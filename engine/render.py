@@ -151,12 +151,84 @@ def draw_host(ctx, ep, x, y, s, t, facing=1, act='idle', blink=False, mouth=0.0,
         chloe(ctx, x, y, s, t, facing, 1.0 if act == 'dig' else 0.0, blink, 1.0 if act == 'wipe' else 0.0,
               1.0 if act == 'wave' else 0.0, mouth, eye, rot, step)
 
+# ---------------------------------------------------------------- noir grading (moody hand-drawn look)
+_yy, _xx = np.mgrid[0:H, 0:W].astype(np.float32)
+_VIG = (1.0 - 0.55*np.clip(((_xx - W/2)/(W*0.62))**2 + ((_yy - H/2)/(H*0.62))**2, 0, 1)**1.3).astype(np.float32)[..., None]
+_GRAIN = [np.random.RandomState(k).normal(0, 3.5, (H, W, 1)).astype(np.float32) for k in range(6)]
+def is_noir(ep): return ep.get('style', 'noir' if is_stick(ep) else 'bright') == 'noir'
+def grade(surf, i):
+    surf.flush()
+    a = np.ndarray((H, W, 4), np.uint8, surf.get_data())
+    f = a[..., :3].astype(np.float32)
+    g = f[..., 0:1]*0.114 + f[..., 1:2]*0.587 + f[..., 2:3]*0.299
+    f = f*0.48 + g*0.52                                   # mostly desaturated
+    f = (f - 128)*1.08 + 120                              # a touch of contrast, slightly darker
+    f[..., 0] *= 1.07; f[..., 2] *= 0.95                  # cool blue-grey cast (BGR order)
+    f = f*_VIG + _GRAIN[(i // 3) % 6]
+    a[..., :3] = np.clip(f, 0, 255).astype(np.uint8)
+    surf.mark_dirty()
+
+def ink(ctx, w=3, a=0.85):
+    ctx.set_source_rgba(0.08, 0.08, 0.1, a); ctx.set_line_width(w); ctx.set_line_join(cairo.LINE_JOIN_ROUND)
+
+def interior(ctx, t, kind):
+    # one-point perspective interior with glowing windows, hand-inked
+    vx, vy = W*0.5, H*0.42
+    ctx.set_source_rgb(0.34, 0.36, 0.40); ctx.paint()
+    bw, bh = 520, 230; bx, by = vx - bw/2, vy - bh/2
+    # back wall + windows with warm light
+    ctx.set_source_rgb(0.26, 0.28, 0.32); ctx.rectangle(bx, by, bw, bh); ctx.fill()
+    for k in range(6):
+        wx = bx + 18 + k*84
+        g = cairo.LinearGradient(0, by + 20, 0, by + bh - 20); g.add_color_stop_rgb(0, 0.95, 0.72, 0.38); g.add_color_stop_rgb(1, 0.55, 0.38, 0.2)
+        ctx.set_source(g); ctx.rectangle(wx, by + 22, 66, bh - 44); ctx.fill()
+        ink(ctx, 2); ctx.rectangle(wx, by + 22, 66, bh - 44); ctx.stroke()
+        ctx.move_to(wx + 33, by + 22); ctx.line_to(wx + 33, by + bh - 22); ctx.stroke()
+    # floor
+    ctx.set_source_rgb(0.30, 0.31, 0.34); ctx.move_to(0, H); ctx.line_to(bx, by + bh); ctx.line_to(bx + bw, by + bh); ctx.line_to(W, H); ctx.close_path(); ctx.fill()
+    # light shafts on the floor
+    for k in range(6):
+        wx = bx + 18 + k*84
+        ctx.set_source_rgba(1, 0.8, 0.45, 0.10)
+        ctx.move_to(wx, by + bh); ctx.line_to(wx + 66, by + bh); ctx.line_to((wx + 66 - vx)*2.4 + vx, H); ctx.line_to((wx - vx)*2.4 + vx, H); ctx.close_path(); ctx.fill()
+    # ceiling
+    ctx.set_source_rgb(0.40, 0.42, 0.46); ctx.move_to(0, 0); ctx.line_to(bx, by); ctx.line_to(bx + bw, by); ctx.line_to(W, 0); ctx.close_path(); ctx.fill()
+    # side walls with panels
+    for side in (-1, 1):
+        ex = 0 if side < 0 else W; nx = bx if side < 0 else bx + bw
+        ctx.set_source_rgb(0.36, 0.38, 0.42); ctx.move_to(ex, 0); ctx.line_to(nx, by); ctx.line_to(nx, by + bh); ctx.line_to(ex, H); ctx.close_path(); ctx.fill()
+        ink(ctx, 2.2)
+        for k in range(1, 5):
+            u = k/5; px = ex + (nx - ex)*u**0.7
+            ty = 0 + (by - 0)*u**0.7; byy = H + (by + bh - H)*u**0.7
+            ctx.move_to(px, ty); ctx.line_to(px, byy); ctx.stroke()
+        if kind == 'corridor':
+            # glass railing
+            ctx.set_source_rgba(0.75, 0.85, 0.9, 0.12); ctx.move_to(ex, H*0.62); ctx.line_to(nx, by + bh*0.75); ctx.line_to(nx, by + bh); ctx.line_to(ex, H); ctx.close_path(); ctx.fill()
+            ink(ctx, 3); ctx.move_to(ex, H*0.62); ctx.line_to(nx, by + bh*0.75); ctx.stroke()
+    # perspective lines + floor tiles
+    ink(ctx, 2.5)
+    for p_ in ((0, 0), (W, 0), (0, H), (W, H)):
+        ctx.move_to(*p_); ctx.line_to(bx if p_[0] == 0 else bx + bw, by if p_[1] == 0 else by + bh); ctx.stroke()
+    ctx.rectangle(bx, by, bw, bh); ctx.stroke()
+    ink(ctx, 1.4, 0.45)
+    for k in range(-6, 7):
+        ctx.move_to(vx + k*45, by + bh); ctx.line_to(vx + k*260, H); ctx.stroke()
+    for k in range(1, 6):
+        u = (k/6)**1.8; yy = by + bh + (H - by - bh)*u
+        ctx.move_to(0, yy); ctx.line_to(W, yy); ctx.stroke()
+    if kind == 'room':
+        ink(ctx, 2.5)
+        for tx_ in (300, 980):  # simple tables
+            ctx.set_source_rgb(0.42, 0.40, 0.38); ctx.rectangle(tx_ - 90, 520, 180, 16); ctx.fill(); ink(ctx, 2.5); ctx.rectangle(tx_ - 90, 520, 180, 16); ctx.stroke()
+            ctx.move_to(tx_ - 75, 536); ctx.line_to(tx_ - 75, 600); ctx.move_to(tx_ + 75, 536); ctx.line_to(tx_ + 75, 600); ctx.stroke()
+
 # ---------------------------------------------------------------- backgrounds
 rnd0 = random.Random(7)
 STONES = [(rnd0.uniform(0, W), rnd0.uniform(0, 1), rnd0.uniform(8, 22), rnd0.choice(['#8b6a4f', '#7a5b42', '#a08066'])) for _ in range(45)]
 STARS = [(rnd0.uniform(0, W), rnd0.uniform(0, H), rnd0.uniform(1, 3.2), rnd0.uniform(0, 6)) for _ in range(140)]
 BUBBLES = [(rnd0.uniform(0, W), rnd0.uniform(0, 1), rnd0.uniform(5, 16), rnd0.uniform(0.6, 1.4)) for _ in range(30)]
-GROUND = {'desert': 560, 'volcano': 560, 'city': 560, 'snow': 560, 'lab': 560, 'mystery': 560, 'meadow': 560, 'split': 300, 'underground': 470, 'sky': 600, 'space': 560, 'ocean': 600, 'forest': 560, 'night': 560}
+GROUND = {'corridor': 640, 'room': 610, 'desert': 560, 'volcano': 560, 'city': 560, 'snow': 560, 'lab': 560, 'mystery': 560, 'meadow': 560, 'split': 300, 'underground': 470, 'sky': 600, 'space': 560, 'ocean': 600, 'forest': 560, 'night': 560}
 
 def sky_grad(ctx, top, bot, y1):
     g = cairo.LinearGradient(0, 0, 0, y1); g.add_color_stop_rgb(0, *hexc(top)[:3]); g.add_color_stop_rgb(1, *hexc(bot)[:3])
@@ -239,6 +311,8 @@ def background(ctx, kind, t):
         ctx.set_source_rgba(*hexc('#0e1a4a')); ctx.arc(1104, 104, 50, 0, 2*math.pi); ctx.fill()
         ctx.set_source_rgba(*hexc('#2d6b3a')); ellipse(ctx, 640, 600, 900, 110); ctx.fill()
         soil(ctx, 560, H, '#5a4030', '#3a2618'); grass(ctx, 560, t, '#2f7d2a', '#256622')
+    elif kind in ('corridor', 'room'):
+        interior(ctx, t, kind)
     elif kind == 'desert':
         sky_grad(ctx, '#ffb366', '#ffe3b0', 520)
         ctx.set_source_rgba(*hexc('#fff1a8')); ctx.arc(1050, 140, 70, 0, 2*math.pi); ctx.fill()
@@ -530,6 +604,7 @@ def frame(i, ep, timeline, total, env):
             ctx.set_source_rgba(*hexc('#8a5a38')); ellipse(ctx, 640, 556, 150, 26); ctx.fill()
         else:
             draw_emoji(ctx, ep.get('intro_emoji', '🔍'), 640, 380 + math.sin(t*2)*10, 230, pop, math.sin(t*1.5)*0.08)
+        if is_noir(ep): grade(surf, i)
         ts = ease_out_back((t - 0.9)/0.7)
         if ts > 0:
             ctx.save(); ctx.translate(W/2, 130); ctx.scale(ts, ts)
@@ -552,6 +627,7 @@ def frame(i, ep, timeline, total, env):
         for k in range(8):
             ph = (t*1.2 + k*0.13) % 1
             sparkle(ctx, 640 + 330*math.cos(k*0.8), 300 + 150*math.sin(k*1.3), 20*math.sin(ph*math.pi), math.sin(ph*math.pi))
+        if is_noir(ep): grade(surf, i)
         a = ease_io(lt/0.5)
         ctx.push_group(); text(ctx, ep.get('outro_text', 'Dig deeper with Chloe!' if ep.get('mascot', True) and not is_stick(ep) else 'Keep digging deeper!'), W/2, 120, 62, col='#ffd23f', outline='#3b2a1a', ow=12)
         ctx.pop_group_to_source(); ctx.paint_with_alpha(a)
@@ -613,6 +689,7 @@ def frame(i, ep, timeline, total, env):
             if sa > 0: bubble(ctx, x + 150*facing, by, say, thought=c.get('thought', False), alpha=sa)
         for p in sc.get('props', []):
             if p.get('layer') != 'back': draw_prop(ctx, p, lt, dur)
+        if is_noir(ep): grade(surf, i); graded = True
         if sc.get('fact'):
             f = sc['fact']; fa = (f.get('at', 0.15))*dur
             fade_out = 1 - ease_io((lt - (dur - 0.35))/0.3)
@@ -647,6 +724,7 @@ def thumbnail(ep, out):
         draw_emoji(ctx, th.get('emoji', '❓'), 330, 470, 300)
     else:
         draw_emoji(ctx, th.get('emoji', '❓'), 960, 430, 420)
+    if is_noir(ep): grade(surf, 0)
     words = th.get('text', ep.get('title', '')).upper()
     lines = wrap(ctx, words, 118, 760)[:3]
     for k, ln in enumerate(lines):
@@ -674,7 +752,7 @@ def main():
         print(f'preview frames written, total {total:.1f}s'); return
     N = int(total*FPS)
     p = subprocess.Popen(['ffmpeg', '-y', '-loglevel', 'error', '-f', 'rawvideo', '-pix_fmt', 'bgra', '-s', f'{W}x{H}', '-r', str(FPS),
-                          '-i', '-', '-i', wav, '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '20', '-pix_fmt', 'yuv420p',
+                          '-i', '-', '-i', wav, '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '23', '-maxrate', '2500k', '-bufsize', '5000k', '-pix_fmt', 'yuv420p',
                           '-c:a', 'aac', '-b:a', '160k', '-shortest', '-movflags', '+faststart', out], stdin=subprocess.PIPE)
     for i in range(N):
         p.stdin.write(bytes(frame(i, ep, timeline, total, env).get_data()))

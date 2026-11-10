@@ -6,7 +6,8 @@ Read before picking each new topic. Append one entry per video, and update earli
 | Date | Title | Topic / genre | Audience | Views (48h) | Notes |
 |---|---|---|---|---|---|
 | 2026-11-10 | (removed) How Do Plants Drink Without a Mouth? | plants / kids science, old Chloe host | kids | – | taken down; channel relaunched with Sir Digsworth |
-| 2026-11-10 | Shooting Stars Aren't Stars (Leonids 2026) | space / timely event (Leonids peak Nov 17-18) | general | – | relaunch episode 1, Sir Digsworth, noir style |
+| 2026-11-10 | Shooting Stars Aren't Stars (Leonids 2026) | space / timely event (Leonids peak Nov 17-18) | general | – | relaunch episode 1, Sir Digsworth, noir style. YouTube id UmRRMuMWwYo |
+| 2026-11-11 | What If Every Human Vanished Tomorrow? | 'what if' thought experiment / Earth without people | general | – | evergreen mega-topic; empty-mall noir look |
 
 ## Channel identity
 - Host: Sir Digsworth, stickman English gentleman (tweed flat cap, tweed jacket, waistcoat, bow tie, monocle, handlebar moustache, cane, pipe), British voice bm_george.

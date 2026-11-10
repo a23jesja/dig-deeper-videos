@@ -518,6 +518,7 @@ def frame(i, ep, timeline, total, env):
         if act == 'wave': wave = 1.0
         if act == 'dizzy': rot = math.sin(t*4)*0.18
         if act == 'swim': rot = math.sin(t*3)*0.12; bob = math.sin(t*2.5)*14; step = t*8
+        if act == 'think': rot = -0.08 + math.sin(t*1.5)*0.03
         if act == 'sleep': blink = True
         if act == 'shiver': x += math.sin(t*60)*3
         talking = lt < tl['voice_len'] + 0.2

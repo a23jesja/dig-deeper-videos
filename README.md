@@ -17,7 +17,7 @@ Raw URL for Metricool: `https://raw.githubusercontent.com/a23jesja/dig-deeper-vi
 
 See `episodes/2026-11-11-how-do-plants-drink.json` for a complete example.
 
-- `host` – `"stick"` (the channel's stickman narrator, use for all new videos, voice `am_michael`) or `"chloe"` (old mole mascot).
+- `host` – `"stick"` = **Sir Digsworth**, the channel's stickman English gentleman (use for all new videos, voice `bm_george`) or `"chloe"` (old mole mascot).
 - `mascot` – `true` (default) shows the host; `false` = no mascot (documentary/explainer style). Pick per topic.
 - `intro_bg` / `intro_emoji` – background and big emoji for intro/outro (emoji used when `mascot` is false). `outro_text` – optional.
 - `thumbnail` – `{text (2–4 punchy words), emoji, bg, color, mascot}`; render with `--thumb out.jpg`.
@@ -27,7 +27,8 @@ See `episodes/2026-11-11-how-do-plants-drink.json` for a complete example.
 - `scenes` – 11–14 scenes. Chloe narrates in first person to "friends"/"diggers". About 280–330 words total gives ~1:45–2:00.
 
 Scene fields:
-- `bg`: `desert`, `volcano`, `city`, `snow`, `lab`, `mystery`, `meadow`, `split` (sky top, soil cross-section below the grass at y=0.42), `underground` (tunnel), `sky`, `space`, `ocean`, `forest`, `night`.
+- `style` – defaults to `noir` for the stickman (moody desaturated hand-inked grading, vignette, grain). Leave it.
+- `bg`: `corridor` (empty mall/hall interior), `room` (interior with tables), `desert`, `volcano`, `city`, `snow`, `lab`, `mystery`, `meadow`, `split` (sky top, soil cross-section below the grass at y=0.42), `underground` (tunnel), `sky`, `space`, `ocean`, `forest`, `night`.
 - `narration`: what Chloe says (lip-synced, also shown as subtitles).
 - `chloe` (the host's settings, also used for the stickman; ignored when `mascot` is false; `hide: true` hides her in one scene): `action` one of `idle, walk, run, dig, jump, wow, think, wipe, wave, dizzy, swim, sleep, shiver` (stickman also: `point, shrug`);
   `x` (0–1), optional `to` (0–1, for walk/run/dig/swim), `facing` (1 right / -1 left), `size` (default 0.85),
@@ -54,3 +55,9 @@ Scene fields:
 - Props stay inside x 0.1–0.9 and y 0.2–0.8; nothing behind the fact card (y < 0.32) while it shows, nothing in the subtitle strip (y > 0.82).
 - Short speech bubbles only (1–3 words). One fact card per scene at most.
 - Don't edit engine/render.py during a run — only write the episode JSON. If something looks broken in the preview, simplify the scene instead.
+
+## Emoji to avoid (they render as square picture tiles)
+🌠 🌉 🏙️ 🌃 🌆 🌇 🎆 🎇 🏞️ 🌄 🌅 🗾 🎑 — use ⭐ ✨ ☄️ 🔩 🔦 etc. instead. Check every emoji in the preview.
+
+## Video size
+The engine caps bitrate (~2.5 Mbps) so a 2–2.5 min video is ~25–50 MB. GitHub rejects files over 100 MB — check with `ls -lh` before committing.

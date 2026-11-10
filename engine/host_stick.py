@@ -7,6 +7,8 @@ body centre and the feet touch the ground at y + 95*s. The figure is about
 import math, cairo
 
 INK = (0.13, 0.12, 0.16)
+SCARF = (1.0, 0.45, 0.10)
+SCARF2 = (0.85, 0.30, 0.05)
 HALO = (1, 1, 1)
 LW = 11
 
@@ -58,6 +60,11 @@ def draw_stick(ctx, x, y, s, t, facing=1, mouth=0.0, blink=False, eye=1.0, pose=
         front = (front[0] + math.sin(t*14)*0.5, front[1]); back = (back[0] + math.sin(t*14 + 2)*0.5, back[1])
     if pose == 'swim':
         back = (t*5 % (2*math.pi), 0.2); front = ((t*5 + math.pi) % (2*math.pi), 0.2)
+    # scarf tail flowing behind (signature look)
+    wv = math.sin(t*5)
+    ctx.set_source_rgb(*SCARF2)
+    ctx.move_to(-8, -72); ctx.curve_to(-30, -70 + wv*4, -46, -60 - wv*6, -64, -52 + wv*8)
+    ctx.line_to(-60, -40 + wv*8); ctx.curve_to(-44, -48 - wv*5, -28, -56 + wv*3, -6, -60); ctx.close_path(); ctx.fill()
     _seg(ctx, _arm(sh, back[0] + sway, back[1]), LW)
     _seg(ctx, [hip, neck], LW + 1)
     # head
@@ -65,6 +72,16 @@ def draw_stick(ctx, x, y, s, t, facing=1, mouth=0.0, blink=False, eye=1.0, pose=
     ctx.set_source_rgb(*HALO); ctx.arc(hc[0], hc[1], r + 6, 0, 2*math.pi); ctx.fill()
     ctx.set_source_rgb(1, 1, 1); ctx.arc(hc[0], hc[1], r, 0, 2*math.pi); ctx.fill()
     ctx.set_source_rgb(*INK); ctx.set_line_width(LW - 2); ctx.arc(hc[0], hc[1], r, 0, 2*math.pi); ctx.stroke()
+    # signature hair curl
+    for col, lw in ((HALO, 12), (INK, 5)):
+        ctx.set_source_rgb(*col); ctx.set_line_width(lw); ctx.set_line_cap(cairo.LINE_CAP_ROUND)
+        ctx.move_to(2, -151); ctx.curve_to(-2, -172, 22, -182, 24, -166); ctx.curve_to(25, -156, 12, -156, 13, -164); ctx.stroke()
+    # scarf band around the neck
+    ctx.set_source_rgb(*HALO); ctx.save(); ctx.translate(0, -68); ctx.scale(30, 13); ctx.arc(0, 0, 1, 0, 2*math.pi); ctx.restore(); ctx.fill()
+    ctx.set_source_rgb(*SCARF); ctx.save(); ctx.translate(0, -68); ctx.scale(26, 10); ctx.arc(0, 0, 1, 0, 2*math.pi); ctx.restore(); ctx.fill()
+    ctx.set_source_rgb(1, 0.85, 0.3); ctx.set_line_width(3)
+    for k in (-10, 4):
+        ctx.move_to(k, -77); ctx.line_to(k + 4, -59); ctx.stroke()
     # face (looks toward facing direction)
     fx = hc[0] + 10
     for ex in (fx - 12, fx + 14):

@@ -145,7 +145,7 @@ rnd0 = random.Random(7)
 STONES = [(rnd0.uniform(0, W), rnd0.uniform(0, 1), rnd0.uniform(8, 22), rnd0.choice(['#8b6a4f', '#7a5b42', '#a08066'])) for _ in range(45)]
 STARS = [(rnd0.uniform(0, W), rnd0.uniform(0, H), rnd0.uniform(1, 3.2), rnd0.uniform(0, 6)) for _ in range(140)]
 BUBBLES = [(rnd0.uniform(0, W), rnd0.uniform(0, 1), rnd0.uniform(5, 16), rnd0.uniform(0.6, 1.4)) for _ in range(30)]
-GROUND = {'meadow': 560, 'split': 300, 'underground': 470, 'sky': 600, 'space': 560, 'ocean': 600, 'forest': 560, 'night': 560}
+GROUND = {'desert': 560, 'volcano': 560, 'city': 560, 'snow': 560, 'lab': 560, 'mystery': 560, 'meadow': 560, 'split': 300, 'underground': 470, 'sky': 600, 'space': 560, 'ocean': 600, 'forest': 560, 'night': 560}
 
 def sky_grad(ctx, top, bot, y1):
     g = cairo.LinearGradient(0, 0, 0, y1); g.add_color_stop_rgb(0, *hexc(top)[:3]); g.add_color_stop_rgb(1, *hexc(bot)[:3])
@@ -228,6 +228,51 @@ def background(ctx, kind, t):
         ctx.set_source_rgba(*hexc('#0e1a4a')); ctx.arc(1104, 104, 50, 0, 2*math.pi); ctx.fill()
         ctx.set_source_rgba(*hexc('#2d6b3a')); ellipse(ctx, 640, 600, 900, 110); ctx.fill()
         soil(ctx, 560, H, '#5a4030', '#3a2618'); grass(ctx, 560, t, '#2f7d2a', '#256622')
+    elif kind == 'desert':
+        sky_grad(ctx, '#ffb366', '#ffe3b0', 520)
+        ctx.set_source_rgba(*hexc('#fff1a8')); ctx.arc(1050, 140, 70, 0, 2*math.pi); ctx.fill()
+        ctx.set_source_rgba(*hexc('#e9b86a')); ellipse(ctx, 300, 600, 600, 170); ctx.fill()
+        ctx.set_source_rgba(*hexc('#f2c97d')); ellipse(ctx, 1000, 640, 650, 190); ctx.fill()
+        ctx.set_source_rgba(*hexc('#ddb06a')); ctx.rectangle(0, 560, W, H - 560); ctx.fill()
+    elif kind == 'volcano':
+        sky_grad(ctx, '#3a1f3d', '#d9663a', 560)
+        ctx.set_source_rgba(*hexc('#4a2c2a')); ctx.move_to(380, 560); ctx.line_to(600, 190); ctx.line_to(700, 190); ctx.line_to(940, 560); ctx.close_path(); ctx.fill()
+        ctx.set_source_rgba(*hexc('#ff7a1a')); ctx.move_to(600, 190); ctx.line_to(700, 190); ctx.line_to(680, 260); ctx.line_to(640, 240); ctx.close_path(); ctx.fill()
+        rr = random.Random(int(t*6))
+        for k in range(10):
+            ph = (t*0.8 + k*0.1) % 1
+            ctx.set_source_rgba(1, 0.45 + 0.3*rr.random(), 0.1, 1 - ph); ctx.arc(650 + math.sin(k*2.3)*ph*180, 190 - ph*160 + ph*ph*120, 8 + 6*(1 - ph), 0, 2*math.pi); ctx.fill()
+        soil(ctx, 560, H, '#5a3b2e', '#2e1d16')
+    elif kind == 'city':
+        sky_grad(ctx, '#89c4ff', '#e2f1ff', 560); clouds(ctx, t)
+        rr = random.Random(5)
+        for k in range(14):
+            bw_ = rr.randint(70, 120); bh_ = rr.randint(160, 380); bx = k*95 - 20
+            ctx.set_source_rgba(*hexc(rr.choice(['#7d8aa6', '#95a3bd', '#6c7896', '#a9b4c9']))); ctx.rectangle(bx, 560 - bh_, bw_, bh_); ctx.fill()
+            ctx.set_source_rgba(1, 0.95, 0.7, 0.7)
+            for wy in range(560 - bh_ + 16, 545, 34):
+                for wx in range(bx + 10, bx + bw_ - 14, 24): ctx.rectangle(wx, wy, 12, 16); ctx.fill()
+        ctx.set_source_rgba(*hexc('#555b66')); ctx.rectangle(0, 560, W, H - 560); ctx.fill()
+        ctx.set_source_rgba(1, 1, 1, 0.8)
+        for k in range(0, W, 120): ctx.rectangle(k + 20, 630, 60, 8); ctx.fill()
+    elif kind == 'snow':
+        sky_grad(ctx, '#9fc7e8', '#eef6ff', 560)
+        ctx.set_source_rgba(1, 1, 1, 1); ellipse(ctx, 300, 600, 620, 170); ctx.fill(); ellipse(ctx, 1000, 620, 640, 180); ctx.fill()
+        ctx.set_source_rgba(*hexc('#f4f8ff')); ctx.rectangle(0, 560, W, H - 560); ctx.fill()
+        for sx, sy, r, ph in STARS[:70]:
+            yy = (sy + t*40*(0.6 + r/4)) % H; ctx.set_source_rgba(1, 1, 1, 0.9); ctx.arc(sx + math.sin(t + ph)*10, yy, r + 1, 0, 2*math.pi); ctx.fill()
+    elif kind == 'lab':
+        ctx.set_source_rgba(*hexc('#dfe9f2')); ctx.paint()
+        ctx.set_source_rgba(*hexc('#c9d8e6'))
+        for k in range(0, W, 80): ctx.rectangle(k, 0, 40, 560); ctx.fill()
+        ctx.set_source_rgba(*hexc('#8a6a52')); ctx.rectangle(0, 500, W, 60); ctx.fill()
+        ctx.set_source_rgba(*hexc('#b3c2cf')); ctx.rectangle(0, 560, W, H - 560); ctx.fill()
+    elif kind == 'mystery':
+        g = cairo.RadialGradient(640, 300, 40, 640, 360, 800)
+        g.add_color_stop_rgb(0, *hexc('#3d2a5c')[:3]); g.add_color_stop_rgb(1, *hexc('#0d0a17')[:3]); ctx.set_source(g); ctx.paint()
+        for sx, sy, r, ph in STARS[:60]:
+            ctx.set_source_rgba(0.8, 0.7, 1, 0.25 + 0.25*math.sin(t*1.3 + ph)); ctx.arc(sx, sy, r*1.4, 0, 2*math.pi); ctx.fill()
+        ctx.set_source_rgba(*hexc('#1d1530')); ctx.rectangle(0, 560, W, H - 560); ctx.fill()
     else:
         background(ctx, 'meadow', t)
 
@@ -461,12 +506,16 @@ def frame(i, ep, timeline, total, env):
     mouth = float(env[min(i, len(env) - 1)])
     title = ep.get('title', '')
     if t < INTRO:
-        background(ctx, 'meadow', t)
-        pop = ease_out_back((t - 0.3)/0.9); cy = 760 - pop*330
-        ctx.save(); ctx.rectangle(0, 0, W, 560); ctx.clip()
-        chloe(ctx, 640, cy, 0.9, t, 1, 0, blink, wave=1.0 if t > 1.6 else 0)
-        ctx.restore()
-        ctx.set_source_rgba(*hexc('#8a5a38')); ellipse(ctx, 640, 556, 150, 26); ctx.fill()
+        background(ctx, ep.get('intro_bg', 'meadow'), t)
+        pop = ease_out_back((t - 0.3)/0.9)
+        if ep.get('mascot', True):
+            cy = 760 - pop*330
+            ctx.save(); ctx.rectangle(0, 0, W, 560); ctx.clip()
+            chloe(ctx, 640, cy, 0.9, t, 1, 0, blink, wave=1.0 if t > 1.6 else 0)
+            ctx.restore()
+            ctx.set_source_rgba(*hexc('#8a5a38')); ellipse(ctx, 640, 556, 150, 26); ctx.fill()
+        else:
+            draw_emoji(ctx, ep.get('intro_emoji', '🔍'), 640, 380 + math.sin(t*2)*10, 230, pop, math.sin(t*1.5)*0.08)
         ts = ease_out_back((t - 0.9)/0.7)
         if ts > 0:
             ctx.save(); ctx.translate(W/2, 130); ctx.scale(ts, ts)
@@ -479,13 +528,16 @@ def frame(i, ep, timeline, total, env):
             ctx.pop_group_to_source(); ctx.paint_with_alpha(sa)
     elif t >= total - OUTRO:
         lt = t - (total - OUTRO)
-        background(ctx, 'meadow', t)
-        chloe(ctx, 640, 560 - 95*0.95 - abs(math.sin(lt*3))*20, 0.95, t, 1, 0, blink, wave=1.0)
+        background(ctx, ep.get('intro_bg', 'meadow'), t)
+        if ep.get('mascot', True):
+            chloe(ctx, 640, 560 - 95*0.95 - abs(math.sin(lt*3))*20, 0.95, t, 1, 0, blink, wave=1.0)
+        else:
+            draw_emoji(ctx, ep.get('intro_emoji', '🔍'), 640, 380 - abs(math.sin(lt*3))*20, 200)
         for k in range(8):
             ph = (t*1.2 + k*0.13) % 1
             sparkle(ctx, 640 + 330*math.cos(k*0.8), 300 + 150*math.sin(k*1.3), 20*math.sin(ph*math.pi), math.sin(ph*math.pi))
         a = ease_io(lt/0.5)
-        ctx.push_group(); text(ctx, 'Dig deeper with Chloe!', W/2, 120, 62, col='#ffd23f', outline='#3b2a1a', ow=12)
+        ctx.push_group(); text(ctx, ep.get('outro_text', 'Dig deeper with Chloe!' if ep.get('mascot', True) else 'Keep digging deeper!'), W/2, 120, 62, col='#ffd23f', outline='#3b2a1a', ow=12)
         ctx.pop_group_to_source(); ctx.paint_with_alpha(a)
         bs = ease_out_back((lt - 0.6)/0.6) * (1 + 0.05*math.sin(t*8))
         if bs > 0:
@@ -522,7 +574,9 @@ def frame(i, ep, timeline, total, env):
         if act == 'sleep': blink = True
         if act == 'shiver': x += math.sin(t*60)*3
         talking = lt < tl['voice_len'] + 0.2
-        chloe(ctx, x, y + bob, s, t, facing, dig, blink, wipe, wave, mouth if talking else 0.0, eye, rot, step)
+        show = ep.get('mascot', True) and not c.get('hide', False)
+        if show: chloe(ctx, x, y + bob, s, t, facing, dig, blink, wipe, wave, mouth if talking else 0.0, eye, rot, step)
+        else: act = 'none'
         if act == 'dig': particles(ctx, t, x, y, facing, 1.0)
         if act == 'dizzy':
             for k in range(3):
@@ -536,7 +590,7 @@ def frame(i, ep, timeline, total, env):
             for k in range(3):
                 ph = (t*0.6 + k/3) % 1
                 big_word(ctx, 'z', x + 90*facing + ph*60, y - 120 - ph*120, 40 + k*8, 1, 0, 1 - ph, '#ffffff')
-        say = c.get('say')
+        say = c.get('say') if show else None
         if say:
             sa = ease_io((lt - c.get('say_at', 0.2)*dur)/0.3)
             if sa > 0: bubble(ctx, x + 150*facing, y - 170*s, say, thought=c.get('thought', False), alpha=sa)
@@ -563,8 +617,29 @@ def frame(i, ep, timeline, total, env):
     if t > total - 0.5: ctx.set_source_rgba(0, 0, 0, clamp((t - (total - 0.5))/0.5)); ctx.paint()
     return surf
 
+def thumbnail(ep, out):
+    th = ep.get('thumbnail', {})
+    surf = cairo.ImageSurface(cairo.FORMAT_ARGB32, W, H); ctx = cairo.Context(surf)
+    background(ctx, th.get('bg', ep.get('intro_bg', 'meadow')), 1.0)
+    ctx.set_source_rgba(0, 0, 0, 0.18); ctx.paint()
+    if th.get('mascot', ep.get('mascot', True)):
+        chloe(ctx, 1000, 470, 1.25, 0.3, -1, 0, False, eye=1.35, mouth=0.9)
+        draw_emoji(ctx, th.get('emoji', '❓'), 330, 470, 300)
+    else:
+        draw_emoji(ctx, th.get('emoji', '❓'), 960, 430, 420)
+    words = th.get('text', ep.get('title', '')).upper()
+    lines = wrap(ctx, words, 118, 760)[:3]
+    for k, ln in enumerate(lines):
+        text(ctx, ln, 40, 150 + k*125, 118, col=th.get('color', '#ffd23f'), outline='#1a1208', ow=22, align='left')
+    rgb = cairo.ImageSurface(cairo.FORMAT_RGB24, W, H); c2 = cairo.Context(rgb); c2.set_source_surface(surf); c2.paint()
+    png = out.rsplit('.', 1)[0] + '.png'; rgb.write_to_png(png)
+    subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', '-i', png, '-q:v', '3', out], check=True); os.remove(png)
+    print('thumbnail', out)
+
 def main():
     ep = json.load(open(sys.argv[1])); out = sys.argv[2]
+    if '--thumb' in sys.argv:
+        thumbnail(ep, out); return
     preview = '--preview' in sys.argv
     timeline, total, mix, env = build(ep, preview)
     wav = out + '.wav'

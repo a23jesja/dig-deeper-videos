@@ -17,14 +17,18 @@ Raw URL for Metricool: `https://raw.githubusercontent.com/a23jesja/dig-deeper-vi
 
 See `episodes/2026-11-11-how-do-plants-drink.json` for a complete example.
 
-- `title` – shown on the intro card. `voice` – always `af_heart` (Chloe). `speed` – 0.95. `seed` – any int (varies the music).
+- `mascot` – `true` (default) shows Chloe the Mole as host; `false` = no mascot (documentary/explainer style). Pick per topic.
+- `intro_bg` / `intro_emoji` – background and big emoji for intro/outro (emoji used when `mascot` is false). `outro_text` – optional.
+- `thumbnail` – `{text (2–4 punchy words), emoji, bg, color, mascot}`; render with `--thumb out.jpg`.
+- `audience` – `"kids"` or `"general"` (decides YouTube madeForKids).
+- `title` – shown on the intro card. `voice` – `af_heart` for Chloe/kids; for documentary style `bm_george` (British male) or `am_michael`. `speed` – 0.95. `seed` – any int (varies the music).
 - `youtube` – `title` (under 60 chars + " | Chloe the Mole" is fine), `description`, `tags` (10).
 - `scenes` – 11–14 scenes. Chloe narrates in first person to "friends"/"diggers". About 280–330 words total gives ~1:45–2:00.
 
 Scene fields:
-- `bg`: `meadow`, `split` (sky top, soil cross-section below the grass at y=0.42), `underground` (tunnel), `sky`, `space`, `ocean`, `forest`, `night`.
+- `bg`: `desert`, `volcano`, `city`, `snow`, `lab`, `mystery`, `meadow`, `split` (sky top, soil cross-section below the grass at y=0.42), `underground` (tunnel), `sky`, `space`, `ocean`, `forest`, `night`.
 - `narration`: what Chloe says (lip-synced, also shown as subtitles).
-- `chloe`: `action` one of `idle, walk, run, dig, jump, wow, think, wipe, wave, dizzy, swim, sleep, shiver`;
+- `chloe` (ignored when `mascot` is false; `hide: true` hides her in one scene): `action` one of `idle, walk, run, dig, jump, wow, think, wipe, wave, dizzy, swim, sleep, shiver`;
   `x` (0–1), optional `to` (0–1, for walk/run/dig/swim), `facing` (1 right / -1 left), `size` (default 0.85),
   `ground` (0–1, override where her feet are; use 0.72 to put her under the soil in `split`),
   `say` (short bubble text, 1–3 words), `say_at` (0–1 of scene), `thought` (true = thought bubble).
@@ -36,3 +40,9 @@ Scene fields:
   - `anim` combine with `+`: `pop, fade, grow, float, bounce, spin, wobble, shake, pulse, move (needs to), drop`.
   - `at` = start time as fraction of the scene. `layer: "back"` draws behind Chloe.
   Keep props away from the subtitle strip (y > 0.85) and the fact card (y < 0.3 when a fact is showing).
+
+## Thumbnail
+`python3 engine/render.py episodes/<file>.json videos/<file>.jpg --thumb`
+
+## Growth log
+`GROWTH.md` – after every run, append the video, topic, and what the analytics showed for earlier videos. Read it before choosing a new topic.

@@ -432,5 +432,10 @@
     }
    ]
   }
- ]
+ ],
+ "thumbnail": {
+  "text": "Plants drink HOW?!",
+  "emoji": "🌻",
+  "bg": "split"
+ }
 }

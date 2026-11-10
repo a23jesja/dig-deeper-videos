@@ -46,3 +46,10 @@ Scene fields:
 
 ## Growth log
 `GROWTH.md` – after every run, append the video, topic, and what the analytics showed for earlier videos. Read it before choosing a new topic.
+
+## Keep animations clean (no glitches)
+- Only pick topics that can be told with the built-in backgrounds, Chloe's actions and emoji props. Skip topics that need specific people, maps, machines, logos or detailed diagrams.
+- Max 3 props per scene, and at most 1 moving prop (`move`) per scene. Never stack props on top of each other or on Chloe (keep ≥0.15 apart in x or y).
+- Props stay inside x 0.1–0.9 and y 0.2–0.8; nothing behind the fact card (y < 0.32) while it shows, nothing in the subtitle strip (y > 0.82).
+- Short speech bubbles only (1–3 words). One fact card per scene at most.
+- Don't edit engine/render.py during a run — only write the episode JSON. If something looks broken in the preview, simplify the scene instead.

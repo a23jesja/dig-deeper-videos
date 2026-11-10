@@ -10,6 +10,8 @@ and a subscribe outro. See ../README.md for the episode format.
 """
 import cairo, math, random, subprocess, sys, json, os, re, wave
 import numpy as np
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from host_stick import draw_stick
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 W, H, FPS = 1280, 720, 30
@@ -139,6 +141,15 @@ def chloe(ctx, x, y, s, t, facing=1, dig=0.0, blink=False, wipe=0.0, wave=0.0, m
             ctx.move_to(40, k*0.9); ctx.line_to(50, k*1.2); ctx.stroke()
         ctx.restore()
     ctx.restore()
+
+STICK_POSE = {'dizzy': 'idle', 'sleep': 'idle', 'shiver': 'idle', 'none': 'idle'}
+def is_stick(ep): return ep.get('host', 'chloe') == 'stick'
+def draw_host(ctx, ep, x, y, s, t, facing=1, act='idle', blink=False, mouth=0.0, eye=1.0, rot=0.0, step=0.0):
+    if is_stick(ep):
+        draw_stick(ctx, x, y, s, t, facing, mouth, blink, eye, STICK_POSE.get(act, act), step, rot)
+    else:
+        chloe(ctx, x, y, s, t, facing, 1.0 if act == 'dig' else 0.0, blink, 1.0 if act == 'wipe' else 0.0,
+              1.0 if act == 'wave' else 0.0, mouth, eye, rot, step)
 
 # ---------------------------------------------------------------- backgrounds
 rnd0 = random.Random(7)
@@ -508,7 +519,10 @@ def frame(i, ep, timeline, total, env):
     if t < INTRO:
         background(ctx, ep.get('intro_bg', 'meadow'), t)
         pop = ease_out_back((t - 0.3)/0.9)
-        if ep.get('mascot', True):
+        if ep.get('mascot', True) and is_stick(ep):
+            k = ease_io((t - 0.2)/1.3); moving = k < 1
+            draw_stick(ctx, -120 + k*760, 560 - 95*1.05, 1.05, t, 1, 0.0, blink, 1.0, 'walk' if moving else 'wave', t*9 if moving else 0)
+        elif ep.get('mascot', True):
             cy = 760 - pop*330
             ctx.save(); ctx.rectangle(0, 0, W, 560); ctx.clip()
             chloe(ctx, 640, cy, 0.9, t, 1, 0, blink, wave=1.0 if t > 1.6 else 0)
@@ -529,7 +543,9 @@ def frame(i, ep, timeline, total, env):
     elif t >= total - OUTRO:
         lt = t - (total - OUTRO)
         background(ctx, ep.get('intro_bg', 'meadow'), t)
-        if ep.get('mascot', True):
+        if ep.get('mascot', True) and is_stick(ep):
+            draw_stick(ctx, 640, 560 - 95*1.05 - abs(math.sin(lt*3))*20, 1.05, t, 1, 0.0, blink, 1.0, 'wave')
+        elif ep.get('mascot', True):
             chloe(ctx, 640, 560 - 95*0.95 - abs(math.sin(lt*3))*20, 0.95, t, 1, 0, blink, wave=1.0)
         else:
             draw_emoji(ctx, ep.get('intro_emoji', '🔍'), 640, 380 - abs(math.sin(lt*3))*20, 200)
@@ -537,7 +553,7 @@ def frame(i, ep, timeline, total, env):
             ph = (t*1.2 + k*0.13) % 1
             sparkle(ctx, 640 + 330*math.cos(k*0.8), 300 + 150*math.sin(k*1.3), 20*math.sin(ph*math.pi), math.sin(ph*math.pi))
         a = ease_io(lt/0.5)
-        ctx.push_group(); text(ctx, ep.get('outro_text', 'Dig deeper with Chloe!' if ep.get('mascot', True) else 'Keep digging deeper!'), W/2, 120, 62, col='#ffd23f', outline='#3b2a1a', ow=12)
+        ctx.push_group(); text(ctx, ep.get('outro_text', 'Dig deeper with Chloe!' if ep.get('mascot', True) and not is_stick(ep) else 'Keep digging deeper!'), W/2, 120, 62, col='#ffd23f', outline='#3b2a1a', ow=12)
         ctx.pop_group_to_source(); ctx.paint_with_alpha(a)
         bs = ease_out_back((lt - 0.6)/0.6) * (1 + 0.05*math.sin(t*8))
         if bs > 0:
@@ -551,7 +567,7 @@ def frame(i, ep, timeline, total, env):
         for p in sc.get('props', []):
             if p.get('layer') == 'back': draw_prop(ctx, p, lt, dur)
         c = sc.get('chloe', {})
-        act = c.get('action', 'idle'); s = c.get('size', 0.85)
+        act = c.get('action', 'idle'); s = c.get('size', 1.0 if is_stick(ep) else 0.85)
         x = c.get('x', 0.3)*W; facing = c.get('facing', 1)
         gy = c.get('ground', GROUND.get(bg, 560) / H)*H
         y = gy - 95*s
@@ -575,13 +591,13 @@ def frame(i, ep, timeline, total, env):
         if act == 'shiver': x += math.sin(t*60)*3
         talking = lt < tl['voice_len'] + 0.2
         show = ep.get('mascot', True) and not c.get('hide', False)
-        if show: chloe(ctx, x, y + bob, s, t, facing, dig, blink, wipe, wave, mouth if talking else 0.0, eye, rot, step)
+        if show: draw_host(ctx, ep, x, y + bob, s, t, facing, act, blink, mouth if talking else 0.0, eye, rot, step)
         else: act = 'none'
         if act == 'dig': particles(ctx, t, x, y, facing, 1.0)
         if act == 'dizzy':
             for k in range(3):
                 ang = t*4 + k*2.1
-                draw_emoji(ctx, '⭐', x + math.cos(ang)*80*s, y - 120*s + math.sin(ang)*22, 46)
+                draw_emoji(ctx, '⭐', x + math.cos(ang)*80*s, y - (175 if is_stick(ep) else 120)*s + math.sin(ang)*22, 46)
         if act == 'wow':
             for k in range(5):
                 ph = (t*1.4 + k*0.2) % 1
@@ -593,7 +609,8 @@ def frame(i, ep, timeline, total, env):
         say = c.get('say') if show else None
         if say:
             sa = ease_io((lt - c.get('say_at', 0.2)*dur)/0.3)
-            if sa > 0: bubble(ctx, x + 150*facing, y - 170*s, say, thought=c.get('thought', False), alpha=sa)
+            by = y - (225 if is_stick(ep) else 170)*s
+            if sa > 0: bubble(ctx, x + 150*facing, by, say, thought=c.get('thought', False), alpha=sa)
         for p in sc.get('props', []):
             if p.get('layer') != 'back': draw_prop(ctx, p, lt, dur)
         if sc.get('fact'):
@@ -622,7 +639,10 @@ def thumbnail(ep, out):
     surf = cairo.ImageSurface(cairo.FORMAT_ARGB32, W, H); ctx = cairo.Context(surf)
     background(ctx, th.get('bg', ep.get('intro_bg', 'meadow')), 1.0)
     ctx.set_source_rgba(0, 0, 0, 0.18); ctx.paint()
-    if th.get('mascot', ep.get('mascot', True)):
+    if th.get('mascot', ep.get('mascot', True)) and is_stick(ep):
+        draw_stick(ctx, 1010, 600 - 95*1.6, 1.6, 0.3, -1, 0.9, False, 1.3, 'wow')
+        draw_emoji(ctx, th.get('emoji', '❓'), 330, 470, 300)
+    elif th.get('mascot', ep.get('mascot', True)):
         chloe(ctx, 1000, 470, 1.25, 0.3, -1, 0, False, eye=1.35, mouth=0.9)
         draw_emoji(ctx, th.get('emoji', '❓'), 330, 470, 300)
     else:

@@ -17,7 +17,8 @@ Raw URL for Metricool: `https://raw.githubusercontent.com/a23jesja/dig-deeper-vi
 
 See `episodes/2026-11-11-how-do-plants-drink.json` for a complete example.
 
-- `mascot` – `true` (default) shows Chloe the Mole as host; `false` = no mascot (documentary/explainer style). Pick per topic.
+- `host` – `"stick"` (the channel's stickman narrator, use for all new videos, voice `am_michael`) or `"chloe"` (old mole mascot).
+- `mascot` – `true` (default) shows the host; `false` = no mascot (documentary/explainer style). Pick per topic.
 - `intro_bg` / `intro_emoji` – background and big emoji for intro/outro (emoji used when `mascot` is false). `outro_text` – optional.
 - `thumbnail` – `{text (2–4 punchy words), emoji, bg, color, mascot}`; render with `--thumb out.jpg`.
 - `audience` – `"kids"` or `"general"` (decides YouTube madeForKids).
@@ -28,7 +29,7 @@ See `episodes/2026-11-11-how-do-plants-drink.json` for a complete example.
 Scene fields:
 - `bg`: `desert`, `volcano`, `city`, `snow`, `lab`, `mystery`, `meadow`, `split` (sky top, soil cross-section below the grass at y=0.42), `underground` (tunnel), `sky`, `space`, `ocean`, `forest`, `night`.
 - `narration`: what Chloe says (lip-synced, also shown as subtitles).
-- `chloe` (ignored when `mascot` is false; `hide: true` hides her in one scene): `action` one of `idle, walk, run, dig, jump, wow, think, wipe, wave, dizzy, swim, sleep, shiver`;
+- `chloe` (the host's settings, also used for the stickman; ignored when `mascot` is false; `hide: true` hides her in one scene): `action` one of `idle, walk, run, dig, jump, wow, think, wipe, wave, dizzy, swim, sleep, shiver` (stickman also: `point, shrug`);
   `x` (0–1), optional `to` (0–1, for walk/run/dig/swim), `facing` (1 right / -1 left), `size` (default 0.85),
   `ground` (0–1, override where her feet are; use 0.72 to put her under the soil in `split`),
   `say` (short bubble text, 1–3 words), `say_at` (0–1 of scene), `thought` (true = thought bubble).

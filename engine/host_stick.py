@@ -17,6 +17,7 @@ GOLD = (0.93, 0.74, 0.25)
 PIPE = (0.45, 0.26, 0.13)
 HALO = (1, 1, 1)
 LW = 11
+SKETCH = False   # set by render.py: hand-drawn 'sketch' look (bigger head, mitten hands, expressive brows)
 
 POSES = {
     #        back arm (shoulder, elbow)   front arm (shoulder, elbow)   radians, pi/2 = straight down
@@ -32,7 +33,7 @@ POSES = {
 }
 
 def _seg(ctx, pts, w):
-    for col, lw in ((HALO, w + 7), (INK, w)):
+    for col, lw in ((HALO, w + (4 if SKETCH else 7)), (INK, w)):
         ctx.set_source_rgb(*col); ctx.set_line_width(lw)
         ctx.set_line_cap(cairo.LINE_CAP_ROUND); ctx.set_line_join(cairo.LINE_JOIN_ROUND)
         ctx.move_to(*pts[0])
@@ -43,6 +44,11 @@ def _arm(sh, a1, a2, l1=36, l2=34):
     e = (sh[0] + math.cos(a1)*l1, sh[1] + math.sin(a1)*l1)
     h = (e[0] + math.cos(a1 + a2)*l2, e[1] + math.sin(a1 + a2)*l2)
     return [sh, e, h]
+
+def _hand(ctx, p, r=8.5):
+    if not SKETCH: return
+    ctx.set_source_rgb(1, 1, 1); ctx.arc(p[0], p[1], r, 0, 2*math.pi); ctx.fill_preserve()
+    ctx.set_source_rgb(*INK); ctx.set_line_width(3.6); ctx.stroke()
 
 def draw_stick(ctx, x, y, s, t, facing=1, mouth=0.0, blink=False, eye=1.0, pose='idle', step=0.0, rot=0.0, energy=0.0):
     ctx.save(); ctx.translate(x, y); ctx.rotate(rot); ctx.scale(s*facing, s)
@@ -71,7 +77,7 @@ def draw_stick(ctx, x, y, s, t, facing=1, mouth=0.0, blink=False, eye=1.0, pose=
     if pose == 'swim':
         back = (t*5 % (2*math.pi), 0.2); front = ((t*5 + math.pi) % (2*math.pi), 0.2)
     bpts = _arm(sh, back[0] + sway, back[1])
-    _seg(ctx, bpts, LW)
+    _seg(ctx, bpts, LW); _hand(ctx, bpts[-1])
     if pose not in ('wow', 'jump', 'swim', 'shrug'):
         hx, hy = bpts[-1]
         for col, lw in ((HALO, 12), (CANE, 6)):
@@ -98,8 +104,10 @@ def draw_stick(ctx, x, y, s, t, facing=1, mouth=0.0, blink=False, eye=1.0, pose=
     ctx.move_to(1, -60); ctx.line_to(-11, -67); ctx.line_to(-11, -53); ctx.close_path(); ctx.fill()
     ctx.move_to(1, -60); ctx.line_to(13, -67); ctx.line_to(13, -53); ctx.close_path(); ctx.fill()
     ctx.arc(1, -60, 3.5, 0, 2*math.pi); ctx.fill()
-    # head
-    hc = (6, -112); r = 40
+    # head (bigger in sketch mode, like classic stick-figure explainers)
+    HK = 1.38 if SKETCH else 1.0
+    hc = (6, -112 - 40*(HK - 1)); r = 40
+    ctx.save(); ctx.translate(*hc); ctx.scale(HK, HK); ctx.translate(-hc[0], -hc[1])
     ctx.set_source_rgb(*HALO); ctx.arc(hc[0], hc[1], r + 6, 0, 2*math.pi); ctx.fill()
     ctx.set_source_rgb(1, 1, 1); ctx.arc(hc[0], hc[1], r, 0, 2*math.pi); ctx.fill()
     ctx.set_source_rgb(*INK); ctx.set_line_width(LW - 2); ctx.arc(hc[0], hc[1], r, 0, 2*math.pi); ctx.stroke()
@@ -112,18 +120,32 @@ def draw_stick(ctx, x, y, s, t, facing=1, mouth=0.0, blink=False, eye=1.0, pose=
         else:
             ctx.set_source_rgb(*INK); ctx.save(); ctx.translate(ex, hc[1] - 6); ctx.scale(5.5*eye, 7.5*eye); ctx.arc(0, 0, 1, 0, 2*math.pi); ctx.restore(); ctx.fill()
             ctx.set_source_rgb(1, 1, 1); ctx.arc(ex + 1.8, hc[1] - 8.5, 1.8, 0, 2*math.pi); ctx.fill()
-    lift = 6 if pose in ('wow', 'jump') else (-3 if pose == 'think' else 0)
-    ctx.set_source_rgb(*INK); ctx.set_line_width(3.5); ctx.set_line_cap(cairo.LINE_CAP_ROUND)
-    for ex in (fx - 12, fx + 14):
-        ctx.move_to(ex - 7, hc[1] - 20 - lift); ctx.line_to(ex + 6, hc[1] - 22 - lift); ctx.stroke()
+    ctx.set_source_rgb(*INK); ctx.set_line_width(3.8); ctx.set_line_cap(cairo.LINE_CAP_ROUND)
+    worried = pose in ('wipe', 'shiver', 'dizzy')
+    for j, ex in enumerate((fx - 12, fx + 14)):
+        by = hc[1] - 21
+        if pose in ('wow', 'jump'):
+            ctx.move_to(ex - 8, by - 4); ctx.curve_to(ex - 3, by - 12, ex + 3, by - 12, ex + 8, by - 5); ctx.stroke(); continue
+        if worried:   # inner ends up
+            inner_up = 6
+            if j == 0: ctx.move_to(ex - 7, by + 1); ctx.line_to(ex + 6, by - inner_up)
+            else: ctx.move_to(ex - 6, by - inner_up); ctx.line_to(ex + 7, by + 1)
+            ctx.stroke(); continue
+        lift = 8 if (pose == 'think' and j == 1) else (5 if pose == 'shrug' else (2 if mouth > 0.1 else 0))
+        ctx.move_to(ex - 7, by - lift); ctx.line_to(ex + 6, by - 2 - lift); ctx.stroke()
     my = hc[1] + 16; fx = fx - 4
     if mouth > 0.08:
         ctx.set_source_rgb(*INK); ctx.save(); ctx.translate(fx + 2, my); ctx.scale(9, 2 + 8*mouth); ctx.arc(0, 0, 1, 0, 2*math.pi); ctx.restore(); ctx.fill()
     elif pose in ('wow', 'jump'):
         ctx.set_source_rgb(*INK); ctx.arc(fx + 2, my, 6, 0, 2*math.pi); ctx.fill()
+    elif pose in ('wipe', 'shiver', 'dizzy'):
+        ctx.set_source_rgb(*INK); ctx.set_line_width(3.5)
+        ctx.move_to(fx - 9, my + 2); ctx.curve_to(fx - 4, my - 4, fx + 1, my + 5, fx + 5, my - 1); ctx.curve_to(fx + 8, my - 4, fx + 11, my + 2, fx + 13, my + 1); ctx.stroke()
+    elif pose == 'think':
+        ctx.set_source_rgb(*INK); ctx.set_line_width(3.5); ctx.move_to(fx - 6, my + 1); ctx.line_to(fx + 9, my - 1); ctx.stroke()
     else:
         ctx.set_source_rgb(*INK); ctx.set_line_width(3.5)
-        ctx.move_to(fx - 8, my - 3); ctx.curve_to(fx - 2, my + 5, fx + 7, my + 5, fx + 12, my - 3); ctx.stroke()
+        ctx.move_to(fx - 8, my - 1); ctx.curve_to(fx - 2, my + 4, fx + 7, my + 5, fx + 13, my - 5); ctx.stroke()
     if pose == 'wipe':
         dy = (t*0.9 % 1.0)*30
         ctx.set_source_rgb(0.35, 0.7, 1.0); ctx.move_to(-30, -138 + dy); ctx.curve_to(-38, -124 + dy, -40, -116 + dy, -30, -114 + dy)
@@ -167,6 +189,8 @@ def draw_stick(ctx, x, y, s, t, facing=1, mouth=0.0, blink=False, eye=1.0, pose=
     ctx.set_source_rgb(*PIPE); ctx.move_to(px0 + 25, py0 - 9); ctx.line_to(px0 + 37, py0 - 9); ctx.line_to(px0 + 35, py0 + 6)
     ctx.curve_to(px0 + 34, py0 + 10, px0 + 28, py0 + 10, px0 + 27, py0 + 6); ctx.close_path(); ctx.fill()
     ctx.set_source_rgb(0.2, 0.1, 0.05); ctx.save(); ctx.translate(px0 + 31, py0 - 9); ctx.scale(6, 2); ctx.arc(0, 0, 1, 0, 2*math.pi); ctx.restore(); ctx.fill()
+    ctx.restore()   # end of head block
     # front arm last so gestures read over the body/head
-    _seg(ctx, _arm(sh, front[0] - sway, front[1]), LW)
+    fpts = _arm(sh, front[0] - sway, front[1])
+    _seg(ctx, fpts, LW); _hand(ctx, fpts[-1])
     ctx.restore()

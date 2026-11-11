@@ -27,7 +27,7 @@ See `episodes/2026-11-11-how-do-plants-drink.json` for a complete example.
 - `scenes` – 11–14 scenes. Chloe narrates in first person to "friends"/"diggers". About 280–330 words total gives ~1:45–2:00.
 
 Scene fields:
-- `style` – defaults to `noir` for the stickman (moody desaturated hand-inked grading, vignette, grain). Leave it.
+- `style` – defaults to `sketch` for the stickman (since 2026-11-11): bright warm hand-drawn look like the big viral stick-figure explainers — cream paper tone, ink outlines on everything, peach/pastel skies, warm wooden rooms, big expressive head, mitten hands, emoji props with ink outlines. `noir` (dark, desaturated) still exists but don't use it. Prefer backgrounds that have warm sketch versions: `room`, `corridor`, `meadow`, `forest`, `desert`, `night` (others work but are less on-style).
 - `bg`: `corridor` (empty mall/hall interior), `room` (interior with tables), `desert`, `volcano`, `city`, `snow`, `lab`, `mystery`, `meadow`, `split` (sky top, soil cross-section below the grass at y=0.42), `underground` (tunnel), `sky`, `space`, `ocean`, `forest`, `night`.
 - `narration`: what Chloe says (lip-synced, also shown as subtitles).
 - `chloe` (the host's settings, also used for the stickman; ignored when `mascot` is false; `hide: true` hides her in one scene): `action` one of `idle, walk, run, dig, jump, wow, think, wipe, wave, dizzy, swim, sleep, shiver` (stickman also: `point, shrug`);

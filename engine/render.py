@@ -12,6 +12,7 @@ import cairo, math, random, subprocess, sys, json, os, re, wave
 import numpy as np
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from host_stick import draw_stick
+import host_stick as HS
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 W, H, FPS = 1280, 720, 30
@@ -64,8 +65,9 @@ def wrap(ctx, s, size, maxw):
     return lines
 
 _emoji_cache = {}
+EMOJI_INK = False
 def emoji_surface(e, size):
-    key = (e, size)
+    key = (e, size, EMOJI_INK)
     if key not in _emoji_cache:
         pad = int(size * 0.35); sz = int(size * 1.4) + pad
         s = cairo.ImageSurface(cairo.FORMAT_ARGB32, sz, sz); c = cairo.Context(s)
@@ -73,6 +75,16 @@ def emoji_surface(e, size):
         ext = c.text_extents(e)
         c.move_to(sz/2 - ext.width/2 - ext.x_bearing, sz/2 - ext.height/2 - ext.y_bearing)
         c.show_text(e)
+        if EMOJI_INK:
+            s.flush(); al = np.ndarray((sz, sz, 4), np.uint8, s.get_data())[..., 3].astype(np.float32)
+            r = max(3, size // 22); dil = al.copy()
+            for dy in range(-r, r + 1):
+                for dx in range(-r, r + 1):
+                    if dx*dx + dy*dy <= r*r: dil = np.maximum(dil, np.roll(np.roll(al, dy, 0), dx, 1))
+            o = cairo.ImageSurface(cairo.FORMAT_ARGB32, sz, sz)
+            ob = np.ndarray((sz, sz, 4), np.uint8, o.get_data())
+            ob[..., 3] = dil.astype(np.uint8); ob[..., 0] = (dil*0.09).astype(np.uint8); ob[..., 1] = (dil*0.08).astype(np.uint8); ob[..., 2] = (dil*0.08).astype(np.uint8)
+            o.mark_dirty(); oc = cairo.Context(o); oc.set_source_surface(s); oc.paint(); s = o
         _emoji_cache[key] = s
     return _emoji_cache[key]
 
@@ -158,7 +170,28 @@ def draw_host(ctx, ep, x, y, s, t, facing=1, act='idle', blink=False, mouth=0.0,
 _yy, _xx = np.mgrid[0:H, 0:W].astype(np.float32)
 _VIG = (1.0 - 0.55*np.clip(((_xx - W/2)/(W*0.62))**2 + ((_yy - H/2)/(H*0.62))**2, 0, 1)**1.3).astype(np.float32)[..., None]
 _GRAIN = [np.random.RandomState(k).normal(0, 3.5, (H, W, 1)).astype(np.float32) for k in range(6)]
-def is_noir(ep): return ep.get('style', 'noir' if is_stick(ep) else 'bright') == 'noir'
+def style_of(ep): return ep.get('style', 'sketch' if is_stick(ep) else 'bright')
+def is_noir(ep): return style_of(ep) == 'noir'
+def is_sketch(ep): return style_of(ep) == 'sketch'
+_CREAM = np.array([214, 236, 252], np.float32)   # BGR warm paper
+def sketch_bg(surf):
+    # warm pastel paper look + automatic hand-inked outlines on every background shape
+    surf.flush(); a = np.ndarray((H, W, 4), np.uint8, surf.get_data())
+    f = a[..., :3].astype(np.float32)
+    lum = f[..., 0]*0.114 + f[..., 1]*0.587 + f[..., 2]*0.299
+    gx = np.zeros_like(lum); gy = np.zeros_like(lum)
+    gx[:, 1:-1] = np.abs(lum[:, 2:] - lum[:, :-2]); gy[1:-1] = np.abs(lum[2:] - lum[:-2])
+    e = np.maximum(gx, gy) > 20
+    e = e | np.roll(e, 1, 0) | np.roll(e, 1, 1)
+    g = f[..., 0:1]*0.114 + f[..., 1:2]*0.587 + f[..., 2:3]*0.299
+    f = f*0.90 + _CREAM*0.10
+    f[e] = f[e]*0.10 + 18
+    a[..., :3] = np.clip(f, 0, 255).astype(np.uint8); surf.mark_dirty()
+def grade_sketch(surf, i):
+    surf.flush(); a = np.ndarray((H, W, 4), np.uint8, surf.get_data())
+    f = a[..., :3].astype(np.float32)
+    f = f*(0.86 + 0.14*_VIG) + _GRAIN[(i // 3) % 6]*0.35
+    a[..., :3] = np.clip(f, 0, 255).astype(np.uint8); surf.mark_dirty()
 def grade(surf, i, desat=0.52):
     surf.flush()
     a = np.ndarray((H, W, 4), np.uint8, surf.get_data())
@@ -258,7 +291,75 @@ def grass(ctx, y, t, col='#5cbf3a', col2='#4aa82c'):
         sw = math.sin(t*3 + gx*0.05)*3
         ctx.move_to(gx, y - 16); ctx.line_to(gx + 6 + sw, y - 34); ctx.line_to(gx + 12, y - 16); ctx.fill()
 
+def warm_room(ctx, t, kind):
+    # cosy hand-drawn interior: warm wall, wooden floor, a window, soft lamp glow
+    fy = 520 if kind == 'room' else 500
+    g = cairo.LinearGradient(0, 0, 0, fy); g.add_color_stop_rgb(0, 0.97, 0.88, 0.72); g.add_color_stop_rgb(1, 0.94, 0.81, 0.62)
+    ctx.set_source(g); ctx.rectangle(0, 0, W, fy); ctx.fill()
+    ctx.set_source_rgb(0.80, 0.56, 0.34); ctx.rectangle(0, fy, W, H - fy); ctx.fill()
+    ctx.set_source_rgba(0.55, 0.35, 0.18, 0.55); ctx.set_line_width(3)
+    for k in range(-8, 12):
+        ctx.move_to(W/2 + k*40, fy); ctx.line_to(W/2 + k*170, H); ctx.stroke()
+    ctx.set_source_rgb(0.62, 0.42, 0.24); ctx.rectangle(0, fy - 14, W, 14); ctx.fill()
+    if kind == 'corridor':
+        # long hall with a bright window at the end
+        ctx.set_source_rgb(0.90, 0.74, 0.52); ctx.move_to(0, 0); ctx.line_to(420, 140); ctx.line_to(420, fy - 40); ctx.line_to(0, fy); ctx.close_path(); ctx.fill()
+        ctx.move_to(W, 0); ctx.line_to(860, 140); ctx.line_to(860, fy - 40); ctx.line_to(W, fy); ctx.close_path(); ctx.fill()
+        gw = cairo.LinearGradient(0, 150, 0, fy - 50); gw.add_color_stop_rgb(0, 1.0, 0.93, 0.70); gw.add_color_stop_rgb(1, 0.98, 0.78, 0.48)
+        ctx.set_source(gw); ctx.rectangle(470, 160, 340, fy - 220); ctx.fill()
+        ctx.set_source_rgb(0.2, 0.15, 0.12); ctx.set_line_width(4)
+        for k in range(1, 4): ctx.move_to(470 + k*85, 160); ctx.line_to(470 + k*85, fy - 60); ctx.stroke()
+        for px in (150, 1130):
+            ctx.set_source_rgb(0.98, 0.95, 0.85); ctx.rectangle(px - 45, 180, 90, 130); ctx.fill()
+    else:
+        wx, wy = 120, 110
+        ctx.set_source_rgb(0.62, 0.80, 0.95); ctx.rectangle(wx, wy, 300, 230); ctx.fill()
+        ctx.set_source_rgb(1, 1, 1)
+        for cx, cy in ((wx + 80, wy + 70), (wx + 200, wy + 120)):
+            for dx, r in ((0, 22), (26, 28), (52, 20)): ctx.arc(cx + dx, cy, r, 0, 2*math.pi); ctx.fill()
+        ctx.set_source_rgb(0.95, 0.92, 0.85); ctx.set_line_width(14); ctx.rectangle(wx, wy, 300, 230); ctx.stroke()
+        ctx.set_line_width(6); ctx.move_to(wx + 150, wy); ctx.line_to(wx + 150, wy + 230); ctx.stroke()
+        ctx.set_source_rgb(0.88, 0.84, 0.76); ctx.rectangle(wx - 20, wy + 236, 340, 14); ctx.fill()
+    lg = cairo.RadialGradient(1050, 160, 10, 1050, 160, 420); lg.add_color_stop_rgba(0, 1, 0.92, 0.6, 0.45); lg.add_color_stop_rgba(1, 1, 0.9, 0.6, 0)
+    ctx.set_source(lg); ctx.paint()
+
+def warm_outdoor(ctx, t, kind):
+    hz = 330
+    if kind == 'night':
+        g = cairo.LinearGradient(0, 0, 0, hz); g.add_color_stop_rgb(0, 0.20, 0.27, 0.50); g.add_color_stop_rgb(1, 0.42, 0.47, 0.70)
+        ctx.set_source(g); ctx.rectangle(0, 0, W, hz + 40); ctx.fill()
+        for sx, sy, r, ph in STARS[:70]:
+            if sy < hz: ctx.set_source_rgba(1, 0.97, 0.85, 0.5 + 0.5*abs(math.sin(t*1.4 + ph))); ctx.arc(sx, sy, r*0.8, 0, 2*math.pi); ctx.fill()
+        ctx.set_source_rgb(1, 0.97, 0.85); ctx.arc(1060, 110, 46, 0, 2*math.pi); ctx.fill()
+        ctx.set_source_rgb(0.22, 0.29, 0.52); ctx.arc(1082, 96, 42, 0, 2*math.pi); ctx.fill()
+        hill1, hill2, ground = (0.36, 0.45, 0.50), (0.32, 0.41, 0.46), (0.42, 0.50, 0.50)
+    else:
+        g = cairo.LinearGradient(0, 0, 0, hz); g.add_color_stop_rgb(0, 0.98, 0.72, 0.56); g.add_color_stop_rgb(1, 0.99, 0.87, 0.68)
+        ctx.set_source(g); ctx.rectangle(0, 0, W, hz + 40); ctx.fill()
+        ctx.set_source_rgb(0.97, 0.58, 0.36); ctx.arc(160, hz + 10, 70, math.pi, 2*math.pi); ctx.fill()
+        ctx.set_source_rgba(1, 1, 1, 0.55)
+        for cx, cy, sc_ in ((420, 90, 1.0), (900, 60, 0.8)):
+            cx = (cx + t*8) % (W + 200) - 100; ctx.save(); ctx.translate(cx, cy); ctx.scale(2.2*sc_, 0.5*sc_); ctx.arc(0, 0, 40, 0, 2*math.pi); ctx.restore(); ctx.fill()
+        if kind == 'meadow': hill1, hill2, ground = (0.74, 0.80, 0.45), (0.66, 0.74, 0.40), (0.78, 0.82, 0.50)
+        elif kind == 'forest': hill1, hill2, ground = (0.55, 0.70, 0.42), (0.48, 0.63, 0.38), (0.62, 0.74, 0.45)
+        else: hill1, hill2, ground = (0.90, 0.78, 0.48), (0.86, 0.72, 0.42), (0.87, 0.74, 0.46)
+    ctx.set_source_rgb(*hill1); ctx.move_to(0, hz + 20)
+    for xx in range(0, W + 41, 40): ctx.line_to(xx, hz + 5 - 28*math.sin(xx*0.006 + 1.3))
+    ctx.line_to(W, H); ctx.line_to(0, H); ctx.close_path(); ctx.fill()
+    ctx.set_source_rgb(*hill2); ctx.move_to(0, hz + 60)
+    for xx in range(0, W + 41, 40): ctx.line_to(xx, hz + 55 - 22*math.sin(xx*0.008 + 4.0))
+    ctx.line_to(W, H); ctx.line_to(0, H); ctx.close_path(); ctx.fill()
+    ctx.set_source_rgb(*ground); ctx.rectangle(0, 470, W, H - 470); ctx.fill()
+    if kind == 'forest':
+        for i_, fx in enumerate(range(60, W, 190)): draw_emoji(ctx, '🌲' if i_ % 2 else '🌳', fx, 380 + (i_ % 3)*10, 170)
+    rr = random.Random(11); ctx.set_source_rgba(hill2[0]*0.75, hill2[1]*0.75, hill2[2]*0.7, 0.7); ctx.set_line_width(4)
+    for _ in range(14):
+        gx_, gy_ = rr.uniform(0, W), rr.uniform(480, H - 40)
+        for d in (-6, 0, 6): ctx.move_to(gx_, gy_); ctx.line_to(gx_ + d + math.sin(t*2 + gx_)*2, gy_ - 14 + abs(d)); ctx.stroke()
+
 def background(ctx, kind, t):
+    if HS.SKETCH and kind in ('corridor', 'room'): return warm_room(ctx, t, kind)
+    if HS.SKETCH and kind in ('meadow', 'forest', 'desert', 'night'): return warm_outdoor(ctx, t, kind)
     if kind in ('meadow', 'forest'):
         sky_grad(ctx, '#7cc8ff', '#d4f0ff', 560)
         ctx.set_source_rgba(*hexc('#fff3a0')); ctx.arc(1150, 85, 48, 0, 2*math.pi); ctx.fill()
@@ -623,6 +724,8 @@ def rng_f(p): return 380 + (hash(p.get('emoji', p.get('text', ''))) % 300)
 # ---------------------------------------------------------------- frame
 def frame(i, ep, timeline, total, env):
     t = i / FPS
+    global EMOJI_INK
+    HS.SKETCH = EMOJI_INK = is_sketch(ep)
     surf = cairo.ImageSurface(cairo.FORMAT_ARGB32, W, H); ctx = cairo.Context(surf)
     blink = ((t + 1.1) % 3.3) < 0.12
     mouth = float(env[min(i, len(env) - 1)])
@@ -655,6 +758,7 @@ def frame(i, ep, timeline, total, env):
     elif t >= total - OUTRO:
         lt = t - (total - OUTRO)
         background(ctx, ep.get('intro_bg', 'meadow'), t)
+        if is_sketch(ep): sketch_bg(surf)
         if ep.get('mascot', True) and is_stick(ep):
             draw_stick(ctx, 640, 560 - 95*1.05 - abs(math.sin(lt*3))*20, 1.05, t, 1, 0.0, blink, 1.0, 'wave')
         elif ep.get('mascot', True):
@@ -692,6 +796,7 @@ def frame(i, ep, timeline, total, env):
         sx_, sy_ = math.sin(t*93)*shake, math.cos(t*71)*shake
         ctx.save(); ctx.translate(W/2 + ox + sx_, H*0.5 + sy_); ctx.scale(z, z); ctx.translate(-W/2, -H*0.5)
         bg = sc.get('bg', 'meadow'); background(ctx, bg, t)
+        if is_sketch(ep): sketch_bg(surf)
         if is_noir(ep):
             for k_, (dx, dy, dr, dp) in enumerate(STARS[:28]):
                 px = (dx + t*14*(0.5 + dr/3)) % (W + 40) - 20; py = (dy - t*9*(0.4 + dr/4)) % H
@@ -699,9 +804,10 @@ def frame(i, ep, timeline, total, env):
         for p in sc.get('props', []):
             if p.get('layer') == 'back': draw_prop(ctx, p, lt, dur)
         c = sc.get('chloe', {})
-        act = c.get('action', 'idle'); s = c.get('size', 1.0 if is_stick(ep) else 0.85)
+        act = c.get('action', 'idle'); s = c.get('size', (1.35 if is_sketch(ep) else 1.0) if is_stick(ep) else 0.85)
         x = c.get('x', 0.3)*W; facing = c.get('facing', 1)
         gy = c.get('ground', GROUND.get(bg, 560) / H)*H
+        if is_sketch(ep) and 'ground' not in c: gy = max(gy, 650)
         y = gy - 95*s
         dig = wipe = wave = 0.0; eye = 1.0; rot = 0.0; step = 0.0; bob = math.sin(t*5)*3
         if act in ('walk', 'dig', 'run', 'swim') and 'to' in c:
@@ -761,6 +867,7 @@ def frame(i, ep, timeline, total, env):
             grade(surf, i)
             for p in sc.get('props', []):
                 if 'text' in p: draw_prop(ctx, p, lt, dur)
+        if is_sketch(ep): grade_sketch(surf, i)
         if sc.get('fact'):
             f = sc['fact']; fa = (f.get('at', 0.15))*dur
             fade_out = 1 - ease_io((lt - (dur - 0.35))/0.3)
@@ -790,8 +897,11 @@ def frame(i, ep, timeline, total, env):
 def thumbnail(ep, out):
     th = ep.get('thumbnail', {})
     surf = cairo.ImageSurface(cairo.FORMAT_ARGB32, W, H); ctx = cairo.Context(surf)
+    global EMOJI_INK
+    HS.SKETCH = EMOJI_INK = is_sketch(ep)
     background(ctx, th.get('bg', ep.get('intro_bg', 'meadow')), 1.0)
     if is_noir(ep): grade(surf, 0, 0.35)
+    if is_sketch(ep): sketch_bg(surf)
     ctx.set_source_rgba(0, 0, 0, 0.30); ctx.paint()
     ex, ey = th.get('emoji_x', 0.33)*W, th.get('emoji_y', 0.64)*H
     g = cairo.RadialGradient(ex, ey, 20, ex, ey, 300)
@@ -833,6 +943,9 @@ def kinetic(ctx, chunk, age, cx, cy, size):
     if not chunk: return
     hot = any(ch.isdigit() for ch in chunk) or any(len(w.strip('.,!?')) > 1 and w.strip('.,!?').isupper() for w in chunk.split())
     sc_ = 1 + 0.28*(1 - ease_out_cubic(age/0.13))
+    cw = ctx.get_target().get_width()
+    est = 0.66*size*len(chunk) + size*0.3          # rough width of the bold caption
+    size = int(size*min(1.0, (cw - 70)/max(1, est*sc_)))  # shrink long chunks so they never clip
     ctx.save(); ctx.translate(cx, cy); ctx.scale(sc_, sc_)
     text(ctx, chunk.upper(), 0, size*0.35, size, col='#ffd23f' if hot else '#ffffff', outline='#000000', ow=max(8, size//6))
     ctx.restore()

@@ -11,7 +11,7 @@ Read before picking each new topic. Append one entry per video, and update earli
 
 ## Channel identity
 - Host: Sir Digsworth, stickman English gentleman (tweed flat cap, tweed jacket, waistcoat, bow tie, monocle, handlebar moustache, cane, pipe), British voice bm_george.
-- Look: moody, desaturated hand-inked style (noir grading), inspired by popular 'What if' illustrated explainers.
+- Look (from 2026-11-11): bright warm hand-drawn 'sketch' style inspired by ReachMora's viral stick-figure video (~18M views) — cream paper, ink outlines, pastel skies, big expressive head. Earlier episodes used the dark noir look.
 - Series thread: every video is Sir Digsworth investigating one mind-blowing question (space, Earth, survival what-ifs, mysteries, history, animals, the human body). He introduces himself, ends with a recap and teases the next investigation.
 
 ## Learnings

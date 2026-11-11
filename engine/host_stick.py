@@ -44,7 +44,7 @@ def _arm(sh, a1, a2, l1=36, l2=34):
     h = (e[0] + math.cos(a1 + a2)*l2, e[1] + math.sin(a1 + a2)*l2)
     return [sh, e, h]
 
-def draw_stick(ctx, x, y, s, t, facing=1, mouth=0.0, blink=False, eye=1.0, pose='idle', step=0.0, rot=0.0):
+def draw_stick(ctx, x, y, s, t, facing=1, mouth=0.0, blink=False, eye=1.0, pose='idle', step=0.0, rot=0.0, energy=0.0):
     ctx.save(); ctx.translate(x, y); ctx.rotate(rot); ctx.scale(s*facing, s)
     ctx.set_source_rgba(0, 0, 0, 0.18); ctx.save(); ctx.translate(0, 96); ctx.scale(55, 9); ctx.arc(0, 0, 1, 0, 2*math.pi); ctx.restore(); ctx.fill()
     hip = (0, 12); neck = (0, -70); sh = (0, -56)
@@ -60,6 +60,10 @@ def draw_stick(ctx, x, y, s, t, facing=1, mouth=0.0, blink=False, eye=1.0, pose=
     sway = math.sin(t*2.2)*0.05
     if pose in ('walk', 'run'):
         back = (math.pi/2 + math.sin(step)*0.6, -0.3); front = (math.pi/2 - math.sin(step)*0.6, -0.3)
+    if energy > 0.05 and pose in ('idle', 'point'):
+        g = 0.5 + 0.5*math.sin(t*5.5)
+        front = (front[0] - 0.9*energy*g, front[1] - 0.6*energy*g)
+        back = (back[0] + 0.25*energy*math.sin(t*4.3), back[1])
     if pose == 'wave':
         front = (front[0], front[1] + math.sin(t*9)*0.35)
     if pose == 'dig':

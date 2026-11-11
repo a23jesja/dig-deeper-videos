@@ -24,6 +24,9 @@ def clamp(x, a=0.0, b=1.0): return max(a, min(b, x))
 def ease_out_back(x):
     x = clamp(x); c1, c3 = 1.70158, 2.70158
     return 1 + c3 * (x - 1) ** 3 + c1 * (x - 1) ** 2
+def ease_out_cubic(x):
+    x = clamp(x); return 1 - (1 - x)**3
+
 def ease_io(x):
     x = clamp(x); return 0.5 - 0.5 * math.cos(math.pi * x)
 def hexc(h, a=1.0):
@@ -73,12 +76,12 @@ def emoji_surface(e, size):
         _emoji_cache[key] = s
     return _emoji_cache[key]
 
-def draw_emoji(ctx, e, x, y, size, scale=1.0, rot=0.0, alpha=1.0):
+def draw_emoji(ctx, e, x, y, size, scale=1.0, rot=0.0, alpha=1.0, sq=0.0):
     if scale <= 0.01 or alpha <= 0.01: return
     base = 128 if size <= 160 else 256
     s = emoji_surface(e, base)
     k = size / base * scale
-    ctx.save(); ctx.translate(x, y); ctx.rotate(rot); ctx.scale(k, k)
+    ctx.save(); ctx.translate(x, y); ctx.rotate(rot); ctx.scale(k*(1 + sq), k*(1 - sq))
     ctx.set_source_surface(s, -s.get_width()/2, -s.get_height()/2)
     ctx.paint_with_alpha(alpha); ctx.restore()
 
@@ -144,9 +147,9 @@ def chloe(ctx, x, y, s, t, facing=1, dig=0.0, blink=False, wipe=0.0, wave=0.0, m
 
 STICK_POSE = {'dizzy': 'idle', 'sleep': 'idle', 'shiver': 'idle', 'none': 'idle'}
 def is_stick(ep): return ep.get('host', 'chloe') == 'stick'
-def draw_host(ctx, ep, x, y, s, t, facing=1, act='idle', blink=False, mouth=0.0, eye=1.0, rot=0.0, step=0.0):
+def draw_host(ctx, ep, x, y, s, t, facing=1, act='idle', blink=False, mouth=0.0, eye=1.0, rot=0.0, step=0.0, energy=0.0):
     if is_stick(ep):
-        draw_stick(ctx, x, y, s, t, facing, mouth, blink, eye, STICK_POSE.get(act, act), step, rot)
+        draw_stick(ctx, x, y, s, t, facing, mouth, blink, eye, STICK_POSE.get(act, act), step, rot, energy)
     else:
         chloe(ctx, x, y, s, t, facing, 1.0 if act == 'dig' else 0.0, blink, 1.0 if act == 'wipe' else 0.0,
               1.0 if act == 'wave' else 0.0, mouth, eye, rot, step)
@@ -444,10 +447,14 @@ def prop_state(p, lt, dur):
     at = p.get('at', 0.0) * dur
     u = (lt - at)
     x, y = p.get('x', 0.5)*W, p.get('y', 0.5)*H
-    sc, rot, a = 1.0, 0.0, 1.0
+    sc, rot, a, sq = 1.0, 0.0, 1.0, 0.0
     anims = p.get('anim', 'pop').split('+')
     if u < 0: return None
-    if 'pop' in anims: sc *= ease_out_back(u / 0.55)
+    if 'pop' in anims and 'text' in p:
+        if u < 0.22: sc *= 1 + 1.4*(1 - ease_out_cubic(u/0.22)); a *= clamp(u/0.08)
+        else: sc *= 1 + 0.07*math.sin((u - 0.22)*26)*math.exp(-(u - 0.22)*7)
+    elif 'pop' in anims:
+        sc *= ease_out_back(u / 0.45); sq = 0.2*math.exp(-u*6)*math.sin(u*26)
     if 'fade' in anims: a *= ease_io(u / 0.6)
     if 'grow' in anims: sc *= 0.15 + 0.85*ease_io(u / max(0.5, dur - at - 0.3))
     if 'float' in anims: y += math.sin(lt*2.2 + x*0.01)*12
@@ -461,12 +468,13 @@ def prop_state(p, lt, dur):
         x += (p['to'][0]*W - x)*k; y += (p['to'][1]*H - y)*k
     if 'drop' in anims:
         k = clamp(u / 0.9); y = -80 + (y + 80)*(k*k) if k < 1 else y
-    return x, y, sc, rot, a
+    return x, y, sc, rot, a, sq
 
 def draw_prop(ctx, p, lt, dur):
     st = prop_state(p, lt, dur)
     if not st: return
-    x, y, sc, rot, a = st
+    x, y, sc, rot, a, sq = st
+    u = lt - p.get('at', 0.0)*dur
     if p.get('kind') == 'roots':
         draw_roots(ctx, x, p.get('top', 0.0)*H, p.get('length', 260)*sc, p.get('hairs', True), a, p.get('seed', 3)); return
     if p.get('kind') == 'stem':
@@ -477,8 +485,15 @@ def draw_prop(ctx, p, lt, dur):
         n = p.get('count', 1)
         for i in range(n):
             ox = (i - (n - 1)/2) * p.get('size', 160) * 0.9
-            draw_emoji(ctx, p['emoji'], x + ox, y, p.get('size', 160), sc, rot, a)
+            draw_emoji(ctx, p['emoji'], x + ox, y, p.get('size', 160), sc, rot, a, sq)
     elif 'text' in p:
+        if 'pop' in p.get('anim', 'pop') and 0 <= u < 0.4:
+            k = u/0.4; ctx.save(); ctx.set_line_cap(cairo.LINE_CAP_ROUND)
+            ctx.set_source_rgba(1, 0.95, 0.75, (1 - k)*0.9); ctx.set_line_width(6)
+            for j in range(14):
+                ang = j*2*math.pi/14; r0 = 120 + k*160; r1 = r0 + 60*(1 - k)
+                ctx.move_to(x + math.cos(ang)*r0*1.6, y + math.sin(ang)*r0*0.7); ctx.line_to(x + math.cos(ang)*r1*1.6, y + math.sin(ang)*r1*0.7); ctx.stroke()
+            ctx.restore()
         big_word(ctx, p['text'], x, y, p.get('size', 90), sc, rot, a, p.get('color', '#ffd23f'))
 
 # ---------------------------------------------------------------- audio
@@ -523,6 +538,18 @@ def synth_music(dur, seed):
             if k and bar % 4 != 3: note(m(k), tpos + j*beat/2, beat*0.5, 0.08)
         tpos += 4*beat; bar += 1
     return out / max(1e-6, np.abs(out).max())
+
+def whoosh_sfx():
+    L = int(0.45*SR); tt = np.arange(L)/SR
+    rng = np.random.RandomState(3); nz = rng.normal(0, 1, L).astype(np.float32)
+    nz = np.convolve(nz, np.ones(12)/12, mode='same')
+    env = np.minimum(1, tt/0.12)*np.exp(-np.maximum(0, tt - 0.12)*9)
+    return (nz*env*(0.6 + 0.4*np.sin(2*np.pi*(3 + 18*tt)*tt))).astype(np.float32)
+
+def thud_sfx():
+    L = int(0.4*SR); tt = np.arange(L)/SR
+    f = 95*np.exp(-tt*6) + 38
+    return (np.sin(2*np.pi*np.cumsum(f)/SR)*np.exp(-tt*9)).astype(np.float32)
 
 def pop_sfx(f0=400):
     L = int(0.22*SR); tt = np.arange(L)/SR
@@ -573,6 +600,14 @@ def build(ep, preview=False):
             if 'pop' in p.get('anim', 'pop'):
                 s0 = int((tl['start'] + p.get('at', 0)*tl['dur'])*SR); sfx = pop_sfx(rng_f(p))*0.22
                 mix[s0:s0 + len(sfx)] += sfx[:max(0, n - s0)]
+    def addfx(at, fx, vol):
+        s0 = int(at*SR)
+        if 0 <= s0 < n: mix[s0:s0 + len(fx)] += fx[:max(0, n - s0)]*vol
+    for k_, tl in enumerate(timeline):
+        if k_ > 0: addfx(tl['start'] - 0.12, whoosh_sfx(), 0.16)
+        for p in tl['sc'].get('props', []):
+            if 'text' in p and 'pop' in p.get('anim', 'pop'): addfx(tl['start'] + p.get('at', 0)*tl['dur'], thud_sfx(), 0.38)
+        if tl['sc'].get('fact'): addfx(tl['start'] + tl['sc']['fact'].get('at', 0.15)*tl['dur'], thud_sfx(), 0.30)
     for s0t in (0.6, total - OUTRO + 1.2):
         s0 = int(s0t*SR); sfx = pop_sfx(500)*0.3; mix[s0:s0 + len(sfx)] += sfx
     fl = int(0.8*SR); mix[int(total*SR) - fl:int(total*SR)] *= np.linspace(1, 0, fl)
@@ -589,7 +624,7 @@ def rng_f(p): return 380 + (hash(p.get('emoji', p.get('text', ''))) % 300)
 def frame(i, ep, timeline, total, env):
     t = i / FPS
     surf = cairo.ImageSurface(cairo.FORMAT_ARGB32, W, H); ctx = cairo.Context(surf)
-    blink = (t % 3.3) < 0.12
+    blink = ((t + 1.1) % 3.3) < 0.12
     mouth = float(env[min(i, len(env) - 1)])
     title = ep.get('title', '')
     if t < INTRO:
@@ -641,10 +676,26 @@ def frame(i, ep, timeline, total, env):
     else:
         tl = next(x for x in timeline if x['start'] <= t < x['start'] + x['dur'])
         sc, lt, dur = tl['sc'], t - tl['start'], tl['dur']
-        first = tl is timeline[0]
-        z = 1 + 0.05*ease_io(lt/dur) + (0.08*(1 - ease_io(lt/0.8)) if first else 0.0)
-        ctx.save(); ctx.translate(W/2, H*0.5); ctx.scale(z, z); ctx.translate(-W/2, -H*0.5)
+        first = tl is timeline[0]; si = timeline.index(tl)
+        ent = 1 - ease_out_cubic(lt/0.32)
+        z = 1 + 0.05*ease_io(lt/dur) + 0.16*ent
+        ox = ent*W*0.10*(1 if si % 2 else -1)
+        # impact events: big text slams and fact cards punch the camera and shake it
+        events = [p.get('at', 0.0)*dur for p in sc.get('props', []) if 'text' in p and 'pop' in p.get('anim', 'pop')]
+        if sc.get('fact'): events.append(sc['fact'].get('at', 0.15)*dur)
+        shake = 0.0
+        for ev in events:
+            d = lt - ev
+            if 0 <= d < 0.3: shake = max(shake, 7*(1 - d/0.3)); z += 0.035*(1 - d/0.3)
+        act0 = sc.get('chloe', {}).get('action', 'idle')
+        if act0 in ('wow', 'dizzy', 'jump') and lt < 0.45: shake = max(shake, 6*(1 - lt/0.45))
+        sx_, sy_ = math.sin(t*93)*shake, math.cos(t*71)*shake
+        ctx.save(); ctx.translate(W/2 + ox + sx_, H*0.5 + sy_); ctx.scale(z, z); ctx.translate(-W/2, -H*0.5)
         bg = sc.get('bg', 'meadow'); background(ctx, bg, t)
+        if is_noir(ep):
+            for k_, (dx, dy, dr, dp) in enumerate(STARS[:28]):
+                px = (dx + t*14*(0.5 + dr/3)) % (W + 40) - 20; py = (dy - t*9*(0.4 + dr/4)) % H
+                ctx.set_source_rgba(1, 0.95, 0.85, 0.10 + 0.08*math.sin(t*2 + dp)); ctx.arc(px, py, 1.2 + dr*0.7, 0, 2*math.pi); ctx.fill()
         for p in sc.get('props', []):
             if p.get('layer') == 'back': draw_prop(ctx, p, lt, dur)
         c = sc.get('chloe', {})
@@ -672,7 +723,16 @@ def frame(i, ep, timeline, total, env):
         if act == 'shiver': x += math.sin(t*60)*3
         talking = lt < tl['voice_len'] + 0.2
         show = ep.get('mascot', True) and not c.get('hide', False)
-        if show: draw_host(ctx, ep, x, y + bob, s, t, facing, act, blink, mouth if talking else 0.0, eye, rot, step)
+        energy = mouth if talking else 0.0
+        if act in ('idle', 'point', 'think', 'shrug', 'wave', 'wipe'):
+            bob += -abs(math.sin(t*6.5))*7*energy; rot += math.sin(t*4.7)*0.035*energy
+        sqk = 0.0
+        if act in ('wow', 'jump', 'dizzy') and lt < 0.5:
+            k_ = lt/0.5; sqk = math.sin(k_*math.pi*2)*(1 - k_)*0.16
+        if show:
+            ctx.save(); ctx.translate(x, gy); ctx.scale(1 + sqk, 1 - sqk); ctx.translate(-x, -gy)
+            draw_host(ctx, ep, x, y + bob, s, t, facing, act, blink, mouth if talking else 0.0, eye, rot, step, energy)
+            ctx.restore()
         else: act = 'none'
         if act == 'dig': particles(ctx, t, x, y, facing, 1.0)
         if act == 'dizzy':
@@ -695,6 +755,8 @@ def frame(i, ep, timeline, total, env):
         for p in sc.get('props', []):
             if p.get('layer') != 'back' and not ('text' in p and is_noir(ep)): draw_prop(ctx, p, lt, dur)
         ctx.restore()
+        if ent > 0.01:
+            ctx.set_source_rgba(1, 1, 1, 0.28*max(0, 1 - lt/0.16)); ctx.paint()
         if is_noir(ep):
             grade(surf, i)
             for p in sc.get('props', []):
@@ -702,7 +764,9 @@ def frame(i, ep, timeline, total, env):
         if sc.get('fact'):
             f = sc['fact']; fa = (f.get('at', 0.15))*dur
             fade_out = 1 - ease_io((lt - (dur - 0.35))/0.3)
-            fact_box(ctx, f.get('label', 'Did you know?'), f['text'], ease_io((lt - fa)/0.4)*fade_out, 0.85 + 0.15*ease_out_back((lt - fa)/0.5))
+            ctx.save(); ctx.translate(0, -140*(1 - ease_out_back((lt - fa)/0.45)))
+            fact_box(ctx, f.get('label', 'Did you know?'), f['text'], clamp((lt - fa)/0.15)*fade_out, 1.0)
+            ctx.restore()
         # subtitles
         if ep.get('subtitles', True) and sc.get('narration'):
             chunks = split_sentences(sc['narration']); tot = sum(len(cn) for cn in chunks)
@@ -712,7 +776,7 @@ def frame(i, ep, timeline, total, env):
                 if pos < acc: cur = cn; break
             if lt < tl['voice_len'] + 0.4: subtitle(ctx, cur)
     # fades at scene edges
-    edges = ([INTRO] if INTRO > 0 else []) + [x['start'] + x['dur'] for x in timeline]
+    edges = ([INTRO] if INTRO > 0 else [])
     for e in edges:
         if abs(e - ep.get('_nofade_edge', -99)) < 0.01: continue
         d = abs(t - e)

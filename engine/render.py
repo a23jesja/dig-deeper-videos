@@ -774,7 +774,9 @@ def frame(i, ep, timeline, total, env):
             for cn in chunks:
                 acc += len(cn)
                 if pos < acc: cur = cn; break
-            if lt < tl['voice_len'] + 0.4: subtitle(ctx, cur)
+            if ep.get('captions', 'kinetic') == 'kinetic':
+                ch_, age_ = caption_chunk(tl, lt, 3); kinetic(ctx, ch_, age_, W/2, H - 62, 54)
+            elif lt < tl['voice_len'] + 0.4: subtitle(ctx, cur)
     # fades at scene edges
     edges = ([INTRO] if INTRO > 0 else [])
     for e in edges:
@@ -815,6 +817,26 @@ def thumbnail(ep, out):
     subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', '-i', png, '-q:v', '2', out], check=True); os.remove(png)
     print('thumbnail', out)
 
+def caption_chunk(tl, lt, n=2):
+    sc = tl['sc']; words = sc.get('narration', '').split()
+    if not words or lt < 0.12 or lt > tl['voice_len'] + 0.3: return None, 0.0
+    weights = [len(w) + 2 for w in words]; tot = float(sum(weights))
+    pos = (lt - 0.15)/max(0.1, tl['voice_len'])*tot; acc = 0; idx = len(words) - 1
+    for k, w in enumerate(weights):
+        acc += w
+        if pos < acc: idx = k; break
+    c0 = (idx // n)*n
+    start_w = sum(weights[:c0])/tot*tl['voice_len'] + 0.15
+    return ' '.join(words[c0:c0 + n]), lt - start_w
+
+def kinetic(ctx, chunk, age, cx, cy, size):
+    if not chunk: return
+    hot = any(ch.isdigit() for ch in chunk) or any(len(w.strip('.,!?')) > 1 and w.strip('.,!?').isupper() for w in chunk.split())
+    sc_ = 1 + 0.28*(1 - ease_out_cubic(age/0.13))
+    ctx.save(); ctx.translate(cx, cy); ctx.scale(sc_, sc_)
+    text(ctx, chunk.upper(), 0, size*0.35, size, col='#ffd23f' if hot else '#ffffff', outline='#000000', ow=max(8, size//6))
+    ctx.restore()
+
 def current_sub(timeline, t):
     for tl in timeline:
         if tl['start'] <= t < tl['start'] + tl['dur']:
@@ -835,7 +857,7 @@ def render_short(ep, out, preview=False):
     ep2 = dict(ep); ep2['subtitles'] = False
     timeline, total, mix, env = build(ep2)
     sh = ep.get('short', {})
-    target = sh.get('max', 52)
+    target = sh.get('max', 64)
     k0 = sh.get('start_scene', 0); start = timeline[k0]['start'] + 1.0/FPS
     ep2['_nofade_edge'] = timeline[k0]['start']
     end = None
@@ -863,10 +885,12 @@ def render_short(ep, out, preview=False):
         lines = wrap(c, title, 112, 980)[:3]
         for j, ln in enumerate(lines):
             text(c, ln, SW/2, 340 + j*122, 112, col='#ffffff' if j == 0 else '#ffd23f', outline='#000000', ow=20)
-        sub = current_sub(timeline, start + t) if cta_k == 0 else ''
-        if sub:
-            for j, ln in enumerate(wrap(c, sub, 56, 980)[:4]):
-                text(c, ln, SW/2, vy + vh + 110 + j*72, 56, col='#ffffff', outline='#000000', ow=11)
+        if cta_k == 0:
+            ta = start + t
+            for tl_ in timeline:
+                if tl_['start'] <= ta < tl_['start'] + tl_['dur']:
+                    ch_, age_ = caption_chunk(tl_, ta - tl_['start'], 2); kinetic(c, ch_, age_, SW/2, vy + vh + 190, 104)
+                    break
         if cta_k > 0:
             c.set_source_rgba(0, 0, 0, 0.65*cta_k); c.paint()
             c.push_group()

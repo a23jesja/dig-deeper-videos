@@ -79,3 +79,13 @@ Add to the episode JSON:
 `"shorts": [{"title": "EVERYONE GONE?!", "start_scene": 0, "max": 52, "yt_title": "What If Every Human Vanished? #Shorts"}]`
 Render: `python3 engine/render.py episodes/<file>.json videos/shorts/<name>-short1.mp4 --short --index 0` (add `--preview` for stills).
 The Short = the episode's scenes from `start_scene` up to ~`max` seconds (cut at a scene boundary), shown in the middle with a big hook title on top, big subtitles below and a 3 s "Want the full story?" end card. Scene 1 must hook within the first second. Check frames at 0 s, 1 s, 20 s and the end.
+
+## Viral story recipe (learned from cartoon explainer Shorts with 18M+ views)
+1. An impossible-sounding opening claim (true!).
+2. Escalating scenes – each one raises the stakes or the weirdness.
+3. A laugh beat (Sir Digsworth's dry reaction, slapstick).
+4. A "You see…" explanation that makes it click.
+5. A closing line that flips or pays off the opening claim.
+- Fast narration: `speed` 1.12 (~200+ words per minute). Long video ≈ 380–430 words; the Short (first scenes) should hit ~60–65 s.
+- Captions are automatic kinetic 2–3-word pops (yellow when a word has numbers or is in CAPS — use CAPS for one key word per scene).
+- Camera is always moving; every cut has a punch-in and whoosh; big text slams with a thud.

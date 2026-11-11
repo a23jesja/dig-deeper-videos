@@ -33,7 +33,7 @@ POSES = {
 }
 
 def _seg(ctx, pts, w):
-    for col, lw in ((HALO, w + (4 if SKETCH else 7)), (INK, w)):
+    for col, lw in (((INK, w),) if SKETCH else ((HALO, w + 7), (INK, w))):
         ctx.set_source_rgb(*col); ctx.set_line_width(lw)
         ctx.set_line_cap(cairo.LINE_CAP_ROUND); ctx.set_line_join(cairo.LINE_JOIN_ROUND)
         ctx.move_to(*pts[0])
@@ -49,6 +49,21 @@ def _hand(ctx, p, r=8.5):
     if not SKETCH: return
     ctx.set_source_rgb(1, 1, 1); ctx.arc(p[0], p[1], r, 0, 2*math.pi); ctx.fill_preserve()
     ctx.set_source_rgb(*INK); ctx.set_line_width(3.6); ctx.stroke()
+
+def _pipe_sketch(ctx, px0, py0):
+    # cut-out style pipe: dark stem + wooden bowl with a thin ink outline, no white border
+    ctx.set_line_cap(cairo.LINE_CAP_ROUND); ctx.set_line_join(cairo.LINE_JOIN_ROUND)
+    def stem(): ctx.move_to(px0, py0); ctx.curve_to(px0 + 10, py0 + 4, px0 + 18, py0 + 6, px0 + 26, py0 + 3)
+    ctx.set_source_rgb(*INK); ctx.set_line_width(8); stem(); ctx.stroke()
+    ctx.set_source_rgb(0.20, 0.13, 0.09); ctx.set_line_width(4.5); stem(); ctx.stroke()
+    def bowl():
+        ctx.move_to(px0 + 23, py0 - 10); ctx.line_to(px0 + 39, py0 - 10); ctx.line_to(px0 + 37, py0 + 6)
+        ctx.curve_to(px0 + 36, py0 + 13, px0 + 26, py0 + 13, px0 + 25, py0 + 6); ctx.close_path()
+    ctx.set_source_rgb(*PIPE); bowl(); ctx.fill()
+    ctx.set_source_rgba(1, 0.85, 0.6, 0.35); ctx.set_line_width(2); ctx.move_to(px0 + 27.5, py0 - 7); ctx.line_to(px0 + 28.5, py0 + 7); ctx.stroke()
+    ctx.set_source_rgb(*INK); ctx.set_line_width(3); bowl(); ctx.stroke()
+    ctx.set_source_rgb(0.12, 0.06, 0.03); ctx.save(); ctx.translate(px0 + 31, py0 - 10); ctx.scale(7, 2.2); ctx.arc(0, 0, 1, 0, 2*math.pi); ctx.restore(); ctx.fill()
+    ctx.set_source_rgba(1, 0.45, 0.1, 0.8); ctx.save(); ctx.translate(px0 + 31, py0 - 10.5); ctx.scale(4, 1.2); ctx.arc(0, 0, 1, 0, 2*math.pi); ctx.restore(); ctx.fill()
 
 def draw_stick(ctx, x, y, s, t, facing=1, mouth=0.0, blink=False, eye=1.0, pose='idle', step=0.0, rot=0.0, energy=0.0):
     ctx.save(); ctx.translate(x, y); ctx.rotate(rot); ctx.scale(s*facing, s)
@@ -80,22 +95,23 @@ def draw_stick(ctx, x, y, s, t, facing=1, mouth=0.0, blink=False, eye=1.0, pose=
     _seg(ctx, bpts, LW); _hand(ctx, bpts[-1])
     if pose not in ('wow', 'jump', 'swim', 'shrug'):
         hx, hy = bpts[-1]
-        for col, lw in ((HALO, 12), (CANE, 6)):
+        for col, lw in (((INK, 9), (CANE, 5)) if SKETCH else ((HALO, 12), (CANE, 6))):
             ctx.set_source_rgb(*col); ctx.set_line_width(lw); ctx.set_line_cap(cairo.LINE_CAP_ROUND)
             ctx.move_to(hx, hy - 6); ctx.line_to(hx - 6, 95); ctx.stroke()
-        ctx.set_source_rgb(*HALO); ctx.arc(hx, hy - 8, 9, 0, 2*math.pi); ctx.fill()
+        ctx.set_source_rgb(*(INK if SKETCH else HALO)); ctx.arc(hx, hy - 8, 8.5 if SKETCH else 9, 0, 2*math.pi); ctx.fill()
         ctx.set_source_rgb(*GOLD); ctx.arc(hx, hy - 8, 6.5, 0, 2*math.pi); ctx.fill()
     _seg(ctx, [hip, neck], LW + 1)
     # gentleman tailcoat with tails, white shirt front and bow tie
     def coat_path():
         ctx.move_to(-17, -70); ctx.line_to(17, -70); ctx.line_to(19, 4); ctx.line_to(8, 6)
         ctx.line_to(-6, 34 + math.sin(t*3)*2); ctx.line_to(-20, 30 + math.sin(t*3)*2); ctx.line_to(-19, -40); ctx.close_path()
-    ctx.set_source_rgb(*HALO); ctx.set_line_width(7); coat_path(); ctx.stroke()
+    if not SKETCH: ctx.set_source_rgb(*HALO); ctx.set_line_width(7); coat_path(); ctx.stroke()
     ctx.set_source_rgb(*COAT); coat_path(); ctx.fill()
     ctx.save(); coat_path(); ctx.clip(); ctx.set_source_rgba(0.25, 0.17, 0.10, 0.35); ctx.set_line_width(1.4)
     for k in range(-80, 40, 8): ctx.move_to(-30, k); ctx.line_to(30, k + 3); ctx.stroke()
     for k in range(-30, 30, 8): ctx.move_to(k, -80); ctx.line_to(k + 2, 40); ctx.stroke()
     ctx.restore()
+    if SKETCH: ctx.set_source_rgb(*INK); ctx.set_line_width(3.2); ctx.set_line_join(cairo.LINE_JOIN_ROUND); coat_path(); ctx.stroke()
     ctx.set_source_rgb(*VEST); ctx.move_to(-9, -66); ctx.line_to(12, -66); ctx.line_to(13, -6); ctx.line_to(1, 0); ctx.line_to(-10, -6); ctx.close_path(); ctx.fill()
     ctx.set_source_rgb(1, 1, 1); ctx.move_to(-8, -70); ctx.line_to(10, -70); ctx.line_to(1, -44); ctx.close_path(); ctx.fill()
     ctx.set_source_rgb(*GOLD)
@@ -108,9 +124,9 @@ def draw_stick(ctx, x, y, s, t, facing=1, mouth=0.0, blink=False, eye=1.0, pose=
     HK = 1.38 if SKETCH else 1.0
     hc = (6, -112 - 40*(HK - 1)); r = 40
     ctx.save(); ctx.translate(*hc); ctx.scale(HK, HK); ctx.translate(-hc[0], -hc[1])
-    ctx.set_source_rgb(*HALO); ctx.arc(hc[0], hc[1], r + 6, 0, 2*math.pi); ctx.fill()
+    if not SKETCH: ctx.set_source_rgb(*HALO); ctx.arc(hc[0], hc[1], r + 6, 0, 2*math.pi); ctx.fill()
     ctx.set_source_rgb(1, 1, 1); ctx.arc(hc[0], hc[1], r, 0, 2*math.pi); ctx.fill()
-    ctx.set_source_rgb(*INK); ctx.set_line_width(LW - 2); ctx.arc(hc[0], hc[1], r, 0, 2*math.pi); ctx.stroke()
+    ctx.set_source_rgb(*INK); ctx.set_line_width(5.5 if SKETCH else LW - 2); ctx.arc(hc[0], hc[1], r, 0, 2*math.pi); ctx.stroke()
     # face (looks toward facing direction)
     fx = hc[0] + 10
     for ex in (fx - 12, fx + 14):
@@ -166,29 +182,38 @@ def draw_stick(ctx, x, y, s, t, facing=1, mouth=0.0, blink=False, eye=1.0, pose=
     ctx.curve_to(mx + 22, myy + 36, mx + 10, myy + 58, mx - 4, myy + 70); ctx.stroke()
     # English tweed flat cap (country / shooting cap), brim toward the facing side
     ctx.save(); ctx.translate(hc[0], hc[1] - 30)
+    if SKETCH: ctx.translate(2, 1 - (9 if pose in ('wow', 'jump') else 0)); ctx.scale(0.78, 0.78)   # hat pops up in surprise
     def cap_path():
         ctx.move_to(-42, 4); ctx.curve_to(-46, -22, -10, -34, 20, -26)
         ctx.curve_to(40, -20, 52, -8, 50, 2); ctx.curve_to(30, 6, -10, 8, -42, 4); ctx.close_path()
-    ctx.set_source_rgb(*HALO); ctx.set_line_width(8); cap_path(); ctx.stroke()
+    if not SKETCH: ctx.set_source_rgb(*HALO); ctx.set_line_width(8); cap_path(); ctx.stroke()
     ctx.set_source_rgb(*CAP); cap_path(); ctx.fill()
     ctx.save(); cap_path(); ctx.clip()
     ctx.set_source_rgba(0.30, 0.22, 0.14, 0.45); ctx.set_line_width(1.6)
     for k in range(-50, 60, 9): ctx.move_to(k, -40); ctx.line_to(k + 14, 10); ctx.stroke()
     for k in range(-34, 10, 9): ctx.move_to(-50, k); ctx.line_to(56, k + 4); ctx.stroke()
     ctx.restore()
-    ctx.set_source_rgb(*HALO); ctx.move_to(18, -2); ctx.curve_to(40, -4, 62, 0, 68, 6); ctx.curve_to(56, 12, 34, 10, 16, 6); ctx.close_path(); ctx.fill()
-    ctx.set_source_rgb(*CAP2); ctx.move_to(20, 0); ctx.curve_to(40, -2, 58, 2, 64, 6); ctx.curve_to(54, 9, 34, 8, 18, 5); ctx.close_path(); ctx.fill()
+    if SKETCH:
+        ctx.set_source_rgb(*INK); ctx.set_line_width(4); cap_path(); ctx.stroke()
+        ctx.set_line_width(2.5); ctx.move_to(-30, -14); ctx.curve_to(-6, -22, 20, -20, 40, -10); ctx.stroke()
+        ctx.set_source_rgb(*CAP2); ctx.move_to(14, 0); ctx.curve_to(36, -4, 58, 0, 64, 6); ctx.curve_to(52, 12, 30, 10, 12, 5); ctx.close_path()
+        ctx.fill_preserve(); ctx.set_source_rgb(*INK); ctx.set_line_width(3.5); ctx.stroke()
+    else:
+        ctx.set_source_rgb(*HALO); ctx.move_to(18, -2); ctx.curve_to(40, -4, 62, 0, 68, 6); ctx.curve_to(56, 12, 34, 10, 16, 6); ctx.close_path(); ctx.fill()
+        ctx.set_source_rgb(*CAP2); ctx.move_to(20, 0); ctx.curve_to(40, -2, 58, 2, 64, 6); ctx.curve_to(54, 9, 34, 8, 18, 5); ctx.close_path(); ctx.fill()
     ctx.restore()
     # pipe at the front corner of the mouth
     px0, py0 = fx + 12, hc[1] + 17
-    for col, lw in ((HALO, 9), (PIPE, 4.5)):
-        ctx.set_source_rgb(*col); ctx.set_line_width(lw); ctx.set_line_cap(cairo.LINE_CAP_ROUND)
-        ctx.move_to(px0, py0); ctx.curve_to(px0 + 12, py0 + 4, px0 + 20, py0 + 6, px0 + 28, py0 + 2); ctx.stroke()
-    ctx.set_source_rgb(*HALO); ctx.move_to(px0 + 22, py0 - 12); ctx.line_to(px0 + 40, py0 - 12); ctx.line_to(px0 + 37, py0 + 8)
-    ctx.curve_to(px0 + 36, py0 + 14, px0 + 26, py0 + 14, px0 + 25, py0 + 8); ctx.close_path(); ctx.fill()
-    ctx.set_source_rgb(*PIPE); ctx.move_to(px0 + 25, py0 - 9); ctx.line_to(px0 + 37, py0 - 9); ctx.line_to(px0 + 35, py0 + 6)
-    ctx.curve_to(px0 + 34, py0 + 10, px0 + 28, py0 + 10, px0 + 27, py0 + 6); ctx.close_path(); ctx.fill()
-    ctx.set_source_rgb(0.2, 0.1, 0.05); ctx.save(); ctx.translate(px0 + 31, py0 - 9); ctx.scale(6, 2); ctx.arc(0, 0, 1, 0, 2*math.pi); ctx.restore(); ctx.fill()
+    if SKETCH: _pipe_sketch(ctx, px0, py0)
+    else:
+        for col, lw in ((HALO, 9), (PIPE, 4.5)):
+            ctx.set_source_rgb(*col); ctx.set_line_width(lw); ctx.set_line_cap(cairo.LINE_CAP_ROUND)
+            ctx.move_to(px0, py0); ctx.curve_to(px0 + 12, py0 + 4, px0 + 20, py0 + 6, px0 + 28, py0 + 2); ctx.stroke()
+        ctx.set_source_rgb(*HALO); ctx.move_to(px0 + 22, py0 - 12); ctx.line_to(px0 + 40, py0 - 12); ctx.line_to(px0 + 37, py0 + 8)
+        ctx.curve_to(px0 + 36, py0 + 14, px0 + 26, py0 + 14, px0 + 25, py0 + 8); ctx.close_path(); ctx.fill()
+        ctx.set_source_rgb(*PIPE); ctx.move_to(px0 + 25, py0 - 9); ctx.line_to(px0 + 37, py0 - 9); ctx.line_to(px0 + 35, py0 + 6)
+        ctx.curve_to(px0 + 34, py0 + 10, px0 + 28, py0 + 10, px0 + 27, py0 + 6); ctx.close_path(); ctx.fill()
+        ctx.set_source_rgb(0.2, 0.1, 0.05); ctx.save(); ctx.translate(px0 + 31, py0 - 9); ctx.scale(6, 2); ctx.arc(0, 0, 1, 0, 2*math.pi); ctx.restore(); ctx.fill()
     ctx.restore()   # end of head block
     # front arm last so gestures read over the body/head
     fpts = _arm(sh, front[0] - sway, front[1])

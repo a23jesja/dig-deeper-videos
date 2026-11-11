@@ -61,3 +61,15 @@ Scene fields:
 
 ## Video size
 The engine caps bitrate (~2.5 Mbps) so a 2–2.5 min video is ~25–50 MB. GitHub rejects files over 100 MB — check with `ls -lh` before committing.
+
+## The first 3–5 seconds (most important part of the video)
+- No logo intro: the video opens directly on scene 1 (`intro` defaults to false). Never set `intro: true`.
+- Scene 1 = the hook. Its first sentence states the shocking question or claim in under ~5 seconds. No greetings first.
+- Scene 1 gets a big hook text prop visible from frame 0: `{"text": "EVERYONE GONE?", "x": 0.5, "y": 0.24, "size": 88, "anim": "pulse", "at": 0.0, "color": "#ffd23f"}` (2–3 words), plus Sir Digsworth reacting (`wow`/`shiver`/`dizzy`) and at most one object prop.
+- Scene 2 introduces "I'm Sir Digsworth" and opens a curiosity loop.
+- Every scene has a slow camera push-in automatically; scene 1 also snaps in.
+
+## Thumbnails (as important as the title)
+- `thumbnail`: `{text, emoji, bg, color, color2}` – 2–3 huge words (line 1 white, line 2 yellow), ONE big object emoji that IS the subject (glowing, red circle around it), Sir Digsworth large on the right with a shocked face (drawn automatically).
+- Text must add curiosity to the title, not repeat it word for word (title: "What If Every Human Vanished Tomorrow?" → thumbnail: "EVERYONE GONE?!").
+- After rendering, downscale the thumbnail to 320x180 and look at it: the words and the object must still be readable at that size.

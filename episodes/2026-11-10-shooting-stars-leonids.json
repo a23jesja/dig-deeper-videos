@@ -359,5 +359,19 @@
    ]
   }
  ],
- "outro_text": "Dig deeper with Sir Digsworth!"
+ "outro_text": "Dig deeper with Sir Digsworth!",
+ "shorts": [
+  {
+   "title": "NOT STARS?!",
+   "start_scene": 0,
+   "max": 52,
+   "yt_title": "Shooting Stars Aren't Stars?! #Shorts"
+  },
+  {
+   "title": "1966 METEOR STORM",
+   "start_scene": 9,
+   "max": 56,
+   "yt_title": "The Night It Rained Meteors (1966) #Shorts"
+  }
+ ]
 }

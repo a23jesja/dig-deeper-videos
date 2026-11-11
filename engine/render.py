@@ -714,6 +714,7 @@ def frame(i, ep, timeline, total, env):
     # fades at scene edges
     edges = ([INTRO] if INTRO > 0 else []) + [x['start'] + x['dur'] for x in timeline]
     for e in edges:
+        if abs(e - ep.get('_nofade_edge', -99)) < 0.01: continue
         d = abs(t - e)
         if d < FADE: ctx.set_source_rgba(0, 0, 0, (1 - d/FADE)*0.9); ctx.paint()
     if INTRO > 0 and t < 0.3: ctx.set_source_rgba(0, 0, 0, 1 - t/0.3); ctx.paint()
@@ -750,7 +751,96 @@ def thumbnail(ep, out):
     subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', '-i', png, '-q:v', '2', out], check=True); os.remove(png)
     print('thumbnail', out)
 
+def current_sub(timeline, t):
+    for tl in timeline:
+        if tl['start'] <= t < tl['start'] + tl['dur']:
+            sc, lt = tl['sc'], t - tl['start']
+            if not sc.get('narration') or lt > tl['voice_len'] + 0.4: return ''
+            chunks = split_sentences(sc['narration']); tot = sum(len(c) for c in chunks)
+            pos = (lt - 0.15) / max(0.1, tl['voice_len']) * tot; acc = 0
+            for c in chunks:
+                acc += len(c)
+                if pos < acc: return c
+            return chunks[-1]
+    return ''
+
+def render_short(ep, out, preview=False):
+    """Vertical 1080x1920 YouTube Short cut from the start of the episode, with a hook title,
+    big subtitles and a call-to-action end card."""
+    SW, SH = 1080, 1920
+    ep2 = dict(ep); ep2['subtitles'] = False
+    timeline, total, mix, env = build(ep2)
+    sh = ep.get('short', {})
+    target = sh.get('max', 52)
+    k0 = sh.get('start_scene', 0); start = timeline[k0]['start'] + 1.0/FPS
+    ep2['_nofade_edge'] = timeline[k0]['start']
+    end = None
+    for tl in timeline[k0:]:
+        e = tl['start'] + tl['dur']
+        if e - start <= target: end = e
+    if end is None or end - start < 20: end = min(start + target, total - OUTRO)
+    seg = end - start
+    CTA = 3.2; dur_total = seg + CTA
+    a = mix[int(start*SR):int(end*SR)].copy(); fl = int(0.35*SR); a[-fl:] *= np.linspace(1, 0, fl)
+    cta = synth_music(CTA + 0.5, ep.get('seed', 1) + 7)[:int(CTA*SR)]*0.30
+    cta[:len(pop_sfx(520))] += pop_sfx(520)*0.3; cta[-int(0.5*SR):] *= np.linspace(1, 0, int(0.5*SR))
+    audio = np.concatenate([a, cta])
+    title = sh.get('title', ep.get('thumbnail', {}).get('text', ep.get('title', ''))).upper()
+    vy = 640; vscale = SW / W; vh = H*vscale
+    def compose(src, t, cta_k):
+        S = cairo.ImageSurface(cairo.FORMAT_ARGB32, SW, SH); c = cairo.Context(S)
+        small = cairo.ImageSurface(cairo.FORMAT_ARGB32, 96, 54); sc_ = cairo.Context(small)
+        sc_.scale(96/W, 54/H); sc_.set_source_surface(src); sc_.paint()
+        c.save(); k = SH/54; c.translate((SW - 96*k)/2, 0); c.scale(k, k); c.set_source_surface(small); c.get_source().set_filter(cairo.FILTER_BILINEAR); c.paint(); c.restore()
+        c.set_source_rgba(0, 0, 0, 0.55); c.paint()
+        c.save(); c.translate(0, vy); c.scale(vscale, vscale); c.set_source_surface(src); c.paint(); c.restore()
+        c.set_source_rgba(1, 1, 1, 0.9); c.set_line_width(4); c.rectangle(0, vy, SW, vh); c.stroke()
+        text(c, 'SIR DIGSWORTH INVESTIGATES', SW/2, 200, 40, col='#ffd23f', outline='#000000', ow=8)
+        lines = wrap(c, title, 112, 980)[:3]
+        for j, ln in enumerate(lines):
+            text(c, ln, SW/2, 340 + j*122, 112, col='#ffffff' if j == 0 else '#ffd23f', outline='#000000', ow=20)
+        sub = current_sub(timeline, start + t) if cta_k == 0 else ''
+        if sub:
+            for j, ln in enumerate(wrap(c, sub, 56, 980)[:4]):
+                text(c, ln, SW/2, vy + vh + 110 + j*72, 56, col='#ffffff', outline='#000000', ow=11)
+        if cta_k > 0:
+            c.set_source_rgba(0, 0, 0, 0.65*cta_k); c.paint()
+            c.push_group()
+            for j, ln in enumerate(['WANT THE', 'FULL STORY?']):
+                text(c, ln, SW/2, 620 + j*130, 120, col='#ffffff' if j == 0 else '#ffd23f', outline='#000000', ow=20)
+            text(c, 'Full investigation on Dig Deeper', SW/2, 900, 54, col='#ffffff', outline='#000000', ow=10)
+            draw_stick(c, SW/2, 1400, 2.2, t, 1, 0.0, False, 1.2, 'wave')
+            rrect(c, SW/2 - 230, 1700, 460, 110, 55); c.set_source_rgba(1, 0, 0.2, 1); c.fill()
+            text(c, 'SUBSCRIBE', SW/2, 1775, 60, col='#ffffff', outline=None)
+            c.pop_group_to_source(); c.paint_with_alpha(cta_k)
+        return S
+    if preview:
+        os.makedirs(out + '_frames', exist_ok=True)
+        for j, tt in enumerate([0.0, 1.5, seg*0.5, seg - 1, seg + 1.5]):
+            i = int((start + min(tt, seg - 0.05))*FPS); src = frame(i, ep2, timeline, total, env)
+            compose(src, tt, clamp((tt - seg)/0.4) if tt >= seg else 0).write_to_png(f'{out}_frames/{j:02d}.png')
+        print(f'short preview, length {dur_total:.1f}s'); return
+    wav = out + '.wav'
+    with wave.open(wav, 'w') as wf:
+        wf.setnchannels(1); wf.setsampwidth(2); wf.setframerate(SR)
+        wf.writeframes((np.clip(audio, -1, 1)*32767).astype(np.int16).tobytes())
+    p = subprocess.Popen(['ffmpeg', '-y', '-loglevel', 'error', '-f', 'rawvideo', '-pix_fmt', 'bgra', '-s', f'{SW}x{SH}', '-r', str(FPS),
+                          '-i', '-', '-i', wav, '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '23', '-maxrate', '4000k', '-bufsize', '8000k',
+                          '-pix_fmt', 'yuv420p', '-c:a', 'aac', '-b:a', '160k', '-shortest', '-movflags', '+faststart', out], stdin=subprocess.PIPE)
+    last = None
+    for i in range(int(dur_total*FPS)):
+        t = i / FPS
+        if t < seg: last = frame(int((start + t)*FPS), ep2, timeline, total, env)
+        p.stdin.write(bytes(compose(last, t, clamp((t - seg)/0.4) if t >= seg else 0).get_data()))
+    p.stdin.close(); p.wait(); os.remove(wav)
+    print(f'done short {out} ({dur_total:.1f}s)')
+
 def main():
+    if '--short' in sys.argv:
+        ep = json.load(open(sys.argv[1]))
+        idx = int(sys.argv[sys.argv.index('--index') + 1]) if '--index' in sys.argv else 0
+        if ep.get('shorts'): ep['short'] = ep['shorts'][idx]
+        render_short(ep, sys.argv[2], '--preview' in sys.argv); return
     ep = json.load(open(sys.argv[1])); out = sys.argv[2]
     if '--thumb' in sys.argv:
         thumbnail(ep, out); return

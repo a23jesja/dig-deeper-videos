@@ -156,12 +156,12 @@ _yy, _xx = np.mgrid[0:H, 0:W].astype(np.float32)
 _VIG = (1.0 - 0.55*np.clip(((_xx - W/2)/(W*0.62))**2 + ((_yy - H/2)/(H*0.62))**2, 0, 1)**1.3).astype(np.float32)[..., None]
 _GRAIN = [np.random.RandomState(k).normal(0, 3.5, (H, W, 1)).astype(np.float32) for k in range(6)]
 def is_noir(ep): return ep.get('style', 'noir' if is_stick(ep) else 'bright') == 'noir'
-def grade(surf, i):
+def grade(surf, i, desat=0.52):
     surf.flush()
     a = np.ndarray((H, W, 4), np.uint8, surf.get_data())
     f = a[..., :3].astype(np.float32)
     g = f[..., 0:1]*0.114 + f[..., 1:2]*0.587 + f[..., 2:3]*0.299
-    f = f*0.48 + g*0.52                                   # mostly desaturated
+    f = f*(1 - desat) + g*desat                                   # mostly desaturated
     f = (f - 128)*1.08 + 120                              # a touch of contrast, slightly darker
     f[..., 0] *= 1.07; f[..., 2] *= 0.95                  # cool blue-grey cast (BGR order)
     f = f*_VIG + _GRAIN[(i // 3) % 6]
@@ -548,6 +548,8 @@ def split_sentences(s):
 def build(ep, preview=False):
     voice = ep.get('voice', 'af_heart'); speed = ep.get('speed', 1.0)
     scenes = ep['scenes']
+    global INTRO
+    INTRO = 3.2 if ep.get('intro', False) else 0.0
     t = INTRO; timeline = []; voice_track = []
     print(f'TTS for {len(scenes)} scenes...', flush=True)
     for i, sc in enumerate(scenes):
@@ -639,6 +641,9 @@ def frame(i, ep, timeline, total, env):
     else:
         tl = next(x for x in timeline if x['start'] <= t < x['start'] + x['dur'])
         sc, lt, dur = tl['sc'], t - tl['start'], tl['dur']
+        first = tl is timeline[0]
+        z = 1 + 0.05*ease_io(lt/dur) + (0.08*(1 - ease_io(lt/0.8)) if first else 0.0)
+        ctx.save(); ctx.translate(W/2, H*0.5); ctx.scale(z, z); ctx.translate(-W/2, -H*0.5)
         bg = sc.get('bg', 'meadow'); background(ctx, bg, t)
         for p in sc.get('props', []):
             if p.get('layer') == 'back': draw_prop(ctx, p, lt, dur)
@@ -688,8 +693,12 @@ def frame(i, ep, timeline, total, env):
             by = y - (225 if is_stick(ep) else 170)*s
             if sa > 0: bubble(ctx, x + 150*facing, by, say, thought=c.get('thought', False), alpha=sa)
         for p in sc.get('props', []):
-            if p.get('layer') != 'back': draw_prop(ctx, p, lt, dur)
-        if is_noir(ep): grade(surf, i); graded = True
+            if p.get('layer') != 'back' and not ('text' in p and is_noir(ep)): draw_prop(ctx, p, lt, dur)
+        ctx.restore()
+        if is_noir(ep):
+            grade(surf, i)
+            for p in sc.get('props', []):
+                if 'text' in p: draw_prop(ctx, p, lt, dur)
         if sc.get('fact'):
             f = sc['fact']; fa = (f.get('at', 0.15))*dur
             fade_out = 1 - ease_io((lt - (dur - 0.35))/0.3)
@@ -703,11 +712,11 @@ def frame(i, ep, timeline, total, env):
                 if pos < acc: cur = cn; break
             if lt < tl['voice_len'] + 0.4: subtitle(ctx, cur)
     # fades at scene edges
-    edges = [INTRO] + [x['start'] + x['dur'] for x in timeline]
+    edges = ([INTRO] if INTRO > 0 else []) + [x['start'] + x['dur'] for x in timeline]
     for e in edges:
         d = abs(t - e)
         if d < FADE: ctx.set_source_rgba(0, 0, 0, (1 - d/FADE)*0.9); ctx.paint()
-    if t < 0.3: ctx.set_source_rgba(0, 0, 0, 1 - t/0.3); ctx.paint()
+    if INTRO > 0 and t < 0.3: ctx.set_source_rgba(0, 0, 0, 1 - t/0.3); ctx.paint()
     if t > total - 0.5: ctx.set_source_rgba(0, 0, 0, clamp((t - (total - 0.5))/0.5)); ctx.paint()
     return surf
 
@@ -715,23 +724,30 @@ def thumbnail(ep, out):
     th = ep.get('thumbnail', {})
     surf = cairo.ImageSurface(cairo.FORMAT_ARGB32, W, H); ctx = cairo.Context(surf)
     background(ctx, th.get('bg', ep.get('intro_bg', 'meadow')), 1.0)
-    ctx.set_source_rgba(0, 0, 0, 0.18); ctx.paint()
+    if is_noir(ep): grade(surf, 0, 0.35)
+    ctx.set_source_rgba(0, 0, 0, 0.30); ctx.paint()
+    ex, ey = th.get('emoji_x', 0.33)*W, th.get('emoji_y', 0.64)*H
+    g = cairo.RadialGradient(ex, ey, 20, ex, ey, 300)
+    g.add_color_stop_rgba(0, 1, 0.85, 0.35, 0.85); g.add_color_stop_rgba(0.5, 1, 0.55, 0.15, 0.35); g.add_color_stop_rgba(1, 1, 0.5, 0.1, 0)
+    ctx.set_source(g); ctx.arc(ex, ey, 300, 0, 2*math.pi); ctx.fill()
+    draw_emoji(ctx, th.get('emoji', '❓'), ex, ey, 330)
+    ctx.set_source_rgba(0.95, 0.1, 0.12, 1); ctx.set_line_width(14)
+    ellipse(ctx, ex, ey, 210, 190); ctx.stroke()
     if th.get('mascot', ep.get('mascot', True)) and is_stick(ep):
-        draw_stick(ctx, 1010, 600 - 95*1.6, 1.6, 0.3, -1, 0.9, False, 1.3, 'wow')
-        draw_emoji(ctx, th.get('emoji', '❓'), 330, 470, 300)
+        g2 = cairo.RadialGradient(1000, 300, 30, 1000, 300, 420)
+        g2.add_color_stop_rgba(0, 1, 1, 1, 0.35); g2.add_color_stop_rgba(1, 1, 1, 1, 0)
+        ctx.set_source(g2); ctx.paint()
+        draw_stick(ctx, 1010, 560, 2.5, 0.3, -1, 1.0, False, 1.45, 'wow')
     elif th.get('mascot', ep.get('mascot', True)):
         chloe(ctx, 1000, 470, 1.25, 0.3, -1, 0, False, eye=1.35, mouth=0.9)
-        draw_emoji(ctx, th.get('emoji', '❓'), 330, 470, 300)
-    else:
-        draw_emoji(ctx, th.get('emoji', '❓'), 960, 430, 420)
-    if is_noir(ep): grade(surf, 0)
     words = th.get('text', ep.get('title', '')).upper()
-    lines = wrap(ctx, words, 118, 760)[:3]
+    lines = wrap(ctx, words, 128, 700)[:2]
+    cols = [th.get('color', '#ffffff'), th.get('color2', '#ffd23f')]
     for k, ln in enumerate(lines):
-        text(ctx, ln, 40, 150 + k*125, 118, col=th.get('color', '#ffd23f'), outline='#1a1208', ow=22, align='left')
+        text(ctx, ln, 36, 140 + k*135, 128, col=cols[min(k, 1)], outline='#000000', ow=26, align='left')
     rgb = cairo.ImageSurface(cairo.FORMAT_RGB24, W, H); c2 = cairo.Context(rgb); c2.set_source_surface(surf); c2.paint()
     png = out.rsplit('.', 1)[0] + '.png'; rgb.write_to_png(png)
-    subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', '-i', png, '-q:v', '3', out], check=True); os.remove(png)
+    subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', '-i', png, '-q:v', '2', out], check=True); os.remove(png)
     print('thumbnail', out)
 
 def main():

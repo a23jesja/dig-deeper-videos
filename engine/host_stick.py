@@ -175,7 +175,7 @@ def draw_stick(ctx, x, y, s, t, facing=1, mouth=0.0, blink=False, eye=1.0, pose=
         ctx.curve_to(tx + d*32, ty + 4, tx + d*26, ty + 10, tx + d*20, ty + 7)
         ctx.curve_to(tx + d*12, ty + 5, tx + d*6, ty + 6, tx, ty + 4); ctx.close_path(); ctx.fill()
     # monocle on the front eye, with a gold chain
-    mx, myy = fx + 14, hc[1] - 6
+    mx, myy = fx + 18, hc[1] - 6   # centred on the front eye (fx was shifted -4 for the mouth)
     ctx.set_source_rgba(0.8, 0.9, 1.0, 0.35); ctx.arc(mx, myy, 11, 0, 2*math.pi); ctx.fill()
     ctx.set_source_rgb(*GOLD); ctx.set_line_width(3.2); ctx.arc(mx, myy, 11, 0, 2*math.pi); ctx.stroke()
     ctx.set_line_width(1.6); ctx.move_to(mx + 8, myy + 8)

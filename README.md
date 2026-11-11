@@ -73,3 +73,9 @@ The engine caps bitrate (~2.5 Mbps) so a 2–2.5 min video is ~25–50 MB. GitHu
 - `thumbnail`: `{text, emoji, bg, color, color2}` – 2–3 huge words (line 1 white, line 2 yellow), ONE big object emoji that IS the subject (glowing, red circle around it), Sir Digsworth large on the right with a shocked face (drawn automatically).
 - Text must add curiosity to the title, not repeat it word for word (title: "What If Every Human Vanished Tomorrow?" → thumbnail: "EVERYONE GONE?!").
 - After rendering, downscale the thumbnail to 320x180 and look at it: the words and the object must still be readable at that size.
+
+## Shorts (vertical 1080x1920)
+Add to the episode JSON:
+`"shorts": [{"title": "EVERYONE GONE?!", "start_scene": 0, "max": 52, "yt_title": "What If Every Human Vanished? #Shorts"}]`
+Render: `python3 engine/render.py episodes/<file>.json videos/shorts/<name>-short1.mp4 --short --index 0` (add `--preview` for stills).
+The Short = the episode's scenes from `start_scene` up to ~`max` seconds (cut at a scene boundary), shown in the middle with a big hook title on top, big subtitles below and a 3 s "Want the full story?" end card. Scene 1 must hook within the first second. Check frames at 0 s, 1 s, 20 s and the end.

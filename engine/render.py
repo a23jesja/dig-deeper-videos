@@ -1033,17 +1033,17 @@ def _scene_state3d(t, i, ep, timeline, env):
     sc, lt, dur = tl['sc'], t - tl['start'], tl['dur']
     si = timeline.index(tl)
     ent = 1 - ease_out_cubic(lt/0.32)
-    z = 1 + 0.07*ease_io(lt/dur) + 0.16*ent
-    ox = ent*0.10*(1 if si % 2 else -1)
+    z = 1 + 0.07*ease_io(lt/dur) + 0.07*ent
+    ox = ent*0.03*(1 if si % 2 else -1)
     events = [p.get('at', 0.0)*dur for p in sc.get('props', []) if 'text' in p and 'pop' in p.get('anim', 'pop')]
     if sc.get('fact'): events.append(sc['fact'].get('at', 0.15)*dur)
     shake = 0.0
     for ev in events:
         d = lt - ev
-        if 0 <= d < 0.3: shake = max(shake, 7*(1 - d/0.3)); z += 0.035*(1 - d/0.3)
+        if 0 <= d < 0.3: shake = max(shake, 3*(1 - d/0.3)); z += 0.025*(1 - d/0.3)
     c = sc.get('chloe', {})
     act = c.get('action', 'idle')
-    if act in ('wow', 'dizzy', 'jump') and lt < 0.45: shake = max(shake, 6*(1 - lt/0.45))
+    if act in ('wow', 'dizzy', 'jump') and lt < 0.45: shake = max(shake, 2.5*(1 - lt/0.45))
     sx_, sy_ = math.sin(t*93)*shake, math.cos(t*71)*shake
     orbit = (1 if si % 2 else -1)*(0.16 - 0.24*ease_io(lt/dur))
     show = ep.get('mascot', True) and not c.get('hide', False)

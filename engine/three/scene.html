@@ -134,7 +134,7 @@ Object.assign(sun.shadow.camera, {left: -10, right: 10, top: 10, bottom: -10}); 
 const fill = new THREE.DirectionalLight('#ffffff', 0.5); fill.position.set(-2, 3, 10); scene.add(fill);
 
 // ------------------------------------------------------------------ worlds
-const worlds = {}; let active = null;
+const worlds = {}; let active = null; let isPortrait = false;
 function world(kind) {
   if (worlds[kind]) return worlds[kind];
   const g = new THREE.Group(); const upd = []; const L = {sky: '#fff4e0', gnd: '#8fa860', hemi: 1.1, sun: '#fff1d6', sunI: 2.2, sunPos: [6, 10, 7], fog: ['#ffd7b0', 22, 80], fill: 0.5};
@@ -173,7 +173,7 @@ function world(kind) {
   } else if (kind === 'night') {
     add(skyDome('#1b2350', '#4d5590', 0.0)); add(starField(500, 280, 2, 7));
     add(hillyGround('#4e6f63')); add(farHills([[-22, -34, 14, '#3e5a55'], [10, -40, 18, '#45625b'], [34, -30, 12, '#3a5550']]));
-    const moon = new THREE.Mesh(new THREE.SphereGeometry(5, 32, 16), basic('#fff6d8', {fog: false})); moon.position.set(-30, 29, -110); add(moon);
+    const moon = new THREE.Mesh(new THREE.SphereGeometry(5, 32, 16), basic('#fff6d8', {fog: false})); moon.position.set(50, 38, -110); add(moon); upd.push(() => moon.position.set(isPortrait ? 33 : 50, isPortrait ? 17 : 38, -110));  // keep the moon clear of titles and big words
     for (let k = 0; k < 8; k++) { const x = (R() - 0.5) * 28, z = -5 - R() * 14; if (Math.abs(x) < 3) continue; add(pine(x, z, 0.9 + R() * 0.7, '#2f5a45')); }
     const ff = []; for (let k = 0; k < 18; k++) { const f = new THREE.Mesh(new THREE.SphereGeometry(0.05, 8, 6), basic('#fff38a')); add(f); ff.push([f, (R() - 0.5) * 16, 0.5 + R() * 2.5, -1 - R() * 8, R() * 6]); }
     upd.push(t => ff.forEach(([f, x, y, z, p]) => { f.position.set(x + Math.sin(t * 0.7 + p) * 0.6, y + Math.sin(t * 1.3 + p) * 0.3, z); f.material.opacity = 1; f.scale.setScalar(0.6 + 0.4 * Math.sin(t * 3 + p)); }));
@@ -340,29 +340,53 @@ function useWorld(kind) {
 // ------------------------------------------------------------------ Sir Digsworth
 const sir = new THREE.Group(); scene.add(sir);
 const body = new THREE.Group(); sir.add(body);
-function leg(x) { const p = new THREE.Group(); p.position.set(x, 0.9, 0); const l = mesh(new THREE.CylinderGeometry(0.07, 0.07, 0.85, 10), '#24212a'); l.position.y = -0.43; p.add(l);
+function leg(x) { const p = new THREE.Group(); p.position.set(x, 0.9, 0); const l = mesh(new THREE.CylinderGeometry(0.085, 0.075, 0.85, 12), '#3a3540'); l.position.y = -0.43; p.add(l);
   const shoe = mesh(new THREE.SphereGeometry(0.12, 12, 8), '#24212a'); shoe.scale.set(1, 0.6, 1.6); shoe.position.set(0, -0.86, 0.06); p.add(shoe); body.add(p); return p; }
 const legL = leg(-0.13), legR = leg(0.13);
 const torso = new THREE.Group(); body.add(torso);
-const coat = mesh(new THREE.CylinderGeometry(0.3, 0.42, 0.95, 18), '#8a6a45'); coat.position.y = 1.32; torso.add(coat);
 const tweed = canvasTex(64, 64, (g, w, h) => { g.fillStyle = '#8a6a45'; g.fillRect(0, 0, w, h); g.strokeStyle = 'rgba(60,40,20,0.35)'; g.lineWidth = 2; for (let k = 0; k < w; k += 10) { g.beginPath(); g.moveTo(k, 0); g.lineTo(k, h); g.stroke(); g.beginPath(); g.moveTo(0, k); g.lineTo(w, k); g.stroke(); } }, [4, 2]);
-coat.children[0].material = toon('#ffffff', {map: tweed});
-const vest = mesh(new THREE.BoxGeometry(0.24, 0.55, 0.04), '#b38b2c', 0.06); vest.position.set(0, 1.45, 0.335); vest.rotation.x = -0.12; torso.add(vest);
-for (let k = 0; k < 3; k++) { const b = new THREE.Mesh(new THREE.SphereGeometry(0.025, 8, 6), toonC('#f2c94c')); b.position.set(0, 1.6 - k * 0.14, 0.37 - k * 0.012); torso.add(b); }
+const tweedMat = toon('#ffffff', {map: tweed});
+// tailored jacket: lathe profile, with shirt, waistcoat, lapels and buttons painted on the front
+const coatTex = canvasTex(1024, 512, (g, w, h) => {
+  const X = u => w / 2 + u * w, Y = v => (1 - v) * h;
+  g.fillStyle = '#8a6a45'; g.fillRect(0, 0, w, h);
+  g.strokeStyle = 'rgba(60,40,20,0.33)'; g.lineWidth = 3;
+  for (let k = 0; k < w; k += 26) { g.beginPath(); g.moveTo(k, 0); g.lineTo(k, h); g.stroke(); }
+  for (let k = 0; k < h; k += 26) { g.beginPath(); g.moveTo(0, k); g.lineTo(w, k); g.stroke(); }
+  g.strokeStyle = 'rgba(255,230,190,0.16)'; g.lineWidth = 2;
+  for (let k = 13; k < w; k += 26) { g.beginPath(); g.moveTo(k, 0); g.lineTo(k, h); g.stroke(); }
+  const poly = (pts, fill, stroke = '#1d1a22', lw = 7) => { g.beginPath(); pts.forEach(([u, v], k) => k ? g.lineTo(X(u), Y(v)) : g.moveTo(X(u), Y(v))); g.closePath(); if (fill) { g.fillStyle = fill; g.fill(); } if (stroke) { g.strokeStyle = stroke; g.lineWidth = lw; g.lineJoin = 'round'; g.stroke(); } };
+  poly([[-0.075, 1.0], [0.075, 1.0], [0.0, 0.40]], '#c9a23a');                       // waistcoat
+  poly([[-0.062, 1.0], [0.062, 1.0], [0.0, 0.70]], '#ffffff');                       // shirt
+  for (const sx of [-1, 1]) poly([[sx * 0.075, 1.0], [sx * 0.135, 0.86], [sx * 0.02, 0.44], [0, 0.40]], '#6f5236');   // lapels
+  g.strokeStyle = '#1d1a22'; g.lineWidth = 7; g.beginPath(); g.moveTo(X(0), Y(0.40)); g.lineTo(X(0), Y(0)); g.stroke();
+  for (const v of [0.62, 0.54, 0.47]) { g.fillStyle = '#f2c94c'; g.beginPath(); g.arc(X(0), Y(v), 9, 0, 7); g.fill(); g.lineWidth = 3; g.stroke(); }
+  for (const v of [0.30, 0.17]) { g.fillStyle = '#3b2a1a'; g.beginPath(); g.arc(X(0.02), Y(v), 10, 0, 7); g.fill(); }
+  for (const sx of [-1, 1]) { g.lineWidth = 6; g.beginPath(); g.moveTo(X(sx * 0.10), Y(0.24)); g.lineTo(X(sx * 0.17), Y(0.24)); g.stroke(); }
+  g.fillStyle = '#c62828'; g.fillRect(X(0.105), Y(0.70), 34, 16); g.strokeRect(X(0.105), Y(0.70), 34, 16);        // pocket square
+});
+const prof = [[0.88, 0.40], [1.0, 0.385], [1.3, 0.335], [1.55, 0.355], [1.72, 0.33], [1.82, 0.22], [1.87, 0.11]];
+const rAt = y => { for (let k = 1; k < prof.length; k++) if (y <= prof[k][0]) { const [y0, r0] = prof[k - 1], [y1, r1] = prof[k]; return r0 + (r1 - r0) * (y - y0) / (y1 - y0); } return 0.11; };
+const cpts = []; for (let k = 0; k <= 22; k++) { const y = 0.88 + (1.87 - 0.88) * k / 22; cpts.push(new THREE.Vector2(rAt(y), y - 1.37)); }
+const coat = mesh(new THREE.LatheGeometry(cpts, 40, Math.PI, Math.PI * 2), toon('#ffffff', {map: coatTex}), 0.035);
+coat.position.y = 1.37; coat.scale.z = 0.82; torso.add(coat);
+const hem = new THREE.Mesh(new THREE.CircleGeometry(0.4, 32), basic('#1d1a22')); hem.rotation.x = Math.PI / 2; hem.position.y = 0.885; hem.scale.y = 0.82; torso.add(hem);
 const bow = new THREE.Group();
 for (const sx of [-1, 1]) { const c = mesh(new THREE.ConeGeometry(0.07, 0.14, 8), '#c62828', 0.08); c.rotation.z = sx * Math.PI / 2; c.position.x = sx * 0.07; bow.add(c); }
-bow.position.set(0, 1.79, 0.27); torso.add(bow);
+bow.position.set(0, 1.80, 0.24); bow.scale.setScalar(1.15); torso.add(bow);
 function arm(side) {
-  const pivot = new THREE.Group(); pivot.position.set(side * 0.33, 1.7, 0);
-  const a = mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.7, 10), '#24212a'); a.position.y = -0.35; pivot.add(a);
-  const hand = mesh(new THREE.SphereGeometry(0.1, 14, 10), '#ffffff', 0.12); hand.position.y = -0.72; pivot.add(hand);
+  const pivot = new THREE.Group(); pivot.position.set(side * 0.34, 1.68, 0);
+  const sh = mesh(new THREE.SphereGeometry(0.105, 14, 10), tweedMat, 0.06); pivot.add(sh);
+  const a = mesh(new THREE.CylinderGeometry(0.095, 0.08, 0.6, 12), tweedMat, 0.05); a.position.y = -0.31; pivot.add(a);
+  const cuff = mesh(new THREE.CylinderGeometry(0.07, 0.07, 0.07, 12), '#ffffff', 0.08); cuff.position.y = -0.64; pivot.add(cuff);
+  const hand = mesh(new THREE.SphereGeometry(0.105, 14, 10), '#ffffff', 0.12); hand.position.y = -0.75; pivot.add(hand);
   torso.add(pivot); return pivot;
 }
 const armL = arm(-1), armR = arm(1);
 const cane = new THREE.Group();
 const stick = mesh(new THREE.CylinderGeometry(0.03, 0.03, 1.3, 8), '#4a2f1d'); stick.position.y = -0.62; cane.add(stick);
 const knob = mesh(new THREE.SphereGeometry(0.06, 10, 8), '#e9b93a', 0.1); cane.add(knob);
-cane.position.set(0, -0.72, 0.05); armL.add(cane);
+cane.position.set(0, -0.75, 0.05); armL.add(cane);
 const head = new THREE.Group(); head.position.y = 2.32; torso.add(head);
 head.add(mesh(new THREE.SphereGeometry(0.5, 32, 24), '#ffffff', 0.05));
 const eyes = [];
@@ -382,12 +406,13 @@ for (const sx of [-1, 1]) {
 const mouth = new THREE.Mesh(new THREE.SphereGeometry(0.06, 12, 8), basic('#3a1c1c')); mouth.position.set(0, -0.24, 0.45); head.add(mouth);
 const brows = [];
 for (const x of [-0.17, 0.17]) { const b = new THREE.Mesh(new THREE.CapsuleGeometry(0.018, 0.12, 4, 8), basic('#1d1a22')); b.rotation.z = Math.PI / 2; b.position.set(x, 0.25, 0.45); head.add(b); brows.push(b); }
-const cap = new THREE.Group();
-const crown = mesh(new THREE.SphereGeometry(0.52, 28, 14, 0, Math.PI * 2, 0, Math.PI / 2), '#8b6b47', 0.04); crown.scale.set(1.02, 0.45, 1.05); cap.add(crown);
-crown.children[0].material = toon('#ffffff', {map: tweed});
-const brim = mesh(new THREE.CylinderGeometry(0.3, 0.3, 0.04, 24, 1, false, -Math.PI / 2, Math.PI), '#6f5236', 0.08);
-brim.position.set(0, 0.0, 0.4); brim.rotation.x = 0.15; cap.add(brim);
-cap.position.y = 0.3; cap.rotation.x = -0.12; head.add(cap);
+const cap = new THREE.Group();   // proper English flat cap: soft crown sloping forward onto a short stiff peak
+const capMat = toon('#ffffff', {map: tweed});
+const band = mesh(new THREE.CylinderGeometry(0.47, 0.455, 0.17, 36), capMat, 0.03); band.position.set(0, -0.03, -0.01); cap.add(band);
+const crown = mesh(new THREE.SphereGeometry(0.5, 32, 18), capMat, 0.03); crown.scale.set(1.06, 0.34, 1.2); crown.position.set(0, 0.08, 0.07); crown.rotation.x = 0.2; cap.add(crown);
+const brim = mesh(new THREE.SphereGeometry(0.3, 24, 12), '#6f5236', 0.06); brim.scale.set(1.0, 0.1, 0.62); brim.position.set(0, -0.085, 0.52); brim.rotation.x = 0.32; cap.add(brim);
+const capBtn = mesh(new THREE.SphereGeometry(0.045, 10, 8), '#6f5236', 0.12); capBtn.position.set(0, 0.25, 0.0); cap.add(capBtn);
+cap.position.y = 0.3; cap.rotation.x = -0.05; head.add(cap);
 const pipe = new THREE.Group();
 const stem = mesh(new THREE.CylinderGeometry(0.018, 0.018, 0.28, 8), '#2b1d14', 0.15); stem.rotation.z = Math.PI / 2.4; stem.position.set(0.12, 0, 0); pipe.add(stem);
 const bowl = mesh(new THREE.CylinderGeometry(0.06, 0.045, 0.13, 12), '#7b4a24', 0.1); bowl.position.set(0.26, 0.05, 0); pipe.add(bowl);
@@ -465,7 +490,7 @@ const visH = z => 2 * (BASE.pos.z - z) * Math.tan(THREE.MathUtils.degToRad(19));
 // ------------------------------------------------------------------ render one frame
 window.setSize = (w, h) => { renderer.setSize(w, h); camera.aspect = w / h; camera.updateProjectionMatrix(); return true; };
 window.renderFrame = function (s) {
-  const t = s.t; const portrait = !!s.portrait; rayCam = portrait ? portCam : baseCam;
+  const t = s.t; const portrait = !!s.portrait; rayCam = portrait ? portCam : baseCam; isPortrait = portrait;
   const cl = (v, a, b) => Math.min(b, Math.max(a, v));
   const PX = x => portrait ? cl(0.36 + (x - 0.3) * 0.35, 0.26, 0.6) : x;
   const w = useWorld(s.bg || 'meadow');

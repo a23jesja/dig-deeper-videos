@@ -115,3 +115,11 @@ Most viewers click on videos that are easy to understand and don't waste time. E
 - Sir Digsworth stands where `chloe.x` says (0–1 across the screen); `chloe.size` is ignored below 1.3 (he is always full size in 3D). Keep props at x ≥ 0.55 when he stands at x ≈ 0.3.
 - Rendering is slower than 2D (~0.25 s per frame): a long video takes ~20 min, a Short ~10 min. Run renders in the background (`nohup … &`) and poll the log instead of one long blocking command.
 - Branding: channel name is **Sir Digsworth**; YouTube titles end with ` | Sir Digsworth`; descriptions/Short texts say "Full investigation on the Sir Digsworth channel."
+
+## MOTTO (Jesper, 2026-11-12): FUNNY and ENTERTAINING first, with exciting explanations
+Every video and Short must make people smile within the first 10 seconds and keep them curious to the end. This outranks cramming in facts.
+- **A joke or funny moment in at least every second scene**: Sir Digsworth's dry British one-liners, overreactions (wow/jump/dizzy), a silly prop (a rubber duck, a sandwich, a cow), an absurd comparison ("that's 40 million double-decker buses"), or things going slightly wrong for him.
+- **A running gag per video** that pays off at the end (he keeps losing his hat, a pigeon keeps following him, his tea goes cold…).
+- **Explanations as mini-stories with stakes** ("here's where it gets strange…", "and then it gets worse") instead of textbook sentences.
+- Speech bubbles are for punchlines ("Oh dear.", "Splendid!", "Not again."), not for facts.
+- Professional edit: calm steady camera, he stands still and gestures gently while talking (the engine handles this — never use `shiver`), one prop at a time appearing exactly when it is mentioned (`at` matched to the word), nothing overlapping, and a punchy cut every 6–10 seconds.

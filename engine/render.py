@@ -987,7 +987,7 @@ def _sprites(sc, lt, dur):
             out.append(dict(key=p['emoji'], x=(x + ox)/W, y=y/H, size=size*1.75, sc=k, rot=rot, a=a, sq=sq, back=p.get('layer') == 'back'))
     return out
 
-def _host3d(ep, c, act, x, t, lt, dur, mouth, blink, talking, si):
+def _host3d(ep, c, act, x, t, lt, dur, mouth, blink, talking, si, energy_s=0.0):
     """Host pose for the 3D world. Returns (state dict, facing)."""
     s = 1.1*clamp(c.get('size', 1.35)/1.35, 0.95, 1.2); facing = c.get('facing', 1)
     bob = 0.0; rot = 0.0; eye = 1.0; step = 0.0
@@ -1000,10 +1000,9 @@ def _host3d(ep, c, act, x, t, lt, dur, mouth, blink, talking, si):
     if act == 'dizzy': rot = math.sin(t*4)*0.18
     if act == 'swim': rot = math.sin(t*3)*0.12; bob = 0.3 + math.sin(t*2.5)*0.15; step = t*8
     if act == 'think': rot = -0.06 + math.sin(t*1.5)*0.03
-    if act == 'shiver': x += math.sin(t*60)*3
-    energy = mouth if talking else 0.0
+    energy = energy_s if talking else 0.0
     if act in ('idle', 'point', 'think', 'shrug', 'wave', 'wipe'):
-        bob += abs(math.sin(t*6.5))*0.06*energy; rot += math.sin(t*4.7)*0.03*energy
+        bob += (0.5 - 0.5*math.cos(t*4.2))*0.035*energy
     bob += math.sin(t*3.2)*0.015
     sqk = 0.0
     if act in ('wow', 'jump', 'dizzy') and lt < 0.5:
@@ -1028,7 +1027,9 @@ def _overlay_effects(ctx, act, hx, hy, facing, t, s):
 
 def _scene_state3d(t, i, ep, timeline, env):
     blink = ((t + 1.1) % 3.3) < 0.12
-    mouth = float(env[min(i, len(env) - 1)])
+    i0 = min(i, len(env) - 1)
+    mouth = float(np.mean(env[max(0, i0 - 1):i0 + 2]))            # lips: lightly smoothed
+    energy_s = float(np.mean(env[max(0, i0 - 7):i0 + 8]))        # body language: smooth, never jittery
     tl = next(x for x in timeline if x['start'] <= t < x['start'] + x['dur'])
     sc, lt, dur = tl['sc'], t - tl['start'], tl['dur']
     si = timeline.index(tl)
@@ -1044,11 +1045,11 @@ def _scene_state3d(t, i, ep, timeline, env):
     c = sc.get('chloe', {})
     act = c.get('action', 'idle')
     if act in ('wow', 'dizzy', 'jump') and lt < 0.45: shake = max(shake, 2.5*(1 - lt/0.45))
-    sx_, sy_ = math.sin(t*93)*shake, math.cos(t*71)*shake
-    orbit = (1 if si % 2 else -1)*(0.16 - 0.24*ease_io(lt/dur))
+    sx_, sy_ = 0.0, 0.0   # no camera shake in 3D: a steady camera reads as more professional
+    orbit = (1 if si % 2 else -1)*(0.10 - 0.16*ease_io(lt/dur))
     show = ep.get('mascot', True) and not c.get('hide', False)
     talking = lt < tl['voice_len'] + 0.2
-    host, facing = _host3d(ep, c, act, c.get('x', 0.3)*W, t, lt, dur, mouth, blink or act == 'sleep', talking, si)
+    host, facing = _host3d(ep, c, act, c.get('x', 0.3)*W, t, lt, dur, mouth, blink or act == 'sleep', talking, si, energy_s)
     host['show'] = show
     state = dict(t=t, bg=sc.get('bg', 'meadow'), host=host, sprites=_sprites(sc, lt, dur),
                  cam=dict(z=z, ox=ox, sx=sx_, sy=sy_, orbit=orbit))
@@ -1064,7 +1065,7 @@ def frame3d(i, ep, timeline, total, env):
     mouth = float(env[min(i, len(env) - 1)])
     if t >= total - OUTRO or t < INTRO:
         lt = t - (total - OUTRO) if t >= total - OUTRO else t
-        host = dict(show=ep.get('mascot', True), x=0.5, gy=0.92, size=1.05, act='wave', bob=abs(math.sin(lt*3))*0.25, rot=0, eye=1.0, step=0,
+        host = dict(show=ep.get('mascot', True), x=0.5, gy=0.92, size=1.05, act='wave', bob=(0.5 - 0.5*math.cos(lt*3))*0.08, rot=0, eye=1.0, step=0,
                     facing=1, mouth=0.0, blink=bool(blink), energy=0.0, sq=0.0, turn=-0.38)
         T3.set_size(W, H)
         surf, info = T3.render(dict(t=t, bg=ep.get('intro_bg', 'meadow'), host=host, sprites=[], cam=dict(z=1.05 + 0.04*ease_io(lt/OUTRO), orbit=0.12*math.sin(lt*0.6), lift=-0.2)))
@@ -1142,7 +1143,7 @@ def thumbnail3d(ep, out):
     print('thumbnail', out)
 
 def cta_host3d(ep, t):
-    host = dict(show=True, x=0.5, gy=0.95, size=1.2, act='wave', bob=abs(math.sin(t*3))*0.2, rot=0, eye=1.0, step=0, facing=1,
+    host = dict(show=True, x=0.5, gy=0.95, size=1.2, act='wave', bob=(0.5 - 0.5*math.cos(t*3))*0.08, rot=0, eye=1.0, step=0, facing=1,
                 mouth=0.0, blink=((t + 1.1) % 3.3) < 0.12, energy=0.0, sq=0.0, turn=-0.38)
     surf, _ = T3.render(dict(t=t, bg=ep.get('intro_bg', 'meadow'), host=host, sprites=[], cam=dict(z=1.15, lift=-0.1)))
     return surf
@@ -1245,7 +1246,7 @@ def render_short3d(ep, out, preview=False):
         st = X['state']; st['portrait'] = True; st['cam']['ox'] *= 0.5
         if cta_k > 0:
             st = dict(t=start + ts, bg=ep.get('intro_bg', X['state']['bg']), portrait=True, sprites=[],
-                      host=dict(show=True, x=0.5, gy=0.9, size=1.15, act='wave', bob=abs(math.sin(ts*3))*0.2, rot=0, eye=1.0, step=0, facing=1,
+                      host=dict(show=True, x=0.5, gy=0.9, size=1.15, act='wave', bob=(0.5 - 0.5*math.cos(ts*3))*0.08, rot=0, eye=1.0, step=0, facing=1,
                                 mouth=0.0, blink=((ts + 1.1) % 3.3) < 0.12, energy=0.0, sq=0.0, turn=-0.38), cam=dict(z=1.05))
         surf, info = T3.render(st)
         c = cairo.Context(surf)

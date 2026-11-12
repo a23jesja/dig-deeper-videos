@@ -173,7 +173,7 @@ function world(kind) {
   } else if (kind === 'night') {
     add(skyDome('#1b2350', '#4d5590', 0.0)); add(starField(500, 280, 2, 7));
     add(hillyGround('#4e6f63')); add(farHills([[-22, -34, 14, '#3e5a55'], [10, -40, 18, '#45625b'], [34, -30, 12, '#3a5550']]));
-    const moon = new THREE.Mesh(new THREE.SphereGeometry(5, 32, 16), basic('#fff6d8', {fog: false})); moon.position.set(50, 38, -110); add(moon); upd.push(() => moon.position.set(isPortrait ? 33 : 50, isPortrait ? 17 : 38, -110));  // keep the moon clear of titles and big words
+    const moon = new THREE.Mesh(new THREE.SphereGeometry(5, 32, 16), basic('#fff6d8', {fog: false})); moon.position.set(50, 38, -110); add(moon); upd.push(() => { moon.visible = !isPortrait; }); upd.push(() => moon.position.set(isPortrait ? 33 : 50, isPortrait ? 17 : 38, -110));  // keep the moon clear of titles and big words
     for (let k = 0; k < 8; k++) { const x = (R() - 0.5) * 28, z = -5 - R() * 14; if (Math.abs(x) < 3) continue; add(pine(x, z, 0.9 + R() * 0.7, '#2f5a45')); }
     const ff = []; for (let k = 0; k < 18; k++) { const f = new THREE.Mesh(new THREE.SphereGeometry(0.05, 8, 6), basic('#fff38a')); add(f); ff.push([f, (R() - 0.5) * 16, 0.5 + R() * 2.5, -1 - R() * 8, R() * 6]); }
     upd.push(t => ff.forEach(([f, x, y, z, p]) => { f.position.set(x + Math.sin(t * 0.7 + p) * 0.6, y + Math.sin(t * 1.3 + p) * 0.3, z); f.material.opacity = 1; f.scale.setScalar(0.6 + 0.4 * Math.sin(t * 3 + p)); }));
@@ -340,7 +340,7 @@ function useWorld(kind) {
 // ------------------------------------------------------------------ Sir Digsworth
 const sir = new THREE.Group(); scene.add(sir);
 const body = new THREE.Group(); sir.add(body);
-function leg(x) { const p = new THREE.Group(); p.position.set(x, 0.9, 0); const l = mesh(new THREE.CylinderGeometry(0.085, 0.075, 0.85, 12), '#3a3540'); l.position.y = -0.43; p.add(l);
+function leg(x) { const p = new THREE.Group(); p.position.set(x, 0.9, 0); const l = mesh(new THREE.CylinderGeometry(0.085, 0.075, 0.85, 12), '#4d4756'); l.position.y = -0.43; p.add(l);
   const shoe = mesh(new THREE.SphereGeometry(0.12, 12, 8), '#24212a'); shoe.scale.set(1, 0.6, 1.6); shoe.position.set(0, -0.86, 0.06); p.add(shoe); body.add(p); return p; }
 const legL = leg(-0.13), legR = leg(0.13);
 const torso = new THREE.Group(); body.add(torso);
@@ -397,30 +397,28 @@ for (const x of [-0.17, 0.17]) {
 }
 const mon = mesh(new THREE.TorusGeometry(0.12, 0.022, 10, 32), '#e9b93a', 0.15); mon.position.set(0.17, 0.08, 0.5); head.add(mon);
 const monGlass = new THREE.Mesh(new THREE.CircleGeometry(0.11, 24), new THREE.MeshBasicMaterial({color: '#cfe8ff', transparent: true, opacity: 0.25})); monGlass.position.set(0.17, 0.08, 0.505); head.add(monGlass);
-const chain = new THREE.Mesh(new THREE.TorusGeometry(0.35, 0.007, 6, 40, Math.PI * 0.55), basic('#e9b93a'));
-chain.position.set(0.3, -0.25, 0.42); chain.rotation.z = -0.4; head.add(chain);
 for (const sx of [-1, 1]) {
   const mu = mesh(new THREE.TorusGeometry(0.11, 0.035, 10, 20, Math.PI * 0.9), '#5a3a20', 0.1);
-  mu.position.set(sx * 0.1, -0.12, 0.47); mu.rotation.set(0, 0, sx > 0 ? Math.PI * 1.05 : -Math.PI * 0.05 + Math.PI); mu.scale.set(sx, 1, 1); head.add(mu);
+  mu.position.set(sx * 0.1, -0.09, 0.475); mu.rotation.set(0, 0, sx > 0 ? Math.PI * 1.05 : -Math.PI * 0.05 + Math.PI); mu.scale.set(sx, 1, 1); head.add(mu);
 }
-const mouth = new THREE.Mesh(new THREE.SphereGeometry(0.06, 12, 8), basic('#3a1c1c')); mouth.position.set(0, -0.24, 0.45); head.add(mouth);
+const mouth = new THREE.Mesh(new THREE.SphereGeometry(0.06, 12, 8), basic('#3a1c1c')); mouth.position.set(0, -0.3, 0.405); head.add(mouth);
 const brows = [];
-for (const x of [-0.17, 0.17]) { const b = new THREE.Mesh(new THREE.CapsuleGeometry(0.018, 0.12, 4, 8), basic('#1d1a22')); b.rotation.z = Math.PI / 2; b.position.set(x, 0.25, 0.45); head.add(b); brows.push(b); }
+for (const x of [-0.17, 0.17]) { const b = new THREE.Mesh(new THREE.CapsuleGeometry(0.018, 0.12, 4, 8), basic('#1d1a22')); b.rotation.z = Math.PI / 2; b.position.set(x, 0.215, 0.46); head.add(b); brows.push(b); }
 const cap = new THREE.Group();   // proper English flat cap: soft crown sloping forward onto a short stiff peak
 const capMat = toon('#ffffff', {map: tweed});
 const band = mesh(new THREE.CylinderGeometry(0.47, 0.455, 0.17, 36), capMat, 0.03); band.position.set(0, -0.03, -0.01); cap.add(band);
 const crown = mesh(new THREE.SphereGeometry(0.5, 32, 18), capMat, 0.03); crown.scale.set(1.06, 0.34, 1.2); crown.position.set(0, 0.08, 0.07); crown.rotation.x = 0.2; cap.add(crown);
 const brim = mesh(new THREE.SphereGeometry(0.3, 24, 12), '#6f5236', 0.06); brim.scale.set(1.0, 0.1, 0.62); brim.position.set(0, -0.085, 0.52); brim.rotation.x = 0.32; cap.add(brim);
 const capBtn = mesh(new THREE.SphereGeometry(0.045, 10, 8), '#6f5236', 0.12); capBtn.position.set(0, 0.25, 0.0); cap.add(capBtn);
-cap.position.y = 0.3; cap.rotation.x = -0.05; head.add(cap);
+cap.position.y = 0.37; cap.rotation.x = -0.05; head.add(cap);
 const pipe = new THREE.Group();
-const stem = mesh(new THREE.CylinderGeometry(0.018, 0.018, 0.28, 8), '#2b1d14', 0.15); stem.rotation.z = Math.PI / 2.4; stem.position.set(0.12, 0, 0); pipe.add(stem);
-const bowl = mesh(new THREE.CylinderGeometry(0.06, 0.045, 0.13, 12), '#7b4a24', 0.1); bowl.position.set(0.26, 0.05, 0); pipe.add(bowl);
-const ember = new THREE.Mesh(new THREE.CircleGeometry(0.045, 12), basic('#ff7a1a')); ember.rotation.x = -Math.PI / 2; ember.position.set(0.26, 0.116, 0); pipe.add(ember);
-pipe.position.set(0.12, -0.24, 0.45); head.add(pipe);
+const stem = mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.28, 8), '#2b1d14', 0.15); stem.rotation.z = Math.PI / 2.4; stem.position.set(0.135, -0.036, 0); pipe.add(stem);
+const bowl = mesh(new THREE.CylinderGeometry(0.07, 0.05, 0.15, 14), '#7b4a24', 0.1); bowl.position.set(0.285, -0.005, 0); pipe.add(bowl);
+const ember = new THREE.Mesh(new THREE.CircleGeometry(0.052, 14), basic('#ff7a1a')); ember.rotation.x = -Math.PI / 2; ember.position.set(0.285, 0.072, 0); pipe.add(ember);
+pipe.position.set(0.045, -0.3, 0.43); pipe.rotation.y = -0.25; head.add(pipe);   // held in the corner of the mouth, below the moustache
 const puffs = [];
-for (let k = 0; k < 5; k++) { const p = new THREE.Mesh(new THREE.SphereGeometry(0.06, 10, 8), new THREE.MeshBasicMaterial({color: '#ffffff', transparent: true, opacity: 0.6})); head.add(p); puffs.push(p); }
-const blob = new THREE.Mesh(new THREE.CircleGeometry(0.55, 32), new THREE.MeshBasicMaterial({color: '#000000', transparent: true, opacity: 0.22, depthWrite: false}));
+for (let k = 0; k < 3; k++) { const p = new THREE.Mesh(new THREE.SphereGeometry(0.06, 10, 8), new THREE.MeshBasicMaterial({color: '#ffffff', transparent: true, opacity: 0.6})); head.add(p); puffs.push(p); }
+const blob = new THREE.Mesh(new THREE.CircleGeometry(0.55, 32), new THREE.MeshBasicMaterial({color: '#000000', transparent: true, opacity: 0.0, depthWrite: false}));
 blob.rotation.x = -Math.PI / 2; blob.position.y = 0.015; sir.add(blob);
 sir.traverse(o => { if (o.isMesh && o.material !== INK) o.castShadow = true; });
 
@@ -430,31 +428,31 @@ const POSES = {
   wow: [-0.55, -0.3, 2.3, 0], jump: [-0.6, -0.3, 2.5, 0], think: [-0.18, -0.15, -0.45, -2.05], wipe: [-0.18, -0.15, -0.6, -2.65], shrug: [-0.5, -0.4, 1.0, -0.5],
   dig: [-0.3, -1.1, 0.3, -1.1], dizzy: [-0.4, -0.2, 0.7, 0], shiver: [-0.25, -0.6, 0.25, -0.6], sleep: [-0.12, 0, 0.12, 0], swim: [-2.6, 0, 2.6, 0], none: [-0.18, -0.15, 0.2, 0]
 };
-let curPose = POSES.idle.slice(); let lastT = -99;
+let curPose = POSES.idle.slice(); let lastT = -99; let capLift = 0;
 function poseHost(h, t) {
   const act = h.act || 'idle'; const P = POSES[act] || POSES.idle;
   const snap = Math.abs(t - lastT) > 0.1; lastT = t;
-  for (let k = 0; k < 4; k++) curPose[k] = snap ? P[k] : curPose[k] + (P[k] - curPose[k]) * 0.35;
+  for (let k = 0; k < 4; k++) curPose[k] = snap ? P[k] : curPose[k] + (P[k] - curPose[k]) * 0.22;
   let [lz, lx, rz, rx] = curPose;
-  if (act === 'wave') rz += Math.sin(t * 12) * 0.35;
+  if (act === 'wave') rz += Math.sin(t * 7.5) * 0.3;
   if (act === 'walk' || act === 'run' || act === 'swim') { const sw = Math.sin(h.step) * (act === 'run' ? 0.8 : 0.5); lx += sw; rx -= sw; legL.rotation.x = -sw; legR.rotation.x = sw; }
   else { legL.rotation.x = legR.rotation.x = 0; }
   if (act === 'dig') { lx += Math.sin(t * 9) * 0.5; rx += Math.sin(t * 9) * 0.5; }
-  if (act === 'shiver') { lz += Math.sin(t * 50) * 0.05; rz -= Math.sin(t * 50) * 0.05; }
+  if (act === 'shiver') { lz += Math.sin(t * 13) * 0.04; rz -= Math.sin(t * 13) * 0.04; }
   if (act === 'swim') { lz += Math.sin(t * 5) * 0.5; rz += Math.sin(t * 5 + 3) * 0.5; }
   // talking gestures with the free hand
-  if (['idle', 'point', 'shrug'].includes(act)) { rz += h.energy * 0.35 * Math.sin(t * 5.3); rx -= h.energy * 0.3 * (0.5 + 0.5 * Math.sin(t * 3.7)); }
+  if (['idle', 'point', 'shrug'].includes(act)) { rz += h.energy * 0.22 * Math.sin(t * 3.1); rx -= h.energy * 0.25 * (0.5 + 0.5 * Math.sin(t * 2.3)); }
   // point toward the facing side
   const mirror = h.facing < 0 && act === 'point';
   armL.rotation.set(lx, 0, mirror ? -rz : lz); armR.rotation.set(rx, 0, mirror ? -lz : rz);
-  head.rotation.set(Math.sin(t * 2.3) * 0.04 + (act === 'sleep' ? 0.25 : 0) + (act === 'think' ? 0.1 : 0), (act === 'think' ? 0.2 : 0), Math.sin(t * 1.7) * 0.05 + h.energy * 0.06 * Math.sin(t * 6) + (act === 'shrug' ? 0.18 : 0) + (act === 'sleep' ? 0.2 : 0));
+  head.rotation.set(Math.sin(t * 2.3) * 0.04 + (act === 'sleep' ? 0.25 : 0) + (act === 'think' ? 0.1 : 0), (act === 'think' ? 0.2 : 0), Math.sin(t * 1.7) * 0.05 + h.energy * 0.05 * Math.sin(t * 2.6) + (act === 'shrug' ? 0.18 : 0) + (act === 'sleep' ? 0.2 : 0));
   const blink = h.blink || act === 'sleep';
   eyes.forEach(e => { e.scale.y = blink ? 0.12 : 1.25 * (h.eye || 1); e.scale.x = 0.85 * (h.eye || 1); });
   const up = (act === 'wow' || act === 'jump') ? 0.07 : (act === 'shrug' ? 0.05 : 0);
-  brows.forEach((b, k) => { b.position.y = 0.25 + up + (act === 'think' && k === 1 ? 0.05 : 0); b.rotation.z = Math.PI / 2 + ((act === 'wipe' || act === 'shiver' || act === 'dizzy') ? (k ? -0.35 : 0.35) : 0); });
-  cap.position.y = 0.3 + ((act === 'wow' || act === 'jump') ? 0.12 : 0);
+  brows.forEach((b, k) => { b.position.y = 0.215 + up * 0.6 + (act === 'think' && k === 1 ? 0.05 : 0); b.rotation.z = Math.PI / 2 + ((act === 'wipe' || act === 'shiver' || act === 'dizzy') ? (k ? -0.35 : 0.35) : 0); });
+  capLift += (((act === 'wow' || act === 'jump') ? 0.12 : 0) - capLift) * (snap ? 1 : 0.3); cap.position.y = 0.37 + capLift;
   mouth.scale.set(1, 0.3 + (h.mouth || 0) * 1.3 + (act === 'wow' ? 0.9 : 0), 1);
-  puffs.forEach((p, k) => { const ph = (t * 0.5 + k / puffs.length) % 1; p.position.set(0.38 + Math.sin(ph * 6 + k) * 0.05, -0.12 + ph * 0.9, 0.45); p.scale.setScalar(0.6 + ph * 1.8); p.material.opacity = 0.5 * (1 - ph); });
+  puffs.forEach((p, k) => { const ph = (t * 0.35 + k / puffs.length) % 1; p.position.set(0.36 + ph * 0.2, -0.17 + ph * 0.5, 0.5); p.scale.setScalar(0.35 + ph * 0.9); p.material.opacity = 0.38 * Math.sin(ph * Math.PI); });
 }
 
 // ------------------------------------------------------------------ emoji sprites

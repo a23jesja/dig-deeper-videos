@@ -101,3 +101,8 @@ Most viewers click on videos that are easy to understand and don't waste time. E
 - **Repeat the key idea once** near the end in one sentence, so nobody leaves confused.
 - Shorter is fine: long videos ~300–360 words (≈1:40–2:10 at speed 1.12), Shorts answer one thing in ~45–60 s.
 - Test before rendering: read the script aloud — if any sentence needs a second read to understand, rewrite it simpler.
+
+## Background music (generated in code, royalty-free)
+- Every video gets low background music that ducks under Sir Digsworth's voice. It is synthesised by the engine, so there is no copyright risk.
+- Mood is picked automatically from the scene backgrounds (space/sky/night → `space`, mystery/underground/corridor/lab → `mystery`, volcano/desert/ocean → `epic`, meadow/forest/snow → `calm`, room/city/split → `playful`).
+- Override with `"music": "playful" | "mystery" | "space" | "epic" | "calm" | "none"` and `"music_volume": 1.0` (e.g. 0.7 = quieter). Pick the mood that fits the topic.

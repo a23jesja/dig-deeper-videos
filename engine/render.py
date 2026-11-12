@@ -609,36 +609,104 @@ def tts(textline, voice, speed):
     assert sr == SR
     return np.asarray(s, dtype=np.float32)
 
-def synth_music(dur, seed):
+MOODS = ('playful', 'mystery', 'space', 'epic', 'calm')
+_BG_MOOD = {'space': 'space', 'sky': 'space', 'night': 'space', 'mystery': 'mystery', 'underground': 'mystery',
+            'corridor': 'mystery', 'lab': 'mystery', 'volcano': 'epic', 'desert': 'epic', 'ocean': 'epic',
+            'snow': 'calm', 'meadow': 'calm', 'forest': 'calm', 'room': 'playful', 'city': 'playful', 'split': 'playful'}
+
+def music_mood(ep):
+    """Mood of the background music: ep['music'] if set, otherwise guessed from the backgrounds used."""
+    m = ep.get('music')
+    if m in MOODS or m == 'none': return m
+    cnt = {}
+    for sc in ep.get('scenes', []):
+        md = _BG_MOOD.get(sc.get('bg', 'meadow'), 'playful'); cnt[md] = cnt.get(md, 0) + 1
+    return max(cnt, key=cnt.get) if cnt else 'playful'
+
+def synth_music(dur, seed, mood='playful'):
+    """Royalty-free background music generated in code, one gentle loop per mood."""
     rng = random.Random(seed)
     n = int(SR*dur); out = np.zeros(n, dtype=np.float32)
-    bpm = 112; beat = 60/bpm
-    key = rng.choice([0, 2, 5, 7, -3])
-    def note(f, start, d, vol):
-        s = int(start*SR); L = int(d*SR)
-        if s >= n or L <= 0: return
-        L = min(L, n - s); tt = np.arange(L)/SR
-        env = np.exp(-tt*5)*np.minimum(1, tt*200)
-        w = np.sin(2*np.pi*f*tt) + 0.4*np.sin(4*np.pi*f*tt) + 0.15*np.sin(6*np.pi*f*tt)
-        out[s:s+L] += (vol*env*w).astype(np.float32)
+    if mood == 'none' or n <= 0: return out
+    cfg = {'playful': (112, 'maj'), 'mystery': (84, 'min'), 'space': (68, 'maj7'), 'epic': (100, 'min'), 'calm': (88, 'maj')}[mood]
+    bpm, kind = cfg; beat = 60/bpm
+    key = rng.choice([0, 2, 5, 7, -3, -5])
     m = lambda k: 440*2**((k + key - 69)/12)
-    progs = [[[60, 64, 67], [65, 69, 72], [67, 71, 74], [60, 64, 67]],
-             [[60, 64, 67], [57, 60, 64], [65, 69, 72], [67, 71, 74]],
-             [[60, 64, 67], [67, 71, 74], [57, 60, 64], [65, 69, 72]]]
+    def put(start, sig):
+        s0 = int(start*SR)
+        if s0 >= n: return
+        L = min(len(sig), n - s0); out[s0:s0 + L] += sig[:L]
+    def pluck(f, d, vol):
+        tt = np.arange(int(d*SR))/SR
+        w = np.sin(2*np.pi*f*tt) + 0.4*np.sin(4*np.pi*f*tt) + 0.15*np.sin(6*np.pi*f*tt)
+        return (vol*np.exp(-tt*5)*np.minimum(1, tt*200)*w).astype(np.float32)
+    def pad(f, d, vol):
+        tt = np.arange(int(d*SR))/SR
+        env = np.minimum(1, tt/0.7)*np.minimum(1, np.maximum(0, (d - tt)/0.9))
+        w = sum(np.sin(2*np.pi*f*dt*tt) for dt in (0.997, 1.0, 1.003)) + 0.25*np.sin(4*np.pi*f*tt)
+        return (vol*env*w/3).astype(np.float32)
+    def bell(f, vol):
+        tt = np.arange(int(2.2*SR))/SR
+        w = np.sin(2*np.pi*f*tt) + 0.35*np.sin(2*np.pi*f*2.76*tt)*np.exp(-tt*3)
+        return (vol*np.exp(-tt*2.2)*np.minimum(1, tt*300)*w).astype(np.float32)
+    def kick(vol):
+        tt = np.arange(int(0.3*SR))/SR; f = 45 + 80*np.exp(-tt*30)
+        return (vol*np.sin(2*np.pi*np.cumsum(f)/SR)*np.exp(-tt*12)).astype(np.float32)
+    def hat(vol):
+        nz = np.diff(np.random.default_rng(rng.randint(0, 9999)).standard_normal(int(0.06*SR) + 1))
+        return (vol*nz*np.exp(-np.arange(len(nz))/SR*60)).astype(np.float32)
+    if kind == 'min':
+        progs = [[[57, 60, 64], [53, 57, 60], [50, 53, 57], [52, 56, 59]], [[57, 60, 64], [55, 59, 62], [53, 57, 60], [52, 56, 59]]]
+        scale = [57, 59, 60, 62, 64, 65, 67, 69]
+    elif kind == 'maj7':
+        progs = [[[60, 64, 67, 71], [57, 60, 64, 67], [65, 69, 72, 76], [62, 65, 69, 72]], [[60, 64, 67, 71], [65, 69, 72, 76]]*2]
+        scale = [60, 62, 64, 67, 69, 71, 72, 74]
+    else:
+        progs = [[[60, 64, 67], [65, 69, 72], [67, 71, 74], [60, 64, 67]], [[60, 64, 67], [57, 60, 64], [65, 69, 72], [67, 71, 74]],
+                 [[60, 64, 67], [67, 71, 74], [57, 60, 64], [65, 69, 72]]]
+        scale = [60, 62, 64, 67, 69, 72, 74, 76]
     chords = rng.choice(progs)
-    scale = [60, 62, 64, 67, 69, 72, 74, 76]
-    mel = [rng.choice(scale) + 12 if rng.random() < 0.85 else None for _ in range(16)]
+    mel = [rng.choice(scale) + 12 if rng.random() < 0.8 else None for _ in range(16)]
     tpos, bar = 0.0, 0
     while tpos < dur:
-        ch = chords[bar % 4]
-        for b in range(4):
-            note(m(ch[0] - 12), tpos + b*beat, beat*0.9, 0.16)
-            for k in ch: note(m(k), tpos + b*beat + beat/2, beat*0.4, 0.05)
-        for j in range(8):
-            k = mel[(bar % 2)*8 + j]
-            if k and bar % 4 != 3: note(m(k), tpos + j*beat/2, beat*0.5, 0.08)
-        tpos += 4*beat; bar += 1
-    return out / max(1e-6, np.abs(out).max())
+        ch = chords[bar % len(chords)]; bl = 4*beat
+        if mood == 'playful':
+            for b in range(4):
+                put(tpos + b*beat, pluck(m(ch[0] - 12), beat*0.9, 0.16))
+                for k in ch: put(tpos + b*beat + beat/2, pluck(m(k), beat*0.4, 0.05))
+            for jx in range(8):
+                k = mel[(bar % 2)*8 + jx]
+                if k and bar % 4 != 3: put(tpos + jx*beat/2, pluck(m(k), beat*0.5, 0.08))
+            for b in range(8): put(tpos + b*beat/2, hat(0.025 if b % 2 else 0.015))
+        elif mood == 'mystery':
+            for k in ch: put(tpos, pad(m(k - 12), bl + 0.4, 0.07))
+            put(tpos, pluck(m(ch[0] - 24), beat*1.8, 0.12)); put(tpos + 2*beat, pluck(m(ch[0] - 24), beat*1.8, 0.09))
+            for jx in range(4):
+                k = mel[(bar % 4)*4 + jx]
+                if k and (jx + bar) % 2 == 0: put(tpos + jx*beat + beat/2, pluck(m(k - 12), beat*0.6, 0.06))
+            for b in range(4): put(tpos + b*beat + beat/2, hat(0.012))
+        elif mood == 'space':
+            for k in ch: put(tpos, pad(m(k - 12), bl + 0.6, 0.08))
+            arp = ch + [ch[1] + 12]
+            for jx in range(8):
+                if rng.random() < 0.7: put(tpos + jx*beat/2, bell(m(arp[jx % len(arp)] + 12), 0.035))
+        elif mood == 'epic':
+            for k in ch: put(tpos, pad(m(k - 12), bl + 0.3, 0.06))
+            for e in range(8): put(tpos + e*beat/2, pluck(m(ch[0] - 24), beat*0.45, 0.13 if e % 2 == 0 else 0.09))
+            for b in (0, 2): put(tpos + b*beat, kick(0.35))
+            put(tpos + 3.5*beat, kick(0.2))
+            for b in range(8): put(tpos + b*beat/2, hat(0.02))
+        else:  # calm
+            for k in ch: put(tpos, pad(m(k - 12), bl + 0.5, 0.06))
+            arp = [ch[0], ch[1], ch[2], ch[1]]
+            for jx in range(8): put(tpos + jx*beat/2, pluck(m(arp[jx % 4]), beat*0.8, 0.06))
+        tpos += bl; bar += 1
+    if mood in ('space', 'mystery', 'calm'):   # soft echo for a roomy feel
+        for dl, g in ((0.27, 0.32), (0.53, 0.18)):
+            d = int(dl*SR); out[d:] += out[:-d]*g
+    rms = float(np.sqrt(np.mean(out**2))) + 1e-6
+    out = np.tanh(out/rms*0.20)                # equal loudness across moods, soft-limited (no clipping)
+    return out.astype(np.float32)
 
 def whoosh_sfx():
     L = int(0.45*SR); tt = np.arange(L)/SR
@@ -691,10 +759,14 @@ def build(ep, preview=False):
     for st, a in voice_track:
         s0 = int(st*SR); vt[s0:s0 + len(a)] += a
     vt /= max(1e-6, np.abs(vt).max()); vt *= 0.92
-    mus = synth_music(total + 1, ep.get('seed', 1))[:n]
-    gain = np.full(n, 0.11, np.float32)
-    gain[:int(INTRO*SR)] = 0.32; gain[int((total - OUTRO)*SR):] = 0.30
+    mus = synth_music(total + 1, ep.get('seed', 1), music_mood(ep))[:n]
+    # low music that ducks under the voice and comes up a little in pauses
+    venv = np.convolve(np.abs(vt), np.ones(SR//4)/(SR//4), mode='same')
+    talk = np.clip(venv/0.05, 0, 1)
+    gain = (0.30 - 0.14*talk).astype(np.float32)
+    gain[:int(INTRO*SR)] = 0.9; gain[int((total - OUTRO)*SR):] = 0.6
     gain = np.convolve(gain, np.ones(4800)/4800, mode='same').astype(np.float32)
+    gain *= float(ep.get('music_volume', 1.0))
     mix = vt + mus*gain
     for tl in timeline:
         for p in tl['sc'].get('props', []):
@@ -981,7 +1053,7 @@ def render_short(ep, out, preview=False):
     seg = end - start
     CTA = 3.2; dur_total = seg + CTA
     a = mix[int(start*SR):int(end*SR)].copy(); fl = int(0.35*SR); a[-fl:] *= np.linspace(1, 0, fl)
-    cta = synth_music(CTA + 0.5, ep.get('seed', 1) + 7)[:int(CTA*SR)]*0.30
+    cta = synth_music(CTA + 0.5, ep.get('seed', 1) + 7, music_mood(ep))[:int(CTA*SR)]*0.75
     cta[:len(pop_sfx(520))] += pop_sfx(520)*0.3; cta[-int(0.5*SR):] *= np.linspace(1, 0, int(0.5*SR))
     audio = np.concatenate([a, cta])
     title = sh.get('title', ep.get('thumbnail', {}).get('text', ep.get('title', ''))).upper()

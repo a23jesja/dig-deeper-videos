@@ -171,7 +171,8 @@ _yy, _xx = np.mgrid[0:H, 0:W].astype(np.float32)
 _VIG = (1.0 - 0.55*np.clip(((_xx - W/2)/(W*0.62))**2 + ((_yy - H/2)/(H*0.62))**2, 0, 1)**1.3).astype(np.float32)[..., None]
 _GRAIN = [np.random.RandomState(k).normal(0, 3.5, (H, W, 1)).astype(np.float32) for k in range(6)]
 def style_of(ep): return ep.get('style', '3d' if is_stick(ep) else 'bright')
-def is_3d(ep): return style_of(ep) == '3d'
+def is_3d(ep): return style_of(ep) in ('3d', 'toon')
+def is_toon(ep): return style_of(ep) == 'toon'
 def is_noir(ep): return style_of(ep) == 'noir'
 def is_sketch(ep): return style_of(ep) == 'sketch'
 _CREAM = np.array([214, 236, 252], np.float32)   # BGR warm paper
@@ -1025,6 +1026,65 @@ def _overlay_effects(ctx, act, hx, hy, facing, t, s):
             ph = (t*0.6 + k/3) % 1
             big_word(ctx, 'z', hx + 90*facing + ph*60, hy - 60 - ph*120, 40 + k*8, 1, 0, 1 - ph, '#ffffff')
 
+def _sir_card(act, x, t, lt, dur, talk, energy, blink, c=None, gy=0.9, h=3.3):
+    """Sir Digsworth as a flat cartoon card: pose options for the toon character library."""
+    c = c or {}
+    o = dict(mode='stand', expr='smile', blink=bool(blink), talk=clamp(talk*1.4), seed=3,
+             tilt=math.sin(t*2.1)*1.4*energy, headTilt=math.sin(t*2.9)*2.2*energy)
+    card = dict(kind='sir', x=x, gy=c.get('gy', gy), h=c.get('h', h), opts=o, bob=0.0, sq=0.0)
+    if act == 'point': o['point'] = clamp(lt/0.2)
+    elif act == 'wow': o['cheer'] = clamp(lt/0.14); o['expr'] = 'shock'; card['bob'] = math.sin(clamp(lt/0.5)*math.pi)*0.35
+    elif act == 'jump': o['cheer'] = 1; o['expr'] = 'grin'; card['bob'] = abs(math.sin(lt*math.pi*1.3))*0.7
+    elif act == 'shrug': o['shrug'] = clamp(lt/0.2); o['expr'] = 'nervous'; o['headTilt'] += 5
+    elif act == 'think': o['headTilt'] -= 7; o['expr'] = 'neutral'; o['look'] = 0.6
+    elif act == 'wave': o['wave'] = math.sin(t*7.5); o['expr'] = 'smile_closed'
+    elif act == 'wipe': o['expr'] = 'relief'
+    elif act == 'dizzy': o['expr'] = 'dazed'; o['tilt'] += math.sin(t*3)*4
+    elif act == 'laugh': o['expr'] = 'laugh'; card['bob'] = abs(math.sin(t*9))*0.06
+    elif act == 'stern': o['expr'] = 'stern'
+    elif act == 'sleep': o['blink'] = True
+    elif act in ('walk', 'run') and 'to' in c:
+        k = ease_io(lt / max(0.6, dur*c.get('move_frac', 0.85)))
+        if 0 < k < 1:
+            o.update(side=True, mode='march', phase=t*(2.4 if act == 'run' else 1.8), expr='neutral')
+            card['flip'] = c['to'] < c.get('x', 0.3)
+        card['x'] = x + (c['to'] - x)*k
+    if c.get('expr'): o['expr'] = c['expr']
+    if act in ('wow', 'jump', 'dizzy') and lt < 0.5:
+        k_ = lt/0.5; card['sq'] = math.sin(k_*math.pi*2)*(1 - k_)*0.10
+    return card
+
+def _cast_cards(sc, t, lt, dur):
+    """Extra cartoon characters of a scene: sc['cast'] = [{kind, x, gy, h, count, mode, expr, to, at, flip, spacing}]"""
+    out = []
+    for ci, m in enumerate(sc.get('cast', [])):
+        at = m.get('at', 0.0)*dur
+        if lt < at: continue
+        u = lt - at; n = m.get('count', 1)
+        for j in range(n):
+            x = m.get('x', 0.7) + j*m.get('spacing', 0.09); gy = m.get('gy', 0.88) - (j % 3)*m.get('stagger', 0.035)
+            mode = m.get('mode', 'stand'); kind = m.get('kind', 'farmer')
+            o = dict(mode=mode, expr=m.get('expr', 'neutral'), seed=5 + ci*7 + j*3, blink=((t + j*0.7 + ci) % 2.9) < 0.12)
+            card = dict(kind=kind, x=x, gy=gy, h=m.get('h', 3.0 if kind != 'emu' else 2.9), flip=bool(m.get('flip', False)), opts=o, bob=0.0, sq=0.0)
+            if 'to' in m:
+                k = ease_io(u/max(0.4, m.get('move_time', dur - at)))
+                card['x'] = x + (m['to'] - m.get('x', 0.7))*k
+                if 0 < k < 1 and kind != 'emu': o.update(side=True, mode='march', phase=t*2.0 + j*0.31); card['flip'] = m['to'] < m.get('x', 0.7)
+                if kind == 'emu': o['mode'] = 'run' if 0 < k < 1 else 'stand'
+            if kind == 'emu': o['phase'] = t*2.6 + j*0.37; 
+            if mode == 'march' and kind != 'emu' and 'to' not in m: o['phase'] = t*1.9 + j*0.25
+            if m.get('act') == 'cheer': o['cheer'] = 1; card['bob'] = abs(math.sin(t*6 + j))*0.12
+            if m.get('act') == 'shrug': o['shrug'] = 1
+            if m.get('act') == 'point': o['point'] = 1
+            if m.get('act') == 'bounce': card['bob'] = abs(math.sin(t*5 + j*1.3))*0.25
+            pop = clamp(u/0.18); card['sq'] = -0.25*(1 - ease_out_back(pop)) if pop < 1 else 0.0
+            out.append(card)
+    return out
+
+def _to_portrait_x(cards):
+    for cd in cards: cd['xp'] = 0.5 + (cd['x'] - 0.5)*0.82
+    return cards
+
 def _scene_state3d(t, i, ep, timeline, env):
     blink = ((t + 1.1) % 3.3) < 0.12
     i0 = min(i, len(env) - 1)
@@ -1051,8 +1111,15 @@ def _scene_state3d(t, i, ep, timeline, env):
     talking = lt < tl['voice_len'] + 0.2
     host, facing = _host3d(ep, c, act, c.get('x', 0.3)*W, t, lt, dur, mouth, blink or act == 'sleep', talking, si, energy_s)
     host['show'] = show
+    cards = []
+    if is_toon(ep):
+        if show: cards.append(_sir_card(act, c.get('x', 0.3), t, lt, dur, mouth if talking else 0.0, energy_s if talking else 0.0, blink, c))
+        if show and act == 'dizzy': cards.append(dict(kind='stars', x=cards[0]['x'], gy=cards[0]['gy'] + 0.001, h=1.5, bob=3.0, opts={}, noshadow=True))
+        cards += _cast_cards(sc, t, lt, dur); _to_portrait_x(cards)
+        host = dict(host); host['show'] = False
     state = dict(t=t, bg=sc.get('bg', 'meadow'), host=host, sprites=_sprites(sc, lt, dur),
                  cam=dict(z=z, ox=ox, sx=sx_, sy=sy_, orbit=orbit))
+    state['cards'] = cards
     return dict(state=state, tl=tl, sc=sc, lt=lt, dur=dur, act=act, facing=facing, show=show, c=c, ent=ent, host=host, z=z)
 
 def _fit_size(ctx, s, size, maxw):
@@ -1248,6 +1315,9 @@ def render_short3d(ep, out, preview=False):
             st = dict(t=start + ts, bg=ep.get('intro_bg', X['state']['bg']), portrait=True, sprites=[],
                       host=dict(show=True, x=0.5, gy=0.9, size=1.15, act='wave', bob=(0.5 - 0.5*math.cos(ts*3))*0.08, rot=0, eye=1.0, step=0, facing=1,
                                 mouth=0.0, blink=((ts + 1.1) % 3.3) < 0.12, energy=0.0, sq=0.0, turn=-0.38), cam=dict(z=1.05))
+            if is_toon(ep):
+                st['host']['show'] = False
+                st['cards'] = _to_portrait_x([_sir_card('wave', 0.5, start + ts, ts, CTA, 0.0, 0.0, ((ts + 1.1) % 3.3) < 0.12, gy=0.86, h=3.6)])
         surf, info = T3.render(st)
         c = cairo.Context(surf)
         g = cairo.LinearGradient(0, 0, 0, 760); g.add_color_stop_rgba(0, 0, 0, 0, 0.55); g.add_color_stop_rgba(1, 0, 0, 0, 0)
@@ -1271,7 +1341,7 @@ def render_short3d(ep, out, preview=False):
                 say = cc.get('say')
                 if say:
                     sa = ease_io((lt - cc.get('say_at', 0.2)*dur)/0.3)
-                    if sa > 0: bubble(c, clamp(hx + 250, 260, SW - 230), clamp(hy - 150, 760, SH - 400), say, thought=cc.get('thought', False), alpha=sa, size=54)
+                    if sa > 0: bubble(c, clamp(hx + 250, 260, SW - 230), clamp(hy - 215, 700, SH - 400), say, thought=cc.get('thought', False), alpha=sa, size=54)
             norm = lambda v: ''.join(ch for ch in v.upper() if ch.isalnum())
             row = 0
             for p in sc.get('props', []):
@@ -1282,13 +1352,13 @@ def render_short3d(ep, out, preview=False):
                 q = dict(p); q['x'] = 0.5; q['y'] = 0.5; q.pop('to', None); q['anim'] = '+'.join(a_ for a_ in p.get('anim', 'pop').split('+') if a_ not in ('move', 'float', 'bounce', 'drop'))
                 c.save(); c.translate(SW/2 - W*kk/2, 600 + row*125 - H*kk/2); c.scale(kk, kk)
                 c.set_source_rgba(1, 1, 1, 1 - 0.9*fact_a); draw_prop(c, q, lt, dur); c.restore(); row += 1
-            if X['ent'] > 0.01: c.set_source_rgba(1, 1, 1, 0.28*max(0, 1 - lt/0.16)); c.paint()
+            if X['ent'] > 0.01 and X['tl'] is not timeline[k0]: c.set_source_rgba(1, 1, 1, 0.18*max(0, 1 - lt/0.12)); c.paint()
             if fact_a > 0:
                 c.save(); c.translate((SW - W)/2, 230 - 140*(1 - ease_out_back((lt - sc['fact'].get('at', 0.15)*dur)/0.45)))
                 fact_box(c, sc['fact'].get('label', 'Did you know?'), sc['fact']['text'], fact_a, 1.0); c.restore()
             ch_, age_ = caption_chunk(X['tl'], lt, 2); kinetic(c, ch_, age_, SW/2, 1690, 104)
         else:
-            c.set_source_rgba(0, 0, 0, 0.35*cta_k); c.paint()
+            c.set_source_rgba(0, 0, 0, (0.12 if is_toon(ep) else 0.35)*cta_k); c.paint()
             c.push_group()
             for j, ln in enumerate(['WANT THE', 'FULL STORY?']):
                 text(c, ln, SW/2, 330 + j*130, 120, col='#ffffff' if j == 0 else '#ffd23f', outline='#000000', ow=20)
@@ -1299,7 +1369,8 @@ def render_short3d(ep, out, preview=False):
         return surf
     if preview:
         os.makedirs(out + '_frames', exist_ok=True)
-        for j, tt in enumerate([0.0, 1.5, seg*0.3, seg*0.5, seg*0.75, seg - 1, seg + 1.5]):
+        pts = [0.0] + [tl_['start'] - start + tl_['dur']*0.8 for tl_ in timeline[k0:] if tl_['start'] + tl_['dur'] <= end + 0.01] + [seg + 1.5]
+        for j, tt in enumerate(pts):
             draw(tt, clamp((tt - seg)/0.4) if tt >= seg else 0).write_to_png(f'{out}_frames/{j:02d}.png')
         print(f'short preview, length {dur_total:.1f}s'); return
     wav = out + '.wav'

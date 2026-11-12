@@ -6,6 +6,7 @@
 <script type="module">
 // Sir Digsworth 3D world. Driven frame-by-frame from Python (engine/three3d.py).
 import * as THREE from 'three';
+import { Pen, bodyFront, bodySide, SIR_DIGSWORTH, setTalk, fxStars, fxPuff, fxBurst, INK as TINK } from './toon.js';
 const W = 1280, H = 720;
 const renderer = new THREE.WebGLRenderer({antialias: true, preserveDrawingBuffer: true});
 renderer.setSize(W, H); renderer.setPixelRatio(1);
@@ -401,7 +402,7 @@ for (const sx of [-1, 1]) {
   const mu = mesh(new THREE.TorusGeometry(0.11, 0.035, 10, 20, Math.PI * 0.9), '#5a3a20', 0.1);
   mu.position.set(sx * 0.1, -0.09, 0.475); mu.rotation.set(0, 0, sx > 0 ? Math.PI * 1.05 : -Math.PI * 0.05 + Math.PI); mu.scale.set(sx, 1, 1); head.add(mu);
 }
-const mouth = new THREE.Mesh(new THREE.SphereGeometry(0.06, 12, 8), basic('#3a1c1c')); mouth.position.set(0, -0.3, 0.405); head.add(mouth);
+const mouth = new THREE.Mesh(new THREE.SphereGeometry(0.06, 16, 10), basic('#3a1c1c')); mouth.position.set(-0.035, -0.29, 0.405); head.add(mouth);
 const brows = [];
 for (const x of [-0.17, 0.17]) { const b = new THREE.Mesh(new THREE.CapsuleGeometry(0.018, 0.12, 4, 8), basic('#1d1a22')); b.rotation.z = Math.PI / 2; b.position.set(x, 0.215, 0.46); head.add(b); brows.push(b); }
 const cap = new THREE.Group();   // proper English flat cap: soft crown sloping forward onto a short stiff peak
@@ -415,7 +416,7 @@ const pipe = new THREE.Group();
 const stem = mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.28, 8), '#2b1d14', 0.15); stem.rotation.z = Math.PI / 2.4; stem.position.set(0.135, -0.036, 0); pipe.add(stem);
 const bowl = mesh(new THREE.CylinderGeometry(0.07, 0.05, 0.15, 14), '#7b4a24', 0.1); bowl.position.set(0.285, -0.005, 0); pipe.add(bowl);
 const ember = new THREE.Mesh(new THREE.CircleGeometry(0.052, 14), basic('#ff7a1a')); ember.rotation.x = -Math.PI / 2; ember.position.set(0.285, 0.072, 0); pipe.add(ember);
-pipe.position.set(0.045, -0.3, 0.43); pipe.rotation.y = -0.25; head.add(pipe);   // held in the corner of the mouth, below the moustache
+pipe.position.set(0.02, -0.296, 0.418); pipe.rotation.y = -0.25; head.add(pipe);   // stem starts inside the mouth so he visibly bites it
 const puffs = [];
 for (let k = 0; k < 3; k++) { const p = new THREE.Mesh(new THREE.SphereGeometry(0.06, 10, 8), new THREE.MeshBasicMaterial({color: '#ffffff', transparent: true, opacity: 0.6})); head.add(p); puffs.push(p); }
 const blob = new THREE.Mesh(new THREE.CircleGeometry(0.55, 32), new THREE.MeshBasicMaterial({color: '#000000', transparent: true, opacity: 0.0, depthWrite: false}));
@@ -424,7 +425,7 @@ sir.traverse(o => { if (o.isMesh && o.material !== INK) o.castShadow = true; });
 
 // poses: [armL z, armL x, armR z, armR x]
 const POSES = {
-  idle: [-0.18, -0.15, 0.2, 0], walk: [-0.18, 0, 0.18, 0], run: [-0.3, 0, 0.3, 0], wave: [-0.18, -0.15, 2.6, 0], point: [-0.18, -0.15, 1.5, -0.25],
+  idle: [-0.18, -0.15, 0.2, 0], walk: [-0.18, 0, 0.18, 0], run: [-0.3, 0, 0.3, 0], wave: [-0.18, -0.15, 2.2, -0.15], point: [-0.18, -0.15, 1.5, -0.25],
   wow: [-0.55, -0.3, 2.3, 0], jump: [-0.6, -0.3, 2.5, 0], think: [-0.18, -0.15, -0.45, -2.05], wipe: [-0.18, -0.15, -0.6, -2.65], shrug: [-0.5, -0.4, 1.0, -0.5],
   dig: [-0.3, -1.1, 0.3, -1.1], dizzy: [-0.4, -0.2, 0.7, 0], shiver: [-0.25, -0.6, 0.25, -0.6], sleep: [-0.12, 0, 0.12, 0], swim: [-2.6, 0, 2.6, 0], none: [-0.18, -0.15, 0.2, 0]
 };
@@ -451,9 +452,84 @@ function poseHost(h, t) {
   const up = (act === 'wow' || act === 'jump') ? 0.07 : (act === 'shrug' ? 0.05 : 0);
   brows.forEach((b, k) => { b.position.y = 0.215 + up * 0.6 + (act === 'think' && k === 1 ? 0.05 : 0); b.rotation.z = Math.PI / 2 + ((act === 'wipe' || act === 'shiver' || act === 'dizzy') ? (k ? -0.35 : 0.35) : 0); });
   capLift += (((act === 'wow' || act === 'jump') ? 0.12 : 0) - capLift) * (snap ? 1 : 0.3); cap.position.y = 0.37 + capLift;
-  mouth.scale.set(1, 0.3 + (h.mouth || 0) * 1.3 + (act === 'wow' ? 0.9 : 0), 1);
+  mouth.scale.set(1.25, 0.32 + (h.mouth || 0) * 1.25 + (act === 'wow' ? 0.9 : 0), 0.6);
   puffs.forEach((p, k) => { const ph = (t * 0.35 + k / puffs.length) % 1; p.position.set(0.36 + ph * 0.2, -0.17 + ph * 0.5, 0.5); p.scale.setScalar(0.35 + ph * 0.9); p.material.opacity = 0.38 * Math.sin(ph * Math.PI); });
 }
+
+
+// ------------------------------------------------------------------ 2D cartoon cast (flat ink-outlined cards standing in the 3D world)
+const KHAKI = {jacket: '#8f9460', pants: '#6d7048', boots: TINK, hat: 'cap', cap: '#7d8252', belt: '#5a3b2a', buttons: '#d9c27a', rifle: true};
+const OUTFITS = {
+  sir: SIR_DIGSWORTH,
+  soldier: KHAKI,
+  officer: {...KHAKI, rifle: false, moustache: '#4a3020', belt: null, build: 'stout', sash: '#8a2f2f'},
+  farmer: {jacket: '#3f6fb5', pants: '#6b4f3a', boots: '#4a3426', hat: 'cap', cap: '#d9b45a', skin: '#f5c9a0'},
+  farmer2: {jacket: '#b5653f', pants: '#3b3f52', boots: '#4a3426', hat: 'hair', hair: '#7a4a2a', skin: '#ecd0b6', moustache: '#7a4a2a'},
+  minister: {jacket: '#2e2a36', pants: '#2e2a36', boots: TINK, hat: 'tophat', skin: '#ffe2c2', moustache: '#8a8a8a', build: 'stout'},
+};
+function drawEmu(p, o) {
+  const ph = (o.phase || 0) * Math.PI * 2, run = o.mode === 'run', sw = run ? Math.sin(ph) : 0, bob = run ? Math.abs(Math.cos(ph)) * 16 : 0;
+  const by = 520 - bob, col = '#6d5a48', dark = '#4d3f33';
+  // legs
+  for (const [k, sgn] of [[0, 1], [1, -1]]) {
+    const hip = [270 + k * 50, by + 80], foot = [hip[0] + sgn * sw * 120, 965 - (run ? Math.max(0, -sgn * Math.cos(ph)) * 70 : 0)];
+    const knee = [(hip[0] + foot[0]) / 2 - 38, (hip[1] + foot[1]) / 2];
+    p.stroke([hip, knee, foot], 15, TINK); p.stroke([hip, knee, foot], 8, '#8a7a5c');
+    p.stroke([foot, [foot[0] + 42, foot[1] + 6]], 13, TINK); p.stroke([foot, [foot[0] + 42, foot[1] + 6]], 6.5, '#8a7a5c');
+  }
+  // neck + head (behind body edge)
+  const nk = [[385, by - 40], [430, by - 190 - bob * 0.4], [418, by - 330]];
+  p.stroke(nk, 46, TINK); p.stroke(nk, 30, '#7fb4c9');
+  const hx = 432, hy = by - 352;
+  p.poly([[hx + 34, hy - 6], [hx + 104, hy + 12], [hx + 34, hy + 26]], '#3b3a35', 9);
+  p.ell(hx, hy, 50, 44, '#58676f', 11);
+  // shaggy body
+  const pts = []; for (let i = 0; i < 40; i++) { const a = i / 40 * Math.PI * 2, r = 1 + (i % 2 ? 0.07 : -0.03); pts.push([285 + Math.cos(a) * 178 * r, by + Math.sin(a) * 128 * r]); }
+  p.poly(pts, col, 12);
+  p.stroke([[190, by + 30], [240, by + 70], [300, by + 60]], 7, dark); p.stroke([[220, by - 30], [280, by + 5], [340, by - 10]], 7, dark);
+  p.poly([[120, by - 20], [70, by + 40], [135, by + 50]], dark, 10);   // tail tuft
+  // face
+  const ex = hx + 14, ey = hy - 8, e = o.expr || 'neutral';
+  if (e === 'shock') { p.ell(ex, ey, 15, 17, '#ffffff', 5); p.dot(ex + 3, ey, 6); }
+  else if (e === 'smug' || e === 'grin') { p.arc(ex, ey + 4, 13, 11, 200, 340, 6.5); }
+  else { p.ell(ex, ey, 12, 13, '#ffffff', 5); p.dot(ex + 3, ey + 1, 6.5); p.stroke([[ex - 16, ey - 20], [ex + 16, ey - 13]], 6.5); }
+}
+function drawGun(p) {   // Lewis gun on a tripod, pointing right
+  p.stroke([[300, 700], [200, 965]], 16, TINK); p.stroke([[300, 700], [400, 965]], 16, TINK); p.stroke([[300, 700], [300, 965]], 16, TINK);
+  p.poly([[150, 640], [470, 640], [470, 700], [150, 700]], '#4a4f57', 11);
+  p.poly([[470, 652], [590, 652], [590, 690], [470, 690]], '#6b727c', 10);
+  p.ell(330, 628, 74, 26, '#5d646e', 10);
+  p.poly([[110, 650], [150, 650], [150, 760], [118, 760]], '#7a4b2a', 10);
+}
+function drawCard(g, c, t) {
+  g.clearRect(0, 0, 600, 1000);
+  const p = new Pen(g), o = c.opts || {};
+  if (c.kind === 'emu') return drawEmu(p, o);
+  if (c.kind === 'gun') return drawGun(p);
+  if (c.kind === 'stars') return fxStars(p, (t * 0.8) % 1);
+  if (c.kind === 'puff') return fxPuff(p, o.t ?? (t % 1));
+  if (c.kind === 'burst') return fxBurst(p, o.t ?? (t % 1));
+  const outfit = OUTFITS[c.kind] || OUTFITS.farmer;
+  setTalk(o.talk || 0);
+  if (o.side) bodySide(p, outfit, {mode: o.mode || 'march', phase: o.phase || 0, expr: o.expr || 'neutral', blink: !!o.blink, seed: o.seed || 3, stride: o.stride ?? 1});
+  else bodyFront(p, outfit, {mode: o.mode || 'stand', phase: o.phase || 0, expr: o.expr || 'neutral', blink: !!o.blink, seed: o.seed || 3, look: o.look || 0,
+    tilt: o.tilt || 0, headTilt: o.headTilt || 0, wave: o.wave, point: o.point, cheer: o.cheer, shrug: o.shrug, facing: o.facing || 0});
+  setTalk(0);
+}
+const cardPool = [];
+function getCard(i) {
+  while (cardPool.length <= i) {
+    const cv = document.createElement('canvas'); cv.width = 600; cv.height = 1000;
+    const tex = new THREE.CanvasTexture(cv); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 4;
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(0.6, 1), new THREE.MeshBasicMaterial({map: tex, transparent: true, depthWrite: false, depthTest: false, fog: false}));
+    m.geometry.translate(0, 0.475, 0);   // soles (y = 975 of 1000) on the ground
+    const sh = new THREE.Mesh(new THREE.CircleGeometry(0.5, 24), new THREE.MeshBasicMaterial({color: '#000000', transparent: true, opacity: 0.26, depthWrite: false, depthTest: false}));
+    sh.rotation.x = -Math.PI / 2;
+    scene.add(m); scene.add(sh); cardPool.push({m, sh, cv, g: cv.getContext('2d'), tex});
+  }
+  return cardPool[i];
+}
+const CARD_TINT = {night: '#b9c2ee', mystery: '#bdb6e6', space: '#e6e2ff', underground: '#e8c9a8', volcano: '#f0c4a8'};
 
 // ------------------------------------------------------------------ emoji sprites
 const texCache = {}; const spritePool = [];
@@ -473,7 +549,7 @@ const baseCam = new THREE.PerspectiveCamera(38, W / H, 0.1, 400);
 baseCam.position.copy(BASE.pos); baseCam.lookAt(BASE.look); baseCam.updateMatrixWorld(); baseCam.updateProjectionMatrix();
 const ray = new THREE.Raycaster();
 const portCam = new THREE.PerspectiveCamera(62, 9 / 16, 0.1, 400);
-portCam.position.set(0, 3.0, 9.6); portCam.lookAt(0, 2.9, 0); portCam.updateMatrixWorld(); portCam.updateProjectionMatrix();
+portCam.position.set(0, 2.9, 12.5); portCam.lookAt(0, 2.1, 0); portCam.updateMatrixWorld(); portCam.updateProjectionMatrix();
 let rayCam = baseCam;
 function screenToPlaneZ(x, y, z) {
   ray.setFromCamera(new THREE.Vector2(x * 2 - 1, -(y * 2 - 1)), rayCam);
@@ -504,6 +580,21 @@ window.renderFrame = function (s) {
     blob.scale.setScalar(1 - Math.min(0.5, (h.bob || 0) * 0.6));
     poseHost(h, t);
   }
+  // cartoon cast
+  let sirCard = null; const cs = (s.cards || []).slice().sort((a, b) => a.gy - b.gy);
+  cs.forEach((c, i) => {
+    const k = getCard(i); k.m.visible = k.sh.visible = true;
+    drawCard(k.g, c, t); k.tex.needsUpdate = true;
+    const gp = screenToGround(portrait && c.xp != null ? c.xp : c.x, c.gy), hgt = c.h || 3.3;
+    k.m.position.set(gp.x, (c.bob || 0), gp.z); k.m.scale.set(hgt * (c.flip ? -1 : 1) * (1 + (c.sq || 0)), hgt * (1 - (c.sq || 0)), 1);
+    k.m.rotation.set(0, 0, 0); k.m.renderOrder = 10 + i;
+    k.m.material.color.set(CARD_TINT[s.bg] || '#ffffff'); k.m.material.opacity = c.a ?? 1;
+    const fx = c.kind === 'stars' || c.kind === 'puff' || c.kind === 'burst';
+    k.sh.visible = !fx && !c.noshadow; k.sh.position.set(gp.x, 0.02, gp.z); k.sh.scale.set(hgt * (c.kind === 'emu' ? 0.42 : 0.26), hgt * 0.1, 1); k.sh.renderOrder = 9;
+    k.sh.material.opacity = 0.26 * (1 - Math.min(0.7, (c.bob || 0) * 0.5));
+    if (c.kind === 'sir') sirCard = k;
+  });
+  for (let i = cs.length; i < cardPool.length; i++) cardPool[i].m.visible = cardPool[i].sh.visible = false;
   // props
   let n = 0;
   for (const p of s.sprites || []) {
@@ -518,17 +609,20 @@ window.renderFrame = function (s) {
   // camera: push-in, whip, shake, slow orbit for depth
   const c = s.cam || {};
   const zoom = c.z || 1, orbit = (c.orbit || 0);
-  const target = portrait ? new THREE.Vector3(0, 2.9, 0) : BASE.look.clone(); target.x += (c.ox || 0) * (portrait ? 5 : 11); target.y += (c.oy || 0);
-  const dist = (portrait ? 9.6 : (BASE.pos.z - BASE.look.z)) / zoom;
-  camera.position.set(target.x + Math.sin(orbit) * dist, (portrait ? 3.0 : BASE.pos.y) + (c.lift || 0) + (c.sy || 0) * 0.004, target.z + Math.cos(orbit) * dist);
+  const target = portrait ? new THREE.Vector3(0, 2.1, 0) : BASE.look.clone(); target.x += (c.ox || 0) * (portrait ? 5 : 11); target.y += (c.oy || 0);
+  const dist = (portrait ? 12.5 : (BASE.pos.z - BASE.look.z)) / zoom;
+  camera.position.set(target.x + Math.sin(orbit) * dist, (portrait ? 2.9 : BASE.pos.y) + (c.lift || 0) + (c.sy || 0) * 0.004, target.z + Math.cos(orbit) * dist);
   camera.position.x += (c.sx || 0) * 0.004;
   if (c.focus) { const f = sir.position.clone(); f.y += 1.75 * (h.size || 1); target.lerp(f, c.focus); }
   camera.lookAt(target);
   camera.fov = portrait ? 62 : (c.fov || 38); camera.updateProjectionMatrix();
   sun.target.position.set(sir.position.x, 0, 0); sun.position.set(sun.position.x, sun.position.y, sun.position.z);
+  for (const k of cardPool) if (k.m.visible) { k.m.quaternion.copy(camera.quaternion); }
   renderer.render(scene, camera);
   // where his head and feet end up on screen (for speech bubbles and effects)
-  const hp = new THREE.Vector3(); head.getWorldPosition(hp); hp.project(camera);
+  const hp = new THREE.Vector3(); head.getWorldPosition(hp);
+  if (sirCard) { hp.copy(sirCard.m.position); hp.y += Math.abs(sirCard.m.scale.y) * 0.80; }
+  hp.project(camera);
   const fp = sir.position.clone().project(camera);
   return {img: renderer.domElement.toDataURL('image/jpeg', 0.92), head: [(hp.x + 1) / 2, (1 - hp.y) / 2], feet: [(fp.x + 1) / 2, (1 - fp.y) / 2]};
 };

@@ -27,6 +27,9 @@ import wordsWJson from "./wordsW.json";
 import { WOJTEK_LONG_SHOW } from "./scenesWL";
 import { TOTAL_WL, FLASH_WL, layersWL, dofAtWL } from "./storyWL";
 import wordsWLJson from "./wordsWL.json";
+import { PIG_SHOW } from "./scenesP";
+import { TOTAL_P, FLASH_P, layersP, dofAtP } from "./storyP";
+import wordsPJson from "./wordsP.json";
 
 type Word = { w: string; a: number; b: number; line: string };
 type Film = {
@@ -39,6 +42,8 @@ const SHORT: Film = { W: 1080, H: 1920, total: TOTAL, flashAt: FLASH_AT, show: E
 const LONG: Film = { W: 1920, H: 1080, total: TOTAL_L, flashAt: FLASH_L, show: LONG_SHOW, layersAt: layersL, dofAt: dofAtL, words: wordsLongJson as Word[], audio: "emu/mix-long.wav", cap: { top: "86%", size: 70, stroke: 11 } };
 const WSHORT: Film = { W: 1080, H: 1920, total: TOTAL_W, flashAt: FLASH_W, show: WOJTEK_SHOW, layersAt: layersW, dofAt: dofAtW, words: wordsWJson as Word[], audio: "wojtek/mix.wav", cap: { top: "67.5%", size: 92, stroke: 14 } };
 const WLONG: Film = { W: 1920, H: 1080, total: TOTAL_WL, flashAt: FLASH_WL, show: WOJTEK_LONG_SHOW, layersAt: layersWL, dofAt: dofAtWL, words: wordsWLJson as Word[], audio: "wojtek/mix-long.wav", cap: { top: "86%", size: 70, stroke: 11 } };
+const PSHORT: Film = { W: 1080, H: 1920, total: TOTAL_P, flashAt: FLASH_P, show: PIG_SHOW, layersAt: layersP, dofAt: dofAtP, words: wordsPJson as Word[], audio: "pig/mix.wav", cap: { top: "67.5%", size: 92, stroke: 14 } };
+export const PIG_FRAMES = TOTAL_P;
 export const EMU_FRAMES = TOTAL, EMU_LONG_FRAMES = TOTAL_L, WOJTEK_FRAMES = TOTAL_W, WOJTEK_LONG_FRAMES = TOTAL_WL;
 
 type Props = { post?: { ink?: boolean; lens?: boolean; bloom?: boolean; grade?: boolean; dpr?: number }; captions?: boolean; audio?: boolean };
@@ -148,3 +153,4 @@ export const EmuShort: React.FC = () => <FilmView film={SHORT} />;
 export const EmuLong: React.FC = () => <FilmView film={LONG} />;
 export const WojtekShort: React.FC = () => <FilmView film={WSHORT} />;
 export const WojtekLong: React.FC = () => <FilmView film={WLONG} />;
+export const PigShort: React.FC = () => <FilmView film={PSHORT} />;

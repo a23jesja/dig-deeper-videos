@@ -1054,6 +1054,10 @@ def _scene_state3d(t, i, ep, timeline, env):
                  cam=dict(z=z, ox=ox, sx=sx_, sy=sy_, orbit=orbit))
     return dict(state=state, tl=tl, sc=sc, lt=lt, dur=dur, act=act, facing=facing, show=show, c=c, ent=ent, host=host, z=z)
 
+def _fit_size(ctx, s, size, maxw):
+    set_font(ctx, size); w = ctx.text_extents(s).x_advance
+    return size if w <= maxw else max(24, int(size*maxw/w))
+
 def frame3d(i, ep, timeline, total, env):
     t = i / FPS
     blink = ((t + 1.1) % 3.3) < 0.12
@@ -1089,10 +1093,15 @@ def frame3d(i, ep, timeline, total, env):
         say = c.get('say')
         if say:
             sa = ease_io((lt - c.get('say_at', 0.2)*dur)/0.3)
-            bx = clamp(hx + 190*facing, 170, W - 170); by = clamp(hy - 150, 70, H - 220)
+            bx = clamp(hx + 250*facing, 170, W - 170); by = clamp(hy - 20, 250, H - 220)
             if sa > 0: bubble(ctx, bx, by, say, thought=c.get('thought', False), alpha=sa)
     for p in sc.get('props', []):
-        if 'emoji' not in p: draw_prop(ctx, p, lt, dur)
+        if 'emoji' in p: continue
+        q = dict(p)
+        if 'text' in q and show and 'to' not in q and c.get('x', 0.3) < 0.5:   # keep big words clear of his head
+            q['x'] = max(q.get('x', 0.5), 0.66); q['y'] = min(q.get('y', 0.24), 0.26)
+            q['size'] = _fit_size(ctx, q['text'], q.get('size', 90), 2*(W - q['x']*W - 40))
+        draw_prop(ctx, q, lt, dur)
     if ent > 0.01:
         ctx.set_source_rgba(1, 1, 1, 0.28*max(0, 1 - lt/0.16)); ctx.paint()
     if sc.get('fact'):
@@ -1261,14 +1270,17 @@ def render_short3d(ep, out, preview=False):
                 say = cc.get('say')
                 if say:
                     sa = ease_io((lt - cc.get('say_at', 0.2)*dur)/0.3)
-                    if sa > 0: bubble(c, clamp(hx + 230*facing, 200, SW - 200), clamp(hy - 230, 640, SH - 400), say, thought=cc.get('thought', False), alpha=sa, size=54)
-            c.save(); c.translate(BX, BY); c.scale(K, K)
+                    if sa > 0: bubble(c, clamp(hx + 250, 260, SW - 230), clamp(hy - 150, 760, SH - 400), say, thought=cc.get('thought', False), alpha=sa, size=54)
+            norm = lambda v: ''.join(ch for ch in v.upper() if ch.isalnum())
+            row = 0
             for p in sc.get('props', []):
-                if 'emoji' not in p:
-                    q = dict(p); q['x'] = 0.5 + (p.get('x', 0.5) - 0.5)*0.55
-                    if 'to' in q: q['to'] = [0.5 + (q['to'][0] - 0.5)*0.55, q['to'][1]]
-                    draw_prop(c, q, lt, dur)
-            c.restore()
+                if 'emoji' in p or 'text' not in p: continue
+                if norm(p['text']) in norm(title) or norm(title) in norm(p['text']): continue   # same words as the title above
+                size = p.get('size', 90); est = 0.66*size*len(p['text']) + 40
+                kk = min(1.35, 940/est)
+                q = dict(p); q['x'] = 0.5; q['y'] = 0.5; q.pop('to', None); q['anim'] = '+'.join(a_ for a_ in p.get('anim', 'pop').split('+') if a_ not in ('move', 'float', 'bounce', 'drop'))
+                c.save(); c.translate(SW/2 - W*kk/2, 600 + row*125 - H*kk/2); c.scale(kk, kk)
+                c.set_source_rgba(1, 1, 1, 1 - 0.9*fact_a); draw_prop(c, q, lt, dur); c.restore(); row += 1
             if X['ent'] > 0.01: c.set_source_rgba(1, 1, 1, 0.28*max(0, 1 - lt/0.16)); c.paint()
             if fact_a > 0:
                 c.save(); c.translate((SW - W)/2, 230 - 140*(1 - ease_out_back((lt - sc['fact'].get('at', 0.15)*dur)/0.45)))

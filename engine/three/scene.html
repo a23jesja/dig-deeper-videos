@@ -173,7 +173,7 @@ function world(kind) {
   } else if (kind === 'night') {
     add(skyDome('#1b2350', '#4d5590', 0.0)); add(starField(500, 280, 2, 7));
     add(hillyGround('#4e6f63')); add(farHills([[-22, -34, 14, '#3e5a55'], [10, -40, 18, '#45625b'], [34, -30, 12, '#3a5550']]));
-    const moon = new THREE.Mesh(new THREE.SphereGeometry(5, 32, 16), basic('#fff6d8', {fog: false})); moon.position.set(28, 30, -110); add(moon);
+    const moon = new THREE.Mesh(new THREE.SphereGeometry(5, 32, 16), basic('#fff6d8', {fog: false})); moon.position.set(-30, 29, -110); add(moon);
     for (let k = 0; k < 8; k++) { const x = (R() - 0.5) * 28, z = -5 - R() * 14; if (Math.abs(x) < 3) continue; add(pine(x, z, 0.9 + R() * 0.7, '#2f5a45')); }
     const ff = []; for (let k = 0; k < 18; k++) { const f = new THREE.Mesh(new THREE.SphereGeometry(0.05, 8, 6), basic('#fff38a')); add(f); ff.push([f, (R() - 0.5) * 16, 0.5 + R() * 2.5, -1 - R() * 8, R() * 6]); }
     upd.push(t => ff.forEach(([f, x, y, z, p]) => { f.position.set(x + Math.sin(t * 0.7 + p) * 0.6, y + Math.sin(t * 1.3 + p) * 0.3, z); f.material.opacity = 1; f.scale.setScalar(0.6 + 0.4 * Math.sin(t * 3 + p)); }));
@@ -402,8 +402,8 @@ sir.traverse(o => { if (o.isMesh && o.material !== INK) o.castShadow = true; });
 // poses: [armL z, armL x, armR z, armR x]
 const POSES = {
   idle: [-0.18, -0.15, 0.2, 0], walk: [-0.18, 0, 0.18, 0], run: [-0.3, 0, 0.3, 0], wave: [-0.18, -0.15, 2.6, 0], point: [-0.18, -0.15, 1.5, -0.25],
-  wow: [-2.3, 0, 2.3, 0], jump: [-2.5, 0, 2.5, 0], think: [-0.18, -0.15, -0.45, -2.05], wipe: [-0.18, -0.15, -0.6, -2.65], shrug: [-1.0, -0.5, 1.0, -0.5],
-  dig: [-0.3, -1.1, 0.3, -1.1], dizzy: [-0.7, 0, 0.7, 0], shiver: [-0.25, -0.6, 0.25, -0.6], sleep: [-0.12, 0, 0.12, 0], swim: [-2.6, 0, 2.6, 0], none: [-0.18, -0.15, 0.2, 0]
+  wow: [-0.55, -0.3, 2.3, 0], jump: [-0.6, -0.3, 2.5, 0], think: [-0.18, -0.15, -0.45, -2.05], wipe: [-0.18, -0.15, -0.6, -2.65], shrug: [-0.5, -0.4, 1.0, -0.5],
+  dig: [-0.3, -1.1, 0.3, -1.1], dizzy: [-0.4, -0.2, 0.7, 0], shiver: [-0.25, -0.6, 0.25, -0.6], sleep: [-0.12, 0, 0.12, 0], swim: [-2.6, 0, 2.6, 0], none: [-0.18, -0.15, 0.2, 0]
 };
 let curPose = POSES.idle.slice(); let lastT = -99;
 function poseHost(h, t) {
@@ -449,12 +449,15 @@ const BASE = {pos: new THREE.Vector3(0, 2.3, 10), look: new THREE.Vector3(0, 1.7
 const baseCam = new THREE.PerspectiveCamera(38, W / H, 0.1, 400);
 baseCam.position.copy(BASE.pos); baseCam.lookAt(BASE.look); baseCam.updateMatrixWorld(); baseCam.updateProjectionMatrix();
 const ray = new THREE.Raycaster();
+const portCam = new THREE.PerspectiveCamera(62, 9 / 16, 0.1, 400);
+portCam.position.set(0, 3.0, 9.6); portCam.lookAt(0, 2.9, 0); portCam.updateMatrixWorld(); portCam.updateProjectionMatrix();
+let rayCam = baseCam;
 function screenToPlaneZ(x, y, z) {
-  ray.setFromCamera(new THREE.Vector2(x * 2 - 1, -(y * 2 - 1)), baseCam);
+  ray.setFromCamera(new THREE.Vector2(x * 2 - 1, -(y * 2 - 1)), rayCam);
   const t = (z - ray.ray.origin.z) / ray.ray.direction.z; return ray.ray.origin.clone().addScaledVector(ray.ray.direction, t);
 }
 function screenToGround(x, y) {
-  ray.setFromCamera(new THREE.Vector2(x * 2 - 1, -(y * 2 - 1)), baseCam);
+  ray.setFromCamera(new THREE.Vector2(x * 2 - 1, -(y * 2 - 1)), rayCam);
   const t = -ray.ray.origin.y / ray.ray.direction.y; return ray.ray.origin.clone().addScaledVector(ray.ray.direction, t);
 }
 const visH = z => 2 * (BASE.pos.z - z) * Math.tan(THREE.MathUtils.degToRad(19));
@@ -462,7 +465,9 @@ const visH = z => 2 * (BASE.pos.z - z) * Math.tan(THREE.MathUtils.degToRad(19));
 // ------------------------------------------------------------------ render one frame
 window.setSize = (w, h) => { renderer.setSize(w, h); camera.aspect = w / h; camera.updateProjectionMatrix(); return true; };
 window.renderFrame = function (s) {
-  const t = s.t; const portrait = !!s.portrait; const PX = x => portrait ? 0.5 + (x - 0.5) * 0.45 : x;
+  const t = s.t; const portrait = !!s.portrait; rayCam = portrait ? portCam : baseCam;
+  const cl = (v, a, b) => Math.min(b, Math.max(a, v));
+  const PX = x => portrait ? cl(0.36 + (x - 0.3) * 0.35, 0.26, 0.6) : x;
   const w = useWorld(s.bg || 'meadow');
   w.upd.forEach(f => f(t));
   const h = s.host || {show: false};
@@ -482,17 +487,17 @@ window.renderFrame = function (s) {
     const tex = texCache[p.key]; if (!tex) continue;
     const z = p.back ? -3.5 : 0.8;
     const sp = getSprite(n++); sp.visible = true; sp.material.map = tex; sp.material.opacity = p.a; sp.material.rotation = -p.rot; sp.material.needsUpdate = true;
-    const wp = screenToPlaneZ(PX(p.x), p.y, z); sp.position.copy(wp);
-    const hh = p.size / H * visH(z) * p.sc * (portrait ? 0.7 : 1.0);
+    const wp = portrait ? screenToPlaneZ(0.63 + cl((p.x - 0.5) / 0.4, 0, 1) * 0.22, 0.45 + cl((p.y - 0.2) / 0.6, 0, 1) * 0.2, z) : screenToPlaneZ(p.x, p.y, z); sp.position.copy(wp);
+    const hh = portrait ? p.size / 280 * 1.2 * p.sc : p.size / H * visH(z) * p.sc;
     sp.scale.set(hh * (1 + p.sq), hh * (1 - p.sq), 1);
   }
   for (let k = n; k < spritePool.length; k++) spritePool[k].visible = false;
   // camera: push-in, whip, shake, slow orbit for depth
   const c = s.cam || {};
   const zoom = c.z || 1, orbit = (c.orbit || 0);
-  const target = portrait ? new THREE.Vector3(0, 2.25, 0) : BASE.look.clone(); target.x += (c.ox || 0) * (portrait ? 5 : 11); target.y += (c.oy || 0);
+  const target = portrait ? new THREE.Vector3(0, 2.9, 0) : BASE.look.clone(); target.x += (c.ox || 0) * (portrait ? 5 : 11); target.y += (c.oy || 0);
   const dist = (portrait ? 9.6 : (BASE.pos.z - BASE.look.z)) / zoom;
-  camera.position.set(target.x + Math.sin(orbit) * dist, (portrait ? 2.7 : BASE.pos.y) + (c.lift || 0) + (c.sy || 0) * 0.004, target.z + Math.cos(orbit) * dist);
+  camera.position.set(target.x + Math.sin(orbit) * dist, (portrait ? 3.0 : BASE.pos.y) + (c.lift || 0) + (c.sy || 0) * 0.004, target.z + Math.cos(orbit) * dist);
   camera.position.x += (c.sx || 0) * 0.004;
   if (c.focus) { const f = sir.position.clone(); f.y += 1.75 * (h.size || 1); target.lerp(f, c.focus); }
   camera.lookAt(target);

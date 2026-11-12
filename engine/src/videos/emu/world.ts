@@ -171,7 +171,7 @@ export class World {
     ground.receiveShadow = true; R.add(ground);
     ranges(R, 560, 60, "#8f86a8", 1); ranges(R, 420, 34, "#a88f78", 2);
 
-    for (const z of ["camp", "farm", "plain", "dam", "track", "office", "dock", "cassino", "zoo"] as Zone[]) { this.zones[z] = new THREE.Group(); R.add(this.zones[z]); }
+    for (const z of ["camp", "farm", "plain", "dam", "track", "office", "dock", "cassino", "zoo", "scot", "isle"] as Zone[]) { this.zones[z] = new THREE.Group(); R.add(this.zones[z]); }
     this.buildPlus(); this.buildWojtek();
     this.fan = this.buildFarm();
     this.buildCamp(); this.buildPlain(); this.buildDam(); this.buildTrack();
@@ -385,6 +385,7 @@ export class World {
       a.mesh.position.set(p.x, p.y, p.z);
       a.mesh.rotation.set(0, p.yaw ?? Math.atan2(cam.position.x - p.x, cam.position.z - p.z), (p.mirror ? -1 : 1) * (p.roll ?? 0));
       a.mesh.scale.set(p.mirror ? -sc2 : sc2, sc2, sc2);
+      a.tint = p.tint;
       used.push(a);
     }
     for (let i = ai; i < this.actors.length; i++) this.actors[i].mesh.visible = false;
@@ -424,7 +425,7 @@ export class World {
     }
     this.crowd.forEach((cw, b) => { cw.mesh.visible = !!spec && b < spec.buckets && counts[b] > 0; cw.mesh.count = counts[b]; cw.mesh.instanceMatrix.needsUpdate = true; });
     this.pool.flush();
-    for (const a of used) a.bind();
+    for (const a of used) a.bind(1, a.tint ?? 0xffffff);
     for (const [fxo, op, tint] of fused) fxo.bind(op, tint);
     if (spec) for (let b = 0; b < spec.buckets; b++) { const t = this.crowd[b].req?.tex; if (t) this.crowd[b].mat.map = t; }
     return focus;
@@ -577,7 +578,7 @@ export class World {
 
     // ---- Edinburgh Zoo: a grassy enclosure with rocks and a pool behind a rail ----
     const z = new Batch(), Zz = this.zones.zoo;
-    z.add(quad(V(-40, 0.03, 30), V(40, 0.03, 30), V(40, 0.03, 0.6), V(-40, 0.03, 0.6), 10, 5), lam("zooGrass", () => ({ map: dryGrassTex(), color: "#a9d16a" })));
+    z.add(quad(V(-40, 0.03, 30), V(40, 0.03, 30), V(40, 0.03, 0.6), V(-40, 0.03, 0.6), 10, 5), lam("zooGrass", () => ({ map: dryGrassTex(), color: "#9cc070" })));
     z.add(quad(V(-40, 0.028, 0.6), V(40, 0.028, 0.6), V(40, 0.028, -30), V(-40, 0.028, -30), 20, 8), stone);
     const rk = col("#9c978f");
     for (const [x, zz, sx, sy, sz] of [[-7, 13, 5, 3.4, 3], [0, 15, 6, 4.6, 3.4], [7.5, 13.5, 5, 3.2, 3], [-13, 11, 4, 2.4, 2.6], [13.5, 11.5, 4, 2.6, 2.6], [3.5, 11.2, 2.4, 1.3, 1.8]]) z.add(new THREE.SphereGeometry(1, 14, 10).applyMatrix4(new THREE.Matrix4().compose(V(x, sy * 0.35, zz), new THREE.Quaternion(), V(sx, sy, sz))), rk);
@@ -589,6 +590,31 @@ export class World {
     for (const [x, zz, h, s] of [[-17, 16, 9, 1], [18, 17, 10, 2], [-22, 4, 8, 3], [23, 6, 9, 4]]) gum(z, x, zz, h, s);
     for (const [x, zz, s] of [[-10, 8.5, 1.1], [10.5, 8, 1.0], [-15.5, 2.2, 1.2], [16, 2.4, 1.1]]) bush(z, x, zz, s, Math.round(Math.abs(x * 3 + zz)));
     this.flush("zoo", z);
+
+    // ---- Scotland: the green farm where the company was stationed and, further along (x = 60), the park with the statues ----
+    const sc = new Batch();
+    sc.add(quad(V(-300, 0.03, 420), V(300, 0.03, 420), V(300, 0.03, -90), V(-300, 0.03, -90), 70, 50), lam("scotGrass", () => ({ map: dryGrassTex(), color: "#7cc45e" })));
+    farmhouse(sc, -8, 16); fence(sc, -44, 30, 9.5, -2.5, 3.5);
+    for (const [x, zz, h, s] of [[9, 19, 9, 3], [-20, 21, 10, 5], [17, 24, 8, 6], [60 - 7, 13, 10, 7], [60 + 7.5, 14, 9, 8], [60, 19, 11, 9]]) gum(sc, x, zz, h, s);
+    for (const [x, zz, s] of [[4.5, 11, 1.1], [-13, 12.5, 1.3], [12, 8, 0.9], [60 - 4.6, 6.5, 1.2], [60 + 4.8, 7, 1.1], [60 - 9, 3, 0.9], [60 + 9.5, 4, 1.0]]) bush(sc, x, zz, s, Math.round(Math.abs(x * 3 + zz)));
+    const pl = col("#b9b3a6"), plb = col("#8f897c");
+    for (const sx of [-1, 1]) { sc.add(box(60 + sx * 1.9, 0, 3, 1.9, 0.2, 1.7), plb); sc.add(box(60 + sx * 1.9, 0.2, 3, 1.5, 0.9, 1.3), pl); }
+    this.flush("scot", sc);
+
+    // ---- San Juan Island (the Pig War): a farm with a potato patch (x = 0), the two camps (x = -100), the shore and the strait (x = 100) ----
+    const is = new Batch();
+    is.add(quad(V(-300, 0.03, 60), V(300, 0.03, 60), V(300, 0.03, -90), V(-300, 0.03, -90), 70, 18), lam("isleGrass", () => ({ map: dryGrassTex(), color: "#86c266" })));
+    is.add(quad(V(-300, 0.026, 64), V(300, 0.026, 64), V(300, 0.026, 60), V(-300, 0.026, 60)), col("#e6d7a8"));
+    is.add(quad(V(-900, 0.02, 1500), V(900, 0.02, 1500), V(900, 0.02, 64), V(-900, 0.02, 64)), col("#2f86b0"));
+    farmhouse(is, -9, 17); fence(is, -3, 9, 5.6);
+    is.add(quad(V(-0.6, 0.04, 4.6), V(5.6, 0.04, 4.6), V(5.6, 0.04, 0.4), V(-0.6, 0.04, 0.4)), col("#8a5a3a"));
+    for (let r = 0; r < 4; r++) is.add(quad(V(-0.4, 0.045, 1.0 + r * 1.0 + 0.12), V(5.4, 0.045, 1.0 + r * 1.0 + 0.12), V(5.4, 0.045, 1.0 + r * 1.0 - 0.12), V(-0.4, 0.045, 1.0 + r * 1.0 - 0.12)), col("#734a2e"));
+    is.add(quad(V(60, 0.045, 15), V(140, 0.045, 15), V(140, 0.045, 12), V(60, 0.045, 12)), col("#e6d7a8"));
+    is.add(quad(V(60, 0.04, 64.5), V(140, 0.04, 64.5), V(140, 0.04, 15), V(60, 0.04, 15)), col("#2f86b0"));
+    tent(is, -104.6, 5.6, 0.25); tent(is, -95.4, 5.6, -0.25);
+    for (const [x, zz, h, s] of [[9, 20, 9, 3], [-21, 22, 10, 5], [15, 26, 8, 6], [-112, 14, 10, 7], [-88, 15, 9, 8], [-100, 22, 11, 9], [84, -8, 9, 4], [118, -9, 10, 2]]) gum(is, x, zz, h, s);
+    for (const [x, zz, s] of [[7.5, 9, 1.0], [-14, 12, 1.3], [-108, 9, 1.0], [-92, 10, 1.1], [-100, 12, 1.2], [88, 9.5, 1.0], [112, 10, 1.1]]) bush(is, x, zz, s, Math.round(Math.abs(x * 3 + zz)));
+    this.flush("isle", is);
   }
 
   private poseWheat(id: number, f: number) {

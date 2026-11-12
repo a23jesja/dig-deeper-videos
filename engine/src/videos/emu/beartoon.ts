@@ -70,7 +70,7 @@ export const bearFront = (p: Pen, o: BearOpts = {}) => {
   const shY = by - bodyRy * 0.55, sh = (s: number): P2 => [bx + s * 140, shY];
   const hang = (s: number): P2[] => curve3(sh(s), [bx + s * 208, shY + 120], [bx + s * 188, shY + 262 - (walk ? 26 * s * Math.sin(TWO * phase) : 0)]);
   const armL = pose === "cheer" ? curve3(sh(-1), [bx - 230, shY - 60 * k], [bx - 214, shY - 200 * k]) : hang(-1);
-  let armR: P2[] | null = pose === "cheer" || pose === "wave" ? curve3(sh(1), [bx + 232, shY - 60 * k], [bx + 216 + (pose === "wave" ? 24 * Math.sin(k * 6) : 0), shY - 200]) : pose === "stand" || pose === "sit" ? hang(1) : null;
+  let armR: P2[] | null = pose === "cheer" || pose === "wave" ? curve3(sh(1), [bx + 236, shY - 40], [bx + 226 + (pose === "wave" ? 26 * Math.sin(k * 1.1) : 0), shY - (pose === "wave" ? 170 : 200 * k)]) : pose === "stand" || pose === "sit" ? hang(1) : null;
   if (pose !== "carry") limb(p, armL, 86, 70, FUR_D);
   if (armR) limb(p, armR, 86, 70, FUR_D);
   // ---- body: a big pear with a lighter belly ----

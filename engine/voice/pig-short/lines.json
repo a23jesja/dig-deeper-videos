@@ -1,0 +1,74 @@
+[
+ {
+  "id": "hook1",
+  "a": 0.05,
+  "b": 4.581,
+  "text": "In 1859, America and Britain almost went to war over a pig."
+ },
+ {
+  "id": "hook2",
+  "a": 4.781,
+  "b": 6.967,
+  "text": "Total casualties: one. The pig."
+ },
+ {
+  "id": "island",
+  "a": 7.317,
+  "b": 11.66,
+  "text": "Both countries claimed the same small island, and nobody had settled who owned it."
+ },
+ {
+  "id": "shot",
+  "a": 11.79,
+  "b": 16.35,
+  "text": "Then an American farmer found a British pig eating his potatoes, and shot it."
+ },
+ {
+  "id": "money",
+  "a": 16.6,
+  "b": 19.249,
+  "text": "He offered 10 dollars. The owner wanted 100."
+ },
+ {
+  "id": "troops",
+  "a": 19.499,
+  "b": 22.7,
+  "text": "So America sent soldiers. And Britain sent warships."
+ },
+ {
+  "id": "peak",
+  "a": 22.83,
+  "b": 30.679,
+  "text": "Soon, 461 Americans with 14 cannons faced 5 warships carrying 2,140 men."
+ },
+ {
+  "id": "admiral",
+  "a": 30.929,
+  "b": 34.838,
+  "text": "Then a British admiral arrived, and refused to start a war over a pig."
+ },
+ {
+  "id": "share",
+  "a": 35.088,
+  "b": 38.176,
+  "text": "Instead, the two armies shared the island, for 12 years."
+ },
+ {
+  "id": "sports",
+  "a": 38.306,
+  "b": 41.677,
+  "text": "They visited each other on holidays, and held sports days."
+ },
+ {
+  "id": "kaiser",
+  "a": 41.927,
+  "b": 46.187,
+  "text": "In 1872, the German emperor gave the island to America."
+ },
+ {
+  "id": "end",
+  "a": 46.487,
+  "b": 48.845,
+  "text": "Nobody ever apologised to the pig."
+ }
+]

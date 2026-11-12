@@ -5,6 +5,7 @@ import { AbsoluteFill, getInputProps, useCurrentFrame } from "remotion";
 import { Pen, bodyFront, bodySide, setTalk, SIR_DIGSWORTH, DIGGER, DIGGER2, MAJOR, FARMER, Expr } from "./toon";
 import { emuSide, emuFront, fxFeather, fxDust, fxMuzzle, fxBang, fxSmoke } from "./emutoon";
 import { bearFront, fxBadge } from "./beartoon";
+import { pigSide, fxFlagUS, fxFlagUK, fxWarship, fxCannon, fxRifle, fxPotato, fxGrave } from "./pigtoon";
 
 type Cell = { w: number; h: number; draw: (p: Pen) => void; label?: string };
 const Cv: React.FC<{ c: Cell; s: number }> = ({ c, s }) => (
@@ -78,6 +79,12 @@ const pages = (f: number): Record<string, { s: number; cells: Cell[] }> => {
       E("cub drink", (p) => bearFront(p, { cub: true, pose: "drink", k: 1 })),
       E("walk .6", (p) => bearFront(p, { walk: true, phase: 0.6, cap: true })),
       X("badge", fxBadge, 400, 440),
+    ] },
+    pig: { s: 0.34, cells: [
+      E("stand", (p) => pigSide(p, { mode: "stand" })), E("walk .25", (p) => pigSide(p, { mode: "walk", phase: 0.25 })), E("eat", (p) => pigSide(p, { mode: "eat", k: 0.25 })),
+      E("shock", (p) => pigSide(p, { mode: "stand", expr: "shock" })), E("dead", (p) => pigSide(p, { mode: "dead" })), E("happy", (p) => pigSide(p, { mode: "stand", expr: "happy" })),
+      X("US", (p) => fxFlagUS(p, 0.5), 520, 720), X("UK", (p) => fxFlagUK(p, 0.5), 520, 720), X("warship", fxWarship, 1000, 760), X("cannon", fxCannon, 420, 260),
+      X("rifle", fxRifle, 560, 120), X("potato", (p) => fxPotato(p), 220, 220), X("eaten", (p) => fxPotato(p, true), 220, 220), X("grave", (p) => fxGrave(p, "R.I.P.|THE PIG|1859"), 420, 480),
     ] },
     fx: { s: 1, cells: [
       X("feather", fxFeather, 200, 120), X("dust .2", (p) => fxDust(p, 0.2)), X("dust .8", (p) => fxDust(p, 0.8)),

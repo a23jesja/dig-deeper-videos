@@ -28,7 +28,7 @@ const man = (out: Stage, cam: CamInfo, who: Who, x: number, y: number, z: number
   person(out, cam, who, x, y, z, { fo: { mode: "stand", blink: lidAt(t, who.i + 30), ...fo } }, shadow);
 
 // ---------------- the chalk board ----------------
-type Row = { l?: string; r?: string; c?: string; y: number; lc?: string; lpx?: number; rpx?: number; cx?: number };
+export type Row = { l?: string; r?: string; c?: string; y: number; lc?: string; lpx?: number; rpx?: number; cx?: number };
 const boardBase = (g: CanvasRenderingContext2D, title: string) => {
   const W = 1024, H = 756;
   g.setTransform(1, 0, 0, 1, 0, 0);
@@ -50,7 +50,7 @@ const rowsDraw = (title: string, rows: Row[]) => (g: CanvasRenderingContext2D) =
     if (r.r) chalk(g, r.r, 954, r.y, r.rpx ?? 150, r.c ?? "#ffffff", "right");
   }
 };
-const board = (out: Scene, pos: V3, title: string, rows: Row[]) => { out.board = { pos, key: title + "|" + JSON.stringify(rows), draw: rowsDraw(title, rows) }; };
+export const board = (out: Scene, pos: V3, title: string, rows: Row[]) => { out.board = { pos, key: title + "|" + JSON.stringify(rows), draw: rowsDraw(title, rows) }; };
 
 /** take a shot from the short film (its own staging, its frame) */
 const borrow = (out: Scene, id: number, f: number, cam: CamInfo) => {

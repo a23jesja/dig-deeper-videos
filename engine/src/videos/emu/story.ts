@@ -48,7 +48,7 @@ export const F = {
 
 // ---------------- shots ----------------
 export type Light = "day" | "golden";
-export type Zone = "camp" | "farm" | "plain" | "dam" | "track" | "office" | "dock" | "cassino" | "zoo";
+export type Zone = "camp" | "farm" | "plain" | "dam" | "track" | "office" | "dock" | "cassino" | "zoo" | "scot" | "isle";
 /** height of the Monte Cassino hillside (zone "cassino") */
 export const hillY = (x: number, z: number) => 62 * smooth((z - 34) / 190) ** 1.25 * Math.max(0, 1 - (x / 190) ** 2);
 export type ShotDef = { id: number; name: string; a: number; b: number; zone: Zone; light: Light; sunAz?: number; sunEl?: number; horde?: boolean;

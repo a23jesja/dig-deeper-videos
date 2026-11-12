@@ -1,0 +1,20 @@
+{
+ "voice": "bm_george",
+ "speed": 1.2,
+ "gap": 0.13,
+ "lead": 0.05,
+ "lines": [
+  { "id": "hook1", "text": "In 1859, America and Britain almost went to war over a pig.", "say": "In eighteen fifty-nine, America and Britain almost went to war, over a pig.", "gap": 0.2 },
+  { "id": "hook2", "text": "Total casualties: one. The pig.", "gap": 0.35 },
+  { "id": "island", "text": "Both countries claimed the same small island, and nobody had settled who owned it." },
+  { "id": "shot", "text": "Then an American farmer found a British pig eating his potatoes, and shot it.", "gap": 0.25 },
+  { "id": "money", "text": "He offered 10 dollars. The owner wanted 100.", "say": "He offered ten dollars. The owner wanted a hundred.", "gap": 0.25 },
+  { "id": "troops", "text": "So America sent soldiers. And Britain sent warships." },
+  { "id": "peak", "text": "Soon, 461 Americans with 14 cannons faced 5 warships carrying 2,140 men.", "say": "Soon, four hundred and sixty-one Americans, with fourteen cannons, faced five warships, carrying two thousand, one hundred and forty men.", "gap": 0.25 },
+  { "id": "admiral", "text": "Then a British admiral arrived, and refused to start a war over a pig.", "gap": 0.25 },
+  { "id": "share", "text": "Instead, the two armies shared the island, for 12 years.", "say": "Instead, the two armies shared the island, for twelve years." },
+  { "id": "sports", "text": "They visited each other on holidays, and held sports days.", "gap": 0.25 },
+  { "id": "kaiser", "text": "In 1872, the German emperor gave the island to America.", "say": "In eighteen seventy-two, the German emperor gave the island to America.", "gap": 0.3 },
+  { "id": "end", "text": "Nobody ever apologised to the pig.", "gap": 0.6 }
+ ]
+}

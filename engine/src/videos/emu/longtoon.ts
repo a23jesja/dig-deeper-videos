@@ -91,3 +91,36 @@ export const fxRound = (p: Pen) => {
 export const fxEquals = (p: Pen) => { for (const y of [70, 130]) { p.stroke([[30, y], [170, y]], 40, INK); p.stroke([[30, y], [170, y]], 24, "#ffffff"); } };
 /** a drop of sweat on an 80 x 110 canvas */
 export const fxSweat = (p: Pen) => { p.poly([[40, 8], [66, 66], [56, 92], [40, 100], [24, 92], [14, 66]], "#8fd0f0", 7); };
+
+// ---------------- the Wojtek film ----------------
+/** speech bubble with words in it, on a 620 x 420 canvas */
+export const fxSay = (p: Pen, s: string, flip = false) => {
+  const cx = 310, cy = 170, d = flip ? -1 : 1, pts: P2[] = [];
+  p.poly([[cx - d * 170, cy + 110], [cx - d * 236, cy + 232], [cx - d * 96, cy + 142]], "#ffffff", 10);
+  for (let i = 0; i < 64; i++) { const a = (TWO * i) / 64; pts.push([cx + 292 * Math.cos(a), cy + 152 * Math.sin(a)]); }
+  p.poly(pts, "#ffffff", 11);
+  p.poly([[cx - d * 160, cy + 116], [cx - d * 222, cy + 212], [cx - d * 106, cy + 138]], "#ffffff", 0);
+  const lines = s.split("|");
+  lines.forEach((l, i) => text(p, l, cx, cy + (i - (lines.length - 1) / 2) * 86, lines.length > 1 ? 76 : 88, "#2b2430"));
+};
+/** a card with a heading and one big line (dog tag, paybook, name), on a 520 x 300 canvas */
+export const fxCard = (p: Pen, head: string, big: string, fill = "#f6efd8") => {
+  p.poly([[14, 14], [506, 14], [506, 286], [14, 286]], fill, 11);
+  text(p, head, 260, 78, 50, "#6a5a40");
+  text(p, big, 260, 190, big.length > 8 ? 62 : big.length > 5 ? 90 : 110, "#2b2430");
+};
+/** round "no animals" sign on a 300 x 300 canvas: a paw print under a red bar */
+export const fxNoPets = (p: Pen) => {
+  p.ell(150, 150, 132, 132, "#ffffff", 0); 
+  p.ell(150, 176, 46, 38, "#3a2f2a", 0);
+  for (const [x, y] of [[92, 124], [128, 96], [172, 96], [208, 124]]) p.ell(x, y, 19, 23, "#3a2f2a", 0);
+  p.arc(150, 150, 122, 122, 0, 360, 26, "#d8382f");
+  p.stroke([[66, 66], [234, 234]], 26, "#d8382f");
+  p.arc(150, 150, 136, 136, 0, 360, 7);
+};
+/** four-point sparkle on a 200 x 200 canvas */
+export const fxSparkle = (p: Pen) => {
+  const pts: P2[] = [];
+  for (let i = 0; i < 8; i++) { const a = (TWO * i) / 8, r = i % 2 ? 22 : 92; pts.push([100 + r * Math.cos(a), 100 + r * Math.sin(a)]); }
+  p.poly(pts, "#ffe14d", 8);
+};

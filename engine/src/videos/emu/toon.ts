@@ -422,6 +422,14 @@ const hatOn = (p: Pen, o: Outfit, hp: P2[], H: Blob, cx: number, hc: number, lig
     }
   } else if (o.hat === "cap" || o.hat === "hair") {
     const cut = crown + (o.hat === "cap" ? 0.3 : 0.42) * HH;
+    if (BACK) { // seen from behind: the back of the head is hair down to the neck
+      const low = hc + 0.86 * H.b, m = hp.length, kp = (y: number) => y < low;
+      const st = Math.max(0, hp.findIndex(([, y], i) => kp(y) && !kp(hp[(i + m - 1) % m][1])));
+      const ha = [...hp.slice(st), ...hp.slice(0, st)].filter(([, y]) => kp(y)).map(([x, y]) => [cx + (x - cx) * 1.02, hc + (y - hc) * 1.02] as P2);
+      const hcol = o.hair ?? o.moustache ?? "#5b3a22";
+      for (const s of [-1, 1]) p.ell(cx + s * 0.97 * H.a, hc + 0.12 * H.b, 0.13 * H.a, 0.2 * H.b, o.skin ?? SKIN, ow * 0.8);
+      if (ha.length >= 3) { p.shadedFill(ha, hcol, mul(hcol, SH_FELT), light, H.a, 0.35); p.poly(ha, null, ow * 0.8); }
+    }
     const keep = (x: number, y: number) => y < cut || (side && o.hat === "hair" && x < cx - 6 * u && y < hc + 0.42 * H.b);
     // start the arc at the first kept point after a dropped one, so the kept run is contiguous and the cut closes it
     const n = hp.length, startIdx = Math.max(0, hp.findIndex(([x, y], i) => keep(x, y) && !keep(hp[(i + n - 1) % n][0], hp[(i + n - 1) % n][1])));
@@ -439,7 +447,7 @@ const hatOn = (p: Pen, o: Outfit, hp: P2[], H: Blob, cx: number, hc: number, lig
       const s = side ? -1 : facing || 1;
       p.stroke([[cx + s * 10 * u, cut - 30 * u], [cx + s * 2 * u, cut - 12 * u]], 1.2 * u);
     }
-    if (o.hat === "cap") {
+    if (o.hat === "cap" && !BACK) {
       const deg = (a * 180) / Math.PI;
       if (side) p.poly(R([[cx + 40 * u, cut - 2 * u], [cx + 74 * u, cut + 4 * u], [cx + 40 * u, cut + 6 * u]]), shade(col, 0.8), ow);
       else {
@@ -659,10 +667,10 @@ export const bodyFront = (p: Pen, o: Outfit, opts: FrontOpts) => {
       if (o.sam) { // Sam Browne: waist belt + one shoulder strap + brass buckle
         p.band([[tcx + 0.85 * T.a, chin - 0.02 * HH], [tcx - 0.9 * T.a, torsoBot - 0.36 * HH]], o.sam, 4.6 * u, 1.6 * u);
         p.band([[tcx - 1.3 * T.a, torsoBot - 0.33 * HH], [tcx + 1.3 * T.a, torsoBot - 0.33 * HH]], o.sam, 0.1 * HH, 1.6 * u);
-        p.poly([[tcx - 5 * u, torsoBot - 0.385 * HH], [tcx + 5 * u, torsoBot - 0.385 * HH], [tcx + 5 * u, torsoBot - 0.275 * HH], [tcx - 5 * u, torsoBot - 0.275 * HH]], "#e2bb4c", 1.6 * u);
+        if (!BACK) p.poly([[tcx - 5 * u, torsoBot - 0.385 * HH], [tcx + 5 * u, torsoBot - 0.385 * HH], [tcx + 5 * u, torsoBot - 0.275 * HH], [tcx - 5 * u, torsoBot - 0.275 * HH]], "#e2bb4c", 1.6 * u);
       }
       if (o.sash) p.band([[tcx - 1.3 * T.a, torsoBot - 0.32 * HH], [tcx + 1.3 * T.a, torsoBot - 0.32 * HH]], o.sash, 0.13 * HH, 1.8 * u);
-      for (let i = 0; i < (o.sir ? 0 : 4); i++) {
+      for (let i = 0; i < (o.sir || BACK ? 0 : 4); i++) {
         const y = chin + 0.12 * HH + i * 0.2 * HH;
         if (o.sash && Math.abs(y - (torsoBot - 0.32 * HH)) < 0.08 * HH) continue;
         p.dot(tcx + 2 * u * facing, y, 2.2 * u + 0.8 * u, INK); p.dot(tcx + 2 * u * facing, y, 2.2 * u, o.buttons ?? shade(o.jacket, 0.7));
@@ -1029,3 +1037,11 @@ export const POLITICIAN: Outfit = { jacket: "#5a3a36", pants: "#2e3142", boots: 
 export const POLITICIAN2: Outfit = { jacket: "#3f4a3a", pants: "#33352e", boots: INK, hat: "hair", hair: "#8a8a90", build: "stout", moustache: "#8a8a90" };
 export const POLITICIAN3: Outfit = { jacket: "#4a4458", pants: "#2e3142", boots: INK, hat: "hair", hair: "#2f2a2a", skin: "#f5c9a0" };
 export const CAMERAMAN: Outfit = { jacket: "#6b7f8e", pants: "#5a4a3a", boots: "#4a3324", hat: "cap", cap: "#39414d", skin: "#f5c9a0" };
+
+// ---------------- the Wojtek film (Polish II Corps, 1942-47) ----------------
+export const POLE: Outfit = { jacket: "#8a7f4c", pants: "#7f7444", boots: "#3a2a20", hat: "cap", cap: "#5d5a3a", sam: "#5e3d24", buttons: "#c9a94a" };
+export const POLE2: Outfit = { ...POLE, skin: "#f5c9a0", cap: "#56533a", moustache: "#5b3a22" };
+export const POLE3: Outfit = { ...POLE, skin: "#ecd0b6", cap: "#615e3e" };
+export const BRIT_OFFICER: Outfit = { jacket: "#7d7a52", pants: "#77744e", boots: "#3a2a20", hat: "peaked", cap: "#7d7a52", moustache: "#8a6a44", build: "stout", sam: "#5e3d24", buttons: "#e2bb4c" };
+export const VETERAN: Outfit = { jacket: "#5a6072", pants: "#3d3f4a", boots: INK, hat: "cap", cap: "#4a4c56", moustache: "#b9b9c0", hair: "#b4b4bc", buttons: "#8a8f9c" };
+export const VETERAN2: Outfit = { jacket: "#6e5a4a", pants: "#3f3a36", boots: INK, hat: "cap", cap: "#5a4a3c", skin: "#f5c9a0", hair: "#a39a92", buttons: "#a99a84" };

@@ -1,0 +1,68 @@
+[
+ {
+  "id": "hook1",
+  "a": 0.05,
+  "b": 3.34,
+  "text": "In the Second World War, the Polish army enlisted a bear."
+ },
+ {
+  "id": "hook2",
+  "a": 3.54,
+  "b": 6.541,
+  "text": "He had a rank, a serial number, and a taste for beer."
+ },
+ {
+  "id": "cub",
+  "a": 6.891,
+  "b": 11.69,
+  "text": "In 1942, Polish soldiers in Iran adopted an orphaned bear cub."
+ },
+ {
+  "id": "milk",
+  "a": 11.82,
+  "b": 16.109,
+  "text": "They fed him condensed milk from an old vodka bottle, and named him Wojtek."
+ },
+ {
+  "id": "copy",
+  "a": 16.359,
+  "b": 21.409,
+  "text": "He grew up copying the soldiers. He wrestled them, saluted, and marched on his hind legs."
+ },
+ {
+  "id": "ship",
+  "a": 21.539,
+  "b": 25.163,
+  "text": "Then the army sailed for Italy, and the ship did not allow pets."
+ },
+ {
+  "id": "private",
+  "a": 25.413,
+  "b": 29.507,
+  "text": "So the soldiers made him one of them: Private Wojtek, with his own paybook."
+ },
+ {
+  "id": "cassino",
+  "a": 29.757,
+  "b": 37.109,
+  "text": "In 1944, at the battle of Monte Cassino, his unit says he carried crates of artillery shells, and never dropped one."
+ },
+ {
+  "id": "corporal",
+  "a": 37.239,
+  "b": 41.803,
+  "text": "He was promoted to corporal, and a bear carrying a shell became the company badge."
+ },
+ {
+  "id": "zoo",
+  "a": 42.053,
+  "b": 46.503,
+  "text": "After the war, he retired to Edinburgh Zoo, where old soldiers came to visit."
+ },
+ {
+  "id": "polish",
+  "a": 46.633,
+  "b": 49.433,
+  "text": "He still answered when they spoke to him in Polish."
+ }
+]

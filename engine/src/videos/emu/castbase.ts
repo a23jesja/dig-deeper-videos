@@ -2,6 +2,7 @@
 // Each frame every character asks for a drawing (a key + a draw call); the pool keeps one canvas per distinct
 // drawing. Characters are yaw-only billboards shaded by cardShade(); standing ones get a soft multiply contact blob.
 // Cards, effects and blobs live on the NOINK layer so the world ink pass never outlines their quads.
+import { pigSide, PigOpts } from "./pigtoon";
 import * as THREE from "three";
 import { Pen, bodyFront, bodySide, setTalk, fxShadow, fxContact, Outfit, FrontOpts, SideOpts } from "./toon";
 import { emuSide, emuFront, EmuOpts, EMU_HIP_X } from "./emutoon";
@@ -76,7 +77,8 @@ export class Actor {
     this.mesh.rotation.order = "YXZ"; this.mesh.renderOrder = 1; this.mesh.layers.set(NOINK);
     parent.add(this.mesh);
   }
-  bind() { const t = this.r?.tex; if (t) { this.mat.map = t; this.dmat.map = t; } }
+  tint?: number;
+  bind(_opacity = 1, tint = 0xffffff) { const t = this.r?.tex; if (t) { this.mat.map = t; this.dmat.map = t; } this.mat.color.set(tint); }
 }
 /** unlit effect card: hard cut-out (ink drawings), soft see-through (dust, smoke) or a multiply ground blob */
 export class Fx {
@@ -90,6 +92,7 @@ export class Fx {
     this.mesh.visible = false; this.mesh.layers.set(NOINK);
     parent.add(this.mesh);
   }
+  tint?: number;
   bind(opacity = 1, tint = 0xffffff) {
     const t = this.r?.tex;
     if (!t) return;
@@ -107,6 +110,8 @@ export class Fx {
 export type Place = {
   key: string; draw: (p: Pen) => void; x: number; y: number; z: number;
   scale?: number; mirror?: boolean; yaw?: number; geo?: GeoName; roll?: number; size?: [number, number, number]; shadow?: boolean;
+  /** multiplies the drawing's colours (a bronze statue) */
+  tint?: number;
 };
 export type FxPlace = { key: string; cw: number; ch: number; draw: (p: Pen) => void; x: number; y: number; z: number; w: number; h: number;
   flat?: boolean; rot?: number; soft?: boolean; opacity?: number; tint?: number; lit?: boolean };
@@ -208,14 +213,27 @@ export const blob = (out: Stage, cam: CamInfo, x: number, y: number, z: number, 
   out.fx.push({ key: `blob|contact|${cc}`, cw: 128, ch: 128, draw: (p) => fxContact(p, cc), x: x + ox * 0.03 * sc, y: y + 0.022, z: z + oz * 0.03 * sc, w: 0.52 * sc, h: 0.4 * sc, flat: true, rot });
 };
 
-export type BearAct = BearOpts & { x: number; y?: number; z: number; scale?: number; shadow?: boolean };
+export type BearAct = BearOpts & { x: number; y?: number; z: number; scale?: number; shadow?: boolean; tint?: number };
 /** Wojtek: always the front drawing (he faces the lens); the cub is the same bear at a small scale */
 export const bear = (out: Stage, cam: CamInfo, a: BearAct): Place => {
   const y = a.y ?? 0, scale = a.scale ?? (a.cub ? 0.5 : 1.02);
   const d = cam.pos.distanceTo(tmp.set(a.x, y + 1.0, a.z)) / scale, k = tierK(d) * 0.9;
   const o: BearOpts = { pose: a.pose, expr: a.expr, blink: a.blink, look: a.look, cub: a.cub, light: light2D(cam, false), seed: 1,
     phase: a.phase === undefined ? undefined : Math.round((((a.phase % 1) + 1) % 1) * 24) / 24, walk: a.walk, cap: a.cap, stripes: a.stripes, k: a.k === undefined ? undefined : q(a.k, 8), crate: a.crate };
-  const pl: Place = { key: `B|${fkey(o)}`, x: a.x, y, z: a.z, scale, geo: "emuFront", draw: (p) => bearFront(p, o), size: [Math.round(900 * k), Math.round(1000 * k), k] };
+  const pl: Place = { key: `B|${fkey(o)}`, x: a.x, y, z: a.z, scale, geo: "emuFront", draw: (p) => bearFront(p, o), size: [Math.round(900 * k), Math.round(1000 * k), k], tint: a.tint };
+  out.places.push(pl);
+  if (a.shadow !== false) blob(out, cam, a.x, y, a.z, scale * 1.5);
+  return pl;
+};
+
+export type PigAct = PigOpts & { x: number; y?: number; z: number; scale?: number; mirror?: boolean; shadow?: boolean };
+/** the pig: one side-on drawing, snout to the right of the picture (mirror = snout to the left) */
+export const pig = (out: Stage, cam: CamInfo, a: PigAct): Place => {
+  const y = a.y ?? 0, scale = a.scale ?? 0.62;
+  const d = cam.pos.distanceTo(tmp.set(a.x, y + 0.5, a.z)) / scale, k = tierK(d) * 0.9;
+  const o: PigOpts = { mode: a.mode, expr: a.expr, blink: a.blink, light: light2D(cam, !!a.mirror),
+    phase: a.phase === undefined ? undefined : Math.round((((a.phase % 1) + 1) % 1) * 16) / 16, k: a.k === undefined ? undefined : q(((a.k % 1) + 1) % 1, 8) };
+  const pl: Place = { key: `PIG|${fkey(o)}`, x: a.x, y, z: a.z, scale, mirror: a.mirror, geo: "emuFront", draw: (p) => pigSide(p, o), size: [Math.round(900 * k), Math.round(1000 * k), k] };
   out.places.push(pl);
   if (a.shadow !== false) blob(out, cam, a.x, y, a.z, scale * 1.5);
   return pl;

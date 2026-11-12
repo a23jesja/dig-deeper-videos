@@ -24,7 +24,7 @@ See `episodes/2026-11-11-how-do-plants-drink.json` for a complete example.
 - `audience` – `"kids"` or `"general"` (decides YouTube madeForKids).
 - `title` – shown on the intro card. `voice` – `af_heart` for Chloe/kids; for documentary style `bm_george` (British male) or `am_michael`. `speed` – 0.95. `seed` – any int (varies the music).
 - `youtube` – `title` (under 60 chars + " | Chloe the Mole" is fine), `description`, `tags` (10).
-- `scenes` – 11–14 scenes. Chloe narrates in first person to "friends"/"diggers". About 280–330 words total gives ~1:45–2:00.
+- `scenes` – 12–15 scenes, about 300–360 words total (~1:40–2:10 at speed 1.12). Follow "Keep it SIMPLE" below.
 
 Scene fields:
 - `style` – defaults to `sketch` for the stickman (since 2026-11-11): bright warm hand-drawn look like the big viral stick-figure explainers — cream paper tone, ink outlines on everything, peach/pastel skies, warm wooden rooms, big expressive head, mitten hands, emoji props with ink outlines. `noir` (dark, desaturated) still exists but don't use it. Prefer backgrounds that have warm sketch versions: `room`, `corridor`, `meadow`, `forest`, `desert`, `night` (others work but are less on-style).
@@ -86,6 +86,18 @@ The Short = the episode's scenes from `start_scene` up to ~`max` seconds (cut at
 3. A laugh beat (Sir Digsworth's dry reaction, slapstick).
 4. A "You see…" explanation that makes it click.
 5. A closing line that flips or pays off the opening claim.
-- Fast narration: `speed` 1.12 (~200+ words per minute). Long video ≈ 380–430 words; the Short (first scenes) should hit ~60–65 s.
+- Fast narration: `speed` 1.12 (~200+ words per minute). Long video ≈ 300–360 words (see "Keep it SIMPLE"); the Short (first scenes) should hit ~60–65 s.
 - Captions are automatic kinetic 2–3-word pops (yellow when a word has numbers or is in CAPS — use CAPS for one key word per scene).
 - Camera is always moving; every cut has a punch-in and whoosh; big text slams with a thud.
+
+## Keep it SIMPLE (most important writing rule, from 2026-11-12)
+Most viewers click on videos that are easy to understand and don't waste time. Explain everything so a 10-year-old gets it on the first listen.
+- **One question, one clear answer.** The whole video answers exactly one question. Cut every side fact, extra date, name or number that does not help answer it.
+- **Max 4–5 key facts** in a long video, **2–3 in a Short**. Better to explain one fact well than mention five.
+- **Short sentences** (about 12 words or fewer) and **everyday words**. No jargon; if a science word is truly needed, explain it right away in a few plain words ("ablation — the rock melting away").
+- **One idea per scene**, and the picture shows exactly what is being said.
+- **Everyday comparisons** instead of raw numbers: "smaller than a grain of sand", "as fast as 200 race cars". Max one number per scene, rounded ("about 70 km per second", not "71.3").
+- **The "You see…" explanation is 2–3 simple sentences** with one comparison.
+- **Repeat the key idea once** near the end in one sentence, so nobody leaves confused.
+- Shorter is fine: long videos ~300–360 words (≈1:40–2:10 at speed 1.12), Shorts answer one thing in ~45–60 s.
+- Test before rendering: read the script aloud — if any sentence needs a second read to understand, rewrite it simpler.

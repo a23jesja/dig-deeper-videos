@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Dig Deeper video engine.
+"""Sir Digsworth video engine.
 
 Usage:  python3 render.py episode.json out.mp4 [--preview]
 
@@ -170,7 +170,8 @@ def draw_host(ctx, ep, x, y, s, t, facing=1, act='idle', blink=False, mouth=0.0,
 _yy, _xx = np.mgrid[0:H, 0:W].astype(np.float32)
 _VIG = (1.0 - 0.55*np.clip(((_xx - W/2)/(W*0.62))**2 + ((_yy - H/2)/(H*0.62))**2, 0, 1)**1.3).astype(np.float32)[..., None]
 _GRAIN = [np.random.RandomState(k).normal(0, 3.5, (H, W, 1)).astype(np.float32) for k in range(6)]
-def style_of(ep): return ep.get('style', 'sketch' if is_stick(ep) else 'bright')
+def style_of(ep): return ep.get('style', '3d' if is_stick(ep) else 'bright')
+def is_3d(ep): return style_of(ep) == '3d'
 def is_noir(ep): return style_of(ep) == 'noir'
 def is_sketch(ep): return style_of(ep) == 'sketch'
 _CREAM = np.array([214, 236, 252], np.float32)   # BGR warm paper
@@ -795,6 +796,7 @@ def rng_f(p): return 380 + (hash(p.get('emoji', p.get('text', ''))) % 300)
 
 # ---------------------------------------------------------------- frame
 def frame(i, ep, timeline, total, env):
+    if is_3d(ep): return frame3d(i, ep, timeline, total, env)
     t = i / FPS
     global EMOJI_INK
     HS.SKETCH = EMOJI_INK = is_sketch(ep)
@@ -820,7 +822,7 @@ def frame(i, ep, timeline, total, env):
         ts = ease_out_back((t - 0.9)/0.7)
         if ts > 0:
             ctx.save(); ctx.translate(W/2, 130); ctx.scale(ts, ts)
-            text(ctx, 'DIG DEEPER', 0, 38, 96, col='#ffd23f', outline='#3b2a1a', ow=14); ctx.restore()
+            text(ctx, 'SIR DIGSWORTH', 0, 38, 96, col='#ffd23f', outline='#3b2a1a', ow=14); ctx.restore()
         sa = ease_io((t - 1.5)/0.5)
         if sa > 0:
             lines = wrap(ctx, title, 46, 1100)
@@ -966,7 +968,178 @@ def frame(i, ep, timeline, total, env):
     if t > total - 0.5: ctx.set_source_rgba(0, 0, 0, clamp((t - (total - 0.5))/0.5)); ctx.paint()
     return surf
 
+
+# ---------------------------------------------------------------- 3D frames (three.js world + 2D overlays)
+import three3d as T3
+def _sprites(sc, lt, dur):
+    global EMOJI_INK
+    out = []
+    for p in sc.get('props', []):
+        if 'emoji' not in p: continue
+        st = prop_state(p, lt, dur)
+        if not st: continue
+        x, y, k, rot, a, sq = st
+        if k <= 0.01 or a <= 0.01: continue
+        EMOJI_INK = True; T3.send_emoji(p['emoji'], emoji_surface(p['emoji'], 256))
+        n = p.get('count', 1); size = p.get('size', 160)
+        for j in range(n):
+            ox = (j - (n - 1)/2)*size*0.9
+            out.append(dict(key=p['emoji'], x=(x + ox)/W, y=y/H, size=size*1.75, sc=k, rot=rot, a=a, sq=sq, back=p.get('layer') == 'back'))
+    return out
+
+def _host3d(ep, c, act, x, t, lt, dur, mouth, blink, talking, si):
+    """Host pose for the 3D world. Returns (state dict, facing)."""
+    s = 1.1*clamp(c.get('size', 1.35)/1.35, 0.95, 1.2); facing = c.get('facing', 1)
+    bob = 0.0; rot = 0.0; eye = 1.0; step = 0.0
+    moving = False
+    if act in ('walk', 'dig', 'run', 'swim') and 'to' in c:
+        k = ease_io(lt / max(0.6, dur*c.get('move_frac', 0.85))); x += (c['to']*W - x)*k; moving = 0 < k < 1
+    if act in ('walk', 'run'): step = t*(14 if act == 'run' else 9) if moving else 0; bob = abs(math.sin(step))*0.08 if moving else 0
+    if act == 'jump': bob = abs(math.sin(lt*math.pi*1.3))*0.9
+    if act == 'wow': eye = 1.3; bob = abs(math.sin(min(lt, 0.7)*math.pi/0.7))*0.4
+    if act == 'dizzy': rot = math.sin(t*4)*0.18
+    if act == 'swim': rot = math.sin(t*3)*0.12; bob = 0.3 + math.sin(t*2.5)*0.15; step = t*8
+    if act == 'think': rot = -0.06 + math.sin(t*1.5)*0.03
+    if act == 'shiver': x += math.sin(t*60)*3
+    energy = mouth if talking else 0.0
+    if act in ('idle', 'point', 'think', 'shrug', 'wave', 'wipe'):
+        bob += abs(math.sin(t*6.5))*0.06*energy; rot += math.sin(t*4.7)*0.03*energy
+    bob += math.sin(t*3.2)*0.015
+    sqk = 0.0
+    if act in ('wow', 'jump', 'dizzy') and lt < 0.5:
+        k_ = lt/0.5; sqk = math.sin(k_*math.pi*2)*(1 - k_)*0.12
+    gy = c.get('ground3d', 0.9)
+    return dict(show=True, x=x/W, gy=gy, size=s, act=act, bob=bob, rot=rot, eye=eye, step=step, facing=facing,
+                mouth=mouth if talking else 0.0, blink=bool(blink), energy=energy, sq=sqk), facing
+
+def _overlay_effects(ctx, act, hx, hy, facing, t, s):
+    if act == 'dizzy':
+        for k in range(3):
+            ang = t*4 + k*2.1
+            draw_emoji(ctx, '⭐', hx + math.cos(ang)*90*s, hy - 95*s + math.sin(ang)*22, 46)
+    if act == 'wow':
+        for k in range(5):
+            ph = (t*1.4 + k*0.2) % 1
+            sparkle(ctx, hx + 170*math.cos(k*1.3), hy + 40 + 120*math.sin(k*1.9), 18*math.sin(ph*math.pi), math.sin(ph*math.pi))
+    if act == 'sleep':
+        for k in range(3):
+            ph = (t*0.6 + k/3) % 1
+            big_word(ctx, 'z', hx + 90*facing + ph*60, hy - 60 - ph*120, 40 + k*8, 1, 0, 1 - ph, '#ffffff')
+
+def _scene_state3d(t, i, ep, timeline, env):
+    blink = ((t + 1.1) % 3.3) < 0.12
+    mouth = float(env[min(i, len(env) - 1)])
+    tl = next(x for x in timeline if x['start'] <= t < x['start'] + x['dur'])
+    sc, lt, dur = tl['sc'], t - tl['start'], tl['dur']
+    si = timeline.index(tl)
+    ent = 1 - ease_out_cubic(lt/0.32)
+    z = 1 + 0.07*ease_io(lt/dur) + 0.16*ent
+    ox = ent*0.10*(1 if si % 2 else -1)
+    events = [p.get('at', 0.0)*dur for p in sc.get('props', []) if 'text' in p and 'pop' in p.get('anim', 'pop')]
+    if sc.get('fact'): events.append(sc['fact'].get('at', 0.15)*dur)
+    shake = 0.0
+    for ev in events:
+        d = lt - ev
+        if 0 <= d < 0.3: shake = max(shake, 7*(1 - d/0.3)); z += 0.035*(1 - d/0.3)
+    c = sc.get('chloe', {})
+    act = c.get('action', 'idle')
+    if act in ('wow', 'dizzy', 'jump') and lt < 0.45: shake = max(shake, 6*(1 - lt/0.45))
+    sx_, sy_ = math.sin(t*93)*shake, math.cos(t*71)*shake
+    orbit = (1 if si % 2 else -1)*(0.16 - 0.24*ease_io(lt/dur))
+    show = ep.get('mascot', True) and not c.get('hide', False)
+    talking = lt < tl['voice_len'] + 0.2
+    host, facing = _host3d(ep, c, act, c.get('x', 0.3)*W, t, lt, dur, mouth, blink or act == 'sleep', talking, si)
+    host['show'] = show
+    state = dict(t=t, bg=sc.get('bg', 'meadow'), host=host, sprites=_sprites(sc, lt, dur),
+                 cam=dict(z=z, ox=ox, sx=sx_, sy=sy_, orbit=orbit))
+    return dict(state=state, tl=tl, sc=sc, lt=lt, dur=dur, act=act, facing=facing, show=show, c=c, ent=ent, host=host, z=z)
+
+def frame3d(i, ep, timeline, total, env):
+    t = i / FPS
+    blink = ((t + 1.1) % 3.3) < 0.12
+    mouth = float(env[min(i, len(env) - 1)])
+    if t >= total - OUTRO or t < INTRO:
+        lt = t - (total - OUTRO) if t >= total - OUTRO else t
+        host = dict(show=ep.get('mascot', True), x=0.5, gy=0.92, size=1.05, act='wave', bob=abs(math.sin(lt*3))*0.25, rot=0, eye=1.0, step=0,
+                    facing=1, mouth=0.0, blink=bool(blink), energy=0.0, sq=0.0, turn=-0.38)
+        T3.set_size(W, H)
+        surf, info = T3.render(dict(t=t, bg=ep.get('intro_bg', 'meadow'), host=host, sprites=[], cam=dict(z=1.05 + 0.04*ease_io(lt/OUTRO), orbit=0.12*math.sin(lt*0.6), lift=-0.2)))
+        ctx = cairo.Context(surf)
+        for k in range(8):
+            ph = (t*1.2 + k*0.13) % 1
+            sparkle(ctx, 640 + 360*math.cos(k*0.8), 300 + 150*math.sin(k*1.3), 20*math.sin(ph*math.pi), math.sin(ph*math.pi))
+        a = ease_io(lt/0.5)
+        ctx.push_group(); text(ctx, ep.get('outro_text', 'Stay curious with Sir Digsworth!'), W/2, 110, 62, col='#ffd23f', outline='#3b2a1a', ow=12)
+        ctx.pop_group_to_source(); ctx.paint_with_alpha(a)
+        bs = ease_out_back((lt - 0.6)/0.6) * (1 + 0.05*math.sin(t*8))
+        if bs > 0:
+            ctx.save(); ctx.translate(W/2, 660); ctx.scale(bs, bs)
+            rrect(ctx, -180, -44, 360, 88, 44); ctx.set_source_rgba(*hexc('#ff0033')); ctx.fill()
+            text(ctx, 'SUBSCRIBE', 0, 18, 46, col='#ffffff', outline=None); ctx.restore()
+        if t > total - 0.5: ctx.set_source_rgba(0, 0, 0, clamp((t - (total - 0.5))/0.5)); ctx.paint()
+        return surf
+    X = _scene_state3d(t, i, ep, timeline, env)
+    state, tl, sc, lt, dur, act, facing, show, c, ent, host, z = (X[k] for k in ('state', 'tl', 'sc', 'lt', 'dur', 'act', 'facing', 'show', 'c', 'ent', 'host', 'z'))
+    T3.set_size(W, H)
+    surf, info = T3.render(state)
+    ctx = cairo.Context(surf)
+    hx, hy = info['head'][0]*W, info['head'][1]*H
+    if show:
+        _overlay_effects(ctx, act, hx, hy, facing, t, host['size']*z)
+        say = c.get('say')
+        if say:
+            sa = ease_io((lt - c.get('say_at', 0.2)*dur)/0.3)
+            bx = clamp(hx + 190*facing, 170, W - 170); by = clamp(hy - 150, 70, H - 220)
+            if sa > 0: bubble(ctx, bx, by, say, thought=c.get('thought', False), alpha=sa)
+    for p in sc.get('props', []):
+        if 'emoji' not in p: draw_prop(ctx, p, lt, dur)
+    if ent > 0.01:
+        ctx.set_source_rgba(1, 1, 1, 0.28*max(0, 1 - lt/0.16)); ctx.paint()
+    if sc.get('fact'):
+        f = sc['fact']; fa = (f.get('at', 0.15))*dur
+        fade_out = 1 - ease_io((lt - (dur - 0.35))/0.3)
+        ctx.save(); ctx.translate(0, -140*(1 - ease_out_back((lt - fa)/0.45)))
+        fact_box(ctx, f.get('label', 'Did you know?'), f['text'], clamp((lt - fa)/0.15)*fade_out, 1.0)
+        ctx.restore()
+    if ep.get('subtitles', True) and sc.get('narration'):
+        ch_, age_ = caption_chunk(tl, lt, 3); kinetic(ctx, ch_, age_, W/2, H - 62, 54)
+    if t > total - 0.5: ctx.set_source_rgba(0, 0, 0, clamp((t - (total - 0.5))/0.5)); ctx.paint()
+    return surf
+
+def thumbnail3d(ep, out):
+    th = ep.get('thumbnail', {})
+    host = dict(show=th.get('mascot', ep.get('mascot', True)), x=0.8, gy=1.02, size=1.55, act='wow', bob=0.0, rot=0.05, eye=1.45, step=0,
+                facing=-1, mouth=0.9, blink=False, energy=0.0, sq=0.0, turn=0.1)
+    for _ in range(4): surf, info = T3.render(dict(t=0.5, bg=th.get('bg', ep.get('intro_bg', 'meadow')), host=host, sprites=[], cam=dict(z=1.0)))
+    ctx = cairo.Context(surf)
+    g = cairo.LinearGradient(0, 0, W*0.7, 0); g.add_color_stop_rgba(0, 0, 0, 0, 0.45); g.add_color_stop_rgba(1, 0, 0, 0, 0.0)
+    ctx.set_source(g); ctx.paint()
+    ex, ey = th.get('emoji_x', 0.33)*W, th.get('emoji_y', 0.64)*H
+    g = cairo.RadialGradient(ex, ey, 20, ex, ey, 300)
+    g.add_color_stop_rgba(0, 1, 0.85, 0.35, 0.85); g.add_color_stop_rgba(0.5, 1, 0.55, 0.15, 0.35); g.add_color_stop_rgba(1, 1, 0.5, 0.1, 0)
+    ctx.set_source(g); ctx.arc(ex, ey, 300, 0, 2*math.pi); ctx.fill()
+    global EMOJI_INK
+    EMOJI_INK = True
+    draw_emoji(ctx, th.get('emoji', '❓'), ex, ey, 330)
+    ctx.set_source_rgba(0.95, 0.1, 0.12, 1); ctx.set_line_width(14); ellipse(ctx, ex, ey, 210, 190); ctx.stroke()
+    words = th.get('text', ep.get('title', '')).upper()
+    lines = wrap(ctx, words, 128, 700)[:2]
+    cols = [th.get('color', '#ffffff'), th.get('color2', '#ffd23f')]
+    for k, ln in enumerate(lines):
+        text(ctx, ln, 36, 140 + k*135, 128, col=cols[min(k, 1)], outline='#000000', ow=26, align='left')
+    rgb = cairo.ImageSurface(cairo.FORMAT_RGB24, W, H); c2 = cairo.Context(rgb); c2.set_source_surface(surf); c2.paint()
+    png = out.rsplit('.', 1)[0] + '.png'; rgb.write_to_png(png)
+    subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', '-i', png, '-q:v', '2', out], check=True); os.remove(png)
+    print('thumbnail', out)
+
+def cta_host3d(ep, t):
+    host = dict(show=True, x=0.5, gy=0.95, size=1.2, act='wave', bob=abs(math.sin(t*3))*0.2, rot=0, eye=1.0, step=0, facing=1,
+                mouth=0.0, blink=((t + 1.1) % 3.3) < 0.12, energy=0.0, sq=0.0, turn=-0.38)
+    surf, _ = T3.render(dict(t=t, bg=ep.get('intro_bg', 'meadow'), host=host, sprites=[], cam=dict(z=1.15, lift=-0.1)))
+    return surf
+
 def thumbnail(ep, out):
+    if is_3d(ep): return thumbnail3d(ep, out)
     th = ep.get('thumbnail', {})
     surf = cairo.ImageSurface(cairo.FORMAT_ARGB32, W, H); ctx = cairo.Context(surf)
     global EMOJI_INK
@@ -1035,7 +1208,104 @@ def current_sub(timeline, t):
             return chunks[-1]
     return ''
 
+
+def render_short3d(ep, out, preview=False):
+    """Full-screen vertical 3D Short (1080x1920): the 3D world fills the phone screen."""
+    SW, SH = 1080, 1920
+    ep2 = dict(ep); ep2['subtitles'] = False
+    timeline, total, mix, env = build(ep2)
+    sh = ep.get('short', {})
+    target = sh.get('max', 60)
+    k0 = sh.get('start_scene', 0); start = timeline[k0]['start'] + 1.0/FPS
+    end = None
+    for tl in timeline[k0:]:
+        e = tl['start'] + tl['dur']
+        if e - start <= target: end = e
+    if end is None or end - start < 20: end = min(start + target, total - OUTRO)
+    seg = end - start; CTA = 3.2; dur_total = seg + CTA
+    a = mix[int(start*SR):int(end*SR)].copy(); fl = int(0.35*SR); a[-fl:] *= np.linspace(1, 0, fl)
+    cta = synth_music(CTA + 0.5, ep.get('seed', 1) + 7, music_mood(ep))[:int(CTA*SR)]*0.75
+    cta[:len(pop_sfx(520))] += pop_sfx(520)*0.3; cta[-int(0.5*SR):] *= np.linspace(1, 0, int(0.5*SR))
+    audio = np.concatenate([a, cta])
+    title = sh.get('title', ep.get('thumbnail', {}).get('text', ep.get('title', ''))).upper()
+    K = 1.15; BX, BY = (SW - W*K)/2, 470           # 16:9 overlay coordinates -> middle band of the portrait frame
+    T3.set_size(SW, SH)
+    def draw(ts, cta_k):
+        ta = start + min(ts, seg - 1.0/FPS); i = int(ta*FPS)
+        X = _scene_state3d(ta, i, ep2, timeline, env)
+        st = X['state']; st['portrait'] = True; st['cam']['ox'] *= 0.5
+        if cta_k > 0:
+            st = dict(t=start + ts, bg=ep.get('intro_bg', X['state']['bg']), portrait=True, sprites=[],
+                      host=dict(show=True, x=0.5, gy=0.9, size=1.15, act='wave', bob=abs(math.sin(ts*3))*0.2, rot=0, eye=1.0, step=0, facing=1,
+                                mouth=0.0, blink=((ts + 1.1) % 3.3) < 0.12, energy=0.0, sq=0.0, turn=-0.38), cam=dict(z=1.05))
+        surf, info = T3.render(st)
+        c = cairo.Context(surf)
+        g = cairo.LinearGradient(0, 0, 0, 760); g.add_color_stop_rgba(0, 0, 0, 0, 0.55); g.add_color_stop_rgba(1, 0, 0, 0, 0)
+        c.set_source(g); c.rectangle(0, 0, SW, 760); c.fill()
+        g = cairo.LinearGradient(0, SH - 700, 0, SH); g.add_color_stop_rgba(0, 0, 0, 0, 0); g.add_color_stop_rgba(1, 0, 0, 0, 0.5)
+        c.set_source(g); c.rectangle(0, SH - 700, SW, 700); c.fill()
+        sc, lt, dur, act, facing, cc = X['sc'], X['lt'], X['dur'], X['act'], X['facing'], X['c']
+        fact_a = 0.0
+        if cta_k == 0 and sc.get('fact'):
+            fa = sc['fact'].get('at', 0.15)*dur
+            fact_a = clamp((lt - fa)/0.15)*(1 - ease_io((lt - (dur - 0.35))/0.3))
+        c.push_group()
+        text(c, 'SIR DIGSWORTH INVESTIGATES', SW/2, 200, 40, col='#ffd23f', outline='#000000', ow=8)
+        for j, ln in enumerate(wrap(c, title, 112, 980)[:3]):
+            text(c, ln, SW/2, 340 + j*122, 112, col='#ffffff' if j == 0 else '#ffd23f', outline='#000000', ow=20)
+        c.pop_group_to_source(); c.paint_with_alpha(1 - 0.85*fact_a if cta_k == 0 else 1 - cta_k)
+        if cta_k == 0:
+            hx, hy = info['head'][0]*SW, info['head'][1]*SH
+            if X['show']:
+                _overlay_effects(c, act, hx, hy, facing, ta, 1.6)
+                say = cc.get('say')
+                if say:
+                    sa = ease_io((lt - cc.get('say_at', 0.2)*dur)/0.3)
+                    if sa > 0: bubble(c, clamp(hx + 230*facing, 200, SW - 200), clamp(hy - 230, 640, SH - 400), say, thought=cc.get('thought', False), alpha=sa, size=54)
+            c.save(); c.translate(BX, BY); c.scale(K, K)
+            for p in sc.get('props', []):
+                if 'emoji' not in p:
+                    q = dict(p); q['x'] = 0.5 + (p.get('x', 0.5) - 0.5)*0.55
+                    if 'to' in q: q['to'] = [0.5 + (q['to'][0] - 0.5)*0.55, q['to'][1]]
+                    draw_prop(c, q, lt, dur)
+            c.restore()
+            if X['ent'] > 0.01: c.set_source_rgba(1, 1, 1, 0.28*max(0, 1 - lt/0.16)); c.paint()
+            if fact_a > 0:
+                c.save(); c.translate((SW - W)/2, 230 - 140*(1 - ease_out_back((lt - sc['fact'].get('at', 0.15)*dur)/0.45)))
+                fact_box(c, sc['fact'].get('label', 'Did you know?'), sc['fact']['text'], fact_a, 1.0); c.restore()
+            ch_, age_ = caption_chunk(X['tl'], lt, 2); kinetic(c, ch_, age_, SW/2, 1690, 104)
+        else:
+            c.set_source_rgba(0, 0, 0, 0.35*cta_k); c.paint()
+            c.push_group()
+            for j, ln in enumerate(['WANT THE', 'FULL STORY?']):
+                text(c, ln, SW/2, 330 + j*130, 120, col='#ffffff' if j == 0 else '#ffd23f', outline='#000000', ow=20)
+            text(c, 'Full investigation on the channel', SW/2, 600, 54, col='#ffffff', outline='#000000', ow=10)
+            rrect(c, SW/2 - 230, 1640, 460, 110, 55); c.set_source_rgba(1, 0, 0.2, 1); c.fill()
+            text(c, 'SUBSCRIBE', SW/2, 1715, 60, col='#ffffff', outline=None)
+            c.pop_group_to_source(); c.paint_with_alpha(cta_k)
+        return surf
+    if preview:
+        os.makedirs(out + '_frames', exist_ok=True)
+        for j, tt in enumerate([0.0, 1.5, seg*0.3, seg*0.5, seg*0.75, seg - 1, seg + 1.5]):
+            draw(tt, clamp((tt - seg)/0.4) if tt >= seg else 0).write_to_png(f'{out}_frames/{j:02d}.png')
+        print(f'short preview, length {dur_total:.1f}s'); return
+    wav = out + '.wav'
+    with wave.open(wav, 'w') as wf:
+        wf.setnchannels(1); wf.setsampwidth(2); wf.setframerate(SR)
+        wf.writeframes((np.clip(audio, -1, 1)*32767).astype(np.int16).tobytes())
+    p = subprocess.Popen(['ffmpeg', '-y', '-loglevel', 'error', '-f', 'rawvideo', '-pix_fmt', 'bgra', '-s', f'{SW}x{SH}', '-r', str(FPS),
+                          '-i', '-', '-i', wav, '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '23', '-maxrate', '4500k', '-bufsize', '9000k',
+                          '-pix_fmt', 'yuv420p', '-c:a', 'aac', '-b:a', '160k', '-shortest', '-movflags', '+faststart', out], stdin=subprocess.PIPE)
+    N = int(dur_total*FPS)
+    for i in range(N):
+        t = i / FPS
+        p.stdin.write(bytes(draw(t, clamp((t - seg)/0.4) if t >= seg else 0).get_data()))
+        if i % 300 == 0: print(f'short frame {i}/{N}', flush=True)
+    p.stdin.close(); p.wait(); os.remove(wav)
+    print(f'done short {out} ({dur_total:.1f}s)')
+
 def render_short(ep, out, preview=False):
+    if is_3d(ep): return render_short3d(ep, out, preview)
     """Vertical 1080x1920 YouTube Short cut from the start of the episode, with a hook title,
     big subtitles and a call-to-action end card."""
     SW, SH = 1080, 1920
@@ -1081,8 +1351,13 @@ def render_short(ep, out, preview=False):
             c.push_group()
             for j, ln in enumerate(['WANT THE', 'FULL STORY?']):
                 text(c, ln, SW/2, 620 + j*130, 120, col='#ffffff' if j == 0 else '#ffd23f', outline='#000000', ow=20)
-            text(c, 'Full investigation on Dig Deeper', SW/2, 900, 54, col='#ffffff', outline='#000000', ow=10)
-            draw_stick(c, SW/2, 1400, 2.2, t, 1, 0.0, False, 1.2, 'wave')
+            text(c, 'Full investigation on the channel', SW/2, 900, 54, col='#ffffff', outline='#000000', ow=10)
+            if is_3d(ep):
+                hs = cta_host3d(ep, t); c.save(); rrect(c, SW/2 - 380, 990, 760, 660, 40); c.clip()
+                c.translate(SW/2 - 380, 990); k3 = 660/720*1.0; c.scale(k3, k3); c.set_source_surface(hs, -(1280 - 760/k3)/2, 0); c.paint(); c.restore()
+                rrect(c, SW/2 - 380, 990, 760, 660, 40); c.set_source_rgba(1, 1, 1, 0.9); c.set_line_width(6); c.stroke()
+            else:
+                draw_stick(c, SW/2, 1400, 2.2, t, 1, 0.0, False, 1.2, 'wave')
             rrect(c, SW/2 - 230, 1700, 460, 110, 55); c.set_source_rgba(1, 0, 0.2, 1); c.fill()
             text(c, 'SUBSCRIBE', SW/2, 1775, 60, col='#ffffff', outline=None)
             c.pop_group_to_source(); c.paint_with_alpha(cta_k)

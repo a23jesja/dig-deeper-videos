@@ -1,6 +1,6 @@
-# Dig Deeper videos
+# Sir Digsworth videos
 
-Rendered videos and the video engine for the YouTube channel **Dig Deeper** (Chloe the Mole).
+Rendered videos and the video engine for the YouTube channel **Sir Digsworth** (@SirDigsworth, renamed from "Dig Deeper" on 2026-11-12). Earlier episodes used Chloe the Mole.
 Videos in `videos/` are public so Metricool can fetch them by raw URL and publish them to YouTube.
 
 ## Make a video
@@ -106,3 +106,12 @@ Most viewers click on videos that are easy to understand and don't waste time. E
 - Every video gets low background music that ducks under Sir Digsworth's voice. It is synthesised by the engine, so there is no copyright risk.
 - Mood is picked automatically from the scene backgrounds (space/sky/night → `space`, mystery/underground/corridor/lab → `mystery`, volcano/desert/ocean → `epic`, meadow/forest/snow → `calm`, room/city/split → `playful`).
 - Override with `"music": "playful" | "mystery" | "space" | "epic" | "calm" | "none"` and `"music_volume": 1.0` (e.g. 0.7 = quieter). Pick the mood that fits the topic.
+
+
+## 3D look (default since 2026-11-12)
+- The stickman host is rendered in a **3D cel-shaded world** with three.js (vendored in `engine/three/`), driven frame by frame in headless Chrome by `engine/three3d.py`. Captions, big text, fact cards, speech bubbles and effects are 2D overlays on top. `style` defaults to `3d` for `host: "stick"` (`sketch` = old flat look, don't use).
+- Every background has its own 3D world: `meadow`, `forest`, `desert`, `night`, `space`, `sky` (cloud platform), `ocean` (beach island), `snow`, `volcano`, `city`, `lab`, `room`, `corridor`, `mystery`, `underground` (`split` = meadow).
+- Emoji props become 3D billboard sprites at the same x/y as before (use `"layer": "back"` to push one deeper into the scene). The camera pushes in, orbits slowly, whips on cuts and shakes on text slams automatically.
+- Sir Digsworth stands where `chloe.x` says (0–1 across the screen); `chloe.size` is ignored below 1.3 (he is always full size in 3D). Keep props at x ≥ 0.55 when he stands at x ≈ 0.3.
+- Rendering is slower than 2D (~0.25 s per frame): a long video takes ~20 min, a Short ~10 min. Run renders in the background (`nohup … &`) and poll the log instead of one long blocking command.
+- Branding: channel name is **Sir Digsworth**; YouTube titles end with ` | Sir Digsworth`; descriptions/Short texts say "Full investigation on the Sir Digsworth channel."

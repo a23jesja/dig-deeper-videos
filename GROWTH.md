@@ -1,4 +1,4 @@
-# Dig Deeper – growth log
+# Sir Digsworth (formerly Dig Deeper) – growth log
 
 Read before picking each new topic. Append one entry per video, and update earlier entries with their numbers (views, avg view duration, likes) when analytics are available.
 
@@ -16,3 +16,5 @@ Read before picking each new topic. Append one entry per video, and update earli
 
 ## Learnings
 - (fill in as data arrives: which topics, titles and formats get the most views and watch time)
+
+- 2026-11-12: channel renamed to **Sir Digsworth** (@SirDigsworth) — several channels were already called Dig Deeper. Switched to a 3D cel-shaded look (three.js) and simpler explanations; added mood-based background music.

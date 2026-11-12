@@ -1,3 +1,7 @@
-engine/models/
-*.wav
+node_modules/
+out/
 __pycache__/
+*.pyc
+engine/voice/models/
+engine/audio/out/
+engine/public/emu/mix.wav

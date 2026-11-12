@@ -1,0 +1,86 @@
+{
+ "voice": "bm_george",
+ "speed": 1.2,
+ "gap": 0.12,
+ "lead": 0.05,
+ "lines": [
+  {
+   "id": "hook1",
+   "text": "In 1932, Australia sent its army to war against twenty thousand emus.",
+   "say": "In nineteen thirty-two, Australia sent its army to war, against twenty thousand emus.",
+   "gap": 0.22
+  },
+  {
+   "id": "hook2",
+   "text": "The emus won.",
+   "gap": 0.35
+  },
+  {
+   "id": "farm",
+   "text": "Twenty thousand hungry emus had marched onto the wheat farms of Western Australia, eating everything in sight."
+  },
+  {
+   "id": "army",
+   "text": "So the army sent one major, two soldiers, two machine guns and ten thousand bullets.",
+   "say": "So the army sent one major, two soldiers, two machine guns, and ten thousand bullets.",
+   "gap": 0.25
+  },
+  {
+   "id": "easy",
+   "text": "Easy, right?",
+   "gap": 0.2
+  },
+  {
+   "id": "split",
+   "text": "But when the guns opened fire, the emus split into small groups and ran in every direction."
+  },
+  {
+   "id": "dam1",
+   "text": "So the major set an ambush at a dam."
+  },
+  {
+   "id": "dam2",
+   "text": "A thousand emus walked straight towards the gun,",
+   "gap": 0.3
+  },
+  {
+   "id": "jam",
+   "text": "and it jammed.",
+   "gap": 0.28
+  },
+  {
+   "id": "truck1",
+   "text": "Next, he put a gun on a truck."
+  },
+  {
+   "id": "truck2",
+   "text": "But the truck couldn't catch the birds, and the ride was so bumpy the gunner never fired a shot.",
+   "gap": 0.22
+  },
+  {
+   "id": "home",
+   "text": "After six days and two and a half thousand bullets, the army went home.",
+   "gap": 0.22
+  },
+  {
+   "id": "back",
+   "text": "They came back for a second try."
+  },
+  {
+   "id": "score",
+   "text": "Final score, by the major's count: 986 emus, for nearly ten thousand bullets.",
+   "say": "Final score, by the major's count: nine hundred and eighty-six emus, for nearly ten thousand bullets.",
+   "gap": 0.3
+  },
+  {
+   "id": "end1",
+   "text": "And the emus?",
+   "gap": 0.22
+  },
+  {
+   "id": "end2",
+   "text": "They're still there.",
+   "gap": 0.6
+  }
+ ]
+}

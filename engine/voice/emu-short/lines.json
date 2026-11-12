@@ -1,0 +1,98 @@
+[
+ {
+  "id": "hook1",
+  "a": 0.05,
+  "b": 5.214,
+  "text": "In 1932, Australia sent its army to war against twenty thousand emus."
+ },
+ {
+  "id": "hook2",
+  "a": 5.434,
+  "b": 6.605,
+  "text": "The emus won."
+ },
+ {
+  "id": "farm",
+  "a": 6.955,
+  "b": 13.468,
+  "text": "Twenty thousand hungry emus had marched onto the wheat farms of Western Australia, eating everything in sight."
+ },
+ {
+  "id": "army",
+  "a": 13.588,
+  "b": 18.777,
+  "text": "So the army sent one major, two soldiers, two machine guns and ten thousand bullets."
+ },
+ {
+  "id": "easy",
+  "a": 19.027,
+  "b": 19.991,
+  "text": "Easy, right?"
+ },
+ {
+  "id": "split",
+  "a": 20.191,
+  "b": 25.593,
+  "text": "But when the guns opened fire, the emus split into small groups and ran in every direction."
+ },
+ {
+  "id": "dam1",
+  "a": 25.713,
+  "b": 27.972,
+  "text": "So the major set an ambush at a dam."
+ },
+ {
+  "id": "dam2",
+  "a": 28.092,
+  "b": 30.844,
+  "text": "A thousand emus walked straight towards the gun,"
+ },
+ {
+  "id": "jam",
+  "a": 31.144,
+  "b": 32.089,
+  "text": "and it jammed."
+ },
+ {
+  "id": "truck1",
+  "a": 32.369,
+  "b": 34.198,
+  "text": "Next, he put a gun on a truck."
+ },
+ {
+  "id": "truck2",
+  "a": 34.318,
+  "b": 39.105,
+  "text": "But the truck couldn't catch the birds, and the ride was so bumpy the gunner never fired a shot."
+ },
+ {
+  "id": "home",
+  "a": 39.325,
+  "b": 43.336,
+  "text": "After six days and two and a half thousand bullets, the army went home."
+ },
+ {
+  "id": "back",
+  "a": 43.556,
+  "b": 45.439,
+  "text": "They came back for a second try."
+ },
+ {
+  "id": "score",
+  "a": 45.559,
+  "b": 51.494,
+  "text": "Final score, by the major's count: 986 emus, for nearly ten thousand bullets."
+ },
+ {
+  "id": "end1",
+  "a": 51.794,
+  "b": 52.806,
+  "text": "And the emus?"
+ },
+ {
+  "id": "end2",
+  "a": 53.026,
+  "b": 54.079,
+  "text": "They're still there."
+ }
+]

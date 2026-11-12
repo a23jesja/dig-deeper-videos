@@ -18,3 +18,6 @@ Read before picking each new topic. Append one entry per video, and update earli
 - (fill in as data arrives: which topics, titles and formats get the most views and watch time)
 
 - 2026-11-12: channel renamed to **Sir Digsworth** (@SirDigsworth) — several channels were already called Dig Deeper. Switched to a 3D cel-shaded look (three.js) and simpler explanations; added mood-based background music.
+| 2026-11-12 | Australia Lost a War to Emus (1932) #Shorts | Great Emu War / strange history, NEW engine (Remotion + three.js), first video Jesper approved at reference quality | general | – | `videos/shorts/2026-11-12-great-emu-war-short.mp4`, 55 s, 2K |
+
+- 2026-11-12: new engine in `engine/` (flat cartoon cast in a painted 3D world). The old Python engine and its episodes were removed; the Tue/Sat routine stays paused until one short and one long video are approved.

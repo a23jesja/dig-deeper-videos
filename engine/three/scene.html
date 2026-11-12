@@ -648,7 +648,7 @@ window.renderFrame = function (s) {
   cs.forEach((c, i) => {
     const k = getCard(i); k.m.visible = k.sh.visible = true;
     drawCard(k.g, c, t); k.tex.needsUpdate = true;
-    const gp = screenToGround(portrait && c.xp != null ? c.xp : c.x, c.gy), hgt = c.h || 3.3;
+    const gp = screenToGround(portrait && c.xp != null ? c.xp : c.x, portrait ? c.gy - 0.05 : c.gy), hgt = (c.h || 3.3) * (portrait ? 0.9 : 1);
     k.m.position.set(gp.x, (c.bob || 0), gp.z); k.m.scale.set(hgt * (c.flip ? -1 : 1) * (1 + (c.sq || 0)), hgt * (1 - (c.sq || 0)), 1);
     k.m.rotation.set(0, 0, 0); k.m.renderOrder = 10 + i;
     k.m.material.color.set(CARD_TINT[s.bg] || '#ffffff'); k.m.material.opacity = c.a ?? 1;

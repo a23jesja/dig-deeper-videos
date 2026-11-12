@@ -1020,3 +1020,12 @@ export const DIGGER: Outfit = { jacket: KHAKI, pants: "#877a45", boots: "#4a3324
 export const DIGGER2: Outfit = { ...DIGGER, skin: "#f5c9a0", cap: "#847446" };
 export const MAJOR: Outfit = { ...DIGGER, hat: "peaked", cap: "#8f8250", moustache: "#5b3a22", build: "stout", buttons: "#e2bb4c" };
 export const FARMER: Outfit = { jacket: "#b5583a", pants: "#56627e", boots: "#4a3324", hat: "slouch", cap: "#b99a62", buttons: "#e9dcc0", skin: "#f0c39a" };
+
+// ---------------- more cast for the long film ----------------
+export const FARMER2: Outfit = { ...FARMER, jacket: "#6f8a5a", pants: "#5a4a3a", cap: "#a88a5a", skin: SKIN };
+export const FARMER3: Outfit = { ...FARMER, jacket: "#c9a25a", pants: "#4f5d7a", cap: "#8a6a44", skin: "#f5c9a0", moustache: "#5b3a22" };
+export const MINISTER: Outfit = { jacket: "#3d4258", pants: "#2e3142", boots: INK, hat: "hair", hair: "#c2c2c8", moustache: "#9a9aa0", build: "stout", buttons: "#c9a94a" };
+export const POLITICIAN: Outfit = { jacket: "#5a3a36", pants: "#2e3142", boots: INK, hat: "hair", hair: "#5a3b2a", buttons: "#c9a94a" };
+export const POLITICIAN2: Outfit = { jacket: "#3f4a3a", pants: "#33352e", boots: INK, hat: "hair", hair: "#8a8a90", build: "stout", moustache: "#8a8a90" };
+export const POLITICIAN3: Outfit = { jacket: "#4a4458", pants: "#2e3142", boots: INK, hat: "hair", hair: "#2f2a2a", skin: "#f5c9a0" };
+export const CAMERAMAN: Outfit = { jacket: "#6b7f8e", pants: "#5a4a3a", boots: "#4a3324", hat: "cap", cap: "#39414d", skin: "#f5c9a0" };

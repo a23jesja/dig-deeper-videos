@@ -5,6 +5,7 @@
 import * as THREE from "three";
 import { Pen, bodyFront, bodySide, setTalk, fxShadow, fxContact, Outfit, FrontOpts, SideOpts } from "./toon";
 import { emuSide, emuFront, EmuOpts, EMU_HIP_X } from "./emutoon";
+import { bearFront, BearOpts } from "./beartoon";
 import { NOINK } from "./ink";
 import { cardShade, blobMaterial, CARD_K } from "./cardshade";
 import { FPS, clamp01 } from "./story";
@@ -167,7 +168,7 @@ export const person = (out: Stage, cam: CamInfo, who: Who, x: number, y: number,
   return pl;
 };
 
-export type EmuAct = EmuOpts & { i: number; x: number; y?: number; z: number; dx: number; dz: number; scale?: number; view?: "side" | "front" | "back"; mirror?: boolean; shadow?: boolean };
+export type EmuAct = EmuOpts & { i: number; x: number; y?: number; z: number; dx: number; dz: number; scale?: number; view?: "side" | "front" | "back"; mirror?: boolean; shadow?: boolean; roll?: number };
 /** one emu: picks the side / front / back drawing from the travel direction relative to the lens */
 export const emu = (out: Stage, cam: CamInfo, a: EmuAct): Place => {
   const { i, x, z, dx, dz } = a, y = a.y ?? 0, scale = a.scale ?? 0.92 + 0.12 * hh(i, 41);
@@ -179,11 +180,11 @@ export const emu = (out: Stage, cam: CamInfo, a: EmuAct): Place => {
   const phaseQ = a.mode === "run" ? 20 : 30;
   const o: EmuOpts = { mode: a.mode, phase: a.phase === undefined ? undefined : Math.round((((a.phase % 1) + 1) % 1) * phaseQ) / phaseQ, peck: a.peck === undefined ? undefined : q(a.peck, 16),
     jab: a.jab === undefined ? undefined : q(a.jab, 4), gulp: a.gulp === undefined || a.gulp < 0 ? undefined : q(a.gulp, 10), reach: a.reach, blink: a.blink, look: a.look,
-    expr: a.expr, seed: (i % 9) + 1, nod: a.nod === undefined ? undefined : q(a.nod, 0.5), light };
+    expr: a.expr, seed: (i % 9) + 1, nod: a.nod === undefined ? undefined : q(a.nod, 0.5), light, leader: a.leader, cap: a.cap };
   if (view !== "side") { o.peck = undefined; o.jab = undefined; o.gulp = undefined; if (o.mode === "peck") o.mode = "stand"; }
   const key = `E|${view}|${fkey(o)}`;
   const pl: Place = {
-    key, x, y, z, scale, mirror, geo: view === "side" ? "emuSide" : "emuFront",
+    key, x, y, z, scale, mirror, roll: a.roll, geo: view === "side" ? "emuSide" : "emuFront",
     draw: (p) => (view === "side" ? emuSide(p, o) : emuFront(p, { ...o, back: view === "back" })),
     size: [Math.round(900 * k), Math.round(1000 * k), k],
   };
@@ -205,4 +206,17 @@ export const blob = (out: Stage, cam: CamInfo, x: number, y: number, z: number, 
   out.fx.push({ key: `blob|shadow|${tc}`, cw: 128, ch: 256, draw: (p) => fxShadow(p, tc), x: x + ox * c, y: y + 0.018, z: z + oz * c, w: 0.72 * sc, h, flat: true, rot });
   const cc = hexOf(CONTACT[cam.light], k);
   out.fx.push({ key: `blob|contact|${cc}`, cw: 128, ch: 128, draw: (p) => fxContact(p, cc), x: x + ox * 0.03 * sc, y: y + 0.022, z: z + oz * 0.03 * sc, w: 0.52 * sc, h: 0.4 * sc, flat: true, rot });
+};
+
+export type BearAct = BearOpts & { x: number; y?: number; z: number; scale?: number; shadow?: boolean };
+/** Wojtek: always the front drawing (he faces the lens); the cub is the same bear at a small scale */
+export const bear = (out: Stage, cam: CamInfo, a: BearAct): Place => {
+  const y = a.y ?? 0, scale = a.scale ?? (a.cub ? 0.5 : 1.02);
+  const d = cam.pos.distanceTo(tmp.set(a.x, y + 1.0, a.z)) / scale, k = tierK(d) * 0.9;
+  const o: BearOpts = { pose: a.pose, expr: a.expr, blink: a.blink, look: a.look, cub: a.cub, light: light2D(cam, false), seed: 1,
+    phase: a.phase === undefined ? undefined : Math.round((((a.phase % 1) + 1) % 1) * 24) / 24, walk: a.walk, cap: a.cap, stripes: a.stripes, k: a.k === undefined ? undefined : q(a.k, 8), crate: a.crate };
+  const pl: Place = { key: `B|${fkey(o)}`, x: a.x, y, z: a.z, scale, geo: "emuFront", draw: (p) => bearFront(p, o), size: [Math.round(900 * k), Math.round(1000 * k), k] };
+  out.places.push(pl);
+  if (a.shadow !== false) blob(out, cam, a.x, y, a.z, scale * 1.5);
+  return pl;
 };

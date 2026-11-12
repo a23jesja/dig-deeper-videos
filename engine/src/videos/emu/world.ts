@@ -10,9 +10,9 @@ import { NOINK } from "./ink";
 import { cardShade } from "./cardshade";
 import { Pool, Actor, Fx, GEO, CamInfo, hh, Req } from "./castbase";
 import { emuSide, emuFront } from "./emutoon";
-import { sceneAt, crowdFor, wheatAt, drawTally, Scene } from "./scenes";
+import { drawTally, Scene, Show, EMU_SHOW } from "./scenes";
 import { lewisGun, truck, crateGeo, crateMat, emptyCrate, tent, farmhouse, windmill, fence, gum, bush, rock, ranges, heightfield, scoreboard, waterTex, Gun, Truck, Board, mesh, merged } from "./props";
-import { FPS, SHOTS, ShotDef, Zone, camAt, riseY, RISE_Z0, FIELD, DAM, bankY } from "./story";
+import { FPS, ShotDef, Zone, riseY, RISE_Z0, FIELD, DAM, bankY, hillY } from "./story";
 
 // ---------------- painted ground + wheat ----------------
 const earthTex = () => ctex("redEarth", 1024, 1024, (g, r) => {
@@ -127,7 +127,7 @@ export class World {
   private wheat: THREE.InstancedMesh; private stubble: THREE.InstancedMesh; private wheatPos: Float32Array; private wheatN = 0;
   private crowd: { mesh: THREE.InstancedMesh; mat: THREE.MeshLambertMaterial; req: Req | null }[] = [];
 
-  constructor() {
+  constructor(private show: Show = EMU_SHOW) {
     const R = this.root;
     // ---- sky + light ----
     this.skyMat = new THREE.ShaderMaterial({
@@ -171,7 +171,8 @@ export class World {
     ground.receiveShadow = true; R.add(ground);
     ranges(R, 560, 60, "#8f86a8", 1); ranges(R, 420, 34, "#a88f78", 2);
 
-    for (const z of ["camp", "farm", "plain", "dam", "track"] as Zone[]) { this.zones[z] = new THREE.Group(); R.add(this.zones[z]); }
+    for (const z of ["camp", "farm", "plain", "dam", "track", "office", "dock", "cassino", "zoo"] as Zone[]) { this.zones[z] = new THREE.Group(); R.add(this.zones[z]); }
+    this.buildPlus(); this.buildWojtek();
     this.fan = this.buildFarm();
     this.buildCamp(); this.buildPlain(); this.buildDam(); this.buildTrack();
     // wheat + stubble cards
@@ -304,7 +305,7 @@ export class World {
     if (v) return v;
     let fx = 0, fz = 0;
     for (let f = a; f < b; f += 3) {
-      const c = camAt(id, f), x = c.look[0] - c.pos[0], z = c.look[2] - c.pos[2], n = Math.hypot(x, z) || 1;
+      const c = this.show.camAt(id, f), x = c.look[0] - c.pos[0], z = c.look[2] - c.pos[2], n = Math.hypot(x, z) || 1;
       fx += x / n; fz += z / n;
     }
     const n = Math.hypot(fx, fz) || 1; fx /= n; fz /= n;
@@ -318,9 +319,9 @@ export class World {
   private fx(i: number) { while (this.fxs.length <= i) this.fxs.push(new Fx(this.root)); return this.fxs[i]; }
 
   update(id: number, f: number, cam: THREE.PerspectiveCamera, scene: THREE.Scene) {
-    const s = SHOTS[id - 1], L = LIGHTS[s.light], K = LOOK[s.light];
+    const s = this.show.shots[id - 1], L = LIGHTS[s.light], K = LOOK[s.light];
     // ---- camera ----
-    const c = camAt(id, f);
+    const c = this.show.camAt(id, f);
     cam.position.set(...c.pos); cam.up.set(0, 1, 0); cam.lookAt(...c.look); cam.rotateZ(c.roll);
     cam.fov = c.fov; cam.near = 0.2; cam.far = 1500; cam.updateProjectionMatrix(); cam.updateMatrixWorld();
     const focus = V(...c.look), dist = cam.position.distanceTo(focus);
@@ -365,7 +366,7 @@ export class World {
     // ---- the story ----
     const right = V(0, 0, 0).setFromMatrixColumn(cam.matrixWorld, 0);
     const ci: CamInfo = { pos: cam.position, right, sun: sunDir, light: s.light };
-    const st = sceneAt(id, f, ci);
+    const st = this.show.sceneAt(id, f, ci);
     this.poseProps(st);
     if (s.zone === "farm") this.poseWheat(id, f);
     this.fan.rotation.z = st.fan;
@@ -382,7 +383,7 @@ export class World {
       a.mesh.geometry = GEO[p.geo ?? "body"];
       a.mesh.visible = true;
       a.mesh.position.set(p.x, p.y, p.z);
-      a.mesh.rotation.set(0, p.yaw ?? Math.atan2(cam.position.x - p.x, cam.position.z - p.z), p.roll ?? 0);
+      a.mesh.rotation.set(0, p.yaw ?? Math.atan2(cam.position.x - p.x, cam.position.z - p.z), (p.mirror ? -1 : 1) * (p.roll ?? 0));
       a.mesh.scale.set(p.mirror ? -sc2 : sc2, sc2, sc2);
       used.push(a);
     }
@@ -403,7 +404,7 @@ export class World {
     }
     for (let i = fi; i < this.fxs.length; i++) this.fxs[i].mesh.visible = false;
     // ---- instanced crowd ----
-    const spec = crowdFor(id, f);
+    const spec = this.show.crowdFor(id, f);
     const counts = new Array(CROWD_B).fill(0);
     if (spec) {
       for (let b = 0; b < spec.buckets; b++) {
@@ -451,6 +452,7 @@ export class World {
       T.root.position.set(ts.x, 0, ts.z); T.root.rotation.y = ts.yaw;
       T.body.position.y = ts.y; T.body.rotation.set(ts.roll, 0, ts.pitch);
       T.wheels.forEach((w, i) => { w.rotation.z = -ts.wheel; w.position.y = 0.43 + ts.wheelY[i]; });
+      T.gun.root.visible = !ts.noGun;
       T.gun.root.position.y = 1.32 + ts.gunLift; T.gun.root.rotation.y = Math.PI / 2 + ts.gunYaw; T.gun.body.rotation.x = -ts.gunPitch;
     }
     this.board.root.visible = !!st.board;
@@ -458,14 +460,141 @@ export class World {
     this.tally.visible = !!st.tally;
     if (st.tally) { this.tally.position.set(...st.tally.pos); this.tally.rotation.y = 0.18; this.tallyDraw(st.tally.n); }
     this.brass.visible = !!st.brass || !!st.aftermath;
-    this.brass.position.set(st.aftermath ? 0.5 : 0, 0, st.aftermath ? -0.9 : 0);
+    if (st.brassAt) this.brass.position.set(...st.brassAt); else this.brass.position.set(st.aftermath ? 0.5 : 0, 0, st.aftermath ? -0.9 : 0);
+    this.posePlus(st);
     this.aftermath.visible = !!st.aftermath;
+  }
+
+  // ---------------- long-film extras: film camera, exclusion fence, the minister's office, the sea ----------------
+  private filmCam = new THREE.Group(); private crank = new THREE.Group(); private tallFence = new THREE.Group();
+  private desk = new THREE.Group(); private lectern = new THREE.Group();
+  private buildPlus() {
+    // hand-cranked film camera on a wooden tripod
+    const fb = new Batch(), wood = col("#8a5a34"), blk = col("#2f3138"), brassM = col("#d0a53c");
+    for (const [x, z] of [[-0.4, 0.28], [0.4, 0.28], [0, -0.48]]) fb.add(new THREE.CylinderGeometry(0.025, 0.03, 1.45, 6).applyMatrix4(new THREE.Matrix4().makeRotationZ(Math.atan2(x, 1.35)).multiply(new THREE.Matrix4().makeRotationX(-Math.atan2(z, 1.35))).setPosition(x / 2, 0.68, z / 2)), wood);
+    fb.add(box(0, 1.35, 0, 0.3, 0.36, 0.5), blk);
+    fb.add(new THREE.CylinderGeometry(0.07, 0.09, 0.2, 12).rotateX(Math.PI / 2).translate(0, 1.52, 0.34), brassM);
+    for (const z of [-0.12, 0.14]) fb.add(new THREE.CylinderGeometry(0.17, 0.17, 0.08, 16).rotateZ(Math.PI / 2).translate(0, 1.86, z), blk);
+    fb.build(this.filmCam);
+    const ck = new Batch(); ck.add(box(0.19, -0.02, 0, 0.06, 0.04, 0.04), brassM); ck.add(box(0.2, -0.02, 0.1, 0.03, 0.04, 0.22), brassM); ck.build(this.crank);
+    this.crank.position.set(0, 1.5, 0); this.filmCam.add(this.crank);
+    this.filmCam.visible = false; this.root.add(this.filmCam);
+    // exclusion fence: tall posts and five wires along the front of the field
+    const tf = new Batch(), post = col("#8a6a4a"), wire = col("#6a6e76");
+    for (let x = -36; x <= 36.01; x += 3) tf.add(box(x, 0, 2.9, 0.14, 2.3, 0.14), post);
+    for (let k = 0; k < 6; k++) tf.add(box(0, 0.25 + k * 0.38, 2.9, 72, 0.035, 0.035), wire);
+    tf.build(this.tallFence); this.tallFence.visible = false; this.zones.farm.add(this.tallFence);
+    // the sea the mob is walking toward (far east of the plain)
+    const sea = mesh(quad(V(170, 0.03, 900), V(1200, 0.03, 900), V(1200, 0.03, -900), V(170, 0.03, -900)), col("#2f86b0"), false);
+    const sand = mesh(quad(V(152, 0.025, 900), V(170, 0.025, 900), V(170, 0.025, -900), V(152, 0.025, -900)), col("#ecd9a6"), false);
+    this.zones.plain.add(sea, sand);
+    // the office: plank floor, panelled walls, pictures; a desk (minister) or a lectern and benches (parliament)
+    const ob = new Batch(), Z = this.zones.office;
+    const floor = lam("officeFloor", () => ({ map: ctex("officeFloor", 512, 512, (g, r) => { g.fillStyle = "#a9794e"; g.fillRect(0, 0, 512, 512); for (let i = 0; i < 8; i++) { g.fillStyle = `rgba(${r() > 0.5 ? "255,220,170" : "60,30,10"},${0.05 + 0.08 * r()})`; g.fillRect(i * 64, 0, 64, 512); g.fillStyle = "rgba(60,35,18,0.6)"; g.fillRect(i * 64, 0, 3, 512); } }) }));
+    ob.add(quad(V(-14, 0.03, 9), V(14, 0.03, 9), V(14, 0.03, -16), V(-14, 0.03, -16), 7, 6), floor);
+    const wall = col("#b9c4a8"), panel = col("#7a5236"), trim = col("#e9dfc8");
+    ob.add(box(0, 0, 6.2, 28, 7.5, 0.3), wall); ob.add(box(0, 0, 6.0, 28, 1.25, 0.12), panel); ob.add(box(0, 1.25, 5.98, 28, 0.1, 0.14), trim);
+    for (const sx of [-1, 1]) { ob.add(box(sx * 13.8, 0, -4, 0.3, 7.5, 21), wall); ob.add(box(sx * 13.6, 0, -4, 0.12, 1.25, 21), panel); }
+    for (const [x, w, h, c] of [[-4.6, 1.5, 1.9, "#5d7f9a"], [4.8, 2.4, 1.6, "#c9a76a"], [8.6, 1.2, 1.6, "#8a5a5a"], [-8.4, 1.2, 1.6, "#6c8a5c"]] as const) { ob.add(box(x, 2.3, 5.96, w + 0.24, h + 0.24, 0.1), panel); ob.add(box(x, 2.42, 5.9, w, h, 0.06), col(c)); }
+    ob.build(Z);
+    const db = new Batch();
+    db.add(box(0, 0, 0, 2.4, 0.86, 1.0), panel); db.add(box(0, 0.86, 0, 2.6, 0.07, 1.15), col("#5e3d26"));
+    db.add(box(-0.7, 0.93, 0.05, 0.5, 0.05, 0.36), trim); db.add(box(0.75, 0.93, -0.1, 0.16, 0.22, 0.16), col("#2f5a3c")); db.add(new THREE.SphereGeometry(0.1, 10, 8).translate(0.75, 1.2, -0.1), col("#f3e2a0"));
+    db.build(this.desk); this.desk.position.set(-2.2, 0.03, 1.4); Z.add(this.desk);
+    const lb = new Batch();
+    lb.add(box(0, 0, 0, 0.9, 1.15, 0.6), panel); lb.add(box(0, 1.15, -0.05, 1.0, 0.07, 0.75), col("#5e3d26"));
+    for (let row = 0; row < 3; row++) for (const sx of [-1, 1]) lb.add(box(sx * 4.6, 0, 2.2 + row * 1.2, 5.2, 0.55 + row * 0.3, 0.8), col("#3f6a4a"));
+    lb.build(this.lectern); this.lectern.position.set(0, 0.03, 0.6); Z.add(this.lectern);
+  }
+  private posePlus(st: Scene) {
+    this.filmCam.visible = !!st.filmCam;
+    if (st.filmCam) { this.filmCam.position.set(...st.filmCam.pos); this.filmCam.rotation.y = st.filmCam.yaw; this.crank.rotation.x = st.filmCam.crank; }
+    this.tallFence.visible = (st.tallFence ?? 0) > 0.01; this.tallFence.scale.set(1, Math.max(0.01, st.tallFence ?? 0), 1);
+    this.desk.visible = st.office !== "parliament"; this.lectern.visible = st.office === "parliament";
+    this.shellCrates.forEach((c, i) => { const s = st.shellCrates?.[i]; c.visible = !!s; if (s) { c.position.set(...s.pos); c.rotation.y = s.yaw; } });
+    this.fieldGun.visible = !!st.fieldGun;
+    if (st.fieldGun) { this.fieldGun.position.set(...st.fieldGun.pos); this.fieldGun.rotation.y = st.fieldGun.yaw; this.gunBarrel.position.z = -0.45 * st.fieldGun.recoil; }
+  }
+
+  // ---------------- the Wojtek film: troopship at the quay, Monte Cassino, Edinburgh Zoo ----------------
+  private shellCrates: THREE.Mesh[] = []; private fieldGun = new THREE.Group(); private gunBarrel = new THREE.Group();
+  private buildWojtek() {
+    // crates of 25-pounder shells
+    const shellTex = ctex("crate25", 512, 256, (g) => {
+      g.fillStyle = "#a9814c"; g.fillRect(0, 0, 512, 256);
+      for (let i = 0; i < 4; i++) { g.fillStyle = `rgba(${i % 2 ? "255,240,200" : "60,30,10"},0.08)`; g.fillRect(0, i * 64, 512, 64); g.fillStyle = "#5a3a1e"; g.fillRect(0, i * 64, 512, 5); }
+      g.strokeStyle = "#5a3a1e"; g.lineWidth = 10; g.strokeRect(5, 5, 502, 246);
+      g.fillStyle = "#2c2118"; g.textAlign = "center"; g.textBaseline = "middle"; g.font = "900 110px 'Arial Black', Impact, sans-serif"; g.fillText("25 PDR", 256, 104);
+      g.font = "900 50px 'Arial Black', Impact, sans-serif"; g.fillText("4 SHELLS", 256, 200);
+    });
+    const sm = lam("crate25", () => ({ map: shellTex }));
+    for (let i = 0; i < 6; i++) { const c = mesh(box(0, 0, 0, 0.82, 0.42, 0.5), sm); c.visible = false; this.shellCrates.push(c); this.root.add(c); }
+    // 25-pounder field gun: wheels, shield, trail, barrel (the barrel slides back on recoil); it points along +z
+    const steel = col("#5f6b4a"), dark = col("#3a3d42"), fg = new Batch();
+    for (const s of [-1, 1]) { fg.add(new THREE.CylinderGeometry(0.55, 0.55, 0.22, 18).rotateZ(Math.PI / 2).translate(s * 0.95, 0.55, 0), dark); fg.add(new THREE.CylinderGeometry(0.2, 0.2, 0.26, 10).rotateZ(Math.PI / 2).translate(s * 0.95, 0.55, 0), steel); }
+    fg.add(box(0, 0.45, 0.05, 1.7, 0.2, 0.5), steel);
+    fg.add(box(0, 0.62, 0.42, 1.75, 0.95, 0.07).applyMatrix4(new THREE.Matrix4().makeRotationX(-0.2).setPosition(0, 0.05, 0)), steel);
+    for (const s of [-1, 1]) fg.add(new THREE.CylinderGeometry(0.06, 0.06, 2.4, 8).rotateX(Math.PI / 2 - 0.2).translate(s * 0.32, 0.36, -1.25), steel);
+    fg.build(this.fieldGun);
+    const gb = new Batch();
+    gb.add(new THREE.CylinderGeometry(0.075, 0.095, 2.5, 12).rotateX(Math.PI / 2).translate(0, 0, 1.3), dark);
+    gb.add(new THREE.CylinderGeometry(0.12, 0.12, 0.3, 12).rotateX(Math.PI / 2).translate(0, 0, 2.6), dark);
+    gb.add(box(0, -0.16, 0.1, 0.34, 0.32, 0.8), steel);
+    gb.build(this.gunBarrel); this.gunBarrel.rotation.x = -0.32; const gbh = new THREE.Group(); gbh.position.set(0, 0.95, 0); gbh.add(this.gunBarrel); this.fieldGun.add(gbh);
+    this.fieldGun.visible = false; this.root.add(this.fieldGun);
+
+    // ---- the quay and the troopship ----
+    const d = new Batch(), Zd = this.zones.dock;
+    const stone = lam("quayStone", () => ({ map: ctex("quayStone", 512, 512, (g, r) => { g.fillStyle = "#b9b3a6"; g.fillRect(0, 0, 512, 512); for (let i = 0; i < 4; i++) for (let k = 0; k < 4; k++) { g.fillStyle = `rgba(${r() > 0.5 ? "255,250,235" : "70,60,55"},${0.05 + 0.1 * r()})`; g.fillRect(k * 128 + (i % 2) * 64, i * 128, 124, 124); g.strokeStyle = "rgba(90,84,78,0.7)"; g.lineWidth = 5; g.strokeRect(k * 128 + (i % 2) * 64, i * 128, 128, 128); } }) }));
+    d.add(quad(V(-60, 0.03, 6), V(60, 0.03, 6), V(60, 0.03, -40), V(-60, 0.03, -40), 20, 8), stone);
+    d.add(box(0, 0, 6.1, 120, 0.3, 0.4), col("#6d665c"));
+    d.add(quad(V(-700, 0.02, 700), V(700, 0.02, 700), V(700, 0.02, 6.2), V(-700, 0.02, 6.2)), col("#2f7fa6"));
+    d.add(box(0, 0.02, 11.5, 34, 3.6, 6.4), col("#3b4252")); d.add(box(0, 0.02, 11.5, 34.2, 0.9, 6.6), col("#9a3b34"));
+    d.add(box(0, 3.62, 11.5, 34.6, 0.14, 6.9), col("#c9b891"));
+    d.add(box(-2, 3.76, 12, 15, 2.7, 4.4), col("#efe9dc")); d.add(box(-2, 4.6, 9.76, 14, 0.7, 0.08), col("#3f5568")); d.add(box(-2, 6.46, 12, 15.6, 0.16, 5), col("#c9b891"));
+    d.add(new THREE.CylinderGeometry(1.15, 1.15, 3.4, 18).translate(-3, 8.3, 12), col("#d9a441")); d.add(new THREE.CylinderGeometry(1.2, 1.2, 0.7, 18).translate(-3, 10.2, 12), col("#2b2b30"));
+    d.add(new THREE.CylinderGeometry(0.09, 0.09, 7, 8).translate(9.5, 7.1, 11.5), col("#8a6a44"));
+    for (let x = -16; x <= 16.01; x += 2) d.add(box(x, 3.76, 8.45, 0.08, 0.9, 0.08), col("#efe9dc"));
+    d.add(box(0, 4.6, 8.45, 32.2, 0.08, 0.08), col("#efe9dc"));
+    // gangway from the quay up to the deck
+    d.add(new THREE.BoxGeometry(1.5, 0.14, 6.1).applyMatrix4(new THREE.Matrix4().makeRotationX(-Math.atan2(3.6, 4.8)).setPosition(3.2, 1.85, 6.4)), col("#a9794e"));
+    for (const x of [-7, 10.5]) d.add(new THREE.CylinderGeometry(0.22, 0.28, 0.6, 12).translate(x, 0.33, 5.3), col("#2b2b30"));
+    for (const [x, z, y, yaw] of [[-5.2, 1.4, 0, 0.2], [-4.3, 1.5, 0, -0.1], [-4.8, 1.45, 0.42, 0.05]]) d.add(box(0, 0, 0, 0.82, 0.42, 0.5).applyMatrix4(new THREE.Matrix4().makeRotationY(yaw).setPosition(x, y, z)), sm);
+    d.build(Zd);
+
+    // ---- Monte Cassino: the hill, the abbey on top, shell holes of rock in front ----
+    const c = new Batch(), Zc = this.zones.cassino;
+    c.add(heightfield(-260, 260, 30, 330, 70, 40, (x, z) => hillY(x, z) + 0.02, 16), lam("hillRock", () => ({ map: dryGrassTex(), color: "#b7c08e" })));
+    const ay = hillY(0, 232), wall = col("#e9dfc8"), roofc = col("#b56a4a");
+    c.add(box(0, ay - 4, 240, 62, 20, 22), wall); c.add(box(-20, ay + 16, 240, 16, 9, 18), wall); c.add(box(14, ay + 16, 242, 22, 5, 16), wall);
+    c.add(box(0, ay + 16, 240, 64, 1.2, 23), roofc); c.add(box(-20, ay + 25, 240, 17, 1.2, 19), roofc);
+    for (let k = -5; k <= 5; k++) c.add(box(k * 5.2, ay + 5, 228.9, 1.8, 3.2, 0.3), col("#5d6b7a"));
+    for (const [x, z, s, n] of [[-7, 9, 1.4, 1], [8.5, 12, 1.1, 2], [-12, 20, 1.8, 3], [13, 24, 1.5, 4], [-5.5, -4, 0.9, 5], [6.5, -5, 1.0, 6], [-16, 6, 1.2, 7], [17, 4, 1.3, 8]]) rock(c, x, z, s, n);
+    for (const [x, z, h, s] of [[-18, 14, 7, 1], [19, 18, 8, 2], [-26, 30, 9, 3], [27, 34, 8, 5], [-11, -9, 7, 6], [12, -10, 8, 7]]) gum(c, x, z, h, s);
+    for (const [x, z, s] of [[-9.5, 2, 1.0], [10.5, 3, 0.9], [-14, 12, 1.3], [15, 14, 1.2], [-4.5, 14, 0.8], [5.5, 16, 0.9]]) bush(c, x, z, s, Math.round(Math.abs(x * 5 + z)));
+    this.scatter(c, 80, 71, [-150, 150, 40, 200], (x) => Math.abs(x) > 6, (x, z) => hillY(x, z), 0.35);
+    this.flush("cassino", c);
+
+    // ---- Edinburgh Zoo: a grassy enclosure with rocks and a pool behind a rail ----
+    const z = new Batch(), Zz = this.zones.zoo;
+    z.add(quad(V(-40, 0.03, 30), V(40, 0.03, 30), V(40, 0.03, 0.6), V(-40, 0.03, 0.6), 10, 5), lam("zooGrass", () => ({ map: dryGrassTex(), color: "#a9d16a" })));
+    z.add(quad(V(-40, 0.028, 0.6), V(40, 0.028, 0.6), V(40, 0.028, -30), V(-40, 0.028, -30), 20, 8), stone);
+    const rk = col("#9c978f");
+    for (const [x, zz, sx, sy, sz] of [[-7, 13, 5, 3.4, 3], [0, 15, 6, 4.6, 3.4], [7.5, 13.5, 5, 3.2, 3], [-13, 11, 4, 2.4, 2.6], [13.5, 11.5, 4, 2.6, 2.6], [3.5, 11.2, 2.4, 1.3, 1.8]]) z.add(new THREE.SphereGeometry(1, 14, 10).applyMatrix4(new THREE.Matrix4().compose(V(x, sy * 0.35, zz), new THREE.Quaternion(), V(sx, sy, sz))), rk);
+    const pool = mesh(new THREE.CircleGeometry(2.6, 32).rotateX(-Math.PI / 2), lam("damWater", () => ({ map: waterTex() })), false); pool.position.set(-4.6, 0.045, 6.2); pool.scale.set(1.3, 1, 0.8); Zz.add(pool);
+    z.add(new THREE.CylinderGeometry(0.28, 0.32, 3.2, 10).rotateZ(Math.PI / 2 - 0.12).translate(4.4, 0.42, 5.2), col("#8a5a34"));
+    const rail = col("#3f5f4a");
+    for (let x = -14; x <= 14.01; x += 2) z.add(box(x, 0, 0.6, 0.12, 1.15, 0.12), rail);
+    for (const y of [0.45, 1.1]) z.add(box(0, y, 0.6, 28.2, 0.08, 0.08), rail);
+    for (const [x, zz, h, s] of [[-17, 16, 9, 1], [18, 17, 10, 2], [-22, 4, 8, 3], [23, 6, 9, 4]]) gum(z, x, zz, h, s);
+    for (const [x, zz, s] of [[-10, 8.5, 1.1], [10.5, 8, 1.0], [-15.5, 2.2, 1.2], [16, 2.4, 1.1]]) bush(z, x, zz, s, Math.round(Math.abs(x * 3 + zz)));
+    this.flush("zoo", z);
   }
 
   private poseWheat(id: number, f: number) {
     const P = this.wheatPos, up = V(0, 1, 0), zero = this.s3;
     for (let i = 0; i < this.wheatN; i++) {
-      const x = P[i * 4], z = P[i * 4 + 1], k = wheatAt(id, f, x, z), s = P[i * 4 + 3];
+      const x = P[i * 4], z = P[i * 4 + 1], k = this.show.wheatAt(id, f, x, z), s = P[i * 4 + 3];
       this.q4.setFromAxisAngle(up, P[i * 4 + 2]);
       this.v.set(x, 0, z);
       this.m4.compose(this.v, this.q4, zero.set(k > 0.02 ? s : 0, k > 0.02 ? s * k : 0, k > 0.02 ? s : 0));

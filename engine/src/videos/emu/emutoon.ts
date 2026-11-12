@@ -66,6 +66,8 @@ export type EmuOpts = {
   nod?: number;
   /** body colour variation */
   tint?: number;
+  /** the pack leader: a big dark bird with a tall black crest; cap = an officer's cap (the "emu command") */
+  leader?: boolean; cap?: boolean;
 };
 
 /** two-bone leg, ankle joint bending backward (-x) */
@@ -138,7 +140,7 @@ export const emuSide = (p: Pen, o: EmuOpts = {}) => {
   const k = mode === "peck" ? clamp(o.peck ?? 1) : clamp(o.peck ?? 0);
   const sole = 975, HX = 400, hipRest = 628, l1 = 168, l2 = 186;
   p.g.save(); p.g.translate(-EMU_SHIFT, 0);
-  const fcol = featherCol(seed, tint), thick = thickAngle(light);
+  const fcol = o.leader ? "#4d4046" : featherCol(seed, tint), thick = thickAngle(light);
   // ---- gait: foot targets relative to the hip (x forward), hip height ----
   type Leg = { x: number; h: number; pitch: number; near: boolean };
   const legs: Leg[] = [];
@@ -251,11 +253,12 @@ export const emuSide = (p: Pen, o: EmuOpts = {}) => {
   p.clip(hp, () => { p.ell(hx - 16, hy - 30, 52, 30, "#4a4350", 0); });
   p.inkRing(hp, 8.5, thick - ha, 0.35);
   // wispy crown feathers (stand up when alarmed)
-  const up = expr === "alarm" ? 1.7 : 1;
-  for (let i = 0; i < 5; i++) {
+  const up = (expr === "alarm" ? 1.7 : 1) * (o.leader ? 2.4 : 1);
+  if (!o.cap) for (let i = 0; i < 5; i++) {
     const a0 = rad(-150 + i * 22), bx = hx + 46 * Math.cos(a0), by = hy + 37 * Math.sin(a0);
-    p.stroke([[bx, by], [bx + (-10 + i * 3) * up, by - 15 * up]], 5, "#3a3440");
+    p.stroke([[bx, by], [bx + (-10 + i * 3) * up, by - 15 * up]], o.leader ? 8 : 5, o.leader ? "#17141a" : "#3a3440");
   }
+  if (o.cap) { p.poly([[hx - 50, hy - 26], [hx + 34, hy - 30], [hx + 40, hy - 62], [hx - 46, hy - 66]], "#8f8250", 7); p.poly([[hx + 26, hy - 32], [hx + 72, hy - 22], [hx + 28, hy - 22]], "#3b2a1e", 6); p.dot(hx + 6, hy - 48, 7, INK); p.dot(hx + 6, hy - 48, 5, "#e2bb4c"); }
   eye(p, hx + 14, hy - 5, 15.5, expr, blink, look, SKIN_N);
   p.rot = null;
   p.g.restore();
@@ -264,7 +267,7 @@ export const emuSide = (p: Pen, o: EmuOpts = {}) => {
 /** front view (walking toward the lens) or back view (walking away); phase as in the side view */
 export const emuFront = (p: Pen, o: EmuOpts & { back?: boolean } = {}) => {
   const { mode = "stand", phase = 0, blink = 0, look = 0, expr = "calm", seed = 1, light = DEF_LIGHT, back = false, nod = 0, tint = 0 } = o;
-  const sole = 975, cx0 = 450, fcol = featherCol(seed, tint), thick = thickAngle(light);
+  const sole = 975, cx0 = 450, fcol = o.leader ? "#4d4046" : featherCol(seed, tint), thick = thickAngle(light);
   const moving = mode === "walk" || mode === "run", run = mode === "run";
   const lift = run ? 150 : 78, sway = moving ? (run ? 16 : 11) * Math.sin(TWO * phase) : 0;
   const bob = moving ? (run ? 24 : 10) * Math.cos(2 * TWO * phase) : 0;
@@ -324,8 +327,9 @@ export const emuFront = (p: Pen, o: EmuOpts & { back?: boolean } = {}) => {
   p.gradFill(hp, back ? "#5b5562" : SKIN_N, back ? "#4a4350" : SKIN_D, light, 0.35);
   p.clip(hp, () => { p.ell(hc[0], hc[1] - 36, 60, 30, "#4a4350", 0); });
   p.inkRing(hp, 8.5, thick, 0.35);
-  const up = expr === "alarm" ? 1.7 : 1;
-  for (let i = -2; i <= 2; i++) p.stroke([[hc[0] + i * 15, hc[1] - 41 + Math.abs(i) * 3], [hc[0] + i * 19, hc[1] - 41 - (15 - Math.abs(i) * 3) * up]], 5, "#3a3440");
+  const up = (expr === "alarm" ? 1.7 : 1) * (o.leader ? 2.4 : 1);
+  if (!o.cap) for (let i = -2; i <= 2; i++) p.stroke([[hc[0] + i * 15, hc[1] - 41 + Math.abs(i) * 3], [hc[0] + i * 19, hc[1] - 41 - (15 - Math.abs(i) * 3) * up]], o.leader ? 8 : 5, o.leader ? "#17141a" : "#3a3440");
+  if (o.cap) { p.poly([[hc[0] - 56, hc[1] - 26], [hc[0] + 56, hc[1] - 26], [hc[0] + 62, hc[1] - 64], [hc[0] - 62, hc[1] - 64]], "#8f8250", 7); p.ell(hc[0], hc[1] - 25, 46, 9, "#3b2a1e", 6, 0, 180); p.dot(hc[0], hc[1] - 46, 7, INK); p.dot(hc[0], hc[1] - 46, 5, "#e2bb4c"); }
   if (!back) {
     for (const s of [-1, 1]) eye(p, hc[0] + s * 27, hc[1] - 5, 14, expr, blink, look, SKIN_N);
     // bill pointing at the viewer: a short kite with two nostrils

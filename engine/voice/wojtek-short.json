@@ -1,0 +1,19 @@
+{
+ "voice": "bm_george",
+ "speed": 1.2,
+ "gap": 0.13,
+ "lead": 0.05,
+ "lines": [
+  { "id": "hook1", "text": "In the Second World War, the Polish army enlisted a bear.", "gap": 0.2 },
+  { "id": "hook2", "text": "He had a rank, a serial number, and a taste for beer.", "gap": 0.35 },
+  { "id": "cub", "text": "In 1942, Polish soldiers in Iran adopted an orphaned bear cub.", "say": "In nineteen forty-two, Polish soldiers in Iran adopted an orphaned bear cub." },
+  { "id": "milk", "text": "They fed him condensed milk from an old vodka bottle, and named him Wojtek.", "say": "They fed him condensed milk from an old vodka bottle, and named him Voy-tek.", "gap": 0.25 },
+  { "id": "copy", "text": "He grew up copying the soldiers. He wrestled them, saluted, and marched on his hind legs." },
+  { "id": "ship", "text": "Then the army sailed for Italy, and the ship did not allow pets.", "gap": 0.25 },
+  { "id": "private", "text": "So the soldiers made him one of them: Private Wojtek, with his own paybook.", "say": "So the soldiers made him one of them: Private Voy-tek, with his own paybook.", "gap": 0.25 },
+  { "id": "cassino", "text": "In 1944, at the battle of Monte Cassino, his unit says he carried crates of artillery shells, and never dropped one.", "say": "In nineteen forty-four, at the battle of Monte Cassino, his unit says he carried crates of artillery shells, and never dropped one." },
+  { "id": "corporal", "text": "He was promoted to corporal, and a bear carrying a shell became the company badge.", "gap": 0.25 },
+  { "id": "zoo", "text": "After the war, he retired to Edinburgh Zoo, where old soldiers came to visit." },
+  { "id": "polish", "text": "He still answered when they spoke to him in Polish.", "gap": 0.6 }
+ ]
+}

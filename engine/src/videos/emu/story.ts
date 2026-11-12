@@ -48,7 +48,9 @@ export const F = {
 
 // ---------------- shots ----------------
 export type Light = "day" | "golden";
-export type Zone = "camp" | "farm" | "plain" | "dam" | "track";
+export type Zone = "camp" | "farm" | "plain" | "dam" | "track" | "office" | "dock" | "cassino" | "zoo";
+/** height of the Monte Cassino hillside (zone "cassino") */
+export const hillY = (x: number, z: number) => 62 * smooth((z - 34) / 190) ** 1.25 * Math.max(0, 1 - (x / 190) ** 2);
 export type ShotDef = { id: number; name: string; a: number; b: number; zone: Zone; light: Light; sunAz?: number; sunEl?: number; horde?: boolean;
   /** a second sun set-up from frame `split` on (for a shot whose two halves look opposite ways) */
   split?: number; sunAz2?: number; sunEl2?: number };
@@ -133,8 +135,8 @@ export const HOME_DIR: [number, number] = [-0.94, 0.34];
 
 // ---------------- camera ----------------
 export type Cam = { pos: V3; look: V3; fov: number; roll: number };
-type Shot = Partial<Cam> & { pos: V3; look: V3 };
-type Key = { f: number; dur?: number; cut?: boolean; s: (f: number) => Shot };
+export type Shot = Partial<Cam> & { pos: V3; look: V3 };
+export type Key = { f: number; dur?: number; cut?: boolean; s: (f: number) => Shot };
 /** camera ease: symmetric smootherstep */
 export const glide = (u: number) => { const x = clamp01(u); return x * x * x * (x * (6 * x - 15) + 10); };
 const mix = (a: Cam, b: Cam, k: number): Cam => ({
@@ -142,7 +144,7 @@ const mix = (a: Cam, b: Cam, k: number): Cam => ({
   fov: a.fov + (b.fov - a.fov) * k, roll: a.roll + (b.roll - a.roll) * k,
 });
 const full = (c: Shot): Cam => ({ fov: 40, roll: 0, ...c });
-const run = (keys: Key[], f: number) => {
+export const run = (keys: Key[], f: number) => {
   let cur = full(keys[0].s(f));
   for (let i = 1; i < keys.length; i++) {
     const k = keys[i];
@@ -152,19 +154,19 @@ const run = (keys: Key[], f: number) => {
   return cur;
 };
 /** push-in factor since f0: the subject grows ~rate per frame; `punch` raises it (8 f soft edges) for the first n frames */
-const pushK = (f: number, f0: number, rate: number, punch = 0, n = 35) => {
+export const pushK = (f: number, f0: number, rate: number, punch = 0, n = 35) => {
   const x = Math.max(0, f - f0);
   let s = rate * x;
   if (punch > rate) for (let i = 0; i < Math.min(x, n); i++) s += (punch - rate) * Math.max(0, Math.min(1, (i + 0.5) / 8, (n - i - 0.5) / 8));
   return Math.exp(-s);
 };
 /** dolly push: the camera slides toward the look point by factor k */
-const dolly = (pos: V3, look: V3, k: number, rest: Partial<Cam> = {}): Shot =>
+export const dolly = (pos: V3, look: V3, k: number, rest: Partial<Cam> = {}): Shot =>
   ({ pos: [look[0] + (pos[0] - look[0]) * k, look[1] + (pos[1] - look[1]) * k, look[2] + (pos[2] - look[2]) * k], look, ...rest });
 /** zoom push (the camera stays put, for shots with something close to the lens): tan(fov/2) shrinks by k */
-const zoom = (pos: V3, look: V3, fov: number, k: number, rest: Partial<Cam> = {}): Shot =>
+export const zoom = (pos: V3, look: V3, fov: number, k: number, rest: Partial<Cam> = {}): Shot =>
   ({ pos, look, fov: (360 / Math.PI) * Math.atan(Math.tan((fov * Math.PI) / 360) * k), ...rest });
-const add = (a: V3, b: V3): V3 => [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
+export const add = (a: V3, b: V3): V3 => [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
 
 const CAMS: Record<number, Key[]> = {
   // 1 hook: Sir Digsworth low in the frame, the proud trio above him, the horde on the rise above them
@@ -257,13 +259,31 @@ export const kickAt = (f: number) => {
   for (const [f0, g] of KICKS) { const n = f - f0; if (n >= 0 && n < 7) a += g * (n % 2 ? -1 : 1) * (1 - n / 7) ** 1.5; }
   return a;
 };
-export const camAt = (id: number, f: number): Cam => {
-  const c = run(CAMS[id], f), a = kickAt(f);
+/** adds an impact kick of strength a to a camera */
+export const kicked = (c: Cam, a: number): Cam => {
   if (!a) return c;
   const d: V3 = [c.look[0] - c.pos[0], c.look[1] - c.pos[1], c.look[2] - c.pos[2]];
   const L = Math.hypot(...d), h = Math.hypot(d[0], d[2]) || 1;
   const m = (3 / 640) * Math.tan((c.fov * Math.PI) / 360) * L * a;
   return { ...c, look: [c.look[0] - (d[2] / h) * m, c.look[1] + 0.6 * m, c.look[2] + (d[0] / h) * m], roll: c.roll + a * 0.004 };
+};
+export const camAt = (id: number, f: number): Cam => kicked(run(CAMS[id], f), kickAt(f));
+/** the lens table -> lens at frame f (shared by every film) */
+export const dofFrom = (TABLE: Dof[]) => (f: number) => {
+  let i = 0; while (i + 1 < TABLE.length && f >= TABLE[i + 1].f) i++;
+  const d = TABLE[i], p = TABLE[Math.max(0, i - 1)];
+  const k = d.dur ? glide((f - d.f) / d.dur) : 1;
+  const fa = d.focus, fb = p.focus;
+  const focus = !fa ? undefined : d.dur && fb && k < 1 ? (ff: number): V3 => { const a = fb(ff), b = fa(ff); return [lerp(a[0], b[0], k), lerp(a[1], b[1], k), lerp(a[2], b[2], k)]; } : fa;
+  return { cInf: p.cInf + (d.cInf - p.cInf) * k, focus };
+};
+/** shots + crossfades -> layers to draw at frame f */
+export const layersFrom = (shots: ShotDef[], xfade: Record<number, number>) => (f: number): { id: number; alpha: number }[] => {
+  for (const s of shots) {
+    const x = xfade[s.id];
+    if (x && f >= s.a - x / 2 && f < s.a + x / 2) return [{ id: s.id - 1, alpha: 1 }, { id: s.id, alpha: (f - (s.a - x / 2) + 1) / (x + 1) }];
+  }
+  return [{ id: (shots.find((s) => f >= s.a && f < s.b) ?? shots[shots.length - 1]).id, alpha: 1 }];
 };
 
 // ---------------- lens: depth of field ----------------

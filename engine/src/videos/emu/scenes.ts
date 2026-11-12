@@ -11,30 +11,40 @@ import {
 import talkJson from "./talk.json";
 
 const TALK = talkJson as number[];
-export const talkAt = (f: number) => TALK[Math.max(0, Math.min(TALK.length - 1, f))] ?? 0;
+let talkFn: ((f: number) => number) | null = null;
+/** another film can supply its own mouth track while it borrows these scenes */
+export const setTalkFn = (fn: ((f: number) => number) | null) => { talkFn = fn; };
+export const talkAt = (f: number) => (talkFn ? talkFn(f) : TALK[Math.max(0, Math.min(TALK.length - 1, f))] ?? 0);
 
 // ---------------- prop state ----------------
 export type GunS = { pos: V3; yaw: number; pitch?: number; roll?: number; recoil?: number; h?: number; legs?: boolean };
 export type CrateS = { pos: V3; yaw: number };
-export type TruckS = { x: number; z: number; yaw: number; y: number; pitch: number; roll: number; wheel: number; wheelY: number[]; gunPitch: number; gunYaw: number; gunLift: number };
+export type TruckS = { x: number; z: number; yaw: number; y: number; pitch: number; roll: number; wheel: number; wheelY: number[]; gunPitch: number; gunYaw: number; gunLift: number; noGun?: boolean };
 export type BoardS = { pos: V3; key: string; draw: (g: CanvasRenderingContext2D) => void };
-export type Scene = Stage & { guns: GunS[]; crates: CrateS[]; truck?: TruckS; board?: BoardS; tally?: { pos: V3; n: number }; brass?: boolean; aftermath?: boolean; fan: number };
+export type Scene = Stage & { guns: GunS[]; crates: CrateS[]; truck?: TruckS; board?: BoardS; tally?: { pos: V3; n: number }; brass?: boolean; aftermath?: boolean; fan: number;
+  /** long film extras: brass heap offset, film camera, exclusion fence height 0..1, office dressing, wheat regrowth is in wheatAt */
+  brassAt?: V3; filmCam?: { pos: V3; yaw: number; crank: number }; tallFence?: number; office?: "minister" | "parliament";
+  /** Wojtek film: crates of 25-pounder shells, the field gun (recoil 0..1) */
+  shellCrates?: CrateS[]; fieldGun?: { pos: V3; yaw: number; recoil: number } };
+/** everything a film hands to the World */
+export type Show = { shots: import("./story").ShotDef[]; camAt: (id: number, f: number) => import("./story").Cam; sceneAt: (id: number, f: number, cam: CamInfo) => Scene;
+  crowdFor: (id: number, f: number) => CrowdSpec | null; wheatAt: (id: number, f: number, x: number, z: number) => number };
 
-const SIR = { i: 3, o: SIR_DIGSWORTH, okey: "sir" };
-const WHO: Record<"major" | "s1" | "s2" | "farmer", { i: number; o: Outfit; okey: string }> = {
+export const SIR = { i: 3, o: SIR_DIGSWORTH, okey: "sir" };
+export const WHO: Record<"major" | "s1" | "s2" | "farmer", { i: number; o: Outfit; okey: string }> = {
   major: { i: 2, o: MAJOR, okey: "major" }, s1: { i: 4, o: DIGGER, okey: "dig1" }, s2: { i: 6, o: DIGGER2, okey: "dig2" }, farmer: { i: 5, o: FARMER, okey: "farmer" },
 };
-const TR = ["major", "s1", "s2"] as const;
+export const TR = ["major", "s1", "s2"] as const;
 const T = (f: number) => f / FPS;
 /** falls in from above and lands at `land` with one small rebound; returns the height above the ground, or -1 before it appears */
-const dropY = (f: number, land: number, from = 1.5) => {
+export const dropY = (f: number, land: number, from = 1.5) => {
   const n = f - (land - 6);
   if (n < 0) return -1;
   if (n < 6) return from * (1 - (n / 6) ** 2);
   const m = n - 6;
   return m < 6 ? 0.1 * Math.sin((Math.PI * m) / 6) : 0;
 };
-const dust = (out: Stage, f: number, f0: number, x: number, y: number, z: number, s = 1, dur = 12) => {
+export const dust = (out: Stage, f: number, f0: number, x: number, y: number, z: number, s = 1, dur = 12) => {
   const u = (f - f0) / dur;
   if (u < 0 || u >= 1) return;
   out.fx.push({ key: `dust${q(u, 12)}`, cw: 300, ch: 300, draw: (p) => fxDust(p, q(u, 12)), x, y: y + 0.32 * s, z, w: 1.5 * s, h: 1.5 * s, soft: true, opacity: 0.85 * (1 - u) ** 0.8 });
@@ -42,13 +52,13 @@ const dust = (out: Stage, f: number, f0: number, x: number, y: number, z: number
 const sirAt = (out: Stage, cam: CamInfo, f: number, at: V3, fo: FrontOpts) =>
   person(out, cam, SIR, at[0], at[1], at[2], { fo: { mode: "stand", blink: lidAt(T(f), 3), ...fo }, talk: talkAt(f) });
 /** muzzle flash + recoil for a gun that fires on the given frames (each shot shows 2 frames) */
-const firing = (f: number, shots: number[]) => { for (const s of shots) if (f >= s && f < s + 2) return f - s + 1; return 0; };
-const burst = (a: number, b: number, step = 3, off = 0) => { const o: number[] = []; for (let x = a + off; x < b; x += step) o.push(x); return o; };
-const flash = (out: Stage, k: number, at: V3, s = 1) => {
+export const firing = (f: number, shots: number[]) => { for (const s of shots) if (f >= s && f < s + 2) return f - s + 1; return 0; };
+export const burst = (a: number, b: number, step = 3, off = 0) => { const o: number[] = []; for (let x = a + off; x < b; x += step) o.push(x); return o; };
+export const flash = (out: Stage, k: number, at: V3, s = 1) => {
   if (!k) return;
   out.fx.push({ key: `muzzle${k}`, cw: 300, ch: 300, draw: (p) => fxMuzzle(p, k), x: at[0], y: at[1], z: at[2], w: 0.95 * s, h: 0.95 * s });
 };
-const emuBlink = (f: number, i: number) => lidAt(T(f), i + 50);
+export const emuBlink = (f: number, i: number) => lidAt(T(f), i + 50);
 
 // ---------------- the wheat ----------------
 /** how far the mob has eaten into the field (everything at larger x is stubble) */
@@ -59,7 +69,7 @@ const PECKERS: { x: number; z: number; off: number }[] = [{ x: -1.4, z: 10.2, of
 const cuEdge = (z: number) => -2.45 + 1.18 * (z - 10.2);
 const PECK_N = 30;
 /** peck cycle: 0 up .. 1 down, two jabs while down, a swallow on the way up */
-const peckAt = (n: number) => {
+export const peckAt = (n: number) => {
   const c = ((n % PECK_N) + PECK_N) % PECK_N;
   const k = c < 8 ? smooth(c / 8) : c < 18 ? 1 : c < 25 ? 1 - smooth((c - 18) / 7) : 0;
   const jab = c >= 8 && c < 18 ? Math.sin(((c - 8) / 5) * Math.PI * 2) : 0;
@@ -445,3 +455,7 @@ export const drawTally = (g: CanvasRenderingContext2D, n: number) => {
   if (n >= 6) { g.beginPath(); g.moveTo(392, 52); g.lineTo(384, 204); g.stroke(); }
 };
 export { SU, Pen };
+
+/** the short film, as the World sees it */
+import { SHOTS as EMU_SHOTS, camAt as emuCamAt } from "./story";
+export const EMU_SHOW: Show = { shots: EMU_SHOTS, camAt: emuCamAt, sceneAt, crowdFor, wheatAt };

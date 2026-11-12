@@ -1,0 +1,203 @@
+{
+ "voice": "bm_george",
+ "speed": 1.16,
+ "gap": 0.16,
+ "lead": 0.05,
+ "lines": [
+  {
+   "id": "hook1",
+   "text": "In 1932, Australia sent soldiers with machine guns to fight an army of birds.",
+   "say": "In nineteen thirty-two, Australia sent soldiers with machine guns, to fight an army of birds.",
+   "gap": 0.25
+  },
+  {
+   "id": "hook2",
+   "text": "The birds won.",
+   "gap": 0.35
+  },
+  {
+   "id": "intro",
+   "text": "I'm Sir Digsworth, and this is the Great Emu War.",
+   "gap": 0.4
+  },
+  {
+   "id": "land",
+   "text": "It begins after the First World War. Australia gives thousands of its soldiers land in the west, to grow wheat."
+  },
+  {
+   "id": "depression",
+   "text": "Then comes the Great Depression. Wheat prices fall, and the help the government promised never arrives.",
+   "gap": 0.3
+  },
+  {
+   "id": "worse",
+   "text": "And then things get worse.",
+   "gap": 0.25
+  },
+  {
+   "id": "arrive",
+   "text": "Twenty thousand emus arrive.",
+   "gap": 0.35
+  },
+  {
+   "id": "migrate",
+   "text": "Every year, emus walk from the dry inland towards the coast. This year, they find something wonderful on the way: fields of wheat."
+  },
+  {
+   "id": "eat",
+   "text": "They eat the crops. They trample what they don't eat."
+  },
+  {
+   "id": "rabbits",
+   "text": "And they smash holes in the fences, which lets the rabbits in.",
+   "gap": 0.35
+  },
+  {
+   "id": "ask",
+   "text": "The farmers are old soldiers. So they ask for what soldiers know: machine guns."
+  },
+  {
+   "id": "minister",
+   "text": "The Minister of Defence says yes. After all, he says, the birds will make good target practice.",
+   "gap": 0.3
+  },
+  {
+   "id": "army",
+   "text": "So the army sends one major, two soldiers, two machine guns and ten thousand bullets.",
+   "say": "So the army sends one major, two soldiers, two machine guns, and ten thousand bullets."
+  },
+  {
+   "id": "camera",
+   "text": "They even bring a film cameraman.",
+   "gap": 0.35
+  },
+  {
+   "id": "nov2",
+   "text": "The second of November. The soldiers spot about fifty emus. But the birds stay just out of range."
+  },
+  {
+   "id": "herd",
+   "text": "The farmers try to herd them towards the guns. The emus split into small groups, and run.",
+   "gap": 0.3
+  },
+  {
+   "id": "dam1",
+   "text": "Two days later, a better plan: an ambush, at a dam."
+  },
+  {
+   "id": "dam2",
+   "text": "More than a thousand emus walk straight towards the gun. The soldiers wait, and wait, and open fire.",
+   "gap": 0.3
+  },
+  {
+   "id": "jam",
+   "text": "The gun jams.",
+   "gap": 0.3
+  },
+  {
+   "id": "twelve",
+   "text": "Twelve birds down. A thousand gone.",
+   "gap": 0.35
+  },
+  {
+   "id": "leader",
+   "text": "The soldiers notice something odd. Every group of emus seems to have a leader: a big bird, six feet tall, with black feathers, who keeps watch and warns the others."
+  },
+  {
+   "id": "guerrilla",
+   "text": "One bird expert wrote that the emu command had clearly ordered guerrilla tactics.",
+   "gap": 0.35
+  },
+  {
+   "id": "truck1",
+   "text": "So the major tries speed. He puts a gun on a truck."
+  },
+  {
+   "id": "truck2",
+   "text": "But the truck can't catch the birds, and the ride is so bumpy the gunner never fires a single shot.",
+   "gap": 0.3
+  },
+  {
+   "id": "sixdays",
+   "text": "After six days, the army has fired two and a half thousand bullets. Nobody is sure how many emus they hit. One count says fifty."
+  },
+  {
+   "id": "casualties",
+   "text": "The major's report notes one comfort: his men suffered no casualties.",
+   "gap": 0.3
+  },
+  {
+   "id": "home",
+   "text": "On the eighth of November, the army is called home.",
+   "gap": 0.4
+  },
+  {
+   "id": "tanks",
+   "text": "The major is impressed. Emus, he says, can face machine guns like tanks."
+  },
+  {
+   "id": "medal",
+   "text": "In parliament, one politician asks whether the soldiers will get a medal.",
+   "gap": 0.35
+  },
+  {
+   "id": "back",
+   "text": "But the emus are still eating. So five days later, the army comes back."
+  },
+  {
+   "id": "better",
+   "text": "This time, it goes better. By December, they are shooting about a hundred emus a week."
+  },
+  {
+   "id": "score",
+   "text": "Then the major is called home for good. His final score, by his own count: 986 emus, for 9,860 bullets.",
+   "say": "Then the major is called home for good. His final score, by his own count: nine hundred and eighty-six emus, for nine thousand, eight hundred and sixty bullets."
+  },
+  {
+   "id": "ten",
+   "text": "That is exactly ten bullets for every bird.",
+   "gap": 0.4
+  },
+  {
+   "id": "again",
+   "text": "The farmers ask for the army again in 1934, in 1943, and in 1948.",
+   "say": "The farmers ask for the army again in nineteen thirty-four, in nineteen forty-three, and in nineteen forty-eight."
+  },
+  {
+   "id": "no",
+   "text": "Each time, the government says no.",
+   "gap": 0.3
+  },
+  {
+   "id": "fences",
+   "text": "What finally works is much simpler: better fences, and a reward for every emu."
+  },
+  {
+   "id": "bounty",
+   "text": "In six months of 1934, farmers claim more than fifty-seven thousand rewards.",
+   "say": "In six months of nineteen thirty-four, farmers claim more than fifty-seven thousand rewards.",
+   "gap": 0.4
+  },
+  {
+   "id": "end1",
+   "text": "And the emus?",
+   "gap": 0.25
+  },
+  {
+   "id": "end2",
+   "text": "They're still there.",
+   "gap": 0.45
+  },
+  {
+   "id": "nil",
+   "text": "Emus one. Australia nil.",
+   "say": "Emus, one. Australia, nil.",
+   "gap": 0.5
+  },
+  {
+   "id": "outro",
+   "text": "I'm Sir Digsworth. Do mind the birds.",
+   "gap": 0.7
+  }
+ ]
+}

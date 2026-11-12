@@ -4,6 +4,7 @@ import React from "react";
 import { AbsoluteFill, getInputProps, useCurrentFrame } from "remotion";
 import { Pen, bodyFront, bodySide, setTalk, SIR_DIGSWORTH, DIGGER, DIGGER2, MAJOR, FARMER, Expr } from "./toon";
 import { emuSide, emuFront, fxFeather, fxDust, fxMuzzle, fxBang, fxSmoke } from "./emutoon";
+import { bearFront, fxBadge } from "./beartoon";
 
 type Cell = { w: number; h: number; draw: (p: Pen) => void; label?: string };
 const Cv: React.FC<{ c: Cell; s: number }> = ({ c, s }) => (
@@ -64,6 +65,19 @@ const pages = (f: number): Record<string, { s: number; cells: Cell[] }> => {
     sir: { s: 1.9, cells: [
       H("front", (p) => { setTalk(0); bodyFront(p, SIR_DIGSWORTH, { mode: "stand", expr: "neutral", seed: 3 }); }),
       H("talk", (p) => { setTalk(0.9); bodyFront(p, SIR_DIGSWORTH, { mode: "stand", expr: "smile", seed: 3 }); setTalk(0); }),
+    ] },
+    bear: { s: 0.44, cells: [
+      E("stand calm", (p) => bearFront(p, {})),
+      E("happy cap", (p) => bearFront(p, { expr: "happy", cap: true })),
+      E("salute", (p) => bearFront(p, { pose: "salute", cap: true, expr: "proud", stripes: true })),
+      E("carry walk", (p) => bearFront(p, { pose: "carry", walk: true, phase: 0.2, cap: true })),
+      E("drink", (p) => bearFront(p, { pose: "drink", expr: "happy" })),
+      E("cheer shock", (p) => bearFront(p, { pose: "cheer", expr: "shock" })),
+      E("sit sleepy", (p) => bearFront(p, { pose: "sit", expr: "sleepy" })),
+      E("cub", (p) => bearFront(p, { cub: true, expr: "calm" })),
+      E("cub drink", (p) => bearFront(p, { cub: true, pose: "drink", k: 1 })),
+      E("walk .6", (p) => bearFront(p, { walk: true, phase: 0.6, cap: true })),
+      X("badge", fxBadge, 400, 440),
     ] },
     fx: { s: 1, cells: [
       X("feather", fxFeather, 200, 120), X("dust .2", (p) => fxDust(p, 0.2)), X("dust .8", (p) => fxDust(p, 0.8)),

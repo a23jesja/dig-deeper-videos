@@ -21,3 +21,4 @@ Read before picking each new topic. Append one entry per video, and update earli
 | 2026-11-12 | Australia Lost a War to Emus (1932) #Shorts | Great Emu War / strange history, NEW engine (Remotion + three.js), first video Jesper approved at reference quality | general | – | `videos/shorts/2026-11-12-great-emu-war-short.mp4`, 55 s, 2K |
 
 - 2026-11-12: new engine in `engine/` (flat cartoon cast in a painted 3D world). The old Python engine and its episodes were removed; the Tue/Sat routine stays paused until one short and one long video are approved.
+| 2026-11-13 | The Army That Lost a War to Birds | Sir Digsworth | Great Emu War, long video (3:08, 1920x1080), new engine | general | – | `videos/2026-11-13-army-that-lost-a-war-to-birds.mp4` + thumbnail "THE ARMY LOST TO BIRDS?!" |

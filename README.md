@@ -123,3 +123,37 @@ Every video and Short must make people smile within the first 10 seconds and kee
 - **Explanations as mini-stories with stakes** ("here's where it gets strange…", "and then it gets worse") instead of textbook sentences.
 - Speech bubbles are for punchlines ("Oh dear.", "Splendid!", "Not again."), not for facts.
 - Professional edit: calm steady camera, he stands still and gestures gently while talking (the engine handles this — never use `shiver`), one prop at a time appearing exactly when it is mentioned (`at` matched to the word), nothing overlapping, and a punchy cut every 6–10 seconds.
+
+
+## THE STANDARD (from 2026-11-12): cartoon "toon" style + SHOW what is said
+This replaces every earlier look. `style` defaults to `toon` for `host: "stick"`: flat ink-outlined cartoon characters (drawn with the character
+library in `engine/toon/toon.ts`, adapted from the MIT-licensed claude-animated-shorts skill) standing in the colourful 3D worlds.
+Reference episodes: `episodes/2026-11-13-emu-war.json` (long) and `episodes/2026-11-12-short-emu-war.json` (Short). Copy their structure.
+
+**Rule number one (Jesper): everything Sir Digsworth says must be SEEN.** Each sentence gets its own visual beat, timed with `at`/`until`:
+if he says the emus ate the wheat, an emu pecks and the wheat disappears; if the gun jams, it fires, stops and smokes; if the army goes home, soldiers march off screen.
+Never leave a static line-up of characters while the narration describes action. Sir Digsworth is the narrator: show him in about half the scenes
+as the commentator (reaction + 1–3 word speech bubble), and hide him (`"chloe": {"hide": true}`) in pure action scenes so the action has the stage.
+
+### Scene format additions
+`"cast": [ {...}, ... ]` — cartoon characters and drawn props, each:
+- `kind`: `sir` is automatic (from `chloe`). People: `soldier`, `officer`, `farmer`, `farmer2`, `minister`. Animal: `emu` (`mode`: stand / run / eat; `opts.helmet`).
+  Drawn things: `gun` (`fire: [from, to]` fractions of the scene, `jam_at`), `wheat` (`anim: {"eaten": [0, 1, from, to]}`), `fence` (`opts.broken`), `rabbit`, `truck` (`bumpy`), `crate` (`opts.label`).
+- `x` (0–1 across the 16:9 frame; the Short maps it automatically), `gy` (0.9 = front, 0.8 = further back and smaller), `h` (height in metres), `flip` (face left).
+- `count`, `spacing`, `rows` (crowds), `at` / `until` (fractions of the scene when it appears / disappears), `to` + `move_time` (+ `linear`) to walk/run/drive across,
+  `expr` (neutral, stern, smile, smile_closed, grin, laugh, shock, nervous, relief, dazed, pained), `act` (cheer, shrug, point, bounce).
+- To change a pose mid-scene, use two entries: one with `until: 0.5`, one with `at: 0.5`.
+- `chloe.action` for Sir Digsworth: idle, point, wow, jump, shrug, think, wave, wipe, dizzy, laugh, stern, walk/run with `to`; `chloe.expr` overrides the face.
+- Emoji props still work for small extras, but prefer drawn `cast` kinds for anything important.
+
+### New topics need new drawings
+Every topic needs its own cast and props. You MAY add new `kind`s: people are a new entry in `OUTFITS`, animals and things are a small `drawXxx(p, o, t)`
+function using the `Pen` API (poly, ell, stroke, dot, arc — see `drawEmu`, `drawTruck`, `drawWheat` in `engine/three/scene.html`) plus one line in `drawCard`.
+Draw on the 600x1000 canvas with the feet at y = 975, thick dark outlines (9–12 px), flat colours. Render a test sheet and LOOK at it before using it.
+Do not change anything else in the engine.
+
+### Staging rules
+- Portrait Shorts fit about 3 characters across: front row at x 0.1 / 0.4 / 0.7, extras further back (`gy` 0.8) and smaller.
+- Sir Digsworth stands at x ≈ 0.12–0.2 when present; action happens at x 0.4–0.9.
+- Big words (`props` with `text`) at y 0.2–0.4; never more than two at once.
+- Preview every scene at two moments (35 % and 92 %) and check that the picture alone tells the story.

@@ -478,9 +478,10 @@ function drawEmu(p, o) {
     p.stroke([foot, [foot[0] + 42, foot[1] + 6]], 13, TINK); p.stroke([foot, [foot[0] + 42, foot[1] + 6]], 6.5, '#8a7a5c');
   }
   // neck + head (behind body edge)
-  const nk = [[385, by - 40], [430, by - 190 - bob * 0.4], [418, by - 330]];
+  const eat = o.mode === 'eat', pk = eat ? 0.5 + 0.5 * Math.sin((o.phase || 0) * Math.PI * 2 * 1.3) : 0;
+  const nk = eat ? [[395, by - 20], [500, by - 60], [520, by + 120 + pk * 150]] : [[385, by - 40], [430, by - 190 - bob * 0.4], [418, by - 330]];
   p.stroke(nk, 46, TINK); p.stroke(nk, 30, '#7fb4c9');
-  const hx = 432, hy = by - 352;
+  const hx = eat ? 524 : 432, hy = eat ? by + 150 + pk * 150 : by - 352;
   p.poly([[hx + 34, hy - 6], [hx + 104, hy + 12], [hx + 34, hy + 26]], '#3b3a35', 9);
   p.ell(hx, hy, 50, 44, '#58676f', 11);
   // shaggy body
@@ -488,6 +489,7 @@ function drawEmu(p, o) {
   p.poly(pts, col, 12);
   p.stroke([[190, by + 30], [240, by + 70], [300, by + 60]], 7, dark); p.stroke([[220, by - 30], [280, by + 5], [340, by - 10]], 7, dark);
   p.poly([[120, by - 20], [70, by + 40], [135, by + 50]], dark, 10);   // tail tuft
+  if (o.helmet) { p.ell(hx - 2, hy - 20, 62, 44, '#6f7a4a', 10, 180, 360); p.stroke([[hx - 70, hy - 20], [hx + 70, hy - 20]], 16, TINK); p.stroke([[hx - 68, hy - 20], [hx + 68, hy - 20]], 8, '#6f7a4a'); }
   // face
   const ex = hx + 14, ey = hy - 8, e = o.expr || 'neutral';
   if (e === 'shock') { p.ell(ex, ey, 15, 17, '#ffffff', 5); p.dot(ex + 3, ey, 6); }
@@ -501,11 +503,72 @@ function drawGun(p) {   // Lewis gun on a tripod, pointing right
   p.ell(330, 628, 74, 26, '#5d646e', 10);
   p.poly([[110, 650], [150, 650], [150, 760], [118, 760]], '#7a4b2a', 10);
 }
+function drawGunFx(p, o, t) {
+  if (o.fire) {   // flickering muzzle flash + flying shells
+    const f = Math.floor(t * 30) % 3, r = 60 + f * 28, cx = 640 - 40, cy = 671; const pts = [];
+    for (let i = 0; i < 16; i++) { const a = i / 16 * Math.PI * 2 + f, rr = i % 2 ? r : r * 0.45; pts.push([cx + Math.cos(a) * rr, cy + Math.sin(a) * rr * 0.8]); }
+    p.poly(pts, f === 1 ? '#fff3b0' : '#ffb52e', 8);
+    for (let k = 0; k < 3; k++) { const ph = (t * 3 + k / 3) % 1; p.ell(300 - ph * 160, 600 - Math.sin(ph * Math.PI) * 170, 13, 7, '#e9b93a', 4); }
+  }
+  if (o.jam) for (let k = 0; k < 4; k++) { const ph = (t * 0.6 + k / 4) % 1; p.g.globalAlpha = 0.85 * (1 - ph); p.ell(330 + Math.sin(k * 2 + ph * 4) * 30, 590 - ph * 380, 34 + ph * 60, 30 + ph * 50, '#8d8f96', 7); p.g.globalAlpha = 1; }
+}
+function drawWheat(p, o, t) {
+  const k = Math.min(1, Math.max(0, o.eaten || 0));
+  for (let i = 0; i < 9; i++) {
+    const x = 60 + i * 60, gone = k > (i * 0.618 % 1) * 0.9 + 0.05, h = gone ? 46 : 330 + (i % 3) * 40, sway = Math.sin(t * 1.7 + i) * 14;
+    p.stroke([[x, 975], [x + sway * 0.4, 975 - h * 0.5], [x + sway, 975 - h]], 15, TINK); p.stroke([[x, 975], [x + sway * 0.4, 975 - h * 0.5], [x + sway, 975 - h]], 8, '#c9a13c');
+    if (!gone) { p.ell(x + sway, 975 - h - 50, 22, 62, '#f2c744', 8, 0, 360, sway * 0.6); p.stroke([[x + sway, 975 - h - 95], [x + sway, 975 - h - 10]], 4, '#b8892a'); }
+  }
+}
+function drawFence(p, o) {
+  const br = !!o.broken, W = '#b98552';
+  for (const y of [770, 870]) {
+    if (!br) { p.poly([[10, y], [590, y], [590, y + 34], [10, y + 34]], W, 9); }
+    else { p.poly([[10, y], [190, y], [222, y + 16], [186, y + 34], [10, y + 34]], W, 9); p.poly([[590, y], [410, y], [378, y + 18], [414, y + 34], [590, y + 34]], W, 9); }
+  }
+  for (const x of br ? [40, 560] : [40, 300, 560]) p.poly([[x - 22, 690], [x, 668], [x + 22, 690], [x + 22, 975], [x - 22, 975]], '#a8743f', 10);
+  if (br) { p.poly([[250, 940], [330, 925], [345, 960], [262, 972]], W, 8); p.poly([[330, 895], [372, 905], [356, 930]], W, 7); }
+}
+function drawRabbit(p, o) {
+  const c = '#d8c2a0';
+  p.ell(250, 965, 60, 14, TINK, 0); 
+  p.ell(170, 870, 34, 34, '#ffffff', 9);
+  p.ell(270, 870, 118, 84, c, 11);
+  for (const dx of [0, 34]) p.ell(372 + dx, 700, 20, 78, c, 10, 0, 360, 8 + dx * 0.3);
+  p.ell(392, 800, 62, 56, c, 11);
+  p.dot(412, 790, 9); p.dot(450, 812, 7, '#e88');
+  p.ell(300, 950, 44, 18, c, 9); p.ell(210, 950, 50, 20, c, 9);
+}
+function drawTruck(p, o, t) {
+  const G = '#6f7a4a', D = '#56603a';
+  p.poly([[40, 720], [330, 720], [330, 860], [40, 860]], D, 11);                                   // flatbed
+  p.poly([[330, 610], [450, 610], [490, 720], [570, 730], [580, 860], [330, 860]], G, 11);     // cab + bonnet
+  p.poly([[352, 632], [436, 632], [462, 712], [352, 712]], '#cfe8f5', 8);
+  // gunner + gun on the flatbed
+  p.ell(150, 610, 46, 46, '#ffe2c2', 10); p.ell(150, 590, 48, 34, '#7d8252', 9, 180, 360); p.dot(166, 612, 6); p.stroke([[136, 632], [160, 628]], 5);
+  if (o.expr === 'shock') p.ell(160, 640, 10, 13, '#5a1e28', 4);
+  p.poly([[120, 656], [186, 656], [200, 720], [106, 720]], '#8f9460', 10);
+  const wob = Math.sin(t * 23) * 0.35; p.rot = [wob, 220, 690];
+  p.poly([[190, 672], [330, 672], [330, 706], [190, 706]], '#4a4f57', 9); p.poly([[330, 680], [420, 680], [420, 698], [330, 698]], '#6b727c', 8);
+  p.rot = null;
+  for (const x of [140, 480]) { p.ell(x, 890, 78, 78, '#2b2a30', 12); p.ell(x, 890, 32, 32, '#9a9ca3', 8); }
+  p.poly([[560, 760], [596, 760], [596, 800], [566, 800]], '#f2d16b', 7);
+}
+function drawCrate(p, o) {
+  p.poly([[110, 760], [490, 760], [490, 975], [110, 975]], '#a8743f', 11); p.stroke([[110, 830], [490, 830]], 8); p.stroke([[110, 905], [490, 905]], 8);
+  for (let i = 0; i < 9; i++) { const x = 140 + i * 40; p.poly([[x - 14, 760], [x - 14, 700], [x, 668], [x + 14, 700], [x + 14, 760]], '#e9b93a', 7); }
+  const g = p.g; g.font = '900 78px Poppins, Arial'; g.textAlign = 'center'; g.fillStyle = '#3b2a1a'; g.fillText(o.label || '10,000', 300, 962 - 55);
+}
 function drawCard(g, c, t) {
   g.clearRect(0, 0, 600, 1000);
   const p = new Pen(g), o = c.opts || {};
   if (c.kind === 'emu') return drawEmu(p, o);
-  if (c.kind === 'gun') return drawGun(p);
+  if (c.kind === 'gun') { drawGun(p); return drawGunFx(p, o, t); }
+  if (c.kind === 'wheat') return drawWheat(p, o, t);
+  if (c.kind === 'fence') return drawFence(p, o);
+  if (c.kind === 'rabbit') return drawRabbit(p, o);
+  if (c.kind === 'truck') return drawTruck(p, o, t);
+  if (c.kind === 'crate') return drawCrate(p, o);
   if (c.kind === 'stars') return fxStars(p, (t * 0.8) % 1);
   if (c.kind === 'puff') return fxPuff(p, o.t ?? (t % 1));
   if (c.kind === 'burst') return fxBurst(p, o.t ?? (t % 1));
@@ -590,7 +653,7 @@ window.renderFrame = function (s) {
     k.m.rotation.set(0, 0, 0); k.m.renderOrder = 10 + i;
     k.m.material.color.set(CARD_TINT[s.bg] || '#ffffff'); k.m.material.opacity = c.a ?? 1;
     const fx = c.kind === 'stars' || c.kind === 'puff' || c.kind === 'burst';
-    k.sh.visible = !fx && !c.noshadow; k.sh.position.set(gp.x, 0.02, gp.z); k.sh.scale.set(hgt * (c.kind === 'emu' ? 0.42 : 0.26), hgt * 0.1, 1); k.sh.renderOrder = 9;
+    k.sh.visible = !fx && !c.noshadow && !['wheat', 'fence', 'crate'].includes(c.kind); k.sh.position.set(gp.x, 0.02, gp.z); k.sh.scale.set(hgt * (c.kind === 'emu' || c.kind === 'truck' ? 0.42 : 0.26), hgt * 0.1, 1); k.sh.renderOrder = 9;
     k.sh.material.opacity = 0.26 * (1 - Math.min(0.7, (c.bob || 0) * 0.5));
     if (c.kind === 'sir') sirCard = k;
   });

@@ -170,7 +170,7 @@ def draw_host(ctx, ep, x, y, s, t, facing=1, act='idle', blink=False, mouth=0.0,
 _yy, _xx = np.mgrid[0:H, 0:W].astype(np.float32)
 _VIG = (1.0 - 0.55*np.clip(((_xx - W/2)/(W*0.62))**2 + ((_yy - H/2)/(H*0.62))**2, 0, 1)**1.3).astype(np.float32)[..., None]
 _GRAIN = [np.random.RandomState(k).normal(0, 3.5, (H, W, 1)).astype(np.float32) for k in range(6)]
-def style_of(ep): return ep.get('style', '3d' if is_stick(ep) else 'bright')
+def style_of(ep): return ep.get('style', 'toon' if is_stick(ep) else 'bright')
 def is_3d(ep): return style_of(ep) in ('3d', 'toon')
 def is_toon(ep): return style_of(ep) == 'toon'
 def is_noir(ep): return style_of(ep) == 'noir'
@@ -1055,29 +1055,43 @@ def _sir_card(act, x, t, lt, dur, talk, energy, blink, c=None, gy=0.9, h=3.3):
     return card
 
 def _cast_cards(sc, t, lt, dur):
-    """Extra cartoon characters of a scene: sc['cast'] = [{kind, x, gy, h, count, mode, expr, to, at, flip, spacing}]"""
+    """Extra cartoon characters / drawn props of a scene. sc['cast'] entries:
+    {kind, x, gy, h, count, spacing, stagger, rows, mode, expr, flip, act, at, until, to, move_time,
+     opts: {...static draw options...}, anim: {name: [v0, v1, at_frac, end_frac]}, fire: [at, until], jam_at: frac}"""
     out = []
     for ci, m in enumerate(sc.get('cast', [])):
         at = m.get('at', 0.0)*dur
-        if lt < at: continue
-        u = lt - at; n = m.get('count', 1)
+        if lt < at or lt > m.get('until', 9.0)*dur: continue
+        u = lt - at; n = m.get('count', 1); kind = m.get('kind', 'farmer')
+        thing = kind in ('gun', 'wheat', 'fence', 'crate', 'truck', 'rabbit')
         for j in range(n):
-            x = m.get('x', 0.7) + j*m.get('spacing', 0.09); gy = m.get('gy', 0.88) - (j % 3)*m.get('stagger', 0.035)
-            mode = m.get('mode', 'stand'); kind = m.get('kind', 'farmer')
-            o = dict(mode=mode, expr=m.get('expr', 'neutral'), seed=5 + ci*7 + j*3, blink=((t + j*0.7 + ci) % 2.9) < 0.12)
-            card = dict(kind=kind, x=x, gy=gy, h=m.get('h', 3.0 if kind != 'emu' else 2.9), flip=bool(m.get('flip', False)), opts=o, bob=0.0, sq=0.0)
+            row = j % m.get('rows', 1); col = j // m.get('rows', 1)
+            x = m.get('x', 0.7) + col*m.get('spacing', 0.09) + row*0.03; gy = m.get('gy', 0.88) - (j % 3)*m.get('stagger', 0.035) - row*0.05
+            mode = m.get('mode', 'stand')
+            o = dict(m.get('opts', {})); o.update(mode=mode, expr=m.get('expr', 'neutral'), seed=5 + ci*7 + j*3, blink=((t + j*0.7 + ci) % 2.9) < 0.12)
+            for name, (v0, v1, a0, a1) in m.get('anim', {}).items():
+                o[name] = v0 + (v1 - v0)*clamp((lt/dur - a0)/max(0.01, a1 - a0))
+            if 'fire' in m: o['fire'] = m['fire'][0]*dur <= lt <= m['fire'][1]*dur
+            if 'jam_at' in m: o['jam'] = lt >= m['jam_at']*dur
+            h = m.get('h', {'emu': 2.9, 'gun': 3.4, 'wheat': 2.6, 'fence': 3.0, 'rabbit': 2.2, 'truck': 4.4, 'crate': 2.6}.get(kind, 3.0))*(1 - 0.12*row)
+            card = dict(kind=kind, x=x, gy=gy, h=h, flip=bool(m.get('flip', False)), opts=o, bob=0.0, sq=0.0)
             if 'to' in m:
-                k = ease_io(u/max(0.4, m.get('move_time', dur - at)))
+                k = ease_io(u/max(0.4, m.get('move_time', dur - at))) if not m.get('linear') else clamp(u/max(0.4, m.get('move_time', dur - at)))
                 card['x'] = x + (m['to'] - m.get('x', 0.7))*k
-                if 0 < k < 1 and kind != 'emu': o.update(side=True, mode='march', phase=t*2.0 + j*0.31); card['flip'] = m['to'] < m.get('x', 0.7)
-                if kind == 'emu': o['mode'] = 'run' if 0 < k < 1 else 'stand'
-            if kind == 'emu': o['phase'] = t*2.6 + j*0.37; 
-            if mode == 'march' and kind != 'emu' and 'to' not in m: o['phase'] = t*1.9 + j*0.25
+                moving = 0 < k < 1
+                if moving and not thing and kind != 'emu': o.update(side=True, mode='march', phase=t*2.0 + j*0.31); card['flip'] = m['to'] < m.get('x', 0.7)
+                if kind == 'emu': o['mode'] = 'run' if moving else mode
+                if kind == 'rabbit' and moving: card['bob'] = abs(math.sin(t*9 + j*1.7))*0.5
+                if kind == 'truck': card['bob'] = abs(math.sin(t*17))*0.16 if (moving or m.get('bumpy')) else 0.0
+            if kind == 'emu': o['phase'] = t*2.6 + j*0.37
+            if kind == 'truck' and m.get('bumpy'): card['bob'] = abs(math.sin(t*17))*0.18; card['x'] += math.sin(t*5)*0.01
+            if kind == 'gun' and o.get('fire'): card['x'] += math.sin(t*90)*0.003
+            if mode == 'march' and not thing and kind != 'emu' and 'to' not in m: o['phase'] = t*1.9 + j*0.25
             if m.get('act') == 'cheer': o['cheer'] = 1; card['bob'] = abs(math.sin(t*6 + j))*0.12
             if m.get('act') == 'shrug': o['shrug'] = 1
             if m.get('act') == 'point': o['point'] = 1
             if m.get('act') == 'bounce': card['bob'] = abs(math.sin(t*5 + j*1.3))*0.25
-            pop = clamp(u/0.18); card['sq'] = -0.25*(1 - ease_out_back(pop)) if pop < 1 else 0.0
+            pop = clamp(u/0.18); card['sq'] = -0.25*(1 - ease_out_back(pop)) if pop < 1 and m.get('at', 0) > 0 else 0.0
             out.append(card)
     return out
 
@@ -1135,7 +1149,10 @@ def frame3d(i, ep, timeline, total, env):
         host = dict(show=ep.get('mascot', True), x=0.5, gy=0.92, size=1.05, act='wave', bob=(0.5 - 0.5*math.cos(lt*3))*0.08, rot=0, eye=1.0, step=0,
                     facing=1, mouth=0.0, blink=bool(blink), energy=0.0, sq=0.0, turn=-0.38)
         T3.set_size(W, H)
-        surf, info = T3.render(dict(t=t, bg=ep.get('intro_bg', 'meadow'), host=host, sprites=[], cam=dict(z=1.05 + 0.04*ease_io(lt/OUTRO), orbit=0.12*math.sin(lt*0.6), lift=-0.2)))
+        cards_ = []
+        if is_toon(ep):
+            host['show'] = False; cards_ = [_sir_card('wave', 0.5, t, lt, OUTRO, 0.0, 0.0, blink, gy=0.9)]
+        surf, info = T3.render(dict(t=t, bg=ep.get('intro_bg', 'meadow'), host=host, cards=cards_, sprites=[], cam=dict(z=1.05 + 0.04*ease_io(lt/OUTRO), orbit=0.12*math.sin(lt*0.6), lift=-0.2)))
         ctx = cairo.Context(surf)
         for k in range(8):
             ph = (t*1.2 + k*0.13) % 1
@@ -1166,7 +1183,7 @@ def frame3d(i, ep, timeline, total, env):
     for p in sc.get('props', []):
         if 'emoji' in p: continue
         q = dict(p)
-        if 'text' in q and show and 'to' not in q and c.get('x', 0.3) < 0.5:   # keep big words clear of his head
+        if 'text' in q and show and 'to' not in q and c.get('x', 0.3) < 0.5 and q.get('x', 0.5) < 0.6:   # keep big words clear of his head
             q['x'] = max(q.get('x', 0.5), 0.66); q['y'] = min(q.get('y', 0.24), 0.26)
             q['size'] = _fit_size(ctx, q['text'], q.get('size', 90), 2*(W - q['x']*W - 40))
         draw_prop(ctx, q, lt, dur)
@@ -1187,18 +1204,25 @@ def thumbnail3d(ep, out):
     th = ep.get('thumbnail', {})
     host = dict(show=th.get('mascot', ep.get('mascot', True)), x=0.8, gy=1.02, size=1.55, act='wow', bob=0.0, rot=0.05, eye=1.45, step=0,
                 facing=-1, mouth=0.9, blink=False, energy=0.0, sq=0.0, turn=0.1)
-    for _ in range(4): surf, info = T3.render(dict(t=0.5, bg=th.get('bg', ep.get('intro_bg', 'meadow')), host=host, sprites=[], cam=dict(z=1.0)))
+    cards_ = []
+    if is_toon(ep):
+        host['show'] = False
+        cd = _sir_card('wow', 0.8, 0.5, 0.3, 3.0, 0.9, 0.0, False, gy=0.985, h=4.5); cd['bob'] = 0.0; cd['sq'] = 0.0
+        cards_ = [cd] + [dict(kind=m.get('kind', 'emu'), x=m.get('x', 0.3), gy=m.get('gy', 0.97), h=m.get('h', 4.6), flip=bool(m.get('flip', False)), opts=dict(expr=m.get('expr', 'smug'), mode='stand', seed=5), bob=0.0, sq=0.0) for m in th.get('cast', [])]
+    T3.set_size(W, H)
+    for _ in range(4): surf, info = T3.render(dict(t=0.5, bg=th.get('bg', ep.get('intro_bg', 'meadow')), host=host, cards=cards_, sprites=[], cam=dict(z=1.0)))
     ctx = cairo.Context(surf)
     g = cairo.LinearGradient(0, 0, W*0.7, 0); g.add_color_stop_rgba(0, 0, 0, 0, 0.45); g.add_color_stop_rgba(1, 0, 0, 0, 0.0)
     ctx.set_source(g); ctx.paint()
     ex, ey = th.get('emoji_x', 0.33)*W, th.get('emoji_y', 0.64)*H
     g = cairo.RadialGradient(ex, ey, 20, ex, ey, 300)
     g.add_color_stop_rgba(0, 1, 0.85, 0.35, 0.85); g.add_color_stop_rgba(0.5, 1, 0.55, 0.15, 0.35); g.add_color_stop_rgba(1, 1, 0.5, 0.1, 0)
-    ctx.set_source(g); ctx.arc(ex, ey, 300, 0, 2*math.pi); ctx.fill()
+    if not th.get('cast'): ctx.set_source(g); ctx.arc(ex, ey, 300, 0, 2*math.pi); ctx.fill()
     global EMOJI_INK
     EMOJI_INK = True
-    draw_emoji(ctx, th.get('emoji', '❓'), ex, ey, 330)
-    ctx.set_source_rgba(0.95, 0.1, 0.12, 1); ctx.set_line_width(14); ellipse(ctx, ex, ey, 210, 190); ctx.stroke()
+    if not th.get('cast'):
+        draw_emoji(ctx, th.get('emoji', '❓'), ex, ey, 330)
+        ctx.set_source_rgba(0.95, 0.1, 0.12, 1); ctx.set_line_width(14); ellipse(ctx, ex, ey, 210, 190); ctx.stroke()
     words = th.get('text', ep.get('title', '')).upper()
     lines = wrap(ctx, words, 128, 700)[:2]
     cols = [th.get('color', '#ffffff'), th.get('color2', '#ffd23f')]

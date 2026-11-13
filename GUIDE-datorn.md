@@ -25,7 +25,7 @@ Committa och pusha till main. Publicera ingenting.
 ### Steg 3: Kontrollera svaret
 Claude ska bekräfta fyra saker. Stämmer någon inte, be den rätta det innan du går vidare.
 - Ett ämne: bisarr och bortglömd historia. Nyheter och trender väljer bara vilken historia som berättas.
-- Långa videor på 10–15 minuter är huvudsaken, shorts är reklam för dem (3–5 i veckan).
+- Långa videor på 7–12 minuter är huvudsaken, shorts är reklam för dem (3–5 i veckan).
 - Ingenting publiceras utan att du har godkänt just den videon.
 - Inga klipp, ljud, loggor eller manus från andra (strejkregeln).
 - Inga betaltjänster: inte ElevenLabs, RunPod, Atlabs eller Higgsfield.

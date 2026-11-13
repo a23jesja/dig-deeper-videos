@@ -17,7 +17,8 @@ Bizarre and forgotten history, told by Sir Digsworth. Every video, long or short
 - Prefer angles advertisers accept: avoid war crimes, Nazi imagery and graphic violence in titles and thumbnails.
 
 ## Long videos are the product
-- **Length: 10-15 minutes, never under 8** (mid-roll ads need 8 minutes).
+- **Length: about 7-12 minutes** (Jesper 2026-11-13). Land at 8:00 or more whenever the story carries it, because
+  mid-roll ads need 8 minutes; never pad a story to get there.
 - **Pace: two a month to start, one a week once the pipeline is fast.** Never trade quality for pace.
 - Workflow: 10 ideas -> Jesper picks -> sources -> script -> Jesper approves the script -> voice -> scenes -> render ->
   review -> Jesper approves the video and thumbnail -> publish.

@@ -61,8 +61,16 @@ Titta på hela videon med ljud och gå igenom listan:
 - Nyheter om verkliga personer: sägs det "enligt" en namngiven källa?
 - Finns något som ser ut eller låter som det kommer från någon annans video?
 
+### Steg 4b: Välj thumbnail
+Du får tre förslag per video. Titta på dem i liten storlek (som i mobilens flöde) och fråga dig:
+- Förstår jag på en sekund vad videon handlar om?
+- Går orden att läsa när bilden är pytteliten?
+- Skulle jag själv klicka på den här bland tio andra?
+- Visar den något som faktiskt finns i videon?
+Duger ingen: säg vad som saknas ("större ansikte", "färre ord", "mer kontrast") och be om tre nya.
+
 ### Steg 5: Godkänn eller skicka tillbaka
-- Godkänd: skriv "Godkänd, publicera" och vilken tid, till exempel "i dag 18:00".
+- Godkänd: skriv "Godkänd, publicera med thumbnail 2" och vilken tid, till exempel "i dag 18:00".
 - Inte godkänd: skriv vad som är fel så konkret du kan ("emun i scen 3 går genom staketet"). Claude rättar och skickar en ny version.
 
 ### Steg 6: Kontrollera att den gick ut

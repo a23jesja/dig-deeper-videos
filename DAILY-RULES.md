@@ -17,6 +17,23 @@ Applies to every production session for the Sir Digsworth channel, on top of REA
   reported as what named outlets say ("the New York Times reported"), never stated as our own claim.
 - Nothing is published or scheduled until Jesper has approved that exact video.
 
+## Thumbnail (as important as the video, Jesper 2026-11-13)
+Every video and Short gets its own thumbnail, made and checked before the video is sent for approval.
+- **Three variants** are rendered and sent to Jesper together with the video; he picks one. Nothing is published
+  with a thumbnail he has not approved.
+- **One idea, readable in one second:** one big subject that IS the story, Sir Digsworth large with a clear reaction
+  (shock, glee, suspicion), and 2-3 huge words at most. The words add curiosity to the title, never repeat it.
+- **Rendered by our engine** at 1280x720 for long videos and 1080x1920 for Shorts, from the same world and characters
+  as the video. No photos, logos, screenshots or other channels' images. Real people only as our own cartoon.
+- **Honest:** the thumbnail shows something that is actually in the video. No fake arrows to nothing, no invented
+  events, no shock imagery.
+- **Checks before sending:** look at each variant shrunk to 320x180 and to 168x94; the words and the subject must
+  still read. Check contrast on both dark and light backgrounds, nothing important in the bottom-right corner
+  (the duration badge covers it), and for Shorts nothing important in the top and bottom 15 % (interface covers it).
+- **Compare:** look up the current top results for the same topic and make sure ours does not look like any of them
+  and stands out next to them.
+- For Shorts the first frame of the video must work as a thumbnail too: no black, blank or mid-transition frame.
+
 ## No strikes (hard rule, Jesper 2026-11-13)
 "Recreate a trend" means our own version of the TOPIC. Before a video is sent to Jesper, check every point:
 - **Footage:** every frame is rendered by our own engine. No clips, screenshots, logos or thumbnails from other

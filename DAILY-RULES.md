@@ -7,7 +7,9 @@ Applies to every production session for the Sir Digsworth channel, on top of REA
    If something big, funny or important happened, make **one Short about it the same day**.
 2. **Search what is trending.** Find the topics, videos, Shorts and events that are trending today (live charts, not memory)
    and make our own version of the topic for this channel, told by Sir Digsworth with our own script, pictures and jokes.
-3. **Output target per run:** mostly Shorts, plus long videos, for example 4 Shorts and 1 long video.
+3. **Output target: 2 Shorts per day** (changed by Jesper 2026-11-13 from "4 Shorts and 1 long video"):
+   one about the day's news when something big, funny or important happened, one on a trending topic.
+   Long videos are not part of the daily quota; make them when Jesper asks for one.
 
 ## Always
 - Sir Digsworth narrates everything; our own touch, never a copy of someone else's script, footage, music or thumbnail.

@@ -1,0 +1,19 @@
+{
+ "voice": "bm_george",
+ "speed": 1.2,
+ "gap": 0.13,
+ "lead": 0.05,
+ "lines": [
+  { "id": "hook1", "text": "In 1925, a con man sold the Eiffel Tower.", "say": "In nineteen twenty-five, a con man sold the Eiffel Tower.", "gap": 0.2 },
+  { "id": "hook2", "text": "Then he went back, and tried to sell it again.", "gap": 0.35 },
+  { "id": "who", "text": "His name was Victor Lustig." },
+  { "id": "news", "text": "In Paris, he read that the tower was getting too expensive to repair and repaint.", "gap": 0.2 },
+  { "id": "pose", "text": "So he posed as a government official, and invited scrap metal dealers to an expensive hotel." },
+  { "id": "secret", "text": "In strict secrecy, he told them the tower was for sale, as scrap.", "gap": 0.25 },
+  { "id": "poisson", "text": "One dealer, André Poisson, paid him about 70,000 francs.", "say": "One dealer, Andray Pwah-son, paid him about seventy thousand francs.", "gap": 0.2 },
+  { "id": "flee", "text": "Lustig took the money, and fled to Austria." },
+  { "id": "shame", "text": "Poisson was too embarrassed to tell the police.", "say": "Pwah-son was too embarrassed to tell the police.", "gap": 0.25 },
+  { "id": "again", "text": "So Lustig came back, and tried it again. This time the police were told, and he escaped to America.", "gap": 0.3 },
+  { "id": "end", "text": "The tower is still there. It was never his to sell.", "gap": 0.6 }
+ ]
+}

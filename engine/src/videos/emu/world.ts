@@ -171,7 +171,7 @@ export class World {
     ground.receiveShadow = true; R.add(ground);
     ranges(R, 560, 60, "#8f86a8", 1); ranges(R, 420, 34, "#a88f78", 2);
 
-    for (const z of ["camp", "farm", "plain", "dam", "track", "office", "dock", "cassino", "zoo", "scot", "isle"] as Zone[]) { this.zones[z] = new THREE.Group(); R.add(this.zones[z]); }
+    for (const z of ["camp", "farm", "plain", "dam", "track", "office", "dock", "cassino", "zoo", "scot", "isle", "paris"] as Zone[]) { this.zones[z] = new THREE.Group(); R.add(this.zones[z]); }
     this.buildPlus(); this.buildWojtek();
     this.fan = this.buildFarm();
     this.buildCamp(); this.buildPlain(); this.buildDam(); this.buildTrack();
@@ -615,6 +615,20 @@ export class World {
     for (const [x, zz, h, s] of [[9, 20, 9, 3], [-21, 22, 10, 5], [15, 26, 8, 6], [-112, 14, 10, 7], [-88, 15, 9, 8], [-100, 22, 11, 9], [84, -8, 9, 4], [118, -9, 10, 2]]) gum(is, x, zz, h, s);
     for (const [x, zz, s] of [[7.5, 9, 1.0], [-14, 12, 1.3], [-108, 9, 1.0], [-92, 10, 1.1], [-100, 12, 1.2], [88, 9.5, 1.0], [112, 10, 1.1]]) bush(is, x, zz, s, Math.round(Math.abs(x * 3 + zz)));
     this.flush("isle", is);
+
+    // ---- Paris, 1925: a paved square, a row of pale stone houses with grey roofs, plane trees, lamp posts (the tower is a drawing placed by the film) ----
+    const pa = new Batch(), wallP = col("#e9dfc8"), roofP = col("#6f7c8c"), winP = col("#51627a"), doorP = col("#7a4a2c");
+    pa.add(quad(V(-200, 0.03, 260), V(200, 0.03, 260), V(200, 0.03, -60), V(-200, 0.03, -60), 60, 48), stone);
+    for (let k = -4; k <= 4; k++) {
+      if (k === 0) continue;
+      const x = k * 15 + (k > 0 ? 6 : -6), h = 13 + ((k * 7 + 20) % 4);
+      pa.add(box(x, 0, 46, 14, h, 12), wallP); pa.add(box(x, h, 46, 14.6, 2.6, 12.6), roofP);
+      for (let fl = 0; fl < 4; fl++) for (let w = -2; w <= 2; w++) if (fl || w) pa.add(box(x + w * 2.5, 1.2 + fl * 3.1, 39.9, 1.2, 1.9, 0.2), winP);
+      pa.add(box(x, 0, 39.9, 1.6, 2.6, 0.2), doorP);
+    }
+    for (const [x, zz] of [[-3.6, 14], [3.6, 14], [-8, 24], [8, 24], [-14, 9], [14, 9]]) { pa.add(new THREE.CylinderGeometry(0.09, 0.12, 4.2, 8).translate(x, 2.1, zz), col("#2b2b30")); pa.add(new THREE.SphereGeometry(0.32, 10, 8).translate(x, 4.4, zz), col("#f6e7b0")); }
+    for (const [x, zz, h, s] of [[-20, 18, 9, 3], [20, 19, 10, 5], [-30, 30, 11, 6], [31, 31, 10, 7], [-11, 30, 9, 8], [12, 31, 9, 9]]) gum(pa, x, zz, h, s);
+    this.flush("paris", pa);
   }
 
   private poseWheat(id: number, f: number) {

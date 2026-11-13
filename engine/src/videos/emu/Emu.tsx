@@ -30,6 +30,12 @@ import wordsWLJson from "./wordsWL.json";
 import { PIG_SHOW } from "./scenesP";
 import { TOTAL_P, FLASH_P, layersP, dofAtP } from "./storyP";
 import wordsPJson from "./wordsP.json";
+import { PIG_LONG_SHOW } from "./scenesPL";
+import { TOTAL_PL, FLASH_PL, layersPL, dofAtPL } from "./storyPL";
+import wordsPLJson from "./wordsPL.json";
+import { LUSTIG_SHOW } from "./scenesLs";
+import { TOTAL_LS, FLASH_LS, layersLs, dofAtLs } from "./storyLs";
+import wordsLsJson from "./wordsLs.json";
 
 type Word = { w: string; a: number; b: number; line: string };
 type Film = {
@@ -43,7 +49,9 @@ const LONG: Film = { W: 1920, H: 1080, total: TOTAL_L, flashAt: FLASH_L, show: L
 const WSHORT: Film = { W: 1080, H: 1920, total: TOTAL_W, flashAt: FLASH_W, show: WOJTEK_SHOW, layersAt: layersW, dofAt: dofAtW, words: wordsWJson as Word[], audio: "wojtek/mix.wav", cap: { top: "67.5%", size: 92, stroke: 14 } };
 const WLONG: Film = { W: 1920, H: 1080, total: TOTAL_WL, flashAt: FLASH_WL, show: WOJTEK_LONG_SHOW, layersAt: layersWL, dofAt: dofAtWL, words: wordsWLJson as Word[], audio: "wojtek/mix-long.wav", cap: { top: "86%", size: 70, stroke: 11 } };
 const PSHORT: Film = { W: 1080, H: 1920, total: TOTAL_P, flashAt: FLASH_P, show: PIG_SHOW, layersAt: layersP, dofAt: dofAtP, words: wordsPJson as Word[], audio: "pig/mix.wav", cap: { top: "67.5%", size: 92, stroke: 14 } };
-export const PIG_FRAMES = TOTAL_P;
+const PLONG: Film = { W: 1920, H: 1080, total: TOTAL_PL, flashAt: FLASH_PL, show: PIG_LONG_SHOW, layersAt: layersPL, dofAt: dofAtPL, words: wordsPLJson as Word[], audio: "pig/mix-long.wav", cap: { top: "86%", size: 70, stroke: 11 } };
+const LSHORT: Film = { W: 1080, H: 1920, total: TOTAL_LS, flashAt: FLASH_LS, show: LUSTIG_SHOW, layersAt: layersLs, dofAt: dofAtLs, words: wordsLsJson as Word[], audio: "lustig/mix.wav", cap: { top: "67.5%", size: 92, stroke: 14 } };
+export const PIG_FRAMES = TOTAL_P, PIG_LONG_FRAMES = TOTAL_PL, LUSTIG_FRAMES = TOTAL_LS;
 export const EMU_FRAMES = TOTAL, EMU_LONG_FRAMES = TOTAL_L, WOJTEK_FRAMES = TOTAL_W, WOJTEK_LONG_FRAMES = TOTAL_WL;
 
 type Props = { post?: { ink?: boolean; lens?: boolean; bloom?: boolean; grade?: boolean; dpr?: number }; captions?: boolean; audio?: boolean };
@@ -154,3 +162,5 @@ export const EmuLong: React.FC = () => <FilmView film={LONG} />;
 export const WojtekShort: React.FC = () => <FilmView film={WSHORT} />;
 export const WojtekLong: React.FC = () => <FilmView film={WLONG} />;
 export const PigShort: React.FC = () => <FilmView film={PSHORT} />;
+export const PigLong: React.FC = () => <FilmView film={PLONG} />;
+export const LustigShort: React.FC = () => <FilmView film={LSHORT} />;

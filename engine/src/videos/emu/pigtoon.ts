@@ -141,3 +141,39 @@ export const fxGrave = (p: Pen, s: string) => {
   p.poly(pts, "#b9b6ae", 12);
   s.split("|").forEach((l, i) => text(p, l, 210, 170 + i * 84, i === 1 ? 62 : 52, "#3a3a40"));
 };
+
+// ---------------- extra drawings for the long film ----------------
+const fitPx = (s: string, base: number, width: number) => Math.min(base, width / (0.66 * Math.max(1, s.length)));
+/** a speech bubble that fits its text ("line|line"), 900 x 460 canvas; the tail points down-left (flip: down-right) */
+export const fxTalk = (p: Pen, s: string, flip = false) => {
+  const cx = 450, cy = 190, d = flip ? -1 : 1, pts: P2[] = [];
+  p.poly([[cx - d * 230, cy + 120], [cx - d * 320, cy + 258], [cx - d * 130, cy + 150]], "#ffffff", 10);
+  for (let i = 0; i < 64; i++) { const a = (TWO * i) / 64; pts.push([cx + 428 * Math.cos(a), cy + 172 * Math.sin(a)]); }
+  p.poly(pts, "#ffffff", 11);
+  p.poly([[cx - d * 218, cy + 126], [cx - d * 304, cy + 236], [cx - d * 140, cy + 146]], "#ffffff", 0);
+  const L = s.split("|"), px = Math.min(...L.map((l) => fitPx(l, 84, 660)));
+  L.forEach((l, i) => text(p, l, cx, cy + (i - (L.length - 1) / 2) * px * 1.12, px, "#2b2430"));
+};
+/** a barrel, 260 x 320 canvas */
+export const fxBarrel = (p: Pen) => {
+  p.poly([[50, 20], [210, 20], [236, 110], [236, 210], [210, 300], [50, 300], [24, 210], [24, 110]], "#a9794e", 10);
+  for (const x of [90, 130, 170]) p.stroke([[x, 26], [x, 294]], 5, "#6a4a2c");
+  for (const y of [70, 250]) p.stroke([[34, y], [226, y]], 16, "#4a4d55");
+};
+/** a book with a title ("LINE|LINE"), 420 x 300 canvas */
+export const fxBook = (p: Pen, s: string) => {
+  p.poly([[20, 30], [400, 30], [400, 280], [20, 280]], "#7a2f2a", 10);
+  p.poly([[20, 30], [52, 30], [52, 280], [20, 280]], "#5a201c", 0);
+  p.poly([[70, 60], [380, 60], [380, 250], [70, 250]], null, 5);
+  const L = s.split("|"), px = Math.min(...L.map((l) => fitPx(l, 60, 290)));
+  L.forEach((l, i) => text(p, l, 226, 155 + (i - (L.length - 1) / 2) * px * 1.2, px, "#f1d98a"));
+};
+/** a length of earthwork (a fort wall of piled earth and logs), 900 x 300 canvas */
+export const fxEarth = (p: Pen) => {
+  for (let i = 0; i < 12; i++) { const x = 76 + i * 68; p.poly([[x - 27, 250], [x - 27, 72], [x, 28], [x + 27, 72], [x + 27, 250]], i % 2 ? "#a9814c" : "#96713f", 8); }
+  p.poly([[10, 292], [56, 214], [844, 214], [890, 292]], "#8f7a52", 10);
+};
+/** a bare flag pole, 60 x 900 canvas */
+export const fxPole = (p: Pen) => { p.poly([[20, 14], [40, 14], [40, 892], [20, 892]], "#8a6a4a", 8); p.dot(30, 14, 14, "#e2bb4c"); };
+/** the cloth of the Union Jack alone, 460 x 300 canvas */
+export const fxClothUK = (p: Pen, wave = 0) => { p.g.save(); p.g.translate(-48, -24); fxFlagUK(p, wave); p.g.restore(); };

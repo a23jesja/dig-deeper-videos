@@ -81,6 +81,13 @@ Every video and Short gets its own thumbnail, made and checked before the video 
 - **Compare:** look up the current top results for the same topic and make sure ours does not look like any of them
   and stands out next to them.
 - For Shorts the first frame of the video must work as a thumbnail too: no black, blank or mid-transition frame.
+- **Let viewers decide:** every long video is uploaded with all three variants in YouTube Studio's "Test & compare"
+  (Jesper approves the three, YouTube picks the winner by watch time). Record the winner and its click-through rate in
+  GROWTH.md and use what won as the starting point for the next video's thumbnails.
+- **What works, in order:** one huge subject, a face with a strong emotion, light behind the subject with dark edges,
+  three words or fewer in white and yellow with a thick dark outline. Start from `thumbnails/thumb.tsx`.
+- **Jesper should not need to design anything.** If he says a thumbnail is not good enough, make three new ones
+  without asking what he wants changed, each with a different subject, emotion and wording.
 
 ## No strikes (hard rule, Jesper 2026-11-13)
 "Use a trend" means our own history story on the same THEME. Before a video is sent to Jesper, check every point:

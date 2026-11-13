@@ -70,3 +70,65 @@ export const fxMoneyBox = (p: Pen) => {
   p.ell(400, 220, 46, 46, "#d0a53c", 9); p.stroke([[400, 220], [452, 168]], 12, INK); p.dot(456, 164, 15, "#2b2026");
   for (const x of [70, 450]) for (const y of [100, 330]) p.dot(x, y, 8, "#d0a53c");
 };
+
+// ---------------- extra drawings for the long film ----------------
+/** one banknote, 320 x 170 canvas (fake = a red cross through it) */
+export const fxNote = (p: Pen, fake = false) => {
+  p.poly([[14, 14], [306, 14], [306, 156], [14, 156]], "#bfe0a8", 9);
+  p.poly([[34, 34], [286, 34], [286, 136], [34, 136]], null, 4);
+  p.ell(160, 85, 34, 34, "#8fc07a", 5); text(p, "$", 160, 88, 44, "#3a5a2c");
+  if (fake) { p.stroke([[30, 30], [290, 140]], 14, "#c8312b"); p.stroke([[290, 30], [30, 140]], 14, "#c8312b"); }
+};
+/** a clock face with one hand (k = turns), 300 x 300 canvas */
+export const fxClock = (p: Pen, k = 0) => {
+  p.ell(150, 150, 132, 132, "#fbf6e6", 12);
+  for (let i = 0; i < 12; i++) { const a = (Math.PI * 2 * i) / 12; p.stroke([[150 + 104 * Math.sin(a), 150 - 104 * Math.cos(a)], [150 + 120 * Math.sin(a), 150 - 120 * Math.cos(a)]], i % 3 ? 5 : 10); }
+  const a = Math.PI * 2 * k; p.stroke([[150, 150], [150 + 92 * Math.sin(a), 150 - 92 * Math.cos(a)]], 12); p.dot(150, 150, 12);
+};
+/** a safe, 420 x 480 canvas; open = the door swung aside and banknotes inside */
+export const fxSafe = (p: Pen, open = false) => {
+  p.poly([[30, 30], [390, 30], [390, 450], [30, 450]], "#5a6470", 12);
+  if (open) { p.poly([[60, 60], [360, 60], [360, 420], [60, 420]], "#262a30", 8); for (let r = 0; r < 3; r++) p.poly([[90, 330 - r * 44], [330, 330 - r * 44], [330, 366 - r * 44], [90, 366 - r * 44]], "#bfe0a8", 6); }
+  else { p.poly([[60, 60], [360, 60], [360, 420], [60, 420]], "#6f7a88", 8); p.ell(210, 240, 62, 62, "#c9ccd2", 9); for (let i = 0; i < 4; i++) { const a = (Math.PI * i) / 2 + 0.5; p.stroke([[210, 240], [210 + 56 * Math.cos(a), 240 + 56 * Math.sin(a)]], 9); } p.poly([[318, 210], [344, 210], [344, 290], [318, 290]], "#c9ccd2", 6); }
+};
+/** a candlestick telephone, 240 x 360 canvas */
+export const fxPhone = (p: Pen) => {
+  p.poly([[60, 330], [180, 330], [164, 290], [76, 290]], "#2b2b30", 9);
+  p.poly([[108, 290], [132, 290], [132, 120], [108, 120]], "#2b2b30", 8);
+  p.ell(120, 96, 40, 34, "#2b2b30", 9); p.ell(120, 92, 22, 16, "#6f7a88", 0);
+  p.stroke([[132, 200], [196, 200], [196, 120]], 9); p.poly([[176, 60], [216, 60], [222, 130], [170, 130]], "#2b2b30", 8);
+};
+/** a key, 320 x 150 canvas */
+export const fxKey = (p: Pen) => {
+  p.ell(70, 75, 52, 52, "#d0a53c", 10); p.ell(70, 75, 22, 22, "#fbf6e6", 7);
+  p.poly([[118, 62], [300, 62], [300, 88], [118, 88]], "#d0a53c", 9);
+  p.poly([[236, 88], [262, 88], [262, 122], [236, 122]], "#d0a53c", 8); p.poly([[276, 88], [300, 88], [300, 112], [276, 112]], "#d0a53c", 8);
+};
+/** a station locker, 420 x 620 canvas; open = full of banknotes and two printing plates */
+export const fxLocker = (p: Pen, open = false) => {
+  p.poly([[30, 20], [390, 20], [390, 600], [30, 600]], "#7a8794", 12);
+  if (!open) { p.poly([[56, 46], [364, 46], [364, 574], [56, 574]], "#8f9ba8", 8); for (let i = 0; i < 4; i++) p.stroke([[110, 90 + i * 22], [310, 90 + i * 22]], 7, "#5a6470"); p.ell(330, 320, 16, 16, "#2b2b30", 6); text(p, "51", 210, 250, 90, "#3a4450"); return; }
+  p.poly([[56, 46], [364, 46], [364, 574], [56, 574]], "#22262c", 8);
+  for (let r = 0; r < 5; r++) for (let c = 0; c < 2; c++) p.poly([[78 + c * 142, 300 + r * 52], [200 + c * 142, 300 + r * 52], [200 + c * 142, 342 + r * 52], [78 + c * 142, 342 + r * 52]], "#bfe0a8", 6);
+  for (const x of [84, 220]) { p.poly([[x, 100], [x + 116, 100], [x + 116, 250], [x, 250]], "#8d6e55", 8); p.poly([[x + 16, 118], [x + 100, 118], [x + 100, 232], [x + 16, 232]], null, 5); }
+};
+/** a knotted rope hanging down, 80 x 900 canvas */
+export const fxRope = (p: Pen) => { p.stroke([[40, 0], [40, 900]], 26, INK); p.stroke([[40, 0], [40, 900]], 14, "#c9a777"); for (let y = 90; y < 900; y += 150) p.ell(40, y, 22, 16, "#b08a56", 7); };
+/** a barred window in a brick wall, 700 x 560 canvas */
+export const fxBars = (p: Pen) => {
+  p.poly([[10, 10], [690, 10], [690, 550], [10, 550]], "#a5694f", 12);
+  for (let r = 0; r < 7; r++) for (let c = 0; c < 6; c++) p.poly([[20 + c * 112 + (r % 2 ? 56 : 0), 20 + r * 76], [124 + c * 112 + (r % 2 ? 56 : 0), 20 + r * 76], [124 + c * 112 + (r % 2 ? 56 : 0), 88 + r * 76], [20 + c * 112 + (r % 2 ? 56 : 0), 88 + r * 76]], null, 4);
+  p.poly([[220, 130], [480, 130], [480, 420], [220, 420]], "#1c2026", 12);
+  for (let i = 1; i < 5; i++) p.stroke([[220 + i * 52, 130], [220 + i * 52, 420]], 14, "#8f9ba8");
+};
+/** Alcatraz: a rock in the bay with the prison and a lighthouse, 1000 x 520 canvas (waterline at y = 480) */
+export const fxAlcatraz = (p: Pen) => {
+  p.poly([[40, 480], [120, 360], [260, 300], [420, 270], [640, 280], [820, 340], [960, 480]], "#8f8a80", 12);
+  p.poly([[300, 300], [300, 190], [660, 190], [660, 290]], "#d9d2c0", 10);
+  for (let i = 0; i < 8; i++) p.poly([[324 + i * 42, 214], [344 + i * 42, 214], [344 + i * 42, 250], [324 + i * 42, 250]], "#3a4450", 0);
+  p.poly([[720, 320], [720, 150], [760, 150], [760, 330]], "#f4efe0", 9); p.poly([[708, 150], [772, 150], [740, 104]], "#c8312b", 8); p.dot(740, 168, 12, "#ffe14d");
+};
+/** a sheriff's star, 200 x 200 canvas */
+export const fxStar = (p: Pen) => { const pts: P2[] = []; for (let i = 0; i < 10; i++) { const a = (Math.PI * 2 * i) / 10 - Math.PI / 2, r = i % 2 ? 40 : 92; pts.push([100 + r * Math.cos(a), 100 + r * Math.sin(a)]); } p.poly(pts, "#e2bb4c", 9); p.dot(100, 100, 14, "#b98f2c"); };
+/** a wallet, 260 x 200 canvas */
+export const fxWallet = (p: Pen) => { p.poly([[20, 40], [240, 40], [240, 170], [20, 170]], "#7a4a2c", 10); p.stroke([[20, 96], [240, 96]], 6, "#5a3420"); p.poly([[150, 20], [226, 20], [226, 60], [150, 60]], "#bfe0a8", 6); p.ell(206, 124, 14, 14, "#d0a53c", 6); };

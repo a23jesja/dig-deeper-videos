@@ -36,6 +36,9 @@ import wordsPLJson from "./wordsPL.json";
 import { LUSTIG_SHOW } from "./scenesLs";
 import { TOTAL_LS, FLASH_LS, layersLs, dofAtLs } from "./storyLs";
 import wordsLsJson from "./wordsLs.json";
+import { LUSTIG_LONG_SHOW } from "./scenesLL";
+import { TOTAL_LL, FLASH_LL, layersLL, dofAtLL } from "./storyLL";
+import wordsLLJson from "./wordsLL.json";
 
 type Word = { w: string; a: number; b: number; line: string };
 type Film = {
@@ -51,7 +54,8 @@ const WLONG: Film = { W: 1920, H: 1080, total: TOTAL_WL, flashAt: FLASH_WL, show
 const PSHORT: Film = { W: 1080, H: 1920, total: TOTAL_P, flashAt: FLASH_P, show: PIG_SHOW, layersAt: layersP, dofAt: dofAtP, words: wordsPJson as Word[], audio: "pig/mix.wav", cap: { top: "67.5%", size: 92, stroke: 14 } };
 const PLONG: Film = { W: 1920, H: 1080, total: TOTAL_PL, flashAt: FLASH_PL, show: PIG_LONG_SHOW, layersAt: layersPL, dofAt: dofAtPL, words: wordsPLJson as Word[], audio: "pig/mix-long.wav", cap: { top: "86%", size: 70, stroke: 11 } };
 const LSHORT: Film = { W: 1080, H: 1920, total: TOTAL_LS, flashAt: FLASH_LS, show: LUSTIG_SHOW, layersAt: layersLs, dofAt: dofAtLs, words: wordsLsJson as Word[], audio: "lustig/mix.wav", cap: { top: "67.5%", size: 92, stroke: 14 } };
-export const PIG_FRAMES = TOTAL_P, PIG_LONG_FRAMES = TOTAL_PL, LUSTIG_FRAMES = TOTAL_LS;
+export const PIG_FRAMES = TOTAL_P, PIG_LONG_FRAMES = TOTAL_PL, LUSTIG_FRAMES = TOTAL_LS, LUSTIG_LONG_FRAMES = TOTAL_LL;
+const LLONG: Film = { W: 1920, H: 1080, total: TOTAL_LL, flashAt: FLASH_LL, show: LUSTIG_LONG_SHOW, layersAt: layersLL, dofAt: dofAtLL, words: wordsLLJson as Word[], audio: "lustig/mix-long.wav", cap: { top: "86%", size: 70, stroke: 11 } };
 export const EMU_FRAMES = TOTAL, EMU_LONG_FRAMES = TOTAL_L, WOJTEK_FRAMES = TOTAL_W, WOJTEK_LONG_FRAMES = TOTAL_WL;
 
 type Props = { post?: { ink?: boolean; lens?: boolean; bloom?: boolean; grade?: boolean; dpr?: number }; captions?: boolean; audio?: boolean };
@@ -164,3 +168,4 @@ export const WojtekLong: React.FC = () => <FilmView film={WLONG} />;
 export const PigShort: React.FC = () => <FilmView film={PSHORT} />;
 export const PigLong: React.FC = () => <FilmView film={PLONG} />;
 export const LustigShort: React.FC = () => <FilmView film={LSHORT} />;
+export const LustigLong: React.FC = () => <FilmView film={LLONG} />;

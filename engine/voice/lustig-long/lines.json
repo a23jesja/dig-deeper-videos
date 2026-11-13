@@ -1,0 +1,170 @@
+[
+ {
+  "id": "hook1",
+  "a": 0.05,
+  "b": 4.577,
+  "text": "In 1925, a man with a forged letter sold the Eiffel Tower."
+ },
+ {
+  "id": "hook2",
+  "a": 4.827,
+  "b": 7.184,
+  "text": "It was not his. He sold it anyway."
+ },
+ {
+  "id": "hook3",
+  "a": 7.484,
+  "b": 9.193,
+  "text": "Then he tried to sell it again."
+ },
+ {
+  "id": "intro",
+  "a": 9.593,
+  "b": 13.203,
+  "text": "I'm Sir Digsworth, and this is the story of Victor Lustig."
+ },
+ {
+  "id": "born",
+  "a": 13.603,
+  "b": 21.924,
+  "text": "Lustig is born in 1890, in a small town in Bohemia. On his first day of school, he is expelled for being rude to the teacher."
+ },
+ {
+  "id": "report",
+  "a": 22.094,
+  "b": 24.714,
+  "text": "A later school report calls him an idiot."
+ },
+ {
+  "id": "languages",
+  "a": 25.014,
+  "b": 30.318,
+  "text": "He is not an idiot. At boarding school he learns English, French, Italian and Hungarian."
+ },
+ {
+  "id": "liners",
+  "a": 30.488,
+  "b": 38.711,
+  "text": "He starts on the ocean liners between France and New York, posing as a producer who needs investors for a Broadway show. There is no show."
+ },
+ {
+  "id": "box",
+  "a": 39.011,
+  "b": 45.435,
+  "text": "Then comes the money box: a mahogany box that, he says, can copy any banknote. It only needs six hours."
+ },
+ {
+  "id": "trick",
+  "a": 45.605,
+  "b": 51.828,
+  "text": "He puts in a note. Six hours later, out comes a second one. It is real, because he hid it in there earlier."
+ },
+ {
+  "id": "sell",
+  "a": 52.128,
+  "b": 54.842,
+  "text": "Then he sells the box, for thousands of dollars."
+ },
+ {
+  "id": "sheriff",
+  "a": 55.012,
+  "b": 61.798,
+  "text": "One buyer is a Texas sheriff, who chases him all the way to Chicago. Lustig pays him back. In fake money."
+ },
+ {
+  "id": "paris",
+  "a": 62.148,
+  "b": 70.704,
+  "text": "In 1925 he is in Paris, reading the newspaper. The Eiffel Tower, it says, is getting too expensive to maintain and repaint."
+ },
+ {
+  "id": "plan",
+  "a": 70.874,
+  "b": 78.704,
+  "text": "So Lustig has some government paper forged, and becomes the Deputy Director-General of the Ministry of Posts and Telegraphs."
+ },
+ {
+  "id": "hotel",
+  "a": 78.874,
+  "b": 87.483,
+  "text": "He invites a small group of scrap metal dealers to an expensive hotel, and tells them a secret. The government wishes to sell the tower for scrap."
+ },
+ {
+  "id": "poisson",
+  "a": 87.783,
+  "b": 97.397,
+  "text": "One dealer, Andr\u00e9 Poisson, badly wants to be an important man. He pays a large bribe, and then he pays for the tower: about 70,000 francs in all."
+ },
+ {
+  "id": "austria",
+  "a": 97.697,
+  "b": 104.269,
+  "text": "Lustig flees to Austria and reads the newspapers. Nothing. Poisson is too ashamed to tell the police."
+ },
+ {
+  "id": "again",
+  "a": 104.569,
+  "b": 113.304,
+  "text": "So, later that year, he goes back to Paris and tries to sell the tower again. This time somebody tells the police, and Lustig sails for America."
+ },
+ {
+  "id": "capone",
+  "a": 113.654,
+  "b": 123.109,
+  "text": "There he asks the gangster Al Capone to invest 50,000 dollars. He keeps the money in a safe for two months, then gives it all back, and says the deal fell through."
+ },
+ {
+  "id": "capone2",
+  "a": 123.279,
+  "b": 128.358,
+  "text": "Then he says he is broke. And Capone gives him 5,000 dollars to tide him over."
+ },
+ {
+  "id": "fake",
+  "a": 128.708,
+  "b": 137.237,
+  "text": "In the 1930s he turns to printing money. With a chemist and a pharmacist, he makes thousands of fake dollars a month, for five years."
+ },
+ {
+  "id": "billy",
+  "a": 137.407,
+  "b": 142.949,
+  "text": "It ends when he is unfaithful to his girlfriend, Billy May. She telephones the federal agents."
+ },
+ {
+  "id": "key",
+  "a": 143.249,
+  "b": 155.188,
+  "text": "He is arrested in New York in May 1935. He has a key he will not explain. It opens a locker at Times Square station, with 51,000 fake dollars and the printing plates inside."
+ },
+ {
+  "id": "escape",
+  "a": 155.488,
+  "b": 162.647,
+  "text": "The day before his trial, he pretends to be ill, and climbs out of the jail on a rope. He is free for 27 days."
+ },
+ {
+  "id": "alcatraz",
+  "a": 162.817,
+  "b": 166.921,
+  "text": "Then he is caught in Pittsburgh, and sent to Alcatraz for 20 years."
+ },
+ {
+  "id": "death",
+  "a": 167.271,
+  "b": 175.306,
+  "text": "Victor Lustig died in 1947. His death certificate gives his occupation as apprentice salesman. And counterfeiter."
+ },
+ {
+  "id": "end",
+  "a": 176.106,
+  "b": 178.534,
+  "text": "The Eiffel Tower is still not for sale."
+ },
+ {
+  "id": "outro",
+  "a": 179.034,
+  "b": 181.417,
+  "text": "I'm Sir Digsworth. Do mind your wallet."
+ }
+]

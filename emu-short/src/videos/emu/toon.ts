@@ -448,8 +448,13 @@ const hatOn = (p: Pen, o: Outfit, hp: P2[], H: Blob, cx: number, hc: number, lig
       const deg = (a * 180) / Math.PI;
       if (side) p.poly(R([[cx + 40 * u, cut - 2 * u], [cx + 74 * u, cut + 4 * u], [cx + 40 * u, cut + 6 * u]]), shade(col, 0.8), ow);
       else {
-        const s = facing || (rnd(seed, 21) < 0.5 ? -1 : 1), [px, py] = R([[cx + s * 4 * u, cut + 1.5 * u]])[0];
-        p.ell(px, py, 32 * u, 0.06 * HH, shade(col, 0.8), ow, 0, 180, deg);
+        // peak: a crescent as wide as the cap, joined to its lower edge (the old narrow half-ellipse read as a loose strip)
+        const pk: P2[] = [], wv = 49 * u, dx = 3 * u * facing;
+        for (let i = 0; i <= 14; i++) { const t = i / 14; pk.push([cx + dx - wv + 2 * wv * t, cut - 2.5 * u - 2.5 * u * Math.sin(Math.PI * t)]); }
+        for (let i = 14; i >= 0; i--) { const t = i / 14; pk.push([cx + dx - wv + 2 * wv * t, cut - 2.5 * u + 10.5 * u * Math.sin(Math.PI * t)]); }
+        const pkr = R(pk);
+        p.poly(pkr, shade(col, 0.72), ow);
+        void deg;
       }
     }
   } else if (o.hat === "slouch" || o.hat === "brim" || o.hat === "peaked") {

@@ -34,6 +34,25 @@ one every two weeks, plus 3-5 Shorts a week cut from them.
 - The hook is on screen as text while the voice says it. No intro, no year, no establishing shot first.
 - Date, place and background come after the hook.
 
+## The series format (Jesper 2026-11-14)
+**"Sir Digsworth survives history":** Sir Digsworth is dropped into a real, famous historical event and has to get
+through it. The events around him are true and sourced; his own journey is dramatised, and each episode says so.
+- **Only eras that draw crowds and are full of action:** the Second World War, the age of knights, the Cold War,
+  famous disasters. Not quiet curiosities.
+- **Seasons of 5-8 episodes**, each with an ending. Titles in the form "I Survived <event>: Day 1".
+  Every episode must be watchable on its own: a ten-second recap, then straight into danger.
+- **Action, chaos and adventure first.** Each episode opens in the middle of danger. Something happens every
+  20-30 seconds: a chase, an escape, a collapse, a near miss. Dialogue and explanation together stay under about
+  a fifth of the running time; facts come as one-sentence asides from Sir Digsworth while things happen.
+  Every episode ends on a cliffhanger.
+- **Violence stays cartoon and bloodless.** No gore, no suffering shown in detail, no Nazi symbols in titles or
+  thumbnails. The tone is adventure, and real victims are treated with respect.
+- **Shorts:** the most dramatic moments of each episode, pointing to it, plus stand-alone funny history Shorts.
+- **Test first (phase 1):** the first season starts as three Shorts in a row (part 1, 2, 3). If viewers stay and
+  move on to the next part, the season is made as long episodes in phase 2.
+- Candidate first seasons, Jesper picks: Titanic 1912 (one night), the tunnel escapes under the Berlin Wall
+  (1960s), the Great Escape from Stalag Luft III (1944), a medieval castle siege (Rochester 1215), D-Day 1944.
+
 ## One niche
 Bizarre and forgotten history, told by Sir Digsworth. Every video, long or short.
 - **News and trends only choose WHICH history we tell.** Each working day, search the day's news and what is trending

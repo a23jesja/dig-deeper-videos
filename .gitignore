@@ -5,3 +5,7 @@ __pycache__/
 engine/voice/models/
 engine/audio/out/
 engine/public/emu/mix.wav
+
+# Remotion agent skills: their repository has no licence file, so they are installed locally, not redistributed here
+# install with: npx skills add remotion-dev/skills
+.claude/skills/remotion-*/

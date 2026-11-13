@@ -33,8 +33,20 @@ Applies to every production session for the Sir Digsworth channel, on top of REA
 - If any point is uncertain, the video is not sent for approval; say what was uncertain instead.
 
 ## Tools worth trying (found by search 2026-11-13, not yet installed or tested)
-- `npx skills add remotion-dev/skills` – Remotion's official agent skills (`remotion-best-practices`).
+- `npx skills add remotion-dev/skills` – Remotion's official agent skills. Install locally on each machine; do not commit
+  them (their repository has no licence file).
 - `digitalsamba/claude-code-video-toolkit` – Remotion/Manim, FFmpeg post-processing, YouTube clipping skills.
 - faster-whisper or whisper.cpp – real word timings from the voice track (the cloud build had to estimate them).
 - Live trend charts: kabo.sh/trending/youtube, shortstrends.com, veedio.co/trending/youtube-shorts, youtube.trends24.in/shorts.
 - `sasharun/awesome-faceless` (tool list) and `Dark2C/Viral-Faceless-Shorts-Generator` (trend -> script pipeline, as reference).
+
+## Licences (checked 2026-11-13)
+- **Remotion:** free licence covers individuals and for-profit organisations with up to 3 employees, commercial videos
+  included. A company with more than 3 employees needs a paid company licence.
+- **claude-animated-shorts (engine base):** MIT. Keep the licence file next to the code. Its reference frames are
+  "for style study only": never commit or publish them.
+- **claude-code-video-toolkit skills:** MIT, licence file in `.claude/skills/`.
+- **three.js, React, react-three-fiber, postprocessing, TypeScript, kokoro-onnx, faster-whisper, moviepy:** MIT / Zlib / Apache-2.0.
+- **Kokoro-82M voice model:** Apache-2.0 per its model card (seen via search, not read directly).
+- **Not allowed for this channel:** anything marked non-commercial (for example the Qwen-Image-2.1 option in `qwen-edit`),
+  stock music or sound libraries, and the paid services (ElevenLabs, RunPod).

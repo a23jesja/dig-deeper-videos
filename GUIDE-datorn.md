@@ -77,7 +77,8 @@ Du får tre förslag per video. Titta på dem i liten storlek (som i mobilens fl
 Duger ingen: säg vad som saknas ("större ansikte", "färre ord", "mer kontrast") och be om tre nya.
 
 ### Steg 5: Godkänn eller skicka tillbaka
-- Godkänd: skriv "Godkänd, publicera med thumbnail 2" och vilken tid, till exempel "i dag 18:00".
+- Godkänd: skriv "Godkänd, publicera med thumbnail 2". Du behöver inte ange tid: Claude väljer den bästa tiden
+  för visningar och berättar vilken den valde (normalt tisdag–fredag kl 16:00 svensk tid).
 - Inte godkänd: skriv vad som är fel så konkret du kan ("emun i scen 3 går genom staketet"). Claude rättar och skickar en ny version.
 
 ### Steg 6: Kontrollera att den gick ut

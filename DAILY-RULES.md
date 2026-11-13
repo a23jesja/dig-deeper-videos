@@ -60,6 +60,20 @@ Keep the Kokoro `bm_george` voice; no human narrator. Everything else in this pl
 Because the voice is synthetic, the script, pacing and pictures have to carry more: vary sentence length, leave pauses
 for jokes, and time every picture to the word.
 
+## Save usage (Jesper 2026-11-13: the weekly limit runs out too fast)
+- **Right model for the job.** The most capable model only for script writing, scene design and the final review.
+  A cheaper model (Sonnet) for building scenes from an approved plan, fixing errors, rendering, file work and git.
+  The cheapest (Haiku) for lookups and simple checks. Subagents never run on the most capable model by default.
+- **No agent swarms.** At most one helper agent at a time, and only when it saves more than it costs. No "verifier"
+  agents looking at pictures; the main session reviews.
+- **Let scripts do the checking.** Black, frozen, off-screen and loudness checks run as scripts on the rendered file.
+  Look at pictures only where a script flags something, plus one contact sheet per scene at small size.
+- **Rendering costs nothing; looking costs.** Render freely on the graphics card, but do not read full-size frames
+  into the conversation. Use small contact sheets.
+- **Short sessions.** One video per session. Start a new session for the next one, and keep notes in the repo
+  (GROWTH.md, README.md) rather than in a long conversation.
+- **Reuse.** Extend existing worlds, props and cast instead of rebuilding; read only the files a change needs.
+
 ## Always
 - Sir Digsworth narrates everything; our own touch, never a copy of someone else's script, footage, music or thumbnail.
 - Every fact is checked against at least two named sources before the script is locked.

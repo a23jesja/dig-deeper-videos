@@ -54,9 +54,10 @@ Jesper does not pick times. The session picks the slot and tells him which one i
 Record views, average view duration, retention at 30 seconds and at 50 %, click-through rate and subscribers gained for
 every video in GROWTH.md. Make more of what holds viewers, stop what does not. Watch time matters more than views.
 
-## Open decision (Jesper)
-- **Voice:** Kokoro `bm_george` is allowed by YouTube, but a real human narrator would be the biggest quality gain and
-  lowers the "mass-produced" risk. Stay with Kokoro until Jesper decides otherwise.
+## Voice (decided by Jesper 2026-11-13)
+Keep the Kokoro `bm_george` voice; no human narrator. Everything else in this plan is done in full.
+Because the voice is synthetic, the script, pacing and pictures have to carry more: vary sentence length, leave pauses
+for jokes, and time every picture to the word.
 
 ## Always
 - Sir Digsworth narrates everything; our own touch, never a copy of someone else's script, footage, music or thumbnail.

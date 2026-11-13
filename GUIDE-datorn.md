@@ -102,7 +102,7 @@ Milstolpar:
   i månaden kan du hamna strax över; ladda då upp de sista själv i YouTube Studio.
 - **Målet är cirka 1 miljon visningar i månaden på långa videor**, vilket uppskattningsvis ger minst 50 000 kr.
   Shorts ger nästan inga pengar; de ska locka folk till de långa videorna.
-- **Rösten är ett öppet beslut.** Kokoro-rösten är tillåten, men en riktig berättarröst vore det största lyftet.
+- **Rösten är bestämd:** Kokoro-rösten behålls. Allt annat i planen görs fullt ut.
 - **Remotion är gratis bara för privatpersoner och företag med högst 3 anställda.**
 - **Tittarstatistik med tittartid och retention** kräver att YouTube Analytics API kopplas in (skillen `youtube-stats`
   beskriver hur). Utan den får du bara visningar, gillningar och kommentarer.

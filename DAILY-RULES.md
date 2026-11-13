@@ -7,6 +7,33 @@ This replaces the earlier "2 Shorts per day about news and trends" rule.
 Within one year: about 1 million long-video views a month, enough for at least 50,000 SEK a month from ads and
 memberships. (Estimate: 0.6-1.6 million views at 3-8 USD per 1,000. Shorts alone would need 60-150 million.)
 
+## Where we are now (Jesper 2026-11-14) - read this first
+**Phase 1: find a look and an opening that keep viewers. Shorts only, as tests.**
+- Baseline from the first Shorts (emu war, pig war): **49 % stayed instead of swiping away**, 30 s average view of
+  ~50 s. The story holds; the first second does not. Target: **65-70 % stayed**.
+- One Short every other day at most. Each one is a test: change one thing, publish, record "stayed %" and average
+  view duration in GROWTH.md, compare with the baseline.
+- No long videos in phase 1.
+**Phase 2 starts when two Shorts in a row reach 65 % or more:** long videos of 7-12 minutes in the proven look,
+one every two weeks, plus 3-5 Shorts a week cut from them.
+
+## The look (decided 2026-11-14 after the three-way test of the Louvre scene)
+- **World: 3D, filled.** Free CC0 models (licence read before use, licence text kept next to the models), signs and
+  papers with readable text that tell the story, a foreground, depth into the next room, one light with a clear
+  direction per scene. Black outlines and toon shading on everything so models and characters share one style.
+  Pictures on walls and similar art are painted locally (ComfyUI) from our own layouts.
+- **Characters: stickmen with volume, not dolls.** Big round head with a simple drawn face (large clear eyes and
+  brows), thin black arms and legs, simple mitten hands, and a body that is a garment with volume (coat, jacket,
+  uniform). Sir Digsworth: tweed cap whose peak is attached, monocle round one eye, pipe in the mouth, handlebar
+  moustache, tweed jacket, waistcoat, bow tie, cane.
+- **Motion:** smooth, no stepped walk cycles, feet planted, upright posture, the face toward the camera in reactions.
+- **Framing:** the subject fills the picture. No small figures in a wide empty view.
+
+## The first second of every Short (hard rule)
+- Frame one shows the most striking moment of the story: one big subject filling the picture, already moving.
+- The hook is on screen as text while the voice says it. No intro, no year, no establishing shot first.
+- Date, place and background come after the hook.
+
 ## One niche
 Bizarre and forgotten history, told by Sir Digsworth. Every video, long or short.
 - **News and trends only choose WHICH history we tell.** Each working day, search the day's news and what is trending

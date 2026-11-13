@@ -77,7 +77,8 @@ Du får tre förslag per video. Titta på dem i liten storlek (som i mobilens fl
 Duger ingen: säg vad som saknas ("större ansikte", "färre ord", "mer kontrast") och be om tre nya.
 
 ### Steg 5: Godkänn eller skicka tillbaka
-- Godkänd: skriv "Godkänd, publicera med thumbnail 2" och vilken tid, till exempel "i dag 18:00".
+- Godkänd: skriv "Godkänd, publicera med thumbnail 2". Du behöver inte ange tid: Claude väljer den bästa tiden
+  för visningar och berättar vilken den valde (normalt tisdag–fredag kl 16:00 svensk tid).
 - Inte godkänd: skriv vad som är fel så konkret du kan ("emun i scen 3 går genom staketet"). Claude rättar och skickar en ny version.
 
 ### Steg 6: Kontrollera att den gick ut
@@ -101,7 +102,7 @@ Milstolpar:
   i månaden kan du hamna strax över; ladda då upp de sista själv i YouTube Studio.
 - **Målet är cirka 1 miljon visningar i månaden på långa videor**, vilket uppskattningsvis ger minst 50 000 kr.
   Shorts ger nästan inga pengar; de ska locka folk till de långa videorna.
-- **Rösten är ett öppet beslut.** Kokoro-rösten är tillåten, men en riktig berättarröst vore det största lyftet.
+- **Rösten är bestämd:** Kokoro-rösten behålls. Allt annat i planen görs fullt ut.
 - **Remotion är gratis bara för privatpersoner och företag med högst 3 anställda.**
 - **Tittarstatistik med tittartid och retention** kräver att YouTube Analytics API kopplas in (skillen `youtube-stats`
   beskriver hur). Utan den får du bara visningar, gillningar och kommentarer.

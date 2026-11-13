@@ -30,6 +30,20 @@ Bizarre and forgotten history, told by Sir Digsworth. Every video, long or short
 - **3-5 a week.** Each one is a self-contained hook from a long video (existing or upcoming) and ends by pointing to it.
 - Under 60 seconds, first 3 seconds carry the hook, word-by-word captions.
 
+## Publishing times (Jesper 2026-11-13: always publish when it is best for views worldwide)
+Jesper does not pick times. The session picks the slot and tells him which one it chose and why.
+- **Default slots, Stockholm time** (from Metricool's best-time data for the channel, week of 16 Nov 2026):
+  - Long videos: **Wednesday or Thursday 16:00** (= 10:00 US Eastern, 15:00 UK: US morning and European afternoon).
+  - Shorts: **Tuesday-Friday 16:00**; second slot the same days at **10:00**. One Short per slot, never two at once.
+  - Avoid Saturday and Sunday (about half the weekday score) and anything between 20:00 and 07:00.
+- **Before every scheduling:** call Metricool `getBestTimeToPostByNetwork` (brand 8016995, youtube, Europe/Stockholm)
+  for the coming week and take the highest free hour; use the defaults only if the call fails.
+- **Spread:** a Short that advertises a long video goes out 1-3 days after the long video, not the same hour.
+- **After 10 published videos:** check YouTube Studio's "When your viewers are on YouTube" and the first-48-hours views
+  per slot in GROWTH.md, and move the defaults if our own numbers disagree. Our own audience beats any general study.
+- Public studies disagree with each other (some say Sunday morning, some weekday afternoons), so treat timing as a
+  small gain: never delay a finished, approved video more than three days to wait for a slot.
+
 ## Monetisation milestones
 1. 500 subscribers: turn on channel memberships.
 2. 1,000 subscribers and 4,000 watch hours in 12 months (or 10 million Shorts views in 90 days): apply to the Partner
@@ -40,9 +54,10 @@ Bizarre and forgotten history, told by Sir Digsworth. Every video, long or short
 Record views, average view duration, retention at 30 seconds and at 50 %, click-through rate and subscribers gained for
 every video in GROWTH.md. Make more of what holds viewers, stop what does not. Watch time matters more than views.
 
-## Open decision (Jesper)
-- **Voice:** Kokoro `bm_george` is allowed by YouTube, but a real human narrator would be the biggest quality gain and
-  lowers the "mass-produced" risk. Stay with Kokoro until Jesper decides otherwise.
+## Voice (decided by Jesper 2026-11-13)
+Keep the Kokoro `bm_george` voice; no human narrator. Everything else in this plan is done in full.
+Because the voice is synthetic, the script, pacing and pictures have to carry more: vary sentence length, leave pauses
+for jokes, and time every picture to the word.
 
 ## Always
 - Sir Digsworth narrates everything; our own touch, never a copy of someone else's script, footage, music or thumbnail.

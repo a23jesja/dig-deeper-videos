@@ -112,6 +112,20 @@ Every video and Short gets its own thumbnail, made and checked before the video 
 - Live trend charts: kabo.sh/trending/youtube, shortstrends.com, veedio.co/trending/youtube-shorts, youtube.trends24.in/shorts.
 - `sasharun/awesome-faceless` (tool list) and `Dark2C/Viral-Faceless-Shorts-Generator` (trend -> script pipeline, as reference).
 
+## Local picture tools (Jesper 2026-11-13; install on the computer, read each licence before first use)
+Used to paint richer thumbnails and backgrounds over OUR OWN layouts; our engine still animates everything.
+- **ComfyUI** – runs image models on the local graphics card. Model must allow commercial use
+  (for example Stable Diffusion XL or FLUX.1 schnell; never FLUX.1 dev, which is non-commercial).
+- **rembg** – cuts subjects out with a transparent background. Use a model that allows commercial use
+  (not BRIA RMBG, which is non-commercial).
+- **Depth maps** – split a painted picture into near and far layers. Depth Anything V2 Small is the commercial-friendly
+  size; the Base and Large sizes are non-commercial.
+- **Real-ESRGAN** – enlarges pictures without blur.
+- **LoRA training** (kohya sd-scripts or ai-toolkit) – only later, and only on our own drawings of Sir Digsworth.
+- Never put an artist's or a channel's name in a prompt. Check every generated background against how the place really
+  looked. No AI-generated video.
+The licence notes above are from memory, not checked: confirm each one on the project's own page before using it.
+
 ## Licences (checked 2026-11-13)
 - **Remotion:** free licence covers individuals and for-profit organisations with up to 3 employees, commercial videos
   included. A company with more than 3 employees needs a paid company licence.

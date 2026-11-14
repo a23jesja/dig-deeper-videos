@@ -35,20 +35,29 @@ The session decides and does everything itself. Jesper is asked for **one thing 
 **Phase 2 starts when two Shorts in a row reach 65 % or more:** long videos of 7-12 minutes in the proven look,
 one every two weeks, plus 3-5 Shorts a week cut from them.
 
-## The look (decided 2026-11-14 after the three-way test of the Louvre scene)
-- **World: 3D, filled.** Free CC0 models (licence read before use, licence text kept next to the models), signs and
-  papers with readable text that tell the story, a foreground, depth into the next room, one light with a clear
-  direction per scene. Black outlines and toon shading on everything so models and characters share one style.
-  Pictures on walls and similar art are painted locally (ComfyUI) from our own layouts.
-- **Characters: real stickmen** (Jesper 2026-11-14, after rejecting the doll-like 3D heads). Plain round head in
-  white or very pale cream with a black outline: no ears, no nose, no skin tone, no eyelashes or coloured irises.
-  The face is a few drawn black lines and dots: simple eyes (dots or half-lidded lines), brows, a line mouth.
-  Thin black arms and legs, simple mitten hands, and a body that is one simple garment shape. Hats, moustaches and
-  props are what tell characters apart. Sir Digsworth: tweed cap whose peak is attached, monocle round one eye,
-  pipe in the mouth, handlebar moustache, tweed jacket, waistcoat, bow tie, cane. Soft shading on head and body is
-  fine; realistic facial features are not.
-- **Motion:** smooth, no stepped walk cycles, feet planted, upright posture, the face toward the camera in reactions.
-- **Framing:** the subject fills the picture. No small figures in a wide empty view.
+## The look: 2D (Jesper 2026-11-14, after the 3D Mona Lisa Short failed)
+The 3D Short was rejected: figures cut off by the frame edge, a smock that read as a snowman, a flat frame around a
+realistic painting, captions on top of a name tag, cameras too close. 3D is dropped. Everything is laid out in
+screen space, where what is drawn is what is shown.
+- **Layers, not a 3D world.** Each shot is a painted background (made locally with ComfyUI from our own layout, with
+  one clear light and real depth), a midground with the characters, and a foreground element. Layers move at
+  different speeds when the camera pans or pushes in.
+- **Characters: our drawn stickmen**, as approved on the character sheet: plain round white head with black outline,
+  a few black lines and dots for the face, thin black limbs, mitten hands, a simple garment body. Soft shading and a
+  light rim so they sit in the painted picture. A garment must read as clothing: collar, opening, sleeves or belt.
+- **Big.** In medium shots a character is at least half the picture height. Use close-ups of faces and inserts of
+  objects often; a wide view lasts two seconds at most.
+- **One style per picture.** Anything shown inside the scene (paintings, posters, letters) is drawn in the same style
+  as the scene. No realistic image inside a flat cartoon frame.
+- **Layout rules, checked by script on every shot before rendering:**
+  - every character and key prop is fully inside the picture with a 5 % margin, or is a deliberate close-up with
+    the whole face inside;
+  - nothing important under the caption band or under YouTube's interface (top and bottom 15 % of a Short);
+  - captions and name tags never overlap each other or a face;
+  - no empty black or unpainted area anywhere in the frame.
+  A shot that fails is fixed before anything is rendered.
+- **Motion:** smooth, no stepped cycles, feet planted, turns drawn as in-between poses, faces toward the viewer in
+  reactions.
 
 ## The first second of every Short (hard rule)
 - Frame one shows the most striking moment of the story: one big subject filling the picture, already moving.

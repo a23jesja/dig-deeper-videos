@@ -22,10 +22,13 @@ one every two weeks, plus 3-5 Shorts a week cut from them.
   papers with readable text that tell the story, a foreground, depth into the next room, one light with a clear
   direction per scene. Black outlines and toon shading on everything so models and characters share one style.
   Pictures on walls and similar art are painted locally (ComfyUI) from our own layouts.
-- **Characters: stickmen with volume, not dolls.** Big round head with a simple drawn face (large clear eyes and
-  brows), thin black arms and legs, simple mitten hands, and a body that is a garment with volume (coat, jacket,
-  uniform). Sir Digsworth: tweed cap whose peak is attached, monocle round one eye, pipe in the mouth, handlebar
-  moustache, tweed jacket, waistcoat, bow tie, cane.
+- **Characters: real stickmen** (Jesper 2026-11-14, after rejecting the doll-like 3D heads). Plain round head in
+  white or very pale cream with a black outline: no ears, no nose, no skin tone, no eyelashes or coloured irises.
+  The face is a few drawn black lines and dots: simple eyes (dots or half-lidded lines), brows, a line mouth.
+  Thin black arms and legs, simple mitten hands, and a body that is one simple garment shape. Hats, moustaches and
+  props are what tell characters apart. Sir Digsworth: tweed cap whose peak is attached, monocle round one eye,
+  pipe in the mouth, handlebar moustache, tweed jacket, waistcoat, bow tie, cane. Soft shading on head and body is
+  fine; realistic facial features are not.
 - **Motion:** smooth, no stepped walk cycles, feet planted, upright posture, the face toward the camera in reactions.
 - **Framing:** the subject fills the picture. No small figures in a wide empty view.
 

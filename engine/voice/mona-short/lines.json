@@ -1,0 +1,74 @@
+[
+ {
+  "id": "hook",
+  "a": 0.05,
+  "b": 4.111,
+  "text": "Someone stole the Mona Lisa. And for a whole day, nobody noticed."
+ },
+ {
+  "id": "paris",
+  "a": 4.461,
+  "b": 7.688,
+  "text": "Paris, 1911. A Monday. The Louvre is closed."
+ },
+ {
+  "id": "who",
+  "a": 7.888,
+  "b": 13.274,
+  "text": "Vincenzo Peruggia, a house painter, is inside, dressed in a museum workman's white smock."
+ },
+ {
+  "id": "lift",
+  "a": 13.474,
+  "b": 16.924,
+  "text": "He lifts her off four hooks, wraps her in the smock, and walks out."
+ },
+ {
+  "id": "guards",
+  "a": 17.224,
+  "b": 20.573,
+  "text": "The guards see the gap and shrug: the photographers must have her."
+ },
+ {
+  "id": "artist",
+  "a": 20.873,
+  "b": 24.78,
+  "text": "Next morning an artist comes to paint her, and finds only hooks."
+ },
+ {
+  "id": "police",
+  "a": 25.13,
+  "b": 29.563,
+  "text": "Sixty detectives search. Even Pablo Picasso is questioned. Wrong man."
+ },
+ {
+  "id": "queue",
+  "a": 29.863,
+  "b": 33.301,
+  "text": "When the Louvre reopens, thousands queue to stare at an empty wall."
+ },
+ {
+  "id": "trunk",
+  "a": 33.601,
+  "b": 36.739,
+  "text": "For two years she lies in a trunk in Peruggia's room."
+ },
+ {
+  "id": "letter",
+  "a": 36.989,
+  "b": 41.849,
+  "text": "Then he offers her to a dealer in Florence, in a letter signed Leonardo, and is arrested."
+ },
+ {
+  "id": "back",
+  "a": 42.149,
+  "b": 45.151,
+  "text": "In January 1914 she is back on her hooks."
+ },
+ {
+  "id": "end",
+  "a": 45.351,
+  "b": 48.792,
+  "text": "And the theft helped make her the most famous painting on Earth."
+ }
+]

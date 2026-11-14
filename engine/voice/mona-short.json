@@ -1,0 +1,20 @@
+{
+ "voice": "bm_george",
+ "speed": 1.2,
+ "gap": 0.13,
+ "lead": 0.05,
+ "lines": [
+  { "id": "hook", "text": "Someone stole the Mona Lisa. And for a whole day, nobody noticed.", "gap": 0.35 },
+  { "id": "paris", "text": "Paris, 1911. A Monday. The Louvre is closed.", "say": "Paris, nineteen eleven. A Monday. The Louvre is closed.", "gap": 0.2 },
+  { "id": "who", "text": "Vincenzo Peruggia, a house painter, is inside, dressed in a museum workman's white smock.", "gap": 0.2 },
+  { "id": "lift", "text": "He lifts her off four hooks, wraps her in the smock, and walks out.", "gap": 0.3 },
+  { "id": "guards", "text": "The guards see the gap and shrug: the photographers must have her.", "gap": 0.3 },
+  { "id": "artist", "text": "Next morning an artist comes to paint her, and finds only hooks.", "gap": 0.35 },
+  { "id": "police", "text": "Sixty detectives search. Even Pablo Picasso is questioned. Wrong man.", "gap": 0.3 },
+  { "id": "queue", "text": "When the Louvre reopens, thousands queue to stare at an empty wall.", "gap": 0.3 },
+  { "id": "trunk", "text": "For two years she lies in a trunk in Peruggia's room.", "gap": 0.25 },
+  { "id": "letter", "text": "Then he offers her to a dealer in Florence, in a letter signed Leonardo, and is arrested.", "gap": 0.3 },
+  { "id": "back", "text": "In January 1914 she is back on her hooks.", "say": "In January nineteen fourteen she is back on her hooks.", "gap": 0.2 },
+  { "id": "end", "text": "And the theft helped make her the most famous painting on Earth.", "gap": 0.8 }
+ ]
+}

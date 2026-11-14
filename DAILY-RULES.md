@@ -7,6 +7,84 @@ This replaces the earlier "2 Shorts per day about news and trends" rule.
 Within one year: about 1 million long-video views a month, enough for at least 50,000 SEK a month from ads and
 memberships. (Estimate: 0.6-1.6 million views at 3-8 USD per 1,000. Shorts alone would need 60-150 million.)
 
+## Automation first (Jesper 2026-11-14: "the whole point is that this is automated")
+The session decides and does everything itself. Jesper is asked for **one thing only: yes or no to the finished video**.
+- **Do not ask Jesper to choose** topics, hooks, scripts, plans, styles, thumbnails, titles, times or models.
+  Pick the best option by these rules, do it, and note the choice and the reason in one line in GROWTH.md.
+- **No step-by-step check-ins.** Topic -> sources -> script -> voice -> build -> render -> automatic checks ->
+  three thumbnails -> title and description runs in one go. All three thumbnails go into YouTube's A/B test, so
+  viewers pick the winner, not Jesper.
+- **The session is its own reviewer.** Before the video is shown: every line of the script checked against the
+  picture, the fact list checked against two named sources, the no-strike checklist, the first-second rule, and the
+  scripted checks for black, frozen and off-screen frames. If a check fails, fix it and run again; do not hand the
+  problem to Jesper.
+- **One message at the end:** the video file, the chosen title, and "publish at <time>? yes/no". On yes it is
+  scheduled at the best time. On no, with or without a reason, make a better version without asking questions.
+- **Stop and ask only** when something would cost money, break a hard rule, or cannot be undone.
+- Wherever older sections below say "Jesper picks" or "Jesper approves" for anything except the finished video,
+  this section wins.
+- Jesper can later switch to fully automatic publishing by saying so; until then the final yes stays.
+
+## Where we are now (Jesper 2026-11-14) - read this first
+**Phase 1: find a look and an opening that keep viewers. Shorts only, as tests.**
+- Baseline from the first Shorts (emu war, pig war): **49 % stayed instead of swiping away**, 30 s average view of
+  ~50 s. The story holds; the first second does not. Target: **65-70 % stayed**.
+- One Short every other day at most. Each one is a test: change one thing, publish, record "stayed %" and average
+  view duration in GROWTH.md, compare with the baseline.
+- No long videos in phase 1.
+**Phase 2 starts when two Shorts in a row reach 65 % or more:** long videos of 7-12 minutes in the proven look,
+one every two weeks, plus 3-5 Shorts a week cut from them.
+
+## The look: 2D (Jesper 2026-11-14, after the 3D Mona Lisa Short failed)
+The 3D Short was rejected: figures cut off by the frame edge, a smock that read as a snowman, a flat frame around a
+realistic painting, captions on top of a name tag, cameras too close. 3D is dropped. Everything is laid out in
+screen space, where what is drawn is what is shown.
+- **Layers, not a 3D world.** Each shot is a painted background (made locally with ComfyUI from our own layout, with
+  one clear light and real depth), a midground with the characters, and a foreground element. Layers move at
+  different speeds when the camera pans or pushes in.
+- **Characters: our drawn stickmen**, as approved on the character sheet: plain round white head with black outline,
+  a few black lines and dots for the face, thin black limbs, mitten hands, a simple garment body. Soft shading and a
+  light rim so they sit in the painted picture. A garment must read as clothing: collar, opening, sleeves or belt.
+- **Big.** In medium shots a character is at least half the picture height. Use close-ups of faces and inserts of
+  objects often; a wide view lasts two seconds at most.
+- **One style per picture.** Anything shown inside the scene (paintings, posters, letters) is drawn in the same style
+  as the scene. No realistic image inside a flat cartoon frame.
+- **Layout rules, checked by script on every shot before rendering:**
+  - every character and key prop is fully inside the picture with a 5 % margin, or is a deliberate close-up with
+    the whole face inside;
+  - nothing important under the caption band or under YouTube's interface (top and bottom 15 % of a Short);
+  - captions and name tags never overlap each other or a face;
+  - no empty black or unpainted area anywhere in the frame.
+  A shot that fails is fixed before anything is rendered.
+- **Motion:** smooth, no stepped cycles, feet planted, turns drawn as in-between poses, faces toward the viewer in
+  reactions.
+
+## The first second of every Short (hard rule)
+- Frame one shows the most striking moment of the story: one big subject filling the picture, already moving.
+- The hook is on screen as text while the voice says it. No intro, no year, no establishing shot first.
+- Date, place and background come after the hook.
+
+## The series format (Jesper 2026-11-14)
+**"Sir Digsworth survives history":** Sir Digsworth is dropped into a real, famous historical event and has to get
+through it. The events around him are true and sourced; his own journey is dramatised, and each episode says so.
+- **Only eras that draw crowds and are full of action:** the Second World War, the age of knights, the Cold War,
+  famous disasters. Not quiet curiosities.
+- **Seasons of 5-8 episodes**, each with an ending. Titles in the form "I Survived <event>: Day 1".
+  Every episode must be watchable on its own: a ten-second recap, then straight into danger.
+- **Action, chaos and adventure first.** Each episode opens in the middle of danger. Something happens every
+  20-30 seconds: a chase, an escape, a collapse, a near miss. Dialogue and explanation together stay under about
+  a fifth of the running time; facts come as one-sentence asides from Sir Digsworth while things happen.
+  Every episode ends on a cliffhanger.
+- **Violence stays cartoon and bloodless.** No gore, no suffering shown in detail, no Nazi symbols in titles or
+  thumbnails. The tone is adventure, and real victims are treated with respect.
+- **Shorts:** the most dramatic moments of each episode, pointing to it, plus stand-alone funny history Shorts.
+- **Test first (phase 1):** the first season starts as three Shorts in a row (part 1, 2, 3). If viewers stay and
+  move on to the next part, the season is made as long episodes in phase 2.
+- **Order decided by Jesper 2026-11-14:** first one stand-alone Short about the theft of the Mona Lisa (1911), in
+  the approved stickman look and the Louvre room already built. Then the first test season: **Titanic 1912**, as
+  three Shorts in a row (part 1, 2, 3). Later candidates: the tunnel escapes under the Berlin Wall, the Great Escape
+  from Stalag Luft III (1944), a medieval castle siege (Rochester 1215), D-Day 1944.
+
 ## One niche
 Bizarre and forgotten history, told by Sir Digsworth. Every video, long or short.
 - **News and trends only choose WHICH history we tell.** Each working day, search the day's news and what is trending
@@ -17,7 +95,8 @@ Bizarre and forgotten history, told by Sir Digsworth. Every video, long or short
 - Prefer angles advertisers accept: avoid war crimes, Nazi imagery and graphic violence in titles and thumbnails.
 
 ## Long videos are the product
-- **Length: 10-15 minutes, never under 8** (mid-roll ads need 8 minutes).
+- **Length: about 7-12 minutes** (Jesper 2026-11-13). Land at 8:00 or more whenever the story carries it, because
+  mid-roll ads need 8 minutes; never pad a story to get there.
 - **Pace: two a month to start, one a week once the pipeline is fast.** Never trade quality for pace.
 - Workflow: 10 ideas -> Jesper picks -> sources -> script -> Jesper approves the script -> voice -> scenes -> render ->
   review -> Jesper approves the video and thumbnail -> publish.
@@ -59,6 +138,37 @@ Keep the Kokoro `bm_george` voice; no human narrator. Everything else in this pl
 Because the voice is synthetic, the script, pacing and pictures have to carry more: vary sentence length, leave pauses
 for jokes, and time every picture to the word.
 
+## Use the installed skills (Jesper 2026-11-14: the session had skipped all of them)
+Load these before the matching step instead of writing everything from scratch, and say in the final message which
+ones were used:
+- `remotion-best-practices` - before any Remotion code.
+- `remotion-captions` - for the word-by-word captions and where they sit.
+- `video-design` - layout, type and colour rules for 9:16, and the contact-sheet critique of the render.
+- `ffmpeg` - for muxing, compression and frame extraction.
+- `youtube-stats` - when recording results in GROWTH.md.
+Not for this channel: `elevenlabs`, `runpod`, `ltx2`, `acestep`, `ideogram4`, `qwen-edit` (paid or non-commercial),
+`blender` (3D is dropped), `playwright-recording`, `synthetic-ui-demo`.
+**Worth reading once, licence first, then borrow the method and keep our own code and characters** (from the list
+github.com/zhuyansen/awesome-claude-video-skills, not yet read or tested by anyone here):
+`deenukhan/stick-figure-shorts` (stick-figure story Shorts in Remotion; its voice step uses a paid service, keep
+Kokoro), `buildwithhanif/claude-animation-skill` and `JohnHeibel/ClaudeAnimationBase` (hand-drawn 2D animation as
+code, acted emotions), `kmilo93sd/agent-video-editor` (pacing, cuts, captions, thumbnails),
+`ZLHad/OpenVideoHarness` (the agent checks its own frames).
+
+## Save usage (Jesper 2026-11-13: the weekly limit runs out too fast)
+- **Right model for the job.** The most capable model only for script writing, scene design and the final review.
+  A cheaper model (Sonnet) for building scenes from an approved plan, fixing errors, rendering, file work and git.
+  The cheapest (Haiku) for lookups and simple checks. Subagents never run on the most capable model by default.
+- **No agent swarms.** At most one helper agent at a time, and only when it saves more than it costs. No "verifier"
+  agents looking at pictures; the main session reviews.
+- **Let scripts do the checking.** Black, frozen, off-screen and loudness checks run as scripts on the rendered file.
+  Look at pictures only where a script flags something, plus one contact sheet per scene at small size.
+- **Rendering costs nothing; looking costs.** Render freely on the graphics card, but do not read full-size frames
+  into the conversation. Use small contact sheets.
+- **Short sessions.** One video per session. Start a new session for the next one, and keep notes in the repo
+  (GROWTH.md, README.md) rather than in a long conversation.
+- **Reuse.** Extend existing worlds, props and cast instead of rebuilding; read only the files a change needs.
+
 ## Always
 - Sir Digsworth narrates everything; our own touch, never a copy of someone else's script, footage, music or thumbnail.
 - Every fact is checked against at least two named sources before the script is locked.
@@ -81,6 +191,13 @@ Every video and Short gets its own thumbnail, made and checked before the video 
 - **Compare:** look up the current top results for the same topic and make sure ours does not look like any of them
   and stands out next to them.
 - For Shorts the first frame of the video must work as a thumbnail too: no black, blank or mid-transition frame.
+- **Let viewers decide:** every long video is uploaded with all three variants in YouTube Studio's "Test & compare"
+  (Jesper approves the three, YouTube picks the winner by watch time). Record the winner and its click-through rate in
+  GROWTH.md and use what won as the starting point for the next video's thumbnails.
+- **What works, in order:** one huge subject, a face with a strong emotion, light behind the subject with dark edges,
+  three words or fewer in white and yellow with a thick dark outline. Start from `thumbnails/thumb.tsx`.
+- **Jesper should not need to design anything.** If he says a thumbnail is not good enough, make three new ones
+  without asking what he wants changed, each with a different subject, emotion and wording.
 
 ## No strikes (hard rule, Jesper 2026-11-13)
 "Use a trend" means our own history story on the same THEME. Before a video is sent to Jesper, check every point:
@@ -104,6 +221,20 @@ Every video and Short gets its own thumbnail, made and checked before the video 
 - faster-whisper or whisper.cpp – real word timings from the voice track (the cloud build had to estimate them).
 - Live trend charts: kabo.sh/trending/youtube, shortstrends.com, veedio.co/trending/youtube-shorts, youtube.trends24.in/shorts.
 - `sasharun/awesome-faceless` (tool list) and `Dark2C/Viral-Faceless-Shorts-Generator` (trend -> script pipeline, as reference).
+
+## Local picture tools (Jesper 2026-11-13; install on the computer, read each licence before first use)
+Used to paint richer thumbnails and backgrounds over OUR OWN layouts; our engine still animates everything.
+- **ComfyUI** – runs image models on the local graphics card. Model must allow commercial use
+  (for example Stable Diffusion XL or FLUX.1 schnell; never FLUX.1 dev, which is non-commercial).
+- **rembg** – cuts subjects out with a transparent background. Use a model that allows commercial use
+  (not BRIA RMBG, which is non-commercial).
+- **Depth maps** – split a painted picture into near and far layers. Depth Anything V2 Small is the commercial-friendly
+  size; the Base and Large sizes are non-commercial.
+- **Real-ESRGAN** – enlarges pictures without blur.
+- **LoRA training** (kohya sd-scripts or ai-toolkit) – only later, and only on our own drawings of Sir Digsworth.
+- Never put an artist's or a channel's name in a prompt. Check every generated background against how the place really
+  looked. No AI-generated video.
+The licence notes above are from memory, not checked: confirm each one on the project's own page before using it.
 
 ## Licences (checked 2026-11-13)
 - **Remotion:** free licence covers individuals and for-profit organisations with up to 3 employees, commercial videos

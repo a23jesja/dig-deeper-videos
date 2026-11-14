@@ -1,0 +1,1146 @@
+[
+{
+"text": " Someone",
+"startMs": 50,
+"endMs": 340,
+"timestampMs": 195,
+"confidence": null,
+"line": "hook"
+},
+{
+"text": " stole",
+"startMs": 340,
+"endMs": 700,
+"timestampMs": 520,
+"confidence": null,
+"line": "hook"
+},
+{
+"text": " the",
+"startMs": 700,
+"endMs": 960,
+"timestampMs": 830,
+"confidence": null,
+"line": "hook"
+},
+{
+"text": " Mona",
+"startMs": 960,
+"endMs": 1280,
+"timestampMs": 1120,
+"confidence": null,
+"line": "hook"
+},
+{
+"text": " Lisa.",
+"startMs": 1280,
+"endMs": 1520,
+"timestampMs": 1400,
+"confidence": null,
+"line": "hook"
+},
+{
+"text": " And",
+"startMs": 2020,
+"endMs": 2100,
+"timestampMs": 2060,
+"confidence": null,
+"line": "hook"
+},
+{
+"text": " for",
+"startMs": 2100,
+"endMs": 2220,
+"timestampMs": 2160,
+"confidence": null,
+"line": "hook"
+},
+{
+"text": " a",
+"startMs": 2220,
+"endMs": 2360,
+"timestampMs": 2290,
+"confidence": null,
+"line": "hook"
+},
+{
+"text": " whole",
+"startMs": 2360,
+"endMs": 2560,
+"timestampMs": 2460,
+"confidence": null,
+"line": "hook"
+},
+{
+"text": " day,",
+"startMs": 2560,
+"endMs": 2900,
+"timestampMs": 2730,
+"confidence": null,
+"line": "hook"
+},
+{
+"text": " nobody",
+"startMs": 3180,
+"endMs": 3380,
+"timestampMs": 3280,
+"confidence": null,
+"line": "hook"
+},
+{
+"text": " noticed.",
+"startMs": 3380,
+"endMs": 3840,
+"timestampMs": 3610,
+"confidence": null,
+"line": "hook"
+},
+{
+"text": " Paris,",
+"startMs": 4461,
+"endMs": 4771,
+"timestampMs": 4616,
+"confidence": null,
+"line": "paris"
+},
+{
+"text": " 1911.",
+"startMs": 4851,
+"endMs": 5431,
+"timestampMs": 5141,
+"confidence": null,
+"line": "paris"
+},
+{
+"text": " A",
+"startMs": 5871,
+"endMs": 5971,
+"timestampMs": 5921,
+"confidence": null,
+"line": "paris"
+},
+{
+"text": " Monday.",
+"startMs": 5971,
+"endMs": 6271,
+"timestampMs": 6121,
+"confidence": null,
+"line": "paris"
+},
+{
+"text": " The",
+"startMs": 6611,
+"endMs": 6711,
+"timestampMs": 6661,
+"confidence": null,
+"line": "paris"
+},
+{
+"text": " Louvre",
+"startMs": 6711,
+"endMs": 6971,
+"timestampMs": 6841,
+"confidence": null,
+"line": "paris"
+},
+{
+"text": " is",
+"startMs": 6971,
+"endMs": 7111,
+"timestampMs": 7041,
+"confidence": null,
+"line": "paris"
+},
+{
+"text": " closed.",
+"startMs": 7111,
+"endMs": 7391,
+"timestampMs": 7251,
+"confidence": null,
+"line": "paris"
+},
+{
+"text": " Vincenzo",
+"startMs": 7888,
+"endMs": 8418,
+"timestampMs": 8153,
+"confidence": null,
+"line": "who"
+},
+{
+"text": " Peruggia,",
+"startMs": 8418,
+"endMs": 8898,
+"timestampMs": 8658,
+"confidence": null,
+"line": "who"
+},
+{
+"text": " a",
+"startMs": 9158,
+"endMs": 9258,
+"timestampMs": 9208,
+"confidence": null,
+"line": "who"
+},
+{
+"text": " house",
+"startMs": 9258,
+"endMs": 9418,
+"timestampMs": 9338,
+"confidence": null,
+"line": "who"
+},
+{
+"text": " painter,",
+"startMs": 9418,
+"endMs": 9818,
+"timestampMs": 9618,
+"confidence": null,
+"line": "who"
+},
+{
+"text": " is",
+"startMs": 10058,
+"endMs": 10298,
+"timestampMs": 10178,
+"confidence": null,
+"line": "who"
+},
+{
+"text": " inside,",
+"startMs": 10298,
+"endMs": 10838,
+"timestampMs": 10568,
+"confidence": null,
+"line": "who"
+},
+{
+"text": " dressed",
+"startMs": 11258,
+"endMs": 11438,
+"timestampMs": 11348,
+"confidence": null,
+"line": "who"
+},
+{
+"text": " in",
+"startMs": 11438,
+"endMs": 11618,
+"timestampMs": 11528,
+"confidence": null,
+"line": "who"
+},
+{
+"text": " a",
+"startMs": 11618,
+"endMs": 11738,
+"timestampMs": 11678,
+"confidence": null,
+"line": "who"
+},
+{
+"text": " museum",
+"startMs": 11738,
+"endMs": 11998,
+"timestampMs": 11868,
+"confidence": null,
+"line": "who"
+},
+{
+"text": " workman's",
+"startMs": 11998,
+"endMs": 12558,
+"timestampMs": 12278,
+"confidence": null,
+"line": "who"
+},
+{
+"text": " white",
+"startMs": 12558,
+"endMs": 12738,
+"timestampMs": 12648,
+"confidence": null,
+"line": "who"
+},
+{
+"text": " smock.",
+"startMs": 12738,
+"endMs": 13178,
+"timestampMs": 12958,
+"confidence": null,
+"line": "who"
+},
+{
+"text": " He",
+"startMs": 13474,
+"endMs": 13584,
+"timestampMs": 13529,
+"confidence": null,
+"line": "lift"
+},
+{
+"text": " lifts",
+"startMs": 13584,
+"endMs": 13784,
+"timestampMs": 13684,
+"confidence": null,
+"line": "lift"
+},
+{
+"text": " her",
+"startMs": 13784,
+"endMs": 13944,
+"timestampMs": 13864,
+"confidence": null,
+"line": "lift"
+},
+{
+"text": " off",
+"startMs": 13944,
+"endMs": 14104,
+"timestampMs": 14024,
+"confidence": null,
+"line": "lift"
+},
+{
+"text": " four",
+"startMs": 14104,
+"endMs": 14424,
+"timestampMs": 14264,
+"confidence": null,
+"line": "lift"
+},
+{
+"text": " hooks,",
+"startMs": 14424,
+"endMs": 14764,
+"timestampMs": 14594,
+"confidence": null,
+"line": "lift"
+},
+{
+"text": " wraps",
+"startMs": 15184,
+"endMs": 15244,
+"timestampMs": 15214,
+"confidence": null,
+"line": "lift"
+},
+{
+"text": " her",
+"startMs": 15244,
+"endMs": 15424,
+"timestampMs": 15334,
+"confidence": null,
+"line": "lift"
+},
+{
+"text": " in",
+"startMs": 15424,
+"endMs": 15524,
+"timestampMs": 15474,
+"confidence": null,
+"line": "lift"
+},
+{
+"text": " the",
+"startMs": 15524,
+"endMs": 15684,
+"timestampMs": 15604,
+"confidence": null,
+"line": "lift"
+},
+{
+"text": " smock,",
+"startMs": 15684,
+"endMs": 15984,
+"timestampMs": 15834,
+"confidence": null,
+"line": "lift"
+},
+{
+"text": " and",
+"startMs": 16224,
+"endMs": 16284,
+"timestampMs": 16254,
+"confidence": null,
+"line": "lift"
+},
+{
+"text": " walks",
+"startMs": 16284,
+"endMs": 16484,
+"timestampMs": 16384,
+"confidence": null,
+"line": "lift"
+},
+{
+"text": " out.",
+"startMs": 16484,
+"endMs": 16804,
+"timestampMs": 16644,
+"confidence": null,
+"line": "lift"
+},
+{
+"text": " The",
+"startMs": 17224,
+"endMs": 17334,
+"timestampMs": 17279,
+"confidence": null,
+"line": "guards"
+},
+{
+"text": " guards",
+"startMs": 17334,
+"endMs": 17594,
+"timestampMs": 17464,
+"confidence": null,
+"line": "guards"
+},
+{
+"text": " see",
+"startMs": 17594,
+"endMs": 17834,
+"timestampMs": 17714,
+"confidence": null,
+"line": "guards"
+},
+{
+"text": " the",
+"startMs": 17834,
+"endMs": 17974,
+"timestampMs": 17904,
+"confidence": null,
+"line": "guards"
+},
+{
+"text": " gap",
+"startMs": 17974,
+"endMs": 18214,
+"timestampMs": 18094,
+"confidence": null,
+"line": "guards"
+},
+{
+"text": " and",
+"startMs": 18214,
+"endMs": 18414,
+"timestampMs": 18314,
+"confidence": null,
+"line": "guards"
+},
+{
+"text": " shrug:",
+"startMs": 18414,
+"endMs": 18694,
+"timestampMs": 18554,
+"confidence": null,
+"line": "guards"
+},
+{
+"text": " the",
+"startMs": 19114,
+"endMs": 19194,
+"timestampMs": 19154,
+"confidence": null,
+"line": "guards"
+},
+{
+"text": " photographers",
+"startMs": 19194,
+"endMs": 19654,
+"timestampMs": 19424,
+"confidence": null,
+"line": "guards"
+},
+{
+"text": " must",
+"startMs": 19654,
+"endMs": 20074,
+"timestampMs": 19864,
+"confidence": null,
+"line": "guards"
+},
+{
+"text": " have",
+"startMs": 20074,
+"endMs": 20334,
+"timestampMs": 20204,
+"confidence": null,
+"line": "guards"
+},
+{
+"text": " her.",
+"startMs": 20334,
+"endMs": 20514,
+"timestampMs": 20424,
+"confidence": null,
+"line": "guards"
+},
+{
+"text": " Next",
+"startMs": 20873,
+"endMs": 21083,
+"timestampMs": 20978,
+"confidence": null,
+"line": "artist"
+},
+{
+"text": " morning",
+"startMs": 21083,
+"endMs": 21423,
+"timestampMs": 21253,
+"confidence": null,
+"line": "artist"
+},
+{
+"text": " an",
+"startMs": 21423,
+"endMs": 21783,
+"timestampMs": 21603,
+"confidence": null,
+"line": "artist"
+},
+{
+"text": " artist",
+"startMs": 21783,
+"endMs": 22103,
+"timestampMs": 21943,
+"confidence": null,
+"line": "artist"
+},
+{
+"text": " comes",
+"startMs": 22103,
+"endMs": 22423,
+"timestampMs": 22263,
+"confidence": null,
+"line": "artist"
+},
+{
+"text": " to",
+"startMs": 22423,
+"endMs": 22663,
+"timestampMs": 22543,
+"confidence": null,
+"line": "artist"
+},
+{
+"text": " paint",
+"startMs": 22663,
+"endMs": 22883,
+"timestampMs": 22773,
+"confidence": null,
+"line": "artist"
+},
+{
+"text": " her,",
+"startMs": 22883,
+"endMs": 23123,
+"timestampMs": 23003,
+"confidence": null,
+"line": "artist"
+},
+{
+"text": " and",
+"startMs": 23363,
+"endMs": 23503,
+"timestampMs": 23433,
+"confidence": null,
+"line": "artist"
+},
+{
+"text": " finds",
+"startMs": 23503,
+"endMs": 23843,
+"timestampMs": 23673,
+"confidence": null,
+"line": "artist"
+},
+{
+"text": " only",
+"startMs": 23843,
+"endMs": 24243,
+"timestampMs": 24043,
+"confidence": null,
+"line": "artist"
+},
+{
+"text": " hooks.",
+"startMs": 24243,
+"endMs": 24523,
+"timestampMs": 24383,
+"confidence": null,
+"line": "artist"
+},
+{
+"text": " Sixty",
+"startMs": 25130,
+"endMs": 25500,
+"timestampMs": 25315,
+"confidence": null,
+"line": "police"
+},
+{
+"text": " detectives",
+"startMs": 25500,
+"endMs": 25920,
+"timestampMs": 25710,
+"confidence": null,
+"line": "police"
+},
+{
+"text": " search.",
+"startMs": 25920,
+"endMs": 26280,
+"timestampMs": 26100,
+"confidence": null,
+"line": "police"
+},
+{
+"text": " Even",
+"startMs": 26760,
+"endMs": 26880,
+"timestampMs": 26820,
+"confidence": null,
+"line": "police"
+},
+{
+"text": " Pablo",
+"startMs": 26880,
+"endMs": 27280,
+"timestampMs": 27080,
+"confidence": null,
+"line": "police"
+},
+{
+"text": " Picasso",
+"startMs": 27280,
+"endMs": 27760,
+"timestampMs": 27520,
+"confidence": null,
+"line": "police"
+},
+{
+"text": " is",
+"startMs": 27760,
+"endMs": 28020,
+"timestampMs": 27890,
+"confidence": null,
+"line": "police"
+},
+{
+"text": " questioned.",
+"startMs": 28020,
+"endMs": 28460,
+"timestampMs": 28240,
+"confidence": null,
+"line": "police"
+},
+{
+"text": " Wrong",
+"startMs": 28940,
+"endMs": 29060,
+"timestampMs": 29000,
+"confidence": null,
+"line": "police"
+},
+{
+"text": " man.",
+"startMs": 29060,
+"endMs": 29380,
+"timestampMs": 29220,
+"confidence": null,
+"line": "police"
+},
+{
+"text": " When",
+"startMs": 29863,
+"endMs": 29973,
+"timestampMs": 29918,
+"confidence": null,
+"line": "queue"
+},
+{
+"text": " the",
+"startMs": 29973,
+"endMs": 30073,
+"timestampMs": 30023,
+"confidence": null,
+"line": "queue"
+},
+{
+"text": " Louvre",
+"startMs": 30073,
+"endMs": 30353,
+"timestampMs": 30213,
+"confidence": null,
+"line": "queue"
+},
+{
+"text": " reopens,",
+"startMs": 30353,
+"endMs": 30833,
+"timestampMs": 30593,
+"confidence": null,
+"line": "queue"
+},
+{
+"text": " thousands",
+"startMs": 31313,
+"endMs": 31553,
+"timestampMs": 31433,
+"confidence": null,
+"line": "queue"
+},
+{
+"text": " queue",
+"startMs": 31553,
+"endMs": 31893,
+"timestampMs": 31723,
+"confidence": null,
+"line": "queue"
+},
+{
+"text": " to",
+"startMs": 31893,
+"endMs": 32053,
+"timestampMs": 31973,
+"confidence": null,
+"line": "queue"
+},
+{
+"text": " stare",
+"startMs": 32053,
+"endMs": 32313,
+"timestampMs": 32183,
+"confidence": null,
+"line": "queue"
+},
+{
+"text": " at",
+"startMs": 32313,
+"endMs": 32493,
+"timestampMs": 32403,
+"confidence": null,
+"line": "queue"
+},
+{
+"text": " an",
+"startMs": 32493,
+"endMs": 32573,
+"timestampMs": 32533,
+"confidence": null,
+"line": "queue"
+},
+{
+"text": " empty",
+"startMs": 32573,
+"endMs": 32853,
+"timestampMs": 32713,
+"confidence": null,
+"line": "queue"
+},
+{
+"text": " wall.",
+"startMs": 32853,
+"endMs": 33153,
+"timestampMs": 33003,
+"confidence": null,
+"line": "queue"
+},
+{
+"text": " For",
+"startMs": 33601,
+"endMs": 33711,
+"timestampMs": 33656,
+"confidence": null,
+"line": "trunk"
+},
+{
+"text": " two",
+"startMs": 33711,
+"endMs": 33871,
+"timestampMs": 33791,
+"confidence": null,
+"line": "trunk"
+},
+{
+"text": " years",
+"startMs": 33871,
+"endMs": 34251,
+"timestampMs": 34061,
+"confidence": null,
+"line": "trunk"
+},
+{
+"text": " she",
+"startMs": 34251,
+"endMs": 34651,
+"timestampMs": 34451,
+"confidence": null,
+"line": "trunk"
+},
+{
+"text": " lies",
+"startMs": 34651,
+"endMs": 34891,
+"timestampMs": 34771,
+"confidence": null,
+"line": "trunk"
+},
+{
+"text": " in",
+"startMs": 34891,
+"endMs": 35131,
+"timestampMs": 35011,
+"confidence": null,
+"line": "trunk"
+},
+{
+"text": " a",
+"startMs": 35131,
+"endMs": 35231,
+"timestampMs": 35181,
+"confidence": null,
+"line": "trunk"
+},
+{
+"text": " trunk",
+"startMs": 35231,
+"endMs": 35511,
+"timestampMs": 35371,
+"confidence": null,
+"line": "trunk"
+},
+{
+"text": " in",
+"startMs": 35511,
+"endMs": 35871,
+"timestampMs": 35691,
+"confidence": null,
+"line": "trunk"
+},
+{
+"text": " Peruggia's",
+"startMs": 35871,
+"endMs": 36351,
+"timestampMs": 36111,
+"confidence": null,
+"line": "trunk"
+},
+{
+"text": " room.",
+"startMs": 36351,
+"endMs": 36571,
+"timestampMs": 36461,
+"confidence": null,
+"line": "trunk"
+},
+{
+"text": " Then",
+"startMs": 36989,
+"endMs": 37119,
+"timestampMs": 37054,
+"confidence": null,
+"line": "letter"
+},
+{
+"text": " he",
+"startMs": 37119,
+"endMs": 37259,
+"timestampMs": 37189,
+"confidence": null,
+"line": "letter"
+},
+{
+"text": " offers",
+"startMs": 37259,
+"endMs": 37499,
+"timestampMs": 37379,
+"confidence": null,
+"line": "letter"
+},
+{
+"text": " her",
+"startMs": 37499,
+"endMs": 37699,
+"timestampMs": 37599,
+"confidence": null,
+"line": "letter"
+},
+{
+"text": " to",
+"startMs": 37699,
+"endMs": 37839,
+"timestampMs": 37769,
+"confidence": null,
+"line": "letter"
+},
+{
+"text": " a",
+"startMs": 37839,
+"endMs": 37959,
+"timestampMs": 37899,
+"confidence": null,
+"line": "letter"
+},
+{
+"text": " dealer",
+"startMs": 37959,
+"endMs": 38179,
+"timestampMs": 38069,
+"confidence": null,
+"line": "letter"
+},
+{
+"text": " in",
+"startMs": 38179,
+"endMs": 38459,
+"timestampMs": 38319,
+"confidence": null,
+"line": "letter"
+},
+{
+"text": " Florence,",
+"startMs": 38459,
+"endMs": 38859,
+"timestampMs": 38659,
+"confidence": null,
+"line": "letter"
+},
+{
+"text": " in",
+"startMs": 39299,
+"endMs": 39359,
+"timestampMs": 39329,
+"confidence": null,
+"line": "letter"
+},
+{
+"text": " a",
+"startMs": 39359,
+"endMs": 39459,
+"timestampMs": 39409,
+"confidence": null,
+"line": "letter"
+},
+{
+"text": " letter",
+"startMs": 39459,
+"endMs": 39639,
+"timestampMs": 39549,
+"confidence": null,
+"line": "letter"
+},
+{
+"text": " signed",
+"startMs": 39639,
+"endMs": 39999,
+"timestampMs": 39819,
+"confidence": null,
+"line": "letter"
+},
+{
+"text": " Leonardo,",
+"startMs": 39999,
+"endMs": 40519,
+"timestampMs": 40259,
+"confidence": null,
+"line": "letter"
+},
+{
+"text": " and",
+"startMs": 41019,
+"endMs": 41099,
+"timestampMs": 41059,
+"confidence": null,
+"line": "letter"
+},
+{
+"text": " is",
+"startMs": 41099,
+"endMs": 41239,
+"timestampMs": 41169,
+"confidence": null,
+"line": "letter"
+},
+{
+"text": " arrested.",
+"startMs": 41239,
+"endMs": 41579,
+"timestampMs": 41409,
+"confidence": null,
+"line": "letter"
+},
+{
+"text": " In",
+"startMs": 42149,
+"endMs": 42299,
+"timestampMs": 42224,
+"confidence": null,
+"line": "back"
+},
+{
+"text": " January",
+"startMs": 42299,
+"endMs": 42639,
+"timestampMs": 42469,
+"confidence": null,
+"line": "back"
+},
+{
+"text": " 1914",
+"startMs": 42639,
+"endMs": 43439,
+"timestampMs": 43039,
+"confidence": null,
+"line": "back"
+},
+{
+"text": " she",
+"startMs": 43439,
+"endMs": 44099,
+"timestampMs": 43769,
+"confidence": null,
+"line": "back"
+},
+{
+"text": " is",
+"startMs": 44099,
+"endMs": 44219,
+"timestampMs": 44159,
+"confidence": null,
+"line": "back"
+},
+{
+"text": " back",
+"startMs": 44219,
+"endMs": 44419,
+"timestampMs": 44319,
+"confidence": null,
+"line": "back"
+},
+{
+"text": " on",
+"startMs": 44419,
+"endMs": 44599,
+"timestampMs": 44509,
+"confidence": null,
+"line": "back"
+},
+{
+"text": " her",
+"startMs": 44599,
+"endMs": 44739,
+"timestampMs": 44669,
+"confidence": null,
+"line": "back"
+},
+{
+"text": " hooks.",
+"startMs": 44739,
+"endMs": 44919,
+"timestampMs": 44829,
+"confidence": null,
+"line": "back"
+},
+{
+"text": " And",
+"startMs": 45351,
+"endMs": 45461,
+"timestampMs": 45406,
+"confidence": null,
+"line": "end"
+},
+{
+"text": " the",
+"startMs": 45461,
+"endMs": 45561,
+"timestampMs": 45511,
+"confidence": null,
+"line": "end"
+},
+{
+"text": " theft",
+"startMs": 45561,
+"endMs": 45821,
+"timestampMs": 45691,
+"confidence": null,
+"line": "end"
+},
+{
+"text": " helped",
+"startMs": 45821,
+"endMs": 46141,
+"timestampMs": 45981,
+"confidence": null,
+"line": "end"
+},
+{
+"text": " make",
+"startMs": 46141,
+"endMs": 46401,
+"timestampMs": 46271,
+"confidence": null,
+"line": "end"
+},
+{
+"text": " her",
+"startMs": 46401,
+"endMs": 46681,
+"timestampMs": 46541,
+"confidence": null,
+"line": "end"
+},
+{
+"text": " the",
+"startMs": 46681,
+"endMs": 47021,
+"timestampMs": 46851,
+"confidence": null,
+"line": "end"
+},
+{
+"text": " most",
+"startMs": 47021,
+"endMs": 47221,
+"timestampMs": 47121,
+"confidence": null,
+"line": "end"
+},
+{
+"text": " famous",
+"startMs": 47221,
+"endMs": 47621,
+"timestampMs": 47421,
+"confidence": null,
+"line": "end"
+},
+{
+"text": " painting",
+"startMs": 47621,
+"endMs": 48041,
+"timestampMs": 47831,
+"confidence": null,
+"line": "end"
+},
+{
+"text": " on",
+"startMs": 48041,
+"endMs": 48341,
+"timestampMs": 48191,
+"confidence": null,
+"line": "end"
+},
+{
+"text": " Earth.",
+"startMs": 48341,
+"endMs": 48601,
+"timestampMs": 48471,
+"confidence": null,
+"line": "end"
+}
+]

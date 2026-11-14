@@ -1,0 +1,62 @@
+[
+ {
+  "id": "hook",
+  "a": 0.05,
+  "b": 2.889,
+  "text": "That is an iceberg. And I am on the Titanic."
+ },
+ {
+  "id": "truth",
+  "a": 3.239,
+  "b": 6.082,
+  "text": "My part is made up. Everything around me is true."
+ },
+ {
+  "id": "time",
+  "a": 6.382,
+  "b": 10.32,
+  "text": "It is 11:40 at night, the 14th of April 1912."
+ },
+ {
+  "id": "scrape",
+  "a": 10.57,
+  "b": 13.995,
+  "text": "The ship swings away. Too late. The ice scrapes along her side."
+ },
+ {
+  "id": "calm",
+  "a": 14.295,
+  "b": 17.3,
+  "text": "On deck, nobody runs. They call her unsinkable."
+ },
+ {
+  "id": "below",
+  "a": 17.6,
+  "b": 23.03,
+  "text": "Below, the sea is coming in. She can float with four compartments flooded. At least five are open."
+ },
+ {
+  "id": "wireless",
+  "a": 23.33,
+  "b": 28.309,
+  "text": "The wireless room calls for help. The ship that answers cannot be here before four in the morning."
+ },
+ {
+  "id": "order",
+  "a": 28.609,
+  "b": 31.362,
+  "text": "Then the order comes: women and children first."
+ },
+ {
+  "id": "count",
+  "a": 31.662,
+  "b": 35.148,
+  "text": "So I count the lifeboats. Twenty. Room for about half of us."
+ },
+ {
+  "id": "cliff",
+  "a": 35.498,
+  "b": 37.515,
+  "text": "And the bow is already going down."
+ }
+]

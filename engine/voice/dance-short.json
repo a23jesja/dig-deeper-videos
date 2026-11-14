@@ -1,0 +1,18 @@
+{
+ "voice": "bm_george",
+ "speed": 1.2,
+ "gap": 0.13,
+ "lead": 0.05,
+ "lines": [
+  { "id": "hook", "text": "This woman cannot stop dancing. And it is about to spread.", "gap": 0.35 },
+  { "id": "where", "text": "Strasbourg, July 1518. Frau Troffea dances in the street, for days.", "say": "Strasbourg, July fifteen eighteen. Frow Troffaya dances in the street, for days.", "gap": 0.3 },
+  { "id": "spread", "text": "Within days, more than thirty people have joined her.", "gap": 0.3 },
+  { "id": "doctors", "text": "The doctors blame overheated blood. Their cure? More dancing.", "gap": 0.3 },
+  { "id": "stage", "text": "So the city builds a stage, and hires musicians.", "gap": 0.3 },
+  { "id": "worse", "text": "It backfires. By August, as many as four hundred are dancing.", "gap": 0.3 },
+  { "id": "toll", "text": "Some may have danced themselves to death. Nobody knows how many.", "gap": 0.3 },
+  { "id": "ban", "text": "At last the council bans dancing, and sends the dancers to a shrine of Saint Vitus.", "gap": 0.3 },
+  { "id": "over", "text": "By September, it is over.", "gap": 0.35 },
+  { "id": "why", "text": "Why? One historian blames mass stress, after famine and disease. Nobody knows for sure.", "gap": 0.9 }
+ ]
+}

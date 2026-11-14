@@ -49,9 +49,9 @@ export type Who = keyof typeof CAST;
 // ---------------------------------------------------------------- what a scene can put on screen
 type Box = { x: number; y: number; w: number; h: number };
 export type Draw =
-  | { t: "cam"; z: number; cx: number; cy: number }
+  | { t: "cam"; z: number; cx: number; cy: number; rot?: number }
   | { t: "bg"; img: string; zoom: number; ox: number; oy: number }
-  | { t: "fig"; who: Who; p: Pose; close?: boolean; part?: "all" | "hands"; free?: boolean }       // free = entering or leaving the picture
+  | { t: "fig"; who: string; c?: Costume; p: Pose; close?: boolean; part?: "all" | "hands"; free?: boolean }       // free = entering or leaving the picture
   | { t: "paint"; kind: "mona" | "panel" | "bundle"; cx: number; cy: number; w: number; rot?: number; key?: boolean; scale?: number; clipBelow?: number }
   | { t: "node"; name: string; box: Box; key?: boolean; layer?: "bg" | "mid" | "fg"; el: React.ReactNode }
   | { t: "tag"; text: string; sub?: string; y: number; age: number };
@@ -202,6 +202,8 @@ const carry = (t: number, spot: [number, number], chest: [number, number], w: nu
   return { cx: lerp(spot[0], chest[0], b), cy: lerp(spot[1], chest[1], b) - 42 * a * (1 - b) - 60 * Math.sin(Math.PI * b), rot: -9 * Math.sin(Math.PI * b) - 4 * b + wob, a, b, w };
 };
 
+/** a whole film for the renderer and the layout check */
+export type Film = { scenes: Scene[]; caps: { text: string; startMs: number; endMs: number; line: string }[]; cast: Record<string, Costume>; audio: string; bgDir: string; total: number; hook: { text: string; from: number; size: number; color: string }[] };
 export type Scene = { name: string; from: number; to: number; closeup?: boolean; captions?: boolean; draw: (t: number, T: number) => Draw[] };
 export const SCENES: Scene[] = [
   { // the thief's hands take her off the four hooks
@@ -424,3 +426,8 @@ export const sceneAt = (f: number) => SCENES.find((s) => f >= s.from && f < s.to
 
 /** on-screen tags that are not part of a scene (none) and the hook text box, for the check */
 export const HOOK_BOX = { x: 60, y: 1212, w: 960, h: 270 };
+
+export const MONA_FILM: Film = {
+  scenes: SCENES, caps: CAPS, cast: CAST, audio: "mona/mix-short.wav", bgDir: "mona2d", total: TOTAL,
+  hook: [{ text: "STOLEN.", from: 0, size: 170, color: "#ffe14d" }, { text: "AND NOBODY NOTICED.", from: at("hook", "And") - 1, size: 76, color: "#ffffff" }],
+};

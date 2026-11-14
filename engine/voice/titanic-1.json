@@ -1,0 +1,18 @@
+{
+ "voice": "bm_george",
+ "speed": 1.2,
+ "gap": 0.13,
+ "lead": 0.05,
+ "lines": [
+  { "id": "hook", "text": "That is an iceberg. And I am on the Titanic.", "gap": 0.35 },
+  { "id": "truth", "text": "My part is made up. Everything around me is true.", "gap": 0.3 },
+  { "id": "time", "text": "It is 11:40 at night, the 14th of April 1912.", "say": "It is eleven forty at night, the fourteenth of April, nineteen twelve.", "gap": 0.25 },
+  { "id": "scrape", "text": "The ship swings away. Too late. The ice scrapes along her side.", "gap": 0.3 },
+  { "id": "calm", "text": "On deck, nobody runs. They call her unsinkable.", "gap": 0.3 },
+  { "id": "below", "text": "Below, the sea is coming in. She can float with four compartments flooded. At least five are open.", "gap": 0.3 },
+  { "id": "wireless", "text": "The wireless room calls for help. The ship that answers cannot be here before four in the morning.", "gap": 0.3 },
+  { "id": "order", "text": "Then the order comes: women and children first.", "gap": 0.3 },
+  { "id": "count", "text": "So I count the lifeboats. Twenty. Room for about half of us.", "gap": 0.35 },
+  { "id": "cliff", "text": "And the bow is already going down.", "gap": 0.9 }
+ ]
+}

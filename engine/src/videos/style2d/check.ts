@@ -1,6 +1,8 @@
 // Layout check for the 2D short: run before rendering. Reads the same scene data the renderer draws.
 //   npx esbuild src/videos/style2d/check.ts --bundle --platform=node --outfile=out/2d/check.cjs --loader:.json=json && node out/2d/check.cjs
-import { CAST, Draw, H, HOOK_BOX, paintBox, SCENES, tagBox, W } from "./scenes";
+import { Draw, H, HOOK_BOX, MONA_FILM, paintBox, tagBox, W } from "./scenes";
+import { TITANIC1 } from "./titanic1";
+import { DANCE } from "./dance";
 import { solve } from "./fig";
 
 type Box = { x: number; y: number; w: number; h: number };
@@ -10,6 +12,7 @@ const inside = (a: Box, x0: number, y0: number, x1: number, y1: number) => a.x >
 const fmt = (b: Box) => `[x ${Math.round(b.x)}-${Math.round(b.x + b.w)}, y ${Math.round(b.y)}-${Math.round(b.y + b.h)}]`;
 const problems = new Map<string, { n: number; first: number; ex: string }>();
 const flag = (scene: string, f: number, msg: string, ex: string) => { const k = `${scene}: ${msg}`, p = problems.get(k); if (p) p.n++; else problems.set(k, { n: 1, first: f, ex }); };
+const film = process.argv[2] === "titanic1" ? TITANIC1 : process.argv[2] === "dance" ? DANCE : MONA_FILM, SCENES = film.scenes;
 let frames = 0;
 for (const sc of SCENES) {
   const T = sc.to - sc.from;
@@ -27,7 +30,7 @@ for (const sc of SCENES) {
         const s = (H / 2208) * d.zoom, b = cv({ x: (W - 1248 * s) / 2 + d.ox, y: (H - 2208 * s) / 2 + d.oy, w: 1248 * s, h: 2208 * s }, 0.6);
         if (!(b.x <= 0 && b.y <= 0 && b.x + b.w >= W && b.y + b.h >= H)) flag(sc.name, f, "background does not cover the picture", fmt(b));
       } else if (d.t === "fig" && d.part !== "hands" && !d.free) {
-        const g = solve(d.p, CAST[d.who]), face = cv(g.faceBox), box = cv(g.box);
+        const g = solve(d.p, d.c ?? film.cast[d.who]), face = cv(g.faceBox), box = cv(g.box);
         faces.push(face);
         if (d.close) { if (!inside(face, 22, TOP, W - 22, BAND.y)) flag(sc.name, f, `${d.who}: close-up face not wholly inside the safe area`, fmt(face)); }
         else {

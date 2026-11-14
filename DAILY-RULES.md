@@ -7,6 +7,24 @@ This replaces the earlier "2 Shorts per day about news and trends" rule.
 Within one year: about 1 million long-video views a month, enough for at least 50,000 SEK a month from ads and
 memberships. (Estimate: 0.6-1.6 million views at 3-8 USD per 1,000. Shorts alone would need 60-150 million.)
 
+## Automation first (Jesper 2026-11-14: "the whole point is that this is automated")
+The session decides and does everything itself. Jesper is asked for **one thing only: yes or no to the finished video**.
+- **Do not ask Jesper to choose** topics, hooks, scripts, plans, styles, thumbnails, titles, times or models.
+  Pick the best option by these rules, do it, and note the choice and the reason in one line in GROWTH.md.
+- **No step-by-step check-ins.** Topic -> sources -> script -> voice -> build -> render -> automatic checks ->
+  three thumbnails -> title and description runs in one go. All three thumbnails go into YouTube's A/B test, so
+  viewers pick the winner, not Jesper.
+- **The session is its own reviewer.** Before the video is shown: every line of the script checked against the
+  picture, the fact list checked against two named sources, the no-strike checklist, the first-second rule, and the
+  scripted checks for black, frozen and off-screen frames. If a check fails, fix it and run again; do not hand the
+  problem to Jesper.
+- **One message at the end:** the video file, the chosen title, and "publish at <time>? yes/no". On yes it is
+  scheduled at the best time. On no, with or without a reason, make a better version without asking questions.
+- **Stop and ask only** when something would cost money, break a hard rule, or cannot be undone.
+- Wherever older sections below say "Jesper picks" or "Jesper approves" for anything except the finished video,
+  this section wins.
+- Jesper can later switch to fully automatic publishing by saying so; until then the final yes stays.
+
 ## Where we are now (Jesper 2026-11-14) - read this first
 **Phase 1: find a look and an opening that keep viewers. Shorts only, as tests.**
 - Baseline from the first Shorts (emu war, pig war): **49 % stayed instead of swiping away**, 30 s average view of

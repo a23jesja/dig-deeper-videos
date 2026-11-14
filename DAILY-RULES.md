@@ -138,6 +138,23 @@ Keep the Kokoro `bm_george` voice; no human narrator. Everything else in this pl
 Because the voice is synthetic, the script, pacing and pictures have to carry more: vary sentence length, leave pauses
 for jokes, and time every picture to the word.
 
+## Use the installed skills (Jesper 2026-11-14: the session had skipped all of them)
+Load these before the matching step instead of writing everything from scratch, and say in the final message which
+ones were used:
+- `remotion-best-practices` - before any Remotion code.
+- `remotion-captions` - for the word-by-word captions and where they sit.
+- `video-design` - layout, type and colour rules for 9:16, and the contact-sheet critique of the render.
+- `ffmpeg` - for muxing, compression and frame extraction.
+- `youtube-stats` - when recording results in GROWTH.md.
+Not for this channel: `elevenlabs`, `runpod`, `ltx2`, `acestep`, `ideogram4`, `qwen-edit` (paid or non-commercial),
+`blender` (3D is dropped), `playwright-recording`, `synthetic-ui-demo`.
+**Worth reading once, licence first, then borrow the method and keep our own code and characters** (from the list
+github.com/zhuyansen/awesome-claude-video-skills, not yet read or tested by anyone here):
+`deenukhan/stick-figure-shorts` (stick-figure story Shorts in Remotion; its voice step uses a paid service, keep
+Kokoro), `buildwithhanif/claude-animation-skill` and `JohnHeibel/ClaudeAnimationBase` (hand-drawn 2D animation as
+code, acted emotions), `kmilo93sd/agent-video-editor` (pacing, cuts, captions, thumbnails),
+`ZLHad/OpenVideoHarness` (the agent checks its own frames).
+
 ## Save usage (Jesper 2026-11-13: the weekly limit runs out too fast)
 - **Right model for the job.** The most capable model only for script writing, scene design and the final review.
   A cheaper model (Sonnet) for building scenes from an approved plan, fixing errors, rendering, file work and git.

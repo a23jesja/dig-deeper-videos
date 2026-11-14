@@ -275,6 +275,16 @@ const SCENES: Scene[] = [
   },
 ];
 
+/** thumbnail picture (not in the film): the liner about to meet the iceberg, Sir Digsworth's shocked face in front */
+export const TITANIC1_THUMB: Scene = {
+  name: "thumb", from: 0, to: 1, closeup: true,
+  draw: () => {
+    const k = 720, sea = water(1030, 0.6) as Extract<Draw, { t: "node" }>;
+    const p: Pose = { x: 520, y: 1335 + 1.42 * k, k, turn: 0.25, lean: -3, handL: [-0.55, 1.0], handR: [0.3, 1.8], hatLift: 0.05, face: { ...FACES.shock, lookX: 0.15, lookY: 0.1, eye: 1.4 } };
+    return [{ t: "cam", z: 1, cx: 540, cy: 900 }, bg("sea", 1.06, 0, -40), iceberg(865, 1040, 470), ship(705, 1010, 830), { ...sea, layer: "mid" }, { t: "fig", who: "sir", c: C.sir, p, close: true }, rail(1650)];
+  },
+};
+
 export const TITANIC1: Film = {
   scenes: SCENES, caps: CAPS, cast: C, audio: "titanic/mix-1.wav", bgDir: "titanic", total: TITANIC1_TOTAL,
   hook: [{ text: "THAT IS AN ICEBERG.", from: 0, size: 82, color: "#ffffff" }, { text: "I'M ON THE TITANIC.", from: at("hook", "And") - 1, size: 84, color: "#ffe14d" }],

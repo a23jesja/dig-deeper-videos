@@ -6,7 +6,7 @@ import { AbsoluteFill, Audio, getInputProps, Img, Sequence, staticFile, useCurre
 import type { Caption } from "@remotion/captions";
 import { Fig, INK } from "./fig";
 import { Draw, Film, FPS, H, MONA_FILM, paintBox, Scene, tagBox, W } from "./scenes";
-import { TITANIC1 } from "./titanic1";
+import { TITANIC1, TITANIC1_THUMB } from "./titanic1";
 import { DANCE } from "./dance";
 
 const FONT = "'Arial Black', 'Segoe UI Black', Impact, sans-serif";
@@ -125,24 +125,25 @@ export const Titanic1: React.FC = () => <FilmView film={TITANIC1} />;
 export const Dance: React.FC = () => <FilmView film={DANCE} />;
 
 // ---------------------------------------------------------------- thumbnails: frames 0-2, one picture each
-type Thumb = { scene: string; at: number; a: string; b: string };
+type Thumb = { scene: string | Scene; at: number; a: string; b: string; top?: boolean };
 const THUMBS: Thumb[] = [
   { scene: "hook", at: 62, a: "GONE", b: "2 YEARS" },
   { scene: "react", at: 16, a: "WHERE", b: "IS SHE?" },
   { scene: "pic", at: 2, a: "WRONG", b: "MAN" },
 ];
 const TITANIC_THUMBS: Thumb[] = [
-  { scene: "hook", at: 30, a: "I WAS", b: "ON IT" },
+  { scene: TITANIC1_THUMB, at: 0, a: "TOO", b: "LATE", top: true },
   { scene: "count", at: 70, a: "20", b: "LIFEBOATS" },
   { scene: "cliff", at: 40, a: "GOING", b: "DOWN" },
 ];
 const ThumbView: React.FC<{ film: Film; thumbs: Thumb[] }> = ({ film, thumbs }) => {
-  const f = useCurrentFrame(), th = thumbs[Math.min(2, f)], sc = film.scenes.find((s) => s.name === th.scene)!;
+  const f = useCurrentFrame(), th = thumbs[Math.min(2, f)], sc = typeof th.scene === "string" ? film.scenes.find((s) => s.name === th.scene)! : th.scene;
   return (
     <AbsoluteFill>
       <SceneView scene={sc} film={film} at={th.at} />
       <AbsoluteFill style={{ background: "radial-gradient(ellipse at 50% 40%, rgba(0,0,0,0) 50%, rgba(10,4,2,0.55) 100%)" }} />
-      <div style={{ position: "absolute", top: "62%", left: 0, right: 0, textAlign: "center", fontFamily: FONT, lineHeight: 0.98, rotate: "-3deg" }}>
+      {th.top && <AbsoluteFill style={{ background: "linear-gradient(180deg, rgba(8,10,22,0.6) 0%, rgba(8,10,22,0) 34%)" }} />}
+      <div style={{ position: "absolute", top: th.top ? "5.5%" : "62%", left: 0, right: 0, textAlign: "center", fontFamily: FONT, lineHeight: 0.98, rotate: "-3deg" }}>
         <div style={{ fontSize: 220, color: "#ffffff", ...outline(30) }}>{th.a}</div>
         <div style={{ fontSize: th.b.length > 7 ? 150 : th.b.length > 6 ? 190 : 220, color: "#ffe14d", ...outline(30) }}>{th.b}</div>
       </div>

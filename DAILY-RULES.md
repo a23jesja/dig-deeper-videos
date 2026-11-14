@@ -53,8 +53,10 @@ through it. The events around him are true and sourced; his own journey is drama
 - **Shorts:** the most dramatic moments of each episode, pointing to it, plus stand-alone funny history Shorts.
 - **Test first (phase 1):** the first season starts as three Shorts in a row (part 1, 2, 3). If viewers stay and
   move on to the next part, the season is made as long episodes in phase 2.
-- Candidate first seasons, Jesper picks: Titanic 1912 (one night), the tunnel escapes under the Berlin Wall
-  (1960s), the Great Escape from Stalag Luft III (1944), a medieval castle siege (Rochester 1215), D-Day 1944.
+- **Order decided by Jesper 2026-11-14:** first one stand-alone Short about the theft of the Mona Lisa (1911), in
+  the approved stickman look and the Louvre room already built. Then the first test season: **Titanic 1912**, as
+  three Shorts in a row (part 1, 2, 3). Later candidates: the tunnel escapes under the Berlin Wall, the Great Escape
+  from Stalag Luft III (1944), a medieval castle siege (Rochester 1215), D-Day 1944.
 
 ## One niche
 Bizarre and forgotten history, told by Sir Digsworth. Every video, long or short.

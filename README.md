@@ -131,3 +131,25 @@ npx remotion render src/index2d.ts Titanic2 out/2d/titanic-2.mp4 --concurrency=4
 About 20 minutes for 37 s on 4 CPU cores. Arial Black is not on Linux: map it to Inter Black in `~/.config/fontconfig/fonts.conf`.
 New backgrounds cannot be painted there (no ComfyUI), and source pages cannot be opened, so use existing backgrounds
 and facts already listed in a `FACTS-*.md`.
+
+### The 2D rig and the scene layers (from 2026-11-15, after "it needs more feeling")
+`fig.tsx` is a jointed character, not a set of sticks:
+- **Chain:** hip -> torso -> neck -> head, shoulder -> elbow -> wrist -> hand, hip -> knee -> ankle -> foot. Limbs are
+  Bezier curves through the joint (round caps), and may stretch a little. Squash and stretch keeps the torso's volume.
+- **Draw order inside a figure:** back arm and what it holds | legs, torso | head, face, monocle, moustache, pipe, hat |
+  front arm and what it holds. `front: "L" | "R"` picks the front arm; `hold: { L: caneHold }` puts a prop in the grip.
+  `part: "rear"` and `part: "front"` let something pass between the two arms (the girl he carries).
+- **Always alive:** the renderer gives every figure the frame, so it breathes and blinks every 2.5-4 s on its own.
+  `lookAt: [x, y]` turns pupils and brows to a point. `shock` and `sweat` draw effect lines; a pipe smokes by itself
+  and hangs from the corner of the mouth.
+- **Timing:** `EASE` holds cubic-bezier curves (`inOut`, `out`, `back` for overshoot, `anticipate`), `tw(t, start, frames, curve)`
+  is one eased move. Every action gets a small anticipation before it and a settle after it.
+- **Scene layers, back to front** (`Layer` in `scenes.tsx`, drawn in this order by `Mona2D.tsx`): painted background |
+  `sky` (twinkling stars) | `sea` (seven bands of swell; boats, ships and the iceberg are sorted into the band they float
+  in, so the next band laps over their waterline) | `bg` (background props and crowd: no two people alike) | `mid`
+  (characters) | `fg` (railing) | tags and captions. Each layer takes its own share of the camera's zoom and pan
+  (`px`, `py` on the camera): parallax.
+- **Ink texture:** every layer but the sky goes through a small `feTurbulence` + `feDisplacementMap` filter whose noise
+  changes five times a second, so outlines wobble like re-inked drawings. `PROPS='{"texture":false}'` turns it off.
+The older films (`scenes.tsx`, `titanic1.tsx`, `dance.tsx`) still build and pass the layout check with the new rig;
+they have not been re-rendered.

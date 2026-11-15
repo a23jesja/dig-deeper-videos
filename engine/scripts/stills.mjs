@@ -9,7 +9,7 @@ const { bundle } = await import("@remotion/bundler");
 const { renderStill, selectComposition } = await import("@remotion/renderer");
 const [id, prefix, frames, scale = "0.5", fmt = "jpeg"] = process.argv.slice(2);
 const browserExecutable = process.env.CHROME || "C:/Program Files/Google/Chrome/Application/chrome.exe";
-const chromiumOptions = { gl: process.env.GL || "angle" };
+const chromiumOptions = process.env.GL === "none" ? {} : { gl: process.env.GL || "angle" };   // GL=none: the browser's default (use this on a machine without a GPU)
 const list = [];
 for (const part of frames.split(",")) {
   const m = part.match(/^(\d+)-(\d+)(?::(\d+))?$/);

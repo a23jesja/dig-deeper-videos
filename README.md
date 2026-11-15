@@ -143,16 +143,23 @@ Picture of it: `engine/RIG-sheet.png`. Acting test: `videos/tests/2026-11-15-sir
   moustache, pipe, hat | front arm and what it holds. `front: "L" | "R"` picks the front arm.
   `hold: { L: cane }` puts a prop in one grip, under the mitten; `hold: { both: telescope("L") }` runs a prop through
   both grips and draws both mittens over it. `part: "rear"` / `"front"` lets something pass between the arms.
-- **The pipe** hangs from the corner of the mouth and tips up out of the way when a hand comes near: it never crosses an arm.
+- **The pipe** hangs from the corner of the mouth and tips up out of the way when a hand comes near from the side or
+  from below: it never crosses an arm. `pipeSide: -1` moves it to the far corner of the mouth when an arm or a prop
+  has to pass on the near side (the wave in the hook, the telescope); `pipeUp` clenches it up inside the outline of
+  the head (while he carries the girl).
+- **The cane** (`cane`) has a fixed length and swings at most 12 degrees with the forearm; keep the hand at 0.84 m and
+  it stays planted when he kneels.
 - **Always alive:** with the frame `f` (the renderer always passes it) a figure breathes and blinks every 2.5-4 s.
-  `lookAt: [x, y]` turns pupils and brows, `nervous` makes the eyes dart and the brows quiver, `shock` and `sweat`
-  draw effect lines that pulse and jitter.
+  `lookAt: [x, y]` turns pupils and brows, `nod` slides the face and the hat down or up on the head (a nod, a gulp,
+  chin up), `nervous` makes the eyes dart and the brows quiver, `shock` and `sweat` draw effect lines that pulse and jitter.
 - **Timing:** `EASE` holds cubic-bezier curves (`inOut`, `soft`, `out`, `in`, `back` = overshoot, `anticipate`),
   `tw(t, start, frames, curve)` is one eased move. Give every action a small anticipation and a settle.
 - **Scene layers, back to front** (`Layer` in `scenes.tsx`, drawn by `Mona2D.tsx`; `Z_ORDER` 1-3 and 8): painted
   background | `sky` | `sea` | `bg` (background props and crowd) | `mid` (characters) | `fg` (railing) | tags and captions.
   Inside a layer things sort by their `z` (default 0), then by list order. Each layer takes its own share of the
-  camera's zoom and pan (`px`, `py` on the camera): parallax.
+  camera's zoom and pan (`px`, `py` on the camera): parallax. Something a character touches (the rail under his hand,
+  the water round his legs) goes in `mid` with a `z`, not in `fg`, or it slides against him when the camera moves;
+  a hand ON it is drawn again after it with `part: "hands"`.
 - **Ink texture:** every layer but the sky goes through a small `feTurbulence` + `feDisplacementMap` filter whose noise
   changes five times a second. `PROPS='{"texture":false}'` turns it off.
 - **Render WITHOUT `--gl=swangle`** in the cloud: with it, stray picture fragments appeared in single frames (about one
@@ -163,4 +170,11 @@ ENTRY=src/index2d.ts node scripts/stills.mjs RigSheet out/rig/sheet_ 0 1 png    
 npx remotion render src/index2d.ts RigTest out/rig/rig-test.mp4 --concurrency=4 --browser-executable=<chrome-headless-shell>
 ```
 The older films (`scenes.tsx`, `titanic1.tsx`, `dance.tsx`) build and pass the layout check with the new rig; they
-have not been re-rendered. `titanic2.tsx` is the first film acted with it (scenes still being reworked).
+have not been re-rendered. `titanic2.tsx` is the first film acted with it. How its scenes keep things apart:
+- two characters in one shot never overlap: there is clear deck between the officer's hand and Sir Digsworth at every frame;
+- a carried child sits on the BACK arm at arm's length and is drawn after the whole of him, so no part of him is ever
+  drawn over her; once she is in the boat she is drawn before the boat's near side (behind its rim), and she changes
+  place in the list while her feet are above the rim, so nothing pops;
+- helpers in `titanic2.tsx`: `pulse` (anticipation, nods, hops), `shk` (camera shake), `talk` (mouth while he speaks),
+  `trail` (motion arc behind a fast hand), `splash` and `ripples` (water), `folk` (a crowd where neighbours never match).
+Stills on a machine without a graphics card: `GL=none ENTRY=src/index2d.ts node scripts/stills.mjs <Comp> <prefix> <frames> <scale>`.

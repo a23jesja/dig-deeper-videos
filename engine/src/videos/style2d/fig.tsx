@@ -11,7 +11,8 @@
 // DRAW ORDER inside a figure, back to front (Z_ORDER below, levels 4-7):
 //   4 back arm and what it holds | 5 legs, torso | 6 head, face, monocle, moustache, pipe, hat | 7 front arm and what it holds
 // A two-handed prop (`hold.both`) is drawn on level 7 and BOTH mittens are drawn over it, so both hands grip it.
-// The pipe hangs from the corner of the mouth and tips up out of the way when a hand comes near: it never crosses an arm.
+// The pipe hangs from the corner of the mouth and tips up out of the way when a hand comes near from the side or from
+// below (a hand that passes above it leaves it alone; `pipeUp` clenches it up by hand): it never crosses an arm.
 //
 // LIFE. Given a frame `f` the figure is never a frozen cutout: it breathes, blinks every 2.5-4 s, its pupils and brows
 // follow `lookAt`, `nervous` makes the eyes dart and the brows quiver, `shock` and `sweat` draw effect lines that
@@ -90,6 +91,8 @@ export type Pose = {
   pipeSide?: -1 | 1;                       // which corner of the mouth holds the pipe; default: the side he faces
   shock?: number; sweat?: number;          // effect lines: frames since they started (undefined = none)
   nervous?: number;                        // 0..1: pupils dart, brows quiver, the head trembles
+  nod?: number;                            // -1..1: chin down (+) or up (-): the face slides on the head, the hat follows
+  pipeUp?: number;                         // 0..1: the pipe clenched upwards, inside the outline of the head
   still?: boolean;                         // no breathing and no blinking (a figure in a picture)
 };
 /** where a hand holds something: wrist on screen (px), forearm direction (degrees), scale, and the ground under the figure */
@@ -354,8 +357,8 @@ export const Fig: React.FC<{ p: Pose; c: Costume; part?: Part; f?: number; hold?
   })();
   // the pipe: stem in the corner of the mouth; it tips up, out of the way, when a hand comes near the bowl
   const mo = mouthOf(face, c, turn), ps = p.pipeSide ?? (turn < -0.25 ? -1 : 1), pcx = mo.ox + ps * mo.w * 0.85, pcy = mo.y + (face.open > 0.05 ? 0.025 * face.open : -mo.sm * 0.45);
-  const hr = (g.headDeg * Math.PI) / 180, bx = pcx + ps * 0.2, by = pcy + 0.06, bowl: P2 = [g.head[0] + (bx * Math.cos(hr) - by * Math.sin(hr)) * k, g.head[1] + (bx * Math.sin(hr) + by * Math.cos(hr)) * k];
-  const near = Math.max(...arms.map((a) => c01(1.25 - Math.hypot(a.B[0] - bowl[0], a.B[1] - bowl[1]) / (0.26 * k))));
+  const nd = 0.035 * Math.max(-1, Math.min(1, p.nod ?? 0)), hr = (g.headDeg * Math.PI) / 180, bx = pcx + ps * 0.2, by = pcy + 0.06 + nd, bowl: P2 = [g.head[0] + (bx * Math.cos(hr) - by * Math.sin(hr)) * k, g.head[1] + (bx * Math.sin(hr) + by * Math.cos(hr)) * k];
+  const near = Math.max(p.pipeUp ?? 0, ...arms.map((a) => c01(1.25 - Math.hypot(a.B[0] - bowl[0], a.B[1] - bowl[1]) / (0.26 * k)) * c01(1 - (bowl[1] - a.B[1] - 0.05 * k) / (0.08 * k))));
   const mx = turn * 0.13 - 0.105 * (1 - 0.22 * Math.abs(turn));
   /** level 6 */
   const head = (
@@ -363,15 +366,17 @@ export const Fig: React.FC<{ p: Pose; c: Costume; part?: Part; f?: number; hold?
       <clipPath id={id}><circle r={HEAD_R} /></clipPath>
       <circle r={HEAD_R} fill="#fdfbf5" />
       <g clipPath={`url(#${id})`}><circle cx={0.2} cy={0.14} r={0.3} fill="none" stroke="#e4dccd" strokeWidth={0.1} /></g>
-      <FaceShape f={face} c={c} turn={turn} id={id} />
+      <g transform={`translate(0 ${nd})`}><FaceShape f={face} c={c} turn={turn} id={id} /></g>
       <circle r={HEAD_R} fill="none" stroke={INK} strokeWidth={0.02} />
+      <g transform={`translate(0 ${nd})`}>
       {c.monocle && <g><circle cx={mx} cy={-0.03} r={0.075} fill="rgba(207,233,255,0.25)" stroke="#e2a92c" strokeWidth={0.018} /><circle cx={mx} cy={-0.03} r={0.086} fill="none" stroke={INK} strokeWidth={0.008} /><path d={`M${mx - 0.03} 0.05 q-0.05 0.12 -0.02 0.24`} stroke="#e2a92c" strokeWidth={0.008} fill="none" /></g>}
       {c.pipe && <g transform={`translate(${pcx} ${pcy}) scale(${ps} 1) rotate(${-52 * near})`}>
         {f !== undefined && [0, 1, 2].map((i) => { const a = (f * 0.8 + i * 30) % 90; return <circle key={i} cx={0.2 + 0.0015 * a + 0.03 * Math.sin(a * 0.11 + i)} cy={-0.03 - a * 0.0065} r={0.028 + 0.0009 * a} fill="#e9edf4" opacity={0.5 * (1 - a / 90)} />; })}
         <path d="M0 0 Q0.08 0.05 0.17 0.07" stroke={INK} strokeWidth={0.026} strokeLinecap="round" fill="none" />
         <path d="M0.15 0.01 L0.25 0.01 L0.235 0.12 L0.165 0.12 Z" fill="#5a3a20" stroke={INK} strokeWidth={0.014} strokeLinejoin="round" />
       </g>}
-      <g transform={`translate(0 ${-(p.hatLift ?? 0)}) rotate(${(p.hatLift ?? 0) * 90})`}><HatShape c={c} turn={turn} /></g>
+      </g>
+      <g transform={`translate(0 ${0.6 * nd - (p.hatLift ?? 0)}) rotate(${(p.hatLift ?? 0) * 90})`}><HatShape c={c} turn={turn} /></g>
       <Effects p={p} c={c} turn={turn} />
     </g>
   );
@@ -384,9 +389,9 @@ export const Fig: React.FC<{ p: Pose; c: Costume; part?: Part; f?: number; hold?
 export const SIR: Costume = { shape: "jacket", coat: "#a47a48", shade: "#6b4a26", tweed: true, vest: "#5c6b38", buttons: "#f0bd3c", bow: "#c0342c", collar: "#fdf8ee", hat: "tweed", hatColor: "#8f6d42", tash: "handle", monocle: true, pipe: true, shoe: "#5a3a20" };
 /** the reusable Sir Digsworth: the rig above in his costume. `p` is the pose, `f` the frame (breath, blink, smoke). */
 export const SirDigsworth: React.FC<{ p: Pose; f?: number; hold?: Hold; part?: Part }> = (props) => <Fig {...props} c={SIR} />;
-/** his cane, for `hold: { L: cane }`: knob in the grip, a fixed length, hanging a little with the forearm */
+/** his cane, for `hold: { L: cane }`: knob in the grip, a fixed length, swinging a little (12 degrees at most) with the forearm */
 export const cane = (g: Grip): React.ReactNode => {
-  const a = ((90 + (g.ang - 90) * 0.35) * Math.PI) / 180, len = 0.83 * g.k, x1 = g.x + Math.cos(a) * len, y1 = Math.min(g.gy - 0.012 * g.k, g.y + Math.sin(a) * len);
+  const sw = ((((g.ang - 90) % 360) + 540) % 360) - 180, a = ((90 + Math.max(-40, Math.min(40, sw)) * 0.3) * Math.PI) / 180, len = 0.83 * g.k, x1 = g.x + Math.cos(a) * len, y1 = Math.min(g.gy - 0.012 * g.k, g.y + Math.sin(a) * len);
   return (<g>
     <path d={`M${g.x} ${g.y} L${x1} ${y1}`} stroke={INK} strokeWidth={0.04 * g.k} strokeLinecap="round" /><path d={`M${g.x} ${g.y} L${x1} ${y1}`} stroke="#5a3a20" strokeWidth={0.018 * g.k} strokeLinecap="round" />
     <circle cx={g.x} cy={g.y - 0.012 * g.k} r={0.036 * g.k} fill="#f0bd3c" stroke={INK} strokeWidth={0.011 * g.k} />

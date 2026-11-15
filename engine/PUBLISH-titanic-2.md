@@ -34,5 +34,6 @@ is acted again with the jointed rig (README, "The 2D rig and the scene layers").
   `frame_diff.py`: 0 frames differ
 - Metricool: post id 429137826 (uuid -938678831642229347), Sunday 15 November 2026, 19:24 Stockholm, same title,
   description, tags and category as version 1, thumbnail `v2-1-left-behind.png`
+- Published: https://www.youtube.com/shorts/H1XWJ4jyYLg (Metricool status PUBLISHED, checked 19:26)
 - Version 1 is still on the channel under the same title. Metricool cannot remove it; hiding or deleting it in
   YouTube Studio is Jesper's decision.

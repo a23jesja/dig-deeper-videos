@@ -3,7 +3,7 @@
 // list, so a figure cut by the frame, a face under the captions or two tags on top of each other is caught
 // before anything is rendered. Screen is 1080x1920; captions sit at 67.5 %.
 import React from "react";
-import { Costume, Face, FACES, Hold, INK, mixFace, Pose, walk } from "./fig";
+import { Costume, Face, FACES, Hold, INK, mixFace, Part, Pose, SIR, walk } from "./fig";
 import caps from "./captionsMona.json";
 
 export const W = 1080, H = 1920, FPS = 30, TOTAL = 1490, GROUND = 1613;
@@ -42,7 +42,7 @@ export const CAST = {
   gent: { shape: "coat", coat: "#3b4352", shade: "#1f2430", collar: "#f4f1e6", buttons: "#d8d8d8", hat: "top", hatColor: "#1b1b22", band: "#7a1420", tash: "curl" },
   police0: { shape: "coat", coat: "#27365a", shade: "#131c33", collar: "#b0302a", buttons: "#d8d8d8", belt: "#f2f2f2", hat: "kepi", hatColor: "#27365a", band: "#b0302a", tash: "curl" },
   police1: { shape: "coat", coat: "#27365a", shade: "#131c33", collar: "#b0302a", buttons: "#d8d8d8", belt: "#f2f2f2", hat: "kepi", hatColor: "#27365a", band: "#b0302a", tash: "brush" },
-  sir: { shape: "jacket", coat: "#a47a48", shade: "#6b4a26", tweed: true, vest: "#5c6b38", buttons: "#f0bd3c", bow: "#c0342c", collar: "#fdf8ee", hat: "tweed", hatColor: "#8f6d42", tash: "handle", monocle: true, pipe: true, shoe: "#5a3a20" },
+  sir: SIR,
 } satisfies Record<string, Costume>;
 export type Who = keyof typeof CAST;
 
@@ -55,9 +55,9 @@ export const DEPTH: Record<Layer | "paint", { z: number; pan: number }> = { sky:
 export type Draw =
   | { t: "cam"; z: number; cx: number; cy: number; rot?: number; px?: number; py?: number }
   | { t: "bg"; img: string; zoom: number; ox: number; oy: number }
-  | { t: "fig"; who: string; c?: Costume; p: Pose; close?: boolean; part?: "all" | "rear" | "front" | "hands"; free?: boolean; hold?: Hold }       // free = entering or leaving the picture
-  | { t: "paint"; kind: "mona" | "panel" | "bundle"; cx: number; cy: number; w: number; rot?: number; key?: boolean; scale?: number; clipBelow?: number }
-  | { t: "node"; name: string; box: Box; key?: boolean; layer?: Layer; el: React.ReactNode }
+  | { t: "fig"; who: string; c?: Costume; p: Pose; close?: boolean; part?: Part; free?: boolean; hold?: Hold; z?: number }       // free = entering or leaving the picture
+  | { t: "paint"; kind: "mona" | "panel" | "bundle"; cx: number; cy: number; w: number; rot?: number; key?: boolean; scale?: number; clipBelow?: number; z?: number }
+  | { t: "node"; name: string; box: Box; key?: boolean; layer?: Layer; el: React.ReactNode; z?: number }
   | { t: "tag"; text: string; sub?: string; y: number; age: number };
 export const tagBox = (d: { text: string; sub?: string; y: number }): Box => { const w = Math.min(960, d.text.length * (d.text.length > 18 ? 36 : 42) + 80); return { x: (W - w) / 2, y: d.y, w, h: d.sub ? 160 : 96 }; };
 export const paintBox = (d: { cx: number; cy: number; w: number; kind: string }): Box => { const h = d.w * 1.36; return { x: d.cx - d.w / 2, y: d.cy - h / 2, w: d.w, h }; };

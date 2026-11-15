@@ -125,31 +125,42 @@ python voice/make_voice.py voice/titanic-2.json voice/titanic-2      # writes vo
 python scripts/align_words.py voice/titanic-2.json voice/titanic-2 src/videos/style2d/captionsTitanic2.json   # word timings without Whisper
 python audio/titanic2_audio.py                                       # public/titanic/mix-2.wav
 node out/2d/check.cjs titanic2                                       # after the esbuild line above; must print LAYOUT OK
-npx remotion render src/index2d.ts Titanic2 out/2d/titanic-2.mp4 --concurrency=4 --gl=swangle \
+npx remotion render src/index2d.ts Titanic2 out/2d/titanic-2.mp4 --concurrency=4 \
   --browser-executable=/opt/pw-browsers/chromium_headless_shell-1243/chrome-headless-shell-linux64/chrome-headless-shell
 ```
 About 20 minutes for 37 s on 4 CPU cores. Arial Black is not on Linux: map it to Inter Black in `~/.config/fontconfig/fonts.conf`.
 New backgrounds cannot be painted there (no ComfyUI), and source pages cannot be opened, so use existing backgrounds
 and facts already listed in a `FACTS-*.md`.
 
-### The 2D rig and the scene layers (from 2026-11-15, after "it needs more feeling")
-`fig.tsx` is a jointed character, not a set of sticks:
-- **Chain:** hip -> torso -> neck -> head, shoulder -> elbow -> wrist -> hand, hip -> knee -> ankle -> foot. Limbs are
-  Bezier curves through the joint (round caps), and may stretch a little. Squash and stretch keeps the torso's volume.
-- **Draw order inside a figure:** back arm and what it holds | legs, torso | head, face, monocle, moustache, pipe, hat |
-  front arm and what it holds. `front: "L" | "R"` picks the front arm; `hold: { L: caneHold }` puts a prop in the grip.
-  `part: "rear"` and `part: "front"` let something pass between the two arms (the girl he carries).
-- **Always alive:** the renderer gives every figure the frame, so it breathes and blinks every 2.5-4 s on its own.
-  `lookAt: [x, y]` turns pupils and brows to a point. `shock` and `sweat` draw effect lines; a pipe smokes by itself
-  and hangs from the corner of the mouth.
-- **Timing:** `EASE` holds cubic-bezier curves (`inOut`, `out`, `back` for overshoot, `anticipate`), `tw(t, start, frames, curve)`
-  is one eased move. Every action gets a small anticipation before it and a settle after it.
-- **Scene layers, back to front** (`Layer` in `scenes.tsx`, drawn in this order by `Mona2D.tsx`): painted background |
-  `sky` (twinkling stars) | `sea` (seven bands of swell; boats, ships and the iceberg are sorted into the band they float
-  in, so the next band laps over their waterline) | `bg` (background props and crowd: no two people alike) | `mid`
-  (characters) | `fg` (railing) | tags and captions. Each layer takes its own share of the camera's zoom and pan
-  (`px`, `py` on the camera): parallax.
+### The 2D rig and the scene layers (rebuilt 2026-11-15, after "stiff and vector-rigid")
+Picture of it: `engine/RIG-sheet.png`. Acting test: `videos/tests/2026-11-15-sir-digsworth-rig-test.mp4`.
+`fig.tsx` holds the rig; `<SirDigsworth p={pose} f={frame} hold={...} />` is Sir Digsworth in it (`<Fig c={costume} />` for anyone else).
+- **Chain:** hip -> spine (`lean` at the hip, `bend` in the back) -> neck (`neck`) -> head (`headTilt`); shoulder (rises
+  with the arm) -> elbow -> wrist -> hand by two-bone IK to `handL` / `handR`; hip -> knee -> ankle -> foot.
+  Every limb is one curved path with round caps and a tight round bend at the joint. `stretch` squashes and stretches
+  the torso and keeps its volume. Limbs may stretch up to a fifth before a target is out of reach.
+- **Draw order in a figure (`Z_ORDER` 4-7):** back arm and what it holds | legs, torso | head, face, monocle,
+  moustache, pipe, hat | front arm and what it holds. `front: "L" | "R"` picks the front arm.
+  `hold: { L: cane }` puts a prop in one grip, under the mitten; `hold: { both: telescope("L") }` runs a prop through
+  both grips and draws both mittens over it. `part: "rear"` / `"front"` lets something pass between the arms.
+- **The pipe** hangs from the corner of the mouth and tips up out of the way when a hand comes near: it never crosses an arm.
+- **Always alive:** with the frame `f` (the renderer always passes it) a figure breathes and blinks every 2.5-4 s.
+  `lookAt: [x, y]` turns pupils and brows, `nervous` makes the eyes dart and the brows quiver, `shock` and `sweat`
+  draw effect lines that pulse and jitter.
+- **Timing:** `EASE` holds cubic-bezier curves (`inOut`, `soft`, `out`, `in`, `back` = overshoot, `anticipate`),
+  `tw(t, start, frames, curve)` is one eased move. Give every action a small anticipation and a settle.
+- **Scene layers, back to front** (`Layer` in `scenes.tsx`, drawn by `Mona2D.tsx`; `Z_ORDER` 1-3 and 8): painted
+  background | `sky` | `sea` | `bg` (background props and crowd) | `mid` (characters) | `fg` (railing) | tags and captions.
+  Inside a layer things sort by their `z` (default 0), then by list order. Each layer takes its own share of the
+  camera's zoom and pan (`px`, `py` on the camera): parallax.
 - **Ink texture:** every layer but the sky goes through a small `feTurbulence` + `feDisplacementMap` filter whose noise
-  changes five times a second, so outlines wobble like re-inked drawings. `PROPS='{"texture":false}'` turns it off.
-The older films (`scenes.tsx`, `titanic1.tsx`, `dance.tsx`) still build and pass the layout check with the new rig;
-they have not been re-rendered.
+  changes five times a second. `PROPS='{"texture":false}'` turns it off.
+- **Render WITHOUT `--gl=swangle`** in the cloud: with it, stray picture fragments appeared in single frames (about one
+  frame in ten differed). Without the flag two renders are identical and it is about four times faster. To check a
+  render for such glitches, render twice and run `python scripts/frame_diff.py a.mp4 b.mp4` (must report 0 frames).
+```bash
+ENTRY=src/index2d.ts node scripts/stills.mjs RigSheet out/rig/sheet_ 0 1 png     # the rig sheet
+npx remotion render src/index2d.ts RigTest out/rig/rig-test.mp4 --concurrency=4 --browser-executable=<chrome-headless-shell>
+```
+The older films (`scenes.tsx`, `titanic1.tsx`, `dance.tsx`) build and pass the layout check with the new rig; they
+have not been re-rendered. `titanic2.tsx` is the first film acted with it (scenes still being reworked).

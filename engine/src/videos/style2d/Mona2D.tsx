@@ -9,6 +9,7 @@ import { DEPTH, Draw, Film, FPS, H, Layer, MONA_FILM, paintBox, Scene, tagBox, W
 import { TITANIC1, TITANIC1_THUMB } from "./titanic1";
 import { DANCE } from "./dance";
 import { TITANIC2, TITANIC2_THUMB } from "./titanic2";
+import { RIG_FILM } from "./rigsheet";
 
 const FONT = "'Arial Black', 'Segoe UI Black', Impact, sans-serif";
 const pop = (n: number) => (n <= 0 ? 0.6 : n === 1 ? 1.12 : n === 2 ? 0.97 : 1);
@@ -66,8 +67,11 @@ const SceneView: React.FC<{ scene: Scene; film: Film; at?: number }> = ({ scene,
   const draw = (d: Draw, i: number) => d.t === "fig" ? <Fig key={i} p={d.p} c={d.c ?? film.cast[d.who]} part={d.part} hold={d.hold} f={abs} /> : d.t === "paint" ? <Paint key={i} d={d} /> : d.t === "node" ? <g key={i}>{d.el}</g> : null;
   const boil = Math.floor(abs / 6) % 5;
   const layer = (name: Layer) => {
-    const items = ds.map((d, i) => (d.t !== "tag" && d.t !== "cam" && d.t !== "bg" && layerOf(d) === name ? draw(d, i) : null));
-    if (!items.some(Boolean)) return null;
+    // within a layer: by z (default 0), then by the order in the scene's list
+    const mine = ds.map((d, i) => ({ d, i })).filter(({ d }) => d.t !== "tag" && d.t !== "cam" && d.t !== "bg" && layerOf(d) === name);
+    if (!mine.length) return null;
+    const zOf = (d: Draw) => (d.t === "fig" || d.t === "node" || d.t === "paint" ? d.z ?? 0 : 0);
+    const items = mine.sort((a, b) => zOf(a.d) - zOf(b.d) || a.i - b.i).map(({ d, i }) => draw(d, i));
     const rough = ip.texture !== false && name !== "sky", id = `ink-${scene.name}-${name}`;
     return (
       <svg key={name} width={W} height={H} viewBox={`0 0 ${W} ${H}`} style={{ position: "absolute", left: 0, top: 0 }}>
@@ -130,7 +134,7 @@ const FilmView: React.FC<{ film: Film }> = ({ film }) => {
       ))}
       {p.text !== false && <Sequence name="hook text" from={0} durationInFrames={hookEnd}><HookText film={film} /></Sequence>}
       {p.text !== false && <Captions captions={film.caps as unknown as Caption[]} from={hookEnd} />}
-      {p.audio !== false && <Audio src={staticFile(film.audio)} />}
+      {p.audio !== false && film.audio && <Audio src={staticFile(film.audio)} />}
     </AbsoluteFill>
   );
 };
@@ -138,6 +142,7 @@ export const Mona2D: React.FC = () => <FilmView film={MONA_FILM} />;
 export const Titanic1: React.FC = () => <FilmView film={TITANIC1} />;
 export const Dance: React.FC = () => <FilmView film={DANCE} />;
 export const Titanic2: React.FC = () => <FilmView film={TITANIC2} />;
+export const RigTest: React.FC = () => <FilmView film={RIG_FILM} />;
 
 // ---------------------------------------------------------------- thumbnails: frames 0-2, one picture each
 type Thumb = { scene: string | Scene; at: number; a: string; b: string; top?: boolean };

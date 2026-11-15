@@ -261,18 +261,18 @@ const SCENES: Scene[] = [
         ...(t >= bw ? [{ t: "tag", text: "SINKING BY THE BOW", y: 1462, age: t - bw } as Draw] : [])];
     },
   },
-  { // the order is women and children first. He steps up; the officer's palm stops him, a thumb points back at the boats,
+  { // the order is women and children first. He steps up; the officer's palm stops him, the same arm points up at the boat,
     // a chop of the hand on "first". He listens, nods, his shoulders drop. So I stay: he straightens, steps back, hat off;
     // the officer salutes. The two never touch: there is always clear deck between their hands.
     name: "order", from: S.order, to: S.child,
     draw: (t, T) => {
       const k = 545, so = at("order", "So") - S.order, wm = at("order", "women") - S.order, ch = at("order", "children") - S.order, fi = at("order", "first") - S.order;
       // the officer
-      const halt = EASE.back(c01((t - 1) / 8)), point = tw(t, wm - 3, 9) * (1 - tw(t, fi - 5, 7)), chop = EASE.back(c01((t - fi + 1) / 6)), lower = tw(t, fi + 14, 10), salute = EASE.back(c01((t - so - 9) / 8));
+      const halt = EASE.back(c01((t - 1) / 8)), point = EASE.back(c01((t - wm + 3) / 9)) * (1 - tw(t, fi - 5, 5)), chop = EASE.back(c01((t - fi + 1) / 6)), lower = tw(t, fi + 14, 10), salute = EASE.back(c01((t - so - 9) / 8));
       const off: Pose = { x: 850, y: GROUND, k, turn: lerp(-0.6, -0.3, point), lean: -3 + 2 * halt - 2 * point + 2 * chop * (1 - lower), bend: -2 * halt * (1 - lower), stretch: 1 + 0.03 * pulse(t, 1, 8) - 0.025 * pulse(t, fi, 7) + 0.025 * salute, front: "L",
-        handL: mix(mix(mix([-0.3, 0.8], [-0.4, 1.3 + 0.012 * Math.sin(t * 0.5)], halt), [-0.4, 1.02], chop), [-0.26, 0.72], lower), handR: mix(mix([0.26, 0.62], [0.3, 1.45], point), [0.27, 1.6], salute),
-        nod: pulse(t, wm, 7) + pulse(t, ch, 7) + 1.2 * pulse(t, fi, 8) + 0.8 * pulse(t, so + 8, 9), headTilt: -4 * point,
-        face: { ...FACES.stern, open: talk(t, 0, fi + 9), lookX: lerp(-0.7, 0.5, point), browY: [-0.4 + 0.5 * salute, -0.4 + 0.5 * salute], smile: -0.3 + 0.5 * salute } };
+        handL: mix(mix(mix(mix([-0.3, 0.8], [-0.4, 1.3 + 0.012 * Math.sin(t * 0.5)], halt), [-0.46, 1.52], point), [-0.4, 1.02], chop), [-0.26, 0.72], lower), handR: mix([0.26, 0.62 + 0.03 * point], [0.27, 1.6], salute),
+        nod: pulse(t, wm, 7) + pulse(t, ch, 7) + 1.2 * pulse(t, fi, 8) + 0.8 * pulse(t, so + 8, 9) - 0.5 * point, headTilt: 4 * point,
+        face: { ...FACES.stern, open: talk(t, 0, fi + 9), lookX: -0.7, lookY: 0.5 * point, browY: [-0.4 + 0.5 * salute, -0.4 + 0.5 * salute], smile: -0.3 + 0.5 * salute } };
       // Sir Digsworth
       const recoil = EASE.back(c01((t - 3) / 8)), listen = tw(t, wm - 2, 10), sag = tw(t, fi + 4, 12), ant = pulse(t, so - 8, 8), st = EASE.back(c01((t - so) / 12)), tip = pulse(t, so + 6, 24);
       const hR = mix(mix(mix(mix([0.36, 1.0], [0.22, 1.14], recoil), [0.07, 0.96], listen), [0.3, 0.66], sag), [0.27, 1.62], tip);
@@ -280,7 +280,7 @@ const SCENES: Scene[] = [
         stretch: 1 - 0.035 * pulse(t, 3, 8) - 0.025 * sag * (1 - st) - 0.035 * ant + 0.04 * pulse(t, so, 12), neck: 5 * sag * (1 - st) + 4 * ant - 3 * tip, front: "R",
         footL: [-0.09, 0.06 * pulse(t, so, 10)], handL: [-0.33, 0.84], handR: hR, hatLift: 0.1 * tip + 0.05 * pulse(t, 3, 7), headTilt: 5 * tip,
         nod: 0.8 * pulse(t, ch + 3, 8) + pulse(t, fi + 6, 9) + 0.9 * pulse(t, so + 9, 10),
-        lookAt: st < 0.5 ? (point > 0.5 ? [600, 430] : [800, 850]) : undefined, shock: t >= 3 && t < 15 ? t - 3 : undefined, sweat: t < so ? t : undefined,
+        lookAt: st < 0.5 ? (point > 0.5 ? [590, 440] : [800, 850]) : undefined, shock: t >= 3 && t < 15 ? t - 3 : undefined, sweat: t < so ? t : undefined,
         face: mixFace(mixFace({ ...FACES.worried, eye: 1.15, open: 0.25 * (1 - listen) }, { ...FACES.worried, eye: 0.95, smile: -1.2, browY: [0.2, 0.2] }, sag), { ...FACES.stern, lookX: 0.1, smile: 0.35, browY: [0.25, 0.25], open: talk(t, so, so + 19) }, st) };
       return [{ t: "cam", z: lerp(1, 1.035, EASE.soft(t / T)), cx: 540 + shk(t, 3, 6, 5), cy: 820, px: lerp(12, -14, tw(t, so - 8, 20)) }, bg("deck", 1.09, 0, 0), davitBoat(575, 470, 0.62, 2 * Math.sin(t * 0.1)),
         { t: "fig", who: "sir", c: C.sir, p: sir, hold: { L: cane } }, { t: "fig", who: "officer", c: C.officer, p: off, free: true },
@@ -299,7 +299,7 @@ const SCENES: Scene[] = [
       const pass = tw(t, lift + 9, 13), rel = tw(t, lift + 22, 9), away = tw(t, lift + 26, 12), down = tw(t, lift + 22, 11), wave = t > lift + 33 ? Math.sin((t - lift - 33) * 0.7) : 0;
       const x = lerp(lerp(lerp(276, 286, walkIn), 331, pass), 310, away), M = (q: P2): P2 => [(q[0] - x) / k, (G - q[1]) / k];
       const seat0: P2 = [614, G - 0.72 * ck], over: P2 = [676, 842], hand = mix(mix(seat0, [618, 962], rise), over, pass), reach = tw(t, 24, 13);
-      const inBoat = t >= lift + 22, gIn: P2 = [715, RIM + 150];
+      const inBoat = t >= lift + 22, gIn: P2 = [702, RIM + 150];
       const pose = (gh: P2): Pose => ({ x, y: G, k, turn: lerp(0.15, 0.6, see) - 0.3 * away, bob: -0.3 * kneel - 0.03 * ant, lean: 6 * pass * (1 - away) - 2 * away, bend: 3 * pass * (1 - away),
         stretch: 1 - 0.04 * ant + 0.06 * pulse(t, lift - 2, 12) + 0.025 * pulse(t, lift + 22, 10), neck: -4 * rise * (1 - pass),
         footR: [0.09, 0.07 * pulse(t, 12, 14) + 0.07 * pulse(t, lift + 9, 13)], footL: [-0.09, 0.07 * pulse(t, lift + 26, 12)],
@@ -317,7 +317,7 @@ const SCENES: Scene[] = [
         footL: [-0.08 + 0.05 * sw * fly, 0.02 * fly], footR: [0.08 + 0.05 * Math.sin(t * 0.6 + 1.5) * fly, 0.035 * fly],
         sweat: t < 20 ? t : undefined, nervous: 0.8 * (1 - turnTo), lookAt: turnTo > 0.5 ? [x + 20, G - 1.3 * k] : undefined,
         face: mixFace(mixFace(mixFace({ ...FACES.worried, eye: 1.2, open: 0.15 }, { ...FACES.neutral, eye: 1.15, browY: [1, 1], smile: 0.2 }, turnTo), { ...FACES.shock, eye: 1.25 }, fly), { ...FACES.glee, eye: 1.05 }, down) };
-      const lx = 950, lgy = RIM + 0.75 * lk, rch = tw(t, lift + 8, 12), rest = tw(t, lift + 33, 10), LM = (q: P2): P2 => [(q[0] - lx) / lk, (lgy - q[1]) / lk];
+      const lx = 925, lgy = RIM + 0.75 * lk, rch = tw(t, lift + 8, 12), rest = tw(t, lift + 33, 10), LM = (q: P2): P2 => [(q[0] - lx) / lk, (lgy - q[1]) / lk];
       const lady: Pose = { x: lx, y: lgy, k: lk, turn: -0.5, front: "L", lean: lerp(-2, -8, rch) * (1 - down) - down, neck: -3 * rch,
         handL: mix(mix([-0.3, 0.84], LM([gp[0] + 50, gp[1] - 0.76 * ck]), rch), LM([gIn[0] + 64, gIn[1] - 1.02 * ck]), rest), handR: [0.16, 0.8], lookAt: gh,
         face: mixFace({ ...FACES.worried, eye: 1.1 }, { ...FACES.neutral, smile: 1, browY: [0.6, 0.6] }, tw(t, lift + 14, 12)) };
@@ -404,17 +404,17 @@ const SCENES: Scene[] = [
     // taps the air towards the deck. The crowd: three rows, no two alike, each swaying, waving or hiding the face.
     name: "left", from: S.left, to: S.cliff,
     draw: (t, T) => {
-      const k = 560, x = 560, n = at("left", "1,500") - S.left - 2, us = at("left", "us") - S.left, still = at("left", "still") - S.left, brd = at("left", "board.") - S.left;
+      const k = 545, x = 560, n = at("left", "1,500") - S.left - 2, us = at("left", "us") - S.left, still = at("left", "still") - S.left, brd = at("left", "board.") - S.left;
       const thumb = EASE.back(c01((t - 2) / 9)) * (1 - tw(t, us + 4, 9)), look = tw(t, n + 6, 12) * (1 - tw(t, us + 6, 10)), gulp = pulse(t, us + 10, 9), down = tw(t, still - 4, 9), taps = pulse(t, still + 2, 7) + pulse(t, brd, 7);
       const p: Pose = { x, y: GROUND, k, turn: lerp(0.1, -0.5, look), lean: 4 + 1.2 * Math.sin(t * 0.1) - 2 * thumb, bend: -3 * thumb + 3 * down, stretch: 1 + 0.03 * pulse(t, 2, 9) - 0.035 * gulp - 0.02 * taps, neck: -6 * look, headTilt: 2 * Math.sin(t * 0.13) + 4 * thumb * (1 - look),
-        handL: [-0.36, 0.84], handR: mix(mix([0.32, 0.66], [0.5, 1.12], thumb), [0.3, 0.54 - 0.07 * taps], down), nod: gulp + 0.8 * taps, lookAt: look > 0.5 ? [150, 1180] : undefined, sweat: t,
+        handL: [-0.36, 0.84], handR: mix(mix([0.32, 0.66], [0.5, 1.12], thumb), [0.3, 0.54 - 0.07 * taps], down), pipeSide: 1, nod: gulp + 0.8 * taps, lookAt: look > 0.5 ? [150, 1180] : undefined, sweat: t,
         face: mixFace({ ...FACES.worried, eye: 1.15, open: talk(t, 0, T - 4) }, { ...FACES.shock, eye: 1.15, open: 0.5 }, look) };
       const row = (cnt: number, x0: number, dx: number, y: number, sc: number, id0: number) => Array.from({ length: cnt }, (_, i) => ({ px: x0 + i * dx + 20 * rnd(i + id0), py: y + 16 * rnd(i + id0 + 7), sc: sc + 0.45 * rnd(i + id0 + 20), id: i + id0 }));
       const crowd = [...row(12, 40, 92, 1196, 1.7, 41), ...row(10, 70, 104, 1262, 2.2, 1), ...row(8, 118, 120, 1344, 2.7, 21)];
       return [{ t: "cam", z: lerp(1, 1.03, EASE.soft(t / T)), cx: 540, cy: 1100, rot: -6, py: lerp(-12, -3, EASE.soft(t / T)), px: lerp(-10, 8, EASE.soft(t / T)) }, bg("deck", 1.34, 0, 0),
         node("the crowd on deck", [0, 1000, W, 380], <g>{crowd.map((c, j) => folk(j, c.px, c.py, c.sc, c.id, t, c.px < 540 ? 0.5 : -0.5))}</g>, "bg"),
         { t: "fig", who: "sir", c: C.sir, p, hold: { L: cane } },
-        ...(t >= n ? [board("1,500 on board", "1,500", "STILL ON BOARD", t - n)] : [])];
+        ...(t >= n ? [board("1,500 on board", "1,500", "STILL ON BOARD", t - n, 322)] : [])];
     },
   },
   { // and the sea has reached my shoes: it runs up the tipping deck, level. He looks down; the cane slips from his hand

@@ -59,6 +59,19 @@ screen space, where what is drawn is what is shown.
 - **Motion:** smooth, no stepped cycles, feet planted, turns drawn as in-between poses, faces toward the viewer in
   reactions.
 
+## The reusable figure kit (Jesper 2026-11-15)
+Jesper makes a small set of drawn sheets once, by hand in Google Flow (his existing subscription; never driven by
+an unofficial tool on his Google account), and puts them in `figurblad/`. Every video is built from this kit, so no
+new sheet is needed per video.
+- **Sir Digsworth:** character sheet (four views, six expressions) and a parts sheet (A-pose body, head, pipe, cane,
+  hand poses, mouth shapes for talking).
+- **The extra:** one plain stick figure with no clothes or hat, as a parts sheet, plus a sheet of expressions.
+- **Wardrobe:** hats, outfits, facial hair and hair as separate items, covering the eras the channel tells.
+- **Effects:** dust, smoke, impact, sparks, sweat, exclamation and question marks, speed lines, speech bubble.
+The session cuts the sheets into parts once, builds 2D puppets, and makes every other character by dressing the
+extra from the wardrobe. A missing item is drawn in code in the same style and noted, so Jesper can add it to the
+kit later. Backgrounds are painted locally per video.
+
 ## The first second of every Short (hard rule)
 - Frame one shows the most striking moment of the story: one big subject filling the picture, already moving.
 - The hook is on screen as text while the voice says it. No intro, no year, no establishing shot first.

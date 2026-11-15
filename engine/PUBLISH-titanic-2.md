@@ -22,7 +22,7 @@ Sources: Wikipedia (Sinking of the Titanic; Titanic; Lifeboats of the Titanic; R
 - Thumbnails: `thumbnails/titanic-2/1-left-behind.png` (chosen), `2-no-boats.png`, `3-its-sinking.png`
 - Series: "Sir Digsworth survives history", test season of three Shorts. Part 2 ends with the sea on the deck; Part 3: the water.
 
-## Version 2 (re-animated 2026-11-15, NOT published)
+## Version 2 (re-animated 2026-11-15, published 19:24 Stockholm on Jesper's word "Publicera den nu.")
 
 Jesper asked for better animation with more feeling after version 1 went out at 14:00
 (https://www.youtube.com/shorts/Jbo7YbaXAUs). Same script, voice, captions, facts and length; every character scene
@@ -30,6 +30,9 @@ is acted again with the jointed rig (README, "The 2D rig and the scene layers").
 
 - File: `videos/shorts/2026-11-15-titanic-part-2-short-v2.mp4` (1080x1920, 30 fps, 37.0 s, -14.1 LUFS)
 - Thumbnails in the new style: `thumbnails/titanic-2/v2-1-left-behind.png`, `v2-2-no-boats.png`, `v2-3-its-sinking.png`
-- Checks: layout check OK; `short_qa.py`: no black, white or frozen frames, no silences
-- Nothing is scheduled. Replacing version 1 on YouTube (delete and upload again, or leave it and use the new look
-  from part 3 on) is Jesper's decision.
+- Checks: layout check OK; `short_qa.py`: no black, white or frozen frames, no silences; two renders compared with
+  `frame_diff.py`: 0 frames differ
+- Metricool: post id 429137826 (uuid -938678831642229347), Sunday 15 November 2026, 19:24 Stockholm, same title,
+  description, tags and category as version 1, thumbnail `v2-1-left-behind.png`
+- Version 1 is still on the channel under the same title. Metricool cannot remove it; hiding or deleting it in
+  YouTube Studio is Jesper's decision.

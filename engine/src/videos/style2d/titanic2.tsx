@@ -243,10 +243,10 @@ const SCENES: Scene[] = [
         handL: [lerp(-0.1, -0.3, up), lerp(0.6, 0.86, up) + (inBoat ? 0.16 + 0.05 * Math.sin(t * 0.9) : 0)], handR: [lerp(0.1, 0.3, up), lerp(0.6, 0.82, up)], footL: [-0.08 - 0.05 * arc, 0], footR: [0.07 - 0.07 * arc, 0.03 * arc],
         sweat: t < lift - 12 ? t : undefined, lookAt: crouch > 0.5 ? [x + 60, GROUND - 1.4 * k] : undefined,
         face: mixFace(mixFace({ ...FACES.worried, lookX: Math.sin(t * 0.21), eye: 1.2, open: 0.15 }, { ...FACES.shock, eye: 1.25 }, up), { ...FACES.glee, eye: 1.05 }, down) };
-      const lx = 925, lk = 420, lgy = 1371, reach = tw(t, lift + 6, 14);
+      const lx = 925, lk = 420, lgy = 1296, reach = tw(t, lift + 6, 14);
       const lady: Pose = { x: lx, y: lgy, k: lk, turn: -0.5, lean: lerp(-2, -9, reach) * (1 - down) + 3 * down, handL: [lerp(-0.3, (U[0] + 78 - lx) / lk, reach), lerp(0.82, (lgy - U[1] - 24) / lk, reach)], handR: [lerp(0.12, -0.12, reach), lerp(0.8, 0.98, reach)],
         lookAt: [U[0], U[1] - 0.7 * ck], face: mixFace({ ...FACES.worried, eye: 1.1 }, { ...FACES.neutral, smile: 1, browY: [0.6, 0.6] }, down) };
-      const sw = 1.2 * Math.sin(t * 0.12) + 2.2 * down * Math.sin((t - lift - 15) * 0.4) * Math.exp(-Math.max(0, t - lift - 15) / 12);
+      const sw = 0.5 * Math.sin(t * 0.12) + 1.1 * down * Math.sin((t - lift - 15) * 0.4) * Math.exp(-Math.max(0, t - lift - 15) / 12);
       const rig = node("davit and far side of the boat", [480, 0, 600, 1300], (<g>
         <path d="M500 1300 L500 700 Q500 545 632 545" fill="none" stroke={INK} strokeWidth={36} strokeLinecap="round" /><path d="M500 1300 L500 700 Q500 545 632 545" fill="none" stroke="#c9ccd4" strokeWidth={21} strokeLinecap="round" />
         <g transform={`rotate(${sw} 800 -400)`}><path d="M616 548 L590 984 M1016 -80 L1016 986" stroke={INK} strokeWidth={9} /><path d="M562 976 L1170 986 L1170 1014 L548 1002 Z" fill="#8f7a5c" {...o(8)} /></g>

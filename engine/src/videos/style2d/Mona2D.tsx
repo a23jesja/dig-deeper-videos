@@ -5,7 +5,7 @@ import React from "react";
 import { AbsoluteFill, Audio, getInputProps, Img, Sequence, staticFile, useCurrentFrame } from "remotion";
 import type { Caption } from "@remotion/captions";
 import { Fig, INK } from "./fig";
-import { Draw, Film, FPS, H, MONA_FILM, paintBox, Scene, tagBox, W } from "./scenes";
+import { DEPTH, Draw, Film, FPS, H, Layer, MONA_FILM, paintBox, Scene, tagBox, W } from "./scenes";
 import { TITANIC1, TITANIC1_THUMB } from "./titanic1";
 import { DANCE } from "./dance";
 import { TITANIC2, TITANIC2_THUMB } from "./titanic2";
@@ -50,26 +50,39 @@ const Tag: React.FC<{ d: Extract<Draw, { t: "tag" }> }> = ({ d }) => {
   );
 };
 
-const layerOf = (d: Draw) => (d.t === "node" ? d.layer ?? "mid" : "mid");
+const layerOf = (d: Draw): Layer => (d.t === "node" ? d.layer ?? "mid" : "mid");
+const LAYERS: Layer[] = ["sky", "sea", "bg", "mid", "fg"];
+/** Strict order, back to front: painted background | sky | sea | background props | characters | foreground | tags.
+ *  Each layer takes its own share of the camera's zoom and pan (parallax). Every layer but the sky is drawn through
+ *  a small displacement filter whose noise changes five times a second, so outlines wobble like re-inked drawings. */
 const SceneView: React.FC<{ scene: Scene; film: Film; at?: number }> = ({ scene, film, at: fixed }) => {
-  const frame = useCurrentFrame(), t = fixed ?? frame, T = scene.to - scene.from, ds = scene.draw(t, T);
-  const cam = (ds.find((d) => d.t === "cam") as Extract<Draw, { t: "cam" }> | undefined) ?? { z: 1, cx: W / 2, cy: H / 2 };
-  const rot = (cam as { rot?: number }).rot ?? 0;
-  const tf = (fac: number) => { const z = 1 + (cam.z - 1) * fac; return `translate(${cam.cx} ${cam.cy}) rotate(${rot}) scale(${z}) translate(${-cam.cx} ${-cam.cy})`; };
+  const frame = useCurrentFrame(), t = fixed ?? frame, T = scene.to - scene.from, ds = scene.draw(t, T), abs = scene.from + t;
+  const ip = getInputProps() as { texture?: boolean };
+  const cam = (ds.find((d) => d.t === "cam") as Extract<Draw, { t: "cam" }> | undefined) ?? { t: "cam", z: 1, cx: W / 2, cy: H / 2 };
+  const rot = cam.rot ?? 0, px = cam.px ?? 0, py = cam.py ?? 0;
+  const tf = (l: Layer) => { const z = 1 + (cam.z - 1) * DEPTH[l].z; return `translate(${-px * DEPTH[l].pan} ${-py * DEPTH[l].pan}) translate(${cam.cx} ${cam.cy}) rotate(${rot}) scale(${z}) translate(${-cam.cx} ${-cam.cy})`; };
   const bgd = ds.find((d) => d.t === "bg") as Extract<Draw, { t: "bg" }>;
-  const s = (H / 2208) * bgd.zoom, zb = 1 + (cam.z - 1) * 0.6;
-  const draw = (d: Draw, i: number) => d.t === "fig" ? <Fig key={i} p={d.p} c={d.c ?? film.cast[d.who]} part={d.part} /> : d.t === "paint" ? <Paint key={i} d={d} /> : d.t === "node" ? <g key={i}>{d.el}</g> : null;
-  const layer = (name: "bg" | "mid" | "fg", fac: number) => (
-    <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} style={{ position: "absolute", left: 0, top: 0 }}>
-      <g transform={tf(fac)}>{ds.map((d, i) => (d.t !== "tag" && d.t !== "cam" && d.t !== "bg" && layerOf(d) === name ? draw(d, i) : null))}</g>
-    </svg>
-  );
+  const s = (H / 2208) * bgd.zoom, zb = 1 + (cam.z - 1) * DEPTH.paint.z;
+  const draw = (d: Draw, i: number) => d.t === "fig" ? <Fig key={i} p={d.p} c={d.c ?? film.cast[d.who]} part={d.part} hold={d.hold} f={abs} /> : d.t === "paint" ? <Paint key={i} d={d} /> : d.t === "node" ? <g key={i}>{d.el}</g> : null;
+  const boil = Math.floor(abs / 6) % 5;
+  const layer = (name: Layer) => {
+    const items = ds.map((d, i) => (d.t !== "tag" && d.t !== "cam" && d.t !== "bg" && layerOf(d) === name ? draw(d, i) : null));
+    if (!items.some(Boolean)) return null;
+    const rough = ip.texture !== false && name !== "sky", id = `ink-${scene.name}-${name}`;
+    return (
+      <svg key={name} width={W} height={H} viewBox={`0 0 ${W} ${H}`} style={{ position: "absolute", left: 0, top: 0 }}>
+        {rough && <defs><filter id={id} filterUnits="userSpaceOnUse" x={-40} y={-40} width={W + 80} height={H + 80}>
+          <feTurbulence type="fractalNoise" baseFrequency={0.022} numOctaves={2} seed={3 + boil * 11 + LAYERS.indexOf(name)} result="n" />
+          <feDisplacementMap in="SourceGraphic" in2="n" scale={5.5} xChannelSelector="R" yChannelSelector="G" />
+        </filter></defs>}
+        <g filter={rough ? `url(#${id})` : undefined}><g transform={tf(name)}>{items}</g></g>
+      </svg>
+    );
+  };
   return (
     <AbsoluteFill style={{ background: "#2a1a16" }}>
-      <Img src={staticFile(`${film.bgDir}/${bgd.img}.jpg`)} style={{ position: "absolute", width: 1248 * s, height: 2208 * s, left: (W - 1248 * s) / 2 + bgd.ox, top: (H - 2208 * s) / 2 + bgd.oy, transformOrigin: `${cam.cx - ((W - 1248 * s) / 2 + bgd.ox)}px ${cam.cy - ((H - 2208 * s) / 2 + bgd.oy)}px`, scale: String(zb), rotate: `${rot}deg` }} />
-      {layer("bg", 0.6)}
-      {layer("mid", 1)}
-      {layer("fg", 1.5)}
+      <Img src={staticFile(`${film.bgDir}/${bgd.img}.jpg`)} style={{ position: "absolute", width: 1248 * s, height: 2208 * s, left: (W - 1248 * s) / 2 + bgd.ox, top: (H - 2208 * s) / 2 + bgd.oy, transformOrigin: `${cam.cx - ((W - 1248 * s) / 2 + bgd.ox)}px ${cam.cy - ((H - 2208 * s) / 2 + bgd.oy)}px`, translate: `${-px * DEPTH.paint.pan}px ${-py * DEPTH.paint.pan}px`, scale: String(zb), rotate: `${rot}deg` }} />
+      {LAYERS.map(layer)}
       <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} style={{ position: "absolute", left: 0, top: 0 }}>
         {ds.map((d, i) => (d.t === "tag" && d.age >= 0 ? <Tag key={i} d={d} /> : null))}
       </svg>

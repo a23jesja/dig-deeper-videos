@@ -3,7 +3,7 @@
 // list, so a figure cut by the frame, a face under the captions or two tags on top of each other is caught
 // before anything is rendered. Screen is 1080x1920; captions sit at 67.5 %.
 import React from "react";
-import { Costume, Face, FACES, INK, mixFace, Pose, walk } from "./fig";
+import { Costume, Face, FACES, Hold, INK, mixFace, Pose, walk } from "./fig";
 import caps from "./captionsMona.json";
 
 export const W = 1080, H = 1920, FPS = 30, TOTAL = 1490, GROUND = 1613;
@@ -48,12 +48,16 @@ export type Who = keyof typeof CAST;
 
 // ---------------------------------------------------------------- what a scene can put on screen
 type Box = { x: number; y: number; w: number; h: number };
+/** layers, back to front: sky and stars | the sea | background props and crowd | the characters | railing and framing */
+export type Layer = "sky" | "sea" | "bg" | "mid" | "fg";
+/** how much of the camera's zoom and of its pan (px, py) each layer takes: far layers move less (parallax) */
+export const DEPTH: Record<Layer | "paint", { z: number; pan: number }> = { sky: { z: 0.2, pan: 0.15 }, paint: { z: 0.6, pan: 0.5 }, sea: { z: 0.45, pan: 0.45 }, bg: { z: 0.6, pan: 0.7 }, mid: { z: 1, pan: 1 }, fg: { z: 1.5, pan: 1.3 } };
 export type Draw =
-  | { t: "cam"; z: number; cx: number; cy: number; rot?: number }
+  | { t: "cam"; z: number; cx: number; cy: number; rot?: number; px?: number; py?: number }
   | { t: "bg"; img: string; zoom: number; ox: number; oy: number }
-  | { t: "fig"; who: string; c?: Costume; p: Pose; close?: boolean; part?: "all" | "hands"; free?: boolean }       // free = entering or leaving the picture
+  | { t: "fig"; who: string; c?: Costume; p: Pose; close?: boolean; part?: "all" | "rear" | "front" | "hands"; free?: boolean; hold?: Hold }       // free = entering or leaving the picture
   | { t: "paint"; kind: "mona" | "panel" | "bundle"; cx: number; cy: number; w: number; rot?: number; key?: boolean; scale?: number; clipBelow?: number }
-  | { t: "node"; name: string; box: Box; key?: boolean; layer?: "bg" | "mid" | "fg"; el: React.ReactNode }
+  | { t: "node"; name: string; box: Box; key?: boolean; layer?: Layer; el: React.ReactNode }
   | { t: "tag"; text: string; sub?: string; y: number; age: number };
 export const tagBox = (d: { text: string; sub?: string; y: number }): Box => { const w = Math.min(960, d.text.length * (d.text.length > 18 ? 36 : 42) + 80); return { x: (W - w) / 2, y: d.y, w, h: d.sub ? 160 : 96 }; };
 export const paintBox = (d: { cx: number; cy: number; w: number; kind: string }): Box => { const h = d.w * 1.36; return { x: d.cx - d.w / 2, y: d.cy - h / 2, w: d.w, h }; };

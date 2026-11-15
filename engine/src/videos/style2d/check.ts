@@ -1,6 +1,6 @@
 // Layout check for the 2D short: run before rendering. Reads the same scene data the renderer draws.
 //   npx esbuild src/videos/style2d/check.ts --bundle --platform=node --outfile=out/2d/check.cjs --loader:.json=json && node out/2d/check.cjs
-import { Draw, H, HOOK_BOX, MONA_FILM, paintBox, tagBox, W } from "./scenes";
+import { DEPTH, Draw, H, HOOK_BOX, MONA_FILM, paintBox, tagBox, W } from "./scenes";
 import { TITANIC1 } from "./titanic1";
 import { DANCE } from "./dance";
 import { TITANIC2 } from "./titanic2";
@@ -21,14 +21,14 @@ for (const sc of SCENES) {
     frames++;
     const ds = sc.draw(t, T), f = sc.from + t;
     const cam = ds.find((d) => d.t === "cam") as Extract<Draw, { t: "cam" }> | undefined;
-    const cv = (b: Box, fac = 1): Box => { if (!cam) return b; const z = 1 + (cam.z - 1) * fac; return { x: (b.x - cam.cx) * z + cam.cx, y: (b.y - cam.cy) * z + cam.cy, w: b.w * z, h: b.h * z }; };
+    const cv = (b: Box, l: keyof typeof DEPTH = "mid"): Box => { if (!cam) return b; const z = 1 + (cam.z - 1) * DEPTH[l].z, sx = -(cam.px ?? 0) * DEPTH[l].pan, sy = -(cam.py ?? 0) * DEPTH[l].pan; return { x: (b.x - cam.cx) * z + cam.cx + sx, y: (b.y - cam.cy) * z + cam.cy + sy, w: b.w * z, h: b.h * z }; };
     const faces: Box[] = [], tags: { n: string; b: Box }[] = [];
     if (sc.name === "hook") tags.push({ n: "hook text", b: HOOK_BOX });
     let hasBg = false;
     for (const d of ds) {
       if (d.t === "bg") {
         hasBg = true;
-        const s = (H / 2208) * d.zoom, b = cv({ x: (W - 1248 * s) / 2 + d.ox, y: (H - 2208 * s) / 2 + d.oy, w: 1248 * s, h: 2208 * s }, 0.6);
+        const s = (H / 2208) * d.zoom, b = cv({ x: (W - 1248 * s) / 2 + d.ox, y: (H - 2208 * s) / 2 + d.oy, w: 1248 * s, h: 2208 * s }, "paint");
         if (!(b.x <= 0 && b.y <= 0 && b.x + b.w >= W && b.y + b.h >= H)) flag(sc.name, f, "background does not cover the picture", fmt(b));
       } else if (d.t === "fig" && d.part !== "hands" && !d.free) {
         const g = solve(d.p, d.c ?? film.cast[d.who]), face = cv(g.faceBox), box = cv(g.box);
@@ -44,7 +44,7 @@ for (const sc of SCENES) {
         if (!inside(b, M, TOP, W - M, BOT)) flag(sc.name, f, `${d.kind}: key prop outside the safe area`, fmt(b));
         if (sc.captions !== false && hit(b, BAND)) flag(sc.name, f, `${d.kind}: key prop under the captions`, fmt(b));
       } else if (d.t === "node" && d.key) {
-        const b = cv(d.box, d.layer === "bg" ? 0.6 : d.layer === "fg" ? 1.5 : 1);
+        const b = cv(d.box, d.layer ?? "mid");
         if (!inside(b, M, TOP, W - M, BOT)) flag(sc.name, f, `${d.name}: key prop outside the safe area`, fmt(b));
         if (sc.captions !== false && hit(b, BAND)) flag(sc.name, f, `${d.name}: key prop under the captions`, fmt(b));
         if (d.layer === "fg") tags.push({ n: d.name, b });

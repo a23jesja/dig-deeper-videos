@@ -464,8 +464,8 @@ export const TITANIC2_THUMB: Scene = {
   name: "thumb", from: 0, to: 1, closeup: true,
   draw: () => {
     const k = 760, RY = 1560, gy = RY + 0.8 * k;
-    const p: Pose = { x: 330, y: gy, k, turn: 0.4, lean: 8, bend: 6, neck: 3, front: "R", pipeSide: -1, handL: [-0.22, 0.805], handR: [0.7, 1.4], hatLift: 0.05, shock: 9, sweat: 6, still: true, face: { ...FACES.shock, lookX: 0.6, lookY: 0.1, eye: 1.4 } };
-    return [{ t: "cam", z: 1, cx: 540, cy: 900 }, SEA_HI, stars(12), sea(HORIZON, 12, [boatFloat(1, 800, 74, 1.0, 12)]), ...atRail(p, RY)];
+    const p: Pose = { x: 330, y: gy, k, turn: 0.4, lean: 8, bend: 6, neck: 3, front: "R", pipeSide: -1, handL: [-0.22, 0.805], handR: [0.64, 1.62], hatLift: 0.05, shock: 9, sweat: 6, still: true, face: { ...FACES.shock, lookX: 0.6, lookY: 0.1, eye: 1.4 } };
+    return [{ t: "cam", z: 1, cx: 540, cy: 900 }, SEA_HI, stars(12), sea(HORIZON, 12, [boatFloat(1, 880, 128, 1.0, 12)]), ...atRail(p, RY)];
   },
 };
 

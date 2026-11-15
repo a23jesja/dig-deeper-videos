@@ -113,3 +113,21 @@ python audio/mona_short_audio.py                                      # public/m
 npx esbuild src/videos/style2d/check.ts --bundle --platform=node --outfile=out/2d/check.cjs --loader:.json=json && node out/2d/check.cjs   # must print LAYOUT OK
 npx remotion render src/index2d.ts Mona2D out/2d/mona-2d.mp4 --concurrency=8
 ```
+
+Later 2D films follow the same pattern with their own files (`titanic1.tsx`, `dance.tsx`, `titanic2.tsx`; compositions
+`Titanic1`, `Dance`, `Titanic2`, each with a `...Thumb` composition; `node out/2d/check.cjs titanic2` for the layout).
+
+### Building a 2D film in a cloud session (no graphics card, limited network), as done for Titanic part 2
+```bash
+cd engine && npm install && pip install kokoro-onnx soundfile scipy pocketsphinx
+# Kokoro model files into voice/models/ (from the kokoro-onnx GitHub release "model-files-v1.0")
+python voice/make_voice.py voice/titanic-2.json voice/titanic-2      # writes voice.wav + lines.json, then stops at the Whisper download
+python scripts/align_words.py voice/titanic-2.json voice/titanic-2 src/videos/style2d/captionsTitanic2.json   # word timings without Whisper
+python audio/titanic2_audio.py                                       # public/titanic/mix-2.wav
+node out/2d/check.cjs titanic2                                       # after the esbuild line above; must print LAYOUT OK
+npx remotion render src/index2d.ts Titanic2 out/2d/titanic-2.mp4 --concurrency=4 --gl=swangle \
+  --browser-executable=/opt/pw-browsers/chromium_headless_shell-1243/chrome-headless-shell-linux64/chrome-headless-shell
+```
+About 20 minutes for 37 s on 4 CPU cores. Arial Black is not on Linux: map it to Inter Black in `~/.config/fontconfig/fonts.conf`.
+New backgrounds cannot be painted there (no ComfyUI), and source pages cannot be opened, so use existing backgrounds
+and facts already listed in a `FACTS-*.md`.

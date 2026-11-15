@@ -1,0 +1,858 @@
+[
+{
+"text": " That",
+"startMs": 0,
+"endMs": 180,
+"timestampMs": 90,
+"confidence": null,
+"line": "hook"
+},
+{
+"text": " lifeboat",
+"startMs": 180,
+"endMs": 790,
+"timestampMs": 485,
+"confidence": null,
+"line": "hook"
+},
+{
+"text": " is",
+"startMs": 790,
+"endMs": 920,
+"timestampMs": 855,
+"confidence": null,
+"line": "hook"
+},
+{
+"text": " leaving.",
+"startMs": 920,
+"endMs": 1400,
+"timestampMs": 1160,
+"confidence": null,
+"line": "hook"
+},
+{
+"text": " And",
+"startMs": 1580,
+"endMs": 1700,
+"timestampMs": 1640,
+"confidence": null,
+"line": "hook"
+},
+{
+"text": " I",
+"startMs": 1700,
+"endMs": 1790,
+"timestampMs": 1745,
+"confidence": null,
+"line": "hook"
+},
+{
+"text": " am",
+"startMs": 1790,
+"endMs": 1970,
+"timestampMs": 1880,
+"confidence": null,
+"line": "hook"
+},
+{
+"text": " not",
+"startMs": 1970,
+"endMs": 2230,
+"timestampMs": 2100,
+"confidence": null,
+"line": "hook"
+},
+{
+"text": " in",
+"startMs": 2230,
+"endMs": 2390,
+"timestampMs": 2310,
+"confidence": null,
+"line": "hook"
+},
+{
+"text": " it.",
+"startMs": 2390,
+"endMs": 2620,
+"timestampMs": 2505,
+"confidence": null,
+"line": "hook"
+},
+{
+"text": " My",
+"startMs": 3029,
+"endMs": 3139,
+"timestampMs": 3084,
+"confidence": null,
+"line": "truth"
+},
+{
+"text": " part",
+"startMs": 3139,
+"endMs": 3489,
+"timestampMs": 3314,
+"confidence": null,
+"line": "truth"
+},
+{
+"text": " is",
+"startMs": 3489,
+"endMs": 3619,
+"timestampMs": 3554,
+"confidence": null,
+"line": "truth"
+},
+{
+"text": " made",
+"startMs": 3619,
+"endMs": 3869,
+"timestampMs": 3744,
+"confidence": null,
+"line": "truth"
+},
+{
+"text": " up.",
+"startMs": 3869,
+"endMs": 4179,
+"timestampMs": 4024,
+"confidence": null,
+"line": "truth"
+},
+{
+"text": " Everything",
+"startMs": 4379,
+"endMs": 4809,
+"timestampMs": 4594,
+"confidence": null,
+"line": "truth"
+},
+{
+"text": " around",
+"startMs": 4809,
+"endMs": 5139,
+"timestampMs": 4974,
+"confidence": null,
+"line": "truth"
+},
+{
+"text": " me",
+"startMs": 5139,
+"endMs": 5259,
+"timestampMs": 5199,
+"confidence": null,
+"line": "truth"
+},
+{
+"text": " is",
+"startMs": 5259,
+"endMs": 5419,
+"timestampMs": 5339,
+"confidence": null,
+"line": "truth"
+},
+{
+"text": " true.",
+"startMs": 5419,
+"endMs": 5799,
+"timestampMs": 5609,
+"confidence": null,
+"line": "truth"
+},
+{
+"text": " The",
+"startMs": 6137,
+"endMs": 6197,
+"timestampMs": 6167,
+"confidence": null,
+"line": "recap"
+},
+{
+"text": " Titanic",
+"startMs": 6197,
+"endMs": 6957,
+"timestampMs": 6577,
+"confidence": null,
+"line": "recap"
+},
+{
+"text": " has",
+"startMs": 6957,
+"endMs": 7077,
+"timestampMs": 7017,
+"confidence": null,
+"line": "recap"
+},
+{
+"text": " struck",
+"startMs": 7077,
+"endMs": 7387,
+"timestampMs": 7232,
+"confidence": null,
+"line": "recap"
+},
+{
+"text": " an",
+"startMs": 7387,
+"endMs": 7507,
+"timestampMs": 7447,
+"confidence": null,
+"line": "recap"
+},
+{
+"text": " iceberg.",
+"startMs": 7507,
+"endMs": 8127,
+"timestampMs": 7817,
+"confidence": null,
+"line": "recap"
+},
+{
+"text": " She",
+"startMs": 8337,
+"endMs": 8457,
+"timestampMs": 8397,
+"confidence": null,
+"line": "recap"
+},
+{
+"text": " is",
+"startMs": 8457,
+"endMs": 8547,
+"timestampMs": 8502,
+"confidence": null,
+"line": "recap"
+},
+{
+"text": " sinking",
+"startMs": 8547,
+"endMs": 8937,
+"timestampMs": 8742,
+"confidence": null,
+"line": "recap"
+},
+{
+"text": " by",
+"startMs": 8937,
+"endMs": 9057,
+"timestampMs": 8997,
+"confidence": null,
+"line": "recap"
+},
+{
+"text": " the",
+"startMs": 9057,
+"endMs": 9157,
+"timestampMs": 9107,
+"confidence": null,
+"line": "recap"
+},
+{
+"text": " bow.",
+"startMs": 9157,
+"endMs": 9577,
+"timestampMs": 9367,
+"confidence": null,
+"line": "recap"
+},
+{
+"text": " The",
+"startMs": 9907,
+"endMs": 10007,
+"timestampMs": 9957,
+"confidence": null,
+"line": "order"
+},
+{
+"text": " order",
+"startMs": 10007,
+"endMs": 10367,
+"timestampMs": 10187,
+"confidence": null,
+"line": "order"
+},
+{
+"text": " is",
+"startMs": 10367,
+"endMs": 10497,
+"timestampMs": 10432,
+"confidence": null,
+"line": "order"
+},
+{
+"text": " women",
+"startMs": 10497,
+"endMs": 10967,
+"timestampMs": 10732,
+"confidence": null,
+"line": "order"
+},
+{
+"text": " and",
+"startMs": 10967,
+"endMs": 11147,
+"timestampMs": 11057,
+"confidence": null,
+"line": "order"
+},
+{
+"text": " children",
+"startMs": 11147,
+"endMs": 11587,
+"timestampMs": 11367,
+"confidence": null,
+"line": "order"
+},
+{
+"text": " first.",
+"startMs": 11587,
+"endMs": 12107,
+"timestampMs": 11847,
+"confidence": null,
+"line": "order"
+},
+{
+"text": " So",
+"startMs": 12307,
+"endMs": 12447,
+"timestampMs": 12377,
+"confidence": null,
+"line": "order"
+},
+{
+"text": " I",
+"startMs": 12447,
+"endMs": 12567,
+"timestampMs": 12507,
+"confidence": null,
+"line": "order"
+},
+{
+"text": " stay.",
+"startMs": 12567,
+"endMs": 13017,
+"timestampMs": 12792,
+"confidence": null,
+"line": "order"
+},
+{
+"text": " A",
+"startMs": 13348,
+"endMs": 13388,
+"timestampMs": 13368,
+"confidence": null,
+"line": "child"
+},
+{
+"text": " little",
+"startMs": 13388,
+"endMs": 13678,
+"timestampMs": 13533,
+"confidence": null,
+"line": "child"
+},
+{
+"text": " girl",
+"startMs": 13678,
+"endMs": 14028,
+"timestampMs": 13853,
+"confidence": null,
+"line": "child"
+},
+{
+"text": " is",
+"startMs": 14028,
+"endMs": 14188,
+"timestampMs": 14108,
+"confidence": null,
+"line": "child"
+},
+{
+"text": " alone.",
+"startMs": 14188,
+"endMs": 14708,
+"timestampMs": 14448,
+"confidence": null,
+"line": "child"
+},
+{
+"text": " I",
+"startMs": 14868,
+"endMs": 14988,
+"timestampMs": 14928,
+"confidence": null,
+"line": "child"
+},
+{
+"text": " lift",
+"startMs": 14988,
+"endMs": 15268,
+"timestampMs": 15128,
+"confidence": null,
+"line": "child"
+},
+{
+"text": " her",
+"startMs": 15268,
+"endMs": 15388,
+"timestampMs": 15328,
+"confidence": null,
+"line": "child"
+},
+{
+"text": " into",
+"startMs": 15388,
+"endMs": 15558,
+"timestampMs": 15473,
+"confidence": null,
+"line": "child"
+},
+{
+"text": " a",
+"startMs": 15558,
+"endMs": 15678,
+"timestampMs": 15618,
+"confidence": null,
+"line": "child"
+},
+{
+"text": " boat.",
+"startMs": 15678,
+"endMs": 16138,
+"timestampMs": 15908,
+"confidence": null,
+"line": "child"
+},
+{
+"text": " The",
+"startMs": 16456,
+"endMs": 16516,
+"timestampMs": 16486,
+"confidence": null,
+"line": "seats"
+},
+{
+"text": " boats",
+"startMs": 16516,
+"endMs": 16916,
+"timestampMs": 16716,
+"confidence": null,
+"line": "seats"
+},
+{
+"text": " have",
+"startMs": 16916,
+"endMs": 17146,
+"timestampMs": 17031,
+"confidence": null,
+"line": "seats"
+},
+{
+"text": " room",
+"startMs": 17146,
+"endMs": 17426,
+"timestampMs": 17286,
+"confidence": null,
+"line": "seats"
+},
+{
+"text": " for",
+"startMs": 17426,
+"endMs": 17596,
+"timestampMs": 17511,
+"confidence": null,
+"line": "seats"
+},
+{
+"text": " 1,178",
+"startMs": 17596,
+"endMs": 19376,
+"timestampMs": 18486,
+"confidence": null,
+"line": "seats"
+},
+{
+"text": " people.",
+"startMs": 19376,
+"endMs": 19816,
+"timestampMs": 19596,
+"confidence": null,
+"line": "seats"
+},
+{
+"text": " Only",
+"startMs": 20176,
+"endMs": 20466,
+"timestampMs": 20321,
+"confidence": null,
+"line": "seats"
+},
+{
+"text": " about",
+"startMs": 20466,
+"endMs": 20706,
+"timestampMs": 20586,
+"confidence": null,
+"line": "seats"
+},
+{
+"text": " 700",
+"startMs": 20706,
+"endMs": 21656,
+"timestampMs": 21181,
+"confidence": null,
+"line": "seats"
+},
+{
+"text": " will",
+"startMs": 21656,
+"endMs": 21776,
+"timestampMs": 21716,
+"confidence": null,
+"line": "seats"
+},
+{
+"text": " be",
+"startMs": 21776,
+"endMs": 21856,
+"timestampMs": 21816,
+"confidence": null,
+"line": "seats"
+},
+{
+"text": " saved.",
+"startMs": 21856,
+"endMs": 22406,
+"timestampMs": 22131,
+"confidence": null,
+"line": "seats"
+},
+{
+"text": " One",
+"startMs": 22741,
+"endMs": 22951,
+"timestampMs": 22846,
+"confidence": null,
+"line": "gone"
+},
+{
+"text": " by",
+"startMs": 22951,
+"endMs": 23101,
+"timestampMs": 23026,
+"confidence": null,
+"line": "gone"
+},
+{
+"text": " one,",
+"startMs": 23101,
+"endMs": 23501,
+"timestampMs": 23301,
+"confidence": null,
+"line": "gone"
+},
+{
+"text": " the",
+"startMs": 23501,
+"endMs": 23631,
+"timestampMs": 23566,
+"confidence": null,
+"line": "gone"
+},
+{
+"text": " boats",
+"startMs": 23631,
+"endMs": 23971,
+"timestampMs": 23801,
+"confidence": null,
+"line": "gone"
+},
+{
+"text": " pull",
+"startMs": 23971,
+"endMs": 24211,
+"timestampMs": 24091,
+"confidence": null,
+"line": "gone"
+},
+{
+"text": " away.",
+"startMs": 24211,
+"endMs": 24651,
+"timestampMs": 24431,
+"confidence": null,
+"line": "gone"
+},
+{
+"text": " Then",
+"startMs": 24921,
+"endMs": 25141,
+"timestampMs": 25031,
+"confidence": null,
+"line": "gone"
+},
+{
+"text": " there",
+"startMs": 25141,
+"endMs": 25261,
+"timestampMs": 25201,
+"confidence": null,
+"line": "gone"
+},
+{
+"text": " are",
+"startMs": 25261,
+"endMs": 25341,
+"timestampMs": 25301,
+"confidence": null,
+"line": "gone"
+},
+{
+"text": " none",
+"startMs": 25341,
+"endMs": 25581,
+"timestampMs": 25461,
+"confidence": null,
+"line": "gone"
+},
+{
+"text": " left.",
+"startMs": 25581,
+"endMs": 26021,
+"timestampMs": 25801,
+"confidence": null,
+"line": "gone"
+},
+{
+"text": " A",
+"startMs": 26370,
+"endMs": 26400,
+"timestampMs": 26385,
+"confidence": null,
+"line": "help"
+},
+{
+"text": " rescue",
+"startMs": 26400,
+"endMs": 26830,
+"timestampMs": 26615,
+"confidence": null,
+"line": "help"
+},
+{
+"text": " ship",
+"startMs": 26830,
+"endMs": 27160,
+"timestampMs": 26995,
+"confidence": null,
+"line": "help"
+},
+{
+"text": " is",
+"startMs": 27160,
+"endMs": 27290,
+"timestampMs": 27225,
+"confidence": null,
+"line": "help"
+},
+{
+"text": " coming.",
+"startMs": 27290,
+"endMs": 27750,
+"timestampMs": 27520,
+"confidence": null,
+"line": "help"
+},
+{
+"text": " It",
+"startMs": 27970,
+"endMs": 28090,
+"timestampMs": 28030,
+"confidence": null,
+"line": "help"
+},
+{
+"text": " cannot",
+"startMs": 28090,
+"endMs": 28400,
+"timestampMs": 28245,
+"confidence": null,
+"line": "help"
+},
+{
+"text": " be",
+"startMs": 28400,
+"endMs": 28530,
+"timestampMs": 28465,
+"confidence": null,
+"line": "help"
+},
+{
+"text": " here",
+"startMs": 28530,
+"endMs": 28790,
+"timestampMs": 28660,
+"confidence": null,
+"line": "help"
+},
+{
+"text": " before",
+"startMs": 28790,
+"endMs": 29130,
+"timestampMs": 28960,
+"confidence": null,
+"line": "help"
+},
+{
+"text": " four",
+"startMs": 29130,
+"endMs": 29500,
+"timestampMs": 29315,
+"confidence": null,
+"line": "help"
+},
+{
+"text": " in",
+"startMs": 29500,
+"endMs": 29620,
+"timestampMs": 29560,
+"confidence": null,
+"line": "help"
+},
+{
+"text": " the",
+"startMs": 29620,
+"endMs": 29690,
+"timestampMs": 29655,
+"confidence": null,
+"line": "help"
+},
+{
+"text": " morning.",
+"startMs": 29690,
+"endMs": 30130,
+"timestampMs": 29910,
+"confidence": null,
+"line": "help"
+},
+{
+"text": " About",
+"startMs": 30473,
+"endMs": 30693,
+"timestampMs": 30583,
+"confidence": null,
+"line": "left"
+},
+{
+"text": " 1,500",
+"startMs": 30693,
+"endMs": 31433,
+"timestampMs": 31063,
+"confidence": null,
+"line": "left"
+},
+{
+"text": " of",
+"startMs": 31433,
+"endMs": 31553,
+"timestampMs": 31493,
+"confidence": null,
+"line": "left"
+},
+{
+"text": " us",
+"startMs": 31553,
+"endMs": 31773,
+"timestampMs": 31663,
+"confidence": null,
+"line": "left"
+},
+{
+"text": " are",
+"startMs": 31873,
+"endMs": 31993,
+"timestampMs": 31933,
+"confidence": null,
+"line": "left"
+},
+{
+"text": " still",
+"startMs": 31993,
+"endMs": 32323,
+"timestampMs": 32158,
+"confidence": null,
+"line": "left"
+},
+{
+"text": " on",
+"startMs": 32323,
+"endMs": 32523,
+"timestampMs": 32423,
+"confidence": null,
+"line": "left"
+},
+{
+"text": " board.",
+"startMs": 32523,
+"endMs": 32983,
+"timestampMs": 32753,
+"confidence": null,
+"line": "left"
+},
+{
+"text": " And",
+"startMs": 33353,
+"endMs": 33443,
+"timestampMs": 33398,
+"confidence": null,
+"line": "cliff"
+},
+{
+"text": " the",
+"startMs": 33473,
+"endMs": 33503,
+"timestampMs": 33488,
+"confidence": null,
+"line": "cliff"
+},
+{
+"text": " sea",
+"startMs": 33503,
+"endMs": 34023,
+"timestampMs": 33763,
+"confidence": null,
+"line": "cliff"
+},
+{
+"text": " has",
+"startMs": 34023,
+"endMs": 34183,
+"timestampMs": 34103,
+"confidence": null,
+"line": "cliff"
+},
+{
+"text": " reached",
+"startMs": 34183,
+"endMs": 34573,
+"timestampMs": 34378,
+"confidence": null,
+"line": "cliff"
+},
+{
+"text": " my",
+"startMs": 34573,
+"endMs": 34753,
+"timestampMs": 34663,
+"confidence": null,
+"line": "cliff"
+},
+{
+"text": " shoes.",
+"startMs": 34753,
+"endMs": 35263,
+"timestampMs": 35008,
+"confidence": null,
+"line": "cliff"
+}
+]

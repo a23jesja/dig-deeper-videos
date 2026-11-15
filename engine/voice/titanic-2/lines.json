@@ -1,0 +1,62 @@
+[
+ {
+  "id": "hook",
+  "a": 0.05,
+  "b": 2.669,
+  "text": "That lifeboat is leaving. And I am not in it."
+ },
+ {
+  "id": "truth",
+  "a": 3.019,
+  "b": 5.837,
+  "text": "My part is made up. Everything around me is true."
+ },
+ {
+  "id": "recap",
+  "a": 6.137,
+  "b": 9.607,
+  "text": "The Titanic has struck an iceberg. She is sinking by the bow."
+ },
+ {
+  "id": "order",
+  "a": 9.907,
+  "b": 13.038,
+  "text": "The order is women and children first. So I stay."
+ },
+ {
+  "id": "child",
+  "a": 13.338,
+  "b": 16.156,
+  "text": "A little girl is alone. I lift her into a boat."
+ },
+ {
+  "id": "seats",
+  "a": 16.456,
+  "b": 22.431,
+  "text": "The boats have room for 1,178 people. Only about 700 will be saved."
+ },
+ {
+  "id": "gone",
+  "a": 22.731,
+  "b": 26.06,
+  "text": "One by one, the boats pull away. Then there are none left."
+ },
+ {
+  "id": "help",
+  "a": 26.36,
+  "b": 30.173,
+  "text": "A rescue ship is coming. It cannot be here before four in the morning."
+ },
+ {
+  "id": "left",
+  "a": 30.473,
+  "b": 33.003,
+  "text": "About 1,500 of us are still on board."
+ },
+ {
+  "id": "cliff",
+  "a": 33.353,
+  "b": 35.323,
+  "text": "And the sea has reached my shoes."
+ }
+]

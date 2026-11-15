@@ -1,0 +1,18 @@
+{
+ "voice": "bm_george",
+ "speed": 1.2,
+ "gap": 0.13,
+ "lead": 0.05,
+ "lines": [
+  { "id": "hook", "text": "That lifeboat is leaving. And I am not in it.", "gap": 0.35 },
+  { "id": "truth", "text": "My part is made up. Everything around me is true.", "gap": 0.3 },
+  { "id": "recap", "text": "The Titanic has struck an iceberg. She is sinking by the bow.", "gap": 0.3 },
+  { "id": "order", "text": "The order is women and children first. So I stay.", "gap": 0.3 },
+  { "id": "child", "text": "A little girl is alone. I lift her into a boat.", "gap": 0.3 },
+  { "id": "seats", "text": "The boats have room for 1,178 people. Only about 700 will be saved.", "say": "The boats have room for eleven hundred and seventy-eight people. Only about seven hundred will be saved.", "gap": 0.3 },
+  { "id": "gone", "text": "One by one, the boats pull away. Then there are none left.", "gap": 0.3 },
+  { "id": "help", "text": "A rescue ship is coming. It cannot be here before four in the morning.", "gap": 0.3 },
+  { "id": "left", "text": "About 1,500 of us are still on board.", "say": "About fifteen hundred of us are still on board.", "gap": 0.35 },
+  { "id": "cliff", "text": "And the sea has reached my shoes.", "gap": 0.9 }
+ ]
+}

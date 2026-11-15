@@ -8,6 +8,7 @@ import { Fig, INK } from "./fig";
 import { Draw, Film, FPS, H, MONA_FILM, paintBox, Scene, tagBox, W } from "./scenes";
 import { TITANIC1, TITANIC1_THUMB } from "./titanic1";
 import { DANCE } from "./dance";
+import { TITANIC2, TITANIC2_THUMB } from "./titanic2";
 
 const FONT = "'Arial Black', 'Segoe UI Black', Impact, sans-serif";
 const pop = (n: number) => (n <= 0 ? 0.6 : n === 1 ? 1.12 : n === 2 ? 0.97 : 1);
@@ -123,6 +124,7 @@ const FilmView: React.FC<{ film: Film }> = ({ film }) => {
 export const Mona2D: React.FC = () => <FilmView film={MONA_FILM} />;
 export const Titanic1: React.FC = () => <FilmView film={TITANIC1} />;
 export const Dance: React.FC = () => <FilmView film={DANCE} />;
+export const Titanic2: React.FC = () => <FilmView film={TITANIC2} />;
 
 // ---------------------------------------------------------------- thumbnails: frames 0-2, one picture each
 type Thumb = { scene: string | Scene; at: number; a: string; b: string; top?: boolean };
@@ -158,3 +160,9 @@ const DANCE_THUMBS: Thumb[] = [
   { scene: "doctors", at: 110, a: "THE", b: "CURE?!" },
 ];
 export const DanceThumb: React.FC = () => <ThumbView film={DANCE} thumbs={DANCE_THUMBS} />;
+const TITANIC2_THUMBS: Thumb[] = [
+  { scene: TITANIC2_THUMB, at: 0, a: "LEFT", b: "BEHIND", top: true },
+  { scene: "none", at: 6, a: "NO", b: "BOATS" },
+  { scene: "cliff", at: 54, a: "IT'S", b: "SINKING" },
+];
+export const Titanic2Thumb: React.FC = () => <ThumbView film={TITANIC2} thumbs={TITANIC2_THUMBS} />;

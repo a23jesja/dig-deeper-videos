@@ -289,4 +289,6 @@ export const TITANIC1: Film = {
   scenes: SCENES, caps: CAPS, cast: C, audio: "titanic/mix-1.wav", bgDir: "titanic", total: TITANIC1_TOTAL,
   hook: [{ text: "THAT IS AN ICEBERG.", from: 0, size: 82, color: "#ffffff" }, { text: "I'M ON THE TITANIC.", from: at("hook", "And") - 1, size: 84, color: "#ffe14d" }],
 };
+/** the drawings and helpers of this film, for the later parts */
+export const KIT = { C, cam, bg, node, iceberg, chunk, rail, cane, board, ship, water, lifeboat, boats20, o, lerp, ease, back, blink, FONT, K };
 export type { Face };

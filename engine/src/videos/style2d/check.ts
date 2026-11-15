@@ -3,6 +3,7 @@
 import { Draw, H, HOOK_BOX, MONA_FILM, paintBox, tagBox, W } from "./scenes";
 import { TITANIC1 } from "./titanic1";
 import { DANCE } from "./dance";
+import { TITANIC2 } from "./titanic2";
 import { solve } from "./fig";
 
 type Box = { x: number; y: number; w: number; h: number };
@@ -12,7 +13,7 @@ const inside = (a: Box, x0: number, y0: number, x1: number, y1: number) => a.x >
 const fmt = (b: Box) => `[x ${Math.round(b.x)}-${Math.round(b.x + b.w)}, y ${Math.round(b.y)}-${Math.round(b.y + b.h)}]`;
 const problems = new Map<string, { n: number; first: number; ex: string }>();
 const flag = (scene: string, f: number, msg: string, ex: string) => { const k = `${scene}: ${msg}`, p = problems.get(k); if (p) p.n++; else problems.set(k, { n: 1, first: f, ex }); };
-const film = process.argv[2] === "titanic1" ? TITANIC1 : process.argv[2] === "dance" ? DANCE : MONA_FILM, SCENES = film.scenes;
+const film = process.argv[2] === "titanic2" ? TITANIC2 : process.argv[2] === "titanic1" ? TITANIC1 : process.argv[2] === "dance" ? DANCE : MONA_FILM, SCENES = film.scenes;
 let frames = 0;
 for (const sc of SCENES) {
   const T = sc.to - sc.from;

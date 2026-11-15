@@ -35,3 +35,20 @@ miles in [C], "58 miles" in [S]) · boat No. 7 leaving with about 28 people at a
 ## For Parts 2 and 3 (confirmed, not yet used)
 Sank at about 2:20 a.m. on 15 April [S] [T] [NG]; about 1,500 died and about 700 survived (705-712 by source)
 [S] [T] [NA] [NG] [US]; Carpathia picked up the survivors [S] [C].
+
+## Part 2 (2026-11-15): facts used
+Built in a cloud session whose network could not open any source page (Wikipedia, titanicinquiry.org, National
+Geographic and the UK National Archives were all refused). So Part 2 (`voice/titanic-2.json`) speaks ONLY facts that
+were already confirmed above on 2026-11-14 with two source families; nothing new was added.
+- She struck an iceberg (11:40 p.m., 14 April 1912, shown as a tag). [S] [T] [NG]
+- She sank by the bow. [S] [NG]
+- The order was women and children first. [S] [L] [US]
+- The lifeboats had room for about 1,178 people. [L] [S] [T] [US] [NA]
+- About 700 people survived (705-712 by source): "only about 700 will be saved". [S] [T] [NA] [NG] [US]
+- A ship answered the distress call and arrived at about 4 a.m. (the Carpathia; not named in the film). [S] [C] [NG]
+- "About 1,500 of us are still on board": about 2,200 aboard minus about 700 in the boats; about 1,500 died. [S] [T] [NA] [NG] [US]
+Dramatised and said to be so in the film: Sir Digsworth staying behind, lifting a girl into a boat, the telescope,
+the sea reaching his shoes. Pictures without a spoken claim: four people in the first boat, three boats rowing, the
+bar that shows 700 of 1,178 seats filled.
+Left out because only one source family was ever opened: the first boat (No. 7) leaving with about 28 people at about
+12:45, the rockets, the band, the time the last boat left. Check these before Part 3 if they are wanted.

@@ -72,6 +72,24 @@ his say-so.
   - Captions: two or three words at a time, big, in a band below the characters, never on a body, face or sign.
   - The last second holds a hook or a question, with its caption.
 
+## The world look (Jesper 2026-11-18, from reference Shorts he showed)
+This is what the pictures should look like, with our own characters, props and stories. Copy the craft, never
+the designs, characters or scenes of another channel.
+- **Real 3D props with a toon finish.** Ships, wheels, barrels, pots, carts, ovens and buildings are modelled
+  objects with flat bright colours, two or three tones of shading and a black outline, not flat walls with a
+  texture. Simple shapes are fine; they must have thickness and cast shadows.
+- **Clear, saturated colours.** Each object keeps its own colour: red hull, blue sky, yellow brass, green
+  shutters. The colour mood of a scene tints the light, it never turns the whole picture one brown or orange hue.
+  Daylight scenes are bright.
+- **One strong light with crisp shadows.** Shadows of masts, ropes, awnings and people fall across floors and
+  walls and show the shape of the place.
+- **The camera is inside the scene.** Wide lens, close to objects: behind a wheel, past a foreground figure's
+  shoulder, low on the deck looking up, high looking down. Something big is near the lens in most shots.
+- **Characters use the world.** They hold, pour, steer, carry, are tied to, lean on and climb the props. A
+  character is seldom alone on an empty floor.
+- **Something worth seeing in the distance:** another ship, a storm, a mountain, a crowd.
+- **Glow, blur and particles are seasoning.** Use them in a few shots, lightly. Most shots are sharp and clear.
+
 ## Light and atmosphere (Jesper 2026-11-17, from Pompeii onward)
 The goal is that every video looks better than the one before. Borrow the lighting of cinematic edits, never their
 pictures: all art stays our own.

@@ -5,7 +5,7 @@
 // Shared set: every Short on the Roman street uses it.
 import * as THREE from "three";
 import { mesh, group, box, paint, sunRig, skyDome } from "./kit";
-import { C, amphora, jar, basket, sack, cart, column, table, fountain, house, cloud, awning, House, streetJar, treadingStall, dryingPole, barCounter, bench, cypress, temple, amphitheatreSite, painted, loaf, windowAt, sunShade, wallShelf, wallLamp } from "./props";
+import { C, amphora, jar, basket, sack, cart, column, table, fountain, house, cloud, awning, House, streetJar, treadingStall, dryingPole, barCounter, bench, cypress, temple, amphitheatreSite, painted, loaf, windowAt, sunShade, wallShelf, wallLamp, treadingTub } from "./props";
 
 export const WALK = 0.28;
 /** where things stand, for the films that play here */
@@ -13,6 +13,7 @@ export const ROME = {
   jar: [3.5, WALK, 3.5] as [number, number, number],          // the big jar at the corner, against the house wall
   box: [2.65, WALK, 3.8] as [number, number, number],         // where the collector's strongbox stands beside the jar (the films put it there)
   stall: [8.15, WALK + 0.1, -1.55] as [number, number, number], // the first treading stall inside the laundry (it opens toward -x)
+  tub: [6.3, WALK + 0.1, 0.1] as [number, number, number],     // the round treading tub in the middle of the laundry's yard
   shopFront: 4.1,                                             // x of the laundry's open front
 };
 const paving = () => paint("paving", 512, 512, (g, r) => {
@@ -38,12 +39,12 @@ const laundry = () => {
   const roof = group([mesh(box(1.5, 0.16, W + 0.7), C.terra)], [x0 + D - 0.5, WALK + H + 0.08, 0]); for (let z = -W / 2; z <= W / 2; z += 0.46) roof.add(mesh(box(1.54, 0.1, 0.12), "#b55a30", { at: [0, 0.1, z], line: 0.5 })); g.add(roof);
   // three treading stalls along the back wall, a rinsing basin, cloth on poles, baskets of washing
   for (const [i, z] of [-1.55, -0.2, 1.15].entries()) { const st = treadingStall(i === 1 ? "#d4c468" : "#cdb95a"); st.rotation.y = -Math.PI / 2; st.position.set(x0 + D - 0.75, WALK + 0.1, z); g.add(st); }
-  g.add(mesh(box(1.5, 0.6, 1.0), "#d8cdb4", { at: [x0 + 1.6, WALK + 0.4, -1.85] }), mesh(box(1.3, 0.04, 0.8), "#7cc0e0", { at: [x0 + 1.6, WALK + 0.69, -1.85], line: 0, shadow: false }));
+  g.add(mesh(box(1.0, 0.6, 1.5), "#d8cdb4", { at: [x0 + 4.0, WALK + 0.4, 1.55] }), mesh(box(0.8, 0.04, 1.3), "#7cc0e0", { at: [x0 + 4.0, WALK + 0.69, 1.55], line: 0, shadow: false }));
   { const p = dryingPole(3.2, 2.35, [[-1.05, 0.8, 1.25, "#fbf6ea"], [-0.1, 0.9, 1.5, "#f6e3b4"], [0.9, 0.75, 1.15, "#fbf6ea"]]); p.position.set(x0 + 2.3, WALK + 0.1, 2.0); g.add(p); }
-  { const b = basket(0.34, 0.3); b.position.set(x0 + 0.95, WALK + 0.1, -0.6); g.add(b, mesh(box(0.5, 0.16, 0.4), "#fbf6ea", { at: [x0 + 0.95, WALK + 0.46, -0.6], rot: [0, 0.3, 0.08] })); }
-  { const p = dryingPole(2.0, 2.2, [[-0.55, 0.6, 1.1, "#f6e3b4"], [0.2, 0.7, 1.35, "#fbf6ea"]]); p.position.set(x0 + 1.45, WALK + 0.1, -2.28); g.add(p); }
+  { const b = basket(0.34, 0.3); b.position.set(x0 + 0.75, WALK + 0.1, -1.5); g.add(b, mesh(box(0.5, 0.16, 0.4), "#fbf6ea", { at: [x0 + 0.75, WALK + 0.46, -1.5], rot: [0, 0.3, 0.08] })); }
   g.add(mesh(box(1.6, 0.06, 0.3), C.woodD, { at: [x0 + 1.0, WALK + 1.75, -2.3] })); for (const dx of [-0.5, 0, 0.5]) { const j = jar(0.34); j.position.set(x0 + 1.0 + dx, WALK + 1.78, -2.3); g.add(j); }
   { const sh = wallShelf(3.6, 5); sh.rotation.y = -Math.PI / 2; sh.position.set(x0 + D - 0.13, WALK + 2.05, -0.2); g.add(sh); for (const z of [-1.2, 0.5]) g.add(mesh(box(0.3, 0.14, 0.4), z < 0 ? "#fbf6ea" : "#e9a07c", { at: [x0 + D - 0.3, WALK + 2.15, z] })); }
+  { const t = treadingTub(); t.position.set(...ROME.tub); g.add(t); }
   // the name of the trade over the door, painted on a board
   { const t = painted(["FVLLONICA"], 2.6, 0.5, { ink: "#b3261e", bg: "#fbf3df", edge: "#b3261e" }); t.rotation.y = -Math.PI / 2; t.position.set(x0 - 0.2, WALK + H - 0.25, 0); g.add(t); }
   return g;

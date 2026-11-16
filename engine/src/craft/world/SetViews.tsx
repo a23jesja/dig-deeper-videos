@@ -7,6 +7,7 @@ import { ThreeCanvas } from "@remotion/three";
 import { useThree } from "@react-three/fiber";
 import { setOutline, aimSun } from "./kit";
 import { romeStreet } from "./rome";
+import { pirateShip } from "./ship";
 
 type View = { pos: [number, number, number]; look: [number, number, number]; fov: number; reach?: number };
 const SETS: Record<string, { make: () => THREE.Group; views: View[] }> = {
@@ -17,6 +18,14 @@ const SETS: Record<string, { make: () => THREE.Group; views: View[] }> = {
     { pos: [0.8, 1.0, -6.5], look: [-0.6, 2.2, 12], fov: 60 },        // back up the street toward the temple
     { pos: [-1.2, 3.0, 4.8], look: [3.2, 0.9, 3.8], fov: 50 },        // from above (25 degrees) onto the corner
     { pos: [1.0, 0.45, 1.5], look: [-3.2, 1.9, -1.2], fov: 62 },      // low, toward the portico
+  ] },
+  ship: { make: pirateShip, views: [
+    { pos: [8.6, 1.0, 2.2], look: [3.5, 0.9, 0.5], fov: 60 },          // from over the water at the plank
+    { pos: [0.6, 3.9, -4.2], look: [4.4, 0.2, 0.6], fov: 55 },          // from the shrouds down on the plank
+    { pos: [-1.6, 0.6, 3.6], look: [0.6, 2.4, -4], fov: 62 },           // low on deck toward the mast and the bow
+    { pos: [-0.5, 1.5, -5.5], look: [0.5, 1.4, 5], fov: 60 },           // from the bow aft toward the quarterdeck
+    { pos: [-1.2, 1.7, -1.0], look: [17, -1, -7], fov: 42 },            // over the starboard rail toward the island
+    { pos: [1.5, 1.7, 1.0], look: [-46, 4, -70], fov: 30 },             // over the port bow toward the merchant ship
   ] },
 };
 export const SET_VIEWS = 6;

@@ -25,7 +25,13 @@ export type Shot = {
   cast: (t: number, T: number) => Actor[];
   /** real things that move in this shot (in hands, falling, rolling): add them to `into` */
   things?: (into: THREE.Group, cast: Record<string, Staged>, t: number, T: number, cam: Cam) => void;
+  /** the sounds of what happens in this shot, and what lies under it: times in seconds into the shot */
+  sounds?: Sound[]; beds?: Bed[];
 };
+/** a sound on the picture: what kind (audio/craft_sfx.py makes it), when, how loud (1 = its normal level), where from left (-1) to right (1) */
+export type Sound = { t: number; k: string; g?: number; p?: number; dur?: number; big?: number; run?: boolean; surface?: string };
+/** a sound that lies under a stretch of the film (the sea, wind, flies) */
+export type Bed = { k: string; a: number; b: number; g?: number };
 export type Caption = { a: number; b: number; text: string };
 export type Film = {
   id: string; fps: number; seconds: number; sky: string;
@@ -39,6 +45,8 @@ export type Film = {
   sign?: { text: string; a: number; b: number };
   /** impacts that shake the camera */
   hits?: { t: number; amp: number; dur?: number }[];
+  /** what lies under the whole film (film seconds), and the name of its music in audio/film_music.py */
+  beds?: Bed[]; music?: string;
   audio?: string;
 };
 

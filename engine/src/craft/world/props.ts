@@ -318,12 +318,16 @@ export const flagCloth = (kind: "black" | "white", w = 1.5, h = 1.0) => mesh(box
   g.strokeStyle = "#f6f1e4"; g.lineWidth = 20; g.lineCap = "round"; for (const s of [-1, 1]) { g.beginPath(); g.moveTo(192 - 96, 150 - s * 62); g.lineTo(192 + 96, 150 + s * 62); g.stroke(); }
   g.fillStyle = "#f6f1e4"; g.beginPath(); g.arc(192, 104, 58, 0, 7); g.fill(); g.fillRect(160, 136, 64, 40); g.fillStyle = "#17141a"; for (const s of [-1, 1]) { g.beginPath(); g.arc(192 + s * 24, 100, 15, 0, 7); g.fill(); } g.fillRect(186, 124, 12, 18); for (const x of [172, 188, 204]) g.fillRect(x, 156, 4, 20);
 }) });
-/** a book with a picture and a name on its cover (the cover faces +z); open = two pages side by side */
-export const storyBook = (lines: string[], w = 0.36, h = 0.46) => {
-  const g = group([mesh(box(w, h, 0.07), "#a8322a", { shadow: false }), mesh(box(w - 0.03, h - 0.03, 0.06), "#fbf6ea", { at: [0.012, 0, 0], line: 0, shadow: false })]);
-  // the picture: sea, a ship's side, a plank and a small figure on it
-  g.add(mesh(box(w * 0.82, h * 0.44, 0.012), "#3b8fd6", { at: [0, h * 0.14, 0.04], line: 0.5, shadow: false }), mesh(box(w * 0.3, h * 0.36, 0.014), "#5a3a22", { at: [-w * 0.26, h * 0.18, 0.042], line: 0, shadow: false }), mesh(box(w * 0.44, 0.016, 0.014), "#e3c68c", { at: [0.05, h * 0.2, 0.044], line: 0, shadow: false }), mesh(box(0.03, 0.075, 0.014), "#17141a", { at: [w * 0.3, h * 0.29, 0.044], line: 0, shadow: false }));
-  const t = painted(lines, w * 0.86, h * 0.24, { ink: "#f6c52e", bg: "#a8322a", line: 0 }); t.position.set(0, -h * 0.3, 0.036); g.add(t); g.traverse((q) => { q.castShadow = false; q.receiveShadow = false; }); return g;
+/** a story book with a picture and its name on the cover (the cover faces +z). pic: an island with a cross on it, or a ship's side
+ *  with a plank and a pirate in a red coat */
+export const storyBook = (lines: string[], pic: "island" | "plank" = "plank", w = 0.36, h = 0.46, col = "#a8322a") => {
+  const g = group([mesh(box(w, h, 0.07), col, { shadow: false }), mesh(box(w - 0.03, h - 0.03, 0.06), "#fbf6ea", { at: [0.012, 0, 0], line: 0, shadow: false })]), f = { line: 0, shadow: false } as const, z = 0.042;
+  g.add(mesh(box(w * 0.82, h * 0.44, 0.012), pic === "island" ? "#bfe3fb" : "#9fd6ff", { at: [0, h * 0.14, 0.04], line: 0.5, shadow: false }), mesh(box(w * 0.82, h * 0.16, 0.013), "#3b8fd6", { at: [0, h * 0.0, 0.041], ...f }));
+  if (pic === "island") g.add(mesh(ball(1, 12), "#f1dc9a", { at: [0, h * 0.06, z], scale: [w * 0.26, h * 0.07, 0.006], ...f }), mesh(box(0.014, h * 0.2, 0.01), "#9a6a3a", { at: [w * 0.06, h * 0.2, z], rot: [0, 0, -0.2], ...f }), mesh(ball(1, 8), "#3f9a5c", { at: [w * 0.1, h * 0.3, z], scale: [w * 0.16, h * 0.05, 0.006], ...f }),
+    mesh(box(w * 0.14, 0.014, 0.01), "#b3261e", { at: [-w * 0.1, h * 0.09, z + 0.004], rot: [0, 0, 0.78], ...f }), mesh(box(w * 0.14, 0.014, 0.01), "#b3261e", { at: [-w * 0.1, h * 0.09, z + 0.004], rot: [0, 0, -0.78], ...f }));
+  else g.add(mesh(box(w * 0.3, h * 0.3, 0.014), "#5a3a22", { at: [-w * 0.26, h * 0.15, z], ...f }), mesh(box(w * 0.44, 0.016, 0.014), "#e3c68c", { at: [0.05, h * 0.2, z + 0.002], ...f }),
+    mesh(box(0.034, 0.07, 0.014), "#b3261e", { at: [-w * 0.2, h * 0.34, z + 0.002], ...f }), mesh(box(0.05, 0.016, 0.014), "#17141a", { at: [-w * 0.2, h * 0.43, z + 0.002], ...f }), mesh(ball(0.016, 6), "#e3b088", { at: [-w * 0.2, h * 0.4, z + 0.002], ...f }), mesh(box(0.024, 0.06, 0.014), "#b0803c", { at: [w * 0.28, h * 0.27, z + 0.002], ...f }));
+  const t = painted(lines, w * 0.86, h * 0.24, { ink: "#f6c52e", bg: col, line: 0 }); t.position.set(0, -h * 0.3, 0.036); g.add(t); g.traverse((q) => { q.castShadow = false; q.receiveShadow = false; }); return g;
 };
 /** a sheet of written rules: a name at the top, lines of writing, a figure at the bottom */
 export const articlesSheet = (w = 0.44, h = 0.58) => mesh(box(w, h, 0.012), "#ffffff", { line: 0.6, shadow: false, receive: false, map: paint("articles", 384, 506, (g) => {

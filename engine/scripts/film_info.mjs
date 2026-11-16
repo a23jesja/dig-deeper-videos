@@ -1,6 +1,6 @@
 // What a Short of the craft kit consists of, without rendering it: its shots with their frames, the frame that stands for each shot
 // in the sketch, and the caption chunks.
-//   usage: node scripts/film_info.mjs <film> [stills|shots|json]
+//   usage: node scripts/film_info.mjs <film> [stills|shots|json|check|audio]
 //     stills = the sketch frames as a comma list (for scripts/stills.mjs)     shots = shots.json for scripts/short_qa.py
 import fs from "node:fs"; import path from "node:path"; import os from "node:os"; import { pathToFileURL } from "node:url"; import { build } from "esbuild";
 const name = process.argv[2], what = process.argv[3] ?? "table";
@@ -27,6 +27,14 @@ else if (what === "check") {
   if (film.sign && film.sign.a < 5) bad.push("the sign comes before second five");
   if (bad.length) { console.error(`FILM CHECK FAILED for ${name}:`); for (const b of bad) console.error("  " + b); process.exit(1); }
   console.log(`FILM CHECK OK for ${name}: ${film.shots.length} shots, ${film.seconds.toFixed(1)} s, no figure seen from more than 35 degrees above`);
+}
+else if (what === "audio") {
+  // everything the sound needs (audio/film_audio.py): each shot's sounds on their frames, the beds, the voice, the music, the impacts
+  const cues = [], beds = (film.beds ?? []).map((b) => ({ k: b.k, f0: f(b.a), f1: f(b.b), g: b.g ?? 1 }));
+  for (const s of film.shots) { for (const c of s.sounds ?? []) { if (c.t < -0.001 || s.a + c.t > s.b + 0.6) console.error(`warning: ${s.id}: sound ${c.k} at ${c.t.toFixed(2)} s lies outside its shot`); const { t, ...rest } = c; cues.push({ f: f(s.a + c.t), shot: s.id, ...rest }); }
+    for (const b of s.beds ?? []) beds.push({ k: b.k, f0: f(s.a + b.a), f1: f(s.a + b.b), g: b.g ?? 1 }); }
+  cues.sort((a, b) => a.f - b.f);
+  console.log(JSON.stringify({ film: name, fps: film.fps, frames: f(film.seconds), voice: { file: `voice/${name}/voice.wav`, frame: 0 }, lines: `voice/${name}/lines.json`, music: film.music ?? null, hits: (film.hits ?? []).map((h) => ({ f: f(h.t), amp: h.amp })), shots: rows.map((r) => ({ id: r.id, a: r.a, b: r.b })), cues, beds }, null, 1));
 }
 else if (what === "json") console.log(JSON.stringify({ comp, fps: film.fps, frames: f(film.seconds), seconds: film.seconds, shots: rows }));
 else { console.log(`${name} (${comp}): ${film.seconds.toFixed(2)} s, ${f(film.seconds)} frames, ${rows.length} shots`); for (const r of rows) console.log(`  ${r.id.padEnd(8)} ${String(r.a).padStart(4)}-${String(r.b).padStart(4)}  ${r.seconds.toFixed(2)} s  still ${r.still}`); }

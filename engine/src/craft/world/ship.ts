@@ -14,6 +14,7 @@ export const SHIP = {
   mast: [0, 0, -1.6] as [number, number, number], mastTop: 13.4,
   quarter: { z: 4.9, y: 1.1 },                                  // where the quarterdeck begins and how high it is
   island: [17, SEA, -7] as [number, number, number],           // the middle of the little island off the starboard bow
+  palm: [17.9, SEA + 0.55, -8.0] as [number, number, number],     // the foot of the island's palm
   merchant: [-46, SEA, -70] as [number, number, number],       // the merchant ship far off the port bow
   staff: { at: [-2.4, 1.2, 8.1] as [number, number, number], h: 3.4 },   // the flagstaff on the port quarter: its foot and its height
   aft: 1.2,                                                    // the height of the quarterdeck's planks
@@ -28,8 +29,16 @@ const waves = () => paint("seawaves", 512, 512, (g, r) => {
 /** a ship's gun on its carriage, pointing toward +x */
 export const cannon = () => group([mesh(box(0.9, 0.22, 0.6), "#7a4a26", { at: [0, 0.2, 0] }), mesh(cyl(0.13, 0.17, 1.3, 14), "#2b2a33", { at: [0.25, 0.44, 0], rot: [0, 0, -Math.PI / 2] }), mesh(cyl(0.16, 0.16, 0.08, 14), "#2b2a33", { at: [-0.4, 0.44, 0], rot: [0, 0, Math.PI / 2] }),
   ...[[-0.3, 0.3], [0.3, 0.3], [-0.3, -0.3], [0.3, -0.3]].map(([x, z]) => mesh(cyl(0.13, 0.13, 0.08, 12), "#5a3a22", { at: [x, 0.13, z], rot: [Math.PI / 2, 0, 0] }))]);
-/** a palm tree */
-export const palm = (h = 4) => { const g = group([rod([0, 0, 0], [0.5, h, 0.1], 0.13, "#9a6a3a")]); for (let i = 0; i < 7; i++) { const a = (i / 7) * Math.PI * 2; g.add(mesh(box(1.9, 0.06, 0.5), i % 2 ? "#3f9a5c" : "#2f7a46", { at: [0.5 + Math.cos(a) * 0.85, h - 0.18, 0.1 + Math.sin(a) * 0.85], rot: [0, -a, -0.38], line: 0.7 })); } return g; };
+/** a palm tree: a leaning trunk with rings, a crown of fronds that droop, two coconuts */
+export const palm = (h = 4) => { const k = h / 4, g = group([rod([0, 0, 0], [0.5 * k, h, 0.1], 0.13 * Math.sqrt(k), "#9a6a3a")]);
+  for (let i = 1; i < 6; i++) g.add(mesh(torus(0.135 * Math.sqrt(k), 0.02, 10), "#7a5230", { at: [0.5 * k * (i / 6), h * (i / 6), 0.1 * (i / 6)], rot: [Math.PI / 2, 0, 0], line: 0, shadow: false }));
+  for (let i = 0; i < 7; i++) { const a = (i / 7) * Math.PI * 2; g.add(mesh(box(1.9 * k, 0.06, 0.5 * k), i % 2 ? "#3f9a5c" : "#2f7a46", { at: [0.5 * k + Math.cos(a) * 0.85 * k, h - 0.18 * k, 0.1 + Math.sin(a) * 0.85 * k], rot: [0, -a, -0.38], line: 0.7 })); }
+  for (const s of [-1, 1]) g.add(mesh(ball(0.11 * Math.sqrt(k), 10), "#6a4424", { at: [0.5 * k + s * 0.12, h - 0.3 * k, 0.1 + 0.1] }));
+  return g; };
+/** the pirates' own sloop seen from far off, sailing away: her hull, one mast with mainsail and jib, a black flag. She heads toward -z */
+export const farSloop = () => { const g = group([mesh(box(4.6, 2.2, 15), "#4a2f22", { at: [0, 1.1, 0], shadow: false }), mesh(box(4.7, 0.45, 15.05), C.ochre, { at: [0, 1.75, 0], line: 0.6, shadow: false }), rod([0, 2.2, -1.5], [0, 15, -1.5], 0.2, "#8a6a3e", { shadow: false }),
+    mesh(slab("farmain", [[0.3, 3.2], [6.3, 3.5], [4.8, 12.6], [0.3, 10.4]], 0.08), "#f6efdc", { at: [0, 0, -1.5], rot: [0, -Math.PI / 2, 0], shadow: false }), mesh(slab("farjib", [[-0.4, 3.2], [-7.4, 2.0], [-0.4, 11.6]], 0.08), "#fbf6ea", { at: [0, 0, -1.5], rot: [0, -Math.PI / 2, 0], shadow: false }),
+    mesh(box(0.06, 1.3, 2.0), "#17141a", { at: [0, 15.3, -0.4], shadow: false })]); return g; };
 /** a ship far away: a hull and three masts of square sails. Her flag is added by the film */
 export const farShip = () => { const g = group([mesh(box(4, 2.6, 16), "#5a3a22", { at: [0, 1.3, 0], shadow: false }), mesh(box(4.1, 0.5, 16.1), C.ochre, { at: [0, 2.1, 0], line: 0.6, shadow: false })]);
   for (const [z, h] of [[-5, 13], [0, 16], [5, 12]]) { g.add(rod([0, 2.6, z], [0, 2.6 + h, z], 0.16, "#7a5a36", { shadow: false })); for (const [y, w] of [[0.3, 6.4], [0.62, 5]]) g.add(mesh(box(w, h * 0.27, 0.12), "#f6efdc", { at: [0, 2.6 + h * y, z + 0.2], shadow: false })); }
@@ -82,7 +91,13 @@ export const pirateShip = () => {
   root.add(rod([mx, 0, mz], [mx, top, mz], 0.22, "#8a6a3e"), mesh(cyl(0.34, 0.34, 0.12, 14), "#7a5a36", { at: [mx, 0.06, mz] }), mesh(cyl(0.6, 0.5, 0.14, 14), "#7a5a36", { at: [mx, 9.4, mz] }));
   root.add(rod([mx, 2.7, mz + 0.2], [mx, 3.1, mz + 6.6], 0.13, "#7a5a36"), rod([mx, 9.0, mz + 0.2], [mx, 11.6, mz + 5.0], 0.11, "#7a5a36"));
   { const sail = mesh(slab("mainsail", [[0.35, 2.9], [6.5, 3.25], [4.95, 11.4], [0.35, 9.0]], 0.06), "#f6efdc", { at: [mx, 0, mz], rot: [0, -Math.PI / 2, 0] }); root.add(sail);
-    for (const u of [0.25, 0.5, 0.75]) root.add(rod([mx, 2.95 + 6.1 * u, mz + 0.4], [mx, 3.2 + 8.2 * u, mz + 6.5 - 1.55 * u], 0.02, "#cdbf9c", { line: 0, shadow: false }));
+    // the sail is cloths sewn side by side, with two bands of reef points and a patch or two (drawn on both of its faces)
+    const foot = (x: number) => 2.9 + (x - 0.35) * (0.35 / 6.15), head = (x: number) => (x < 4.95 ? 9.0 + (x - 0.35) * (2.4 / 4.6) : 3.25 + (6.5 - x) * (8.15 / 1.55)), leech = (y: number) => 6.5 - (y - 3.25) * (1.55 / 8.15);
+    for (const side of [-1, 1]) { const X = mx + side * 0.045;
+      for (let x = 1.05; x < 6.4; x += 0.72) root.add(rod([X, foot(x) + 0.05, mz + x], [X, head(x) - 0.05, mz + x], 0.018, "#cbb98c", { line: 0, shadow: false }));
+      for (const up of [1.5, 3.0]) { const y = 3.0 + up, x1 = leech(y) - 0.1; root.add(mesh(box(0.02, 0.16, x1 - 0.45), "#e4d6b0", { at: [X, y, mz + (x1 + 0.45) / 2], line: 0, shadow: false })); for (let x = 0.8; x < x1; x += 0.48) root.add(rod([X + side * 0.012, y, mz + x], [X + side * 0.012, y - 0.3, mz + x + 0.03], 0.016, "#8a7a56", { line: 0, shadow: false })); }
+      root.add(mesh(box(0.02, 0.62, 0.74), "#dccb9c", { at: [X, 7.6, mz + 2.2], rot: [0.1, 0, 0], line: 0.5, shadow: false }), mesh(box(0.02, 0.5, 0.5), "#d3c08e", { at: [X, 5.3, mz + 4.5], rot: [-0.2, 0, 0], line: 0.5, shadow: false }));
+      for (const x of [-1.5, -2.7, -3.9, -5.1, -6.3]) root.add(rod([X, 3.0 + (x + 0.4) * (1.5 / 7.2) + 0.05, mz + x], [X, 1.5 + (x + 7.6) * (9.1 / 7.2) - 0.08, mz + x], 0.016, "#d9cba6", { line: 0, shadow: false })); }
     root.add(mesh(slab("jib", [[-0.4, 3.0], [-7.6, 1.5], [-0.4, 10.6]], 0.06), "#fbf6ea", { at: [mx, 0, mz], rot: [0, -Math.PI / 2, 0] })); }
   root.add(rod([mx, 0.6, -10.6], [mx, 2.3, -13.8], 0.14, "#8a6a3e"), rod([mx, 11.2, mz], [mx, 2.2, -13.6], 0.025, "#3a3028", { line: 0.4 }));
   for (const s of [-1, 1]) { const a: [number, number, number][] = [[s * W, 0.95, mz - 0.9], [s * W, 0.95, mz], [s * W, 0.95, mz + 0.9]]; for (const p of a) root.add(rod(p, [mx, 9.3, mz], 0.028, "#3a3028", { line: 0.4 }));
@@ -107,7 +122,10 @@ export const pirateShip = () => {
     for (const [x, y, z] of [[0, 0, 0], [0.2, 0, 0], [0.1, 0, 0.17], [0.1, 0.16, 0.06]]) root.add(mesh(ball(0.1, 12), "#2b2a33", { at: [-2.15 + x, 0.1 + y, -5.0 + z] }));
     root.add(mesh(lathe("bucket", [[0.14, 0], [0.18, 0.3], [0.16, 0.3], [0.13, 0.03]], 12), "#b0703c", { at: [2.2, 0, 3.2] })); }
   // far off: the island with its palm, the merchant ship, clouds
-  { const [ix, iy, iz] = SHIP.island; root.add(mesh(ball(1, 20), "#f1dc9a", { at: [ix, iy - 0.3, iz], scale: [5.2, 0.95, 3.8], shadow: false, line: 0.9 })); const p = palm(4.2); p.position.set(ix + 1.4, iy + 0.5, iz - 0.6); root.add(p); }
+  { const [ix, iy, iz] = SHIP.island; root.add(mesh(ball(1, 20), "#f1dc9a", { at: [ix, iy - 0.3, iz], scale: [5.2, 0.95, 3.8], shadow: false, line: 0.9 })); const p = palm(2.5); p.position.set(...SHIP.palm); root.add(p);
+    // on the sand: a starfish, shells, a piece of driftwood
+    for (const [x, z, c, r] of [[2.3, 1.5, "#fbf3df", 0.07], [-0.7, 2.6, "#f4c9a0", 0.06], [2.9, 0.4, "#fbf3df", 0.08]] as [number, number, string, number][]) root.add(mesh(ball(r, 8), c, { at: [ix + x, iy - 0.3 + 0.95 * Math.sqrt(Math.max(0, 1 - (x / 5.2) ** 2 - (z / 3.8) ** 2)) , iz + z], scale: [1, 0.35, 1], line: 0.6, shadow: false }));
+    root.add(rod([ix - 2.6, iy + 0.42, iz + 1.2], [ix - 1.5, iy + 0.5, iz + 0.9], 0.07, "#b89a6a")); }
   { const s = farShip(); s.position.set(...SHIP.merchant); s.rotation.y = 0.5; root.add(s); }
   for (const [x, y, z, s] of [[-170, 110, -420, 34], [150, 150, -500, 44], [-40, 190, -540, 30], [260, 100, -400, 26], [-220, 120, 300, 36], [200, 140, 340, 40], [420, 130, -60, 38]] as number[][]) { const c = cloud(s); c.position.set(x, y, z); if (Math.abs(x) > 300) c.rotation.y = Math.PI / 2; root.add(c); }
   void group; void painted;

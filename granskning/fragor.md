@@ -85,8 +85,15 @@ Valda bort trots styrka: pestläkarens näbb (nr 15) är lika stark på punkt 1 
 - **Svar:** Nästan aldrig: pirater kastade folk överbord eller satte i land dem på en öde ö, och plankan kommer från sagoböckerna.
 - **MYT.** Royal Museums Greenwich, "What do pirates do?" (https://www.rmg.co.uk/stories/topics/what-do-pirates-do): "Pirates never made their victims walk the plank. They just threw them overboard or abandoned them on desert islands." National Geographic, Jamie L. H. Goodall (https://www.nationalgeographic.com/history/history-magazine/article/pirate-portrayals-are-more-fantasy-than-fact): "Little to no historical evidence exists to support that practice."
 - **Säg inte:** "det hände aldrig" (enstaka sena fall uppges); var bilden kommer ifrån som säkert faktum (källorna säger Peter Pan respektive romaner i allmänhet), så "according to".
-- **Första sekunden:** Sir Digsworth längst ut på plankan, sabelspets i ryggen, hajfena i vattnet.
+- **Första sekunden:** Sir Digsworth längst ut på plankan, sabelspets i ryggen, hajen under honom (sagans bild; hajen finns bara där).
 - **Ton:** skrämmande, med rolig vändning.
+- **Vad de gjorde i stället (det filmen visar), med källor:**
+  - *Skrivna regler.* Charles Johnson, A General History of the Pyrates (1724), Project Gutenberg nr 40580: Bartholomew Roberts och John Phillips artiklar, "the Substance of the Articles, as taken from the Pyrates own Informations". Royal Museums Greenwich (samma sida som ovan): "The pirate Bartholomew Roberts for example had 11 articles... Pirate captains also listed the punishments for breaking the rules, including 'marooning'."
+  - *Ersättning för en förlorad lem.* Johnson 1724, Phillips artikel 8: "If any Man shall lose a Joint in time of an Engagement, shall have 400 Pieces of Eight; if a Limb, 800." Roberts artikel IX: "he was to have 800 Dollars, out of the publick Stock". Greenwich: "he is to have 800 pieces of eight, with smaller amounts for lesser injuries" (med "supposedly").
+  - *Fuskaren sätts i land på en öde ö med ett gevär och en flaska vatten.* Johnson 1724, Roberts artikel II: "if they defrauded the Company to the Value of a Dollar ... MAROONING was their Punishment. This was a Barbarous Custom of putting the Offender on Shore, on some desolate or uninhabited Cape or Island, with a Gun, a few Shot, a Bottle of Water, and a Bottle of Powder". Phillips artikel 2: "one Bottle of Powder, one Bottle of Water, one small Arm, and Shot". Greenwich: marooning var ett straff "to maintain discipline among their crew".
+  - *Över relingen.* Greenwich: "They just threw them overboard"; Greenwich, "Why do pirates say 'arr'?" (https://rmg.co.uk/stories/topics/why-do-pirates-say-arr): "It would have been easier to simply push someone overboard if they needed getting rid of."
+  - *Varifrån plankan kommer.* National Geographic (Goodall): "largely pulled from fiction, including Treasure Island"; Greenwich: "its key role in J.M. Barrie's Peter Pan". Treasure Island, Project Gutenberg nr 120, kap. I: "Dreadful stories they were--about hanging, and walking the plank"; Peter and Wendy, Project Gutenberg nr 16, kap. XIV: "six of you walk the plank to-night".
+  - *Säg inte heller:* att strandsättning drabbade fångar (det var besättningens eget straff); att alla besättningar hade samma belopp (Lowthers artiklar har 150 pund).
 
 ### 10. Why did sailors pour oil on a stormy sea?
 - **Svar:** En tunn hinna olja hindrar vinden från att resa nya småvågor, och Benjamin Franklin provade det med en tesked olja på en damm.
@@ -122,6 +129,20 @@ Valda bort trots styrka: pestläkarens näbb (nr 15) är lika stark på punkt 1 
 - **Säg inte:** vakternas klockslag.
 - **Första sekunden:** en skeppspojke vänder ett timglas och slår i klockan precis bredvid Sir Digsworths öra.
 - **Ton:** smart.
+
+### 21. Why did pirates fly a black flag?  (tillagd 17 november, ur arbetet med fråga 9)
+- **Svar:** För att skrämma en besättning till att ge upp utan strid, så att piraterna fick bytet utan att riskera sina egna.
+- **SANT.** Royal Museums Greenwich, "What do pirates do?" (https://www.rmg.co.uk/stories/topics/what-do-pirates-do): "The flags were designed to frighten victims into surrendering without a fight, allowing a pirate captain to gain treasure without risking crew in combat." Charles Johnson, A General History of the Pyrates (1724), Project Gutenberg nr 40580: "upon seeing the black Flag hoisted, struck his Sail and came to, under the Stern of Teach"; "they hoisted the black Flag, and fired three Guns each, at the Pearl; she struck".
+- **Säg inte:** att alla pirater förde dödskallen (National Geographic: "most pirates did not fly the famous Jolly Roger"); "violence was bad for business" som citat (det är min omskrivning).
+- **Första sekunden:** en handelsbesättning med händerna i luften medan en svart flagga stiger på skeppet bredvid; Sir Digsworth kikar fram bakom masten.
+- **Ton:** skrämmande.
+
+### 22. Did pirates really get paid for a lost arm?  (tillagd 17 november, ur arbetet med fråga 9)
+- **Svar:** Ja: piraternas egna regler gav 800 pieces of eight för en förlorad lem, ur den gemensamma kassan.
+- **SANT.** Johnson 1724 (Project Gutenberg nr 40580), Phillips artikel 8: "If any Man shall lose a Joint in time of an Engagement, shall have 400 Pieces of Eight; if a Limb, 800." Roberts artikel IX: "800 Dollars, out of the publick Stock, and for lesser Hurts, proportionably." Exquemelin, The Buccaneers of America (Project Gutenberg nr 26690): "for the loss of a right arm, six hundred pieces of eight, or six slaves". Royal Museums Greenwich återger regeln med "supposedly".
+- **Säg inte:** ett belopp som om det gällde alla (det skiljer mellan besättningar); Exquemelins "or six slaves" får inte strykas tyst om hans lista används.
+- **Första sekunden:** en pirat med krok får en tung säck mynt i famnen medan Sir Digsworth räknar på fingrarna.
+- **Ton:** rolig, lite hemsk.
 
 ## Medeltida borg och stad
 

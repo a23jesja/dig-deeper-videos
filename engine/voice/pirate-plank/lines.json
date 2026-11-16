@@ -12,39 +12,33 @@
   "text": "A plank, a sword, a shark. Just like the stories!"
  },
  {
-  "id": "loot",
-  "a": 6.48,
-  "b": 8.719,
-  "text": "Pirates wanted loot, not a fight."
- },
- {
-  "id": "flag",
-  "a": 8.939,
-  "b": 12.839,
-  "text": "So their black flag was meant to scare a crew into giving up."
- },
- {
   "id": "rules",
-  "a": 13.089,
-  "b": 18.571,
-  "text": "And they had rules. Lose a limb in battle, and the crew paid you eight hundred pieces of eight."
+  "a": 6.48,
+  "b": 9.343,
+  "text": "Not quite. Real pirates had written rules."
+ },
+ {
+  "id": "limb",
+  "a": 9.593,
+  "b": 14.036,
+  "text": "Lose a limb in battle, and the crew paid you eight hundred pieces of eight."
  },
  {
   "id": "maroon",
-  "a": 18.821,
-  "b": 21.897,
-  "text": "Cheat the crew, and you were left on an empty island."
+  "a": 14.286,
+  "b": 19.479,
+  "text": "Cheat the crew, and you were left on an empty island, with a gun and a bottle of water."
  },
  {
   "id": "answer",
-  "a": 22.197,
-  "b": 27.323,
+  "a": 19.779,
+  "b": 24.905,
   "text": "But the plank? Almost never recorded. Unwanted men simply went over the side."
  },
  {
   "id": "origin",
-  "a": 27.623,
-  "b": 31.741,
+  "a": 25.205,
+  "b": 29.323,
   "text": "The plank comes from stories, like Treasure Island and Peter Pan."
  }
 ]

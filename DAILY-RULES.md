@@ -72,6 +72,22 @@ his say-so.
   - Captions: two or three words at a time, big, in a band below the characters, never on a body, face or sign.
   - The last second holds a hook or a question, with its caption.
 
+## Light and atmosphere (Jesper 2026-11-17, from Pompeii onward)
+The goal is that every video looks better than the one before. Borrow the lighting of cinematic edits, never their
+pictures: all art stays our own.
+- **Backlight:** in calm or emotional moments the sun, fire or a lamp sits behind the character, with a soft glow
+  around the outline and a long shadow toward the camera.
+- **Air:** something always drifts in it: sparks, ash, dust, snow, mist or spray. Near particles big and blurred,
+  far ones small and sharp.
+- **Depth:** three layers in every shot, a blurred foreground (grass, railing, a shoulder), the sharp subject and a
+  soft background. Focus pulls from one to another when the story shifts.
+- **Slow moves:** in the two or three quiet moments of a video the camera glides slowly in or sideways for two to
+  three seconds, so the layers slide against each other. Action shots stay fast.
+- **One colour mood per scene:** warm gold, cold blue, fire red. Change it when the story turns.
+- **Limits:** faces and captions stay readable, nothing blows out to white, and the glow never hides the action.
+- **One step better each video:** before building, name one thing in the look that will be better than last time,
+  and say in the delivery note what it was.
+
 ## The first second of every Short (hard rule)
 - Frame one shows the most striking moment of the story: one big subject filling the picture, already moving.
 - The hook is on screen as text while the voice says it. No intro, no year, no establishing shot first.

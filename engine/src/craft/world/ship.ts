@@ -3,7 +3,7 @@
 // quarterdeck rises with the wheel and the cabin door. Far off lie a small island with a palm and a merchant ship under sail.
 // Shared set: every Short on the sailing ship uses it.
 import * as THREE from "three";
-import { mesh, group, box, cyl, ball, lathe, slab, rod, paint, sunRig, skyDome } from "./kit";
+import { mesh, group, box, cyl, ball, lathe, slab, rod, paint, torus, sunRig, skyDome } from "./kit";
 import { C, barrel, crate, ropeCoil, wheel, cloud, doorway, painted } from "./props";
 
 export const SEA = -2.3;
@@ -15,6 +15,8 @@ export const SHIP = {
   quarter: { z: 4.9, y: 1.1 },                                  // where the quarterdeck begins and how high it is
   island: [17, SEA, -7] as [number, number, number],           // the middle of the little island off the starboard bow
   merchant: [-46, SEA, -70] as [number, number, number],       // the merchant ship far off the port bow
+  staff: { at: [-2.4, 1.2, 8.1] as [number, number, number], h: 3.4 },   // the flagstaff on the port quarter: its foot and its height
+  aft: 1.2,                                                    // the height of the quarterdeck's planks
 };
 const planks = (key: string, a: string, b: string, line: string) => paint(key, 256, 256, (g, r) => {
   for (let i = 0; i < 8; i++) { g.fillStyle = i % 3 ? a : b; g.fillRect(i * 32, 0, 32, 256); g.fillStyle = line; g.fillRect(i * 32, 0, 3, 256); const y = Math.floor(r() * 220); g.fillRect(i * 32, y, 32, 3); }
@@ -32,6 +34,29 @@ export const palm = (h = 4) => { const g = group([rod([0, 0, 0], [0.5, h, 0.1], 
 export const farShip = () => { const g = group([mesh(box(4, 2.6, 16), "#5a3a22", { at: [0, 1.3, 0], shadow: false }), mesh(box(4.1, 0.5, 16.1), C.ochre, { at: [0, 2.1, 0], line: 0.6, shadow: false })]);
   for (const [z, h] of [[-5, 13], [0, 16], [5, 12]]) { g.add(rod([0, 2.6, z], [0, 2.6 + h, z], 0.16, "#7a5a36", { shadow: false })); for (const [y, w] of [[0.3, 6.4], [0.62, 5]]) g.add(mesh(box(w, h * 0.27, 0.12), "#f6efdc", { at: [0, 2.6 + h * y, z + 0.2], shadow: false })); }
   return g; };
+
+/** a stretch of a merchant ship's side, as seen from another ship's deck: her planking with a painted strake and two gun ports, the
+ *  bulwark and its rail, the deck behind it, a mast with the foot of a square sail, shrouds, casks. She faces +x; her crew stand at
+ *  x = -0.75 on the deck, which lies at y = MERCHANT_DECK */
+export const MERCHANT_DECK = 0.35;
+export const merchantSide = (len = 11) => {
+  const g = new THREE.Group(), d = MERCHANT_DECK;
+  g.add(mesh(box(0.4, d + 0.72 - SEA, len), "#6a4630", { at: [-0.2, (d + 0.72 + SEA) / 2, 0] }), mesh(box(0.46, 0.4, len + 0.02), "#3f77b4", { at: [-0.2, d - 0.35, 0], line: 0.6 }), mesh(box(0.46, 0.14, len + 0.02), "#f1e4c4", { at: [-0.2, d - 0.72, 0], line: 0 }));
+  g.add(mesh(box(0.56, 0.1, len + 0.06), "#e8cf8a", { at: [-0.2, d + 0.76, 0], line: 0.7 }));
+  // along the bulwark: a painted band, rope coils hung on pins, the heads of the timbers
+  g.add(mesh(box(0.44, 0.13, len + 0.02), "#f1e4c4", { at: [-0.2, d + 0.42, 0], line: 0.5 }), mesh(box(0.44, 0.07, len + 0.02), "#3f77b4", { at: [-0.2, d + 0.25, 0], line: 0 }));
+  for (const z of [-3.4, -2.0, -0.42, 0.42, 2.0, 3.4]) g.add(mesh(torus(0.13, 0.035, 14), "#dcc38a", { at: [0.03, d + 0.5, z], rot: [0, Math.PI / 2, 0], scale: [1, 1.5, 1], line: 0.6, shadow: false }), mesh(cyl(0.025, 0.025, 0.2, 6), "#7a5a36", { at: [0.03, d + 0.76, z], line: 0.5, shadow: false }));
+  for (const z of [-3.2, -1.1, 1.1, 3.2]) g.add(mesh(box(0.08, 0.5, 0.6), "#3a2a22", { at: [0.02, d - 1.25, z], line: 0.6, shadow: false }));
+  g.add(mesh(box(7, 0.2, len), "#d8b780", { at: [-3.7, d - 0.1, 0], line: 0 }));
+  g.add(rod([-3.1, d, 0.9], [-3.1, d + 14, 0.9], 0.3, "#8a6a3e"), mesh(box(0.12, 4.6, 7.4), "#f6efdc", { at: [-3.0, d + 5.6, 0.9] }), rod([-3.0, d + 3.2, -3.0], [-3.0, d + 3.2, 4.8], 0.1, "#7a5a36"));
+  // her shrouds come down to the rail well clear of where the crew stand
+  for (const z of [3.0, 3.8, 4.6]) g.add(rod([-0.3, d + 0.8, z], [-3.0, d + 9, 0.9], 0.03, "#3a3028", { line: 0.4 }));
+  for (let i = 1; i < 7; i++) { const u = i / 9, x = -0.3 - 2.7 * u, y = d + 0.8 + 8.2 * u; g.add(rod([x, y, 3.0 - 2.1 * u], [x, y, 4.6 - 3.7 * u], 0.016, "#3a3028", { line: 0, shadow: false })); }
+  // on deck behind them: the fife rail at the mast's foot with its coils, a hatch
+  g.add(mesh(box(0.1, 0.9, 1.9), "#8a6a3e", { at: [-2.3, d + 0.45, 0.9] }), mesh(box(0.2, 0.08, 2.1), "#e8cf8a", { at: [-2.3, d + 0.9, 0.9], line: 0.6 }), mesh(box(1.5, 0.2, 1.3), "#8a5e2c", { at: [-1.7, d + 0.1, -2.6] }));
+  { const b = barrel(0.9, 0.32); b.position.set(-1.9, d, -1.5); const c = crate(0.6); c.position.set(-2.1, d, 2.6); g.add(b, c); }
+  return g;
+};
 
 export const pirateShip = () => {
   const root = new THREE.Group(), W = SHIP.half, deckMap = (planks("deckplanks2", "#d8b780", "#cba86e", "#8a6a40"), paint("deckplanks2", 256, 256, () => {}, [3, 1]));
@@ -69,6 +94,10 @@ export const pirateShip = () => {
     for (let i = 0; i < 4; i++) root.add(mesh(box(0.9, 0.275, 0.3), "#c98f52", { at: [-2.2, 0.1375 + i * 0.275, q.z - 1.05 + i * 0.3] }));
     for (const x of [-2.6, -1.3, 0, 1.3, 2.6]) root.add(mesh(box(0.1, 0.8, 0.1), "#e8cf8a", { at: [x, q.y + 0.5, q.z + 0.1] })); root.add(mesh(box(W * 2 - 0.3, 0.09, 0.16), "#e8cf8a", { at: [0, q.y + 0.92, q.z + 0.1], line: 0.7 }));
     const w = wheel(0.55); w.position.set(0, q.y + 0.95, q.z + 1.6); root.add(w, mesh(box(0.2, 0.95, 0.2), "#5a4634", { at: [0, q.y + 0.47, q.z + 1.75] }));
+    // the rail round the quarterdeck, and the flagstaff on the port quarter
+    for (const s of [-1, 1]) { for (const z of [q.z + 0.1, 6.1, 7.3, 8.4]) root.add(mesh(box(0.1, 0.8, 0.1), "#e8cf8a", { at: [s * (W - 0.12), q.y + 0.5, z] })); root.add(mesh(box(0.16, 0.09, 8.5 - q.z + 0.06), "#e8cf8a", { at: [s * (W - 0.12), q.y + 0.92, (q.z + 8.5) / 2], line: 0.7 }), mesh(box(0.08, 0.06, 8.5 - q.z), "#e8cf8a", { at: [s * (W - 0.12), q.y + 0.52, (q.z + 8.5) / 2], line: 0.5 })); }
+    for (const x of [-2.0, -1.0, 1.0, 2.0]) root.add(mesh(box(0.1, 0.8, 0.1), "#e8cf8a", { at: [x, q.y + 0.5, 8.42] })); root.add(mesh(box(W * 2 - 0.2, 0.09, 0.16), "#e8cf8a", { at: [0, q.y + 0.92, 8.42], line: 0.7 }), mesh(box(W * 2 - 0.3, 0.06, 0.08), "#e8cf8a", { at: [0, q.y + 0.52, 8.42], line: 0.5 }));
+    { const [sx, sy, sz] = SHIP.staff.at; root.add(rod([sx, sy, sz], [sx, sy + SHIP.staff.h, sz], 0.05, "#8a6a3e"), mesh(ball(0.09, 10), C.gold, { at: [sx, sy + SHIP.staff.h + 0.06, sz] }), mesh(box(0.22, 0.12, 0.22), "#7a5a36", { at: [sx, sy + 0.06, sz] })); }
     root.add(rod([0, q.y, 8.4], [0, q.y + 2.0, 8.4], 0.05, C.iron), mesh(box(0.34, 0.44, 0.34), "#ffd75a", { at: [0, q.y + 2.2, 8.4] }), mesh(box(0.42, 0.08, 0.42), C.iron, { at: [0, q.y + 2.46, 8.4] })); }
   // on deck: the hatch with its grating, guns on the port side, casks and crates, coils of rope, a pile of shot, a bucket
   root.add(mesh(box(1.9, 0.22, 1.6), "#8a5e2c", { at: [-0.3, 0.11, 2.4] })); for (let i = 0; i < 5; i++) root.add(mesh(box(1.7, 0.03, 0.12), "#2b1d1a", { at: [-0.3, 0.235, 1.8 + i * 0.3], line: 0, shadow: false }));

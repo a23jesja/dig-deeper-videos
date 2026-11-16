@@ -5,6 +5,7 @@
 import * as THREE from "three";
 import { Film, Shot, Cam, V3, Staged, Word, play, talk, glide, smooth, mix3 } from "../stage/film";
 import { mover, mt, tread, wag, arm } from "../stage/acting";
+import { lens, once, noShade, put, between, ahead, near } from "../stage/staging";
 import { romeStreet, ROME, WALK } from "../world/rome";
 import { mesh, box, ball, group, rod } from "../world/kit";
 import { chest, coin, amphora, painted, waxTablet, basket } from "../world/props";
@@ -21,21 +22,7 @@ const at = (line: string, re: RegExp) => W.find((w) => w.line === line && re.tes
 const [JX, , JZ] = ROME.jar, BOX = ROME.box;
 const P = (o: Partial<Pose>) => o;
 
-// ---------------- a camera and the places in front of it ----------------
-/** a camera at (cx, cy, cz) looking along (fx, fz) on the ground, tipped by pitch degrees. `spot(d, l)` is the place d metres ahead
- *  and l metres to the right of it; `toward(x, z, off)` is the heading that faces the lens, turned by `off` degrees */
-const lens = (cx: number, cy: number, cz: number, fx: number, fz: number, pitch: number, fov: number) => {
-  const n = Math.hypot(fx, fz); fx /= n; fz /= n;
-  return { cam: { pos: [cx, cy, cz], look: [cx + fx * 4, cy + 4 * Math.tan((pitch * Math.PI) / 180), cz + fz * 4], fov } as Cam,
-    spot: (d: number, l: number): [number, number] => [cx + d * fx - l * fz, cz + d * fz + l * fx],
-    toward: (x: number, z: number, off = 0) => (Math.atan2(cx - x, cz - z) * 180) / Math.PI + off,
-    /** the same lens moved `by` metres along its own way of looking (a slow push in or pull back) */
-    push: (by: number): Cam => ({ pos: [cx + fx * by, cy, cz + fz * by], look: [cx + fx * (4 + by), cy + 4 * Math.tan((pitch * Math.PI) / 180), cz + fz * (4 + by)], fov }) };
-};
-
 // ---------------- the things of the corner (made once, moved by the shots) ----------------
-const once = <T,>(make: () => T) => { let v: T | undefined; return () => (v ??= make()); };
-const noShade = <T extends THREE.Object3D>(o: T) => { o.traverse((q) => { q.castShadow = false; }); return o; };
 const CHEST_FULL = once(() => chest(true, true)), CHEST_EMPTY = once(() => chest(true, false, 0.44, 0.28, 0.3)), COIN = once(() => noShade(coin(0.05))), COIN_BIG = once(() => noShade(coin(0.075))), JUG = once(() => amphora(0.62)), TABLET = once(() => noShade(waxTablet()));
 const CARD = once(() => { const g = group([mesh(box(0.46, 0.62, 0.02), "#fbf6ea", { shadow: false })]), flat = { line: 0.5, shadow: false } as const;
   // a street urinal of Paris, drawn as the round iron kiosk it was: a green drum on a base, a band of small openings, a cap, a lamp
@@ -43,14 +30,8 @@ const CARD = once(() => { const g = group([mesh(box(0.46, 0.62, 0.02), "#fbf6ea"
   for (const x of [-0.055, -0.018, 0.018, 0.055]) g.add(mesh(box(0.02, 0.05, 0.012), "#fbf6ea", { at: [x, 0.1, 0.016], line: 0, shadow: false }));
   const t = painted(["VESPASIENNE"], 0.42, 0.085, { ink: "#2a1a14", bg: "#fbf6ea", line: 0 }); t.position.set(0, -0.2, 0.012); g.add(t);
   const t2 = painted(["PARIS"], 0.2, 0.06, { ink: "#b3261e", bg: "#fbf6ea", line: 0 }); t2.position.set(0, -0.27, 0.012); g.add(t2); g.traverse((q) => { q.receiveShadow = false; }); return noShade(g); });
-const put = (into: THREE.Group, o: THREE.Object3D, p: V3, ry = 0) => { o.position.set(...p); o.rotation.set(0, ry, 0); into.add(o); return o; };
 const lid = (ch: THREE.Object3D, open: number) => { const l = ch.children.find((c) => c.userData.lid) ?? ch.children[4]; l.rotation.x = -1.9 * open; };
 const strongbox = (into: THREE.Group, ry: number, open = 1, p: V3 = BOX) => { const c = put(into, CHEST_FULL(), p, ry); lid(c, open); return c; };
-const between = (a: V3, b: V3, u = 0.5): V3 => mix3(a, b, u);
-/** a point `d` metres in front of a figure (things held before the body stand off the card, on the side the figure faces) */
-const ahead = (a: Staged, p: V3, d: number): V3 => [p[0] + Math.sin((a.heading * Math.PI) / 180) * d, p[1], p[2] + Math.cos((a.heading * Math.PI) / 180) * d];
-/** a point moved `d` metres toward the lens (in front of a card) or, with a negative d, behind it */
-const near = (p: V3, cam: Cam, d: number): V3 => { const dx = cam.pos[0] - p[0], dz = cam.pos[2] - p[2], n = Math.hypot(dx, dz) || 1; return [p[0] + (dx / n) * d, p[1], p[2] + (dz / n) * d]; };
 /** the smell of the jar: three wavy lines rising from its mouth, and flies going round it */
 const stink = (into: THREE.Group, t: number, cam: Cam, p: V3 = [JX, WALK + 0.84, JZ]) => {
   const dx = cam.pos[0] - p[0], dz = cam.pos[2] - p[2], n = Math.hypot(dx, dz) || 1, rx = -dz / n, rz = dx / n;   // across the picture

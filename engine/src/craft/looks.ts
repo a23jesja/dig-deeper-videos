@@ -179,8 +179,42 @@ export const TOWNSWOMAN: Look = {
   rows: [[-400, 150, 124, 140], [-280, 134, 112, 126], [-120, 106, 88, 98], [0, 84, 68, 70], [70, 70, 58, 54], [170, 78, 66, 56], [226, 88, 54, 54], [250, 44, 34, 38]],
   legs: "trousers", feet: "shoes", sleeve: "long", arm: [24, 19, 14], leg: [28, 20, 14],
 };
+// ---------------- a pirate sloop, about 1720 ----------------
+/** the pirate captain: a black cocked hat edged with gold, a long red coat, a black beard, sea boots */
+export const CAPTAIN: Look = {
+  id: "captain", P: { ...COLONIST, thigh: 215, shin: 205, shW: 114, hipW: 62, spine: 276 }, head: { a: 118, b: 118, H: 236, jaw: 1.1, round: 0.3, eye: 0.86 }, skin: "#e3b088", brow: "#1f1a18",
+  hat: "tricorn", hatCol: "#1f1c22", hatBand: "#e7bb48", hair: { col: "#1f1a18", kind: "queue" }, beard: "#1f1a18",
+  top: "jacket", coat: "#b3261e", accent: "#f1d9a0", cuffs: "#e7bb48",
+  rows: [[-190, 124, 96, 100], [-60, 116, 100, 92], [50, 108, 100, 84], [170, 116, 96, 76], [244, 118, 68, 68], [272, 58, 42, 46]],
+  legs: "trousers", trous: "#2b2a33", feet: "boots", sleeve: "long", arm: [32, 26, 19], leg: [40, 29, 19],
+};
+/** a pirate of the crew: a red headscarf, an open green waistcoat over a shirt, wide trousers */
+export const PIRATE: Look = {
+  id: "pirate", P: { ...COLONIST, shW: 110 }, head: { a: 110, b: 114, H: 232, jaw: 1.04, round: 0.3, eye: 0.86 }, skin: "#d9a070", brow: "#3a2418",
+  hat: "band", hatCol: "#c8402f", hair: { col: "#3a2418", kind: "queue" }, mous: { col: "#3a2418", span: 0.8, curl: 0.4, w: 11 },
+  top: "jacket", plain: true, coat: "#3f9a5c", accent: "#fbf3df",
+  rows: [[-30, 106, 80, 82], [20, 102, 82, 78], [100, 98, 82, 72], [190, 108, 82, 70], [242, 114, 62, 62], [268, 54, 40, 44]],
+  legs: "trousers", trous: "#efe6cf", feet: "shoes", sleeve: "long", armCol: "#fbf3df", arm: [32, 26, 19], leg: [40, 32, 26],
+};
+/** a pirate who has been in the wars: a blue coat, a yellow headscarf (the film puts his arm in a sling) */
+export const MATE: Look = {
+  id: "mate", P: { ...COLONIST, thigh: 200, shin: 190 }, head: { a: 112, b: 112, H: 230, jaw: 1.0, round: 0.45, eye: 0.86 }, skin: "#eebf96", brow: "#6a4424",
+  hat: "band", hatCol: "#e2b93a", hair: { col: "#6a4424", kind: "queue" }, beard: "#6a4424",
+  top: "jacket", plain: true, coat: "#356fb0", accent: "#fbf3df",
+  rows: [[-30, 106, 80, 82], [20, 102, 82, 78], [100, 96, 80, 70], [190, 106, 80, 68], [242, 112, 62, 62], [268, 54, 40, 44]],
+  legs: "trousers", trous: "#6b5a44", feet: "shoes", sleeve: "long", arm: [31, 25, 18], leg: [38, 28, 20],
+};
+/** a pirate put ashore: a torn shirt, bare legs, wild hair */
+export const CASTAWAY: Look = {
+  id: "castaway", P: { ...COLONIST, thigh: 205, shin: 195, shW: 100 }, head: { a: 108, b: 110, H: 228, jaw: 0.92, round: 0.4, eye: 0.86 }, skin: "#d9a070", brow: "#5a3a22",
+  hat: "none", hair: { col: "#5a3a22", kind: "short" }, beard: "#5a3a22",
+  top: "tunic", coat: "#e6d9b8", accent: "#7a4a26", belt: "#7a4a26",
+  rows: [[-120, 108, 84, 86], [-20, 104, 86, 82], [90, 98, 84, 74], [190, 106, 80, 68], [242, 110, 62, 62], [266, 54, 40, 44]],
+  legs: "bare", feet: "sandals", sleeve: "short", arm: [28, 22, 16], leg: [36, 26, 17],
+};
 export const castDesign = (L: Look, name = L.id): Design => ({ id: L.id, name, ol: 4.6, faceW: L.head.a * 1.45, props: () => L.P, draw: drawCast(L), hat: (k, phi) => drawHat(k, L, phi) });
 export const SIR_D = castDesign(SIR, "Sir Digsworth"), BAKER_D = castDesign(BAKER), SOLDIER_D = castDesign(SOLDIER), MERCHANT_D = castDesign(MERCHANT);
 export const KNIGHT_D = castDesign(KNIGHT), TOMMY_D = castDesign(TOMMY), LADY_D = castDesign(LADY), DOCKER_D = castDesign(DOCKER), BOY_D = castDesign(BOY), GRANNY_D = castDesign(GRANNY), ROMAN_WOMAN_D = castDesign(ROMAN_WOMAN);
 export const VESPASIAN_D = castDesign(VESPASIAN), TITUS_D = castDesign(TITUS), FULLER_D = castDesign(FULLER), CITIZEN_D = castDesign(CITIZEN), COLLECTOR_D = castDesign(COLLECTOR);
+export const CAPTAIN_D = castDesign(CAPTAIN), PIRATE_D = castDesign(PIRATE), MATE_D = castDesign(MATE), CASTAWAY_D = castDesign(CASTAWAY);
 export const CUSTOMS_D = castDesign(CUSTOMS), SHIPOWNER_D = castDesign(SHIPOWNER), SAILOR_D = castDesign(SAILOR), DOCKHAND_D = castDesign(DOCKHAND), TOWNSWOMAN_D = castDesign(TOWNSWOMAN);

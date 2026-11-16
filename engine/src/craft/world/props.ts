@@ -1,7 +1,7 @@
 // Props of a Roman street, each a real object with thickness, its own colour and its own shadow (world kit, kit.ts).
 // Sizes in metres. Each function returns a group standing on y = 0 at its own origin.
 import * as THREE from "three";
-import { mesh, group, box, cyl, ball, torus, lathe, slab, paint, rod, INK3 } from "./kit";
+import { mesh, group, box, cyl, ball, torus, arc, lathe, slab, paint, rod, INK3 } from "./kit";
 
 const D2 = Math.PI / 180;
 export const C = {
@@ -307,6 +307,59 @@ export const amphitheatreSite = (R = 40, tierH = 9) => {
     rod([cx + 0.6, top + 9, cz + 1], [cx + 4.5, top + 6.2, cz + 3.4], 0.07, "#3a3028", { shadow: false, line: 0.4 }), mesh(box(2, 1.3, 1.6), stoneC, { at: [cx + 4.5, top + 5.4, cz + 3.4], shadow: false }));
   return g;
 };
+// ---------------- things of a pirate ship ----------------
+/** a cutlass: a short, broad, curved blade with a brass guard. It lies along +x from the grip at the origin, its flat toward +z */
+export const cutlass = () => group([mesh(box(0.2, 0.06, 0.06), "#5a3a22", { at: [0.02, 0, 0], shadow: false }), mesh(box(0.06, 0.28, 0.1), C.gold, { at: [0.15, 0, 0], line: 0.6, shadow: false }), mesh(arc(0.1, 0.02, Math.PI), C.gold, { at: [0.04, -0.03, 0], rot: [0, 0, Math.PI], line: 0.5, shadow: false }),
+  mesh(slab("cutlass2", [[0, -0.055], [0.58, -0.06], [0.9, 0.1], [0.86, 0.16], [0.52, 0.08], [0, 0.065]], 0.03), "#e9eef4", { at: [0.17, 0, -0.015], line: 0.9, shadow: false })]);
+/** a flag as a painted cloth that hangs from its upper inner corner (the origin): w along +x, h down. kind: the black flag with a
+ *  skull and crossed bones, or a plain white one */
+export const flagCloth = (kind: "black" | "white", w = 1.5, h = 1.0) => mesh(box(w, h, 0.02), "#ffffff", { at: [w / 2, -h / 2, 0], line: 0.6, shadow: false, map: paint(`flag${kind}`, 384, 256, (g) => {
+  g.fillStyle = kind === "black" ? "#17141a" : "#fbf8ee"; g.fillRect(0, 0, 384, 256); if (kind === "white") return;
+  g.strokeStyle = "#f6f1e4"; g.lineWidth = 20; g.lineCap = "round"; for (const s of [-1, 1]) { g.beginPath(); g.moveTo(192 - 96, 150 - s * 62); g.lineTo(192 + 96, 150 + s * 62); g.stroke(); }
+  g.fillStyle = "#f6f1e4"; g.beginPath(); g.arc(192, 104, 58, 0, 7); g.fill(); g.fillRect(160, 136, 64, 40); g.fillStyle = "#17141a"; for (const s of [-1, 1]) { g.beginPath(); g.arc(192 + s * 24, 100, 15, 0, 7); g.fill(); } g.fillRect(186, 124, 12, 18); for (const x of [172, 188, 204]) g.fillRect(x, 156, 4, 20);
+}) });
+/** a book with a picture and a name on its cover (the cover faces +z); open = two pages side by side */
+export const storyBook = (lines: string[], w = 0.36, h = 0.46) => {
+  const g = group([mesh(box(w, h, 0.07), "#a8322a", { shadow: false }), mesh(box(w - 0.03, h - 0.03, 0.06), "#fbf6ea", { at: [0.012, 0, 0], line: 0, shadow: false })]);
+  // the picture: sea, a ship's side, a plank and a small figure on it
+  g.add(mesh(box(w * 0.82, h * 0.44, 0.012), "#3b8fd6", { at: [0, h * 0.14, 0.04], line: 0.5, shadow: false }), mesh(box(w * 0.3, h * 0.36, 0.014), "#5a3a22", { at: [-w * 0.26, h * 0.18, 0.042], line: 0, shadow: false }), mesh(box(w * 0.44, 0.016, 0.014), "#e3c68c", { at: [0.05, h * 0.2, 0.044], line: 0, shadow: false }), mesh(box(0.03, 0.075, 0.014), "#17141a", { at: [w * 0.3, h * 0.29, 0.044], line: 0, shadow: false }));
+  const t = painted(lines, w * 0.86, h * 0.24, { ink: "#f6c52e", bg: "#a8322a", line: 0 }); t.position.set(0, -h * 0.3, 0.036); g.add(t); g.traverse((q) => { q.castShadow = false; q.receiveShadow = false; }); return g;
+};
+/** a sheet of written rules: a name at the top, lines of writing, a figure at the bottom */
+export const articlesSheet = (w = 0.44, h = 0.58) => mesh(box(w, h, 0.012), "#ffffff", { line: 0.6, shadow: false, receive: false, map: paint("articles", 384, 506, (g) => {
+  g.fillStyle = "#f3e6c4"; g.fillRect(0, 0, 384, 506); g.fillStyle = "#2a1a14"; g.textAlign = "center"; g.font = "700 66px 'Times New Roman', Georgia, serif"; g.fillText("ARTICLES", 192, 84);
+  g.strokeStyle = "#5a4634"; g.lineWidth = 6; for (let i = 0; i < 5; i++) { g.beginPath(); g.moveTo(44, 142 + i * 48); for (let x = 44; x <= 340 - (i % 3) * 40; x += 12) g.lineTo(x, 142 + i * 48 + 4 * Math.sin(x * 0.3 + i)); g.stroke(); }
+  g.fillStyle = "#b3261e"; g.font = "700 96px 'Times New Roman', Georgia, serif"; g.fillText("800", 192, 468);
+}) });
+/** a sack tied at the neck; `label` is painted on its front (toward +z) */
+export const moneySack = (r = 0.2, label?: string) => group([...(label ? [(() => { const t = painted([label], r * 1.25, r * 0.62, { ink: "#2a1a14", bg: "#d9c49a", line: 0 }); t.position.set(0, r * 0.85, r * 0.9); t.traverse((q) => { q.castShadow = false; q.receiveShadow = false; }); return t; })()] : []),mesh(ball(r, 14), "#d9c49a", { at: [0, r * 0.85, 0], scale: [1, 0.9, 0.9] }), mesh(cyl(r * 0.28, r * 0.42, r * 0.4, 10), "#d9c49a", { at: [0, r * 1.75, 0] }), mesh(torus(r * 0.3, 0.018, 10), "#7a4a26", { at: [0, r * 1.62, 0], rot: [Math.PI / 2, 0, 0], line: 0 })]);
+/** a shark's back fin, standing in the water at the origin and pointing along +x */
+export const sharkFin = (h = 0.55) => mesh(slab("fin", [[-0.42, 0], [0.34, 0], [0.16, 0.2], [-0.12, h], [-0.2, 0.3]], 0.05), "#55606e", { line: 0.8, shadow: false });
+/** the ring of white water round something that stands or floats in the sea */
+export const foamRing = (r = 0.45) => group([mesh(torus(r, 0.06, 20), "#ffffff", { rot: [Math.PI / 2, 0, 0], scale: [1, 1, 0.5], line: 0.5, shadow: false }), mesh(torus(r * 1.5, 0.035, 20), "#d6ecfb", { rot: [Math.PI / 2, 0, 0], scale: [1, 1, 0.4], line: 0, shadow: false })]);
+/** an iron hook on a leather cup, worn where a hand was lost: the cup lies along +x from the wrist at the origin, the hook curls toward +y */
+export const hookHand = () => group([mesh(cyl(0.072, 0.08, 0.2, 12), "#6a4630", { at: [0.07, 0, 0], rot: [0, 0, Math.PI / 2], line: 0.7, shadow: false }), mesh(cyl(0.086, 0.086, 0.045, 12), C.gold, { at: [0.17, 0, 0], rot: [0, 0, Math.PI / 2], line: 0.5, shadow: false }),
+  mesh(cyl(0.024, 0.024, 0.1, 8), "#aeb6c2", { at: [0.23, 0, 0], rot: [0, 0, Math.PI / 2], line: 0.6, shadow: false }), mesh(arc(0.1, 0.028, Math.PI * 1.3), "#aeb6c2", { at: [0.28, 0.1, 0], rot: [0, 0, -Math.PI / 2], line: 0.8, shadow: false })]);
+/** a shark, nose toward +x, about `len` metres long: grey back, white belly, back fin, tail, and jaws that open by `jaw` (0..1) */
+export const sharkBody = (len = 2.3, jaw = 1) => {
+  const h = len / 2, g = group([mesh(ball(1, 18), "#687688", { scale: [h * 0.86, 0.34, 0.3], at: [-0.12, 0, 0] }), mesh(ball(1, 16), "#f3f5f7", { scale: [h * 0.8, 0.26, 0.27], at: [-0.1, -0.1, 0], line: 0, shadow: false }),
+    mesh(slab("sfin", [[-0.3, 0], [0.3, 0], [0.0, 0.5], [-0.14, 0.36]], 0.06), "#586474", { at: [-0.1, 0.3, -0.03], line: 0.8 }),
+    mesh(slab("stail", [[0, 0.06], [-0.5, 0.6], [-0.3, 0], [-0.46, -0.42], [0, -0.06]], 0.06), "#586474", { at: [-h * 0.92, 0, -0.03], line: 0.8 }),
+    mesh(slab("spec", [[0, 0], [0.34, 0], [-0.1, -0.4]], 0.05), "#586474", { at: [0.2, -0.16, 0.24], rot: [0.5, 0, 0], line: 0.7 }), mesh(slab("spec", [[0, 0], [0.34, 0], [-0.1, -0.4]], 0.05), "#586474", { at: [0.2, -0.16, -0.29], rot: [-0.5, 0, 0], line: 0.7 })]);
+  // the head: the upper jaw with the eyes, the lower jaw dropped, the red of the mouth, two rows of teeth
+  const up = group([mesh(ball(1, 16), "#687688", { scale: [0.5, 0.2, 0.27], at: [0.3, 0.06, 0] }), ...[-1, 1].map((s) => mesh(ball(0.05, 8), "#17141a", { at: [0.34, 0.12, s * 0.22], line: 0, shadow: false })), ...[-1, 1].map((s) => mesh(ball(0.018, 6), "#ffffff", { at: [0.36, 0.135, s * 0.262], line: 0, shadow: false }))], [h * 0.52, 0.02, 0]);
+  const low = group([mesh(ball(1, 14), "#f3f5f7", { scale: [0.42, 0.11, 0.23], at: [0.24, -0.04, 0] })], [h * 0.52, -0.08, 0]);
+  for (let i = 0; i < 6; i++) for (const s of [-1, 1]) { up.add(mesh(cyl(0.001, 0.035, 0.1, 6), "#ffffff", { at: [0.16 + i * 0.11, -0.1, s * (0.2 - i * 0.022)], rot: [Math.PI, 0, 0], line: 0.4, shadow: false })); low.add(mesh(cyl(0.001, 0.03, 0.085, 6), "#ffffff", { at: [0.14 + i * 0.1, 0.08, s * (0.17 - i * 0.02)], line: 0.4, shadow: false })); }
+  up.rotation.z = 0.36 * jaw; low.rotation.z = -0.5 * jaw; g.add(mesh(ball(1, 12), "#9a2424", { scale: [0.34, 0.16 + 0.1 * jaw, 0.2], at: [h * 0.52 + 0.14, -0.05, 0], line: 0, shadow: false }), up, low);
+  return g;
+};
+/** a glass bottle with a cork */
+export const bottle = (h = 0.3, col = "#3f8a5c") => group([mesh(lathe(`bottle${h}`, [[h * 0.2, 0], [h * 0.22, h * 0.05], [h * 0.22, h * 0.55], [h * 0.08, h * 0.75], [h * 0.08, h * 0.95]], 12), col, { line: 0.7 }), mesh(cyl(h * 0.07, h * 0.07, h * 0.1, 8), "#c9a06a", { at: [0, h, 0], line: 0, shadow: false })]);
+/** a flintlock pistol, lying along +x */
+export const pistol = () => group([mesh(cyl(0.022, 0.026, 0.36, 8), "#3a3f48", { at: [0.3, 0.06, 0], rot: [0, 0, Math.PI / 2], shadow: false }), mesh(box(0.3, 0.07, 0.06), "#8a5a30", { at: [0.18, 0.02, 0], shadow: false }), mesh(box(0.09, 0.2, 0.06), "#8a5a30", { at: [0, -0.06, 0], rot: [0, 0, -0.45], shadow: false }),
+  mesh(ball(0.035, 8), C.gold, { at: [-0.045, -0.15, 0], line: 0.5, shadow: false }), mesh(box(0.05, 0.07, 0.03), C.gold, { at: [0.12, 0.085, 0], line: 0.5, shadow: false })]);
+/** a spyglass, lying along +x from the eye end at the origin */
+export const spyglass = () => group([mesh(cyl(0.028, 0.034, 0.26, 10), C.gold, { at: [0.13, 0, 0], rot: [0, 0, Math.PI / 2], shadow: false }), mesh(cyl(0.036, 0.046, 0.22, 10), "#5a3a22", { at: [0.36, 0, 0], rot: [0, 0, Math.PI / 2], shadow: false })]);
 /** flat white clouds far away */
 export const cloud = (s = 30) => { const g = new THREE.Group(); for (const [x, y, r] of [[0, 0, 1], [0.9, 0.1, 0.72], [-0.95, 0.05, 0.66], [0.35, 0.42, 0.7], [-0.4, 0.36, 0.6]]) g.add(mesh(ball(1, 14), "#ffffff", { at: [x * s, y * s, 0], scale: [r * s, r * s * 0.6, r * s * 0.3], shadow: false, receive: false, line: 0.6 })); return g; };
 export { INK3 };

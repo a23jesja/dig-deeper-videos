@@ -58,22 +58,29 @@ export const box = (w: number, h: number, d: number) => G(`b${w},${h},${d}`, () 
 export const cyl = (r0: number, r1: number, h: number, n = 20, open = false) => G(`c${r0},${r1},${h},${n},${open}`, () => new THREE.CylinderGeometry(r0, r1, h, n, 1, open));
 export const ball = (r: number, n = 20) => G(`s${r},${n}`, () => new THREE.SphereGeometry(r, n, Math.round(n * 0.7)));
 export const torus = (r: number, t: number, n = 28) => G(`t${r},${t},${n}`, () => new THREE.TorusGeometry(r, t, 10, n));
+/** part of a ring: `turn` radians of it */
+export const arc = (r: number, t: number, turn: number, n = 16) => G(`a${r},${t},${turn},${n}`, () => new THREE.TorusGeometry(r, t, 8, n, turn));
 /** a turned shape (pots, columns, loaves): the profile as [radius, height] pairs from the bottom up */
 export const lathe = (key: string, prof: [number, number][], n = 24) => G("l" + key, () => new THREE.LatheGeometry(prof.map(([r, y]) => new THREE.Vector2(Math.max(r, 0.0001), y)), n));
-/** a flat shape with thickness (an awning, a sign, a wheel rim) from an outline in the xy plane */
-export const slab = (key: string, pts: [number, number][], depth: number) => G("e" + key, () => {
-  const s = new THREE.Shape(pts.map(([x, y]) => new THREE.Vector2(x, y))); const g = new THREE.ExtrudeGeometry(s, { depth, bevelEnabled: false }); g.translate(0, 0, -depth / 2); return g;
-});
+/** a flat outline in the xy plane given thickness along z, with its two faces (three's own ExtrudeGeometry leaves the faces out
+ *  in this version, so the solid is built here): the faces from the triangulated outline, the walls from its edges */
+const extrude = (pts: [number, number][], holes: [number, number][][], depth: number) => {
+  const V = (q: [number, number][]) => q.map(([x, y]) => new THREE.Vector2(x, y));
+  const outer = V(pts); if (THREE.ShapeUtils.isClockWise(outer)) outer.reverse();
+  const hs = holes.map((h) => { const q = V(h); if (!THREE.ShapeUtils.isClockWise(q)) q.reverse(); return q; });
+  const faces = THREE.ShapeUtils.triangulateShape(outer, hs), all = [outer, ...hs].flat(), pos: number[] = [], z0 = -depth / 2, z1 = depth / 2;
+  for (const [a, b, c] of faces) { pos.push(all[a].x, all[a].y, z1, all[b].x, all[b].y, z1, all[c].x, all[c].y, z1); pos.push(all[c].x, all[c].y, z0, all[b].x, all[b].y, z0, all[a].x, all[a].y, z0); }
+  for (const ring of [outer, ...hs]) for (let i = 0; i < ring.length; i++) { const a = ring[i], b = ring[(i + 1) % ring.length]; pos.push(a.x, a.y, z0, b.x, b.y, z0, b.x, b.y, z1, a.x, a.y, z0, b.x, b.y, z1, a.x, a.y, z1); }
+  const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
+  const uv: number[] = []; for (let i = 0; i < pos.length; i += 3) uv.push(pos[i], pos[i + 1]); g.setAttribute("uv", new THREE.Float32BufferAttribute(uv, 2)); g.computeVertexNormals(); return g;
+};
+/** a flat shape with thickness (an awning, a sign, a sail, a blade) from an outline in the xy plane */
+export const slab = (key: string, pts: [number, number][], depth: number) => G("e" + key, () => extrude(pts, [], depth));
 
 /** a flat shape with thickness and holes in it (a wall with an arched gateway) */
-export const slabHoles = (key: string, pts: [number, number][], holes: [number, number][][], depth: number) => G("h" + key, () => {
-  const s = new THREE.Shape(pts.map(([x, y]) => new THREE.Vector2(x, y))); for (const h of holes) s.holes.push(new THREE.Path(h.map(([x, y]) => new THREE.Vector2(x, y))));
-  const g = new THREE.ExtrudeGeometry(s, { depth, bevelEnabled: false, curveSegments: 1 }); g.translate(0, 0, -depth / 2); return g;
-});
+export const slabHoles = (key: string, pts: [number, number][], holes: [number, number][][], depth: number) => G("h" + key, () => extrude(pts, holes, depth));
 /** a solid with a flat outline seen from above (a hull, a deck, a pier): pts = [x, z] round the outline, from height y0 up to y1 */
-export const prism = (key: string, pts: [number, number][], y0: number, y1: number) => G("p" + key + y0 + y1, () => {
-  const g = new THREE.ExtrudeGeometry(new THREE.Shape(pts.map(([x, z]) => new THREE.Vector2(x, -z))), { depth: y1 - y0, bevelEnabled: false }); g.rotateX(-Math.PI / 2); g.translate(0, y0, 0); return g;
-});
+export const prism = (key: string, pts: [number, number][], y0: number, y1: number) => G("p" + key + y0 + y1, () => { const g = extrude(pts.map(([x, z]) => [x, -z] as [number, number]), [], y1 - y0); g.translate(0, 0, (y1 - y0) / 2); g.rotateX(-Math.PI / 2); g.translate(0, y0, 0); g.computeVertexNormals(); return g; });
 /** a round rod from a to b (a mast, a spar, a rope, a rail) */
 export const rod = (a: [number, number, number], b: [number, number, number], r: number, color: string, o: MeshO = {}) => {
   const A = new THREE.Vector3(...a), B = new THREE.Vector3(...b), len = A.distanceTo(B), m = mesh(cyl(r, r, 1, 10), color, o);

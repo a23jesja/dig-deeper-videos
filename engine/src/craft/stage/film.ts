@@ -9,7 +9,9 @@ import { Mover, blink, mouthAt } from "../motion";
 export type V3 = [number, number, number];
 export type Cam = { pos: V3; look: V3; fov: number };
 /** one figure on one frame: where its soles are, the way it faces (0 = toward +z, 90 = toward +x), its height, pose and face */
-export type Actor = { name: string; D: Design; at: V3; heading: number; h: number; pose: Pose; o: FigOpts };
+export type Actor = { name: string; D: Design; at: V3; heading: number; h: number; pose: Pose; o: FigOpts;
+  /** a figure thrown through the air: `at` is then the middle of its body and it is turned this many degrees in the picture */
+  spin?: number };
 /** a figure placed in the world on this frame: where its joints are, so that real things can be put in its hands */
 export type Staged = Actor & { joint: (j: Joint) => V3; mesh: THREE.Mesh };
 export type Word = { w: string; a: number; b: number; line?: string };
@@ -32,7 +34,7 @@ export type Film = {
   shots: Shot[];
   words: Word[];
   /** the question, on screen with the voice in the first seconds */
-  hook: { text: string[]; a: number; b: number };
+  hook: { text: string[]; a: number; b: number; /** the height of its letters in pixels (108 when left out) */ size?: number };
   /** a small sign when something is dramatised: never in the first five seconds, two seconds long */
   sign?: { text: string; a: number; b: number };
   /** impacts that shake the camera */

@@ -56,6 +56,21 @@ his say-so.
   top and bottom 15 % of a Short; captions and name tags never overlap each other or a face; no black or empty
   area; no prop standing between or in front of the characters.
 - **Motion:** smooth, no stepped cycles, feet planted, faces toward the viewer in reactions.
+- **Staging checks (after the Titanic part 3 review, 2026-11-17), also by script where possible:**
+  - No pole, mast, rocket trail or light starts or ends behind a head or hat. Effects burst in open sky.
+  - Two characters never share the same spot: at most a quarter of a body may be hidden by another, never a face.
+  - Nobody is cut by the edge of the picture unless it is a deliberate close-up.
+  - A character in water is hidden by the water surface with a wavy edge, never a straight cut. Feet stand on
+    something: nobody floats in front of a boat or above a deck.
+  - Characters react to what happens: they look at the rocket, the ship, the speaker. Nobody stands still facing
+    the camera during an event.
+  - No wink or smile on a line about deaths.
+  - No light that blows the floor out to white. No single shape (hull, deck, sky) filling more than a third of the
+    picture without anything on it.
+  - Props must read at phone size: wreckage looks like doors, chairs and planks with detail, not plain blocks.
+  - Signs: text at least as tall as the caption text.
+  - Captions: two or three words at a time, big, in a band below the characters, never on a body, face or sign.
+  - The last second holds a hook or a question, with its caption.
 
 ## The first second of every Short (hard rule)
 - Frame one shows the most striking moment of the story: one big subject filling the picture, already moving.

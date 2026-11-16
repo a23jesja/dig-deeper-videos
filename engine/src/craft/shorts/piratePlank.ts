@@ -49,7 +49,9 @@ const splash = (g: THREE.Group, p: V3, u: number, big = 1) => {
   if (u < 0) return;
   for (let k = 0; k < 16; k++) { const a = (k / 16) * 6.283 + 0.3, v = (1.4 + 0.9 * ((k * 7) % 4) / 3) * big, x = Math.cos(a) * v * u * 0.8, z = Math.sin(a) * v * u * 0.8, y = (4.2 + 1.3 * (k % 3)) * big * u - 6.5 * u * u;
     if (y > 0) g.add(mesh(ball(0.07 * big * Math.max(0.4, 1 - u * 0.5), 8), k % 2 ? "#ffffff" : "#bfe3fb", { at: [p[0] + x, p[1] + y, p[2] + z], line: 0.5, shadow: false })); }
-  const col = Math.max(0, 1 - u / 0.7); if (col > 0) g.add(mesh(ball(1, 12), "#eaf6ff", { at: [p[0], p[1] + 0.5 * big * Math.sin(Math.PI * Math.min(1, u / 0.5)), p[2]], scale: [0.36 * big * (0.6 + u), 0.9 * big * col + 0.05, 0.36 * big * (0.6 + u)], line: 0.7, shadow: false }));
+  // the water that stands up where it went in: a low crown of tongues leaning outward, gone in half a second
+  const col = Math.sin(Math.PI * Math.min(1, u / 0.55)); if (u < 0.55) for (let k = 0; k < 7; k++) { const a = (k / 7) * 6.283 + 0.5, r = 0.2 * big * (0.6 + u * 2);
+    g.add(mesh(ball(1, 8), k % 2 ? "#ffffff" : "#d6ecfb", { at: [p[0] + Math.cos(a) * r, p[1] + 0.22 * big * col, p[2] + Math.sin(a) * r], scale: [0.09 * big, (0.2 + 0.28 * col) * big, 0.09 * big], rot: [Math.sin(a) * 0.5, 0, -Math.cos(a) * 0.5], line: 0.5, shadow: false })); }
   for (const [o, f] of [[0, FOAM], [0.25, FOAM2]] as [number, () => THREE.Object3D][]) { const v = u - o; if (v > 0) { const r = put(g, f(), [p[0], p[1] + 0.02, p[2]]); r.scale.setScalar(0.6 + v * 2.6 * big); } }
 };
 /** drops falling from somebody who is soaked */
@@ -163,7 +165,7 @@ function hooked(g: THREE.Group, a: Staged, cam: Cam) {
 //    hand was; the captain nods at it and swings a heavy sack into his arms. He sags under it and coins jump out
 const limbA = cut("rules", "limb");
 {
-  const V = lens(-1.75, 1.1, 4.0, 1, -0.1, 4, 50), [mx, mz] = V.spot(2.6, -0.36), [cx, cz] = V.spot(3.3, 0.5), give = at("limb", /^paid/) - limbA - 0.12;
+  const V = lens(-1.75, 1.05, 4.0, 1, -0.1, 0, 52), [mx, mz] = V.spot(2.6, -0.22), [cx, cz] = V.spot(3.3, 0.56), give = at("limb", /^paid/) - limbA - 0.12;
   const cap = mover(CAPTAIN_D, 1.86, cx, cz, V.toward(cx, cz, -40)); cap.stand(8);
   cap.actAt(-1, { armL: arm(30, 10, 84, -6), armR: arm(30, 10, 84, -6), lean: -6, twist: -10, head: [8, 0, 0] }, give + 0.2 + 1, { in: 0.01, out: 0.16, handL: "grip", handR: "grip", face: { smile: 0.2, brow: 0.6, gaze: [-0.7, -0.4] } });
   for (const t0 of [0.75, 1.15]) cap.actAt(t0, { head: [8, 14, 0] }, 0.3, { in: 0.1, out: 0.14, antic: 0.2, over: 1.4 });
@@ -171,7 +173,7 @@ const limbA = cut("rules", "limb");
   cap.actAt(give + 0.45, { armR: arm(40, 30, 130, 30), armL: arm(10, 12, 30, 0), head: [8, -4, 0] }, 9, { in: 0.3, handR: "open", face: { smile: 0.38, brow: 0.6, gaze: [-0.8, 0.2] } });
   const m = mover(MATE_D, 1.8, mx, mz, V.toward(mx, mz, 44)); m.stand(8);
   m.actAt(-1, { armL: arm(10, 12, 30, 0), armR: arm(20, 12, 60, -6), head: [0, 6, 0] }, 0.5 + 1, { in: 0.01, out: 0.2, handL: "relaxed", handR: "fist", face: { brow: 0.6, smile: -0.5, lid: 0.25, gaze: [0.4, 0.5] } });
-  m.actAt(0.15, { armR: arm(122, 16, 176, 0), lean: -3, head: [6, -12, 0] }, give - 0.4, { in: 0.3, out: 0.2, antic: 0.4, over: 1.8, handR: "fist", face: { brow: 0.9, smile: -0.5, lid: 0.15, gaze: [0.5, -0.8] } });
+  m.actAt(0.15, { armR: arm(112, 2, 138, -4), lean: -3, head: [6, -12, 0] }, give - 0.4, { in: 0.3, out: 0.2, antic: 0.4, over: 1.8, handR: "fist", face: { brow: 0.9, smile: -0.5, lid: 0.15, gaze: [0.5, -0.8] } });
   m.actAt(give - 0.3, { armL: arm(50, 14, 100, 0), armR: arm(50, 14, 100, 0), head: [0, 2, 0] }, 0.5, { in: 0.2, out: 0.15, handL: "open", handR: "fist", face: { brow: 0.8, wide: 0.4, lid: 0, gaze: [0.8, 0] } });
   m.actAt(give, { armL: arm(44, 10, 100, -14), armR: arm(44, 10, 100, -14), py: -0.14, lean: 10, head: [0, 12, 0] }, 9, { in: 0.14, over: 2.6, handL: "grip", handR: "fist", face: { wide: 1, lid: 0, brow: 1, smile: 0.9, mouth: 0.6, gaze: [0, 0.7] } });
   wag(m, give + 0.7, 3, P({ py: -0.06, armL: arm(52, 10, 108, -14), armR: arm(52, 10, 108, -14), head: [0, 4, 0] }), P({ py: -0.15, armL: arm(42, 10, 98, -14), armR: arm(42, 10, 98, -14), head: [0, 14, 0] }), 0.5, { handL: "grip", handR: "fist" });

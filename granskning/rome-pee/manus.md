@@ -1,21 +1,25 @@
 # Short 1: Why did Rome tax pee?
 
-Romersk gata, äcklig och rolig, SANT. 29,9 sekunder, 79 ord, Kokoro bm_george. Fråga nr 1 i `granskning/fragor.md`.
+VERSION 2 (skissens andra omgång). Romersk gata, äcklig och rolig, SANT. 32,3 sekunder, 84 ord, Kokoro bm_george. Fråga nr 1 i `granskning/fragor.md`.
 
 ## Manus, med källa per påstående
 
 | Tid (s) | Röst | Bild | Källa |
 |---|---|---|---|
-| 0,0-2,0 | **Why did Rome tax pee?** | Gathörn: en man står vid en stor kruka, sedd bakifrån och påklädd; uppbördsmannen räknar mynt vid sitt bord; Sir Digsworth håller för näsan. Ingen betalar för något. | Skatten: [S1] [S2]. Att män kissade i krukor i gränderna: [M] [F]. |
-| 2,0-6,5 | Rome. The new emperor, Vespasian, needs money. A great deal of it. | Kejsaren kommer uppför gatan med sin penningkista, amfiteaterbygget bakom; han vänder kistan upp och ned och skakar: ett enda mynt faller ut. | Statskassan: [S3]. Vespasianus kejsare 69-79, Titus hans son: [S4] [D]. |
-| 6,5-9,7 | I guessed: a fine for peeing in the street. Wrong! | Sir Digsworth kommer med höjt pekfinger mot mannen vid krukan, som springer; Sir Digsworth rycker till på "Wrong!". | Sir Digsworths egen felgissning, inget påstående. |
-| 9,7-12,8 | Pee was useful. Laundries washed wool with it. | I tvätteriet: tvättaren häller en kanna i ett kar, Sir Digsworth lutar sig fram och ångrar sig; sedan ovanifrån: tvättaren trampar tyget i karet. | [B] [P] [F] |
-| 12,8-15,2 | So Vespasian put a tax on it. | Kejsaren pekar på krukan; uppbördsmannen ställer ned sin kassakista bredvid. Skylt i två sekunder: "Dramatised. The story is from Suetonius; nobody knows who paid the tax." | [S1] [S2] |
-| 15,2-17,4 | His son Titus complained. | Titus backar från krukan med handen för ansiktet och pekar på kistan. | [S1]: "found fault"; [D]: "expressed his indignation". |
-| 17,4-21,3 | So the emperor held a coin under his nose. Does it smell? | De två i profil på gatan; kejsaren sträcker fram myntet under Titus näsa, kameran går in på myntet. | [S1] |
-| 21,3-23,3 | No. Yet it comes from pee. | Kejsaren skrattar och singlar myntet. | [S1]: When Titus said "No," he replied, "Yet it comes from urine." |
-| 23,3-24,9 | That is why: money. | Myntet landar i kassakistan vid krukan, uppbördsmannen slår igen locket. | Slutsats av [S1] [S3]. |
-| 24,9-29,9 | And in Paris, street urinals were later named after him: vespasiennes. | Sir Digsworth vid krukan tar fram ett bildkort av en parisisk pissoar, pekar på namnet och lyfter på kepsen. | [V1] [V2] |
+| 0,0-2,0 | **Why did Rome tax pee?** | Krukan nära linsen med gult innehåll, luktstreck och flugor; en kassakista med en hög guldmynt bredvid; Sir Digsworth ryggar från krukan med handen för näsan. Templet i fjärran. | Skatten: [S1] [S2]. Krukor i gränderna som män kissade i: [M] [F]. |
+| 2,0-4,8 | Rome. The emperor Vespasian has a problem. | Kejsaren kommer uppför gatan med sin penningkista, Titus bakom, amfiteaterbygget i fjärran. | Vespasianus kejsare, Titus hans son: [S4] [D]. |
+| 4,8-6,5 | The treasury is empty. | Han vänder kistan upp och ned och skakar: ett enda mynt faller ut, studsar och rullar bort; Titus tittar i kistan och slår handen för pannan. | [S3] |
+| 6,5-10,0 | My guess was a fine for peeing in the street. Wrong! | Sir Digsworth marscherar fram mot en man vid krukan med vickande pekfinger; mannen blir rädd och springer; Sir Digsworth rycker till på "Wrong!". | Sir Digsworths egen felgissning, inget påstående. Mannen vid krukan: [M]. |
+| 10,0-11,4 | Pee was useful. | Inne i tvätteriet, sett inifrån karet: tvättaren häller en kanna i tvätten; Sir Digsworth böjer sig fram och ångrar sig. | [B] [P] [F] |
+| 11,4-13,1 | Laundries washed wool with it. | Uppifrån: tvättaren trampar tyget i karet med händerna på karets väggar; det stänker. | [B] [P] |
+| 13,1-15,4 | So Vespasian put a tax on it. | Kejsaren pekar; uppbördsmannen (civil, med vaxtavla) antecknar bakom sin kassakista bredvid krukan. Ingen betalar. | [S1] [S2] |
+| 15,4-17,6 | His son Titus complained. | Titus lutar sig bort från krukan med armen för näsan och hugger med pekfingret mot kistan. | [S1]: "found fault"; [S2]: "expressed his indignation". |
+| 17,6-21,3 | The emperor held a coin under his nose. Does it smell? | Kejsaren i profil håller myntet mellan fingrarna under Titus näsa; Titus drar huvudet bakåt. Amfiteaterbygget bakom. Skylt 17,8-19,8 s: "Dramatised. The story is from Suetonius; nobody knows who paid the tax." | [S1] |
+| 21,3-23,3 | No. Yet it comes from pee. | Kejsaren skrattar och singlar myntet högt, två gånger. | [S1]: When Titus said "No," he replied, "Yet it comes from urine." |
+| 23,3-25,4 | That is why Rome taxed pee. | Myntet landar på guldhögen i kistan vid krukan; uppbördsmannen prickar av det på vaxtavlan. | Poängen i [S1]. |
+| 25,4-27,0 | The money did not smell. | Sir Digsworth, bredvid krukan och dess flugor, håller ett mynt under näsan och finner inget fel på det. | [S1] [S2] |
+| 27,0-30,4 | In Paris, street urinals were later named after him. | Sir Digsworth kommer gående uppför gatan mot linsen, tar fram ett bildkort ur kavajen och håller upp det; templet bakom. | [V1] [V2] |
+| 30,4-32,3 | Vespasiennes. | Nära: kortet med en parisisk pissoar och namnet; han knackar på namnet och lyfter på kepsen. | [V1] [V2] |
 
 ## Källor (alla lästa i sidans råtext)
 
@@ -31,16 +35,38 @@ Romersk gata, äcklig och rolig, SANT. 29,9 sekunder, 79 ord, Kokoro bm_george. 
 
 ## Vad manuset medvetet inte säger
 
-- **Inget årtal och ingen plats för samtalet.** Varken Suetonius eller Dio anger när eller var. Rösten säger "Rome" om kejsardömets huvudstad och kassa, och skylten säger att scenen är dramatiserad.
-- **Inte vem som betalade.** Källorna säger det inte. I bild betalar ingen; uppbördsmannen räknar mynt och ställer sin kista vid krukan. Skylten säger "nobody knows who paid the tax".
+- **Inget årtal och ingen plats för samtalet.** Varken Suetonius eller Dio anger när eller var. Skylten säger att scenen är dramatiserad.
+- **Inte vem som betalade.** Källorna säger det inte. I bild betalar ingen. Skylten säger "nobody knows who paid the tax".
 - **Inte att tvättarna hämtade urinen i krukor på gatan.** Flohr kallar det "a scholarly fiction". Krukan i gathörnet är en kruka som män kissar i (Macrobius); tvättaren har sin egen kanna inne i tvätteriet och rör aldrig krukan på gatan.
+- **Uppbördsmannen har ingen källa för hur han såg ut.** Han är därför ritad som en civil man i ockra tunika och brun mantel med en vaxtavla, inte som legionär. Att en uppbördsman alls stod vid en kruka är dramatisering, och det är det skylten gäller.
 - **Inget belopp** för statens behov (översättningarna säger 40 000 respektive 400 000 miljoner sestertier).
-- **Inte "pecunia non olet"** och inget latin: frasen står inte i källorna.
-- **Inte att Vespasianus uppfann pissoaren** (CNRTL påpekar att han inte gjorde det); rösten säger bara att de fick hans namn.
+- **Inte "pecunia non olet"** och inget latin: frasen står inte i källorna. Slutraden "The money did not smell" återger vad Titus svarade ("No").
+- **Inte att Vespasianus uppfann pissoaren**; rösten säger bara att de fick hans namn.
 
 ## Formen
 
-- Frågan i bild och röst 0,0-2,0 s över det märkliga (krukan, uppbördsmannen, näsan).
-- Problemet till 6,5 s (tom kassa), handlingen till 23,3 s, svaret och det sista överraskande faktumet i sista tredjedelen (från 21,3 s). Ingen del 2, ingen krok.
-- En plats (gathörnet med tvätteriet), tretton bilder, högst tre figurer per bild.
-- Friskrivningen: liten skylt 12,9-14,9 s, aldrig uppläst.
+- Frågan i bild och röst 0,0-2,0 s över det märkliga: krukan, lukten, flugorna och guldet.
+- Början visar bara problemet (tom kista, till 6,5 s) utan att svara på frågan. Handlingen till 23,3 s. **Svaret kommer 23,3-27,0 s** ("That is why Rome taxed pee. The money did not smell."), i sista tredjedelen, följt av det sista överraskande faktumet. Ingen del 2, ingen krok.
+- En plats (gathörnet med tvätteriet och gatan), fjorton bilder, högst två figurer per bild.
+- Ingen undertextruta slutar på skiljetecken.
+
+## Svar på granskningens arton punkter (version 1)
+
+1. Manuset: "needs money" är borta; början säger bara att kassan är tom, och slutraden är poängen (pengarna luktade inte).
+2. Inga kolon; undertexterna rensas från skiljetecken.
+3. Bild 1 är ombyggd kring krukan (gult innehåll, luktstreck, flugor), guldkistan och Sir Digsworth som ryggar i rörelse; templet och gatan fyller överdelen, texten ligger över krukans buk och trottoaren.
+4. Uppbördsmannen är civil (se ovan).
+5. Väggen vid krukan har fått fönster med gröna luckor under en randig markis, lampa på järnarm, hylla med krukor över en bänk, och husets dörr är flyttad. Bakgrunderna växlar: tempelgatan (1, 13), amfiteatergatan (2, 9, 12), sidogatan med portiken (3), väggen vid krukan (4, 7, 8, 11), tvätteriet inifrån (5, 6), tvätteriets framsida (10), det gula huset (14).
+6. Bild 5 är ny: sedd inifrån karet, kannans mynning och strålen syns, tvätten ligger närmast linsen, Sir Digsworth står hel i bild.
+7. Gatstenens fogar är smalare och ljusare; bild 2 har figurerna på 66 % av höjden.
+8. Bild 7 och 11: figurerna 62 % respektive kista, kruka och uppbördsman fyller bilden.
+9. Bild 6: händerna på karets väggar inom bild, knäna lyfts i tur, tyget ligger i veck som häver sig, det stänker.
+10. Bild 9 är ombyggd kring myntet och näsan: kejsaren i profil nära linsen, myntet vid fingertoppen, Titus hel i bild och bakåtlutad med en hand uppe, amfiteatern bakom i stället för vita togor (kejsaren bär nu purpur, Titus gulvit tunika med röd mantel).
+11. Bild 11: guldet är en hög med höjd, myntet faller in uppifrån och studsar till ro.
+12. Bild 8: kistan står framför honom, armen ligger över näsan, inget skärs av kanten.
+13. Bild 4: pekfingret hålls genom hela rörelsen; hörnet är ombyggt.
+14. Bild 3: myntet är stort och faller fritt mellan de två; kistan hålls framför bröstet så ansiktet är ljust.
+15. Glada stängda ögon: jag använder dem inte på bifigurerna i filmen (kejsaren skrattar med öppna ögon), och de nya bifigurernas ögon är mindre så att ögonvitorna inte möts över näsan. Det är siffror i bifigurernas egna utseenden, ingen ändring av den frysta teckningen. Ringen runt Sir Digsworths glada stängda ögon finns på det frysta bladet; den lämnar jag till Jesper i slutrapporten.
+16. Bild 10: purpurtoga, myntet singlas högt två gånger, vänsterhanden på magen.
+17. Slutet är två olika bilder med handling: han kommer gående och drar fram kortet (helfigur, låg kamera, templet), sedan nära på kortet där han knackar på namnet och lyfter på kepsen.
+18. Titus reagerar: kliar sig på hakan och ser sig om i bild 2, tittar i kistan och slår handen för pannan i bild 3.

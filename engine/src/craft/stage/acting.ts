@@ -15,6 +15,8 @@ export const tread = (m: Mover, t0: number, dur: number, period = 0.4, lift = 56
 };
 /** a small repeated move between two arm poses (wagging a finger, waving a smell away, shaking a box) */
 export const wag = (m: Mover, t0: number, dur: number, a: Partial<Pose>, b: Partial<Pose>, period = 0.3, o: Parameters<Mover["actAt"]>[3] = {}) => {
+  // the first pose lies under the whole move, so the hand keeps its shape and the arm never drops between two beats
+  m.actAt(t0 - 0.1, a, dur + 0.2, { in: 0.14, out: 0.2, antic: 0, over: 1.1, ...o });
   for (let t = t0, i = 0; t < t0 + dur; t += period / 2, i++) m.actAt(t, i % 2 ? b : a, period * 0.62, { in: period * 0.26, out: period * 0.26, antic: 0, over: 1.2, ...o });
 };
 export const arm = (a: number, b: number, c: number, d: number): [Seg, Seg] => [[a, b], [c, d]];

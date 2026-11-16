@@ -1,0 +1,16 @@
+{
+ "voice": "bm_george",
+ "speed": 1.06,
+ "gap": 0.16,
+ "lead": 0.05,
+ "lines": [
+  { "id": "hook", "text": "Did pirates really make you walk the plank?", "gap": 0.3 },
+  { "id": "story", "text": "A plank, a sword, a shark. Just like the stories!", "gap": 0.22 },
+  { "id": "cargo", "text": "But real pirates wanted one thing: your cargo.", "gap": 0.2 },
+  { "id": "flag", "text": "Their black flag was meant to scare a ship into giving up without a fight.", "gap": 0.22 },
+  { "id": "over", "text": "Someone in the way? Over the side. No plank needed.", "gap": 0.25 },
+  { "id": "maroon", "text": "A pirate who cheated his crew was left on an empty island.", "gap": 0.25 },
+  { "id": "answer", "text": "Walking the plank is almost never recorded. It comes from stories like Treasure Island and Peter Pan.", "gap": 0.25 },
+  { "id": "rules", "text": "And pirates had rules: lose a limb in battle, and the crew paid you eight hundred pieces of eight.", "gap": 0.2 }
+ ]
+}

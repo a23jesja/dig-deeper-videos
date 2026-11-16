@@ -45,18 +45,18 @@ const tall = (P: Props) => P.thigh + P.shin + P.ankle + P.spine + P.neck + P.hea
 export const legM = (D: Design, h: number) => { const P = D.props("sir"); return ((P.thigh + P.shin) * h) / tall(P); };
 /** a figure played by a Mover at the Mover's time tm: the Mover's ground (x to the right, z toward the lens of a camera that
  *  looks along -z) is laid in the world at `origin`, turned by `turn` degrees about the vertical */
-export const play = (name: string, D: Design, m: Mover, tm: number, origin: V3, h: number, o: { turn?: number; talk?: number; extra?: FigOpts; seed?: number } = {}): Actor => {
+export const play = (name: string, D: Design, m: Mover, tm: number, origin: V3, h: number, o: { turn?: number; talk?: number; extra?: FigOpts; seed?: number; /** false = the eyes do not blink in this shot (a laugh, a held look) */ blink?: boolean } = {}): Actor => {
   const s = m.sample(tm), LL = legM(D, h), a = ((o.turn ?? 0) * Math.PI) / 180, x = s.x * LL, z = s.z * LL;
   return { name, D, h, at: [origin[0] + x * Math.cos(a) + z * Math.sin(a), origin[1] + s.y * LL, origin[2] - x * Math.sin(a) + z * Math.cos(a)], heading: s.yaw + (o.turn ?? 0), pose: s.pose,
     o: { handL: s.handL, handR: s.handR, sway: s.sway, capLift: Math.min(0.45, Math.max(0, Math.abs(s.drag) - 1.6) * 0.16), ...o.extra,
-      face: { ...s.face, lid: Math.max(s.face.lid ?? 0.16, blink(tm, o.seed ?? 3)), mouth: Math.max(s.face.mouth ?? 0, o.talk ?? 0), ...o.extra?.face } } };
+      face: { ...s.face, lid: Math.max(s.face.lid ?? 0.16, o.blink === false ? 0 : blink(tm, o.seed ?? 3)), mouth: Math.max(s.face.mouth ?? 0, o.talk ?? 0), ...o.extra?.face } } };
 };
 /** how far the mouth is open at film time T for the one who says the lines `ids` (0 when somebody else speaks) */
 export const talk = (words: Word[], T: number, ids?: string[]) => { const w = ids ? words.filter((q) => ids.includes(q.line ?? "")) : words; return w.length && T >= w[0].a - 0.05 && T <= w[w.length - 1].b + 0.1 ? mouthAt(w, T) : 0; };
 /** caption chunks from the word timings: two or three words, never wider than the picture, a new chunk after a full stop */
 export const captions = (words: Word[], skip: (w: Word) => boolean = () => false): Caption[] => {
   const out: Caption[] = []; let cur: Word[] = [];
-  const flush = () => { if (cur.length) out.push({ a: cur[0].a, b: cur[cur.length - 1].b + 0.12, text: cur.map((q) => q.w).join(" ").toUpperCase().replace(/[.,"]/g, "") }); cur = []; };
+  const flush = () => { if (cur.length) out.push({ a: cur[0].a, b: cur[cur.length - 1].b + 0.12, text: cur.map((q) => q.w).join(" ").toUpperCase().replace(/[.,":;]/g, "") }); cur = []; };
   for (const w of words) { if (skip(w)) { flush(); continue; } if (cur.length && (cur.length >= 3 || [...cur, w].map((q) => q.w).join(" ").length > 14 || /[.!?]"?$/.test(cur[cur.length - 1].w) || w.line !== cur[0].line)) flush(); cur.push(w); }
   flush();
   // a caption stays until the next one comes, if the gap is short, so that the band does not flicker

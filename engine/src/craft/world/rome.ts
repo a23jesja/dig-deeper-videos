@@ -5,24 +5,24 @@
 // Shared set: every Short on the Roman street uses it.
 import * as THREE from "three";
 import { mesh, group, box, paint, sunRig, skyDome } from "./kit";
-import { C, amphora, jar, basket, sack, cart, column, table, fountain, house, cloud, awning, House, streetJar, treadingStall, dryingPole, barCounter, bench, cypress, temple, amphitheatreSite, painted, loaf } from "./props";
+import { C, amphora, jar, basket, sack, cart, column, table, fountain, house, cloud, awning, House, streetJar, treadingStall, dryingPole, barCounter, bench, cypress, temple, amphitheatreSite, painted, loaf, windowAt, sunShade, wallShelf, wallLamp } from "./props";
 
 export const WALK = 0.28;
 /** where things stand, for the films that play here */
 export const ROME = {
-  jar: [3.5, WALK, 2.75] as [number, number, number],         // the big jar at the laundry's corner
-  taxTable: [3.3, WALK, 4.7] as [number, number, number],     // where the collector's little table stands (the films put it there)
+  jar: [3.5, WALK, 3.5] as [number, number, number],          // the big jar at the corner, against the house wall
+  box: [2.65, WALK, 3.8] as [number, number, number],         // where the collector's strongbox stands beside the jar (the films put it there)
   stall: [8.15, WALK + 0.1, -1.55] as [number, number, number], // the first treading stall inside the laundry (it opens toward -x)
   shopFront: 4.1,                                             // x of the laundry's open front
 };
 const paving = () => paint("paving", 512, 512, (g, r) => {
   const n = 5, c = 512 / n, P: number[][][] = [];
   for (let i = 0; i <= n; i++) { P.push([]); for (let k = 0; k <= n; k++) P[i].push([i * c + (i % n ? (r() - 0.5) * c * 0.5 : 0), k * c + (k % n ? (r() - 0.5) * c * 0.5 : 0)]); }
-  g.fillStyle = "#5b5d70"; g.fillRect(0, 0, 512, 512);
+  g.fillStyle = "#8e90a0"; g.fillRect(0, 0, 512, 512);
   for (let i = 0; i < n; i++) for (let k = 0; k < n; k++) {
     const q = [P[i][k], P[i + 1][k], P[i + 1][k + 1], P[i][k + 1]], cx = (q[0][0] + q[2][0]) / 2, cy = (q[0][1] + q[2][1]) / 2;
     g.fillStyle = ["#a3a5b4", "#9497a6", "#aeb0bd", "#9b9eac"][(i * 3 + k * 5) % 4]; g.beginPath();
-    q.forEach(([x, y], m) => { const X = cx + (x - cx) * 0.9, Y = cy + (y - cy) * 0.9; if (m) g.lineTo(X, Y); else g.moveTo(X, Y); }); g.closePath(); g.fill();
+    q.forEach(([x, y], m) => { const X = cx + (x - cx) * 0.965, Y = cy + (y - cy) * 0.965; if (m) g.lineTo(X, Y); else g.moveTo(X, Y); }); g.closePath(); g.fill();
   }
 });
 const slabs = () => paint("slabs", 256, 256, (g) => { g.fillStyle = "#e6d9b4"; g.fillRect(0, 0, 256, 256); g.strokeStyle = "#b3a377"; g.lineWidth = 5; g.strokeRect(0, 0, 256, 256); g.beginPath(); g.moveTo(128, 0); g.lineTo(128, 256); g.stroke(); });
@@ -41,8 +41,9 @@ const laundry = () => {
   g.add(mesh(box(1.5, 0.6, 1.0), "#d8cdb4", { at: [x0 + 1.6, WALK + 0.4, -1.85] }), mesh(box(1.3, 0.04, 0.8), "#7cc0e0", { at: [x0 + 1.6, WALK + 0.69, -1.85], line: 0, shadow: false }));
   { const p = dryingPole(3.2, 2.35, [[-1.05, 0.8, 1.25, "#fbf6ea"], [-0.1, 0.9, 1.5, "#f6e3b4"], [0.9, 0.75, 1.15, "#fbf6ea"]]); p.position.set(x0 + 2.3, WALK + 0.1, 2.0); g.add(p); }
   { const b = basket(0.34, 0.3); b.position.set(x0 + 0.95, WALK + 0.1, -0.6); g.add(b, mesh(box(0.5, 0.16, 0.4), "#fbf6ea", { at: [x0 + 0.95, WALK + 0.46, -0.6], rot: [0, 0.3, 0.08] })); }
-  { const p = dryingPole(2.0, 2.2, [[-0.55, 0.6, 1.1, "#f6e3b4"], [0.2, 0.7, 1.35, "#fbf6ea"]]); p.position.set(x0 + 2.35, WALK + 0.1, -2.28); g.add(p); }
+  { const p = dryingPole(2.0, 2.2, [[-0.55, 0.6, 1.1, "#f6e3b4"], [0.2, 0.7, 1.35, "#fbf6ea"]]); p.position.set(x0 + 1.45, WALK + 0.1, -2.28); g.add(p); }
   g.add(mesh(box(1.6, 0.06, 0.3), C.woodD, { at: [x0 + 1.0, WALK + 1.75, -2.3] })); for (const dx of [-0.5, 0, 0.5]) { const j = jar(0.34); j.position.set(x0 + 1.0 + dx, WALK + 1.78, -2.3); g.add(j); }
+  { const sh = wallShelf(3.6, 5); sh.rotation.y = -Math.PI / 2; sh.position.set(x0 + D - 0.13, WALK + 2.05, -0.2); g.add(sh); for (const z of [-1.2, 0.5]) g.add(mesh(box(0.3, 0.14, 0.4), z < 0 ? "#fbf6ea" : "#e9a07c", { at: [x0 + D - 0.3, WALK + 2.15, z] })); }
   // the name of the trade over the door, painted on a board
   { const t = painted(["FVLLONICA"], 2.6, 0.5, { ink: "#b3261e", bg: "#fbf3df", edge: "#b3261e" }); t.rotation.y = -Math.PI / 2; t.position.set(x0 - 0.2, WALK + H - 0.25, 0); g.add(t); }
   return g;
@@ -60,7 +61,7 @@ export const romeStreet = () => {
     root.add(mesh(box(0.22, WALK + 0.32, 80), C.stoneL, { at: [s * 2.1, (WALK - 0.28) / 2, 0], line: 0.7 }));
   }
   // stepping stones across the road, in two places
-  for (const z of [-4.2, 8.2]) for (const x of [-1.25, 0, 1.25]) root.add(mesh(box(0.9, 0.3, 0.62), C.stone, { at: [x, 0.15, z] }));
+  for (const z of [-4.2, 9.6]) for (const x of [-1.25, 0, 1.25]) root.add(mesh(box(0.9, 0.3, 0.62), C.stone, { at: [x, 0.15, z] }));
   // houses: every one its own colour
   const left: House[] = [
     { w: 7, h: 5.0, d: 6, wall: "#fbf3df", dado: C.red, door: -1.4, doorCol: C.green, windows: [1.6, -1.4], shutter: C.green, signs: [{ x: 1.7, y: 2.0, w: 2.7, h: 0.95, lines: ["HELVIVM", "AED · O · V · F"], ink: "#b3261e", bg: "#fbf3df" }] },
@@ -70,7 +71,7 @@ export const romeStreet = () => {
     { w: 7, h: 4.8, d: 6, wall: "#e9a07c", dado: "#7a2f2a", door: -1, windows: [1.8], shutter: C.green },
   ];
   const right: House[] = [
-    { w: 7, h: 5.2, d: 6, wall: "#f6c95e", dado: "#7a2f2a", door: 1.5, doorCol: C.blue, windows: [-1.5, 1.5], shutter: C.blue, signs: [{ x: -0.6, y: 1.95, w: 2.3, h: 0.5, lines: ["CAVE CANEM"], ink: "#2a1a14", bg: "#f6c95e" }] },
+    { w: 7, h: 5.2, d: 6, wall: "#f6c95e", dado: "#7a2f2a", door: 1.5, doorCol: C.blue, windows: [-1.5, 1.5], shutter: C.blue },
     { w: 7, h: 5.4, d: 6, wall: "#fbf3df", dado: C.red, shop: 0.6, windows: [-2.3], shutter: C.green, awning: [C.ochre, C.cloth], signs: [{ x: -2.2, y: 1.9, w: 1.9, h: 0.5, lines: ["FELICITER"], ink: "#b3261e", bg: "#fbf3df" }] },
     { w: 7.5, h: 4.6, d: 6, wall: "#f3b58c", dado: C.red, door: -1.5, doorCol: C.green, windows: [1.5], shutter: C.green },
     { w: 7, h: 5.2, d: 6, wall: "#fbf3df", dado: C.ochre, door: 1, windows: [-2, 1], shutter: C.blue },
@@ -78,7 +79,10 @@ export const romeStreet = () => {
   let z = 17.6;
   for (const h of left) { const g = house(h); g.rotation.y = Math.PI / 2; g.position.set(-4.1, WALK, z - h.w / 2); root.add(g); z -= h.w + 0.12; }
   { const g = house(right[0]); g.rotation.y = -Math.PI / 2; g.position.set(4.1, WALK, 9.75 + 3.5); root.add(g); }
-  { const g = house({ w: 7.1, h: 4.8, d: 6, wall: "#fbf3df", dado: C.red, door: -1.3, doorCol: C.blue, windows: [1.9], shutter: C.blue}); g.rotation.y = -Math.PI / 2; g.position.set(4.1, WALK, 6.13); root.add(g); }
+  { const g = house({ w: 7.1, h: 4.8, d: 6, wall: "#fbf3df", dado: C.red, door: 2.3, doorCol: C.blue, windows: [-2.2, 0.6], shutter: C.blue }); g.rotation.y = -Math.PI / 2; g.position.set(4.1, WALK, 6.13); root.add(g);
+    // the wall by the jar: a window under a sun shade, a lamp on its arm, a shelf of jars over a bench
+    const onWall = (o: THREE.Object3D, z: number, y: number, x = 4.09) => { o.rotation.y = -Math.PI / 2; o.position.set(x, WALK + y, z); root.add(o); };
+    onWall(windowAt(C.green), 4.55, 2.2); onWall(sunShade(1.5, 0.85, C.green, C.cloth), 4.55, 3.05); onWall(wallShelf(1.5, 3), 6.1, 1.62); onWall(wallLamp(), 3.3, 2.45); onWall(bench(1.5), 6.1, 0, 3.86); }
   root.add(laundry());
   z = -2.62; for (const h of right.slice(1)) { const g = house(h); g.rotation.y = -Math.PI / 2; g.position.set(4.1, WALK, z - h.w / 2); root.add(g); z -= h.w + 0.12; }
   // the portico on the left sidewalk: three columns and a beam with its roof
@@ -90,7 +94,7 @@ export const romeStreet = () => {
   { const f = fountain(); f.position.set(-2.95, WALK, 6.3); f.rotation.y = Math.PI / 2; root.add(f); }
   { const b = bench(1.8); b.rotation.y = Math.PI / 2; b.position.set(-3.85, WALK, 0.8); root.add(b); }
   { const b = barCounter(2.4); b.rotation.y = -Math.PI / 2; b.position.set(3.7, WALK, -5.6); root.add(b); for (const dz of [-0.5, 0.2]) { const l = loaf(0.13); l.position.set(3.7, WALK + 0.97, -6.45 + dz * 0.5); root.add(l); } }
-  for (const [x, zz, t] of [[-3.6, 4.2, 0], [-3.3, 3.8, 1], [3.6, -9.2, 0], [3.3, -9.8, 2], [-3.4, -8.5, 1], [3.55, 9.4, 0], [3.3, 9.9, 1], [-3.5, 11.2, 2]] as number[][]) { const o = t === 0 ? amphora(0.95) : t === 1 ? jar(0.7) : basket(); o.position.set(x, WALK, zz); if (t === 0) { o.rotation.z = 0.24; o.position.y += 0.02; } root.add(o); }
+  for (const [x, zz, t] of [[-3.6, 4.2, 0], [-3.3, 3.8, 1], [3.6, -9.2, 0], [3.3, -9.8, 2], [-3.4, -8.5, 1], [-3.5, 11.2, 2]] as number[][]) { const o = t === 0 ? amphora(0.95) : t === 1 ? jar(0.7) : basket(); o.position.set(x, WALK, zz); if (t === 0) { o.rotation.z = 0.24; o.position.y += 0.02; } root.add(o); }
   { const c = cart(); c.position.set(0.5, 0, -10.5); c.rotation.y = 0.5; root.add(c); const a = amphora(0.9); a.position.set(0.4, 0.77, -10.7); a.rotation.z = 0.2; root.add(a); const s = sack(0.3); s.position.set(0.7, 0.77, -10.1); root.add(s); }
   { const a = awning(2.6, 1.3, 2.8, C.green, C.cloth); a.rotation.y = Math.PI / 2; a.position.set(-4.0, WALK, 12.0); root.add(a); const t = table(1.3, 0.6, 0.74); t.rotation.y = Math.PI / 2; t.position.set(-3.3, WALK, 12.0); root.add(t); for (const dz of [-0.4, 0, 0.4]) { const o = jar(0.4); o.position.set(-3.3, WALK + 0.78, 12 + dz); root.add(o); } }
   // far toward -z: the square, the great amphitheatre being built, tall trees, hills; toward +z: a temple closes the street

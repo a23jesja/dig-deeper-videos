@@ -240,14 +240,23 @@ export const chest = (open = false, coinsIn = false, w = 0.62, h = 0.36, d = 0.4
   const g = group([mesh(box(w, h, d), "#8a5a30", { at: [0, h / 2, 0] }), mesh(box(w + 0.03, 0.05, d + 0.03), C.iron, { at: [0, 0.04, 0], line: 0.5 }), mesh(box(w + 0.03, 0.05, d + 0.03), C.iron, { at: [0, h - 0.04, 0], line: 0.5 })]);
   for (const x of [-w * 0.3, w * 0.3]) g.add(mesh(box(0.05, h + 0.02, d + 0.035), C.iron, { at: [x, h / 2, 0], line: 0 }));
   const lid = group([mesh(box(w + 0.02, 0.07, d + 0.02), "#7a4e28", { at: [0, 0.035, d / 2] }), mesh(box(0.09, 0.09, 0.03), C.gold, { at: [0, 0.02, d + 0.02], line: 0.5 })], [0, h, -d / 2]);
-  lid.rotation.x = open ? -1.9 : 0; g.add(lid);
-  // what shows when the lid is up: a dark inside with a rim, and gold heaped to the brim if there is any
-  if (open) { g.add(mesh(box(w - 0.07, 0.02, d - 0.07), coinsIn ? C.gold : "#2a1c16", { at: [0, h + 0.008, 0], line: 0.4, shadow: false }));
-    if (coinsIn) for (let i = 0; i < 9; i++) g.add(mesh(cyl(0.04, 0.04, 0.012, 12), i % 2 ? "#ffd84a" : C.gold, { at: [(((i * 37) % 9) / 9 - 0.5) * (w - 0.2), h + 0.03 + (i % 3) * 0.012, (((i * 53) % 7) / 7 - 0.5) * (d - 0.16)], rot: [0.2 * (i % 3), 0, 0.2 * ((i + 1) % 3)], line: 0.5, shadow: false })); }
+  lid.rotation.x = open ? -1.9 : 0; lid.userData.lid = true; g.add(lid);
+  // what shows when the lid is up: a dark inside with a rim, and gold heaped over the brim if there is any
+  if (open) { g.add(mesh(box(w - 0.07, 0.02, d - 0.07), coinsIn ? "#d9a520" : "#2a1c16", { at: [0, h + 0.008, 0], line: 0.4, shadow: false }));
+    if (coinsIn) { g.add(mesh(ball(1, 14), C.gold, { at: [0, h - 0.01, 0], scale: [w * 0.4, 0.11, d * 0.36], line: 0.6, shadow: false }));
+      for (let i = 0; i < 16; i++) { const a = i * 2.4, r = 0.03 + (i % 5) * 0.045; g.add(mesh(cyl(0.042, 0.042, 0.012, 12), i % 2 ? "#ffd84a" : C.gold, { at: [Math.cos(a) * r * (w / 0.5), h + 0.1 - r * 0.28 + (i % 3) * 0.008, Math.sin(a) * r * (d / 0.5)], rot: [0.5 * Math.sin(a), 0, 0.5 * Math.cos(a)], line: 0.5, shadow: false })); } } }
   return g;
 };
 /** one big coin (for close shots), lying flat; turn it to stand it up */
 export const coin = (r = 0.02, col = C.gold) => group([mesh(cyl(r, r, r * 0.18, 20), col, { line: 0.6 }), mesh(cyl(r * 0.72, r * 0.72, r * 0.2, 16), shadeHex(col, 0.8), { line: 0, shadow: false })]);
+/** a wax tablet for keeping accounts: two wooden leaves, the wax dark, a few scratched lines */
+export const waxTablet = () => { const g = group([mesh(box(0.2, 0.26, 0.02), C.wood, { shadow: false }), mesh(box(0.16, 0.22, 0.012), "#3a2a22", { at: [0, 0, 0.012], line: 0, shadow: false })]); for (const y of [0.06, 0.02, -0.02]) g.add(mesh(box(0.11, 0.012, 0.006), "#d9c89a", { at: [-0.01, y, 0.02], line: 0, shadow: false })); return g; };
+/** a shelf on a wall with small jars standing on it (the wall is behind it, toward -z) */
+export const wallShelf = (len = 1.6, n = 3) => { const g = group([mesh(box(len, 0.06, 0.3), C.woodD, { at: [0, 0, 0.15] }), mesh(box(0.06, 0.22, 0.24), C.woodD, { at: [-len / 2 + 0.1, -0.13, 0.12], line: 0.5 }), mesh(box(0.06, 0.22, 0.24), C.woodD, { at: [len / 2 - 0.1, -0.13, 0.12], line: 0.5 })]); for (let i = 0; i < n; i++) { const j = i % 2 ? amphora(0.42) : jar(0.34); j.position.set(-len / 2 + (len / n) * (i + 0.5), 0.03, 0.15); g.add(j); } return g; };
+/** a sun shade over a window or a door: a striped cloth on two iron arms (the wall is toward -z) */
+export const sunShade = (w = 1.5, reach = 0.9, a = C.blue, b = C.cloth) => group([mesh(box(w, 0.04, reach * 1.08), "#ffffff", { at: [0, -0.16, reach / 2], rot: [0.36, 0, 0], map: stripes(a, b) }), mesh(box(w, 0.16, 0.03), a, { at: [0, -0.4, reach + 0.02], line: 0.6 }), rod([-w / 2 + 0.05, -0.02, 0], [-w / 2 + 0.05, -0.33, reach], 0.02, C.iron, { line: 0.4 }), rod([w / 2 - 0.05, -0.02, 0], [w / 2 - 0.05, -0.33, reach], 0.02, C.iron, { line: 0.4 })]);
+/** a lamp on an iron arm from a wall (the wall is toward -z) */
+export const wallLamp = () => group([rod([0, 0, 0], [0, 0, 0.4], 0.018, C.iron, { line: 0.4 }), rod([0, 0, 0.4], [0, -0.14, 0.4], 0.01, C.iron, { line: 0 }), mesh(lathe("lamp", [[0.05, 0], [0.11, 0.05], [0.12, 0.12], [0.05, 0.17], [0.001, 0.17]], 12), C.terra, { at: [0, -0.31, 0.4] })]);
 /** a cook-shop counter with jars set into it (thermopolium): an L of masonry with a marble top; holes with dark rims */
 export const barCounter = (len = 2.4) => {
   const g = group([mesh(box(len, 0.9, 0.62), C.ochre, { at: [0, 0.45, 0] }), mesh(box(len + 0.08, 0.07, 0.7), C.marble, { at: [0, 0.935, 0] }), mesh(box(0.62, 0.9, 1.1), C.ochre, { at: [-len / 2 + 0.31, 0.45, -0.86] }), mesh(box(0.7, 0.07, 1.18), C.marble, { at: [-len / 2 + 0.31, 0.935, -0.86] }),

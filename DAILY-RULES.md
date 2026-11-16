@@ -35,42 +35,27 @@ The session decides and does everything itself. Jesper is asked for **one thing 
 **Phase 2 starts when two Shorts in a row reach 65 % or more:** long videos of 7-12 minutes in the proven look,
 one every two weeks, plus 3-5 Shorts a week cut from them.
 
-## The look: 2D (Jesper 2026-11-14, after the 3D Mona Lisa Short failed)
-The 3D Short was rejected: figures cut off by the frame edge, a smock that read as a snowman, a flat frame around a
-realistic painting, captions on top of a name tag, cameras too close. 3D is dropped. Everything is laid out in
-screen space, where what is drawn is what is shown.
-- **Layers, not a 3D world.** Each shot is a painted background (made locally with ComfyUI from our own layout, with
-  one clear light and real depth), a midground with the characters, and a foreground element. Layers move at
-  different speeds when the camera pans or pushes in.
-- **Characters: our drawn stickmen**, as approved on the character sheet: plain round white head with black outline,
-  a few black lines and dots for the face, thin black limbs, mitten hands, a simple garment body. Soft shading and a
-  light rim so they sit in the painted picture. A garment must read as clothing: collar, opening, sleeves or belt.
-- **Big.** In medium shots a character is at least half the picture height. Use close-ups of faces and inserts of
-  objects often; a wide view lasts two seconds at most.
-- **One style per picture.** Anything shown inside the scene (paintings, posters, letters) is drawn in the same style
-  as the scene. No realistic image inside a flat cartoon frame.
-- **Layout rules, checked by script on every shot before rendering:**
-  - every character and key prop is fully inside the picture with a 5 % margin, or is a deliberate close-up with
-    the whole face inside;
-  - nothing important under the caption band or under YouTube's interface (top and bottom 15 % of a Short);
-  - captions and name tags never overlap each other or a face;
-  - no empty black or unpainted area anywhere in the frame.
-  A shot that fails is fixed before anything is rendered.
-- **Motion:** smooth, no stepped cycles, feet planted, turns drawn as in-between poses, faces toward the viewer in
-  reactions.
-
-## The reusable figure kit (Jesper 2026-11-15)
-Jesper makes a small set of drawn sheets once, by hand in Google Flow (his existing subscription; never driven by
-an unofficial tool on his Google account), and puts them in `figurblad/`. Every video is built from this kit, so no
-new sheet is needed per video.
-- **Sir Digsworth:** character sheet (four views, six expressions) and a parts sheet (A-pose body, head, pipe, cane,
-  hand poses, mouth shapes for talking).
-- **The extra:** one plain stick figure with no clothes or hat, as a parts sheet, plus a sheet of expressions.
-- **Wardrobe:** hats, outfits, facial hair and hair as separate items, covering the eras the channel tells.
-- **Effects:** dust, smoke, impact, sparks, sweat, exclamation and question marks, speed lines, speech bubble.
-The session cuts the sheets into parts once, builds 2D puppets, and makes every other character by dressing the
-extra from the wardrobe. A missing item is drawn in code in the same style and noted, so Jesper can add it to the
-kit later. Backgrounds are painted locally per video.
+## The look: the emu Short (locked by Jesper 2026-11-16)
+After trying 3D dolls, flat 2D and Flow figure sheets, Jesper chose the look of the first approved Short,
+"Australia Lost a War to Emus (1932)" (commit 05fab8d, `engine/src/videos/emu`). Do not change it again without
+his say-so.
+- **Characters: the engine's own drawn cast**, exactly as in the emu Short: flat ink-outlined cartoon figures drawn
+  in code (`toon.ts`) and standing as cards in the 3D world. Same Sir Digsworth as there. New characters and animals
+  are drawn the same way as the soldiers and emus were. Fix once: the peak of Sir Digsworth's cap must be as wide as
+  the cap and joined to its lower edge, and the pipe sits in his mouth.
+- **The Flow figure sheets in `figurblad/` are not used in videos.** They are for the profile picture, the banner
+  and thumbnails only.
+- **World: the same kind of 3D world, with more detail.** Use the environment kit: trees with thousands of leaves,
+  grass of single blades, textured roads and decks, layered skies for day, dusk and night, water, weather and
+  particles, lights that really glow, clear shadows from one light per scene. Free CC0 models for vehicles and
+  props, licence read first. Signs and papers with readable text that tell the story.
+- **Camera:** varied, as in the reference Shorts: close to the ground, close-ups, from inside a vehicle or boat,
+  inserts of objects. Subjects big in the picture; a wide view lasts two seconds at most.
+- **Layout checks by script before rendering:** every character and key prop fully inside the picture with a 5 %
+  margin or a deliberate close-up with the whole face inside; nothing important under the caption band or in the
+  top and bottom 15 % of a Short; captions and name tags never overlap each other or a face; no black or empty
+  area; no prop standing between or in front of the characters.
+- **Motion:** smooth, no stepped cycles, feet planted, faces toward the viewer in reactions.
 
 ## The first second of every Short (hard rule)
 - Frame one shows the most striking moment of the story: one big subject filling the picture, already moving.

@@ -1,0 +1,9 @@
+{
+ "voice": "bm_george",
+ "speed": 1.08,
+ "gap": 0.13,
+ "lead": 0.05,
+ "lines": [
+  { "id": "say", "text": "I say! That mountain was not smoking yesterday.", "gap": 0.2 }
+ ]
+}

@@ -91,6 +91,14 @@ export const townsfolk = (v = 0): Outfit => {
 let SIR = false, GT = false, NEW = false, TALK = 0, BACK = false, LOOKUP = 0;
 /** how far the figure is turned from the lens, -1..1 (+-1 = the three-quarter view to screen-left / screen-right); set by bodyFront */
 let TURN = 0;
+/** per-draw extras of the craft kit, set from the options of bodyFront / bodySide: the hat's lag behind the head [dx, dy in u, degrees],
+ *  where the eyes look [-1..1 right, -1..1 down], the mouth shape of the spoken sound */
+let CAPV: number[] = [0, 0, 0], GAZE: number[] = [0, 0], MSHAPE: Viseme | null = null;
+/** mouth shapes for speech: rest = the expression's own mouth, M = lips closed (m b p), E = teeth together (e i s t d n k),
+ *  A = wide open, O = round, U = small and pursed (u w oo), F = teeth on the lip (f v), L = open with the tongue up (l th r) */
+export type Viseme = "rest" | "M" | "E" | "A" | "O" | "U" | "F" | "L";
+/** hand shapes: fist (the plain ink dot), open (fingers spread), point (one finger out), grip (closed round a handle), hold (a flat palm under a thing) */
+export type HandShape = "fist" | "open" | "point" | "grip" | "hold";
 /** head tilt back per unit of lookUp, in degrees (negative = chin up) */
 const LOOKUP_TILT = 5;
 /** 0..1 mouth opening for lip-sync (overrides the expression's mouth while > 0.12) */
@@ -290,19 +298,19 @@ const eyeKind = (k: EyeK, lid: number): EyeK =>
 const lidOf = (b: boolean | number | undefined) => (b === true ? 1 : Number(b) || 0);
 
 const eye = (p: Pen, kind: EyeK, x: number, ey: number, u: number, side: number, look: number, skin: string) => {
-  const lx = x + look * 3 * u, lw = 3.8 * u;
+  const lx = x + look * 3 * u + GAZE[0] * 3.4 * u, gy = GAZE[1] * 3 * u, lw = 3.8 * u;
   switch (kind) {
-    case "dot": p.ell(lx, ey, 3.8 * u, 5.5 * u, INK, 0); break;
-    case "small": p.ell(lx, ey, 3 * u, 4.4 * u, INK, 0); break;
+    case "dot": p.ell(lx, ey + gy, 3.8 * u, 5.5 * u, INK, 0); break;
+    case "small": p.ell(lx, ey + gy, 3 * u, 4.4 * u, INK, 0); break;
     // a calm open eye: white with a pupil, the same size on both sides (Sir Digsworth's neutral face)
-    case "open": p.ell(x, ey, 8.5 * u, 8.5 * u, WHITE, 2.4 * u); p.dot(lx, ey + 0.5 * u - 4.6 * u * LOOKUP, 3.2 * u); break;
+    case "open": p.ell(x, ey, 8.5 * u, 8.5 * u, WHITE, 2.4 * u); p.dot(lx, ey + 0.5 * u - 4.6 * u * LOOKUP + gy, 3.2 * u); break;
     case "lid": p.ell(lx, ey - u, 7 * u, 6 * u, INK, 0, 0, 180); p.stroke([[x - 9 * u, ey - u], [x + 9 * u, ey - u]], lw); break;
     case "slit": p.ell(lx, ey, 7 * u, 2.6 * u, INK, 0, 0, 180); p.stroke([[x - 9 * u, ey], [x + 9 * u, ey]], lw); break;
     case "happy": p.arc(x, ey + 3 * u, 8 * u, 6 * u, 200, 340, lw); break;
     case "dash": p.stroke([[x - 8.5 * u, ey], [x + 8.5 * u, ey]], lw); break;
     case "squeeze": p.stroke([[x + 6 * u * side, ey - 5 * u], [x - 6 * u * side, ey], [x + 6 * u * side, ey + 5 * u]], lw); break;
     case "shock": case "shockHalf":
-      p.ell(x, ey, 11 * u, 11 * u, WHITE, 2.6 * u); p.dot(lx - side * 1.5 * u, ey + 1.5 * u - 7.2 * u * LOOKUP, 3 * u);
+      p.ell(x, ey, 11 * u, 11 * u, WHITE, 2.6 * u); p.dot(lx - side * 1.5 * u, ey + 1.5 * u - 7.2 * u * LOOKUP + gy, 3 * u);
       if (kind === "shockHalf") { p.ell(x, ey, 11 * u, 11 * u, skin, 0, 180, 360); p.stroke([[x - 11 * u, ey], [x + 11 * u, ey]], 2.6 * u); }
       break;
     default: {
@@ -342,6 +350,48 @@ const mouth = (p: Pen, kind: MouthK, mx: number, my: number, u: number, k = 1) =
   }
 };
 
+/** a mouth shape of speech at (mx, my); kx squeezes it sideways (profile). Returns its viewer-right corner (the pipe starts there). */
+const viseme = (p: Pen, v: Viseme, mx: number, my: number, u: number, kx = 1): P2 => {
+  const open = (rx: number, ry: number, dy: number, teeth: number, tongue: number): P2 => {
+    const cy = my + dy, e = ellPts(mx, cy, rx, ry);
+    p.poly(e, MOUTH, 0);
+    p.clip(e, () => {
+      if (teeth) p.poly([[mx - rx, cy - ry], [mx + rx, cy - ry], [mx + rx, cy - ry + teeth], [mx - rx, cy - ry + teeth]], WHITE, 0);
+      if (tongue) p.ell(mx, cy + ry * (1 - tongue), 0.7 * rx, 0.7 * ry, TONGUE, 0);
+    });
+    p.poly(e, null, 3 * u);
+    return [mx + rx, cy];
+  };
+  switch (v) {
+    case "M": p.stroke([[mx - 5.5 * u * kx, my], [mx + 5.5 * u * kx, my]], 4 * u); return [mx + 5.5 * u * kx, my];
+    case "E": { const w = 8.5 * u * kx, h = 3.8 * u; p.poly(rrect(mx - w, my - h, mx + w, my + h, 2.6 * u), WHITE, 3 * u); p.stroke([[mx - w + 2 * u, my], [mx + w - 2 * u, my]], 1.4 * u); return [mx + w, my]; }
+    case "A": return open(7.5 * u * kx, 8.5 * u, 2 * u, 4 * u, 0.5);
+    case "O": return open(5.2 * u * kx, 6.8 * u, 1.5 * u, 0, 0.25);
+    case "U": return open(3.4 * u * kx, 4 * u, 0.5 * u, 0, 0);
+    case "F": { const w = 6.5 * u * kx; p.poly(rrect(mx - w, my - 3.4 * u, mx + w, my + 1.6 * u, 2 * u), WHITE, 2.8 * u); p.stroke([[mx - w * 0.8, my + 4.6 * u], [mx + w * 0.8, my + 4.6 * u]], 2.8 * u); return [mx + w, my]; }
+    case "L": return open(6.8 * u * kx, 5.8 * u, 1 * u, 3.2 * u, 0.9);
+    default: return [mx, my];
+  }
+};
+/** a hand at the end of an arm; ang = the direction the forearm points (canvas radians). Ink silhouettes, like the plain dot. */
+const hand = (p: Pen, x: number, y: number, u: number, shape: HandShape | undefined, ang: number) => {
+  const dir = (a: number, l: number): P2 => [x + Math.cos(ang + rad(a)) * l, y + Math.sin(ang + rad(a)) * l];
+  if (shape === "open") {
+    for (const a of [-46, -16, 14, 44]) p.stroke([dir(a, 3 * u), dir(a, 11.5 * u)], 3 * u);
+    p.stroke([dir(-95, 2 * u), dir(-88, 8.5 * u)], 3.2 * u);
+    p.dot(x, y, 5.6 * u);
+  } else if (shape === "point") {
+    p.stroke([[x, y], dir(0, 16 * u)], 3.6 * u);
+    p.stroke([dir(-80, 2 * u), dir(-70, 7.5 * u)], 3.2 * u);
+    p.dot(x, y, 5.8 * u);
+  } else if (shape === "grip") {
+    p.poly(ellPts(x, y, 6.8 * u, 5.2 * u, 0, 360, (ang * 180) / Math.PI + 90), INK, 0);
+    p.stroke([dir(60, 3 * u), dir(100, 7 * u)], 3.2 * u);
+  } else if (shape === "hold") {
+    p.poly(ellPts(x, y + 1 * u, 8.5 * u, 4 * u, 0, 360, 0), INK, 0);
+    p.stroke([[x - 6 * u, y], [x - 9 * u, y - 6 * u]], 3.2 * u);
+  } else p.dot(x, y, 5.8 * u);
+};
 /** where the viewer-right corner of a mouth ends (the pipe stem starts there); same geometry as `mouth` */
 const mouthCorner = (kind: MouthK, mx: number, my: number, u: number, k = 1): P2 => {
   switch (kind) {
@@ -387,7 +437,8 @@ const faceFront = (p: Pen, cx: number, cy: number, W: number, expr: Expr, facing
   const km = (s: number) => (aq && s === sg ? 1 - 0.3 * aq : 1 + 0.05 * aq);   // the far half of a moustache is shorter
   const ms = NEW ? sirMs(F.mouth) : 1, mu = u * ms;
   let corner: P2 = [mx, my];
-  if (TALK > 0.12 && F.mouth !== "O" && F.mouth !== "laugh" && F.mouth !== "teeth") {
+  if (MSHAPE && MSHAPE !== "rest") corner = viseme(p, MSHAPE, mx, my + (NEW ? 0 : 1) * u, u * (NEW ? 0.82 : 1));
+  else if (TALK > 0.12 && F.mouth !== "O" && F.mouth !== "laugh" && F.mouth !== "teeth") {
     const k = Math.min(1, TALK), tk = NEW ? 0.8 : 1, rx = (4.5 + 3.5 * k) * u * tk;
     p.ell(mx, my + 1 * u, rx, (1.5 + 6.5 * k) * u * tk, MOUTH, 3 * u);
     corner = [mx + rx, my + u];
@@ -429,7 +480,8 @@ const faceSide = (p: Pen, hx: number, hy: number, W: number, expr: Expr, lid: nu
   p.stroke([[hx + 44 * u, hy + 4 * u + dy0], [hx + 47.5 * u, hy + 9 * u + dy0], [hx + 43 * u, hy + 10 * u + dy0]], 3 * u);
   const smy = hy + (SIR ? 40 : GT ? 32 : 21) * u, sms = NEW ? sirMs(F.mouth) : 1;
   let scorner: P2 = [hx + 33 * u, smy];
-  if (TALK > 0.12) {
+  if (MSHAPE && MSHAPE !== "rest") scorner = viseme(p, MSHAPE, hx + 34 * u, smy, u * (NEW ? 0.82 : 1), 0.66);
+  else if (TALK > 0.12) {
     const tk = NEW ? 0.8 : 1, rx = (3.5 + 2 * TALK) * u * tk;
     p.ell(hx + 34 * u, hy + (SIR ? 40 : GT ? 32 : 22) * u, rx, (1.5 + 5.5 * Math.min(1, TALK)) * u * tk, MOUTH, 3 * u);
     scorner = [hx + 34 * u + rx, hy + (SIR ? 40 : GT ? 32 : 22) * u];
@@ -584,9 +636,9 @@ const gentHat = (p: Pen, o: Outfit, H: Blob, cx: number, hc: number, R: (pts: P2
     p.poly(d.pts, null, ow);
     if (!BACK) {
       if (side) p.poly(R([[cx + 0.5 * hw, ye + 1 * u], [cx + hw + 22 * u, ye + 8 * u], [cx + 0.5 * hw, ye + 10 * u]]), "#1d2030", ow);
-      else { const up: P2[] = [], lo: P2[] = []; for (let i = 0; i <= 20; i++) { const x = cx - 0.82 * hw + (1.64 * hw * i) / 20, t = ((x - cx) / hw) ** 2; up.push([x, d.base(x) + 3 * u]); lo.push([x, d.base(x) + 3 * u + 7 * u * Math.max(0, 1 - t / 0.67) ** 0.6]); }
+      else { const up: P2[] = [], lo: P2[] = [], pcx = cx + 0.34 * hw * TURN, phw = hw * (1 - 0.12 * Math.abs(TURN)); for (let i = 0; i <= 20; i++) { const x = pcx - 0.82 * phw + (1.64 * phw * i) / 20, t = ((x - pcx) / phw) ** 2; up.push([x, d.base(x) + 3 * u]); lo.push([x, d.base(x) + 3 * u + 7 * u * Math.max(0, 1 - t / 0.67) ** 0.6]); }
         p.poly(R([...up, ...lo.reverse()]), "#1d2030", ow); }
-      const [gx, gy] = R([[cx + (side ? 0.5 * hw : 0), ye - 0.1 * b]])[0];
+      const [gx, gy] = R([[cx + (side ? 0.5 * hw : 0.34 * hw * TURN), ye - 0.1 * b]])[0];
       p.ell(gx, gy, 6.5 * u, 5.5 * u, "#e2bb4c", 2.2 * u, 0, 360, deg); p.dot(gx, gy, 1.8 * u, INK);
     }
   } else if (o.hat === "tophat") { // a tall silk hat on a narrow brim, a ribbon round it
@@ -630,19 +682,24 @@ const romanHat = (p: Pen, o: Outfit, H: Blob, cx: number, hc: number, R: (pts: P
   const fill = (pts: P2[], c: string) => p.shadedFill(pts, c, mul(c, SH_FELT), light, a, 0.35);
   if (o.hat === "helmet") {
     const ye = hc - 0.62 * b, hw = 1.08 * a, st = "#aab3be";
-    p.poly(R([[cx - 0.62 * hw, ye - 0.2 * b], [cx - 0.5 * hw, ye - 0.9 * b], [cx - 0.2 * hw, ye - 1.15 * b], [cx + 0.2 * hw, ye - 1.15 * b], [cx + 0.5 * hw, ye - 0.9 * b], [cx + 0.62 * hw, ye - 0.2 * b]]), "#c8312b", ow);
-    for (const s of [-1, 1]) p.poly(R([[cx + s * 0.84 * hw, ye - 0.05 * b], [cx + s * 1.05 * hw, ye + 0.05 * b], [cx + s * 1.02 * hw, ye + 0.95 * b], [cx + s * 0.8 * hw, ye + 0.88 * b]]), "#98a1ad", ow);
+    { const k = 1 - 0.3 * Math.abs(BACK ? 0 : TURN), cc = cx + 0.1 * hw * (BACK ? 0 : TURN);
+      p.poly(R([[cc - 0.62 * hw * k, ye - 0.2 * b], [cc - 0.5 * hw * k, ye - 0.9 * b], [cc - 0.2 * hw * k, ye - 1.15 * b], [cc + 0.2 * hw * k, ye - 1.15 * b], [cc + 0.5 * hw * k, ye - 0.9 * b], [cc + 0.62 * hw * k, ye - 0.2 * b]]), "#c8312b", ow); }
+    // turned: the cheek flap toward the lens moves in over the cheek and widens, the far one closes up; crest and rivets slide with the face
+    const tq = BACK ? 0 : TURN, aq = Math.abs(tq), sg = Math.sign(tq);
+    for (const s of [-1, 1]) { const far = aq > 0 && s === sg, sh2 = aq && !far ? -s * 0.26 * hw * aq : 0, w = far ? 1 - 0.6 * aq : 1 + 0.5 * aq, xo = cx + s * 1.05 * hw + sh2;
+      p.poly(R([[xo - s * 0.21 * hw * w, ye - 0.05 * b], [xo, ye + 0.05 * b], [xo - s * 0.03 * hw, ye + 0.95 * b], [xo - s * 0.25 * hw * w, ye + 0.88 * b]]), "#98a1ad", ow); }
     const d = dome(hw, ye, 0.62 * b, 0.55); fill(d, st);
     p.clip(d, () => p.poly(R([[cx - hw - 4 * u, ye - 0.15 * b], [cx + hw + 4 * u, ye - 0.15 * b], [cx + hw + 4 * u, ye + 8 * u], [cx - hw - 4 * u, ye + 8 * u]]), "#7d8691", 0));
     p.poly(d, null, ow);
     p.stroke(R([[cx - 0.5 * hw, ye - 0.46 * b], [cx - 0.15 * hw, ye - 0.56 * b]]), 5 * u, "#eef2f6");
-    for (const s of [-0.55, 0, 0.55]) { const [rx, ry] = R([[cx + s * hw, ye - 0.08 * b]])[0]; p.dot(rx, ry, 3.2 * u, INK); p.dot(rx, ry, 2 * u, "#e2bb4c"); }
+    for (const s of [-0.55, 0, 0.55]) { const [rx, ry] = R([[cx + (s * (1 - 0.15 * aq) + 0.3 * tq) * hw, ye - 0.08 * b]])[0]; p.dot(rx, ry, 3.2 * u, INK); p.dot(rx, ry, 2 * u, "#e2bb4c"); }
   } else if (o.hat === "bakercap") {
     const ye = hc - 0.66 * b, hw = 1.04 * a, col = o.cap ?? "#f2efe4", d = dome(hw, ye, 0.66 * b, 0.5, 4 * u);
     fill(d, col);
     p.clip(d, () => p.poly(R([[cx - hw - 4 * u, ye - 0.14 * b], [cx + hw + 4 * u, ye - 0.14 * b], [cx + hw + 4 * u, ye + 8 * u], [cx - hw - 4 * u, ye + 8 * u]]), shade(col, 0.88), 0));
     p.poly(d, null, ow);
-    p.stroke(R([[cx - 0.4 * hw, ye - 0.38 * b], [cx - 0.05 * hw, ye - 0.5 * b]]), 4 * u, "#ffffff");
+    p.stroke(R([[cx - (0.4 - 0.3 * TURN) * hw, ye - 0.38 * b], [cx - (0.05 - 0.3 * TURN) * hw, ye - 0.5 * b]]), 4 * u, "#ffffff");
+    if (TURN && !BACK) { const fx = cx + 0.5 * hw * TURN; p.stroke(R([[fx - 0.3 * hw, ye + 5 * u], [fx, ye + 7 * u], [fx + 0.3 * hw, ye + 5 * u]]), 2 * u, shade(col, 0.62)); }   // the gathered front edge
   } else {
     const ye = hc - 0.6 * b, hw = 1.14 * a, col = o.cap ?? "#e9d9b0", d = dome(hw, ye, 0.7 * b, 0.62, 5 * u);
     fill(d, col);
@@ -665,7 +722,15 @@ const hatOn = (p: Pen, o: Outfit, hp: P2[], H: Blob, cx0: number, hc: number, li
   // hat that leaned with it looked as if it were sliding off over the eyes, so there it stays close to level.
   const lean = side && p.rot ? p.rot[0] : 0;
   const a = (side ? rad(1.5) - 0.75 * lean : H.rot) + rad(4 * (rnd(seed, 20) - 0.5));
-  const R = (pts: P2[]) => rotPts(pts, a, cx, hc);
+  // the hat follows the head a moment late: the motion library gives the offset (CAPV)
+  const R = (pts: P2[]) => { const r = rotPts(pts, a + rad(CAPV[2]), cx, hc); return CAPV[0] || CAPV[1] ? r.map(([x, y]) => [x + CAPV[0] * u, y + CAPV[1] * u] as P2) : r; };
+  if ((Math.abs(CAPV[0]) > 2 || Math.abs(CAPV[1]) > 2) && !BACK && o.hat !== "hair" && o.hat !== "bonnet" && o.hat !== "scarf") {
+    // a hat lifted off the head shows the hair under it
+    const hcol = o.hair ?? o.moustache ?? ["#5b3a22", "#2b2026", "#8a6a3a", "#3a2a1e", "#a8824c", "#4a3020"][Math.floor(rnd(seed, 31) * 6)];
+    const yk = hc - 0.6 * H.b, m = hp.length, kp = (q: P2) => q[1] < yk, st = Math.max(0, hp.findIndex((q, i) => kp(q) && !kp(hp[(i + m - 1) % m])));
+    const arc = [...hp.slice(st), ...hp.slice(0, st)].filter(kp);
+    if (arc.length >= 3) { p.shadedFill(arc, hcol, mul(hcol, SH_FELT), light, H.a, 0.35); p.poly(arc, null, ow * 0.8); }
+  }
   const sag = (yb: number, wb: number): P2[] => {
     const base: P2[] = [];
     for (let i = 0; i <= 12; i++) { const t = i / 12; base.push([cx + wb * (2 * t - 1), yb + 3 * u * (1 - (2 * t - 1) ** 2)]); }
@@ -700,9 +765,9 @@ const hatOn = (p: Pen, o: Outfit, hp: P2[], H: Blob, cx0: number, hc: number, li
       const [tx, ty] = R([[cx + 24 * u, yb - ht - 6 * u]])[0];
       p.ell(tx, ty, 7 * u, 7 * u, "#2b7a4b", 2.5 * u);
     } else {
-      const [px, py] = R([[cx + 3 * u * facing, yb + 3 * u]])[0];
+      const [px, py] = R([[cx + 3 * u * facing + 0.3 * wb * TURN, yb + 3 * u]])[0];
       p.ell(px, py, 34 * u, 0.045 * HH, "#16171b", 2.5 * u, 0, 180, deg); // peak
-      const [bx, by] = R([[cx, yb - 0.45 * ht]])[0];
+      const [bx, by] = R([[cx + 0.42 * wb * TURN, yb - 0.45 * ht]])[0];
       p.ell(bx, by, 7 * u, 6 * u, tall ? "#e8c45a" : "#c9ccd2", 2 * u, 0, 360, deg); // badge plate
       p.arc(bx, by, 3.5 * u, 2.8 * u, 200, 500, 1.6 * u);
       const [tx, ty] = R([[cx, yb - ht - 6 * u]])[0];
@@ -740,7 +805,7 @@ const hatOn = (p: Pen, o: Outfit, hp: P2[], H: Blob, cx0: number, hc: number, li
       const deg = (a * 180) / Math.PI;
       if (side) p.poly(R([[cx + 40 * u, cut - 2 * u], [cx + 74 * u, cut + 4 * u], [cx + 40 * u, cut + 6 * u]]), shade(col, 0.8), ow);
       else {
-        const s = facing || (rnd(seed, 21) < 0.5 ? -1 : 1), [px, py] = R([[cx + (o.sir ? 0 : s * 4 * u), cut + (o.sir ? 0 : 1.5 * u)]])[0];
+        const s = facing || (rnd(seed, 21) < 0.5 ? -1 : 1), [px, py] = R([[cx + (o.sir ? 0 : s * 4 * u) + 0.34 * H.a * TURN, cut + (o.sir ? 0 : 1.5 * u)]])[0];
         // Sir Digsworth's peak is as wide as the cap and joined to its lower edge (DAILY-RULES, 2026-11-16)
         p.ell(px, py, o.sir ? 0.9 * H.a : 32 * u, (o.sir ? 0.075 : 0.06) * HH, shade(col, 0.8), ow, 0, 180, deg);
       }
@@ -767,8 +832,8 @@ const hatOn = (p: Pen, o: Outfit, hp: P2[], H: Blob, cx0: number, hc: number, li
       p.dot(gx, gy, 4.2 * u, INK); p.dot(gx, gy, 3 * u, "#d8b24a");
     } else if (!BACK) {
       if (side) p.poly(R([[cx + 38 * u, yb - 1 * u], [cx + 66 * u, yb + 9 * u], [cx + 36 * u, yb + 7 * u]]), "#3b2a1e", 2.5 * u);
-      else { const [px, py] = R([[cx + 3 * u * facing, yb + 3 * u]])[0]; p.ell(px, py, 37 * u, 0.05 * HH, "#3b2a1e", 2.5 * u, 0, 180, deg); }
-      const [gx, gy] = R([[cx + (side ? 30 * u : 0), yb - 0.19 * HH]])[0];
+      else { const [px, py] = R([[cx + 3 * u * facing + 0.3 * wb * TURN, yb + 3 * u]])[0]; p.ell(px, py, 37 * u, 0.05 * HH, "#3b2a1e", 2.5 * u, 0, 180, deg); }
+      const [gx, gy] = R([[cx + (side ? 30 * u : 0.42 * wb * TURN), yb - 0.19 * HH]])[0];
       p.dot(gx, gy, 5.4 * u, INK); p.dot(gx, gy, 4 * u, "#e2bb4c");
     }
   } else if (o.hat === "tophat") {
@@ -795,6 +860,7 @@ const hatOn = (p: Pen, o: Outfit, hp: P2[], H: Blob, cx0: number, hc: number, li
     p.poly(body, null, ow);
     const [bx, by] = R([[cx, yb + 1 * u]])[0];
     p.ell(bx + (side ? 3 * u : 0), by, (side ? 0.51 : 0.47) * W, 0.05 * HH, shade(col, 0.8), ow, 0, 360, (a * 180) / Math.PI);
+    if (TURN && !BACK && !side) { const [kx2, ky2] = R([[cx - Math.sign(TURN) * 0.2 * W, yb - 0.07 * HH]])[0]; p.poly(rrect(kx2 - 4 * u, ky2 - 4.4 * u, kx2 + 4 * u, ky2 + 4.4 * u, 1.5 * u), shade(col, 0.45), 1.4 * u); }   // the ribbon's flat bow, on his left side
   } else if (o.hat === "crown") {
     // a king's crown: a gold band with five points and jewels
     const yb = crown + 0.2 * HH, ht = 0.44 * HH, wb = 0.36 * W, wt = 0.42 * W, col = "#e9b93a", top: P2[] = [];
@@ -810,7 +876,7 @@ const hatOn = (p: Pen, o: Outfit, hp: P2[], H: Blob, cx0: number, hc: number, li
     const body = R([...sag(yb, 0.5 * W).reverse(), [cx - wb, yb + 3 * u], [cx - 0.5 * W, yb - 0.3 * HH], [cx - 0.16 * W, yb - 0.5 * HH], [cx + 0.16 * W, yb - 0.5 * HH], [cx + 0.5 * W, yb - 0.3 * HH], [cx + wb, yb + 3 * u]]);
     p.shadedFill(body, col, mul(col, SH_FELT), light, wb, 0.4);
     p.poly(body, null, ow);
-    const [gx, gy] = R([[cx + (side ? 20 * u : 0), yb - 0.26 * HH]])[0];
+    const [gx, gy] = R([[cx + (side ? 20 * u : 0.24 * W * TURN), yb - 0.26 * HH]])[0];
     const ck = o.cockade ?? ["#c8312b", "#f4efe0", "#2a4f9a"]; p.dot(gx, gy, 7.5 * u, INK); p.dot(gx, gy, 6 * u, ck[0]); p.dot(gx, gy, 3.6 * u, ck[1]); p.dot(gx, gy, 1.8 * u, ck[2]);
   } else if (o.hat === "beret") {
     // a painter's beret, pulled to one side

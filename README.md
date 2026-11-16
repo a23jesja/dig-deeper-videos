@@ -5,6 +5,64 @@ Rendered videos and the video engine for the YouTube channel **Sir Digsworth** (
 Videos in `videos/` are public so Metricool can fetch them by raw URL:
 `https://raw.githubusercontent.com/a23jesja/dig-deeper-videos/main/videos/<file>.mp4`
 
+## Status 2026-11-16, evening: what is built, where it is, what remains
+
+Work was stopped here on Jesper's order ("Committa och pusha allt arbete till main nu, även det som inte är klart ... Bygg inget mer").
+Read `DAILY-RULES.md` first, above all "One big build, then the look is frozen", "Our own character design", "Series paused,
+stand-alone history Shorts now", "The world look" and "The craft kit".
+
+### Decisions that now apply
+- **One big build, about a week, then the look is frozen.** After it: one small improvement per video, no new style.
+- **Own character design.** The figures used so far (round head, bean body, stick limbs) are retired: no new video is built with
+  them until Jesper has picked a new design. Nothing below that draws the old figure is to be continued.
+- **The series is paused.** Stand-alone history Shorts only; Pompeii becomes one stand-alone Short (no "Part 1", no "Part 2").
+- Nothing is published without Jesper's yes on that exact video. Nothing is scheduled anywhere right now.
+
+### Built, and where it is
+| What | Where | State |
+|---|---|---|
+| The drawn cast (the OLD figure design), moved to shared code | `engine/src/craft/toon.ts` (`engine/src/videos/emu/toon.ts` only re-exports it) | Works; every existing film still passes its layout check. |
+| Four views of the old figure: front, three-quarter, side, back, one entry `figure(pen, outfit, { view, dir, mode })` | `engine/src/craft/toon.ts` | Done and approved by Jesper as a sheet, but drawn on the retired design. The view logic (what turns, what is foreshortened, where the monocle, pipe, cane and chain sit) is the part worth carrying over. |
+| The thin monocle chain (fixed to the frame's lower outer edge, arc outside the cheek, loop in the lapel's buttonhole, hidden by blanket and water) | `sirChain`, `chainBody` in `engine/src/craft/toon.ts` | Done, in the Titanic film that is uploaded. |
+| Check sheets for the views | composition `SirViews` (`engine/src/craft/SirViews.tsx`); `PROPS='{"audio":false}' node scripts/stills.mjs SirViews out/craft/views_ 0,1,2 1 png` | Done. |
+| Layout check with the rules of "Staging checks" and "Action, not portraits" | `engine/scripts/kit_check.mjs` (`node scripts/kit_check.mjs <film>`, `--selftest`) | Done. The block on Sir Digsworth's side view is lifted. |
+| Pompeii, second build (26 shots, runs, falling awnings, cart, pots, grey pine-shaped column, dark at the end) | `engine/src/videos/emu/pompeii1b.ts`, `pompeiiset.ts`, `Pompeii1Film.tsx`, voice `engine/voice/pompeii-1v2/`, mix `engine/audio/pompeii1b_audio.py` | Withdrawn, never uploaded. Kept as working code: the shot helpers `frame()`, `runner()`, `town()` and the set's moving parts can be reused. The rendered file is on Jesper's PC only (`videos/shorts/2026-11-16-pompeii-part-1-short-v2.mp4`, 58 MB, not in git). |
+| Titanic part 3 with the feet on top of the deck and the new chain | `engine/src/videos/emu/titanic3.ts`; file `videos/shorts/2026-11-16-titanic-part-3-short-v3.mp4` | Done; Jesper uploaded this file by hand. |
+| Test sentence for a lip-sync clip ("I say! That mountain was not smoking yesterday.") | `engine/voice/kit-test.json`, `engine/voice/kit-test/` (voice.wav, words.json) | Voice and word timings made; not used yet. |
+
+### Started, not finished (in `engine/src/craft/toon.ts`, type-checks, NOT looked at in a rendered picture)
+- Mouth shapes for speech (`Viseme`, `viseme()`): drawn for front and side faces, but no option sets them yet and nothing turns
+  word timings into shapes.
+- Hand shapes (`HandShape`, `hand()`: fist, open, point, grip, hold): the function exists, no arm calls it yet.
+- Eyes that look at things (`GAZE`) and a hat that lags behind the head (`CAPV`, plus the hair under a lifted hat): read by the
+  drawing code, but no option sets them yet.
+- Side characters' hats turned in the three-quarter view (peaked caps, shako, helmet, baker's cap, bowler ribbon): coded, not
+  rendered or checked.
+- Not started: the motion library, the test clip, the new world, the sounds on the picture.
+
+All of the above sits on the old figure and mixes pose and drawing in one file. The new rule is a skeleton separate from the
+drawing, so treat this code as a source of ideas for step B and C, not as the base to extend.
+
+### What remains (Jesper's steps; stop and wait for his yes where it says STOP)
+- **A. Own character design.** Six clearly different directions for Sir Digsworth, drawn in code on one sheet: front, side, an
+  action pose with weight, and next to a side character. Among them a mole or badger in tweed, people in woodcut style, a human
+  with an own body shape, and three more. Limbs with shape and real hands and feet, eyes that can act, monocle, tweed cap,
+  moustache and pipe kept, rim light in one picture, no model from any other channel or studio. One sentence per direction. STOP.
+- **B. Skeleton and views.** A rig separate from the drawing; the chosen figure from the front, three-quarter, side and back; a
+  shared base for side characters and animals with hats and clothes that turn right. View sheet. STOP.
+- **C. Motion, hands and mouth.** Walk, run, stop, turn, stumble, fall, get up, duck, carry, throw, point, recoil, climb, sit,
+  pour, pull; wind-up, overshoot, late follow-through, feet that never slide; hand shapes; mouth from the word timings; eyes
+  that look and blink. A 15-second test clip. STOP.
+- **D. The world** per "The world look": three daylight stills of a street in Pompeii. STOP.
+- **E. Sound** on the picture, own synthesized or CC0 with the licence noted in the repo; camera shake on impacts.
+- **F. Pompeii as one stand-alone Short:** script and rough sketch first. STOP. Then the full build, the review at two frames
+  per second, three thumbnails.
+- **G. Freeze:** write here which character design, skeleton and world apply; then ten proposals for stand-alone stories.
+
+### Not in git (were on Jesper's PC before this work; left alone)
+`.agents/`, `Figurblad/`, `engine/public/kit/`, `engine/public/three3d/`, `engine/public/mona/mix-long.wav` (112 MB, over
+GitHub's limit), `engine/voice/` folders of other Shorts (deck-test, friday13, gta, mona-long, outage), `thumbnails/emu/`.
+
 ## The engine (from 2026-11-12)
 `engine/` is a Remotion + three.js project: flat ink-outlined cartoon characters in a painted 3D world, with ink lines, lens blur, gliding cameras, word-by-word captions, a synthesized score and sound effects. It is built on the MIT-licensed [claude-animated-shorts](https://github.com/mromidev/claude-animated-shorts) engine (see `engine/LICENSE-claude-animated-shorts`). Everything renders locally and free: no AI video generator, no paid service. The earlier Python engine and its episode files are in the git history only.
 

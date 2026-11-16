@@ -143,7 +143,7 @@ export const fxGrave = (p: Pen, s: string) => {
 };
 
 // ---------------- extra drawings for the long film ----------------
-const fitPx = (s: string, base: number, width: number) => Math.min(base, width / (0.66 * Math.max(1, s.length)));
+const fitPx = (s: string, base: number, width: number) => Math.min(base, width / (0.8 * Math.max(1, s.length)));
 /** a speech bubble that fits its text ("line|line"), 900 x 460 canvas; the tail points down-left (flip: down-right) */
 export const fxTalk = (p: Pen, s: string, flip = false) => {
   const cx = 450, cy = 190, d = flip ? -1 : 1, pts: P2[] = [];

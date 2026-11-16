@@ -1,0 +1,12 @@
+{
+ "voice": "bm_george",
+ "speed": 1.15,
+ "gap": 0.13,
+ "lead": 0.05,
+ "lines": [
+  { "id": "hook", "text": "That is the last lifeboat.", "gap": 0.28 },
+  { "id": "not", "text": "And I am not in it.", "gap": 0.32 },
+  { "id": "order", "text": "Women and children first, says the officer.", "gap": 0.3 },
+  { "id": "cap", "text": "So I tip my cap, and stay.", "gap": 0.7 }
+ ]
+}

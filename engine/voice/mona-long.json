@@ -1,0 +1,466 @@
+{
+ "voice": "bm_george",
+ "speed": 1.14,
+ "gap": 0.2,
+ "lead": 0.05,
+ "lines": [
+  {
+   "id": "h_1",
+   "text": "In 1911, a man walks out of the Louvre with the Mona Lisa under his arm.",
+   "say": "In nineteen eleven, a man walks out of the Louvre with the Mona Lisa under his arm."
+  },
+  {
+   "id": "h_2",
+   "text": "The museum does not notice for more than a day."
+  },
+  {
+   "id": "h_3",
+   "text": "The police do not find her for more than two years."
+  },
+  {
+   "id": "h_4",
+   "text": "And by the time they do, she has become the most famous painting in the world."
+  },
+  {
+   "id": "h_5",
+   "text": "I'm Sir Digsworth. This is the story of the man who stole the Mona Lisa, and of the one thing he never meant to do.",
+   "gap": 0.85
+  },
+  {
+   "id": "s1_1",
+   "text": "Paris, 1911. In the Louvre, in a room called the Salon Carré, hangs a portrait of a woman with a small smile.",
+   "say": "Paris, nineteen eleven. In the Louvre, in a room called the Salon Carré, hangs a portrait of a woman with a small smile."
+  },
+  {
+   "id": "s1_2",
+   "text": "She is not large. Seventy-seven centimetres tall, fifty-three wide. You could carry her under one arm. Remember that.",
+   "gap": 0.55
+  },
+  {
+   "id": "s1_3",
+   "text": "Leonardo da Vinci began her in Florence, around 1503. He did not paint her on canvas. He painted her on a panel of poplar wood.",
+   "say": "Leonardo da Vinci began her in Florence, around fifteen oh three. He did not paint her on canvas. He painted her on a panel of poplar wood."
+  },
+  {
+   "id": "s1_4",
+   "text": "Then, as an old man, he moved to France, and took her with him. After his death, the King of France acquired her. She has belonged to France for nearly four hundred years."
+  },
+  {
+   "id": "s1_5",
+   "text": "People who love art adore her. Admirers even send her love letters."
+  },
+  {
+   "id": "s1_6",
+   "text": "But she is not yet the painting that everybody on Earth can picture. She is one treasure among thousands."
+  },
+  {
+   "id": "s1_7",
+   "text": "The director of the museum is not worried about her. Steal the Mona Lisa? You might as well pretend, he says, that one could steal the towers of Notre-Dame.",
+   "say": "The director of the museum is not worried about her. Steal the Mona Lisa? You might as well pretend, he says, that one could steal the towers of Notruh Dahm."
+  },
+  {
+   "id": "s1_8",
+   "text": "Then he goes on holiday.",
+   "gap": 0.85
+  },
+  {
+   "id": "s2_1",
+   "text": "Not long before, the Louvre decides to protect its best paintings behind glass. Workmen are brought in to do it."
+  },
+  {
+   "id": "s2_2",
+   "text": "One of them is Vincenzo Peruggia.",
+   "say": "One of them is Vinchenzo Peroojah.",
+   "gap": 0.3
+  },
+  {
+   "id": "s2_3",
+   "text": "He is Italian, born in 1881 in Dumenza, a village in the mountains near the Swiss border. He is a house painter. He is five foot three. He has come to Paris for work.",
+   "say": "He is Italian, born in eighteen eighty-one in Dumenza, a village in the mountains near the Swiss border. He is a house painter. He is five foot three. He has come to Paris for work."
+  },
+  {
+   "id": "s2_4",
+   "text": "He has been in small trouble with the police before. So they have his photograph, and they have his fingerprints. Remember that, too.",
+   "gap": 0.55
+  },
+  {
+   "id": "s2_5",
+   "text": "At the Louvre, Peruggia helps to make the glass case for one painting in particular. The Mona Lisa.",
+   "say": "At the Louvre, Peroojah helps to make the glass case for one painting in particular. The Mona Lisa."
+  },
+  {
+   "id": "s2_6",
+   "text": "So he knows how she is framed. He knows how she hangs: on four iron hooks, and nothing else. He knows the back stairs."
+  },
+  {
+   "id": "s2_7",
+   "text": "And he knows that every Monday, the museum is closed to the public.",
+   "gap": 0.85
+  },
+  {
+   "id": "s3_1",
+   "text": "Monday, the twenty-first of August, 1911. Seven o'clock in the morning.",
+   "say": "Monday, the twenty-first of August, nineteen eleven. Seven o'clock in the morning."
+  },
+  {
+   "id": "s3_2",
+   "text": "The Louvre is closed. Only cleaners and workmen go in and out, all of them in the same white smock."
+  },
+  {
+   "id": "s3_3",
+   "text": "Peruggia puts on a white smock, and walks in through the workers' door.",
+   "say": "Peroojah puts on a white smock, and walks in through the workers' door."
+  },
+  {
+   "id": "s3_4",
+   "text": "He has not worked at the Louvre for months. Nobody at the door knows that. They see the smock."
+  },
+  {
+   "id": "s3_5",
+   "text": "For a hundred years, people said he had hidden in a cupboard all night. By his own account, he simply walked in. It turns out you do not need a plan, if you have the right coat."
+  },
+  {
+   "id": "s3_6",
+   "text": "He waits until the Salon Carré is empty. Then he lifts the Mona Lisa off her four hooks, and carries her to a service staircase."
+  },
+  {
+   "id": "s3_7",
+   "text": "There he takes off the glass case, and the heavy frame, and leaves them on the stairs."
+  },
+  {
+   "id": "s3_8",
+   "text": "Now she is only a piece of wood. He takes off his smock, wraps her in it, and tucks her under his arm."
+  },
+  {
+   "id": "s3_9",
+   "text": "At the bottom of the stairs is a door to the outside. It is locked."
+  },
+  {
+   "id": "s3_10",
+   "text": "Peruggia takes out a screwdriver, and removes the doorknob. The door stays shut. And now he can hear footsteps.",
+   "say": "Peroojah takes out a screwdriver, and removes the doorknob. The door stays shut. And now he can hear footsteps."
+  },
+  {
+   "id": "s3_11",
+   "text": "It is a plumber, a man called Sauvet. He sees a workman having trouble with a door. He does not see a thief.",
+   "say": "It is a plumber, a man called Sovay. He sees a workman having trouble with a door. He does not see a thief."
+  },
+  {
+   "id": "s3_12",
+   "text": "So the plumber opens it for him.",
+   "gap": 0.3
+  },
+  {
+   "id": "s3_13",
+   "text": "Peruggia walks out into the morning, and goes home. With the Mona Lisa.",
+   "say": "Peroojah walks out into the morning, and goes home. With the Mona Lisa.",
+   "gap": 0.5
+  },
+  {
+   "id": "s3_14",
+   "text": "And nobody notices.",
+   "gap": 0.85
+  },
+  {
+   "id": "s4_1",
+   "text": "All of Monday, there are four bare hooks on the wall of the Salon Carré. The guards see them. They are not alarmed."
+  },
+  {
+   "id": "s4_2",
+   "text": "You see, the museum's photographers are allowed to take paintings away to their studio. The guards assume she is having her picture taken."
+  },
+  {
+   "id": "s4_3",
+   "text": "On Tuesday morning the museum opens again. A painter called Louis Béroud arrives to paint the Mona Lisa, and finds four hooks.",
+   "say": "On Tuesday morning the museum opens again. A painter called Louis Bayroo arrives to paint the Mona Lisa, and finds four hooks."
+  },
+  {
+   "id": "s4_4",
+   "text": "He asks a guard when she will be back. The guard goes to ask the photographers."
+  },
+  {
+   "id": "s4_5",
+   "text": "The photographers do not have her.",
+   "gap": 0.3
+  },
+  {
+   "id": "s4_6",
+   "text": "It is about eleven o'clock on Tuesday. She has been gone for more than a day.",
+   "gap": 0.85
+  },
+  {
+   "id": "s5_1",
+   "text": "Then everything happens at once.",
+   "gap": 0.3
+  },
+  {
+   "id": "s5_2",
+   "text": "The Louvre is shut for a week. Sixty policemen search it. They find the frame and the glass on the staircase. And they find a thumbprint."
+  },
+  {
+   "id": "s5_3",
+   "text": "The borders are watched. Ships and trains are searched. Rewards are offered for her return."
+  },
+  {
+   "id": "s5_4",
+   "text": "The theft is on front pages around the world. And the director who joked about Notre-Dame loses his post.",
+   "say": "The theft is on front pages around the world. And the director who joked about Notruh Dahm loses his post."
+  },
+  {
+   "id": "s5_5",
+   "text": "Everyone in France is asking the same question. Who has her?",
+   "gap": 0.55
+  },
+  {
+   "id": "s5_6",
+   "text": "Then, something strange.",
+   "gap": 0.3
+  },
+  {
+   "id": "s5_7",
+   "text": "When the Louvre opens again, there is a queue outside. People pour into the Salon Carré to look at a wall. Four hooks, and a space where a painting used to be."
+  },
+  {
+   "id": "s5_8",
+   "text": "One of the visitors is a writer from Prague, on holiday with a friend. His name is Franz Kafka."
+  },
+  {
+   "id": "s5_9",
+   "text": "Thousands come. People who never thought about the Mona Lisa while she was there cannot stop thinking about her, now that she is gone.",
+   "gap": 0.85
+  },
+  {
+   "id": "s6_1",
+   "text": "The police need a thief. Soon they think they have two."
+  },
+  {
+   "id": "s6_2",
+   "text": "About a week after the theft, a young man writes to a Paris newspaper with a confession. Not about the Mona Lisa. He says he has been stealing small stone statues from the Louvre."
+  },
+  {
+   "id": "s6_3",
+   "text": "His name is Géry Pieret. He once worked as secretary to a poet, Guillaume Apollinaire. And two of his stolen statues have ended up with the poet's friend, a young Spanish painter called Pablo Picasso."
+  },
+  {
+   "id": "s6_4",
+   "text": "Apollinaire and Picasso panic. They give the statues back."
+  },
+  {
+   "id": "s6_5",
+   "text": "It does not help. On the seventh of September, the police arrest Apollinaire. If these men had the statues, surely they have the Mona Lisa as well."
+  },
+  {
+   "id": "s6_6",
+   "text": "The poet spends several days in prison. Then Picasso is brought before the judge. He is terrified."
+  },
+  {
+   "id": "s6_7",
+   "text": "He is brought face to face with his friend. And Picasso says he has never seen him before."
+  },
+  {
+   "id": "s6_8",
+   "text": "In the end there is no evidence at all. Both men are let go."
+  },
+  {
+   "id": "s6_9",
+   "text": "Two of the great artists of the century, and for a few days in 1911, they are simply suspects. But they did not steal the Mona Lisa.",
+   "say": "Two of the great artists of the century, and for a few days in nineteen eleven, they are simply suspects. But they did not steal the Mona Lisa."
+  },
+  {
+   "id": "s6_10",
+   "text": "The man who did is still in Paris. And the police are about to knock on his door.",
+   "gap": 0.85
+  },
+  {
+   "id": "s7_1",
+   "text": "Because the police are questioning everyone who has worked at the Louvre. And that includes a certain house painter."
+  },
+  {
+   "id": "s7_2",
+   "text": "A detective comes to Peruggia's room. He asks where Peruggia was on that Monday morning. Peruggia has an answer. The detective looks around, believes him, and leaves.",
+   "say": "A detective comes to Peroojah's room. He asks where Peroojah was on that Monday morning. Peroojah has an answer. The detective looks around, believes him, and leaves.",
+   "gap": 0.5
+  },
+  {
+   "id": "s7_3",
+   "text": "The Mona Lisa is in that room.",
+   "gap": 0.3
+  },
+  {
+   "id": "s7_4",
+   "text": "And remember the thumbprint? The police have Peruggia's fingerprints in their own files. Nobody ever puts the two together.",
+   "say": "And remember the thumbprint? The police have Peroojah's fingerprints in their own files. Nobody ever puts the two together."
+  },
+  {
+   "id": "s7_5",
+   "text": "So she stays where she is. At first she simply lies on his table, under a cloth. Then he finds her a better hiding place: a wooden trunk with a false bottom. His own things on top. The most wanted object in Europe underneath."
+  },
+  {
+   "id": "s7_6",
+   "text": "A house painter, in a rented room, alone with Leonardo da Vinci."
+  },
+  {
+   "id": "s7_7",
+   "text": "One year passes. Then two.",
+   "gap": 0.3
+  },
+  {
+   "id": "s7_8",
+   "text": "The Louvre gives up. It hangs another portrait in her place, a painting by Raphael. And slowly, Paris stops looking.",
+   "gap": 0.85
+  },
+  {
+   "id": "s8_1",
+   "text": "November 1913. In Florence, in Italy, an art dealer called Alfredo Geri opens a letter from Paris.",
+   "say": "November nineteen thirteen. In Florence, in Italy, an art dealer called Alfredo Geri opens a letter from Paris."
+  },
+  {
+   "id": "s8_2",
+   "text": "The writer says he has the Mona Lisa. He is Italian, and he wants to bring her home to Italy. He signs the letter with one name. Leonardo."
+  },
+  {
+   "id": "s8_3",
+   "text": "Geri shows the letter to Giovanni Poggi, the director of the great Uffizi gallery. Together, they invite Leonardo to Florence."
+  },
+  {
+   "id": "s8_4",
+   "text": "In December, a small man arrives with a wooden trunk. He takes a room at a hotel called the Tripoli-Italia."
+  },
+  {
+   "id": "s8_5",
+   "text": "He tells the two men his price. Five hundred thousand lire, for his trouble.",
+   "say": "He tells the two men his price. Five hundred thousand leeray, for his trouble."
+  },
+  {
+   "id": "s8_6",
+   "text": "Then he opens the trunk, lifts out the false bottom, and unwraps a panel of poplar wood."
+  },
+  {
+   "id": "s8_7",
+   "text": "Geri and Poggi keep very calm. They persuade him to let them take her to the Uffizi, to be sure.",
+   "gap": 0.5
+  },
+  {
+   "id": "s8_8",
+   "text": "She is real.",
+   "gap": 0.55
+  },
+  {
+   "id": "s8_9",
+   "text": "They promise Leonardo his money. Then they call the police."
+  },
+  {
+   "id": "s8_10",
+   "text": "Vincenzo Peruggia is arrested in his hotel room.",
+   "say": "Vinchenzo Peroojah is arrested in his hotel room.",
+   "gap": 0.85
+  },
+  {
+   "id": "s9_1",
+   "text": "So why did he do it?",
+   "gap": 0.3
+  },
+  {
+   "id": "s9_2",
+   "text": "Peruggia has an answer ready. He is a patriot. Napoleon stole the Mona Lisa from Italy, he says, and he has simply brought her home.",
+   "say": "Peroojah has an answer ready. He is a patriot. Napoleon stole the Mona Lisa from Italy, he says, and he has simply brought her home."
+  },
+  {
+   "id": "s9_3",
+   "text": "There is one problem with this. Napoleon never stole her. Leonardo carried her to France himself, two hundred and fifty years before Napoleon was born."
+  },
+  {
+   "id": "s9_4",
+   "text": "There is a second problem. Peruggia's letters to his family. In one of them, written four months after the theft, he promises that he is about to make his fortune.",
+   "say": "There is a second problem. Peroojah's letters to his family. In one of them, written four months after the theft, he promises that he is about to make his fortune."
+  },
+  {
+   "id": "s9_5",
+   "text": "And there is a third story, the most famous of all. That a mysterious marquis planned everything, so that he could sell six perfect forgeries to six millionaires."
+  },
+  {
+   "id": "s9_6",
+   "text": "It is a wonderful story. It comes from one magazine article, printed in 1932. And nobody has ever found the marquis, the forger, or a single one of the six.",
+   "say": "It is a wonderful story. It comes from one magazine article, printed in nineteen thirty-two. And nobody has ever found the marquis, the forger, or a single one of the six."
+  },
+  {
+   "id": "s9_7",
+   "text": "The truth seems to be simpler. One man, one smock, and a painting small enough to carry."
+  },
+  {
+   "id": "s9_8",
+   "text": "Italy does not much mind. To many Italians, he is a hero."
+  },
+  {
+   "id": "s9_9",
+   "text": "At his trial in Florence, in 1914, he is sentenced to one year and fifteen days. Soon it is cut to seven months. He has already been in jail that long. So he walks free.",
+   "say": "At his trial in Florence, in nineteen fourteen, he is sentenced to one year and fifteen days. Soon it is cut to seven months. He has already been in jail that long. So he walks free.",
+   "gap": 0.85
+  },
+  {
+   "id": "s10_1",
+   "text": "The Mona Lisa does not go straight home. First she is shown in Italy. In Florence, she hangs in the Uffizi for two weeks, and people queue to see her."
+  },
+  {
+   "id": "s10_2",
+   "text": "Then, on the fourth of January 1914, she returns to the Louvre.",
+   "say": "Then, on the fourth of January nineteen fourteen, she returns to the Louvre."
+  },
+  {
+   "id": "s10_3",
+   "text": "But she is not the same painting that left."
+  },
+  {
+   "id": "s10_4",
+   "text": "For more than two years, her face has been in newspapers all over the world. People who have never set foot in a museum know exactly what she looks like."
+  },
+  {
+   "id": "s10_5",
+   "text": "She left the Louvre as a masterpiece. She comes back as a celebrity. And she has been one ever since. Today, millions of people a year come to stand in front of her."
+  },
+  {
+   "id": "s10_6",
+   "text": "And Peruggia?",
+   "say": "And Peroojah?",
+   "gap": 0.3
+  },
+  {
+   "id": "s10_7",
+   "text": "He fights for Italy in the First World War. Then he goes back to live in France, of all places."
+  },
+  {
+   "id": "s10_8",
+   "text": "He dies there in 1925, on his forty-fourth birthday.",
+   "say": "He dies there in nineteen twenty-five, on his forty-fourth birthday.",
+   "gap": 0.5
+  },
+  {
+   "id": "s10_9",
+   "text": "And nobody notices.",
+   "gap": 0.55
+  },
+  {
+   "id": "s10_10",
+   "text": "The newspapers do not report his death until 1947. Twenty-two years late, when another man using his name dies.",
+   "say": "The newspapers do not report his death until nineteen forty-seven. Twenty-two years late, when another man using his name dies."
+  },
+  {
+   "id": "s10_11",
+   "text": "He wanted a fortune. He got seven months in jail."
+  },
+  {
+   "id": "s10_12",
+   "text": "But he did one thing that nobody else has ever managed."
+  },
+  {
+   "id": "s10_13",
+   "text": "Leonardo da Vinci made her a masterpiece. Vincenzo Peruggia made her famous.",
+   "say": "Leonardo da Vinci made her a masterpiece. Vinchenzo Peroojah made her famous."
+  },
+  {
+   "id": "s10_14",
+   "text": "I'm Sir Digsworth. Do keep an eye on your valuables. Especially on Mondays.",
+   "gap": 0.85
+  }
+ ]
+}

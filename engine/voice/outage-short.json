@@ -1,0 +1,17 @@
+{
+ "voice": "bm_george",
+ "speed": 1.2,
+ "gap": 0.13,
+ "lead": 0.05,
+ "lines": [
+  { "id": "hook1", "text": "On Thursday, the world's email simply stopped.", "gap": 0.22 },
+  { "id": "hook2", "text": "And on Friday, it was still stopped.", "gap": 0.4 },
+  { "id": "what", "text": "Microsoft's Outlook and Teams went down. Trouble was reported in 74 countries.", "say": "Microsoft's Outlook and Teams went down. Trouble was reported in seventy-four countries.", "gap": 0.25 },
+  { "id": "attack", "text": "It was not a cyber attack, Microsoft said.", "gap": 0.18 },
+  { "id": "servers", "text": "A large number of its servers had simply dropped out.", "gap": 0.25 },
+  { "id": "waiters", "text": "Picture four waiters. Two go home. The other two get every table.", "gap": 0.4 },
+  { "id": "relapse", "text": "And each time a server came back, the crowd flattened it again.", "gap": 0.3 },
+  { "id": "status", "text": "By Friday, Microsoft said things were slowly improving.", "gap": 0.3 },
+  { "id": "end", "text": "Until then, office workers faced something dreadful. Talking to each other.", "gap": 0.7 }
+ ]
+}

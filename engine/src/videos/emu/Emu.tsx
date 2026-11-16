@@ -40,12 +40,19 @@ import { LUSTIG_LONG_SHOW } from "./scenesLL";
 import { TOTAL_LL, FLASH_LL, layersLL, dofAtLL } from "./storyLL";
 import wordsLLJson from "./wordsLL.json";
 
+import { MONA_SHOW, TOTAL_M, FLASH_M, layersM, dofAtM } from "./storyM";
+import wordsMJson from "./wordsM.json";
+import { THUMB_SHOW, layersT, dofAtT } from "./monaThumbs";
+import { Flat2D } from "./flat2d";
+
 type Word = { w: string; a: number; b: number; line: string };
-type Film = {
+export type Film = {
   W: number; H: number; total: number; flashAt: number; show: Show;
   layersAt: (f: number) => { id: number; alpha: number }[];
   dofAt: (f: number) => { cInf: number; focus?: (f: number) => V3 };
   words: Word[]; audio: string; cap: { top: string; size: number; stroke: number };
+  /** drawn as a flat 2D cartoon (flat2d.tsx) instead of in the 3D world */
+  flat?: boolean;
 };
 const SHORT: Film = { W: 1080, H: 1920, total: TOTAL, flashAt: FLASH_AT, show: EMU_SHOW, layersAt, dofAt, words: wordsJson as Word[], audio: "emu/mix.wav", cap: { top: "67.5%", size: 92, stroke: 14 } };
 const LONG: Film = { W: 1920, H: 1080, total: TOTAL_L, flashAt: FLASH_L, show: LONG_SHOW, layersAt: layersL, dofAt: dofAtL, words: wordsLongJson as Word[], audio: "emu/mix-long.wav", cap: { top: "86%", size: 70, stroke: 11 } };
@@ -56,6 +63,9 @@ const PLONG: Film = { W: 1920, H: 1080, total: TOTAL_PL, flashAt: FLASH_PL, show
 const LSHORT: Film = { W: 1080, H: 1920, total: TOTAL_LS, flashAt: FLASH_LS, show: LUSTIG_SHOW, layersAt: layersLs, dofAt: dofAtLs, words: wordsLsJson as Word[], audio: "lustig/mix.wav", cap: { top: "67.5%", size: 92, stroke: 14 } };
 export const PIG_FRAMES = TOTAL_P, PIG_LONG_FRAMES = TOTAL_PL, LUSTIG_FRAMES = TOTAL_LS, LUSTIG_LONG_FRAMES = TOTAL_LL;
 const LLONG: Film = { W: 1920, H: 1080, total: TOTAL_LL, flashAt: FLASH_LL, show: LUSTIG_LONG_SHOW, layersAt: layersLL, dofAt: dofAtLL, words: wordsLLJson as Word[], audio: "lustig/mix-long.wav", cap: { top: "86%", size: 70, stroke: 11 } };
+const MLONG: Film = { W: 1920, H: 1080, total: TOTAL_M, flashAt: FLASH_M, show: MONA_SHOW, layersAt: layersM, dofAt: dofAtM, words: wordsMJson as Word[], audio: "mona/mix-long.wav", cap: { top: "86%", size: 70, stroke: 11 } };
+export const MONA_LONG_FRAMES = TOTAL_M;
+const MTHUMB: Film = { W: 1920, H: 1080, total: 14, flashAt: -100, show: THUMB_SHOW, layersAt: layersT, dofAt: dofAtT, words: [], audio: "mona/mix-long.wav", cap: { top: "86%", size: 70, stroke: 11 } };
 export const EMU_FRAMES = TOTAL, EMU_LONG_FRAMES = TOTAL_L, WOJTEK_FRAMES = TOTAL_W, WOJTEK_LONG_FRAMES = TOTAL_WL;
 
 type Props = { post?: { ink?: boolean; lens?: boolean; bloom?: boolean; grade?: boolean; dpr?: number }; captions?: boolean; audio?: boolean };
@@ -142,19 +152,19 @@ const Captions: React.FC<{ film: Film }> = ({ film }) => {
       <div style={{
         position: "absolute", top: c.top, transform: `translateY(-50%) scale(${pop})`, fontFamily: "'Arial Black', 'Segoe UI Black', Impact, sans-serif", fontWeight: 900,
         fontSize: big ? c.size * 1.13 : c.size, letterSpacing: -1, color: big ? "#ffe14d" : "#ffffff", WebkitTextStroke: `${c.stroke}px #101014`, paintOrder: "stroke fill", textShadow: "0 6px 0 rgba(16,16,20,0.9)",
-        whiteSpace: "nowrap", lineHeight: 1,
+        whiteSpace: "nowrap", lineHeight: 1, strokeLinejoin: "round", strokeLinecap: "round",
       }}>{clean(cur.w)}</div>
     </AbsoluteFill>
   );
 };
 
-const FilmView: React.FC<{ film: Film }> = ({ film }) => {
+export const FilmView: React.FC<{ film: Film }> = ({ film }) => {
   const f = useCurrentFrame();
   const p = props();
   const flash = f >= film.flashAt && f < film.flashAt + 4 ? [1, 0.75, 0.45, 0.2][f - film.flashAt] : 0;
   return (
     <AbsoluteFill style={{ background: "#cfe3f2" }}>
-      {film.layersAt(f).map((l, i) => <ShotView key={i ? "over" : "base"} id={l.id} alpha={l.alpha} film={film} />)}
+      {film.layersAt(f).map((l, i) => film.flat ? <Flat2D key={i ? "over" : "base"} show={film.show} id={l.id} alpha={l.alpha} W={film.W} H={film.H} /> : <ShotView key={i ? "over" : "base"} id={l.id} alpha={l.alpha} film={film} />)}
       {flash > 0 && <AbsoluteFill style={{ background: "#ffffff", opacity: flash }} />}
       {p.captions !== false && <Captions film={film} />}
       {p.audio !== false && <Audio src={staticFile(film.audio)} />}
@@ -169,3 +179,6 @@ export const PigShort: React.FC = () => <FilmView film={PSHORT} />;
 export const PigLong: React.FC = () => <FilmView film={PLONG} />;
 export const LustigShort: React.FC = () => <FilmView film={LSHORT} />;
 export const LustigLong: React.FC = () => <FilmView film={LLONG} />;
+export const MonaLong: React.FC = () => <FilmView film={MLONG} />;
+export const MonaThumb: React.FC = () => <FilmView film={MTHUMB} />;
+export const MonaFlat: React.FC = () => <FilmView film={{ ...MLONG, flat: true }} />;

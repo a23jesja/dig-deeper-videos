@@ -63,6 +63,20 @@ for s in shots or [{"id": 0, "a": 0, "b": n}]:
     a, b = s["a"], min(s["b"], n)
     if a >= b: continue
     R.append(f"  shot {s['id']:>2} f{a}-{b - 1}: " + " / ".join(f"{np.median(stats[k][a:b]):.3f}" for k in ("mean", "std", "p2", "p98", "sat")))
+# EMPTY: the lower third of a shot must not be a flat empty surface. Local detail = median over 8 x 8 blocks of the luma standard deviation,
+# then the median over the shot (calibrated on the old test: its shot 3 = 0.006, shots with planks / water / figures = 0.028 - 0.041; threshold 0.015)
+EMPTY_MIN = 0.015
+B = 8; y0 = (H * 2 // 3) // B * B; lo = luma[:, y0:y0 + (H - y0) // B * B, : W // B * B]
+blk = lo.reshape(n, lo.shape[1] // B, B, lo.shape[2] // B, B).transpose(0, 1, 3, 2, 4).reshape(n, -1, B * B).std(2)
+empty = []
+for s in shots or [{"id": 0, "a": 0, "b": n}]:
+    a, b = s["a"], min(s["b"], n)
+    if a >= b: continue
+    d = float(np.median(np.median(blk[a:b], axis=1)))
+    R.append(f"  shot {s['id']:>2} lower-third detail {d:.4f}")
+    if d < EMPTY_MIN: empty.append((s["id"], d))
+for i, d in empty: R.append(f"EMPTY shot {i}: the lower third is a flat empty surface (local detail {d:.4f} < {EMPTY_MIN})")
+if not empty: R.append("EMPTY: none (every shot's lower third has detail)")
 np.savez(os.path.join(out, "perframe.npz"), diff=diff, **stats)
 
 # 2 s contact sheets, 10 x 6 frames of 108x192 each
@@ -76,3 +90,4 @@ for k in range(0, n, 60):
     S.save(os.path.join(out, f"sheet_{k:04d}.jpg"), quality=85)
 open(os.path.join(out, "report.md"), "w", encoding="utf-8").write("\n".join(R) + "\n")
 print("\n".join(R))
+sys.exit(1 if empty else 0)

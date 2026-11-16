@@ -28,7 +28,9 @@ export type Scene = Stage & { guns: GunS[]; crates: CrateS[]; truck?: TruckS; bo
   shellCrates?: CrateS[]; fieldGun?: { pos: V3; yaw: number; recoil: number } };
 /** everything a film hands to the World */
 export type Show = { shots: import("./story").ShotDef[]; camAt: (id: number, f: number) => import("./story").Cam; sceneAt: (id: number, f: number, cam: CamInfo) => Scene;
-  crowdFor: (id: number, f: number) => CrowdSpec | null; wheatAt: (id: number, f: number, x: number, z: number) => number };
+  crowdFor: (id: number, f: number) => CrowdSpec | null; wheatAt: (id: number, f: number, x: number, z: number) => number;
+  /** zone deck only: which set shows and how the ship stands (tilt, sea level, liner, boats ...) */
+  deckAt?: (id: number, f: number) => import("./t3sets").DeckState };
 
 export const SIR = { i: 3, o: SIR_DIGSWORTH, okey: "sir" };
 export const WHO: Record<"major" | "s1" | "s2" | "farmer", { i: number; o: Outfit; okey: string }> = {

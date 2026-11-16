@@ -11,7 +11,7 @@ const text = (p: Pen, s: string, x: number, y: number, px: number, fill: string,
   g.fillStyle = fill; g.fillText(s, x, y);
 };
 /** the largest size (up to `base`) at which `s` fits in `width` */
-const fit = (s: string, base: number, width: number) => Math.min(base, width / (0.7 * Math.max(1, s.length)));
+const fit = (s: string, base: number, width: number) => Math.min(base, width / (0.9 * Math.max(1, s.length)));
 
 /** a cigarette on a 300 x 80 canvas: filter on the left, ember on the right */
 export const fxCig = (p: Pen) => {

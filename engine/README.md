@@ -1,0 +1,50 @@
+
+## The figure kit (2026-11-15)
+Jesper's six sheets in `../Figurblad/` are cut once into named transparent parts and reused by every video.
+- Cut: copy the sheets to `out/kit/src/s0..s5.png` (s0 plain figure, s1 wardrobe, s2 Sir Digsworth main sheet, s3 effects,
+  s4 faces and mouths, s5 Sir Digsworth parts), enlarge the small ones with `python scripts/comfy_upscale.py` (Real-ESRGAN
+  anime 6B, BSD-3-Clause, runs in ComfyUI; s0, s1, s3, s4 are then halved to `*x2.png`, s5 stays `s5x4.png`), then
+  `python scripts/kit_cut.py`. It writes `public/kit/<sir|base|wardrobe|fx>/<name>.png` and `src/videos/kit/parts.json`.
+  `python scripts/kit_sheet.py` makes labelled overviews in `out/kit/`.
+- Puppets: `src/videos/kit/puppet.tsx`. `Look` = who (Sir Digsworth, or the plain figure + garment, tint, hat, moustache,
+  beard, hair); `Pose` = ground point, hand and foot targets, hand picture, head picture (`talk_*` mouth shapes,
+  `face_*` / `expr_*` expressions, `head_side`). Sir Digsworth's front heads are mirrored so the monocle sits on the eye
+  to the left of the picture, as on the main sheet. `mouthOf(word, u)` picks the mouth shape while a word is spoken.
+- Check pictures: compositions `KitTest` (all garments, hats, heads, hands) and `KitTrio` (Sir Digsworth, guard, thief).
+- Missing from the kit, drawn in code or worked around (for Jesper to add to the sheets later): side and back views of
+  every garment and hat; sleeves as separate pieces (drawn as strokes in the garment's colour); trousers and shoes;
+  the headscarf needs an open face hole; the long hair's fill is lost in the cut; Sir Digsworth's parts sheet came at
+  512 px and was enlarged four times (a full-size copy would be sharper; his "holding" hand turned blue and is not used).
+
+## The locked style and the environment kit (2026-11-15)
+Jesper locked the style: flat drawn figures as cards in a detailed 3D world, as in the emu short. Figures are whole
+pose drawings from his sheets (`scripts/kit2_cut.py` -> `public/kit/cards/`, `src/videos/kit/cards.json`), placed with
+`kitFig` (`src/videos/emu/kitcards.ts`): one picture per pose, pose changes as a short hop, and on top only a mouth
+shape while he talks (`scripts/kit2_mouths.py`), a blink, pipe smoke and a slow sway. Nothing is bent or redrawn.
+- Environment kit: `src/videos/emu/env/` (every piece returns `{ obj, update(t) }`):
+  `foliage.ts` trees with thousands of separate leaves and grass of separate blades (wind in the vertex shader),
+  `surfaces.ts` road, cobbles, planked deck, soil (colour + bump textures with lines and wear), `sky.ts` day, dusk and
+  night (clouds in three layers, stars, moon), `water.ts` waves and reflections, `particles.ts` rain, snow, dust,
+  debris, sparks, smoke, `lights.ts` lantern, bulb sign, lit window, fire, distress rocket and the one shadow-casting
+  key light, `models.ts` CC0 models (Poly Haven, licence read 2026-11-15; `python scripts/get_models.py`).
+  Check pictures: composition `EnvKit`, frames 0-9.
+- The Titanic deck (`deckset.ts`, zone `deck`, light `night`) is built from the kit. A rocket takes over as the scene's
+  one light while it burns (`deckFlare`, used in `world.ts`).
+- Test film: `titanic3Test.ts` + `KitWorld.tsx` (composition `KitWorld`). Run `node scripts/kit_check.mjs` before
+  rendering: it must print "LAYOUT OK" (5 % margin, faces clear of the top and bottom 15 %, the caption band and the
+  hook text, biggest figure at least half the height in medium shots, air between figures, the lady in the boat not
+  covered, no set piece over or between figures, wide shots 2 s at most, close-ups with the whole face inside).
+- Found on the pose sheets (for Jesper): every new Sir Digsworth pose has the monocle on the eye to the RIGHT of the
+  picture (the main sheet has it on the left); the cane is in the other hand in the cheering and shrugging poses;
+  walk frames 5 and 6 have no cane; the second pose sheet and the walk cycle have a body about 15 % shorter for the
+  same head. The dressed side figures have no lady standing (only seated in a boat).
+
+## Look locked on 2026-11-16: code-drawn cast, no figure sheets in videos
+DAILY-RULES "The look: the emu Short". Characters are drawn in code by `src/videos/emu/toon.ts` and placed with
+`person()`; the Flow sheets (`Figurblad/`, `public/kit/`, `src/videos/kit/`, `kitcards.ts`) are never loaded by a video.
+- `node scripts/no_sheets_check.mjs` walks everything `src/index.ts` imports and fails if a video uses the sheets.
+  `scripts/stills.mjs` runs it first; `node scripts/render.mjs <Comp> <out.mp4> [layoutCheck.mjs]` runs it and the
+  layout check and renders only if both pass.
+- Test film: composition `Titanic3Test` (`Titanic3Test.tsx`, `titanic3Scenes.ts`, set in `deckset.ts`), layout check
+  `scripts/kit_check.mjs` (a standing figure measures 1.7 m to the top of the head, face centre at 1.42 m).
+- toon.ts fixes for Sir Digsworth: monocle on the eye to the left as the viewer sees him, cap peak as wide as the cap.

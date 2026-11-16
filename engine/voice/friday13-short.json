@@ -1,0 +1,17 @@
+{
+ "voice": "bm_george",
+ "speed": 1.2,
+ "gap": 0.13,
+ "lead": 0.05,
+ "lines": [
+  { "id": "hook1", "text": "Friday the 13th has come round again.", "say": "Friday the thirteenth has come round again.", "gap": 0.2 },
+  { "id": "hook2", "text": "For the third time this year, which is as many as a year can hold.", "gap": 0.35 },
+  { "id": "why", "text": "So why is it unlucky? Nobody really knows.", "gap": 0.3 },
+  { "id": "table", "text": "13 at one table was already thought to be bad luck.", "say": "Thirteen at one table was already thought to be bad luck.", "gap": 0.2 },
+  { "id": "club", "text": "In the 1880s, a New York club set out to mock it. 13 men dined together, in room 13.", "say": "In the eighteen eighties, a New York club set out to mock it. Thirteen men dined together, in room thirteen.", "gap": 0.3 },
+  { "id": "novel", "text": "Then, in 1907, came a novel called Friday, the Thirteenth, about a broker who crashes the stock market on that very day.", "say": "Then, in nineteen oh seven, came a novel called Friday, the Thirteenth, about a broker who crashes the stock market on that very day.", "gap": 0.25 },
+  { "id": "stuck", "text": "The book sold. The fear stuck.", "gap": 0.35 },
+  { "id": "world", "text": "In Italy, the unlucky day is Friday the 17th. In Spain, it is Tuesday the 13th.", "say": "In Italy, the unlucky day is Friday the seventeenth. In Spain, it is Tuesday the thirteenth.", "gap": 0.3 },
+  { "id": "end", "text": "The next one is in August. You have nine months to prepare.", "gap": 0.7 }
+ ]
+}

@@ -12,6 +12,7 @@ import { Pool, Actor, Fx, GEO, CamInfo, hh, Req } from "./castbase";
 import { emuSide, emuFront } from "./emutoon";
 import { drawTally, Scene, Show, EMU_SHOW } from "./scenes";
 import { lewisGun, truck, crateGeo, crateMat, emptyCrate, tent, farmhouse, windmill, fence, gum, bush, rock, ranges, heightfield, scoreboard, waterTex, Gun, Truck, Board, mesh, merged } from "./props";
+import { buildDeck, updateDeck, deckFlare } from "./deckset";
 import { FPS, ShotDef, Zone, riseY, RISE_Z0, FIELD, DAM, bankY, hillY } from "./story";
 
 // ---------------- painted ground + wheat ----------------
@@ -107,10 +108,11 @@ export class World {
   private zones = {} as Record<Zone, THREE.Group>;
   private hemi: THREE.HemisphereLight; private sun: THREE.DirectionalLight;
   private sky: THREE.Mesh; private skyMat: THREE.ShaderMaterial;
+  private groundMesh!: THREE.Mesh;
   private fog = new THREE.Fog("#bccbec", 25, 420);
   private sunDisc: THREE.Sprite; private sunHalo: THREE.Sprite;
   private sunCache = new Map<number, THREE.Vector3>();
-  private cloudMaps: Record<"day" | "golden", THREE.Texture[]>;
+  private cloudMaps: Record<"day" | "golden" | "night", THREE.Texture[]>;
   private clouds: THREE.Mesh[] = [];
   private frustum = new THREE.Frustum();
   private m4 = new THREE.Matrix4(); private v = new THREE.Vector3(); private sph = new THREE.Sphere();
@@ -154,7 +156,7 @@ export class World {
     this.sun = new THREE.DirectionalLight("#fff0d6", 2.6);
     this.sun.castShadow = true; this.sun.shadow.mapSize.set(4096, 4096);
     R.add(this.hemi, this.sun, this.sun.target);
-    this.cloudMaps = { day: [0, 1, 2, 3].map((k) => cloudHD(k, LOOK.day.cloud)), golden: [0, 1, 2, 3].map((k) => cloudHD(k, LOOK.golden.cloud)) };
+    this.cloudMaps = { day: [0, 1, 2, 3].map((k) => cloudHD(k, LOOK.day.cloud)), golden: [0, 1, 2, 3].map((k) => cloudHD(k, LOOK.golden.cloud)), night: [0, 1, 2, 3].map((k) => cloudHD(k, LOOK.night.cloud)) };
     for (let i = 0; i < 9; i++) {
       const a = (i / 9) * Math.PI * 2 + 0.3, d = 620 + (i % 3) * 60;
       const m = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ map: this.cloudMaps.day[i % 4], color: new THREE.Color(1.1, 1.1, 1.1), transparent: true, depthWrite: false, fog: false }));
@@ -168,11 +170,11 @@ export class World {
     const ground = new THREE.Mesh(new THREE.PlaneGeometry(2400, 2400).rotateX(-Math.PI / 2), earth);
     const guv = ground.geometry.attributes.uv as THREE.BufferAttribute;
     for (let i = 0; i < guv.count; i++) guv.setXY(i, guv.getX(i) * 170, guv.getY(i) * 170);
-    ground.receiveShadow = true; R.add(ground);
+    ground.receiveShadow = true; R.add(ground); this.groundMesh = ground;
     ranges(R, 560, 60, "#8f86a8", 1); ranges(R, 420, 34, "#a88f78", 2);
 
-    for (const z of ["camp", "farm", "plain", "dam", "track", "office", "dock", "cassino", "zoo", "scot", "isle", "paris"] as Zone[]) { this.zones[z] = new THREE.Group(); R.add(this.zones[z]); }
-    this.buildPlus(); this.buildWojtek();
+    for (const z of ["camp", "farm", "plain", "dam", "track", "office", "dock", "cassino", "zoo", "scot", "isle", "paris", "louvre", "deck"] as Zone[]) { this.zones[z] = new THREE.Group(); R.add(this.zones[z]); }
+    this.buildPlus(); this.buildWojtek(); this.buildMona(); buildDeck(this.zones.deck);
     this.fan = this.buildFarm();
     this.buildCamp(); this.buildPlain(); this.buildDam(); this.buildTrack();
     // wheat + stubble cards
@@ -240,7 +242,8 @@ export class World {
     }
   }
   private pending = new THREE.Group();
-  private flush(zone: Zone, b: Batch) { b.build(this.zones[zone]); while (this.pending.children.length) this.zones[zone].add(this.pending.children[0]); }
+  // indoors nothing casts a sun shadow: the hard purple wedges and notched bands they threw on walls and floors read as mistakes
+  private flush(zone: Zone, b: Batch) { b.build(this.zones[zone], zone !== "louvre" && zone !== "office"); while (this.pending.children.length) this.zones[zone].add(this.pending.children[0]); }
 
   private buildCamp() {
     const b = new Batch();
@@ -327,18 +330,24 @@ export class World {
     const focus = V(...c.look), dist = cam.position.distanceTo(focus);
     cam.layers.enable(NOINK);
     // ---- light rig: camera-relative sun frozen per shot, two-tone uniforms, shadow fit ----
-    const sunDir = this.shotSun(id, s, L, f);
+    let sunDir = this.shotSun(id, s, L, f);
+    // a flare (a distress rocket) takes over as the scene's one light while it burns: the shadows fall away from it
+    const fl = s.zone === "deck" ? deckFlare(f / FPS) : null, gain = fl ? 1 + 0.2 * fl.k : 1;
+    if (fl && fl.k > 0.02) sunDir = sunDir.clone().lerp(fl.pos.clone().sub(focus).normalize(), Math.min(1, fl.k * 3)).normalize();
     this.hemi.color.set(L.sky); this.hemi.groundColor.set(L.ground); this.hemi.intensity = L.hemiI;
-    this.sun.color.set(L.sunCol); this.sun.intensity = L.sunI;
+    this.sun.color.set(L.sunCol); this.sun.intensity = L.sunI * gain;
     let Rr = THREE.MathUtils.clamp(dist * 1.15 + 7, 12, 95);
     if (s.light === "golden") Rr = Math.max(Rr, 30);
     this.sun.position.copy(focus).addScaledVector(sunDir, 220); this.sun.target.position.copy(focus);
     const sc = this.sun.shadow.camera;
     sc.left = -Rr; sc.right = Rr; sc.top = Rr; sc.bottom = -Rr; sc.near = 20; sc.far = 480; sc.updateProjectionMatrix();
     this.sun.shadow.bias = L.bias; this.sun.shadow.normalBias = L.normalBias * (Rr / 12);
-    TONE.uLitCol.value.set(...L.lit); TONE.uShadeCol.value.set(...L.shade); TONE.uShadeLift.value.set(...L.lift);
+    // while a flare burns its shadows are SOFT: the fill (shade colour, lift, hemisphere light) rises with it, so the deck is never cut by a black wedge
+    const fk = fl ? fl.k : 0;
+    this.hemi.intensity = L.hemiI * (1 + 1.2 * fk); this.sun.shadow.radius = 2 + 10 * fk;
+    TONE.uLitCol.value.set(...L.lit).multiplyScalar(gain); TONE.uShadeCol.value.set(...L.shade).multiplyScalar(1 + 1.1 * fk); TONE.uShadeLift.value.set(...L.lift).multiplyScalar(1 + 2.2 * fk);
     TONE.uLambert.value = L.lambert; TONE.uSideK.value = L.sideK; TONE.uTerm.value = L.term; TONE.uBounce.value.set(...K.bounce); TONE.uSat.value = K.sat;
-    CHAR.uCharTint.value.set(...L.charTint); CHAR.uCharShade.value = L.charShade; CHAR.uGrad.value = L.charGrad;
+    CHAR.uCharTint.value.set(...L.charTint).multiplyScalar(1 + 0.35 * (gain - 1)); CHAR.uCharShade.value = L.charShade; CHAR.uGrad.value = L.charGrad;
     CHAR.uBodyGrad.value = L.bodyGrad; CHAR.uSideTint.value.set(...L.sideTint);
     // ---- sky, fog, sun disc, clouds ----
     const su = this.skyMat.uniforms;
@@ -359,10 +368,11 @@ export class World {
     for (let i = 0; i < this.clouds.length; i++) {
       const m = this.clouds[i];
       m.lookAt(cam.position.x, m.position.y, cam.position.z);
-      (m.material as THREE.MeshBasicMaterial).map = this.cloudMaps[s.light][i % 4];
+      (m.material as THREE.MeshBasicMaterial).map = this.cloudMaps[s.light][i % 4]; m.visible = s.light !== "night";
     }
     // ---- place ----
     for (const z of Object.keys(this.zones) as Zone[]) this.zones[z].visible = z === s.zone;
+    this.groundMesh.visible = s.zone !== "deck"; if (s.zone === "deck") updateDeck(f / FPS, cam.position, this.show.deckAt?.(id, f));   // at sea there is no red earth under the ship
     // ---- the story ----
     const right = V(0, 0, 0).setFromMatrixColumn(cam.matrixWorld, 0);
     const ci: CamInfo = { pos: cam.position, right, sun: sunDir, light: s.light };
@@ -391,16 +401,24 @@ export class World {
     for (let i = ai; i < this.actors.length; i++) this.actors[i].mesh.visible = false;
     let fi = 0;
     const fused: [Fx, number, number][] = [];
+    // "top" cards (banners, bubbles, stamps) are pulled along their line of sight to just in front of the lens and
+    // shrunk by the same factor: the same picture on screen, but nothing in the scene can stand in front of them.
+    // They keep their order: the farthest (and, at equal depth, the first listed) ends up at the back.
+    const fwd = cam.getWorldDirection(V(0, 0, 0)), cp = cam.position;
+    const depthOf = (p: { x: number; y: number; z: number }) => (p.x - cp.x) * fwd.x + (p.y - cp.y) * fwd.y + (p.z - cp.z) * fwd.z;
+    const pull = new Map<object, number>();
+    st.fx.map((p, i) => ({ p, i, d: depthOf(p) })).filter((e) => e.p.top && !e.p.flat && e.d > 0.7)
+      .sort((a, b) => b.d - a.d || a.i - b.i).forEach((e, k) => pull.set(e.p, Math.max(0.32, 0.62 - 0.003 * k) / e.d));
     for (const p of st.fx) {
       if (!this.frustum.intersectsSphere(this.sph.set(this.v.set(p.x, p.y, p.z), Math.max(p.w, p.h)))) continue;
-      const fxo = this.fx(fi++);
+      const fxo = this.fx(fi++), s = pull.get(p) ?? 1;
       fxo.r = this.pool.req(p.key, p.cw, p.ch, 1, p.draw);
       fxo.mesh.material = p.soft ? fxo.soft : fxo.mat;
       fxo.mesh.visible = true;
-      fxo.mesh.position.set(p.x, p.y, p.z);
+      fxo.mesh.position.set(cp.x + (p.x - cp.x) * s, cp.y + (p.y - cp.y) * s, cp.z + (p.z - cp.z) * s);
       if (p.flat) fxo.mesh.rotation.set(-Math.PI / 2, 0, p.rot ?? 0);
       else { fxo.mesh.quaternion.copy(cam.quaternion); fxo.mesh.rotateZ(p.rot ?? 0); }
-      fxo.mesh.scale.set(p.w, p.h, 1);
+      fxo.mesh.scale.set(p.w * s, p.h * s, 1);
       fused.push([fxo, p.opacity ?? 1, p.tint ?? 0xffffff]);
     }
     for (let i = fi; i < this.fxs.length; i++) this.fxs[i].mesh.visible = false;
@@ -496,16 +514,17 @@ export class World {
     const wall = col("#b9c4a8"), panel = col("#7a5236"), trim = col("#e9dfc8");
     ob.add(box(0, 0, 6.2, 28, 7.5, 0.3), wall); ob.add(box(0, 0, 6.0, 28, 1.25, 0.12), panel); ob.add(box(0, 1.25, 5.98, 28, 0.1, 0.14), trim);
     for (const sx of [-1, 1]) { ob.add(box(sx * 13.8, 0, -4, 0.3, 7.5, 21), wall); ob.add(box(sx * 13.6, 0, -4, 0.12, 1.25, 21), panel); }
-    for (const [x, w, h, c] of [[-4.6, 1.5, 1.9, "#5d7f9a"], [4.8, 2.4, 1.6, "#c9a76a"], [8.6, 1.2, 1.6, "#8a5a5a"], [-8.4, 1.2, 1.6, "#6c8a5c"]] as const) { ob.add(box(x, 2.3, 5.96, w + 0.24, h + 0.24, 0.1), panel); ob.add(box(x, 2.42, 5.9, w, h, 0.06), col(c)); }
-    ob.build(Z);
+    for (let i = 0; i < 14; i++) ob.add(box(-13 + i * 2, 0.16, 5.93, 1.5, 0.9, 0.03), col("#8a6040")); // panels of the dado
+    ob.build(Z, false);
     const db = new Batch();
     db.add(box(0, 0, 0, 2.4, 0.86, 1.0), panel); db.add(box(0, 0.86, 0, 2.6, 0.07, 1.15), col("#5e3d26"));
-    db.add(box(-0.7, 0.93, 0.05, 0.5, 0.05, 0.36), trim); db.add(box(0.75, 0.93, -0.1, 0.16, 0.22, 0.16), col("#2f5a3c")); db.add(new THREE.SphereGeometry(0.1, 10, 8).translate(0.75, 1.2, -0.1), col("#f3e2a0"));
-    db.build(this.desk); this.desk.position.set(-2.2, 0.03, 1.4); Z.add(this.desk);
+    db.add(box(-0.7, 0.93, 0.05, 0.5, 0.05, 0.36), trim); db.add(box(0.8, 0.93, -0.1, 0.26, 0.03, 0.18), col("#b08a3a")); db.add(box(0.8, 0.96, -0.1, 0.035, 0.3, 0.035), col("#b08a3a")); db.add(box(0.8, 1.24, -0.12, 0.42, 0.1, 0.2), col("#2f6a48")); db.add(box(0.8, 1.215, -0.12, 0.36, 0.03, 0.16), new THREE.MeshBasicMaterial({ color: new THREE.Color(2.2, 1.9, 1.2), fog: false }));
+    db.build(this.desk, false); this.desk.position.set(-2.2, 0.03, 1.4); Z.add(this.desk);
     const lb = new Batch();
-    lb.add(box(0, 0, 0, 0.9, 1.15, 0.6), panel); lb.add(box(0, 1.15, -0.05, 1.0, 0.07, 0.75), col("#5e3d26"));
-    for (let row = 0; row < 3; row++) for (const sx of [-1, 1]) lb.add(box(sx * 4.6, 0, 2.2 + row * 1.2, 5.2, 0.55 + row * 0.3, 0.8), col("#3f6a4a"));
-    lb.build(this.lectern); this.lectern.position.set(0, 0.03, 0.6); Z.add(this.lectern);
+    lb.add(box(0, 0, 0, 1.7, 1.5, 0.6), panel); lb.add(box(0, 1.5, -0.05, 1.86, 0.08, 0.76), col("#5e3d26")); lb.add(box(0, 0.2, -0.31, 1.3, 1.0, 0.03), col("#8a6040")); // tall enough to hide the judge below the chest
+    // public benches: a seat and a back each, in dark wood (the old green slabs read as hedges)
+    for (let row = 0; row < 3; row++) for (const sx of [-1, 1]) { lb.add(box(sx * 4.6, 0, 2.2 + row * 1.2, 5.2, 0.46, 0.5), panel); lb.add(box(sx * 4.6, 0.46, 2.2 + row * 1.2, 5.3, 0.06, 0.56), col("#5e3d26")); lb.add(box(sx * 4.6, 0, 2.5 + row * 1.2, 5.2, 1.0, 0.1), col("#5e3d26")); }
+    lb.build(this.lectern, false); this.lectern.position.set(0, 0.03, 0.6); Z.add(this.lectern);
   }
   private posePlus(st: Scene) {
     this.filmCam.visible = !!st.filmCam;
@@ -519,6 +538,132 @@ export class World {
 
   // ---------------- the Wojtek film: troopship at the quay, Monte Cassino, Edinburgh Zoo ----------------
   private shellCrates: THREE.Mesh[] = []; private fieldGun = new THREE.Group(); private gunBarrel = new THREE.Group();
+  // ---------------- the Mona Lisa film: one zone of interiors, 60 m apart so no room ever sees another ----------------
+  // x = 0 the Salon Carre (red gallery) | 60 the service staircase | 120 the thief's room in Paris | 180 a room in
+  // Florence (hotel bed on the left, a painter's studio window on the right) | 240 the Uffizi (green gallery)
+  private buildMona() {
+    const b = new Batch(), gold = col("#d9a93a"), goldD = col("#a87c22"), wood = col("#5a3a26"), woodL = col("#8a5a34");
+    const parquet = lam("parquet", () => ({ map: ctex("parquet", 512, 512, (g, r) => {
+      g.fillStyle = "#b98a54"; g.fillRect(0, 0, 512, 512);
+      for (let y = 0; y < 8; y++) for (let x = 0; x < 8; x++) {
+        g.fillStyle = `rgba(${(x + y) % 2 ? "255,225,170" : "70,40,16"},${0.1 + 0.1 * r()})`; g.fillRect(x * 64, y * 64, 64, 64);
+        g.strokeStyle = "rgba(60,35,18,0.55)"; g.lineWidth = 2; g.strokeRect(x * 64, y * 64, 64, 64);
+        for (let k = 1; k < 4; k++) { g.beginPath(); if ((x + y) % 2) { g.moveTo(x * 64 + k * 16, y * 64); g.lineTo(x * 64 + k * 16, y * 64 + 64); } else { g.moveTo(x * 64, y * 64 + k * 16); g.lineTo(x * 64 + 64, y * 64 + k * 16); } g.stroke(); }
+      }
+    }) }));
+    const planks = lam("roomPlanks", () => ({ map: ctex("roomPlanks", 512, 512, (g, r) => { g.fillStyle = "#9a7450"; g.fillRect(0, 0, 512, 512); for (let i = 0; i < 8; i++) { g.fillStyle = `rgba(${r() > 0.5 ? "255,220,170" : "50,28,10"},${0.06 + 0.1 * r()})`; g.fillRect(i * 64, 0, 64, 512); g.fillStyle = "rgba(50,30,16,0.65)"; g.fillRect(i * 64, 0, 3, 512); } }) }));
+    const flags = lam("stoneFlags", () => ({ map: ctex("stoneFlags", 512, 512, (g, r) => { g.fillStyle = "#b9b2a4"; g.fillRect(0, 0, 512, 512); for (let y = 0; y < 4; y++) for (let x = 0; x < 4; x++) { g.fillStyle = `rgba(${r() > 0.5 ? "255,255,245" : "70,66,60"},${0.05 + 0.1 * r()})`; g.fillRect(x * 128, y * 128, 128, 128); g.strokeStyle = "rgba(80,74,66,0.6)"; g.lineWidth = 4; g.strokeRect(x * 128, y * 128, 128, 128); } }) }));
+    const blocks = lam("stoneBlocks", () => ({ map: ctex("stoneBlocks", 512, 512, (g, r) => { g.fillStyle = "#d2c9b6"; g.fillRect(0, 0, 512, 512); for (let y = 0; y < 8; y++) for (let x = -1; x < 4; x++) { const ox = (y % 2) * 64; g.fillStyle = `rgba(${r() > 0.5 ? "255,250,235" : "90,80,64"},${0.04 + 0.08 * r()})`; g.fillRect(x * 128 + ox, y * 64, 128, 64); g.strokeStyle = "rgba(110,100,84,0.5)"; g.lineWidth = 3; g.strokeRect(x * 128 + ox, y * 64, 128, 64); } }) }));
+    const tiles = lam("redTiles", () => ({ map: ctex("redTiles", 512, 512, (g, r) => { for (let y = 0; y < 8; y++) for (let x = 0; x < 8; x++) { g.fillStyle = (x + y) % 2 ? "#b8603f" : "#e2cfa6"; g.fillRect(x * 64, y * 64, 64, 64); g.fillStyle = `rgba(40,20,10,${0.05 * r()})`; g.fillRect(x * 64, y * 64, 64, 64); } }) }));
+    const picture = (k: number) => lam("louvrePic" + k, () => ({ map: ctex("louvrePic" + k, 256, 256, (g) => {
+      const sky = ["#6f8fa6", "#a88f5e", "#4a5a52", "#7a6a8a", "#8a5a48", "#5a6f7a"][k % 6];
+      const gr = g.createLinearGradient(0, 0, 0, 256); gr.addColorStop(0, sky); gr.addColorStop(1, "#3a2f28"); g.fillStyle = gr; g.fillRect(0, 0, 256, 256);
+      g.fillStyle = "rgba(60,70,50,0.8)"; g.beginPath(); g.moveTo(0, 190); for (let x = 0; x <= 256; x += 32) g.lineTo(x, 172 + 26 * Math.sin(x / 40 + k)); g.lineTo(256, 256); g.lineTo(0, 256); g.fill();
+      const n = 1 + (k % 3);
+      for (let i = 0; i < n; i++) { const x = (256 * (i + 1)) / (n + 1); g.fillStyle = ["#b9483a", "#c9a25a", "#3f5f8a", "#e9dfc8"][(k + i) % 4]; g.beginPath(); g.ellipse(x, 196, 28, 62, 0, 0, 7); g.fill(); g.fillStyle = "#e8c4a0"; g.beginPath(); g.arc(x, 122, 17, 0, 7); g.fill(); }
+      const v = g.createRadialGradient(128, 128, 60, 128, 128, 190); v.addColorStop(0, "rgba(0,0,0,0)"); v.addColorStop(1, "rgba(30,20,10,0.6)"); g.fillStyle = v; g.fillRect(0, 0, 256, 256);
+    }) }));
+    /** a framed picture on a back wall whose inner face is at zw; (x, y) = centre */
+    const hang = (x: number, y: number, w: number, h: number, zw: number, k: number) => {
+      b.add(box(x, y - h / 2 - 0.13, zw - 0.07, w + 0.26, h + 0.26, 0.14), gold); b.add(box(x, y - h / 2 - 0.04, zw - 0.16, w + 0.08, h + 0.08, 0.04), goldD); b.add(box(x, y - h / 2, zw - 0.2, w, h, 0.04), picture(k));
+    };
+    /** floor, back wall and side walls; the back wall's inner face is at zb */
+    const shell = (cx: number, w: number, zb: number, zf: number, h: number, floor: THREE.Material, wall: THREE.Material, tile = 4) => {
+      b.add(quad(V(cx - w / 2, 0.03, zb), V(cx + w / 2, 0.03, zb), V(cx + w / 2, 0.03, zf), V(cx - w / 2, 0.03, zf), w / tile, (zb - zf) / tile), floor);
+      b.add(box(cx, 0, zb + 0.15, w + 0.6, h, 0.3), wall);
+      for (const s of [-1, 1]) b.add(box(cx + s * (w / 2 + 0.15), 0, (zb + zf) / 2, 0.3, h, zb - zf), wall);
+    };
+    const dado = (cx: number, w: number, zb: number, zf: number, hh: number, m: THREE.Material, rail: THREE.Material) => {
+      b.add(box(cx, 0, zb - 0.05, w, hh, 0.1), m); b.add(box(cx, hh, zb - 0.07, w, 0.09, 0.14), rail);
+      for (const s of [-1, 1]) { b.add(box(cx + s * (w / 2 - 0.05), 0, (zb + zf) / 2, 0.1, hh, zb - zf), m); b.add(box(cx + s * (w / 2 - 0.07), hh, (zb + zf) / 2, 0.14, 0.09, zb - zf), rail); }
+    };
+    // ---- galleries: the Salon Carre (0) and the Uffizi (240). The middle of the back wall is left bare for the film's own
+    // picture; left of it (x = +2.7..+5.1) a doorway opens on a second, sunlit room, whose tall window is the light we see.
+    // Three shafts from the skylight fall across the wall and the floor (soft additive sheets, never outlined).
+    const paper = (hex: string) => lam("wallpaper" + hex, () => ({ map: ctex("wallpaper" + hex, 256, 256, (g) => {
+      g.fillStyle = hex; g.fillRect(0, 0, 256, 256);
+      for (let y = 0; y < 4; y++) for (let x = 0; x < 4; x++) {
+        const cx = x * 64 + (y % 2 ? 32 : 0) + 16, cy = y * 64 + 32;
+        g.fillStyle = "rgba(0,0,0,0.10)"; g.beginPath(); g.moveTo(cx, cy - 22); g.quadraticCurveTo(cx + 18, cy, cx, cy + 22); g.quadraticCurveTo(cx - 18, cy, cx, cy - 22); g.fill();
+        g.fillStyle = "rgba(255,230,190,0.07)"; g.beginPath(); g.arc(cx, cy, 5, 0, 7); g.fill();
+      }
+    }) }));
+    const shaftTex = ctex("lightShaft", 64, 256, (g) => {
+      const gx = g.createLinearGradient(0, 0, 64, 0); gx.addColorStop(0, "rgba(255,255,255,0)"); gx.addColorStop(0.3, "rgba(255,255,255,1)"); gx.addColorStop(0.7, "rgba(255,255,255,1)"); gx.addColorStop(1, "rgba(255,255,255,0)");
+      g.fillStyle = gx; g.fillRect(0, 0, 64, 256);
+      g.globalCompositeOperation = "destination-in"; const gy = g.createLinearGradient(0, 0, 0, 256); gy.addColorStop(0, "rgba(0,0,0,0.55)"); gy.addColorStop(0.5, "rgba(0,0,0,1)"); gy.addColorStop(1, "rgba(0,0,0,0.75)"); g.fillStyle = gy; g.fillRect(0, 0, 64, 256);
+    });
+    const glow = (r: number, gg: number, bl: number) => new THREE.MeshBasicMaterial({ map: shaftTex, color: new THREE.Color(r, gg, bl), transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, fog: false, side: THREE.DoubleSide });
+    const shaftM = glow(0.2, 0.15, 0.07), poolM = glow(0.2, 0.15, 0.07), sunM = glow(0.3, 0.24, 0.12);
+    // bright, but under the bloom threshold where people stand in front of it: a hotter window put a white halo round them
+    const windowM = new THREE.MeshBasicMaterial({ color: new THREE.Color(1.25, 1.18, 0.98), fog: false });
+    const cream = col("#efe6cf"), marble = col("#cfc3a8");
+    for (const [cx, wallC, k0, farC] of [[0, "#8a2f33", 0, "#3f6f73"], [240, "#4f6f5a", 7, "#8a4a3a"]] as const) {
+      const wm = paper(wallC), zb = 6.05, D0 = cx + 2.7, D1 = cx + 5.1, DH = 3.8;
+      b.add(quad(V(cx - 15, 0.03, zb), V(cx + 15, 0.03, zb), V(cx + 15, 0.03, -18), V(cx - 15, 0.03, -18), 10, 8), cx === 0 ? parquet : lam("uffiziFloor", () => ({ map: ctex("uffiziFloor", 256, 256, (g) => { for (let y = 0; y < 4; y++) for (let x = 0; x < 4; x++) { g.fillStyle = (x + y) % 2 ? "#d9d4c8" : "#9aa0a6"; g.fillRect(x * 64, y * 64, 64, 64); } g.strokeStyle = "rgba(40,40,50,0.5)"; g.lineWidth = 2; for (let k = 0; k <= 4; k++) { g.beginPath(); g.moveTo(k * 64, 0); g.lineTo(k * 64, 256); g.moveTo(0, k * 64); g.lineTo(256, k * 64); g.stroke(); } }) })));
+      // back wall in three pieces around the doorway, side walls, dado and rail (broken at the doorway too)
+      b.add(box((cx - 15.3 + D0) / 2, 0, zb + 0.15, D0 - (cx - 15.3), 9, 0.3, 0, 1.6), wm); b.add(box((D1 + cx + 15.3) / 2, 0, zb + 0.15, cx + 15.3 - D1, 9, 0.3, 0, 1.6), wm);
+      b.add(box((D0 + D1) / 2, DH, zb + 0.15, D1 - D0, 9 - DH, 0.3, 0, 1.6), wm);
+      for (const s of [-1, 1]) { b.add(box(cx + s * 15.15, 0, -6, 0.3, 9, 24, 0, 1.6), wm); b.add(box(cx + s * 14.95, 0, -6, 0.1, 1.0, 24), wood); b.add(box(cx + s * 14.93, 1.0, -6, 0.14, 0.09, 24), gold); }
+      for (const [x0, x1] of [[cx - 15, D0 - 0.12], [D1 + 0.12, cx + 15]]) { b.add(box((x0 + x1) / 2, 0, zb - 0.05, x1 - x0, 1.0, 0.1), wood); b.add(box((x0 + x1) / 2, 1.0, zb - 0.07, x1 - x0, 0.09, 0.14), gold); b.add(box((x0 + x1) / 2, 0, zb - 0.08, x1 - x0, 0.16, 0.16), goldD); }
+      b.add(box(cx, 8.2, 5.95, 30, 0.5, 0.3), gold); b.add(box(cx, 8.7, 5.9, 30, 0.3, 0.4), cream);
+      // the doorway: cream jambs and a gilt lintel
+      for (const x of [D0 - 0.06, D1 + 0.06]) b.add(box(x, 0, zb - 0.06, 0.26, DH + 0.1, 0.22), cream);
+      b.add(box((D0 + D1) / 2, DH, zb - 0.06, D1 - D0 + 0.5, 0.3, 0.24), gold); b.add(box((D0 + D1) / 2, DH + 0.3, zb - 0.06, D1 - D0 + 0.8, 0.12, 0.3), cream);
+      // the room beyond: pale floor, a coloured far wall with a tall bright window (placed where the lens sees it through the doorway)
+      b.add(quad(V(cx + 0.3, 0.03, 16.4), V(cx + 10.6, 0.03, 16.4), V(cx + 10.6, 0.03, zb), V(cx + 0.3, 0.03, zb)), marble);
+      b.add(box(cx + 5.45, 0, 16.55, 10.7, 9, 0.3), col(farC)); for (const x of [cx + 0.25, cx + 10.65]) b.add(box(x, 0, 11.4, 0.3, 9, 10.4), col(farC));
+      b.add(box(cx + 5.45, 0, 16.38, 10.3, 0.9, 0.06), wood); b.add(box(cx + 5.45, 0.9, 16.36, 10.3, 0.08, 0.1), gold);
+      b.add(box(cx + 7.0, 1.0, 16.36, 2.7, 5.0, 0.1), cream); b.add(box(cx + 7.0, 1.14, 16.3, 2.4, 4.7, 0.06), windowM);
+      b.add(box(cx + 7.0, 1.14, 16.26, 0.09, 4.7, 0.05), cream); for (const y of [2.6, 4.2]) b.add(box(cx + 7.0, y, 16.26, 2.4, 0.08, 0.05), cream);
+      hang(cx + 3.6, 2.7, 1.5, 1.9, 16.4, k0 + 3); hang(cx + 9.7, 2.7, 1.2, 1.8, 16.4, k0 + 5);
+      b.add(quad(V(cx + 5.85, 0.045, 16.2), V(cx + 8.15, 0.045, 16.2), V(cx + 4.0, 0.045, 1.6), V(cx + 1.4, 0.045, 1.6)), sunM);
+      // pictures: the old row, minus the one the doorway replaced
+      const P: [number, number, number, number][] = [[-3.5, 2.85, 2.2, 2.6], [7.4, 2.6, 2.0, 2.6], [-7.2, 2.5, 2.6, 1.9], [11.2, 2.8, 2.4, 2.2], [-11.0, 2.9, 2.0, 2.5], [5.6, 6.1, 3.4, 2.2], [-5.4, 6.1, 3.0, 2.4], [0, 6.2, 3.2, 2.4], [10.4, 6.0, 2.6, 2.2], [-10.2, 6.1, 2.8, 2.2]];
+      P.forEach(([x, y, w, h], i) => hang(cx + x, y, w, h, 6.05, k0 + i));
+      for (const s of [-1, 1]) for (let i = 0; i < 4; i++) { const z = 3 - i * 4.6; b.add(box(cx + s * 14.86, 1.9, z, 0.14, 2.3, 2.8), gold); b.add(box(cx + s * 14.74, 2.0, z, 0.06, 2.1, 2.6), picture(k0 + 11 + i + (s > 0 ? 4 : 0))); }
+      // light from the skylight: three slanting sheets on the wall, each with its pool on the floor
+      for (const [xt, xb] of [[1.6, -2.75], [-7.0, -11.3], [11.0, 6.6]]) {
+        b.add(quad(V(cx + xt + 1.0, 8.2, 5.8), V(cx + xt - 1.0, 8.2, 5.8), V(cx + xb - 1.0, 1.12, 5.8), V(cx + xb + 1.0, 1.12, 5.8)), shaftM);
+        b.add(quad(V(cx + xb + 1.0, 0.05, 5.9), V(cx + xb - 1.0, 0.05, 5.9), V(cx + xb - 2.9, 0.05, 2.4), V(cx + xb - 0.5, 0.05, 2.4)), poolM);
+      }
+    }
+    // ---- the service staircase (60): stone; a flight of steps going up to the back on the left, bare wall on the right for the door ----
+    shell(60, 12, 5.05, -14, 9, flags, blocks, 3);
+    for (let k = 0; k < 9; k++) b.add(box(63.6, 0, 0.9 + k * 0.46, 3.0, 0.2 * (k + 1), 0.46), col(k % 2 ? "#a8a092" : "#b4ad9e"));
+    b.add(box(63.6, 0, 4.6, 3.0, 2.0, 0.9), col("#b4ad9e")); b.add(box(63.6, 2.0, 4.99, 2.2, 3.4, 0.1), col("#3a3530"));
+    b.add(box(62.05, 0, 2.9, 0.1, 2.9, 4.2), col("#8f8779")); b.add(box(62.05, 2.9, 2.9, 0.16, 0.08, 4.3), woodL);
+    // ---- the thief's room in Paris (120): bare plaster, a window, an iron bed, a table ----
+    shell(120, 9, 4.05, -12, 7, planks, col("#cfc2a4"), 3); dado(120, 9, 4.05, -12, 0.18, wood, wood);
+    b.add(box(117.4, 1.3, 3.98, 1.5, 2.0, 0.12), wood); b.add(box(117.4, 1.42, 3.9, 1.26, 1.76, 0.06), col("#9cc4e6")); b.add(box(117.4, 1.42, 3.86, 0.07, 1.76, 0.05), wood); b.add(box(117.4, 2.26, 3.86, 1.26, 0.07, 0.05), wood);
+    b.add(box(123.0, 0.3, 2.9, 1.2, 0.3, 2.1), col("#6a7f9a")); b.add(box(123.0, 0.6, 3.6, 0.9, 0.16, 0.5), col("#d9d2c0"));
+    for (const [x, z] of [[122.45, 1.9], [123.55, 1.9], [122.45, 3.9], [123.55, 3.9]]) b.add(box(x, 0, z, 0.07, z > 3 ? 1.2 : 0.75, 0.07), col("#2b2b30"));
+    b.add(box(123.0, 1.12, 3.9, 1.17, 0.07, 0.07), col("#2b2b30")); b.add(box(123.0, 0.68, 1.9, 1.17, 0.07, 0.07), col("#2b2b30"));
+    b.add(box(119.9, 0.8, 2.9, 1.3, 0.07, 0.8), woodL); for (const [x, z] of [[119.35, 2.6], [120.45, 2.6], [119.35, 3.2], [120.45, 3.2]]) b.add(box(x, 0, z, 0.08, 0.8, 0.08), wood);
+    // ---- a room in Florence (180): terracotta walls, tiled floor; a hotel bed on the left, a studio window on the right ----
+    shell(180, 14, 4.55, -12, 7, tiles, col("#c98f68"), 2); dado(180, 14, 4.55, -12, 0.2, wood, wood);
+    b.add(box(176.2, 1.1, 4.48, 1.9, 2.6, 0.12), woodL); b.add(box(176.2, 1.22, 4.4, 1.66, 2.36, 0.06), col("#a9d0ee")); b.add(box(176.2, 1.22, 4.36, 0.08, 2.36, 0.05), woodL);
+    for (const s of [-1, 1]) b.add(box(176.2 + s * 1.3, 1.1, 4.42, 0.7, 2.6, 0.08), col("#4f7a5a"));
+    b.add(box(184.6, 0.35, 3.3, 1.5, 0.3, 2.2), col("#b03a44")); b.add(box(184.6, 0.65, 3.9, 1.2, 0.18, 0.5), col("#d9d2c0")); b.add(box(184.6, 0, 4.3, 1.6, 1.5, 0.1), woodL); b.add(box(184.6, 0, 2.2, 1.6, 0.6, 0.08), woodL);
+    for (const [x, z] of [[183.95, 2.3], [185.25, 2.3]]) b.add(box(x, 0, z, 0.09, 0.4, 0.09), wood);
+    b.add(box(181.6, 0, 3.9, 1.0, 1.0, 0.6), woodL); b.add(box(181.6, 1.0, 3.9, 1.1, 0.06, 0.66), wood);
+    // ---- Picasso's studio (300): pale walls, a tall studio window on the right, canvases stacked against the wall on the left ----
+    shell(300, 14, 4.55, -12, 7, planks, col("#c9d2d8"), 3); dado(300, 14, 4.55, -12, 0.2, wood, wood);
+    b.add(box(296.2, 0.7, 4.48, 2.6, 4.2, 0.12), woodL); b.add(box(296.2, 0.84, 4.4, 2.3, 3.9, 0.06), new THREE.MeshBasicMaterial({ color: new THREE.Color(1.05, 1.12, 1.2), fog: false }));
+    for (const x of [295.45, 296.2, 296.95]) b.add(box(x, 0.84, 4.36, 0.07, 3.9, 0.05), woodL); for (const y of [2.1, 3.4]) b.add(box(296.2, y, 4.36, 2.3, 0.07, 0.05), woodL);
+    for (const [x, w, h, yaw, c] of [[304.2, 1.5, 1.9, 0.06, "#f1ecdc"], [304.9, 1.2, 1.5, -0.05, "#e6dcc6"], [305.5, 0.9, 1.2, 0.08, "#d9cfb5"]] as const) { b.add(box(x, 0, 4.3, w + 0.1, h + 0.1, 0.06, yaw), woodL); b.add(box(x, 0.05, 4.24, w, h, 0.04, yaw), col(c)); }
+    b.add(box(302.6, 0, 3.6, 0.5, 0.6, 0.5), woodL); b.add(box(302.6, 0.6, 3.6, 0.62, 0.05, 0.62), wood);
+    // ---- Geri's shop in Florence (360): dark green walls hung with small pictures, a counter on the left, the street door on the right ----
+    shell(360, 14, 4.55, -12, 7, planks, col("#2f5a4a"), 3); dado(360, 14, 4.55, -12, 1.0, wood, gold);
+    ([[-1.9, 2.75, 1.0, 1.3], [-0.3, 2.9, 1.2, 0.9], [1.4, 2.7, 0.9, 1.2], [3.0, 2.9, 1.3, 1.0], [4.9, 2.75, 1.0, 1.4], [-0.3, 4.4, 1.6, 1.1], [3.0, 4.5, 1.5, 1.2]] as const).forEach(([x, y, w, h], i) => hang(360 + x, y, w, h, 4.55, 18 + i));
+    b.add(box(355.8, 0, 4.48, 1.5, 2.7, 0.12), woodL); b.add(box(355.8, 0.1, 4.42, 1.2, 2.4, 0.06), col("#5a3a26")); b.add(box(355.8, 1.5, 4.38, 0.8, 0.8, 0.04), new THREE.MeshBasicMaterial({ color: new THREE.Color(1.08, 1.02, 0.88), fog: false })); b.add(box(356.25, 1.15, 4.36, 0.08, 0.16, 0.08), gold);
+    b.add(box(362.6, 0, 2.6, 2.4, 0.95, 0.7), wood); b.add(box(362.6, 0.95, 2.6, 2.6, 0.07, 0.86), woodL); b.add(box(362.6, 0.2, 2.24, 2.2, 0.55, 0.03), woodL);
+    // ---- open country (x = -200, on the far side of the galleries), kept well clear of the two rings of far hills that surround every zone (420 m and 560 m from the origin): grass to the horizon; what stands on it is drawn by the film (monaSets.country) ----
+    const grass = lam("meadow", () => ({ map: ctex("meadow", 512, 512, (g, r) => { g.fillStyle = "#7aa95e"; g.fillRect(0, 0, 512, 512); for (let i = 0; i < 900; i++) { const x = r() * 512, y = r() * 512; g.strokeStyle = r() > 0.5 ? "rgba(60,110,50,0.35)" : "rgba(190,220,130,0.3)"; g.lineWidth = 2; g.beginPath(); g.moveTo(x, y); g.lineTo(x + 3 * (r() - 0.5), y - 7 - 5 * r()); g.stroke(); } }) }));
+    b.add(quad(V(-340, 0.02, 330), V(-60, 0.02, 330), V(-60, 0.02, -40), V(-340, 0.02, -40), 56, 74), grass);
+    b.add(quad(V(-201.4, 0.03, 60), V(-198.6, 0.03, 60), V(-198.1, 0.03, -40), V(-201.9, 0.03, -40), 1, 20), lam("dirtRoad", () => ({ color: "#cdb48a" })));
+    this.flush("louvre", b);
+  }
   private buildWojtek() {
     // crates of 25-pounder shells
     const shellTex = ctex("crate25", 512, 256, (g) => {

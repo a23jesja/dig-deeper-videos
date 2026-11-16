@@ -12,7 +12,17 @@ export type LightPreset = {
   sunCol: string; sunI: number; sky: string; ground: string; hemiI: number;         // three lights (unpatched mats only)
   bias: number; normalBias: number;
 };
-export const LIGHTS: Record<"day" | "golden", LightPreset> = {
+export const LIGHTS: Record<"day" | "golden" | "night", LightPreset> = {
+  // a clear night at sea: one cool moon from high on the side; faces stay readable, the world goes deep blue
+  night: {
+    az: 118, el: 46,
+    lit: [0.62, 0.72, 1.02], shade: [0.1, 0.13, 0.27], lift: [0.02, 0.03, 0.08], lambert: 0.35, sideK: 0.84, term: 0.2,
+    charTint: [0.8, 0.86, 1.0], charShade: 0.8, charGrad: 0.08, bodyGrad: 0.22, sideTint: [0.84, 0.88, 1.0],
+    blob: [0.45, 0.47, 0.6], actorShadow: true,
+    top: "#050817", hor: "#16223f", skyCurve: [0.0, 0.5, 0.6], fog: "#121c36", fogNear: 60, fogFar: 380, sunDisc: "#000000",
+    sunCol: "#b9c8ff", sunI: 1.7, sky: "#3a4874", ground: "#191c2c", hemiI: 0.5,
+    bias: -0.00025, normalBias: 0.015,
+  },
   day: {
     az: 75, el: 48,
     lit: [1.58, 1.5, 1.33], shade: [0.3, 0.29, 0.36], lift: [0.05, 0.06, 0.11], lambert: 0.35, sideK: 0.84, term: 0.2,
@@ -42,7 +52,14 @@ export type WorldLook = {
   sat: number;                                                // shade.ts uSat: world albedo saturation (1 = as painted)
   cloud: { lit: string; mid: string; shade: string };
 };
-export const LOOK: Record<"day" | "golden", WorldLook> = {
+export const LOOK: Record<"day" | "golden" | "night", WorldLook> = {
+  night: {
+    sky: { c: ["#16223f", "#111b36", "#0b132b", "#070d20", "#040716"], e: [0, 4, 10, 20, 45] },
+    water: { near: "#0d1a33", mid: "#0b1730", far: "#0a142a", crest: "#31466f", trough: "#070f20", glint: "#cfd9ff", shade: [0.4, 0.45, 0.7] },
+    cloud: { lit: "#27324f", mid: "#1c2540", shade: "#141b31" },
+    bounce: [0, 0, 0],
+    sat: 0.95,
+  },
   day: {
     // depth.md 2.2: horizon #9fb6e6 just above the skyline, upper sky #5e93d9 at ~20 deg (grade: frame top #5997e2)
     sky: { c: ["#b8d0ec", "#9cbfea", "#6a9fe0", "#4f8cdb", "#3373cc"], e: [0, 3, 8, 16, 40] },

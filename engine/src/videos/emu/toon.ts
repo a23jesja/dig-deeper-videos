@@ -22,6 +22,14 @@ export type Outfit = {
   sam?: string;
   /** Sir Digsworth extras: monocle, pipe, bow tie, waistcoat, cane */
   sir?: boolean;
+  /** the new look of Sir Digsworth's family (Titanic film): short legs, real trousers / long skirt, real hats, wide-set open eyes,
+   *  mouth low and always drawn. No monocle or pipe. Off = every older character stays exactly as it was. */
+  gent?: boolean;
+  /** what tells one face from another: a full beard (colour; beardLong 0..1 makes it a long one), round spectacles,
+   *  a bald crown (with hat "hair": only the side tufts are left), a bow tie (colour) */
+  beard?: string; beardLong?: number; glasses?: boolean; bald?: boolean; tie?: string;
+  /** the cockade on a bicorne, outer ring to centre (default: the French red, white, blue) */
+  cockade?: [string, string, string];
 };
 type P2 = [number, number];
 
@@ -58,7 +66,7 @@ export const RIFLEMAN: Outfit = { jacket: "#357650", pants: "#3d4440", boots: IN
 export const OFFICER: Outfit = { ...RIFLEMAN, hat: "shako_tall", buttons: "#e8c45a", sash: "#c0353a", sword: true, moustache: "#4a3020", rifle: false, belt: null, build: "stout" };
 export const KID: Outfit = { jacket: "#f08a2c", pants: "#3b5b9a", boots: "#f4f1ea", hat: "cap", cap: "#e2453c", build: "kid" };
 export const PARENT: Outfit = { jacket: "#7b5ac9", pants: "#3b3f52", boots: "#5a3b2a", hat: "hair", hair: "#5a3b2a" };
-export const SKINS = [SKIN, "#f5c9a0", "#ecd0b6", "#c99067"];
+export const SKINS = [SKIN, "#f5c9a0", "#ecd0b6", "#cfa27e"];
 
 export const soldier = (v = 0, extra: Partial<Outfit> = {}): Outfit => {
   const o: Outfit = { ...RIFLEMAN, skin: SKINS[v % 4] };
@@ -74,11 +82,13 @@ export const townsfolk = (v = 0): Outfit => {
 };
 
 /** per-draw extras, set by bodyFront / bodySide before the face is drawn */
-let SIR = false, TALK = 0, BACK = false;
+let SIR = false, GT = false, NEW = false, TALK = 0, BACK = false, LOOKUP = 0;
+/** head tilt back per unit of lookUp, in degrees (negative = chin up) */
+const LOOKUP_TILT = -5;
 /** 0..1 mouth opening for lip-sync (overrides the expression's mouth while > 0.12) */
 export const setTalk = (t: number) => { TALK = t; };
 export const TWEED = "#9a7748", TWEED_DARK = "#6f5236", GOLD = "#e9b93a";
-export const SIR_DIGSWORTH: Outfit = { jacket: TWEED, pants: "#4d4756", boots: INK, hat: "cap", cap: "#8b6b47", moustache: "#5a3a20", buttons: GOLD, sir: true };
+export const SIR_DIGSWORTH: Outfit = { jacket: TWEED, pants: "#4a3324", boots: INK, hat: "cap", cap: "#a07c4c", moustache: "#5a3a20", buttons: GOLD, sir: true };
 
 export class Pen {
   g: CanvasRenderingContext2D;
@@ -238,8 +248,8 @@ const DEF_LIGHT = rad(-120);
 
 // ---------------- faces ----------------
 export type Expr = "neutral" | "stern" | "grin" | "laugh" | "whistle" | "nervous" | "shock" | "relief" | "relief_open" | "dazed"
-  | "pained" | "smile" | "smile_closed" | "lick";
-type EyeK = "dot" | "small" | "lid" | "slit" | "happy" | "dash" | "squeeze" | "shock" | "shockHalf" | "spiral";
+  | "pained" | "smile" | "smile_closed" | "lick" | "squint";
+type EyeK = "dot" | "small" | "lid" | "slit" | "happy" | "dash" | "squeeze" | "shock" | "shockHalf" | "spiral" | "open";
 type MouthK = "dash" | "frown" | "smirk" | "smile" | "smileWide" | "grin" | "laugh" | "o" | "O" | "wave" | "teeth" | "lick";
 /** eyes [back, front], brows [inner, outer] offsets in u (+ = down), mouth kind */
 const FACE: Record<Expr, { eye: [EyeK, EyeK]; brow: [number, number]; mouth: MouthK }> = {
@@ -257,8 +267,9 @@ const FACE: Record<Expr, { eye: [EyeK, EyeK]; brow: [number, number]; mouth: Mou
   smile: { eye: ["dot", "dot"], brow: [0, -1], mouth: "smirk" },
   smile_closed: { eye: ["happy", "happy"], brow: [0, -1], mouth: "smile" },
   lick: { eye: ["dot", "dot"], brow: [0, -1], mouth: "lick" },
+  squint: { eye: ["slit", "slit"], brow: [3, 1], mouth: "dash" },
 };
-const halfLid = (k: EyeK): EyeK => (k === "dot" || k === "small" ? "lid" : k === "lid" ? "slit" : k === "shock" ? "shockHalf" : k);
+const halfLid = (k: EyeK): EyeK => (k === "dot" || k === "small" || k === "open" ? "lid" : k === "lid" ? "slit" : k === "shock" ? "shockHalf" : k);
 const eyeKind = (k: EyeK, lid: number): EyeK =>
   lid >= 1 && k !== "happy" && k !== "squeeze" && k !== "spiral" ? "dash" : lid > 0 ? halfLid(k) : k;
 const lidOf = (b: boolean | number | undefined) => (b === true ? 1 : Number(b) || 0);
@@ -268,13 +279,15 @@ const eye = (p: Pen, kind: EyeK, x: number, ey: number, u: number, side: number,
   switch (kind) {
     case "dot": p.ell(lx, ey, 3.8 * u, 5.5 * u, INK, 0); break;
     case "small": p.ell(lx, ey, 3 * u, 4.4 * u, INK, 0); break;
+    // a calm open eye: white with a pupil, the same size on both sides (Sir Digsworth's neutral face)
+    case "open": p.ell(x, ey, 8.5 * u, 8.5 * u, WHITE, 2.4 * u); p.dot(lx, ey + 0.5 * u - 4.6 * u * LOOKUP, 3.2 * u); break;
     case "lid": p.ell(lx, ey - u, 7 * u, 6 * u, INK, 0, 0, 180); p.stroke([[x - 9 * u, ey - u], [x + 9 * u, ey - u]], lw); break;
     case "slit": p.ell(lx, ey, 7 * u, 2.6 * u, INK, 0, 0, 180); p.stroke([[x - 9 * u, ey], [x + 9 * u, ey]], lw); break;
     case "happy": p.arc(x, ey + 3 * u, 8 * u, 6 * u, 200, 340, lw); break;
     case "dash": p.stroke([[x - 8.5 * u, ey], [x + 8.5 * u, ey]], lw); break;
     case "squeeze": p.stroke([[x + 6 * u * side, ey - 5 * u], [x - 6 * u * side, ey], [x + 6 * u * side, ey + 5 * u]], lw); break;
     case "shock": case "shockHalf":
-      p.ell(x, ey, 11 * u, 11 * u, WHITE, 2.6 * u); p.dot(lx - side * 1.5 * u, ey + 1.5 * u, 3 * u);
+      p.ell(x, ey, 11 * u, 11 * u, WHITE, 2.6 * u); p.dot(lx - side * 1.5 * u, ey + 1.5 * u - 7.2 * u * LOOKUP, 3 * u);
       if (kind === "shockHalf") { p.ell(x, ey, 11 * u, 11 * u, skin, 0, 180, 360); p.stroke([[x - 11 * u, ey], [x + 11 * u, ey]], 2.6 * u); }
       break;
     default: {
@@ -314,71 +327,123 @@ const mouth = (p: Pen, kind: MouthK, mx: number, my: number, u: number, k = 1) =
   }
 };
 
+/** where the viewer-right corner of a mouth ends (the pipe stem starts there); same geometry as `mouth` */
+const mouthCorner = (kind: MouthK, mx: number, my: number, u: number, k = 1): P2 => {
+  switch (kind) {
+    case "dash": return [mx + 5.5 * u * k, my - 0.8 * u];
+    case "frown": return [mx + 6.1 * u * k, my + 1.8 * u];
+    case "smirk": return [mx + u + 6.9 * u * k, my - 2.3 * u];
+    case "smile": return [mx + 7.5 * u * k, my - 1.5 * u];
+    case "smileWide": return [mx + 10.6 * u * k, my - 2.4 * u];
+    case "grin": return [mx + 12 * u * k, my - u];
+    case "laugh": return [mx + 16 * u * k, my];
+    case "o": return [mx + 7.5 * u, my];
+    case "O": return [mx + 9 * u * k, my + 2 * u];
+    case "wave": return [mx + 9 * u * k, my];
+    case "teeth": return [mx + 12 * u * k, my];
+    default: return [mx + 7.5 * u * k, my - 1.5 * u]; // lick
+  }
+};
+/** Sir Digsworth's mouth sits low (under the moustache), so the open ones are drawn smaller to stay inside the chin */
+const sirMs = (kind: MouthK) => (kind === "O" ? 0.6 : kind === "laugh" ? 0.62 : kind === "grin" || kind === "teeth" ? 0.78 : kind === "o" ? 0.8 : 1);
+
 /** face v2 (front / 3-4). u = 1 % of the head path width W. Eyes 26u apart on the centre line, brows 20u up, mouth 20u
  *  down, everything slid toward the facing side. No blush, no catchlights. */
 const faceFront = (p: Pen, cx: number, cy: number, W: number, expr: Expr, facing: number, look: number, lid: number, brim: boolean,
   skin: string, moustache?: string, stout = false) => {
   const u = W / 100, F = FACE[expr], fx = cx + 7 * u * facing;
-  const ex = (F.eye[0] === "shock" ? 12 : 13) * u, ey = cy;
+  // Sir Digsworth's calm faces have two open eyes of the same size, like the surprised face but smaller (Jesper
+  // 2026-11-16): the shared neutral is heavy-lidded, and a plain dot looked bigger inside the monocle than outside it
+  const EY: EyeK[] = NEW && expr === "neutral" ? ["open", "open"] : NEW ? (F.eye.map((k) => (k === "dot" ? "open" : k)) as EyeK[]) : (F.eye as EyeK[]);
+  const ex = (NEW ? (EY[0] === "shock" ? 17 : 19) : EY[0] === "shock" ? 12 : 13) * u, ey = cy + (NEW ? 3 : 0) * u;
   for (const side of [-1, 1]) {
     const x = fx + side * ex;
-    const kind = eyeKind(F.eye[(facing ? side === facing : side > 0) ? 1 : 0], lid);
+    const kind = eyeKind(EY[(facing ? side === facing : side > 0) ? 1 : 0], lid);
     eye(p, kind, x, ey, u, side, look, skin);
     const [dI, dO] = F.brow, by = ey - (brim ? 17 : 20) * u;
-    if (kind === "shock" || kind === "shockHalf") p.arc(x, by - 6 * u, 9 * u, 3 * u, 200, 340, 4 * u);
+    if (kind === "shock" || kind === "shockHalf") p.arc(x, by - (brim ? 1 : 6) * u, 9 * u, 3 * u, 200, 340, 4 * u);
     else taper(p, [x - side * 8.5 * u, by + dI * u], [x + side * 8.5 * u, by + dO * u], 5 * u, 2.5 * u);
   }
-  const mx = cx + 8 * u * facing, my = cy + (SIR ? 29 : 20) * u;
+  const mx = cx + 8 * u * facing, my = cy + (SIR ? 40 : GT ? 32 : 20) * u;
+  const ms = NEW ? sirMs(F.mouth) : 1, mu = u * ms;
+  let corner: P2 = [mx, my];
   if (TALK > 0.12 && F.mouth !== "O" && F.mouth !== "laugh" && F.mouth !== "teeth") {
-    const k = Math.min(1, TALK);
-    p.ell(mx, my + 1 * u, (4.5 + 3.5 * k) * u, (1.5 + 6.5 * k) * u, MOUTH, 3 * u);
-  } else mouth(p, F.mouth, mx, my, u);
-  if (moustache) for (const s of [-1, 1])
-    taper(p, [mx + s * 1.5 * u, cy + 12.5 * u], [mx + s * (stout ? 19 : 15) * u, cy + (stout ? 10.5 : 15) * u], stout ? 5.5 * u : 4.5 * u, 1.6 * u, moustache);
+    const k = Math.min(1, TALK), tk = NEW ? 0.8 : 1, rx = (4.5 + 3.5 * k) * u * tk;
+    p.ell(mx, my + 1 * u, rx, (1.5 + 6.5 * k) * u * tk, MOUTH, 3 * u);
+    corner = [mx + rx, my + u];
+  } else { mouth(p, F.mouth, mx, my, mu); corner = mouthCorner(F.mouth, mx, my, mu); }
+  if (moustache && !SIR) for (const s of [-1, 1])
+    taper(p, [mx + s * 1.5 * u, cy + (GT ? 19 : 12.5) * u], [mx + s * (stout ? 19 : 15) * u, cy + (GT ? 22 : stout ? 10.5 : 15) * u], stout ? 5.5 * u : 4.5 * u, 1.6 * u, moustache);
   if (SIR) {
-    // handlebar moustache: two fat curls
+    // handlebar moustache: two fat curls, well below the eyes and the monocle
     for (const s of [-1, 1]) {
-      const c = curve([mx + s * 1 * u, cy + 12 * u], [mx + s * 12 * u, cy + 18.5 * u], [mx + s * 22 * u, cy + 7.5 * u], 12);
-      p.stroke(c, 8.5 * u, INK); p.stroke(c, 5.2 * u, "#6b4424");
+      const c = curve([mx + s * 1 * u, cy + 23 * u], [mx + s * 10.5 * u, cy + 30 * u], [mx + s * 20 * u, cy + 22 * u], 12);
+      p.stroke(c, 8 * u, INK); p.stroke(c, 5 * u, "#6b4424");
     }
-    // monocle on his left eye (screen right) with a little chain
-    const ox = fx + ex, oy = ey - 1 * u;
-    p.arc(ox + 10 * u, oy + 4 * u, 9 * u, 30 * u, -70, 60, 1.4 * u, GOLD);
-    p.ell(ox, oy, 11.5 * u, 11.5 * u, null, 6.2 * u);
-    p.arc(ox, oy, 11.5 * u, 11.5 * u, 0, 360, 3.4 * u, GOLD);
-    p.arc(ox - 2 * u, oy - 2 * u, 7 * u, 7 * u, 200, 260, 1.6 * u, "#ffffff");
-    // pipe held in the corner of the mouth
-    const a0: P2 = [mx + 2.5 * u, my + 0.8 * u], a1: P2 = [mx + 25 * u, my + 8.5 * u];
+    // monocle on the eye to the LEFT of the picture (as the viewer sees him), with a little chain (Jesper 2026-11-16)
+    const ox = fx - ex, oy = ey - 1 * u;   // the chain is drawn by bodyFront (sirChain): it must end on the body
+    p.ell(ox, oy, 9.5 * u, 9.5 * u, null, 5.6 * u);
+    p.arc(ox, oy, 9.5 * u, 9.5 * u, 0, 360, 3 * u, GOLD);
+    p.arc(ox - 2 * u, oy - 2 * u, 5.8 * u, 5.8 * u, 200, 260, 1.5 * u, "#ffffff");
+    // pipe: the stem starts at the viewer-right corner of the mouth, in every expression
+    const a0: P2 = corner, a1: P2 = [a0[0] + 22 * u, a0[1] + 8 * u];
     p.band([a0, a1], "#3a261a", 3.6 * u, 1.5 * u, "round");
     p.poly([[a1[0] - 5 * u, a1[1] - 13 * u], [a1[0] + 9 * u, a1[1] - 13 * u], [a1[0] + 7.5 * u, a1[1] + 4 * u], [a1[0] - 3.5 * u, a1[1] + 4 * u]], "#8a5226", 2.6 * u);
     p.ell(a1[0] + 2 * u, a1[1] - 13 * u, 7 * u, 2.2 * u, "#ff8a2a", 2 * u);
   }
-  if (expr === "nervous") p.ell(cx + 40 * u * (facing || 1), cy - 22 * u, 3 * u, 5 * u, "#9fd4ff", 2 * u);
 };
 
 /** profile face (facing screen-right): one eye, brow, nose tick, mouth near the front edge; no skin bump nose, no ear */
 const faceSide = (p: Pen, hx: number, hy: number, W: number, expr: Expr, lid: number, brim: boolean, skin: string, moustache?: string, stout = false) => {
-  const u = W / 100, F = FACE[expr], ex = hx + 27 * u, ey = hy;
+  const u = W / 100, F = FACE[expr], ex = hx + 27 * u, ey = hy + (NEW ? 3 : 0) * u, dy0 = NEW ? 3 * u : 0;
   const kind = eyeKind(F.eye[1], lid);
   eye(p, kind, ex, ey, u, 1, 0.6, skin);
   const by = ey - (brim ? 17 : 20) * u, [dI, dO] = F.brow;
-  if (kind === "shock" || kind === "shockHalf") p.arc(ex, by - 6 * u, 9 * u, 3 * u, 200, 340, 4 * u);
+  if (kind === "shock" || kind === "shockHalf") p.arc(ex, by - (brim ? 1 : 6) * u, 9 * u, 3 * u, 200, 340, 4 * u);
   else taper(p, [ex + 8 * u, by + dI * u], [ex - 7 * u, by - u + dO * u], 5 * u, 2.5 * u);
-  p.stroke([[hx + 44 * u, hy + 4 * u], [hx + 47.5 * u, hy + 9 * u], [hx + 43 * u, hy + 10 * u]], 3 * u);
-  if (TALK > 0.12) p.ell(hx + 34 * u, hy + (SIR ? 28.5 : 22) * u, (3.5 + 2 * TALK) * u, (1.5 + 5.5 * Math.min(1, TALK)) * u, MOUTH, 3 * u);
-  else mouth(p, F.mouth, hx + 33 * u, hy + (SIR ? 28.5 : 21) * u, u, 0.62);
-  if (moustache) taper(p, [hx + 41 * u, hy + 13.5 * u], [hx + 25 * u, hy + (stout ? 11.5 : 16) * u], stout ? 5.5 * u : 4.5 * u, 1.6 * u, moustache);
+  p.stroke([[hx + 44 * u, hy + 4 * u + dy0], [hx + 47.5 * u, hy + 9 * u + dy0], [hx + 43 * u, hy + 10 * u + dy0]], 3 * u);
+  const smy = hy + (SIR ? 40 : GT ? 32 : 21) * u, sms = NEW ? sirMs(F.mouth) : 1;
+  let scorner: P2 = [hx + 33 * u, smy];
+  if (TALK > 0.12) {
+    const tk = NEW ? 0.8 : 1, rx = (3.5 + 2 * TALK) * u * tk;
+    p.ell(hx + 34 * u, hy + (SIR ? 40 : GT ? 32 : 22) * u, rx, (1.5 + 5.5 * Math.min(1, TALK)) * u * tk, MOUTH, 3 * u);
+    scorner = [hx + 34 * u + rx, hy + (SIR ? 40 : GT ? 32 : 22) * u];
+  } else { mouth(p, F.mouth, hx + 33 * u, smy, u * sms, 0.62); scorner = mouthCorner(F.mouth, hx + 33 * u, smy, u * sms, 0.62); }
+  if (moustache && !SIR) taper(p, [hx + 41 * u, hy + 13.5 * u], [hx + 25 * u, hy + (stout ? 11.5 : 16) * u], stout ? 5.5 * u : 4.5 * u, 1.6 * u, moustache);
   if (SIR) {
-    const c = curve([hx + 46 * u, hy + 11.5 * u], [hx + 33 * u, hy + 18.5 * u], [hx + 21 * u, hy + 8 * u], 12);
-    p.stroke(c, 8.5 * u, INK); p.stroke(c, 5.2 * u, "#6b4424");
-    p.ell(ex, ey - u, 11 * u, 11.5 * u, null, 6.2 * u);
-    p.arc(ex, ey - u, 11 * u, 11.5 * u, 0, 360, 3.4 * u, GOLD);
-    const a0: P2 = [hx + 37 * u, hy + 29 * u], a1: P2 = [hx + 61 * u, hy + 36 * u];
+    const c = curve([hx + 46 * u, hy + 23 * u], [hx + 33 * u, hy + 30 * u], [hx + 21 * u, hy + 20 * u], 12);
+    p.stroke(c, 8 * u, INK); p.stroke(c, 5 * u, "#6b4424");
+    p.ell(ex, ey - u, 9.5 * u, 10 * u, null, 5.6 * u);
+    p.arc(ex, ey - u, 9.5 * u, 10 * u, 0, 360, 3 * u, GOLD);
+    const a0: P2 = scorner, a1: P2 = [a0[0] + 22 * u, a0[1] + 7 * u];
     p.band([a0, a1], "#3a261a", 3.6 * u, 1.5 * u, "round");
     p.poly([[a1[0] - 5 * u, a1[1] - 13 * u], [a1[0] + 9 * u, a1[1] - 13 * u], [a1[0] + 7.5 * u, a1[1] + 4 * u], [a1[0] - 3.5 * u, a1[1] + 4 * u]], "#8a5226", 2.6 * u);
     p.ell(a1[0] + 2 * u, a1[1] - 13 * u, 7 * u, 2.2 * u, "#ff8a2a", 2 * u);
   }
-  if (expr === "nervous") p.ell(hx - 30 * u, hy - 24 * u, 3 * u, 5 * u, "#9fd4ff", 2 * u);
+};
+
+// ---------------- beards, spectacles, bow ties ----------------
+/** a full beard over the lower face (drawn before the face, so the mouth and moustache sit on it) */
+const beardOn = (p: Pen, o: Outfit, hp: P2[], cx: number, hc: number, H: Blob, light: number, ow: number) => {
+  if (!o.beard || BACK) return;
+  const y0 = hc + 0.36 * H.b, bot = hc + H.b, n = hp.length, kp = (q: P2) => q[1] > y0, long = o.beardLong ?? 0;
+  const st = Math.max(0, hp.findIndex((q, i) => kp(q) && !kp(hp[(i + n - 1) % n])));
+  const arc = [...hp.slice(st), ...hp.slice(0, st)].filter(kp).map(([x, y]) => { const k = ((y - y0) / (bot - y0)) ** 2; return [cx + (x - cx) * (1.05 - 0.25 * long * k), hc + (y - hc) * (1.07 + 0.75 * long * k)] as P2; });
+  if (arc.length < 3) return;
+  p.shadedFill(arc, o.beard, mul(o.beard, SH_FELT), light, H.a, 0.35);
+  p.poly(arc, null, ow * 0.8);
+};
+const glassesOn = (p: Pen, o: Outfit, xs: number[], y: number, u: number, back?: P2) => {
+  if (!o.glasses || BACK) return;
+  for (const x of xs) { p.ell(x, y, 11 * u, 11 * u, "rgba(190,225,250,0.28)", 0); p.ell(x, y, 11 * u, 11 * u, null, 2.8 * u); }
+  if (xs.length > 1) p.stroke([[xs[0] + 11 * u, y - 2 * u], [xs[1] - 11 * u, y - 2 * u]], 2.6 * u);
+  if (back) p.stroke([[xs[0] - 11 * u, y - 2 * u], back], 2.6 * u);
+};
+const tieOn = (p: Pen, o: Outfit, cx: number, y: number, u: number) => {
+  if (!o.tie || BACK) return;
+  p.poly([[cx, y], [cx - 15 * u, y - 8 * u], [cx - 15 * u, y + 8 * u]], o.tie, 2.6 * u);
+  p.poly([[cx, y], [cx + 15 * u, y - 8 * u], [cx + 15 * u, y + 8 * u]], o.tie, 2.6 * u);
+  p.dot(cx, y, 4.6 * u, INK); p.dot(cx, y, 3 * u, o.tie);
 };
 
 // ---------------- hats ----------------
@@ -391,15 +456,150 @@ const hatBehind = (p: Pen, o: Outfit, H: Blob, cx: number, hc: number, light: nu
   p.inkRing(bb, ow * 0.85, thick);
 };
 
-const hatOn = (p: Pen, o: Outfit, hp: P2[], H: Blob, cx: number, hc: number, light: number, seed: number, facing: number, side: boolean) => {
-  const W = 2 * H.a, HH = 2 * H.b, u = W / 100, crown = hc - H.b, ow = 0.85 * 5 * u;
-  const a = H.rot + rad(4 * (rnd(seed, 20) - 0.5)); // tilt with the head, +-2 deg extra
+/** Sir Digsworth's flat cap: a soft tweed crown wider than the head and standing up above it, seams fanning from a button,
+ *  and a short darker peak the full width of the cap, joined to its lower front edge (front), or pointing forward (side). */
+const sirCap = (p: Pen, o: Outfit, H: Blob, cx: number, hc: number, R: (pts: P2[]) => P2[], light: number, side: boolean, facing: number, seed: number, ow: number) => {
+  const u = (2 * H.a) / 100, a = H.a, b = H.b, ye = hc - 0.7 * b;
+  const col = o.cap!, dark = shade(col, 0.78), sF = side ? 1 : facing || (rnd(seed, 21) < 0.5 ? -1 : 1);
+  const x0 = side ? cx - 0.95 * a : cx - 1.07 * a, x1 = side ? cx + 1.02 * a : cx + 1.07 * a, xc = (x0 + x1) / 2, hw = (x1 - x0) / 2;
+  const sag = (side ? 2 : 3) * u, h = (side ? 0.74 : 0.72) * b;
+  const base = (x: number) => ye + sag * (1 - ((x - xc) / hw) ** 2);
+  const top: P2[] = [], N = 32;
+  for (let i = 0; i <= N; i++) {
+    const th = Math.PI * (1 - i / N), c = Math.cos(th), x = xc + hw * c;
+    const full = side ? 1 + 0.16 * c : 1 + 0.1 * sF * c;
+    top.push([x, base(x) - h * Math.sin(th) ** 0.72 * full]);
+  }
+  const bot: P2[] = [];
+  for (let i = 0; i <= 12; i++) { const x = x1 - ((x1 - x0) * i) / 12; bot.push([x, base(x)]); }
+  const crown = R([...top, ...bot]);
+  p.shadedFill(crown, col, mul(col, SH_FELT), light, a, 0.35);
+  p.clip(crown, () => {
+    const g = p.g;
+    g.save(); g.globalAlpha = 0.2;
+    for (let k = -14; k <= 14; k++) {
+      p.stroke(R([[xc + k * 9 * u, ye - 1.1 * b], [xc + k * 9 * u, ye + 10 * u]]), 1.3 * u, "#3b2a1a");
+      p.stroke(R([[x0 - 10 * u, ye - 0.2 * b + k * 9 * u], [x1 + 10 * u, ye - 0.2 * b + k * 9 * u]]), 1.3 * u, "#3b2a1a");
+    }
+    g.restore();
+    const bt: P2 = [xc + (side ? 0.05 : 0.12) * hw * sF, ye - h * 0.93];
+    for (const k of side ? [-0.8, -0.35, 0.1, 0.55, 0.92] : [-0.9, -0.55, -0.2, 0.2, 0.55, 0.9]) {
+      const e: P2 = [xc + hw * k, base(xc + hw * k) + 1 * u], m: P2 = [(bt[0] + e[0]) / 2 + k * 5 * u, (bt[1] + e[1]) / 2 - 2 * u];
+      p.stroke(R(curve(bt, m, e, 8)), 1.4 * u, "#5a3f24");
+    }
+  });
+  p.poly(crown, null, ow);
+  const [bx, by] = R([[xc + (side ? 0.05 : 0.12) * hw * sF, ye - h * 0.93]])[0];
+  p.dot(bx, by, 3.6 * u, INK); p.dot(bx, by, 2.4 * u, shade(col, 0.82));
+  if (BACK) return;
+  if (side) {
+    const pk = R([[xc + 0.45 * hw, base(xc + 0.45 * hw) - 3 * u], [x1 + 0.5 * u, ye - 1 * u], ...curve([x1 + 0.5 * u, ye - 1 * u], [x1 + 20 * u, ye + 5 * u], [x1 + 34 * u, ye + 9 * u], 8), ...curve([x1 + 34 * u, ye + 9 * u], [x1 + 18 * u, ye + 13 * u], [xc + 0.45 * hw, base(xc + 0.45 * hw) + 8 * u], 8)]);
+    p.poly(pk, dark, ow);
+  } else {
+    const upper: P2[] = [], lower: P2[] = [];
+    for (let i = 0; i <= 20; i++) {
+      const x = x0 + 0.02 * hw + ((x1 - x0) * 0.96 * i) / 20, t = ((x - xc) / hw) ** 2;
+      upper.push([x, base(x) - 1 * u]); lower.push([x, base(x) + 11 * u * Math.max(0, 1 - t) ** 0.6]);
+    }
+    p.poly(R([...upper, ...lower.reverse()]), dark, ow);
+  }
+};
+
+/** the hats of the new look (Outfit.gent): real hats that sit on the head, wider than it, with an ink outline */
+const gentHat = (p: Pen, o: Outfit, H: Blob, cx: number, hc: number, R: (pts: P2[]) => P2[], light: number, side: boolean, ow: number) => {
+  const u = (2 * H.a) / 100, a = H.a, b = H.b, deg = Math.atan2(R([[cx + 1, hc]])[0][1] - R([[cx, hc]])[0][1], R([[cx + 1, hc]])[0][0] - R([[cx, hc]])[0][0]) * 180 / Math.PI;
+  const dome = (xc: number, hw: number, ye: number, h: number, sag: number, pw = 0.72, front = 0): { pts: P2[]; base: (x: number) => number } => {
+    const base = (x: number) => ye + sag * (1 - ((x - xc) / hw) ** 2), top: P2[] = [], bot: P2[] = [];
+    for (let i = 0; i <= 32; i++) { const th = Math.PI * (1 - i / 32), c = Math.cos(th), x = xc + hw * c; top.push([x, base(x) - h * Math.abs(Math.sin(th)) ** pw * (1 + front * c)]); }
+    for (let i = 0; i <= 12; i++) { const x = xc + hw - (2 * hw * i) / 12; bot.push([x, base(x)]); }
+    return { pts: R([...top, ...bot]), base };
+  };
+  const bandAt = (y0: number, y1: number, xa: number, xb: number, sag: number, xc: number, hw: number): P2[] => {
+    const f = (x: number) => sag * (1 - ((x - xc) / hw) ** 2), up: P2[] = [], dn: P2[] = [];
+    for (let i = 0; i <= 12; i++) { const x = xa + ((xb - xa) * i) / 12; up.push([x, y0 + f(x)]); dn.push([xb - ((xb - xa) * i) / 12, y1 + f(xb - ((xb - xa) * i) / 12)]); }
+    return R([...up, ...dn]);
+  };
+  const fill = (pts: P2[], col: string, w = 0.35) => { p.shadedFill(pts, col, mul(col, SH_FELT), light, a, w); };
+  const mk = (cxx: number) => cxx;
+  if (o.hat === "peaked") { // officer: white crown, dark band with a badge, a short dark peak
+    const col = o.cap ?? "#f1efe6", ye = hc - 0.72 * b, hw = 1.08 * a, band = shade("#2a3350", 1);
+    const d = dome(mk(cx), hw, ye, 0.5 * b, 3 * u, 0.5);
+    fill(d.pts, col);
+    p.clip(d.pts, () => { p.poly(bandAt(ye - 0.2 * b, ye + 8 * u, cx - hw - 4 * u, cx + hw + 4 * u, 3 * u, cx, hw), band, 0); });
+    p.poly(d.pts, null, ow);
+    if (!BACK) {
+      if (side) p.poly(R([[cx + 0.5 * hw, ye + 1 * u], [cx + hw + 22 * u, ye + 8 * u], [cx + 0.5 * hw, ye + 10 * u]]), "#1d2030", ow);
+      else { const up: P2[] = [], lo: P2[] = []; for (let i = 0; i <= 20; i++) { const x = cx - 0.82 * hw + (1.64 * hw * i) / 20, t = ((x - cx) / hw) ** 2; up.push([x, d.base(x) + 3 * u]); lo.push([x, d.base(x) + 3 * u + 7 * u * Math.max(0, 1 - t / 0.67) ** 0.6]); }
+        p.poly(R([...up, ...lo.reverse()]), "#1d2030", ow); }
+      const [gx, gy] = R([[cx + (side ? 0.5 * hw : 0), ye - 0.1 * b]])[0];
+      p.ell(gx, gy, 6.5 * u, 5.5 * u, "#e2bb4c", 2.2 * u, 0, 360, deg); p.dot(gx, gy, 1.8 * u, INK);
+    }
+  } else if (o.hat === "tophat") { // a tall silk hat on a narrow brim, a ribbon round it
+    const col = o.cap ?? "#3a3640", ye = hc - 0.58 * b, hw = 0.98 * a, cw = 0.66 * a, ch = 1.0 * b;
+    const [bx, by] = R([[cx, ye + 2 * u]])[0];
+    p.ell(bx, by, hw, 0.1 * b, shade(col, 0.8), ow, 0, 360, deg);
+    const body = R([[cx - cw, ye + 2 * u], [cx - cw * 0.93, ye - ch], [cx + cw * 0.93, ye - ch], [cx + cw, ye + 2 * u], ...[...Array(9)].map((_, i) => [cx + cw - (2 * cw * (i + 1)) / 10, ye + 2 * u + 3 * u * (1 - (((i + 1) / 5) - 1) ** 2)] as P2)]);
+    fill(body, col, 0.4);
+    p.clip(body, () => p.poly(R([[cx - cw - 4 * u, ye - 0.26 * b], [cx + cw + 4 * u, ye - 0.26 * b], [cx + cw + 4 * u, ye + 2 * u], [cx - cw - 4 * u, ye + 2 * u]]), o.jacket, 0));
+    p.poly(body, null, ow);
+    const [tx, ty] = R([[cx, ye - ch]])[0]; p.ell(tx, ty, 0.93 * cw, 0.08 * b, shade(col, 1.15), ow * 0.8, 0, 360, deg);
+  } else if (o.hat === "bonnet") { // a cloth bonnet pulled over the hair, a frill at the front edge, a ribbon in the dress colour
+    const cream = "#eadfc2", ye = hc - 0.7 * b, hw = 1.08 * a;
+    const d = dome(cx, hw, ye, 0.62 * b, 6 * u, 0.7, 0.08);
+    fill(d.pts, cream);
+    p.clip(d.pts, () => p.poly(bandAt(ye - 0.2 * b, ye + 12 * u, cx - hw - 4 * u, cx + hw + 4 * u, 6 * u, cx, hw), o.dress ?? "#c25a7a", 0));
+    p.poly(d.pts, null, ow);
+    const fr: P2[] = []; for (let i = 0; i <= 14; i++) { const x = cx - 0.96 * hw + (1.92 * hw * i) / 14; fr.push([x, d.base(x) + 1 * u + (i % 2 ? 5 : 1) * u]); }
+    p.stroke(R(fr), 5 * u, INK); p.stroke(R(fr), 2.6 * u, "#f6efdb");
+  } else { // the kid's sailor cap: a round white crown on an upturned brim with a navy ribbon
+    const col = o.cap ?? "#f1efe6", ye = hc - 0.66 * b, hw = 1.08 * a;
+    const d = dome(cx, hw, ye - 0.1 * b, 0.42 * b, 3 * u, 0.55);
+    fill(d.pts, col);
+    p.poly(d.pts, null, ow);
+    const br = bandAt(ye - 0.14 * b, ye + 0.08 * b, cx - hw * 0.98, cx + hw * 0.98, 4 * u, cx, hw);
+    fill(br, shade(col, 0.88), 0.5);
+    p.clip(br, () => p.poly(bandAt(ye - 0.02 * b, ye + 0.04 * b, cx - hw, cx + hw, 4 * u, cx, hw), o.jacket, 0));
+    p.poly(br, null, ow);
+  }
+};
+
+const hatOn = (p: Pen, o: Outfit, hp: P2[], H: Blob, cx0: number, hc: number, light: number, seed: number, facing: number, side: boolean) => {
+  const W = 2 * H.a, HH = 2 * H.b, u = W / 100, ow = 0.85 * 5 * u;
+  // A brimmed hat sits on the head as drawn, not on its nominal centre: the outline is lopsided (the face bulges
+  // forward, most of all in the side view), so centre the hat over the top of the outline, where the brim meets it.
+  let cx = cx0, crown = hc - H.b;
+  if (o.hat !== "cap" && o.hat !== "hair" && o.hat !== "bonnet") {
+    crown = Math.min(...hp.map((q) => q[1]));
+    const xs = hp.filter((q) => q[1] <= crown + 0.26 * HH).map((q) => q[0]);
+    if (xs.length > 1) cx = (Math.min(...xs) + Math.max(...xs)) / 2;
+  }
+  // tilt with the head, +-2 deg extra. In the side view the whole upper body leans into the walk (pen rotation): a brimmed
+  // hat that leaned with it looked as if it were sliding off over the eyes, so there it stays close to level.
+  const lean = side && p.rot ? p.rot[0] : 0;
+  const a = (side ? rad(1.5) - 0.75 * lean : H.rot) + rad(4 * (rnd(seed, 20) - 0.5));
   const R = (pts: P2[]) => rotPts(pts, a, cx, hc);
   const sag = (yb: number, wb: number): P2[] => {
     const base: P2[] = [];
     for (let i = 0; i <= 12; i++) { const t = i / 12; base.push([cx + wb * (2 * t - 1), yb + 3 * u * (1 - (2 * t - 1) ** 2)]); }
     return base;
   };
+  if (BACK && o.hat === "bonnet") {
+    // a bonnet seen from behind covers the whole head: gathered cloth, a ribbon tied at the neck
+    const bb = hp.map(([x, y]) => [cx0 + (x - cx0) * 1.05, hc + (y - hc) * 1.05] as P2);
+    p.shadedFill(bb, BONNET, mul(BONNET, SH_CLOTH), light, H.a * 1.05);
+    p.clip(bb, () => { for (const s of [-0.55, 0, 0.55]) p.stroke([[cx0 + s * H.a, hc - 0.7 * H.b], [cx0 + s * 0.5 * H.a, hc + 0.75 * H.b]], 1.6 * u, BONNET_BRIM); });
+    p.poly(bb, null, ow);
+    p.stroke([[cx0 - 0.5 * H.a, hc + 0.8 * H.b], [cx0, hc + 0.93 * H.b], [cx0 + 0.5 * H.a, hc + 0.8 * H.b]], 3.2 * u, BONNET_BRIM);
+    return;
+  }
+  if (BACK) { // seen from behind: ears, and the back of the head is hair down to the neck (whatever the hat)
+    const low = hc + 1.2 * H.b, m = hp.length, kp = (y: number) => y < low;
+    const st = Math.max(0, hp.findIndex(([, y], i) => kp(y) && !kp(hp[(i + m - 1) % m][1])));
+    const ha = [...hp.slice(st), ...hp.slice(0, st)].filter(([, y]) => kp(y)).map(([x, y]) => [cx0 + (x - cx0) * 1.02, hc + (y - hc) * 1.02] as P2);
+    const hcol = o.hair ?? o.moustache ?? ["#5b3a22", "#2b2026", "#8a6a3a", "#3a2a1e", "#a8824c", "#4a3020"][Math.floor(rnd(seed, 31) * 6)];
+    for (const s of [-1, 1]) p.ell(cx0 + s * 0.97 * H.a, hc + 0.12 * H.b, 0.13 * H.a, 0.2 * H.b, o.skin ?? SKIN, ow * 0.8);
+    if (ha.length >= 3) { p.shadedFill(ha, hcol, mul(hcol, SH_FELT), light, H.a, 0.35); p.poly(ha, null, ow * 0.8); }
+  }
   if (o.hat === "shako" || o.hat === "shako_tall") {
     const tall = o.hat === "shako_tall", yb = crown + 0.25 * HH, ht = (tall ? 0.66 : 0.56) * HH, wb = 46 * u, wt = 52 * u;
     const body = R([...sag(yb, wb).reverse(), [cx - wt, yb - ht], [cx + wt, yb - ht]]);
@@ -420,16 +620,15 @@ const hatOn = (p: Pen, o: Outfit, hp: P2[], H: Blob, cx: number, hc: number, lig
       const [tx, ty] = R([[cx, yb - ht - 6 * u]])[0];
       p.ell(tx, ty, 7 * u, 7 * u, "#2b7a4b", 2.5 * u); // green tuft
     }
+  } else if (o.hat === "hair" && o.bald && !BACK) {
+    const col = o.hair!;
+    for (const s of side ? [-1] : [-1, 1]) p.ell(cx0 + s * (side ? 0.8 : 0.9) * H.a, hc - 0.02 * H.b, (side ? 0.3 : 0.17) * H.a, 0.36 * H.b, col, ow * 0.8, 0, 360, s * 8);
+  } else if (o.gent && (o.hat === "peaked" || o.hat === "tophat" || o.hat === "bonnet" || o.hat === "cap")) {
+    gentHat(p, o, H, cx, hc, R, light, side, ow);
+  } else if (o.hat === "cap" && o.sir) {
+    sirCap(p, o, H, cx, hc, R, light, side, facing, seed, ow);
   } else if (o.hat === "cap" || o.hat === "hair") {
-    const cut = crown + (o.hat === "cap" ? 0.3 : 0.42) * HH;
-    if (BACK) { // seen from behind: the back of the head is hair down to the neck
-      const low = hc + 0.86 * H.b, m = hp.length, kp = (y: number) => y < low;
-      const st = Math.max(0, hp.findIndex(([, y], i) => kp(y) && !kp(hp[(i + m - 1) % m][1])));
-      const ha = [...hp.slice(st), ...hp.slice(0, st)].filter(([, y]) => kp(y)).map(([x, y]) => [cx + (x - cx) * 1.02, hc + (y - hc) * 1.02] as P2);
-      const hcol = o.hair ?? o.moustache ?? "#5b3a22";
-      for (const s of [-1, 1]) p.ell(cx + s * 0.97 * H.a, hc + 0.12 * H.b, 0.13 * H.a, 0.2 * H.b, o.skin ?? SKIN, ow * 0.8);
-      if (ha.length >= 3) { p.shadedFill(ha, hcol, mul(hcol, SH_FELT), light, H.a, 0.35); p.poly(ha, null, ow * 0.8); }
-    }
+    const cut = crown + (o.hat === "cap" ? 0.24 : side ? 0.23 : 0.3) * HH; // above the brows: hair and caps never run into the eyes
     const keep = (x: number, y: number) => y < cut || (side && o.hat === "hair" && x < cx - 6 * u && y < hc + 0.42 * H.b);
     // start the arc at the first kept point after a dropped one, so the kept run is contiguous and the cut closes it
     const n = hp.length, startIdx = Math.max(0, hp.findIndex(([x, y], i) => keep(x, y) && !keep(hp[(i + n - 1) % n][0], hp[(i + n - 1) % n][1])));
@@ -451,8 +650,9 @@ const hatOn = (p: Pen, o: Outfit, hp: P2[], H: Blob, cx: number, hc: number, lig
       const deg = (a * 180) / Math.PI;
       if (side) p.poly(R([[cx + 40 * u, cut - 2 * u], [cx + 74 * u, cut + 4 * u], [cx + 40 * u, cut + 6 * u]]), shade(col, 0.8), ow);
       else {
-        const s = facing || (rnd(seed, 21) < 0.5 ? -1 : 1), [px, py] = R([[cx + s * 4 * u, cut + 1.5 * u]])[0];
-        p.ell(px, py, 32 * u, 0.06 * HH, shade(col, 0.8), ow, 0, 180, deg);
+        const s = facing || (rnd(seed, 21) < 0.5 ? -1 : 1), [px, py] = R([[cx + (o.sir ? 0 : s * 4 * u), cut + (o.sir ? 0 : 1.5 * u)]])[0];
+        // Sir Digsworth's peak is as wide as the cap and joined to its lower edge (DAILY-RULES, 2026-11-16)
+        p.ell(px, py, o.sir ? 0.9 * H.a : 32 * u, (o.sir ? 0.075 : 0.06) * HH, shade(col, 0.8), ow, 0, 180, deg);
       }
     }
   } else if (o.hat === "slouch" || o.hat === "peaked") {
@@ -488,13 +688,47 @@ const hatOn = (p: Pen, o: Outfit, hp: P2[], H: Blob, cx: number, hc: number, lig
     p.clip(body, () => p.band(R([[cx - wt - 4 * u, yb - 0.13 * HH], [cx + wt + 4 * u, yb - 0.13 * HH]]), shade(o.jacket, 0.9), 0.14 * HH, 0.8 * u));
     p.poly(body, null, ow);
     const [bx, by] = R([[cx, yb + 1 * u]])[0];
-    p.ell(bx, by, 0.45 * W, 0.05 * HH, "#1d1b22", ow, 0, 360, (a * 180) / Math.PI);
+    p.ell(bx + (side ? 3 * u : 0), by, (side ? 0.5 : 0.45) * W, 0.05 * HH, "#1d1b22", ow, 0, 360, (a * 180) / Math.PI);
   } else if (o.hat === "bonnet") {
     const [bx, by] = R([[cx + (side ? 6 * u : 0), crown + 0.16 * HH]])[0];
     p.arc(bx, by, 0.5 * W, 0.2 * HH, 200, 340, 7 * u, BONNET_BRIM);
     p.arc(bx, by, 0.5 * W + 3.5 * u, 0.2 * HH + 3.5 * u, 200, 340, 1.2 * u);
     const cy = hc + H.b * 0.98;
     p.stroke([[cx - 14 * u, cy - 4 * u], [cx, cy + 2 * u], [cx + 14 * u, cy - 4 * u]], 2 * u, BONNET_BRIM);
+  } else if (o.hat === "bowler") {
+    // a detective's bowler: a round crown on a narrow curled brim
+    const yb = crown + 0.24 * HH, ht = 0.46 * HH, wb = 0.34 * W, col = o.cap ?? "#2e2a36", dome: P2[] = [];
+    for (let i = 0; i <= 14; i++) { const t = (Math.PI * i) / 14; dome.push([cx - wb * Math.cos(t), yb - ht * Math.sin(t) ** 0.8]); }
+    const body = R([...sag(yb, wb).reverse(), ...dome.slice(1, -1)]);
+    p.shadedFill(body, col, mul(col, SH_FELT), light, wb, 0.4);
+    p.clip(body, () => p.band(R([[cx - wb - 4 * u, yb - 0.07 * HH], [cx + wb + 4 * u, yb - 0.07 * HH]]), shade(col, 0.62), 0.08 * HH, 0.8 * u));
+    p.poly(body, null, ow);
+    const [bx, by] = R([[cx, yb + 1 * u]])[0];
+    p.ell(bx + (side ? 3 * u : 0), by, (side ? 0.51 : 0.47) * W, 0.05 * HH, shade(col, 0.8), ow, 0, 360, (a * 180) / Math.PI);
+  } else if (o.hat === "crown") {
+    // a king's crown: a gold band with five points and jewels
+    const yb = crown + 0.2 * HH, ht = 0.44 * HH, wb = 0.36 * W, wt = 0.42 * W, col = "#e9b93a", top: P2[] = [];
+    for (let i = 0; i <= 8; i++) top.push([cx - wt + (2 * wt * i) / 8, yb - (i % 2 ? 0.5 : 1) * ht]);
+    const body = R([...sag(yb, wb).reverse(), ...top]);
+    p.shadedFill(body, col, mul(col, SH_FELT), light, wt, 0.4);
+    p.clip(body, () => p.band(R([[cx - wb - 4 * u, yb - 0.08 * HH], [cx + wb + 4 * u, yb - 0.08 * HH]]), "#c8312b", 0.09 * HH, 0.8 * u));
+    p.poly(body, null, ow);
+    for (let i = 0; i <= 8; i += 2) { const [jx, jy] = R([[cx - wt + (2 * wt * i) / 8, yb - ht - 1 * u]])[0]; p.dot(jx, jy, 4.6 * u, INK); p.dot(jx, jy, 3.2 * u, i % 4 ? "#6fb6e6" : "#f4efe0"); }
+  } else if (o.hat === "bicorne") {
+    // Napoleon's hat, worn side to side
+    const yb = crown + 0.27 * HH, col = o.cap ?? "#22242c", wb = 0.78 * W;
+    const body = R([...sag(yb, 0.5 * W).reverse(), [cx - wb, yb + 3 * u], [cx - 0.5 * W, yb - 0.3 * HH], [cx - 0.16 * W, yb - 0.5 * HH], [cx + 0.16 * W, yb - 0.5 * HH], [cx + 0.5 * W, yb - 0.3 * HH], [cx + wb, yb + 3 * u]]);
+    p.shadedFill(body, col, mul(col, SH_FELT), light, wb, 0.4);
+    p.poly(body, null, ow);
+    const [gx, gy] = R([[cx + (side ? 20 * u : 0), yb - 0.26 * HH]])[0];
+    const ck = o.cockade ?? ["#c8312b", "#f4efe0", "#2a4f9a"]; p.dot(gx, gy, 7.5 * u, INK); p.dot(gx, gy, 6 * u, ck[0]); p.dot(gx, gy, 3.6 * u, ck[1]); p.dot(gx, gy, 1.8 * u, ck[2]);
+  } else if (o.hat === "beret") {
+    // a painter's beret, pulled to one side
+    const col = o.cap ?? "#2e2a36", s = side ? -1 : facing || 1, [bx, by] = R([[cx + s * 9 * u, crown + 0.15 * HH]])[0], deg = (a * 180) / Math.PI - s * 9;
+    p.ell(bx, by, 0.56 * W, 0.17 * HH, col, ow, 0, 360, deg);
+    p.ell(bx, by - 0.03 * HH, 0.4 * W, 0.08 * HH, mul(col, SH_FELT), 0, 0, 360, deg);
+    const [sx, sy] = R([[cx + s * 9 * u, crown + 0.15 * HH - 0.17 * HH]])[0];
+    p.stroke([[sx, sy + 1 * u], [sx + s * 2 * u, sy - 6 * u]], 3.4 * u);
   }
 };
 
@@ -503,6 +737,10 @@ export type Arms = [P2[], P2[]];
 /** held prop; for the hammer the number is the strike 0 (raised) .. 1 (struck) */
 export type Prop = null | "icecream" | "shako" | ["hammer", number];
 
+/** Sir Digsworth: a gentleman, not a peanut on stilts; short legs */
+const SIR_BUILD = { a: 118, torso: 1.1, legs: 0.9, tw: 0.8 };
+const GENT_BUILD: Record<Build, typeof SIR_BUILD> = { adult: SIR_BUILD, stout: { a: 118, torso: 1.12, legs: 0.88, tw: 0.9 }, kid: { a: 112, torso: 0.85, legs: 0.7, tw: 0.72 } };
+const newBuild = (o: Outfit) => (o.sir ? SIR_BUILD : GENT_BUILD[o.build ?? "adult"]);
 const BUILD: Record<Build, { a: number; torso: number; legs: number; tw: number }> = {
   adult: { a: 118, torso: 1.1, legs: 1.4, tw: 0.8 },
   stout: { a: 118, torso: 1.15, legs: 1.32, tw: 0.92 },
@@ -512,6 +750,8 @@ const BUILD: Record<Build, { a: number; torso: number; legs: number; tw: number 
 export type FrontOpts = {
   phase?: number; expr?: Expr; mode?: "march" | "stroll" | "stand" | "sit" | "fall"; look?: number; blink?: boolean | number; lift?: number;
   prop?: Prop; tilt?: number; headTilt?: number; wave?: number;
+  /** looking up 0..1 (open and shocked eyes: pupils rise; the head tilts back a little); `look` is the horizontal gaze */
+  lookUp?: number;
   /** right arm points out to screen-right (0..1); both arms up (0..1); palms-up shrug (0..1) */
   point?: number; cheer?: number; shrug?: number;
   /** canvas angle the key light comes FROM (painted crescent + thick outline side) */
@@ -528,23 +768,27 @@ const footStroke = (p: Pen, a: P2, b: P2, w: number, col: string) => {
 export const bodyFront = (p: Pen, o: Outfit, opts: FrontOpts) => {
   const { phase = 0, expr = "neutral", mode = "march", look = 0, blink = false, lift = 60, prop = null, tilt = 0, headTilt = 0, wave,
     light = DEF_LIGHT, facing = 0, seed = 1, point, cheer, shrug } = opts;
-  SIR = !!o.sir; BACK = !!opts.back;
-  const Bd = BUILD[o.build ?? "adult"], skin = o.skin ?? SKIN, two = Math.PI * 2, lid = lidOf(blink);
-  const H = headBlob(seed, Bd.a, facing), W = 2 * H.a, HH = 2 * H.b, u = W / 100;
+  SIR = !!o.sir; GT = !!o.gent; NEW = SIR || GT; BACK = !!opts.back; LOOKUP = clamp(opts.lookUp ?? 0, 0, 1);
+  const Bd = NEW ? newBuild(o) : BUILD[o.build ?? "adult"], skin = o.skin ?? SKIN, two = Math.PI * 2, lid = lidOf(blink);
+  const H = headBlob(seed, Bd.a, facing);
+  if (NEW) H.b *= 1.07; // a little more room for the cap, the moustache and the mouth
+  const W = 2 * H.a, HH = 2 * H.b, u = W / 100;
   const tall = (1 + Bd.torso + Bd.legs) * HH, sole = 975;
   // body bob 5 % (march) / 3 % (stroll) of the height, lowest at contact (phase 0 and 0.5)
   const bob = mode === "march" ? 0.025 * tall * Math.cos(2 * two * phase) : mode === "stroll" ? 0.015 * tall * Math.cos(2 * two * phase) : 0;
   const torsoBot = mode === "sit" ? sole - 0.2 * HH : sole - Bd.legs * HH + bob;
   const chin = torsoBot - Bd.torso * HH, hc = chin - H.b, crown = hc - H.b, hipY = torsoBot - 0.12 * HH;
   const thick = thickAngle(light), ow = 5 * u;
-  const legCol = mix(o.pants, INK, 0.55), armCol = mix(o.jacket, INK, 0.5), footCol = o.boots;
-  const legW = 5.8 * u, footW = 7.5 * u;
+  const legCol = NEW ? o.pants : mix(o.pants, INK, 0.55), armCol = mix(o.jacket, INK, 0.5), footCol = o.boots;
+  const legW = (NEW ? 17 : 5.8) * u, footW = (NEW ? 10 : 7.5) * u;
+  // Sir's trousers are real trouser legs with an ink outline; everyone else keeps the single-stroke leg
+  const legS = (pts: P2[]) => { if (NEW) p.stroke(pts, legW + 6 * u, INK); p.stroke(pts, legW, legCol); };
   // ---- legs + feet (not rotated) ----
   p.rot = null;
   if (mode === "sit") {
     for (const side of [-1, 1]) {
       const h: P2 = [300 + side * 15 * u, hipY], k: P2 = [300 + side * 36 * u, hipY + 0.2 * HH], f: P2 = [300 + side * 44 * u, sole - 8 * u];
-      p.stroke(curve(h, k, f), legW, legCol);
+      if (!(GT && o.dress)) legS(curve(h, k, f));
       footStroke(p, [f[0] - side * 2 * u, f[1]], [f[0] + side * 12 * u, f[1] - 5 * u], footW, footCol);
     }
   } else if (mode === "fall") {
@@ -553,22 +797,22 @@ export const bodyFront = (p: Pen, o: Outfit, opts: FrontOpts) => {
       [[300 + 15 * u, hipY], [300 + 50 * u, hipY + 0.45 * HH], [300 + 76 * u, hipY + 0.22 * HH]],
     ];
     legs.forEach(([h, k, f], i) => {
-      p.stroke(curve(h, k, f), legW, legCol);
+      legS(curve(h, k, f));
       footStroke(p, f, [f[0] + (i ? 14 : -14) * u, f[1] + (i ? -6 : 4) * u], footW, footCol);
     });
   } else if (o.dress) {
     for (const side of [-1, 1]) {
       const fx = 300 + side * 12 * u, fy = sole - 4 * u;
-      p.stroke([[fx, sole - 0.4 * HH], [fx + side * u, fy]], legW, legCol);
+      if (!GT) p.stroke([[fx, sole - 0.4 * HH], [fx + side * u, fy]], legW, legCol);
       footStroke(p, [fx - side * 3 * u, fy], [fx + side * 12 * u, fy + u], footW, footCol);
     }
   } else {
     const L = mode === "march" ? lift * 1.25 : mode === "stroll" ? lift * 0.55 : 0;
     for (const [side, ph] of [[-1, 0], [1, 0.5]] as const) {
       const up = Math.max(0, Math.sin(two * (phase + ph))) * L;
-      const hx = 300 + side * 15 * u, fx = 300 + side * 22 * u, fy = sole - 4 * u - up;
+      const hx = 300 + side * (NEW ? 13 : 15) * u, fx = 300 + side * (NEW ? 17 : 22) * u, fy = sole - 4 * u - up;
       const k: P2 = [(hx + fx) / 2 + side * (1.5 * u + up * 0.16), (hipY + fy) / 2 - up * 0.08];
-      p.stroke(curve([hx, hipY], k, [fx, fy]), legW, legCol);
+      legS(curve([hx, hipY], k, [fx, fy]));
       footStroke(p, [fx - side * 3 * u, fy], [fx + side * 13 * u, fy + 0.5 * u], footW, footCol);
     }
   }
@@ -576,7 +820,7 @@ export const bodyFront = (p: Pen, o: Outfit, opts: FrontOpts) => {
   const sway = mode === "march" ? 1.6 * Math.sin(two * phase) : mode === "stroll" ? 1.0 * Math.sin(two * phase) : 0;
   const A = tilt + sway;
   p.rot = A ? [rad(A), 300, hipY] : null;
-  const dress = !!o.dress && mode !== "sit" && mode !== "fall";
+  const dress = !!o.dress && (mode !== "sit" || GT) && mode !== "fall";
   const T: Blob = { a: ((Bd.tw / 2) * W) / 1.06, b: 0.5 * (torsoBot - (chin - 0.25 * HH)), nTop: 2.2, nBot: 2.6, egg: o.build === "stout" ? 0.17 : 0.12,
     asym: 0.04 * facing, rot: 0, noise: 0.006, seed: seed + 7 };
   const tcx = 300 + 3 * u * facing, tcy = torsoBot - T.b, tp = blobPts(tcx, tcy, T);
@@ -617,7 +861,8 @@ export const bodyFront = (p: Pen, o: Outfit, opts: FrontOpts) => {
       arms.push({ pts: [S, E, Hd], front: true });
     } else arms.push({ pts: hang(1, sw), front: false });
   }
-  const drawArm = (a: Arm) => { p.stroke(curve(a.pts[0], a.pts[1], a.pts[2]), 5.2 * u, armCol); p.dot(a.pts[2][0], a.pts[2][1], 5.5 * u); };
+  // arms carry their own ink rim, so they read against any wall and against the coat
+  const drawArm = (a: Arm) => { const c = curve(a.pts[0], a.pts[1], a.pts[2]); p.stroke(c, 8.4 * u, INK); p.stroke(c, 5 * u, armCol); p.dot(a.pts[2][0], a.pts[2][1], 5.8 * u); };
   // behind the body: rifle, sword, arms
   if (rifle) {
     p.band([R0, R1], "#7a4b2a", 5 * u, 1.5 * u, "round");
@@ -635,8 +880,9 @@ export const bodyFront = (p: Pen, o: Outfit, opts: FrontOpts) => {
   for (const a of arms) if (!a.front) drawArm(a);
   // torso / dress: shaded fill -> clothing clipped to it -> thick-thin ink ring
   if (dress) {
-    const D: Blob = { a: 0.5 * W * 0.98, b: 0.5 * ((sole - 0.35 * HH) - (chin - 0.2 * HH)), nTop: 2.0, nBot: 3.0, egg: 0.35, asym: 0.03 * facing, rot: 0, noise: 0.006, seed: seed + 9 };
-    const dp = blobPts(300, sole - 0.35 * HH - D.b, D);
+    const hem = sole - (GT ? 0.09 : 0.35) * HH; // the long skirt of the new look hangs to the ankles: only the shoes show
+    const D: Blob = { a: (GT ? 0.42 : 0.5 * 0.98) * W, b: 0.5 * (hem - (chin - 0.2 * HH)), nTop: 2.0, nBot: 3.0, egg: GT ? 0.3 : 0.35, asym: 0.03 * facing, rot: 0, noise: 0.006, seed: seed + 9 };
+    const dp = blobPts(300, hem - D.b, D);
     p.gradFill(dp, o.dress!, mul(o.dress!, SH_CLOTH), light);
     p.inkRing(dp, ow, thick);
     const Sw: Blob = { a: 0.37 * W, b: 0.3 * HH, nTop: 2.2, nBot: 2.4, egg: 0.1, asym: 0, rot: 0, noise: 0.006, seed: seed + 8 };
@@ -676,7 +922,6 @@ export const bodyFront = (p: Pen, o: Outfit, opts: FrontOpts) => {
         p.dot(tcx + 2 * u * facing, y, 2.2 * u + 0.8 * u, INK); p.dot(tcx + 2 * u * facing, y, 2.2 * u, o.buttons ?? shade(o.jacket, 0.7));
       }
     });
-    if (o.sash) { const s = facing || 1; p.poly([[tcx + s * 0.55 * T.a, torsoBot - 0.3 * HH], [tcx + s * 0.75 * T.a, torsoBot + 0.05 * HH], [tcx + s * 0.45 * T.a, torsoBot + 0.02 * HH]], o.sash, 1.6 * u); }
     p.inkRing(tp, ow, thick);
     if (o.sir) for (const s of [-1, 1]) // red bow tie over the collar
       p.poly([[tcx, chin + 0.035 * HH], [tcx + s * 13 * u, chin - 0.03 * HH], [tcx + s * 13 * u, chin + 0.1 * HH]], "#d12f2f", 2.2 * u);
@@ -704,17 +949,54 @@ export const bodyFront = (p: Pen, o: Outfit, opts: FrontOpts) => {
     p.dot(hx, hy, 5.5 * u);
   }
   // ---- head: rotates with the body, plus its own tilt about the chin ----
-  const Ah = A + headTilt, [cpx, cpy] = rotAbout([300, chin], rad(A), [300, hipY]);
+  const Ah = A + headTilt + LOOKUP_TILT * LOOKUP, [cpx, cpy] = rotAbout([300, chin], rad(A), [300, hipY]);
   p.rot = Ah ? [rad(Ah), 300, chin, cpx - 300, cpy - chin] : null;
   hatBehind(p, o, H, 300, hc, light, thick, ow, false);
   const hp = blobPts(300, hc, H);
   p.shadedFill(hp, skin, mul(skin, SH_SKIN), light, H.a);
   p.inkRing(hp, ow, thick);
+  tieOn(p, o, 300, chin + 0.07 * HH, u);
+  beardOn(p, o, hp, 300, hc, H, light, ow);
   hatOn(p, o, hp, H, 300, hc, light, seed, facing, false);
-  const brim = !!o.hat && o.hat !== "hair" && o.hat !== "bonnet" && o.hat !== "cap";
+  const brim = !!o.hat && o.hat !== "hair" && o.hat !== "bonnet";
   if (!BACK) faceFront(p, 300, hc, W, expr, facing, look, lid, brim, skin, o.moustache, o.build === "stout");
-  BACK = false;
+  glassesOn(p, o, [300 + 7 * u * facing - 13 * u, 300 + 7 * u * facing + 13 * u], hc, u);
   p.rot = null;
+  if (o.sir && !BACK) { // the monocle's chain: fixed to the rim, sags past the cheek, ends in a gold stud on the lapel
+    const ch = sirChain(opts, o);
+    p.stroke(ch.pts, 3.8 * u, INK); p.stroke(ch.pts, 1.9 * u, GOLD);
+    p.dot(ch.lower[0], ch.lower[1], 3.8 * u, INK); p.dot(ch.lower[0], ch.lower[1], 2.6 * u, GOLD);
+  }
+  BACK = false; LOOKUP = 0;
+  p.rot = null;
+};
+
+/** Sir Digsworth's monocle chain in canvas design units for given FrontOpts (the same numbers bodyFront draws with).
+ *  upper = on the monocle's lower outer rim (moves with the head), lower = the stud on the lapel (moves with the body),
+ *  low = the point of the curve farthest below the straight line between them. The layout check tests these. */
+export type ChainInfo = { upper: P2; lower: P2; lowerBody: P2; low: P2; sag: number; below: boolean; mono: P2; monoR: number; torso: { x0: number; x1: number; y0: number; y1: number }; u: number; pts: P2[] };
+export const sirChain = (opts: FrontOpts, o: Outfit = SIR_DIGSWORTH): ChainInfo => {
+  const { expr = "neutral", mode = "march", tilt = 0, headTilt = 0, facing = 0, seed = 1, phase = 0 } = opts, lookUp = clamp(opts.lookUp ?? 0, 0, 1), two = Math.PI * 2;
+  const Bd = newBuild(o), H = headBlob(seed, Bd.a, facing); H.b *= 1.07;
+  const W = 2 * H.a, HH = 2 * H.b, u = W / 100, tall = (1 + Bd.torso + Bd.legs) * HH, sole = 975;
+  const bob = mode === "march" ? 0.025 * tall * Math.cos(2 * two * phase) : mode === "stroll" ? 0.015 * tall * Math.cos(2 * two * phase) : 0;
+  const torsoBot = mode === "sit" ? sole - 0.2 * HH : sole - Bd.legs * HH + bob, chin = torsoBot - Bd.torso * HH, hc = chin - H.b, hipY = torsoBot - 0.12 * HH;
+  const A = tilt + (mode === "march" ? 1.6 * Math.sin(two * phase) : mode === "stroll" ? 1.0 * Math.sin(two * phase) : 0);
+  const Ah = A + headTilt + LOOKUP_TILT * lookUp, [cpx, cpy] = rotAbout([300, chin], rad(A), [300, hipY]);
+  const head = (q: P2): P2 => { const r = rotAbout(q, rad(Ah), [300, chin]); return [r[0] + cpx - 300, r[1] + cpy - chin]; };
+  const shock = expr !== "neutral" && FACE[expr].eye[0] === "shock";
+  const fx = 300 + 7 * u * facing, ex = (shock ? 17 : 19) * u, ox = fx - ex, oy = hc + 3 * u - u, R = 9.5 * u;
+  const upper = head([ox - R * 0.7071, oy + R * 0.7071]), mono = head([ox, oy]);
+  const tcx = 300 + 3 * u * facing, Ta = ((Bd.tw / 2) * W) / 1.06;
+  const lowerBody: P2 = [tcx - 14 * u, chin + 0.34 * HH], lower = rotAbout(lowerBody, rad(A), [300, hipY]);
+  const dx = lower[0] - upper[0], dy = lower[1] - upper[1], len = Math.hypot(dx, dy) || 1;
+  let n: P2 = [-dy / len, dx / len]; if (n[1] < 0) n = [-n[0], -n[1]]; if (Math.abs(n[1]) < 1e-6 && n[0] > 0) n = [-n[0], -n[1]];
+  const mid: P2 = [(upper[0] + lower[0]) / 2 + n[0] * 0.14 * len, (upper[1] + lower[1]) / 2 + n[1] * 0.14 * len];
+  const pts = curve(upper, mid, lower, 24);
+  let low = pts[0], sag = -1;
+  for (const q of pts) { const s = (q[0] - upper[0]) * n[0] + (q[1] - upper[1]) * n[1]; if (s > sag) { sag = s; low = q; } }
+  const below = Math.abs(dx) < 1e-3 ? sag > 0 : low[1] > upper[1] + (low[0] - upper[0]) * dy / dx;
+  return { upper, lower, lowerBody, low, sag, below, mono, monoR: R, torso: { x0: tcx - Ta, x1: tcx + Ta, y0: chin - 0.25 * HH, y1: torsoBot }, u, pts };
 };
 
 export type SideOpts = {
@@ -739,13 +1021,14 @@ const SWING_HIP = 733;
  *  The stance foot is planted: it slides back at exactly the walking speed while the hip rises and falls over it. */
 export const bodySide = (p: Pen, o: Outfit, opts: SideOpts) => {
   const { phase = 0, expr = "neutral", mode = "march", blink = false, stomp = 1, pose = 0, stride = 1, light = DEF_LIGHT, seed = 1 } = opts;
-  SIR = !!o.sir;
-  const Bd = BUILD[o.build ?? "adult"], skin = o.skin ?? SKIN, two = Math.PI * 2, lid = lidOf(blink);
-  const H: Blob = { ...headBlob(seed, Bd.a, 1), asym: 0.12, rot: rad(3 + 3 * (rnd(seed, 7) - 0.5)) };
+  SIR = !!o.sir; GT = !!o.gent; NEW = SIR || GT;
+  const Bd = NEW ? newBuild(o) : BUILD[o.build ?? "adult"], skin = o.skin ?? SKIN, two = Math.PI * 2, lid = lidOf(blink);
+  const H: Blob = { ...headBlob(seed, Bd.a, 1), asym: 0.12, rot: rad((mode === "stand" ? 0 : 3) + 3 * (rnd(seed, 7) - 0.5)) };
+  if (NEW) H.b *= 1.07;
   const W = 2 * H.a, HH = 2 * H.b, u = W / 100, sole = 975, ankY = sole - 4 * u;
   const thick = thickAngle(light), ow = 5 * u;
   const legLen = (Bd.legs + 0.12) * HH - 4 * u, l1 = legLen / 2, l2 = legLen / 2;
-  const nearCol = mix(o.pants, INK, 0.55), farCol = mix(o.pants, INK, 0.75), footCol = o.boots;
+  const nearCol = NEW ? o.pants : mix(o.pants, INK, 0.55), farCol = NEW ? shade(o.pants, 0.8) : mix(o.pants, INK, 0.75), footCol = o.boots;
   type LegS = { ank: P2; pitch: number; near: boolean };
   const legs: LegS[] = [];
   let hipY = ankY - legLen * 0.995, lean = 0, nearFwd = 0;
@@ -762,7 +1045,7 @@ export const bodySide = (p: Pen, o: Outfit, opts: SideOpts) => {
     hipY = ankY - Math.sqrt(Math.max(1, Leff * Leff - stance.x * stance.x));
     for (const [L, near] of [[fL, false], [nL, true]] as const)
       legs.push({ ank: [300 + L.x, ankY - L.h], pitch: L.stance ? 0 : rad(35 * Math.sin(Math.PI * L.s) * (1 - 1.6 * L.s)), near });
-    lean = 4 + 3 * Math.cos(2 * two * phase); // 7 deg at contact, 1 deg at passing
+    lean = 4 + 2 * Math.cos(2 * two * phase); // 6 deg at contact, 2 deg at passing
     nearFwd = nL.x / (S / 2);
   } else if (mode === "push") {
     hipY = ankY - 0.87 * legLen;
@@ -783,11 +1066,14 @@ export const bodySide = (p: Pen, o: Outfit, opts: SideOpts) => {
   for (const L of legs) {
     const knee = mode === "swing" ? ([300 + l1 * 0.98 + (L.near ? 0 : -6 * u), hipY + 6 * u] as P2) : ik(hip, L.ank, l1, l2);
     const hp0: P2 = [300 + (L.near ? 0 : -5 * u), hipY];
-    p.stroke([hp0, knee, L.ank], 5.8 * u, L.near ? nearCol : farCol);
+    if (NEW) p.stroke([hp0, knee, L.ank], 15 * u + 6 * u, INK);
+    p.stroke([hp0, knee, L.ank], (NEW ? 15 : 5.8) * u, L.near ? nearCol : farCol);
     const c = Math.cos(L.pitch), s = Math.sin(L.pitch);
     footStroke(p, [L.ank[0] - 3 * u * c, L.ank[1] - 3 * u * s], [L.ank[0] + 13 * u * c, L.ank[1] + 13 * u * s + 0.5 * u],
-      7.5 * u, L.near ? footCol : footCol === INK ? INK : shade(footCol, 0.82));
+      (NEW ? 10 : 7.5) * u, L.near ? footCol : footCol === INK ? INK : shade(footCol, 0.82));
   }
+  // a long dress in the side view too (without it a woman turned into a stick figure whenever she walked)
+  if (o.dress) p.poly([[300 - 0.3 * W, hipY - 0.12 * HH], [300 + 0.34 * W, hipY - 0.12 * HH], [300 + 0.82 * W, ankY - 0.03 * HH], [300 - 0.82 * W, ankY - 0.03 * HH]], o.dress, ow); // wide enough to hide the striding legs: only the feet show
   // ---- upper body leans about the hip ----
   p.rot = lean ? [rad(lean), 300, hipY] : null;
   const T: Blob = { a: (o.build === "stout" ? 0.36 : 0.31) * W, b: 0.5 * (torsoBot - (chin - 0.25 * HH)), nTop: 2.2, nBot: 2.5, egg: 0.1, asym: 0.06,
@@ -815,8 +1101,9 @@ export const bodySide = (p: Pen, o: Outfit, opts: SideOpts) => {
     near = [S, [(S[0] + hN[0]) / 2, (S[1] + hN[1]) / 2 + 0.06 * HH], hN];
     far = [S, [(S[0] + hN[0]) / 2 - 4 * u, (S[1] + hN[1]) / 2 - 0.02 * HH], [hN[0] - 6 * u, hN[1] - 0.08 * HH]];
   } else if (rifle) { near = [S, [S[0] - 4 * u, S[1] + 0.42 * HH], B0]; far = mode === "march" ? swingArm(rad(30) * nearFwd) : swingArm(0); }
-  else { near = swingArm(rad(-30) * nearFwd); far = mode === "march" ? swingArm(rad(30) * nearFwd) : null; }
-  if (far) { p.stroke(curve(far[0], far[1], far[2]), 5.2 * u, farArm); p.dot(far[2][0], far[2][1], 5.5 * u); }
+  else if (mode === "march") { near = swingArm(rad(-30) * nearFwd); far = swingArm(rad(30) * nearFwd); }
+  else { near = swingArm(rad(13)); far = swingArm(rad(-15)); }
+  if (far) { const c = curve(far[0], far[1], far[2]); p.stroke(c, 8.4 * u, INK); p.stroke(c, 5 * u, farArm); p.dot(far[2][0], far[2][1], 5.8 * u); }
   p.gradFill(tp, o.jacket, mul(o.jacket, SH_CLOTH), light);
   p.clip(tp, () => {
     if (o.belt) p.band([[tcx - 0.65 * T.a, chin - 0.05 * HH], [tcx + 0.75 * T.a, torsoBot - 0.1 * HH]], o.belt!, 5.5 * u, 1.8 * u);
@@ -828,16 +1115,18 @@ export const bodySide = (p: Pen, o: Outfit, opts: SideOpts) => {
     p.band([B0, B1], "#7a4b2a", 5 * u, 1.5 * u, "round");
     p.band([lerp2(B0, B1, 0.6), B1], "#8d949c", 2.4 * u, 1.2 * u, "round");
   }
-  p.stroke(curve(near[0], near[1], near[2]), 5.2 * u, armCol); p.dot(near[2][0], near[2][1], 5.5 * u);
+  { const c = curve(near[0], near[1], near[2]); p.stroke(c, 8.4 * u, INK); p.stroke(c, 5 * u, armCol); p.dot(near[2][0], near[2][1], 5.8 * u); }
   // ---- head ----
   const hx = 300 + 4 * u;
   hatBehind(p, o, H, hx, hc, light, thick, ow, true);
   const hp = blobPts(hx, hc, H);
   p.shadedFill(hp, skin, mul(skin, SH_SKIN), light, H.a);
   p.inkRing(hp, ow, thick);
+  beardOn(p, o, hp.map(([x, y]) => [x < hx - 0.1 * H.a ? hx - 0.1 * H.a : x, y] as P2), hx, hc, H, light, ow);
   hatOn(p, o, hp, H, hx, hc, light, seed, 1, true);
-  const brim = !!o.hat && o.hat !== "hair" && o.hat !== "bonnet" && o.hat !== "cap";
+  const brim = !!o.hat && o.hat !== "hair" && o.hat !== "bonnet";
   faceSide(p, hx, hc, W, expr, lid, brim, skin, o.moustache, o.build === "stout");
+  glassesOn(p, o, [hx + 27 * u], hc, u, [hx - 20 * u, hc - 4 * u]);
   p.rot = null;
 };
 

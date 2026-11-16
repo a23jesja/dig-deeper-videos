@@ -54,12 +54,13 @@ export class Pool {
 // ---------------- sprite meshes ----------------
 const blank = (() => { const c = document.createElement("canvas"); c.width = c.height = 2; return new THREE.CanvasTexture(c); })();
 export const SU = 0.00216; // metres per design unit: 1000 units = 2.16 m
-export type GeoName = "body" | "emuSide" | "emuFront";
+export type GeoName = "body" | "emuSide" | "emuFront" | "wide";
 const plane = (w: number, h: number, ox: number, sole: number) => { const g = new THREE.PlaneGeometry(w * SU, h * SU); g.translate((w / 2 - ox) * SU, (sole - h / 2) * SU, 0); return g; };
 export const GEO: Record<GeoName, THREE.BufferGeometry> = {
   body: plane(600, 1000, 300, 975),
   emuSide: plane(900, 1000, EMU_HIP_X, 975),
   emuFront: plane(900, 1000, 450, 975),
+  wide: plane(2400, 1700, 1200, 1690),   // a boat with people in it, or any wide drawing
 };
 const CARD = new THREE.PlaneGeometry(1, 1);
 
@@ -114,8 +115,11 @@ export type Place = {
   tint?: number;
 };
 export type FxPlace = { key: string; cw: number; ch: number; draw: (p: Pen) => void; x: number; y: number; z: number; w: number; h: number;
-  flat?: boolean; rot?: number; soft?: boolean; opacity?: number; tint?: number; lit?: boolean };
-export type CamInfo = { pos: THREE.Vector3; right: THREE.Vector3; sun: THREE.Vector3; light: "day" | "golden" };
+  flat?: boolean; rot?: number; soft?: boolean; opacity?: number; tint?: number; lit?: boolean;
+  /** a caption-like card (banner, tag, speech bubble, stamp and the pictures inside a bubble): drawn in front of the
+   *  whole scene at the same place and size on screen, so no wall, post or person can cut into it */
+  top?: boolean };
+export type CamInfo = { pos: THREE.Vector3; right: THREE.Vector3; sun: THREE.Vector3; light: "day" | "golden" | "night" };
 export type Stage = { places: Place[]; fx: FxPlace[] };
 
 export const hh = (i: number, s = 0) => { const v = Math.sin(i * 127.1 + s * 311.7) * 43758.5453; return v - Math.floor(v); };
@@ -199,7 +203,7 @@ export const emu = (out: Stage, cam: CamInfo, a: EmuAct): Place => {
 };
 
 /** ground shadow under a standing card: a tight contact pool under the feet, plus by day a soft tail away from the sun */
-const CONTACT: Record<"day" | "golden", [number, number, number]> = { day: [0.2, 0.21, 0.33], golden: [0.24, 0.2, 0.33] };
+const CONTACT: Record<"day" | "golden" | "night", [number, number, number]> = { day: [0.2, 0.21, 0.33], golden: [0.24, 0.2, 0.33], night: [0.16, 0.18, 0.32] };
 const TAIL: [number, number, number] = [0.42, 0.44, 0.62];
 const toSrgb = (v: number) => { const c = clamp01(v); return c <= 0.0031308 ? 12.92 * c : 1.055 * c ** (1 / 2.4) - 0.055; };
 const hexOf = (c: [number, number, number], k: number) => "#" + c.map((v) => Math.round(255 * toSrgb(1 - (1 - v) * k)).toString(16).padStart(2, "0")).join("");

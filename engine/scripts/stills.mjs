@@ -17,6 +17,8 @@ for (const part of frames.split(",")) {
   else list.push(Number(part));
 }
 fs.mkdirSync(path.dirname(path.resolve(prefix + "x")), { recursive: true });
+// never render a picture that uses the Flow figure sheets
+{ const { check } = await import("./no_sheets_check.mjs"); const hits = await check(); if (hits.length) { console.error("FIGURE SHEETS IN A VIDEO: rendering stopped"); for (const h of hits) console.error("  " + h); process.exit(1); } }
 let t0 = Date.now();
 const serveUrl = await bundle({ entryPoint: path.resolve(process.env.ENTRY || "src/index.ts"), publicDir: path.resolve("public") });
 console.log("bundle", ((Date.now() - t0) / 1000).toFixed(1) + "s");

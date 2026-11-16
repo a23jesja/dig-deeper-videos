@@ -1,0 +1,903 @@
+{
+"base/body_front": {
+"w": 623,
+"h": 845
+},
+"base/body_side": {
+"w": 98,
+"h": 840
+},
+"base/body_back": {
+"w": 514,
+"h": 843
+},
+"base/hand_open": {
+"w": 158,
+"h": 185
+},
+"base/hand_pointing": {
+"w": 183,
+"h": 116
+},
+"base/hand_fist": {
+"w": 129,
+"h": 150
+},
+"base/hand_grip": {
+"w": 174,
+"h": 110
+},
+"base/hand_waving": {
+"w": 197,
+"h": 208
+},
+"base/hand_thumb": {
+"w": 141,
+"h": 160
+},
+"base/pose_stand": {
+"w": 139,
+"h": 429
+},
+"base/pose_walk": {
+"w": 222,
+"h": 425
+},
+"base/pose_run": {
+"w": 334,
+"h": 389
+},
+"base/pose_sit": {
+"w": 200,
+"h": 404
+},
+"base/pose_kneel": {
+"w": 241,
+"h": 346
+},
+"base/pose_fall": {
+"w": 390,
+"h": 244
+},
+"base/pose_cheer": {
+"w": 279,
+"h": 433
+},
+"base/pose_despair": {
+"w": 188,
+"h": 363
+},
+"base/hand_rest": {
+"w": 81,
+"h": 111
+},
+"base/head_front": {
+"w": 333,
+"h": 328,
+"cx": 166.5,
+"cy": 164.0,
+"r": 161.25
+},
+"base/head_side": {
+"w": 333,
+"h": 327,
+"cx": 166.5,
+"cy": 163.5,
+"r": 161.0
+},
+"base/face_neutral": {
+"w": 334,
+"h": 328,
+"cx": 167.0,
+"cy": 164.0,
+"r": 161.5
+},
+"base/face_smile": {
+"w": 334,
+"h": 329,
+"cx": 167.0,
+"cy": 164.5,
+"r": 161.75
+},
+"base/face_laugh": {
+"w": 334,
+"h": 328,
+"cx": 167.0,
+"cy": 164.0,
+"r": 161.5
+},
+"base/face_sad": {
+"w": 333,
+"h": 328,
+"cx": 166.5,
+"cy": 164.0,
+"r": 161.25
+},
+"base/face_angry": {
+"w": 334,
+"h": 328,
+"cx": 167.0,
+"cy": 164.0,
+"r": 161.5
+},
+"base/face_shock": {
+"w": 334,
+"h": 328,
+"cx": 167.0,
+"cy": 164.0,
+"r": 161.5
+},
+"base/face_worried": {
+"w": 333,
+"h": 328,
+"cx": 166.5,
+"cy": 164.0,
+"r": 161.25
+},
+"base/face_suspicious": {
+"w": 334,
+"h": 328,
+"cx": 167.0,
+"cy": 164.0,
+"r": 161.5
+},
+"base/face_smug": {
+"w": 333,
+"h": 328,
+"cx": 166.5,
+"cy": 164.0,
+"r": 161.25
+},
+"base/face_tired": {
+"w": 333,
+"h": 328,
+"cx": 166.5,
+"cy": 164.0,
+"r": 161.25
+},
+"base/face_dizzy": {
+"w": 333,
+"h": 328,
+"cx": 166.5,
+"cy": 164.0,
+"r": 161.25
+},
+"base/face_cry": {
+"w": 333,
+"h": 328,
+"cx": 166.5,
+"cy": 164.0,
+"r": 161.25
+},
+"base/mouth_closed": {
+"w": 317,
+"h": 56
+},
+"base/mouth_slight": {
+"w": 187,
+"h": 80
+},
+"base/mouth_open": {
+"w": 266,
+"h": 163
+},
+"base/mouth_wide": {
+"w": 185,
+"h": 370
+},
+"base/mouth_oo": {
+"w": 75,
+"h": 142
+},
+"base/mouth_smile": {
+"w": 356,
+"h": 151
+},
+"base/talk_closed": {
+"w": 333,
+"h": 328,
+"cx": 166.5,
+"cy": 164.0,
+"r": 161.25
+},
+"base/talk_slight": {
+"w": 333,
+"h": 328,
+"cx": 166.5,
+"cy": 164.0,
+"r": 161.25
+},
+"base/talk_open": {
+"w": 333,
+"h": 328,
+"cx": 166.5,
+"cy": 164.0,
+"r": 161.25
+},
+"base/talk_wide": {
+"w": 333,
+"h": 328,
+"cx": 166.5,
+"cy": 164.0,
+"r": 161.25
+},
+"base/talk_oo": {
+"w": 333,
+"h": 328,
+"cx": 166.5,
+"cy": 164.0,
+"r": 161.25
+},
+"base/talk_smile": {
+"w": 333,
+"h": 328,
+"cx": 166.5,
+"cy": 164.0,
+"r": 161.25
+},
+"wardrobe/hat_brodie": {
+"w": 298,
+"h": 168
+},
+"wardrobe/hat_officer": {
+"w": 272,
+"h": 186
+},
+"wardrobe/hat_knight": {
+"w": 229,
+"h": 265
+},
+"wardrobe/hat_crown": {
+"w": 264,
+"h": 200
+},
+"wardrobe/hat_top": {
+"w": 266,
+"h": 222
+},
+"wardrobe/hat_bowler": {
+"w": 292,
+"h": 186
+},
+"wardrobe/hat_flatcap": {
+"w": 259,
+"h": 153
+},
+"wardrobe/hat_sailor": {
+"w": 274,
+"h": 164
+},
+"wardrobe/hat_bobby": {
+"w": 201,
+"h": 198
+},
+"wardrobe/hat_ushanka": {
+"w": 254,
+"h": 247
+},
+"wardrobe/hat_straw": {
+"w": 351,
+"h": 161
+},
+"wardrobe/hat_scarf": {
+"w": 216,
+"h": 272
+},
+"wardrobe/full_uniform": {
+"w": 332,
+"h": 317
+},
+"wardrobe/garment_uniform": {
+"w": 212,
+"h": 309,
+"sleeves": true,
+"shoL": [
+11,
+43
+],
+"shoR": [
+201,
+44
+],
+"pit": 183,
+"sleeveW": 43,
+"sleeveCol": [
+250,
+248,
+234
+],
+"sleeveEnd": 266,
+"neck": [
+105.5,
+0
+]
+},
+"wardrobe/full_sailor": {
+"w": 329,
+"h": 299
+},
+"wardrobe/garment_sailor": {
+"w": 201,
+"h": 290,
+"sleeves": true,
+"shoL": [
+9,
+19
+],
+"shoR": [
+191,
+20
+],
+"pit": 173,
+"sleeveW": 43,
+"sleeveCol": [
+249,
+248,
+234
+],
+"sleeveEnd": 249,
+"neck": [
+99.0,
+0
+]
+},
+"wardrobe/full_suit": {
+"w": 331,
+"h": 298
+},
+"wardrobe/garment_suit": {
+"w": 203,
+"h": 289,
+"sleeves": true,
+"shoL": [
+9,
+30
+],
+"shoR": [
+193,
+29
+],
+"pit": 167,
+"sleeveW": 43,
+"sleeveCol": [
+249,
+248,
+235
+],
+"sleeveEnd": 249,
+"neck": [
+101.0,
+0
+]
+},
+"wardrobe/full_trench": {
+"w": 303,
+"h": 337
+},
+"wardrobe/garment_trench": {
+"w": 203,
+"h": 329,
+"sleeves": true,
+"shoL": [
+19,
+44
+],
+"shoR": [
+183,
+44
+],
+"pit": 171,
+"sleeveW": 37,
+"sleeveCol": [
+249,
+248,
+233
+],
+"sleeveEnd": 242,
+"neck": [
+101.5,
+0
+]
+},
+"wardrobe/full_armour": {
+"w": 310,
+"h": 294
+},
+"wardrobe/garment_armour": {
+"w": 302,
+"h": 286,
+"sleeves": false,
+"neck": [
+149.5,
+0
+]
+},
+"wardrobe/full_tunic": {
+"w": 315,
+"h": 299
+},
+"wardrobe/garment_tunic": {
+"w": 208,
+"h": 290,
+"sleeves": true,
+"shoL": [
+15,
+18
+],
+"shoR": [
+192,
+18
+],
+"pit": 140,
+"sleeveW": 39,
+"sleeveCol": [
+250,
+248,
+233
+],
+"sleeveEnd": 220,
+"neck": [
+103.0,
+0
+]
+},
+"wardrobe/full_dress": {
+"w": 249,
+"h": 302
+},
+"wardrobe/garment_dress": {
+"w": 241,
+"h": 294,
+"sleeves": false,
+"neck": [
+120.0,
+0
+]
+},
+"wardrobe/full_smock": {
+"w": 319,
+"h": 298
+},
+"wardrobe/garment_smock": {
+"w": 201,
+"h": 290,
+"sleeves": true,
+"shoL": [
+10,
+37
+],
+"shoR": [
+190,
+37
+],
+"pit": 187,
+"sleeveW": 33,
+"sleeveCol": [
+249,
+248,
+234
+],
+"sleeveEnd": 227,
+"neck": [
+100.0,
+0
+]
+},
+"wardrobe/full_chef": {
+"w": 326,
+"h": 299
+},
+"wardrobe/garment_chef": {
+"w": 318,
+"h": 291,
+"sleeves": false,
+"neck": [
+159.5,
+0
+]
+},
+"wardrobe/full_greatcoat": {
+"w": 323,
+"h": 308
+},
+"wardrobe/garment_greatcoat": {
+"w": 198,
+"h": 300,
+"sleeves": true,
+"shoL": [
+10,
+37
+],
+"shoR": [
+186,
+36
+],
+"pit": 180,
+"sleeveW": 40,
+"sleeveCol": [
+249,
+248,
+234
+],
+"sleeveEnd": 252,
+"neck": [
+98.0,
+0
+]
+},
+"wardrobe/full_striped": {
+"w": 312,
+"h": 259
+},
+"wardrobe/garment_striped": {
+"w": 179,
+"h": 250,
+"sleeves": true,
+"shoL": [
+4,
+18
+],
+"shoR": [
+175,
+18
+],
+"pit": 141,
+"sleeveW": 38,
+"sleeveCol": [
+249,
+248,
+239
+],
+"sleeveEnd": 217,
+"neck": [
+89.5,
+0
+]
+},
+"wardrobe/full_sweater": {
+"w": 313,
+"h": 261
+},
+"wardrobe/garment_sweater": {
+"w": 183,
+"h": 253,
+"sleeves": true,
+"shoL": [
+4,
+19
+],
+"shoR": [
+178,
+18
+],
+"pit": 150,
+"sleeveW": 39,
+"sleeveCol": [
+250,
+249,
+235
+],
+"sleeveEnd": 222,
+"neck": [
+92.0,
+0
+]
+},
+"wardrobe/tash_handlebar": {
+"w": 267,
+"h": 93
+},
+"wardrobe/tash_thin": {
+"w": 228,
+"h": 55
+},
+"wardrobe/tash_walrus": {
+"w": 286,
+"h": 95
+},
+"wardrobe/beard_full": {
+"w": 253,
+"h": 198
+},
+"wardrobe/beard_goatee": {
+"w": 217,
+"h": 185
+},
+"wardrobe/hair_bun": {
+"w": 229,
+"h": 265
+},
+"wardrobe/hair_long": {
+"w": 241,
+"h": 281
+},
+"wardrobe/hair_short": {
+"w": 237,
+"h": 172
+},
+"fx/dust": {
+"w": 400,
+"h": 333
+},
+"fx/smoke": {
+"w": 347,
+"h": 372
+},
+"fx/impact": {
+"w": 355,
+"h": 374
+},
+"fx/burst": {
+"w": 348,
+"h": 374
+},
+"fx/bang": {
+"w": 368,
+"h": 353
+},
+"fx/sparkle": {
+"w": 335,
+"h": 337
+},
+"fx/splash": {
+"w": 411,
+"h": 313
+},
+"fx/drop": {
+"w": 320,
+"h": 322
+},
+"fx/exclaim": {
+"w": 147,
+"h": 324
+},
+"fx/question": {
+"w": 215,
+"h": 326
+},
+"fx/speed_a": {
+"w": 354,
+"h": 251
+},
+"fx/speed_b": {
+"w": 335,
+"h": 233
+},
+"fx/anger": {
+"w": 288,
+"h": 296
+},
+"fx/dizzy": {
+"w": 352,
+"h": 265
+},
+"fx/bubble_speech": {
+"w": 335,
+"h": 294
+},
+"fx/bubble_thought": {
+"w": 339,
+"h": 319
+},
+"sir/view_front": {
+"w": 381,
+"h": 838
+},
+"sir/view_34": {
+"w": 359,
+"h": 835
+},
+"sir/view_side": {
+"w": 324,
+"h": 826
+},
+"sir/view_back": {
+"w": 381,
+"h": 826
+},
+"sir/expr_neutral": {
+"w": 307,
+"h": 321,
+"cx": 157.43,
+"cy": 189.29,
+"r": 130.61
+},
+"sir/expr_wink": {
+"w": 308,
+"h": 322,
+"cx": 157.16,
+"cy": 189.07,
+"r": 130.96
+},
+"sir/expr_surprised": {
+"w": 308,
+"h": 324,
+"cx": 158.45,
+"cy": 191.0,
+"r": 131.05
+},
+"sir/expr_suspicious": {
+"w": 309,
+"h": 320,
+"cx": 157.83,
+"cy": 188.3,
+"r": 130.33
+},
+"sir/expr_angry": {
+"w": 326,
+"h": 321,
+"cx": 157.62,
+"cy": 189.34,
+"r": 130.23
+},
+"sir/expr_laugh": {
+"w": 318,
+"h": 316,
+"cx": 165.08,
+"cy": 182.17,
+"r": 132.02
+},
+"sir/body_front_full": {
+"w": 465,
+"h": 630
+},
+"sir/torso": {
+"w": 210,
+"h": 339,
+"sleeves": true,
+"shoL": [
+21,
+65
+],
+"shoR": [
+187,
+63
+],
+"pit": 150,
+"sleeveW": 47,
+"sleeveCol": [
+138,
+128,
+102
+],
+"sleeveEnd": 342,
+"neck": [
+103.5,
+0
+]
+},
+"sir/body_side": {
+"w": 355,
+"h": 628
+},
+"sir/pipe": {
+"w": 146,
+"h": 99
+},
+"sir/cane": {
+"w": 79,
+"h": 341
+},
+"sir/hand_open": {
+"w": 119,
+"h": 140
+},
+"sir/hand_pointing": {
+"w": 137,
+"h": 87
+},
+"sir/hand_fist": {
+"w": 99,
+"h": 113
+},
+"sir/hand_grip": {
+"w": 131,
+"h": 172
+},
+"sir/hand_waving": {
+"w": 148,
+"h": 156
+},
+"sir/hand_thumb": {
+"w": 107,
+"h": 120
+},
+"sir/head_side": {
+"w": 307,
+"h": 301,
+"cx": 144.29,
+"cy": 165.04,
+"r": 119.36
+},
+"sir/head_front": {
+"w": 283,
+"h": 297,
+"cx": 138.44,
+"cy": 173.2,
+"r": 119.14
+},
+"sir/mouthhead_closed": {
+"w": 267,
+"h": 287,
+"cx": 129.61,
+"cy": 168.59,
+"r": 113.02
+},
+"sir/talk_closed": {
+"w": 283,
+"h": 297,
+"cx": 138.44,
+"cy": 173.2,
+"r": 119.14
+},
+"sir/mouthhead_slight": {
+"w": 268,
+"h": 286,
+"cx": 130.01,
+"cy": 168.38,
+"r": 112.59
+},
+"sir/talk_slight": {
+"w": 283,
+"h": 297,
+"cx": 138.44,
+"cy": 173.2,
+"r": 119.14
+},
+"sir/mouthhead_open": {
+"w": 269,
+"h": 287,
+"cx": 130.23,
+"cy": 166.53,
+"r": 113.91
+},
+"sir/talk_open": {
+"w": 283,
+"h": 297,
+"cx": 138.44,
+"cy": 173.2,
+"r": 119.14
+},
+"sir/mouthhead_wide": {
+"w": 268,
+"h": 285,
+"cx": 129.64,
+"cy": 167.03,
+"r": 113.53
+},
+"sir/talk_wide": {
+"w": 283,
+"h": 297,
+"cx": 138.44,
+"cy": 173.2,
+"r": 119.14
+},
+"sir/mouthhead_oo": {
+"w": 268,
+"h": 285,
+"cx": 130.19,
+"cy": 166.69,
+"r": 113.43
+},
+"sir/talk_oo": {
+"w": 283,
+"h": 297,
+"cx": 138.44,
+"cy": 173.2,
+"r": 119.14
+},
+"sir/mouthhead_smile": {
+"w": 268,
+"h": 286,
+"cx": 130.99,
+"cy": 167.57,
+"r": 112.7
+},
+"sir/talk_smile": {
+"w": 283,
+"h": 297,
+"cx": 138.44,
+"cy": 173.2,
+"r": 119.14
+}
+}

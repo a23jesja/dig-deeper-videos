@@ -35,3 +35,17 @@ miles in [C], "58 miles" in [S]) · boat No. 7 leaving with about 28 people at a
 ## For Parts 2 and 3 (confirmed, not yet used)
 Sank at about 2:20 a.m. on 15 April [S] [T] [NG]; about 1,500 died and about 700 survived (705-712 by source)
 [S] [T] [NA] [NG] [US]; Carpathia picked up the survivors [S] [C].
+
+## Part 3 (2026-11-16): facts used
+Opened again on 2026-11-16 from this machine: [S] Wikipedia "Sinking of the Titanic" (raw text saved in
+`out/tit3/wiki_sinking.txt`), [US] US Senate inquiry report on titanicinquiry.org (AmInqRep03, 06, 07), [NG] National
+Geographic "Titanic". Quotes are in `SCRIPT-titanic-3.md`.
+- Distress rockets were fired one after another. [US] [S]
+- The forward part went under first. [US] [S] [NG]
+- She disappeared at about 2:20 a.m. on 15 April 1912. [NG] [S]
+- An overturned collapsible boat carried about thirty men ("about 30" [US], "some 35" [S]).
+- The Carpathia arrived at about 4 a.m. and picked up the survivors. [S] [C] [NG] [US]
+- About 700 saved (706 [US], 710 [S]); about 1,500 lost ([NG], [S]).
+Not used: the ship breaking in two ([US] 1912: "sank intact"; [S] says she broke), the lights going out and the stern
+rising ([S] only), the band playing to the end ([S] has a witness who says it stopped earlier), the water temperature.
+Dramatised and said to be so in the film: Sir Digsworth on board, swimming to the overturned boat, being pulled up.

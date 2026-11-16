@@ -7,6 +7,9 @@ import { emuSide, emuFront, fxFeather, fxDust, fxMuzzle, fxBang, fxSmoke } from 
 import { bearFront, fxBadge } from "./beartoon";
 import { pigSide, fxFlagUS, fxFlagUK, fxWarship, fxCannon, fxRifle, fxPotato, fxGrave } from "./pigtoon";
 
+import * as M from "./monatoon";
+import * as C from "./monacast";
+type C0 = { i: number; o: import("./toon").Outfit };
 type Cell = { w: number; h: number; draw: (p: Pen) => void; label?: string };
 const Cv: React.FC<{ c: Cell; s: number }> = ({ c, s }) => (
   <div style={{ position: "relative", width: c.w * s, height: c.h * s, background: "#cfe0c8", border: "1px solid #789" }}>
@@ -89,6 +92,45 @@ const pages = (f: number): Record<string, { s: number; cells: Cell[] }> => {
     fx: { s: 1, cells: [
       X("feather", fxFeather, 200, 120), X("dust .2", (p) => fxDust(p, 0.2)), X("dust .8", (p) => fxDust(p, 0.8)),
       X("muzzle", (p) => fxMuzzle(p, 0)), X("muzzle 1", (p) => fxMuzzle(p, 1)), X("bang", fxBang, 200, 260), X("smoke", (p) => fxSmoke(p, 0.5)),
+    ] },
+    mona: { s: 0.34, cells: [
+      X("mona framed", (p) => M.fxMona(p), 700, 920), X("mona glass", (p) => M.fxMona(p, true), 700, 920), X("hooks", (p) => M.fxHooks(p, 4), 700, 920), X("other portrait", (p) => M.fxOtherPortrait(p), 700, 920),
+      X("frame", (p) => M.fxFrameEmpty(p), 700, 920), X("glass", (p) => M.fxGlassPane(p), 560, 760), X("panel", (p) => M.fxPanel(p), 460, 640), X("panel back", (p) => M.fxPanel(p, true), 460, 640),
+      X("bundle", (p) => M.fxBundle(p), 520, 400), X("smock", (p) => M.fxSmock(p), 380, 600),
+      ...[0, 1, 2].map((k) => X("door " + k, (p) => M.fxDoorS(p, k), 520, 900)), ...[0, 1].map((k) => X("knob " + k, (p) => M.fxKnob(p, k), 760, 520)), X("pliers", (p) => M.fxPliers(p), 360, 220),
+      ...[0, 1, 2, 3, 4].map((k) => X("trunk " + k, (p) => M.fxTrunk(p, k), 820, 600)), ...[0, 0.6, 1].map((k) => X("cloth " + k, (p) => M.fxCloth(p, k), 620, 300)),
+      X("louvre", (p) => M.fxLouvre(p), 1800, 640), X("florence", (p) => M.fxFlorence(p), 1600, 700), X("notre dame", (p) => M.fxNotreDame(p), 560, 660), X("alps", (p) => M.fxAlps(p), 1800, 620),
+      ...(["blank", "start", "mona", "other", "cubist"] as const).map((k) => X("easel " + k, (p) => M.fxEasel(p, k), 640, 1040)), X("camera", (p) => M.fxCamera(p), 560, 820), X("camera flash", (p) => M.fxCamera(p, true), 560, 820),
+      X("statue", (p) => M.fxStatue(p), 320, 440), X("suitcase", (p) => M.fxSuitcase(p), 460, 340), X("thumb", (p) => M.fxThumb(p), 440, 440), X("file", (p) => M.fxFile(p), 600, 720),
+      X("front page", (p) => M.fxFrontPage(p), 600, 760), X("magazine", (p) => M.fxMagazine(p), 560, 720), X("letter", (p) => M.fxHandLetter(p, "Leonardo"), 620, 780), X("letter big", (p) => M.fxHandLetter(p, "", "I will make|my FORTUNE"), 620, 780),
+      X("love", (p) => M.fxLove(p), 320, 240), X("clock", (p) => M.fxClock2(p, 7, 0), 320, 320), X("measure", (p) => M.fxMeasure(p, "77 cm"), 760, 200), X("tick", (p) => M.fxMark(p, true), 320, 320), X("cross", (p) => M.fxMark(p, false), 320, 320),
+      X("poster", (p) => M.fxPoster(p), 460, 620), X("train", (p) => M.fxTrain(p), 1300, 480), X("barrier", (p) => M.fxBarrier(p), 1000, 420), X("bell", (p) => M.fxBell(p, 0.6), 340, 340), X("lens", (p) => M.fxLens(p), 340, 340),
+      X("bars", (p) => M.fxCellBars(p), 1000, 760), X("paint", (p) => M.fxPaintPot(p), 340, 340), X("canvas", (p) => M.fxSupport(p, false), 420, 260), X("wood", (p) => M.fxSupport(p, true), 420, 260),
+      X("sign", (p) => M.fxSign(p, "HOTEL", "TRIPOLI-ITALIA"), 900, 300), X("cupboard", (p) => M.fxCupboard(p), 420, 720), X("post", (p) => M.fxPost(p), 200, 520),
+    ] },
+    hats: { s: 0.56, cells: [
+      ...[1, 2, 3, 4, 5, 6, 7].map((sd) => H("tophat walk seed " + sd, (p) => bodySide(p, C.FOLK[0].o, { mode: "march", phase: 0.05 + 0.1 * sd, seed: sd }))),
+      ...(["tophat", "bowler", "cap", "shako", "peaked", "slouch", "crown", "bicorne", "beret", "bonnet", "hair"] as const).map((h, k) => H(h + " walk", (p) => bodySide(p, { ...C.FOLK[0].o, hat: h, cap: "#5a4a3a", hair: "#5a3b2a" }, { mode: "march", phase: 0.0, seed: 1 + (k % 7) }))),
+      ...(["tophat", "bowler", "cap", "shako", "peaked", "slouch", "crown", "bicorne", "beret", "bonnet", "hair"] as const).map((h, k) => H(h + " stand", (p) => bodySide(p, { ...C.FOLK[0].o, hat: h, cap: "#5a4a3a", hair: "#5a3b2a" }, { mode: "stand", seed: 2 + (k % 6) }))),
+    ] },
+    hatwalk: { s: 0.5, cells: [
+      ...[0, 1, 2, 3, 4, 5, 6, 7].map((k) => H("tophat " + k / 8, (p) => bodySide(p, C.FOLK[0].o, { mode: "march", phase: k / 8, seed: 4 }))),
+      ...[0, 1, 2, 3, 4, 5, 6, 7].map((k) => H("bowler " + k / 8, (p) => bodySide(p, C.DETECTIVE.o, { mode: "march", phase: k / 8, seed: 6 }))),
+      ...[1, 2, 3, 5, 7].map((sd) => H("tophat stand " + sd, (p) => bodySide(p, C.MARQUIS.o, { mode: "stand", seed: sd }))),
+      ...[1, 4, 6].map((sd) => H("tophat front " + sd, (p) => bodyFront(p, C.MARQUIS.o, { mode: "stand", seed: sd }))),
+    ] },
+    backs: { s: 0.5, cells: [
+      ...[0, 1, 2, 3, 4, 5, 6, 7].map((k) => H("folk" + k + " back", (p) => bodyFront(p, C.FOLK[k].o, { mode: "stand", back: true, seed: ((C.FOLK[k].i * 5 + 3) % 7) + 1 }))),
+      ...([["guard", C.GUARD1], ["cop", C.COPS[0]], ["detective", C.DETECTIVE], ["marquis", C.MARQUIS], ["per", C.PER], ["smock", C.PER_SMOCK], ["kafka", C.KAFKA], ["director", C.DIRECTOR], ["leonardo", C.LEONARDO], ["king", C.KING], ["napoleon", C.NAPOLEON], ["picasso", C.PICASSO], ["work1", C.WORK1], ["beroud", C.BEROUD]] as [string, C0][])
+        .map(([n, w]) => H(n + " back", (p) => bodyFront(p, w.o, { mode: "stand", back: true, seed: ((w.i * 5 + 3) % 7) + 1 }))),
+    ] },
+    monacast: { s: 0.36, cells: [
+      ...([["per", C.PER], ["smock", C.PER_SMOCK], ["soldier", C.PER_SOLDIER], ["suit", C.PER_SUIT], ["guard1", C.GUARD1], ["guard2", C.GUARD2], ["porter", C.PORTER], ["director", C.DIRECTOR], ["work1", C.WORK1], ["plumber", C.PLUMBER], ["beroud", C.BEROUD], ["photog", C.PHOTOG],
+        ["leonardo", C.LEONARDO], ["king", C.KING], ["napoleon", C.NAPOLEON], ["cop", C.COPS[0]], ["detective", C.DETECTIVE], ["judge", C.JUDGE], ["carab", C.CARAB1], ["pieret", C.PIERET], ["editor", C.EDITOR], ["apollinaire", C.APOLLINAIRE], ["picasso", C.PICASSO], ["kafka", C.KAFKA], ["brod", C.BROD],
+        ["geri", C.GERI], ["poggi", C.POGGI], ["marquis", C.MARQUIS], ["rich0", C.RICH[0]], ["folk0", C.FOLK[0]], ["folk1", C.FOLK[1]], ["folk3", C.FOLK[3]]] as [string, C0][]).map(([n, w]) => H(n, (p) => bodyFront(p, w.o, { mode: "stand", expr: "smile", seed: w.i * 7 + 3 }))),
+      H("leonardo back", (p) => bodyFront(p, C.LEONARDO.o, { mode: "stand", back: true, seed: 3 })), H("leonardo side", (p) => bodySide(p, C.LEONARDO.o, { mode: "march", phase: 0.2, seed: 3 })),
+      H("napoleon side", (p) => bodySide(p, C.NAPOLEON.o, { mode: "march", phase: 0.2, seed: 3 })), H("per side", (p) => bodySide(p, C.PER_SMOCK.o, { mode: "march", phase: 0.2, seed: 3 })), H("kafka side", (p) => bodySide(p, C.KAFKA.o, { mode: "stand", seed: 3 })),
+      H("per sit", (p) => bodyFront(p, C.PER.o, { mode: "sit", expr: "nervous", seed: 3 })), H("per shock", (p) => bodyFront(p, C.PER_SMOCK.o, { mode: "stand", expr: "shock", seed: 3 })),
     ] },
   };
 };

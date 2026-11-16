@@ -1,0 +1,18 @@
+{
+ "voice": "bm_george",
+ "speed": 1.2,
+ "gap": 0.13,
+ "lead": 0.05,
+ "lines": [
+  { "id": "hook1", "text": "Grand Theft Auto Six arrives on November the 19th.", "say": "Grand Theft Auto Six arrives on November the nineteenth.", "gap": 0.2 },
+  { "id": "hook2", "text": "And the whole series began as a mistake.", "gap": 0.4 },
+  { "id": "dundee", "text": "In 1995, a studio in Dundee, Scotland, started a game called Race and Chase.", "say": "In nineteen ninety-five, a studio in Dundee, Scotland, started a game called Race and Chase.", "gap": 0.2 },
+  { "id": "plan", "text": "Cops chased robbers through a city. You could be either.", "gap": 0.25 },
+  { "id": "dull", "text": "It was going nowhere. The publisher wanted to scrap it.", "gap": 0.3 },
+  { "id": "bug", "text": "Then, one of its makers recalled, a bug sent the police cars berserk. Instead of driving round you, they tried to drive through you.", "gap": 0.3 },
+  { "id": "fun", "text": "It was wonderful. So the bug stayed in.", "gap": 0.3 },
+  { "id": "name", "text": "The game came out in 1997, as Grand Theft Auto.", "say": "The game came out in nineteen ninety-seven, as Grand Theft Auto.", "gap": 0.25 },
+  { "id": "now", "text": "The sixth arrives 13 years after the fifth.", "say": "The sixth arrives thirteen years after the fifth.", "gap": 0.35 },
+  { "id": "end", "text": "Not bad, for a bug.", "gap": 0.7 }
+ ]
+}

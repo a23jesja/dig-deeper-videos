@@ -1,0 +1,18 @@
+{
+ "voice": "bm_george",
+ "speed": 1.2,
+ "gap": 0.13,
+ "lead": 0.05,
+ "lines": [
+  { "id": "hook", "text": "The Titanic is sinking. And I am still on board.", "gap": 0.35 },
+  { "id": "truth", "text": "My part is made up. Everything around me is true.", "gap": 0.3 },
+  { "id": "recap", "text": "The lifeboats are gone. About 1,500 of us are left.", "say": "The lifeboats are gone. About fifteen hundred of us are left.", "gap": 0.3 },
+  { "id": "rockets", "text": "Distress rockets burst over the ship, one after another.", "gap": 0.3 },
+  { "id": "bow", "text": "The bow goes under. The sea comes up the deck.", "gap": 0.3 },
+  { "id": "gone", "text": "At 2:20 in the morning, the Titanic is gone.", "say": "At two twenty in the morning, the Titanic is gone.", "gap": 0.45 },
+  { "id": "boat", "text": "I swim for an overturned lifeboat. About thirty men cling to it.", "gap": 0.3 },
+  { "id": "dawn", "text": "At about four, a ship arrives: the Carpathia.", "say": "At about four, a ship arrives. The Carpaythia.", "gap": 0.3 },
+  { "id": "count", "text": "She saves about 700 people. About 1,500 are lost.", "say": "She saves about seven hundred people. About fifteen hundred are lost.", "gap": 0.45 },
+  { "id": "end", "text": "I survived the Titanic. Most did not.", "gap": 0.9 }
+ ]
+}

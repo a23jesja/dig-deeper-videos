@@ -1,7 +1,21 @@
 import React from "react";
 import { Composition } from "remotion";
 import { Sheet } from "./videos/emu/Sheet";
-import { EmuShort, EmuLong, WojtekShort, WojtekLong, PigShort, PigLong, LustigShort, LustigLong, EMU_FRAMES, EMU_LONG_FRAMES, WOJTEK_FRAMES, WOJTEK_LONG_FRAMES, PIG_FRAMES, PIG_LONG_FRAMES, LUSTIG_FRAMES, LUSTIG_LONG_FRAMES } from "./videos/emu/Emu";
+import { SirLook } from "./videos/emu/SirLook";
+import { PuppetCompositions } from "./videos/puppet";
+import { Titanic3Test, TITANIC3_TEST_FRAMES } from "./videos/emu/Titanic3Test";
+import { Titanic3, TITANIC3_FRAMES } from "./videos/emu/Titanic3Film";
+import { Titanic3Thumb, TITANIC3_THUMB_FRAMES } from "./videos/emu/Titanic3Thumb";
+import { EnvKit, ENV_PARTS } from "./videos/emu/env/EnvKit";
+import { ThreeWay3 } from "./videos/three3d/ThreeWay3";
+import { StyleSheet } from "./videos/style/StyleSheet";
+import { StyleScene } from "./videos/style/StyleScene";
+import { Dance, DanceThumb, Mona2D, Mona2DThumb, Titanic1, Titanic1Thumb } from "./videos/style2d/Mona2D";
+import { DANCE_TOTAL } from "./videos/style2d/dance";
+import { TITANIC1_TOTAL } from "./videos/style2d/titanic1";
+import { TOTAL as MONA2D_TOTAL } from "./videos/style2d/scenes";
+import { MonaShort, MonaShortThumb, MONA_SHORT_TOTAL } from "./videos/style/MonaShort";
+import { EmuShort, EmuLong, WojtekShort, WojtekLong, PigShort, PigLong, LustigShort, LustigLong, MonaLong, MonaThumb, MonaFlat, MONA_LONG_FRAMES, EMU_FRAMES, EMU_LONG_FRAMES, WOJTEK_FRAMES, WOJTEK_LONG_FRAMES, PIG_FRAMES, PIG_LONG_FRAMES, LUSTIG_FRAMES, LUSTIG_LONG_FRAMES } from "./videos/emu/Emu";
 
 export const Root: React.FC = () => (
   <>
@@ -13,6 +27,26 @@ export const Root: React.FC = () => (
     <Composition id="PigLong" component={PigLong} durationInFrames={PIG_LONG_FRAMES} fps={30} width={1920} height={1080} />
     <Composition id="LustigShort" component={LustigShort} durationInFrames={LUSTIG_FRAMES} fps={30} width={1080} height={1920} />
     <Composition id="LustigLong" component={LustigLong} durationInFrames={LUSTIG_LONG_FRAMES} fps={30} width={1920} height={1080} />
+    <Composition id="MonaLong" component={MonaLong} durationInFrames={MONA_LONG_FRAMES} fps={30} width={1920} height={1080} />
+    <Composition id="MonaFlat" component={MonaFlat} durationInFrames={MONA_LONG_FRAMES} fps={30} width={1920} height={1080} />
+    <Composition id="MonaThumb" component={MonaThumb} durationInFrames={14} fps={30} width={1920} height={1080} />
     <Composition id="Sheet" component={Sheet} durationInFrames={120} fps={30} width={2400} height={2400} />
+    <Composition id="SirLook" component={SirLook} durationInFrames={2} fps={30} width={1920} height={1080} />
+    <Composition id="StyleSheet" component={StyleSheet} durationInFrames={7} fps={30} width={1920} height={1080} />
+    <Composition id="MonaShort" component={MonaShort} durationInFrames={MONA_SHORT_TOTAL} fps={30} width={1080} height={1920} />
+    <Composition id="MonaShortThumb" component={MonaShortThumb} durationInFrames={3} fps={30} width={1080} height={1920} />
+    <Composition id="Mona2D" component={Mona2D} durationInFrames={MONA2D_TOTAL} fps={30} width={1080} height={1920} />
+    <Composition id="Mona2DThumb" component={Mona2DThumb} durationInFrames={3} fps={30} width={1080} height={1920} />
+    <Composition id="Titanic1" component={Titanic1} durationInFrames={TITANIC1_TOTAL} fps={30} width={1080} height={1920} />
+    <Composition id="Titanic1Thumb" component={Titanic1Thumb} durationInFrames={3} fps={30} width={1080} height={1920} />
+    <Composition id="Dance" component={Dance} durationInFrames={DANCE_TOTAL} fps={30} width={1080} height={1920} />
+    <Composition id="DanceThumb" component={DanceThumb} durationInFrames={3} fps={30} width={1080} height={1920} />
+    <Composition id="StyleScene" component={StyleScene} durationInFrames={300} fps={30} width={1920} height={1080} />
+    <Composition id="ThreeWay3" component={ThreeWay3} durationInFrames={300} fps={30} width={1920} height={1080} />
+    <Composition id="Titanic3" component={Titanic3} durationInFrames={TITANIC3_FRAMES} fps={30} width={1080} height={1920} />
+    <Composition id="Titanic3Thumb" component={Titanic3Thumb} durationInFrames={TITANIC3_THUMB_FRAMES} fps={30} width={1080} height={1920} />
+    <Composition id="Titanic3Test" component={Titanic3Test} durationInFrames={TITANIC3_TEST_FRAMES} fps={30} width={1080} height={1920} />
+    <Composition id="EnvKit" component={EnvKit} durationInFrames={ENV_PARTS} fps={30} width={1920} height={1080} />
+    <PuppetCompositions />
   </>
 );

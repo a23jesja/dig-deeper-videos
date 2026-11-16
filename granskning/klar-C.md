@@ -1,11 +1,27 @@
-VERSION: 1
+VERSION: 2
 
 # Steg C: rörelser, händer och mun
 
 Material i `granskning/C/`:
 
-- `testklipp.mp4` (540x960, 13,6 sekunder, med röst): Sir Digsworth går in från sidan, stannar, vänder sig mot oss, pekar på berget, säger "I say! That mountain was not smoking yesterday.", rycker till när berget smäller, vänder sig, springer ut och snubblar.
+- `testklipp.mp4` (540x960, 13,4 sekunder, med röst och ljud): Sir Digsworth går in från sidan, stannar, vänder sig mot oss, pekar på bergets topp, säger "I say! That mountain was not smoking yesterday." med en gest på varje betonat ord, rycker till när berget smäller, vänder sig, springer, snubblar, faller, reser sig och springer ut ur bild. Bagaren flyr genom samma bild.
 - `rorelseblad.jpg` (1560 px): en ruta per rörelse med tre ögonblick: gå, springa, stanna, vända sig, snubbla, falla, resa sig, ducka, bära, kasta, peka, rygga tillbaka, klättra, sitta, hälla, dra, en bifigur vars kjol följer med, och handformerna.
+
+## Ändrat i version 2 (efter granskningens GÖR OM, omgång 1)
+
+Fotplantering, vändning, ryggning, snubbling, fåll, undertexter och rörelsebladet var godkända och är orörda.
+
+1. **Mustaschen blinkar inte längre i profil.** Orsaken var att huvudets små vridningar i gången fick ansiktsdelarna att växla till "sedd bakifrån" precis vid profilen; gränsen ligger nu långt förbi profilen.
+2. **Kroppen rör sig när han talar.** En gest på varje betonat ord: finger upp på "I say!", pekar på toppen på "mountain", slår ut med armarna på "not", rycker på axlarna med öppna händer på "yesterday". Dessutom gäller nu för alla figurer: när fötterna står stilla vandrar vikten mellan fötterna och huvud och armar rör sig lite, så ingen pose står fryst.
+3. **Slutet lever.** Efter snubblingen faller han, reser sig och springer ut ur bild; kameran stannar så att han lämnar bilden och sista bildrutan är mitt i språnget.
+4. **Rädslan sitter kvar** i ansiktet från smällen till slutet, och i första språnget ser han sig om mot berget.
+5. **Pekningen träffar toppen** där röken kommer, med blicken åt samma håll och marginal till bildkanten. Han står i vänstra tredjedelen medan han talar.
+6. **Röken ligger i öppen himmel** bredvid honom, inte bakom huvud och keps. Röken är platta grå skivor: en platshållare tills världen byggs i steg D.
+7. **Första bildrutan:** han är redan på väg in i bild.
+8. **Markplattorna** var jämna och fasta i världen; det som såg ut som en söm som hoppade var figurens hårda markskugga över plattkanterna. Skuggan är nu mjuk.
+9. **En bifigur på samma rörelser:** bagaren flyr genom bilden åt samma håll, med armarna i luften, på samma språng ur biblioteket och med sina egna mått.
+
+Klippet har nu också ljud från steg E (fotsteg på bildrutan där foten landar, smäll, muller, vind).
 
 ## Hur rörelserna är byggda
 
@@ -32,7 +48,6 @@ Allt ligger i skelettet (`engine/src/craft/motion.ts` på `rig.ts`) och gäller 
 ## Kända svagheter
 
 - Munnen öppnas ord för ord, inte ljud för ljud. Det räcker i helfigur; närbilder på tal behöver munformer per ljud (inte byggt).
-- Fallet ligger på rörelsebladet men inte i klippet (uppgiften slutade med snubblingen).
 - Klättra, sitta, hälla, dra och bära är poser med ansats och översläng; rekvisitan på bladet är bara ritad i rutan. Att figuren verkligen håller i världens föremål byggs i steg D.
 - I ren vänsterprofil (språnget ut) syns pipan men inte monokeln; kortet kan speglas när regin vill visa den.
 - Sir Digsworths mun ligger under mustaschen, så hans glädje syns mest i ögon och ögonbryn. Från granskningen av steg B: "glad" på bifigurer ska ha uppåtböjd mun och öppna ögon; munlinjen kan nu böjas tydligare, men uttrycken är inte visade på ett eget blad.

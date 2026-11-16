@@ -1,37 +1,47 @@
-// Step D: three daylight stills of a street in Pompeii before the eruption, from the world kit (kit.ts, props.ts, pompeii.ts).
-//   frame 0 = behind the baker's counter, 1 = low past the cart toward the portico and Vesuvius, 2 = from above over the merchant's table
+// Step D: three daylight stills of a street in Pompeii before the eruption, from the world kit (kit.ts, props.ts, pompeii.ts) with
+// the cast of step B standing in it as cards (people.ts). The figures hold, lean on or use the things around them.
+//   frame 0 = behind the baker's counter, bread near the lens, Sir Digsworth walking past outside
+//   frame 1 = low from the ground past the cart: the soldier leans on a column, Vesuvius at the end of the street
+//   frame 2 = from above: the merchant counts coins at his table, the dog pulls at its chain
 // PROPS='{"audio":false}' node scripts/stills.mjs PompeiiStills out/craft/pomp_ 0-2 0.5 jpeg
 import React, { useMemo } from "react";
 import * as THREE from "three";
 import { AbsoluteFill, useCurrentFrame } from "remotion";
 import { ThreeCanvas } from "@remotion/three";
 import { useThree } from "@react-three/fiber";
-import { card, setOutline } from "./kit";
-import { pompeiiStreet, POMPEII_SHOTS, POMPEII_MARKS } from "./pompeii";
-import { Ink } from "../ink";
-import { solve, POSES, Pose, Props } from "../rig";
-import { Design, FigOpts } from "../designs/common";
-import { DIRECTIONS } from "../designs";
+import { setOutline } from "./kit";
+import { chainLink } from "./props";
+import { pompeiiStreet, POMPEII_SHOTS, DOG_RING, WALK } from "./pompeii";
+import { figureCard, beastCard } from "./people";
+import { POSES, Pose } from "../rig";
+import { Mover } from "../motion";
+import { SIR_D, BAKER_D, SOLDIER_D, MERCHANT_D, BOY_D, ROMAN_WOMAN_D } from "../looks";
+import { DOG, BEAST_POSES } from "../beast";
 
-const tall = (P: Props) => P.thigh + P.shin + P.ankle + P.spine + P.neck + P.head * 1.2;
-/** a figure of the cast as a card: `heading` is the way it faces in the world, `cam` where it is seen from, Hm its height in metres */
-export const figureCard = (D: Design, pose: Pose, o: FigOpts, at: readonly number[], cam: number[], Hm = 1.75, tilt = 0) => {
-  const P = D.props(o.who ?? "sir"), T = tall(P), s = 0.9, cw = Math.round(T * 1.5 * s), ch = Math.round(T * 1.22 * s), feet = 0.96;
-  const az = Math.atan2(cam[0] - at[0], cam[2] - at[2]), yaw = at[3] - (az * 180) / Math.PI;
-  const m = card(`${D.id}${at.join()}`, cw, ch, (cw / (T * s)) * Hm, (ch / (T * s)) * Hm, feet, (g) => { g.translate(cw / 2, ch * feet); g.scale(s, s); D.draw(new Ink(g, D.ol), solve(P, pose, yaw), o); });
-  m.position.set(at[0], at[1], at[2]); m.rotation.order = "YXZ"; m.rotation.y = az; m.rotation.x = -tilt * Math.atan2(cam[1] - at[1] - Hm * 0.5, Math.hypot(cam[0] - at[0], cam[2] - at[2]));
-  return m;
-};
+/** a moment out of a walk or a run, for a still */
+const stride = (run = false, at = 0.5): Pose => { const m = new Mover([0, 0], 0); if (run) m.run(5); else m.walk(3); return m.sample(m.end * at).pose; };
+const WALKING = stride(false, 0.47), WALKING2 = stride(false, 0.62), RUNNING = stride(true, 0.5);
 
 const Scene: React.FC = () => {
   const fr = Math.min(useCurrentFrame(), POMPEII_SHOTS.length - 1), { camera } = useThree(), shot = POMPEII_SHOTS[fr];
   const root = useMemo(() => pompeiiStreet(), []);
   const figs = useMemo(() => {
-    const g = new THREE.Group(), D = DIRECTIONS[3].D, M = POMPEII_MARKS, t = shot.tilt ?? 0;
-    g.add(figureCard(D, { ...POSES.point, armR: [[30, 8], [70, 4]], lean: 5 }, { who: "sir" }, M.sirWalk, shot.cam, 1.78, t));
-    g.add(figureCard(D, { ...POSES.stand, roll: -7, px: 0.03, armL: [[20, 6], [100, -40]], armR: [[24, 6], [96, -44]] }, { who: "baker" }, M.soldier, shot.cam, 1.72, t));
-    g.add(figureCard(D, { ...POSES.stand, lean: 16, armL: [[40, 10], [86, -6]], armR: [[46, 10], [80, -6]], head: [0, 16, 0] }, { who: "baker", handR: "point", face: { gaze: [0, 0.7] } }, M.merchant, shot.cam, 1.7, t));
-    g.add(figureCard(D, { ...POSES.stand, armL: [[20, 12], [78, -8]] }, { who: "baker", prop: "loaf", handL: "grip" }, M.baker, shot.cam, 1.7, t));
+    const g = new THREE.Group(), c = shot.cam, t = shot.tilt ?? 0, add = (m: { mesh: THREE.Mesh }) => g.add(m.mesh);
+    // Sir Digsworth walks along the sidewalk past the bakery, his eyes on the bread
+    add(figureCard(SIR_D, { ...WALKING, head: [-34, 4, 0] }, { face: { gaze: [-0.5, 0.2], brow: 0.5, smile: 0.6 }, sway: 0.4 }, { at: [3.05, WALK, -0.7], heading: 180, h: 1.8 }, c, t));
+    // the baker holds a loaf out over his counter
+    add(figureCard(BAKER_D, { ...POSES.stand, lean: 8, armL: [[66, 12], [84, 2]], armR: [[30, 10], [60, -10]], head: [14, -2, 0] }, { prop: "loaf", handL: "grip", face: { smile: 1, brow: 0.3 } }, { at: [4.62, WALK + 0.1, -1.0], heading: -62, h: 1.72 }, c, t));
+    // the soldier leans back against his column, arms crossed, one foot over the other
+    add(figureCard(SOLDIER_D, { ...POSES.stand, lean: -9, pz: -0.05, legL: { x: 0.04, toe: 20 }, legR: { x: -0.1, z: 0.12, pitch: 26, toe: 10 }, armL: [[24, 6], [104, -46]], armR: [[28, 6], [98, -50]], head: [26, 2, 0] }, { handL: "fist", handR: "fist", face: { lid: 0.4, smile: 0.2 } }, { at: [-2.08, WALK, 2.72], heading: 84, h: 1.8 }, c, t));
+    // the merchant sits at his table counting coins
+    add(figureCard(MERCHANT_D, { ...POSES.stand, py: -0.42, pz: -0.16, lean: 16, legL: { x: 0.08, z: 0.3, toe: 14 }, legR: { x: 0.08, z: 0.3, toe: 14 }, armL: [[58, 16], [74, -14]], armR: [[64, 12], [84, -8]], head: [0, 20, 0] }, { handR: "point", handL: "open", face: { gaze: [0, 0.8], brow: -0.3, smile: 0.5 } }, { at: [3.5, WALK, 7.72], heading: -42, h: 1.66 }, c, t));
+    // the dog strains at its chain toward the street; the chain is real and runs from the ring in the wall to its collar
+    const dog = beastCard(DOG, BEAST_POSES.strain, { at: [2.25, WALK, 10.0], heading: -112, h: 0.56 }, c, t); add(dog);
+    g.add(chainLink(DOG_RING, dog.collar, 0.07, 18));
+    // people on their way down the street
+    add(figureCard(ROMAN_WOMAN_D, { ...WALKING2 }, { sway: 0.5, face: { smile: 0.5 } }, { at: [-3.0, WALK, -3.4], heading: 12, h: 1.62 }, c, t));
+    add(figureCard(BOY_D, RUNNING, { handL: "fist", handR: "fist", face: { smile: 1, mouth: 0.4, brow: 0.5 } }, { at: [0.7, 0, -6.5], heading: 175, h: 1.2 }, c, t));
+    add(figureCard(ROMAN_WOMAN_D, WALKING, { sway: 0.5 }, { at: [3.0, WALK, -9.5], heading: 180, h: 1.6 }, c, t));
     return g;
   }, [fr]);
   const cam = camera as THREE.PerspectiveCamera;

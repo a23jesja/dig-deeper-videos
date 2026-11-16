@@ -9,9 +9,9 @@ import { AbsoluteFill, Audio, Sequence, getInputProps, staticFile, useCurrentFra
 import { Ink, hand, HandKind } from "./ink";
 import { solve, Sk } from "./rig";
 import { Mover, Sample, blink, mouthAt, shake } from "./motion";
-import { SIR_D, LADY_D } from "./looks";
+import { SIR_D, LADY_D, BAKER_D } from "./looks";
 import type { Design, FigOpts } from "./designs/common";
-import { SIR_TEST, SIR_TEST_FRAMES, sirTestCam, WORDS, SAY, TFPS, W } from "./sirTest";
+import { SIR_TEST, SIR_TEST_FRAMES, sirTestCam, WORDS, SAY, TFPS, T_OFF, W } from "./sirTest";
 export { SIR_TEST_FRAMES, TFPS };
 
 type G = CanvasRenderingContext2D;
@@ -46,17 +46,18 @@ export const SirTest: React.FC = () => {
     <AbsoluteFill style={{ background: "#9fd4f7" }}>
       <canvas width={TW} height={TH} ref={(cv) => {
         if (!cv) return;
-        const g = cv.getContext("2d")!, t = fr / TFPS, s = S.m.sample(t);
+        const g = cv.getContext("2d")!, t = fr / TFPS + T_OFF, s = S.m.sample(t), sb = S.b.sample(t);
         // the camera follows him a little late, and shakes when the mountain goes off
         const camX = sirTestCam(t), sk2 = shake(t, [{ t: S.boom, amp: 1, dur: 0.55 }, ...S.m.cues().filter((q) => q.k === "thud").map((q) => ({ t: q.t, amp: 0.5, dur: 0.3 }))]);
         const X = (xw: number, par = 1) => CX + (xw - camX * par) * px;
         g.setTransform(1, 0, 0, 1, sk2[0], sk2[1]);
         const sky = g.createLinearGradient(0, 0, 0, FY); sky.addColorStop(0, "#58b4f2"); sky.addColorStop(1, "#d9f1ff"); g.fillStyle = sky; g.fillRect(-40, -40, TW + 80, FY + 40);
         // the mountain far away, on the side he points to; it smokes from the moment he speaks and blows when he flinches
-        const mx = CX + 290 - camX * px * 0.1, smoke = Math.max(0, t - S.sayAt + 0.6), big = Math.max(0, t - S.boom);
-        g.fillStyle = "#6fb05a"; g.strokeStyle = "#33241b"; g.lineWidth = 6; g.beginPath(); g.moveTo(mx - 420, FY - 130); g.lineTo(mx - 60, FY - 640); g.lineTo(mx + 60, FY - 640); g.lineTo(mx + 440, FY - 130); g.closePath(); g.fill(); g.stroke();
-        g.fillStyle = "#a89c86"; g.beginPath(); g.moveTo(mx - 150, FY - 510); g.lineTo(mx - 60, FY - 640); g.lineTo(mx + 60, FY - 640); g.lineTo(mx + 160, FY - 510); g.closePath(); g.fill(); g.stroke();
-        for (let i = 0; i < 9; i++) { const life = smoke * 0.5 - i * 0.22; if (life <= 0) continue; const bg = Math.min(big, 1.6), r = 34 + i * 7 + bg * (10 + i * 5), y = FY - 650 - Math.min(life, 2.6) * (70 + bg * 40) - i * 30; g.fillStyle = i % 2 ? "#8e8a92" : "#a7a3ab"; g.beginPath(); g.arc(mx + Math.sin(i * 2.1) * (30 + bg * 34) + life * 14, y, r, 0, 7); g.fill(); g.lineWidth = 5; g.stroke(); }
+        const mx = CX + 380 - camX * px * 0.1, MY = FY - 900, smoke = Math.max(0, t - S.sayAt + 0.6), big = Math.max(0, t - S.boom);
+        g.fillStyle = "#6fb05a"; g.strokeStyle = "#33241b"; g.lineWidth = 6; g.beginPath(); g.moveTo(mx - 620, FY - 130); g.lineTo(mx - 70, MY); g.lineTo(mx + 70, MY); g.lineTo(mx + 560, FY - 130); g.closePath(); g.fill(); g.stroke();
+        g.fillStyle = "#a89c86"; g.beginPath(); g.moveTo(mx - 190, MY + 170); g.lineTo(mx - 70, MY); g.lineTo(mx + 70, MY); g.lineTo(mx + 180, MY + 170); g.closePath(); g.fill(); g.stroke();
+        // smoke (flat grey puffs: a stand-in until the world of step D), in open sky beside him, never behind his head
+        for (let i = 0; i < 9; i++) { const life = smoke * 0.5 - i * 0.22; if (life <= 0) continue; const bg = Math.min(big, 1.6), r = 34 + i * 7 + bg * (10 + i * 5), y = MY - 10 - Math.min(life, 2.6) * (70 + bg * 40) - i * 30; g.fillStyle = i % 2 ? "#8e8a92" : "#a7a3ab"; g.beginPath(); g.arc(mx + Math.sin(i * 2.1) * (26 + bg * 26) + life * 10, y, r, 0, 7); g.fill(); g.lineWidth = 5; g.stroke(); }
         // a wall and the ground: tiles fixed in the world
         g.fillStyle = "#f0dfb6"; g.fillRect(-40, FY - 150, TW + 80, 150); g.fillStyle = "#c8402f"; g.fillRect(-40, FY - 70, TW + 80, 70); g.lineWidth = 6; g.strokeRect(-40, FY - 150, TW + 80, 150);
         g.fillStyle = "#d9c79c"; g.fillRect(-40, FY, TW + 80, TH - FY + 40);
@@ -67,8 +68,12 @@ export const SirTest: React.FC = () => {
         g.fillStyle = "#33241b"; g.font = "700 40px Georgia"; g.textAlign = "center"; g.fillText("IX", stone, FY - 110);
         const jar = X(1.55); g.fillStyle = "#d2693a"; g.beginPath(); g.moveTo(jar - 30, FY); g.quadraticCurveTo(jar - 96, FY - 120, jar - 34, FY - 210); g.lineTo(jar - 40, FY - 250); g.lineTo(jar + 40, FY - 250); g.lineTo(jar + 34, FY - 210); g.quadraticCurveTo(jar + 96, FY - 120, jar + 30, FY); g.closePath(); g.fill(); g.stroke();
         if (p.marks) for (const side of ["L", "R"] as const) { const f = s.feet[side]; g.fillStyle = f[2] ? "#c0353a" : "#3b6fb5"; g.fillRect(X(f[0]) - 4, FY + 96 + (side === "L" ? 0 : 16), 8, 14); }
-        g.fillStyle = "rgba(60,40,20,0.25)"; g.beginPath(); g.ellipse(X(s.x), FY + 10, 120, 16, 0, 0, 7); g.fill();
-        const talking = t >= S.sayAt && t < S.sayAt + SAY;
+        // soft shadows under the figures (soft, so that they are not taken for a joint between two tiles)
+        const shadow = (x: number, y: number) => { const gr = g.createRadialGradient(x, y, 4, x, y, 150); gr.addColorStop(0, "rgba(60,40,20,0.3)"); gr.addColorStop(1, "rgba(60,40,20,0)"); g.save(); g.translate(0, y); g.scale(1, 0.16); g.translate(0, -y); g.fillStyle = gr; g.beginPath(); g.arc(x, y, 150, 0, 7); g.fill(); g.restore(); };
+        const talking = t >= S.sayAt && t < S.sayAt + SAY, LLb = (BAKER_D.props("sir").thigh + BAKER_D.props("sir").shin) * 1.1;
+        // the baker flees through the picture on the same motions, a step further from the lens
+        shadow(CX + (sb.x * LLb / px - camX) * px, FY - 22); play(g, BAKER_D, sb, CX + (sb.x * LLb / px - camX) * px, FY - 26, 1.1, t + 1.3);
+        shadow(X(s.x), FY + 8);
         play(g, D, s, X(s.x), FY, sc, t, {}, talking ? mouthAt(WORDS, t - S.sayAt) : 0);
         // captions: two or three words in the lower third, across the shins (clear of face, chest and hands, and of the bottom 15 % that the Shorts interface covers)
         const c = CAPS.find((q) => t - S.sayAt >= q.a - 0.03 && t - S.sayAt < q.b);
@@ -76,7 +81,7 @@ export const SirTest: React.FC = () => {
         g.setTransform(1, 0, 0, 1, 0, 0);
       }} />
       {/* the mixed track (steps, blast, wind and the voice, from audio/craft_sfx.py); mix: false plays the voice alone */}
-      {p.audio !== false && (p.mix === false ? <Sequence from={Math.round(S.sayAt * TFPS)}><Audio src={staticFile("craft/kit-test.wav")} /></Sequence> : <Audio src={staticFile("craft/sir-test.wav")} />)}
+      {p.audio !== false && (p.mix === false ? <Sequence from={Math.round((S.sayAt - T_OFF) * TFPS)}><Audio src={staticFile("craft/kit-test.wav")} /></Sequence> : <Audio src={staticFile("craft/sir-test.wav")} />)}
     </AbsoluteFill>
   );
 };

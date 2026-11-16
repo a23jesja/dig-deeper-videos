@@ -141,6 +141,10 @@ export class Mover {
     if (o.wait !== false) this.stand(dur);
     return this;
   }
+  /** the same, at a set time (for gestures on spoken words, or a face that stays through several moves); never moves the clock */
+  actAt(t0: number, name: keyof typeof ACTS | Partial<Pose>, dur: number, o: { in?: number; out?: number; antic?: number; over?: number; face?: Face; handL?: HandKind; handR?: HandKind } = {}) {
+    const t = this.t; this.t = t0; this.act(name, dur, { ...o, wait: false }); this.t = t; return this;
+  }
   /** a run that ends with the toe catching: short stuttering steps with the body pitched forward and the hands thrown out */
   stumble() {
     const T0 = this.t; this.marks.push({ t: T0 + 0.04, k: "scuff", x: this.P[0] });
@@ -227,6 +231,11 @@ export class Mover {
     pose.armL = [[up, lerp(9, 14, run)], [up + bend + 8 * Math.abs(sep) * (1 - run), 5]]; pose.armR = [[-up, lerp(9, 14, run)], [-up + bend + 8 * Math.abs(sep) * (1 - run), 5]];
     pose.twist = -9 * sep * (1 + 0.6 * run); pose.lean = this.lean.at(t); pose.head = [0, -(pose.lean ?? 0) * 0.45, 0];
     pose.py = -0.012 - run * (0.07 - 0.5 * air - 0.03 * Math.abs(sep));
+    // nobody stands like a post: when the feet are still the weight drifts from foot to foot, the head and the arms move a little
+    const dt0 = 1 / 60, Pb = this.pelAt(t - dt0), still = clamp(1 - Math.hypot(P[0] - Pb[0], P[1] - Pb[1]) / dt0 / 0.35, 0, 1) * (1 - run);
+    pose.px = 0.02 * Math.sin(2.3 * t + 0.4) * still; pose.roll = 1.3 * Math.sin(2.3 * t + 1.0) * still; pose.hipTilt = -1.6 * Math.sin(2.3 * t + 0.4) * still;
+    pose.head = [3 * Math.sin(1.1 * t) * still, (pose.head as number[])[1], 1.6 * Math.sin(1.7 * t + 2) * still];
+    pose.armL[1][0] += 3 * Math.sin(2.3 * t) * still; pose.armR[1][0] -= 3 * Math.sin(2.3 * t + 0.7) * still;
     let handL: HandKind = run > 0.5 ? "fist" : "relaxed", handR: HandKind = handL; const face: Face = {};
     for (const L of this.layers) {
       const w = this.weight(L, t); if (!w) continue;

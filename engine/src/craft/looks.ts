@@ -86,6 +86,14 @@ export const GRANNY: Look = {
   rows: [[-340, 136, 112, 126], [-240, 126, 104, 118], [-100, 104, 86, 96], [0, 86, 74, 76], [90, 82, 76, 66], [170, 86, 70, 62], [204, 84, 54, 56], [224, 44, 34, 38]],
   legs: "trousers", feet: "shoes", sleeve: "long", arm: [23, 18, 13], leg: [27, 20, 14],
 };
+/** a Roman woman: a long dress, a shawl over one shoulder, hair in a knot */
+export const ROMAN_WOMAN: Look = {
+  id: "romanwoman", P: { ...ROMAN, thigh: 200, shin: 190, shW: 88, hipW: 52, spine: 250, upper: 136, fore: 126, hand: 74, head: 184 }, head: { a: 82, b: 88, H: 180, jaw: 0.84, round: 0.6, eye: 1.08 }, skin: "#efc39c", brow: "#3a2418",
+  hat: "none", hair: { col: "#3a2418", kind: "bun" }, lash: true, lips: "#c8504c",
+  top: "tunic", skirt: true, coat: "#3f9a8c", accent: "#fbf3df", cloak: "#e9b83a", belt: "#fbf3df",
+  rows: [[-400, 132, 110, 124], [-280, 122, 102, 114], [-120, 104, 86, 96], [0, 86, 70, 72], [70, 72, 60, 56], [170, 80, 68, 58], [228, 90, 56, 56], [252, 44, 34, 38]],
+  legs: "trousers", feet: "sandals", sleeve: "short", arm: [24, 19, 14], leg: [28, 20, 14],
+};
 export const castDesign = (L: Look, name = L.id): Design => ({ id: L.id, name, ol: 4.6, faceW: L.head.a * 1.45, props: () => L.P, draw: drawCast(L) });
 export const SIR_D = castDesign(SIR, "Sir Digsworth"), BAKER_D = castDesign(BAKER), SOLDIER_D = castDesign(SOLDIER), MERCHANT_D = castDesign(MERCHANT);
-export const KNIGHT_D = castDesign(KNIGHT), TOMMY_D = castDesign(TOMMY), LADY_D = castDesign(LADY), DOCKER_D = castDesign(DOCKER), BOY_D = castDesign(BOY), GRANNY_D = castDesign(GRANNY);
+export const KNIGHT_D = castDesign(KNIGHT), TOMMY_D = castDesign(TOMMY), LADY_D = castDesign(LADY), DOCKER_D = castDesign(DOCKER), BOY_D = castDesign(BOY), GRANNY_D = castDesign(GRANNY), ROMAN_WOMAN_D = castDesign(ROMAN_WOMAN);

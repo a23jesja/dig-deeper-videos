@@ -7,8 +7,15 @@ import { C, loaf, amphora, jar, basket, sack, cart, column, table, stool, coins,
 
 export const WALK = 0.28; // height of the sidewalks
 const paving = () => paint("paving", 512, 512, (g, r) => {
-  g.fillStyle = "#9a9ca8"; g.fillRect(0, 0, 512, 512);
-  for (let i = 0; i < 46; i++) { g.fillStyle = ["#8c8e9b", "#a6a8b3", "#90929e"][i % 3]; const x = r() * 512, y = r() * 512, w = 50 + r() * 60, h = 40 + r() * 50; g.beginPath(); g.ellipse(x, y, w / 2, h / 2, r() * 3, 0, 7); g.fill(); g.lineWidth = 5; g.strokeStyle = "#5d5f6c"; g.stroke(); }
+  // a lattice of corners, each pushed a little out of line, gives blocks of uneven shape that still tile
+  const n = 5, c = 512 / n, P: number[][][] = [];
+  for (let i = 0; i <= n; i++) { P.push([]); for (let k = 0; k <= n; k++) P[i].push([i * c + (i % n ? (r() - 0.5) * c * 0.5 : 0), k * c + (k % n ? (r() - 0.5) * c * 0.5 : 0)]); }
+  g.fillStyle = "#55576a"; g.fillRect(0, 0, 512, 512);
+  for (let i = 0; i < n; i++) for (let k = 0; k < n; k++) {
+    const q = [P[i][k], P[i + 1][k], P[i + 1][k + 1], P[i][k + 1]], cx = (q[0][0] + q[2][0]) / 2, cy = (q[0][1] + q[2][1]) / 2;
+    g.fillStyle = ["#9a9cab", "#8b8e9e", "#a6a8b6", "#9295a4"][(i * 3 + k * 5) % 4]; g.beginPath();
+    q.forEach(([x, y], m) => { const X = cx + (x - cx) * 0.9, Y = cy + (y - cy) * 0.9; if (m) g.lineTo(X, Y); else g.moveTo(X, Y); }); g.closePath(); g.fill();
+  }
 });
 const slabs = () => paint("slabs", 256, 256, (g) => { g.fillStyle = "#dccfab"; g.fillRect(0, 0, 256, 256); g.strokeStyle = "#a8996f"; g.lineWidth = 5; g.strokeRect(0, 0, 256, 256); g.beginPath(); g.moveTo(128, 0); g.lineTo(128, 256); g.stroke(); });
 
@@ -36,26 +43,23 @@ const bakery = () => {
 
 export type Shot = { cam: [number, number, number]; look: [number, number, number]; fov: number; tilt?: number };
 export const POMPEII_SHOTS: Shot[] = [
-  // 1. behind the baker's counter, bread close to the lens, the street beyond
-  { cam: [6.75, 1.72, 1.35], look: [-1.2, 1.0, -3.6], fov: 58 },
-  // 2. low from the ground past the cart, the portico's columns, Vesuvius at the end of the street
-  { cam: [0.95, 0.3, 8.9], look: [-1.5, 2.4, -8], fov: 62 },
-  // 3. from above: the merchant's table on the sidewalk, the dog on its chain
-  { cam: [0.35, 5.0, 12.3], look: [2.75, 0.75, 8.1], fov: 46, tilt: 0.55 },
+  // 1. behind the baker's counter, bread close to the lens, Sir Digsworth walking past on the sidewalk outside
+  { cam: [6.35, 1.66, 1.0], look: [-2.0, 1.2, -0.9], fov: 56 },
+  // 2. low from the ground past the cart, the soldier at his column, Vesuvius at the end of the street
+  { cam: [0.45, 0.3, 6.6], look: [-2.3, 2.25, -6], fov: 54 },
+  // 3. from above: the merchant counting coins at his table, the dog pulling at its chain
+  { cam: [0.55, 4.7, 12.4], look: [2.75, 0.7, 8.6], fov: 46, tilt: 0.5 },
 ];
-/** where the figures of the three stills stand: [x, y, z, heading in degrees (0 = toward +z, 90 = toward +x)] */
-export const POMPEII_MARKS = {
-  sirWalk: [0.35, 0, -2.6, 20], soldier: [-2.12, WALK, 1.55, 60], merchant: [3.05, WALK, 7.55, -10], dog: [2.2, WALK, 9.6, 200], dogRing: [3.98, WALK + 0.55, 8.9],
-  baker: [4.9, WALK + 0.1, -0.7, -90],
-} as const;
+/** the ring in the wall that the dog is chained to */
+export const DOG_RING: [number, number, number] = [3.98, WALK + 0.55, 9.6];
 
 export const pompeiiStreet = () => {
   const root = new THREE.Group();
   root.add(skyDome("#2f86e0", "#a9dcff", "#e8f6ff"));
-  root.add(sunRig({ from: [-9, 15, 7], power: 3.2, fill: 1.3, reach: 30 }, [0, 0, -4]));
+  root.add(sunRig({ from: [-9, 15, 7], power: 1.85, fill: 1.55, reach: 30 }, [0, 0, -2]));
   // ground, road, sidewalks, stepping stones
   root.add(mesh(box(400, 0.2, 400), "#d8c79a", { at: [0, -0.32, -100], line: 0, shadow: false }));
-  root.add(mesh(box(4.2, 0.3, 70), "#ffffff", { at: [0, -0.15, -12], map: (paving(), paint("paving", 512, 512, () => {}, [2, 30])), line: 0 }));
+  root.add(mesh(box(4.2, 0.3, 70), "#ffffff", { at: [0, -0.15, -12], map: (paving(), paint("paving", 512, 512, () => {}, [1.4, 22])), line: 0 }));
   for (const s of [-1, 1]) {
     root.add(mesh(box(2.0, WALK + 0.3, 70), "#ffffff", { at: [s * 3.1, (WALK - 0.3) / 2, -12], map: (slabs(), paint("slabs", 256, 256, () => {}, [1, 30])) }));
     root.add(mesh(box(0.22, WALK + 0.32, 70), C.stoneL, { at: [s * 2.1, (WALK - 0.28) / 2, -12], line: 0.7 }));
@@ -84,15 +88,15 @@ export const pompeiiStreet = () => {
   for (const h of right.slice(1)) { const g = house(h); g.rotation.y = -Math.PI / 2; g.position.set(4.1, WALK, z - h.w / 2); root.add(g); z -= h.w + 0.12; }
   { const g = house({ w: 5.8, h: 5.0, d: 6, wall: "#f6e3b4", dado: C.red, door: -0.9, windows: [1.5], shutter: C.blue }); g.rotation.y = -Math.PI / 2; g.position.set(4.1, WALK, 5.5); root.add(g); }
   // the portico: three columns and a beam on the left sidewalk
-  for (const cz of [1.9, -1.3, -4.5]) { const c = column(3.3, 0.23); c.position.set(-2.55, WALK, cz); root.add(c); }
-  root.add(mesh(box(0.6, 0.36, 7.4), C.marble, { at: [-2.55, WALK + 3.48, -1.3] }), mesh(box(1.9, 0.14, 7.6), C.terra, { at: [-3.3, WALK + 3.73, -1.3], rot: [0, 0, 0.16] }));
+  for (const cz of [2.6, -0.6, -3.8]) { const c = column(3.3, 0.23); c.position.set(-2.55, WALK, cz); root.add(c); }
+  root.add(mesh(box(0.6, 0.36, 7.4), C.marble, { at: [-2.55, WALK + 3.48, -0.6] }), mesh(box(1.9, 0.14, 7.6), C.terra, { at: [-3.3, WALK + 3.73, -0.6], rot: [0, 0, 0.16] }));
   // the cart on the road, loaded with jars and sacks
-  { const c = cart(); c.position.set(-0.75, 0, 6.3); c.rotation.y = 0.5; root.add(c); const a = amphora(0.9); a.position.set(-0.9, 0.77, 6.0); a.rotation.z = 0.2; root.add(a); const j = jar(0.6); j.position.set(-0.45, 0.77, 6.5); root.add(j); const s = sack(0.3); s.position.set(-1.0, 0.77, 6.9); root.add(s); }
+  { const c = cart(); c.position.set(-1.25, 0, 4.9); c.rotation.y = 0.42; root.add(c); const a = amphora(0.9); a.position.set(-1.4, 0.77, 4.6); a.rotation.z = 0.2; root.add(a); const j = jar(0.6); j.position.set(-0.95, 0.77, 5.1); root.add(j); const s = sack(0.3); s.position.set(-1.5, 0.77, 5.5); root.add(s); }
   // street furniture
   { const f = fountain(); f.position.set(-2.9, WALK, 9.4); f.rotation.y = Math.PI / 2; root.add(f); }
   for (const [x, zz, t] of [[-3.5, 4.6, 0], [-3.2, 4.1, 1], [3.6, -6.2, 0], [3.3, -6.8, 2], [-3.4, -8.5, 1], [3.5, 13, 0]] as number[][]) { const o = t === 0 ? amphora(0.95) : t === 1 ? jar(0.7) : basket(); o.position.set(x, WALK, zz); if (t === 0) { o.rotation.z = 0.24; o.position.y += 0.02; } root.add(o); }
   // the merchant's table with his coins, a stool, and the ring his dog is chained to
-  { const t = table(1.25, 0.72, 0.74); t.position.set(2.85, WALK, 8.3); t.rotation.y = 0.1; root.add(t); const c = coins(34, 3); c.position.set(2.72, WALK + 0.78, 8.32); root.add(c); const s = stool(); s.position.set(3.25, WALK, 7.35); root.add(s); const b = basket(0.2, 0.18); b.position.set(3.3, WALK + 0.78, 8.42); root.add(b); root.add(ring([3.98, WALK + 0.55, 8.9])); }
+  { const t = table(1.25, 0.72, 0.74); t.position.set(2.85, WALK, 8.35); t.rotation.y = -0.55; root.add(t); const c = coins(34, 3); c.position.set(2.78, WALK + 0.78, 8.38); c.rotation.y = -0.55; root.add(c); const s = stool(); s.position.set(3.42, WALK, 7.72); root.add(s); const b = basket(0.2, 0.18); b.position.set(3.22, WALK + 0.78, 8.05); root.add(b); root.add(ring([3.98, WALK + 0.55, 9.6])); }
   // the town gate that closes the street, and Vesuvius behind it
   for (const s of [-1, 1]) root.add(mesh(box(3.4, 8.5, 3.2), C.stoneL, { at: [s * 4.0, 4.25, -40] }), mesh(box(3.8, 0.5, 3.6), C.stone, { at: [s * 4.0, 8.7, -40] }));
   root.add(mesh(box(4.8, 2.6, 2.6), C.stoneL, { at: [0, 6.4, -40] }), mesh(box(11.6, 0.4, 3.0), C.stone, { at: [0, 7.9, -40], line: 0.7 }));

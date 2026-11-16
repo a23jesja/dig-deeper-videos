@@ -66,7 +66,8 @@ const at = (h: HG, az: number, rho = 1) => p3(h, h.a * Math.sin(az * R) * rho, h
 
 const drawHead = (k: Ink, L: Look, phiDeg: number, f: Face, o: FigOpts) => {
   const { a, b, H } = L.head, phi = phiDeg * R, h: HG = { a, b, H, sin: Math.sin(phi), cos: Math.cos(phi), w: Math.hypot(a * Math.cos(phi), b * Math.sin(phi)) }, w = h.w;
-  const m = f.mouth ?? 0, away = h.cos < -0.08, skin = L.skin, skinD = shade(skin, 0.86);
+  // away = seen from behind. The limit lies well past the profile, so that the small turns of the head in a walk seen from the side never flip the face parts behind the skull
+  const m = f.mouth ?? 0, away = h.cos < -0.3, skin = L.skin, skinD = shade(skin, 0.86);
   // the skull card: square-jawed from the front; from the side it gets a chin and a brow in front, a rounded back and a narrow nape
   const jw = L.head.jaw ?? 1, rd = L.head.round ?? 0.3, sa = Math.abs(h.sin), fr = h.sin >= 0 ? 1 : -1, EY = L.head.eye ?? 1;
   const prof = (side: number): P2[] => {

@@ -88,6 +88,25 @@ pictures: all art stays our own.
 - **One step better each video:** before building, name one thing in the look that will be better than last time,
   and say in the delivery note what it was.
 
+## Action, not portraits (after the Pompeii part 1 preview, 2026-11-18)
+A Short must not be a row of characters standing still in the middle of the picture while the voice describes
+what happens. Show it.
+- **In at least two shots of three somebody does something:** runs across the picture, falls, carries, throws,
+  ducks, pushes, climbs. A verb in the script ("runs", "grabs") is shown as that movement, with a real run or
+  walk cycle that moves the character through the scene.
+- **Standing still facing the camera:** at most two seconds at a time and at most a quarter of the video.
+- **Framing varies:** no two shots in a row with the same size and position of the subject. Mix close-up,
+  waist-up, full figure from the side, from above, from the ground, over a shoulder. The subject fills 50 to 80 %
+  of the height. The lower half of the picture is never just ground.
+- **Captions** sit in the lower third and may cross legs or ground, never a face, chest, hands or a sign. Do not
+  shrink or lift the characters to make room for them.
+- **Panic looks like panic:** crowds run in different directions, drop things and bump into each other. Nobody in
+  the background stands still. Things break: awnings fall, pots smash, carts tip.
+- **Disclaimer:** a small sign for two seconds, never spoken, never inside the first five seconds.
+- **After the hook the story keeps moving:** a flashback to the calm before is at most eight seconds.
+- **Foreground blur is something from the scene** (a pillar, an amphora, a running shoulder), never a row of dark
+  heads. The thing the voice talks about is always in focus.
+
 ## The first second of every Short (hard rule)
 - Frame one shows the most striking moment of the story: one big subject filling the picture, already moving.
 - The hook is on screen as text while the voice says it. No intro, no year, no establishing shot first.

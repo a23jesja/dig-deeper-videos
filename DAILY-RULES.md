@@ -35,6 +35,21 @@ The session decides and does everything itself. Jesper is asked for **one thing 
 **Phase 2 starts when two Shorts in a row reach 65 % or more:** long videos of 7-12 minutes in the proven look,
 one every two weeks, plus 3-5 Shorts a week cut from them.
 
+## Our own character design (Jesper 2026-11-18) - overrides the character part of the next section
+The round-head, bean-body, stick-limb figures look like those of several well-known channels. Jesper wants
+figures nobody else uses. Until he has picked a design, no new video is built with the old figures.
+- **Still drawn in code** and standing as cards in the 3D world, so everything stays automatic and animatable.
+- **Recognisable as ours from the silhouette alone:** own head shape, proportions, limbs, line and palette. Not
+  a white or skin-coloured ball on a bean with stick arms.
+- **One design language for the whole cast:** Sir Digsworth first, then side characters and animals from the same
+  rules, so a new figure for any era can be drawn without new decisions.
+- **Never modelled on another channel's or studio's characters.** No reference pictures of other people's
+  figures while designing.
+- **The rig is separate from the skin.** Views, motion library, hands and mouth are built on a skeleton so the
+  drawing on top can be replaced without redoing the motion.
+- **Process:** six clearly different directions for Sir Digsworth as one sheet (front, side, one action pose,
+  next to one side character). Jesper picks one or mixes. Then the four views, then the craft kit continues.
+
 ## The look: the emu Short (locked by Jesper 2026-11-16)
 After trying 3D dolls, flat 2D and Flow figure sheets, Jesper chose the look of the first approved Short,
 "Australia Lost a War to Emus (1932)" (commit 05fab8d, `engine/src/videos/emu`). Do not change it again without

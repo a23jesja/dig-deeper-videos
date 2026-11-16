@@ -204,11 +204,13 @@ code, acted emotions), `kmilo93sd/agent-video-editor` (pacing, cuts, captions, t
 `ZLHad/OpenVideoHarness` (the agent checks its own frames).
 
 ## Save usage (Jesper 2026-11-13: the weekly limit runs out too fast)
-- **Right model for the job.** The most capable model only for script writing, scene design and the final review.
-  A cheaper model (Sonnet) for building scenes from an approved plan, fixing errors, rendering, file work and git.
-  The cheapest (Haiku) for lookups and simple checks. Subagents never run on the most capable model by default.
-- **No agent swarms.** At most one helper agent at a time, and only when it saves more than it costs. No "verifier"
-  agents looking at pictures; the main session reviews.
+- **Right model for the job (changed by Jesper 2026-11-18: quality first).** The most capable model writes the
+  script, plans every shot, and writes the staging, camera and animation code (story, cast, world, run and fall
+  cycles), because that is where the videos have looked amateurish. A cheaper model (Sonnet) only for rendering,
+  voice, captions, file work and git. The cheapest (Haiku) for lookups.
+- **One review before delivery, by the most capable model:** two frames per second, each checked against
+  "Staging checks" and "Action, not portraits". Fix, render again, and send only when it passes. Still no agent
+  swarms: at most one helper agent at a time.
 - **Let scripts do the checking.** Black, frozen, off-screen and loudness checks run as scripts on the rendered file.
   Look at pictures only where a script flags something, plus one contact sheet per scene at small size.
 - **Rendering costs nothing; looking costs.** Render freely on the graphics card, but do not read full-size frames

@@ -257,6 +257,7 @@ export const ranges = (root: THREE.Object3D, rad: number, hMax: number, hex: str
   const m = mesh(g, lam("range" + hex, () => ({ color: hex, side: THREE.DoubleSide })), false);
   m.receiveShadow = false;
   root.add(m);
+  return m;
 };
 /** heightfield over a grid: y = f(x, z) */
 export const heightfield = (x0: number, x1: number, z0: number, z1: number, nx: number, nz: number, f: (x: number, z: number) => number, tile = 4) => {

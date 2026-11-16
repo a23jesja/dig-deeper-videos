@@ -6,7 +6,7 @@ import * as THREE from "three";
 import { Batch, V, box, col, lam, quad, rod } from "./geo";
 import { NOINK } from "./ink";
 import { SEA, LINER, buildSets, DeckState } from "./t3sets";
-import { Part, makeLantern, makeRocket, makeSky, makeSmoke, makeWater, model, surfacePlane, glow, SKY } from "./env";
+import { canvasTex, Part, makeLantern, makeRocket, makeSky, makeSmoke, makeWater, model, surfacePlane, glow, SKY } from "./env";
 
 /** sea: the water level (the deck is close above it); boat: centre of the lifeboat hung out at the first station (its keel y);
  *  gaps: where the rail is open (the first for the lifeboat on its davits, the second for the empty station of a boat that has gone) */
@@ -19,12 +19,12 @@ export const toWorld = (fr: Frame, p: [number, number, number]): [number, number
 /** foreground piece: a pulley block hanging on its rope from a davit, high at the edge of the low shot (world x, y, z) */
 export const HANGING: [number, number, number] = [-0.5, 2.3, -1.5];
 /** distress rockets: [fired at (s), from, apex]. A film sets these before the world is built. */
-export const ROCKETS: { t0: number; from: [number, number, number]; apex: [number, number, number]; rise?: number; radius?: number; glow?: number }[] = [];
+export const ROCKETS: { t0: number; from: [number, number, number]; apex: [number, number, number]; rise?: number; radius?: number; glow?: number; noDepth?: boolean }[] = [];
 /** where the lifeboat on the water lies (the camera sits in it in one shot) */
-export const WATER_BOAT: [number, number, number] = [9, DECK.sea + 0.1, 21.0];
+export const WATER_BOAT: [number, number, number] = [0, DECK.sea + 0.1, 900];   // the old test's camera boat: parked far away so no frame floats in view
 
 const parts: Part[] = [];
-let ship: THREE.Group, shipPivot: THREE.Group, benchG: THREE.Group;
+let ship: THREE.Group, shipPivot: THREE.Group, benchG: THREE.Group, foamG: THREE.Mesh, dressG: THREE.Group;
 let rockets: ReturnType<typeof makeRocket>[] = [], water: ReturnType<typeof makeWater> | null = null, sky: ReturnType<typeof makeSky> | null = null;
 let applySets: ((st: DeckState, t: number) => { sky2: Part & { follow: (p: THREE.Vector3) => void } }) | null = null;
 /** where a point of the ship's own frame (x along the ship, y up from the deck, z to the sea) stands in the world while she tilts and sinks */
@@ -38,10 +38,12 @@ export const updateDeck = (t: number, camPos: THREE.Vector3, st: DeckState = { s
   for (const p of parts) p.update(t);
   sky?.follow(camPos);
   const r = applySets?.(st, t); r?.sky2.follow(camPos);
-  if (water) (water.obj as THREE.Mesh<THREE.BufferGeometry, THREE.ShaderMaterial>).material.uniforms.uAmp.value = st.calm ? 0.035 : 0.3;
-  benchG.visible = st.bench !== undefined; if (st.bench !== undefined) benchG.position.set(st.bench, 0, 6.2);
+  if (water) (water.obj as THREE.Mesh<THREE.BufferGeometry, THREE.ShaderMaterial>).material.uniforms.uAmp.value = st.calm || st.debris === "wreck" ? 0.035 : 0.3;
+  foamG.visible = st.set === "deck" && !!st.foam; if (foamG.visible) { let xi = 30; while (xi > -60 && deckPt(st, xi, 0, 7)[1] > DECK.sea) xi -= 0.25; foamG.position.set(deckPt(st, xi, 0, 7)[0], DECK.sea + 0.04, 0); }
+  dressG.visible = !!st.dress;
+  benchG.visible = st.bench !== undefined; if (st.bench !== undefined) benchG.position.set(st.bench, 0, 4.0);
   shipPivot.visible = st.set === "deck"; shipPivot.rotation.z = st.tilt ?? 0; shipPivot.position.y = deckSink(st);
-  if (water) rockets.forEach((r, i) => { if (i < 4) { const p = r.pos(t); water!.lamps[i].set(p.x, p.y, p.z, 24 * r.level(t)); water!.lampCols[i].set("#eef3ff"); } });
+  if (water) rockets.forEach((r, i) => { if (i < 4) { const p = r.pos(t); water!.lamps[i].set(p.x, p.y, p.z, 3 * r.level(t)); water!.lampCols[i].set("#eef3ff"); } });
 };
 /** lit things that must not glow behind or between a main figure: [x, y, z, radius] in the world (deck lanterns and windows, the liner's lights) */
 export const lamps = (st: DeckState | undefined): [number, number, number, number][] => {
@@ -67,6 +69,13 @@ export const buildDeck = (root: THREE.Group) => {
   const b = new Batch(), R = DECK.railZ, H = DECK.houseZ, S = DECK.sea, white = col("#e8e4d8"), wood = col("#7a5232"), dark = col("#1b1d26");
   // the deck: planks with grain, caulked seams, nail heads and a worn track
   const planks = surfacePlane("planks", -70, 70, -40, R + 0.4, 3.4, { bump: 3, rough: 0.85 }); planks.position.y = 0.03; zone.add(planks);
+  {  // darker strakes, butt joints and nail heads laid over the planks: contrast the night light would otherwise wash out
+    const tex = canvasTex("deckStripes", 512, 512, (g, r) => { g.clearRect(0, 0, 512, 512); const rows = 20, hgt = 512 / rows;
+      for (let i = 0; i < rows; i++) { g.fillStyle = `rgba(8,6,4,${0.05 + 0.3 * r()})`; g.fillRect(0, i * hgt, 512, hgt); g.fillStyle = "rgba(0,0,0,0.7)"; g.fillRect(0, i * hgt, 512, 3);
+        for (let k = 0; k < 2; k++) { const x = r() * 512; g.fillRect(x, i * hgt, 3, hgt); g.fillStyle = "rgba(235,225,200,0.55)"; for (const dy of [0.3, 0.7]) { g.beginPath(); g.arc(x + 12, i * hgt + dy * hgt, 2.6, 0, 7); g.fill(); } g.fillStyle = "rgba(0,0,0,0.7)"; } } }, true);
+    const ov = new THREE.Mesh(new THREE.PlaneGeometry(140, 54.4).rotateX(-Math.PI / 2).translate(0, 0, -12.8), new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 }));
+    const uv = ov.geometry.attributes.uv as THREE.BufferAttribute; for (let i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * 140 / 3.4, uv.getY(i) * 54.4 / 3.4);
+    ov.position.y = 0.036; ov.layers.set(NOINK); zone.add(ov); }
   // the sea, the sky, the hull with two rows of lit portholes
   water = makeWater({ size: 1400, y: S, deep: "#050c1c", shallow: "#12284a", skyTop: SKY.night.top, skyHor: "#1b2a4c", sunCol: "#cfd9ff", sunDir: new THREE.Vector3(-0.35, 0.42, 0.84), amp: 0.3, fogCol: "#121c36", fogFar: 520 });
   root.add(water.obj); parts.push(water);
@@ -135,8 +144,21 @@ export const buildDeck = (root: THREE.Group) => {
   { const bb = new Batch(), wd = col("#7a5232"), dk = col("#3a3d4a"); benchG = new THREE.Group();   // a deck bench that can slide
     bb.add(box(0, 0.42, 0, 1.7, 0.07, 0.46), wd); bb.add(box(0, 0.5, -0.22, 1.7, 0.5, 0.05), wd); for (const sx of [-0.75, 0.75]) for (const sz of [-0.18, 0.18]) bb.add(box(sx, 0, sz, 0.06, 0.42, 0.06), dk);
     bb.build(benchG, true); benchG.visible = false; zone.add(benchG); }
+  // ---- deck dressing near the truth shot: a bench, a coiled rope, a ventilator cowl, a stretch of rail ----
+  { const db = new Batch(), wd = col("#7a5232"), dk = col("#3a3d4a"), wh2 = col("#e8e4d8"), rd = col("#8a2a20");
+    for (const [bx, bz] of [[0.4, 8.0], [5.8, 8.3]]) { db.add(box(bx, 0.42, bz, 1.8, 0.07, 0.48), wd); db.add(box(bx, 0.5, bz + 0.24, 1.8, 0.5, 0.05), wd); for (const sx of [-0.8, 0.8]) for (const sz of [-0.18, 0.18]) db.add(box(bx + sx, 0, bz + sz, 0.06, 0.42, 0.06), dk); }
+    db.add(new THREE.TorusGeometry(0.42, 0.13, 8, 20).rotateX(Math.PI / 2).translate(2.0, 0.17, 7.5), col("#c9b891")); db.add(new THREE.TorusGeometry(0.3, 0.11, 8, 20).rotateX(Math.PI / 2).translate(2.0, 0.3, 7.5), col("#d8c8a0"));
+    db.add(new THREE.CylinderGeometry(0.34, 0.4, 1.0, 14).translate(3.5, 0.55, 8.3), rd); db.add(new THREE.CylinderGeometry(0.1, 0.34, 0.5, 14).translate(3.5, 1.3, 8.3), rd); db.add(new THREE.CylinderGeometry(0.46, 0.2, 0.42, 14, 1, true).rotateZ(Math.PI / 2).translate(3.9, 1.5, 8.3), col("#a02a20", THREE.DoubleSide));
+    
+    for (let x = -2; x <= 10; x += 1.5) db.add(box(x, 0, 9.0, 0.07, 1.1, 0.07), wh2);
+    for (const y of [0.36, 0.72]) db.add(box(4, y, 9.0, 12, 0.045, 0.045), wh2); db.add(box(4, 1.08, 9.0, 12, 0.07, 0.13), wd);
+    dressG = new THREE.Group(); db.build(dressG, true); dressG.visible = false; zone.add(dressG); }
+  { const cv = document.createElement("canvas"); cv.width = 64; cv.height = 8; const g = cv.getContext("2d")!;   // a thin white foam line: soft edge, no speckles
+    const gr = g.createLinearGradient(0, 0, 64, 0); gr.addColorStop(0, "rgba(245,250,255,0)"); gr.addColorStop(0.55, "rgba(245,250,255,0.95)"); gr.addColorStop(1, "rgba(245,250,255,0)"); g.fillStyle = gr; g.fillRect(0, 0, 64, 8);
+    foamG = new THREE.Mesh(new THREE.PlaneGeometry(0.34, 40).rotateX(-Math.PI / 2).translate(0, 0, 7.4), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(cv), transparent: true, depthWrite: false, fog: false }));
+    foamG.layers.set(NOINK); foamG.visible = false; root.add(foamG); }
   // distress rockets
-  rockets = ROCKETS.map((r) => makeRocket(r.t0, new THREE.Vector3(...r.from), new THREE.Vector3(...r.apex), { power: 1000, glowTime: r.glow ?? 5.5, rise: r.rise, radius: r.radius }));
+  rockets = ROCKETS.map((r) => makeRocket(r.t0, new THREE.Vector3(...r.from), new THREE.Vector3(...r.apex), { power: 450, glowTime: r.glow ?? 5.5, rise: r.rise, radius: r.radius, noDepth: r.noDepth }));
   for (const r of rockets) { root.add(r.obj); parts.push(r); }
   applySets = buildSets(root, parts, sky!, water!) as typeof applySets;
 };

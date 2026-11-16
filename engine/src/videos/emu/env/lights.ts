@@ -78,7 +78,7 @@ export const makeFire = (at: THREE.Vector3, size = 1, o: { power?: number; shado
  *  star: 10-14 arms shooting out, each a line of sparks of different sizes that curve down under gravity and fade out one by one.
  *  No halo sprite: the glow comes only from the bright sparks through the bloom. Everything is a pure function of time.
  *  `level(t)` is its brightness 0..1 (for anything that wants to follow it) and `pos(t)` where it is. */
-export const makeRocket = (t0: number, from: THREE.Vector3, apex: THREE.Vector3, o: { rise?: number; glowTime?: number; power?: number; color?: string; arms?: number; radius?: number; shadow?: boolean } = {}) => {
+export const makeRocket = (t0: number, from: THREE.Vector3, apex: THREE.Vector3, o: { rise?: number; glowTime?: number; power?: number; color?: string; arms?: number; radius?: number; noDepth?: boolean; shadow?: boolean } = {}) => {
   const rise = o.rise ?? 1.3, hold = o.glowTime ?? 5, P = o.power ?? 9000, col = o.color ?? "#f2f6ff", g = new THREE.Group(), r = rng(41);
   const ARMS = o.arms ?? 12, PER = 16, R = o.radius ?? 9, TR = 60, GL = 90, N = 1 + TR + ARMS * PER + GL + 3;
   const light = new THREE.PointLight(col, 0, 0, 2);
@@ -86,7 +86,7 @@ export const makeRocket = (t0: number, from: THREE.Vector3, apex: THREE.Vector3,
   const P3 = new Float32Array(N * 3), SZ = new Float32Array(N), AL = new Float32Array(N), TN = new Float32Array(N * 3), geo = new THREE.BufferGeometry();
   geo.setAttribute("position", new THREE.BufferAttribute(P3, 3)); geo.setAttribute("size", new THREE.BufferAttribute(SZ, 1)); geo.setAttribute("alpha", new THREE.BufferAttribute(AL, 1)); geo.setAttribute("tint", new THREE.BufferAttribute(TN, 3));
   const mat = new THREE.ShaderMaterial({
-    transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, fog: false, uniforms: { uScale: { value: 1000 } },
+    transparent: true, depthWrite: false, depthTest: !o.noDepth, blending: THREE.AdditiveBlending, fog: false, uniforms: { uScale: { value: 1000 } },
     vertexShader: "attribute float size; attribute float alpha; attribute vec3 tint; varying float vA; varying vec3 vC; uniform float uScale; void main(){ vec4 mv = modelViewMatrix * vec4(position, 1.0); gl_Position = projectionMatrix * mv; gl_PointSize = max(1.5, size * uScale / -mv.z); vA = alpha; vC = tint; }",
     fragmentShader: "varying float vA; varying vec3 vC; void main(){ float d = length(gl_PointCoord - 0.5) * 2.0; if (d > 1.0) discard; float k = pow(1.0 - d, 3.0) * 3.0 + pow(1.0 - d, 1.4) * 0.35; gl_FragColor = vec4(vC * k, vA); }",
   });

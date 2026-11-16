@@ -56,6 +56,37 @@ his say-so.
   top and bottom 15 % of a Short; captions and name tags never overlap each other or a face; no black or empty
   area; no prop standing between or in front of the characters.
 - **Motion:** smooth, no stepped cycles, feet planted, faces toward the viewer in reactions.
+- **Staging checks (after the Titanic part 3 review, 2026-11-17), also by script where possible:**
+  - No pole, mast, rocket trail or light starts or ends behind a head or hat. Effects burst in open sky.
+  - Two characters never share the same spot: at most a quarter of a body may be hidden by another, never a face.
+  - Nobody is cut by the edge of the picture unless it is a deliberate close-up.
+  - A character in water is hidden by the water surface with a wavy edge, never a straight cut. Feet stand on
+    something: nobody floats in front of a boat or above a deck.
+  - Characters react to what happens: they look at the rocket, the ship, the speaker. Nobody stands still facing
+    the camera during an event.
+  - No wink or smile on a line about deaths.
+  - No light that blows the floor out to white. No single shape (hull, deck, sky) filling more than a third of the
+    picture without anything on it.
+  - Props must read at phone size: wreckage looks like doors, chairs and planks with detail, not plain blocks.
+  - Signs: text at least as tall as the caption text.
+  - Captions: two or three words at a time, big, in a band below the characters, never on a body, face or sign.
+  - The last second holds a hook or a question, with its caption.
+
+## Light and atmosphere (Jesper 2026-11-17, from Pompeii onward)
+The goal is that every video looks better than the one before. Borrow the lighting of cinematic edits, never their
+pictures: all art stays our own.
+- **Backlight:** in calm or emotional moments the sun, fire or a lamp sits behind the character, with a soft glow
+  around the outline and a long shadow toward the camera.
+- **Air:** something always drifts in it: sparks, ash, dust, snow, mist or spray. Near particles big and blurred,
+  far ones small and sharp.
+- **Depth:** three layers in every shot, a blurred foreground (grass, railing, a shoulder), the sharp subject and a
+  soft background. Focus pulls from one to another when the story shifts.
+- **Slow moves:** in the two or three quiet moments of a video the camera glides slowly in or sideways for two to
+  three seconds, so the layers slide against each other. Action shots stay fast.
+- **One colour mood per scene:** warm gold, cold blue, fire red. Change it when the story turns.
+- **Limits:** faces and captions stay readable, nothing blows out to white, and the glow never hides the action.
+- **One step better each video:** before building, name one thing in the look that will be better than last time,
+  and say in the delivery note what it was.
 
 ## The first second of every Short (hard rule)
 - Frame one shows the most striking moment of the story: one big subject filling the picture, already moving.

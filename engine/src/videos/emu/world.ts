@@ -8,11 +8,13 @@ import { LIGHTS, LOOK, LightPreset } from "./lights";
 import { TONE, CHAR, untone } from "./shade";
 import { NOINK } from "./ink";
 import { cardShade } from "./cardshade";
-import { Pool, Actor, Fx, GEO, CamInfo, hh, Req } from "./castbase";
+import { Pool, Actor, Fx, GEO, CamInfo, hh, Req, SHADOW } from "./castbase";
+import { CARD_K } from "./cardshade";
 import { emuSide, emuFront } from "./emutoon";
 import { drawTally, Scene, Show, EMU_SHOW } from "./scenes";
 import { lewisGun, truck, crateGeo, crateMat, emptyCrate, tent, farmhouse, windmill, fence, gum, bush, rock, ranges, heightfield, scoreboard, waterTex, Gun, Truck, Board, mesh, merged } from "./props";
 import { buildDeck, updateDeck, deckFlare } from "./deckset";
+import { buildPompeii, updatePompeii, ASH_L, ASH_K, FIRE_L, FIRE_K, GOLD_L, GOLD_K } from "./pompeiiset";
 import { FPS, ShotDef, Zone, riseY, RISE_Z0, FIELD, DAM, bankY, hillY } from "./story";
 
 // ---------------- painted ground + wheat ----------------
@@ -99,6 +101,12 @@ const haloTex = () => ctex("sunHalo", 256, 256, (g) => {
 });
 
 const CROWD_B = 8, CROWD_CAP = 460;
+/** blend two light / look presets (numbers, [numbers], "#hex" colours, nested objects) by k */
+const mixAny = (a: unknown, b: unknown, k: number): unknown =>
+  typeof a === "number" ? a + ((b as number) - a) * k
+    : typeof a === "string" && a.startsWith("#") ? "#" + new THREE.Color(a).lerp(new THREE.Color(b as string), k).getHexString()
+    : Array.isArray(a) ? a.map((v, i) => mixAny(v, (b as unknown[])[i], k))
+    : a && typeof a === "object" ? Object.fromEntries(Object.keys(a).map((key) => [key, mixAny((a as Record<string, unknown>)[key], (b as Record<string, unknown>)[key], k)])) : a;
 
 export class World {
   root = new THREE.Group();
@@ -108,7 +116,7 @@ export class World {
   private zones = {} as Record<Zone, THREE.Group>;
   private hemi: THREE.HemisphereLight; private sun: THREE.DirectionalLight;
   private sky: THREE.Mesh; private skyMat: THREE.ShaderMaterial;
-  private groundMesh!: THREE.Mesh;
+  private groundMesh!: THREE.Mesh; private rangeMeshes: THREE.Mesh[] = [];
   private fog = new THREE.Fog("#bccbec", 25, 420);
   private sunDisc: THREE.Sprite; private sunHalo: THREE.Sprite;
   private sunCache = new Map<number, THREE.Vector3>();
@@ -171,10 +179,10 @@ export class World {
     const guv = ground.geometry.attributes.uv as THREE.BufferAttribute;
     for (let i = 0; i < guv.count; i++) guv.setXY(i, guv.getX(i) * 170, guv.getY(i) * 170);
     ground.receiveShadow = true; R.add(ground); this.groundMesh = ground;
-    ranges(R, 560, 60, "#8f86a8", 1); ranges(R, 420, 34, "#a88f78", 2);
+    this.rangeMeshes = [ranges(R, 560, 60, "#8f86a8", 1), ranges(R, 420, 34, "#a88f78", 2)];
 
-    for (const z of ["camp", "farm", "plain", "dam", "track", "office", "dock", "cassino", "zoo", "scot", "isle", "paris", "louvre", "deck"] as Zone[]) { this.zones[z] = new THREE.Group(); R.add(this.zones[z]); }
-    this.buildPlus(); this.buildWojtek(); this.buildMona(); buildDeck(this.zones.deck);
+    for (const z of ["camp", "farm", "plain", "dam", "track", "office", "dock", "cassino", "zoo", "scot", "isle", "paris", "louvre", "deck", "pompeii"] as Zone[]) { this.zones[z] = new THREE.Group(); R.add(this.zones[z]); }
+    this.buildPlus(); this.buildWojtek(); this.buildMona(); buildDeck(this.zones.deck); buildPompeii(this.zones.pompeii);
     this.fan = this.buildFarm();
     this.buildCamp(); this.buildPlain(); this.buildDam(); this.buildTrack();
     // wheat + stubble cards
@@ -322,7 +330,12 @@ export class World {
   private fx(i: number) { while (this.fxs.length <= i) this.fxs.push(new Fx(this.root)); return this.fxs[i]; }
 
   update(id: number, f: number, cam: THREE.PerspectiveCamera, scene: THREE.Scene) {
-    const s = this.show.shots[id - 1], L = LIGHTS[s.light], K = LOOK[s.light];
+    const s = this.show.shots[id - 1];
+    let L: LightPreset = LIGHTS[s.light], K = LOOK[s.light];
+    if (s.zone === "pompeii") { L = GOLD_L as LightPreset; K = GOLD_K as typeof K; }   // warm gold, shadows warm too
+    const mood = this.show.moodAt?.(id, f) ?? 0;
+    { const pm = s.zone === "pompeii"; CARD_K.uRim.value = pm ? 1.0 + 2.2 * Math.min(1, mood * 2) : 1; CARD_K.uRimW.value = pm ? 2.0 + 3.0 * Math.min(1, mood * 2) : 2; SHADOW.tail = pm ? [0.62, 0.5, 0.44] : null; SHADOW.contact = pm ? [0.36, 0.26, 0.22] : null; }   // the daylight drains toward ash-dark (Pompeii)
+    if (mood > 0) { const m1 = Math.min(1, mood * 2), m2 = Math.max(0, mood * 2 - 1); L = mixAny(L, FIRE_L, m1) as LightPreset; K = mixAny(K, FIRE_K, m1) as typeof K; if (m2 > 0) { L = mixAny(L, ASH_L, m2) as LightPreset; K = mixAny(K, ASH_K, m2) as typeof K; } }   // gold -> fire red (0.5) -> ash-dark (1)
     // ---- camera ----
     const c = this.show.camAt(id, f);
     cam.position.set(...c.pos); cam.up.set(0, 1, 0); cam.lookAt(...c.look); cam.rotateZ(c.roll);
@@ -332,8 +345,8 @@ export class World {
     // ---- light rig: camera-relative sun frozen per shot, two-tone uniforms, shadow fit ----
     let sunDir = this.shotSun(id, s, L, f);
     // a flare (a distress rocket) takes over as the scene's one light while it burns: the shadows fall away from it
-    const fl = s.zone === "deck" ? deckFlare(f / FPS) : null, gain = fl ? 1 + 0.2 * fl.k : 1;
-    if (fl && fl.k > 0.02) sunDir = sunDir.clone().lerp(fl.pos.clone().sub(focus).normalize(), Math.min(1, fl.k * 3)).normalize();
+    const fl0 = s.zone === "deck" ? deckFlare(f / FPS) : s.zone === "pompeii" ? this.show.flareAt?.(id, f) ?? null : null, fl = fl0 ? { k: fl0.k, pos: Array.isArray(fl0.pos) ? V(...fl0.pos) : fl0.pos } : null, gain = fl ? 1 + 0.08 * fl.k : 1;
+    // (the sun direction is no longer turned toward the flare: planks stay brown and are only lit a little)
     this.hemi.color.set(L.sky); this.hemi.groundColor.set(L.ground); this.hemi.intensity = L.hemiI;
     this.sun.color.set(L.sunCol); this.sun.intensity = L.sunI * gain;
     let Rr = THREE.MathUtils.clamp(dist * 1.15 + 7, 12, 95);
@@ -344,8 +357,8 @@ export class World {
     this.sun.shadow.bias = L.bias; this.sun.shadow.normalBias = L.normalBias * (Rr / 12);
     // while a flare burns its shadows are SOFT: the fill (shade colour, lift, hemisphere light) rises with it, so the deck is never cut by a black wedge
     const fk = fl ? fl.k : 0;
-    this.hemi.intensity = L.hemiI * (1 + 1.2 * fk); this.sun.shadow.radius = 2 + 10 * fk;
-    TONE.uLitCol.value.set(...L.lit).multiplyScalar(gain); TONE.uShadeCol.value.set(...L.shade).multiplyScalar(1 + 1.1 * fk); TONE.uShadeLift.value.set(...L.lift).multiplyScalar(1 + 2.2 * fk);
+    this.hemi.intensity = L.hemiI * (1 + 0.5 * fk); this.sun.shadow.radius = 2 + 10 * fk;
+    TONE.uLitCol.value.set(...L.lit).multiplyScalar(gain); TONE.uShadeCol.value.set(...L.shade).multiplyScalar(1 + 0.45 * fk); TONE.uShadeLift.value.set(...L.lift).multiplyScalar(1 + 0.9 * fk);
     TONE.uLambert.value = L.lambert; TONE.uSideK.value = L.sideK; TONE.uTerm.value = L.term; TONE.uBounce.value.set(...K.bounce); TONE.uSat.value = K.sat;
     CHAR.uCharTint.value.set(...L.charTint).multiplyScalar(1 + 0.35 * (gain - 1)); CHAR.uCharShade.value = L.charShade; CHAR.uGrad.value = L.charGrad;
     CHAR.uBodyGrad.value = L.bodyGrad; CHAR.uSideTint.value.set(...L.sideTint);
@@ -357,7 +370,7 @@ export class World {
     this.sky.position.copy(cam.position);
     untone(L.fog, this.fog.color); this.fog.near = L.fogNear; this.fog.far = L.fogFar;
     scene.fog = this.fog; scene.background = null;
-    const showSun = s.light === "golden";
+    const showSun = s.light === "golden" && s.zone !== "pompeii";   // in Pompeii the volcano is the lamp, not the sun
     this.sunDisc.visible = this.sunHalo.visible = showSun;
     if (showSun) {
       this.sunDisc.position.copy(cam.position).addScaledVector(sunDir, 900);
@@ -368,11 +381,11 @@ export class World {
     for (let i = 0; i < this.clouds.length; i++) {
       const m = this.clouds[i];
       m.lookAt(cam.position.x, m.position.y, cam.position.z);
-      (m.material as THREE.MeshBasicMaterial).map = this.cloudMaps[s.light][i % 4]; m.visible = s.light !== "night";
+      (m.material as THREE.MeshBasicMaterial).map = this.cloudMaps[s.light][i % 4]; m.visible = s.light !== "night" && s.zone !== "pompeii";
     }
     // ---- place ----
     for (const z of Object.keys(this.zones) as Zone[]) this.zones[z].visible = z === s.zone;
-    this.groundMesh.visible = s.zone !== "deck"; if (s.zone === "deck") updateDeck(f / FPS, cam.position, this.show.deckAt?.(id, f));   // at sea there is no red earth under the ship
+    this.groundMesh.visible = s.zone !== "deck" && s.zone !== "pompeii"; for (const rm of this.rangeMeshes) rm.visible = s.zone !== "pompeii"; if (s.zone === "pompeii") updatePompeii(f / FPS, this.show.pompAt?.(id, f), cam); if (s.zone === "deck") updateDeck(f / FPS, cam.position, this.show.deckAt?.(id, f));   // at sea there is no red earth under the ship
     // ---- the story ----
     const right = V(0, 0, 0).setFromMatrixColumn(cam.matrixWorld, 0);
     const ci: CamInfo = { pos: cam.position, right, sun: sunDir, light: s.light };

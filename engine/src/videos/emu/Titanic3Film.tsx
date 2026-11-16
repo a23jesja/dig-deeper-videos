@@ -3,9 +3,9 @@ import React, { useEffect, useState } from "react";
 import { AbsoluteFill, continueRender, delayRender, staticFile, useCurrentFrame } from "remotion";
 import { Film, FilmView } from "./Emu";
 import { loadModels } from "./env/models";
-import { SHOW_T3, TOTAL_T3, HOOK, HOOK_END, WORDS_T3, layersT3, dofAtT3 } from "./titanic3";
+import { SHOW_T3, TOTAL_T3, HOOK, HOOK_END, END_HOOK, T3_CHUNKS, WORDS_T3, layersT3, dofAtT3 } from "./titanic3";
 
-const FILM: Film = { W: 1080, H: 1920, total: TOTAL_T3, flashAt: -100, show: SHOW_T3, layersAt: layersT3, dofAt: dofAtT3, words: WORDS_T3.filter((w) => w.a * 30 >= HOOK_END + 1), audio: "titanic/mix-3.wav", cap: { top: "67.5%", size: 92, stroke: 14 } };
+const FILM: Film = { W: 1080, H: 1920, total: TOTAL_T3, flashAt: -100, show: SHOW_T3, layersAt: layersT3, dofAt: dofAtT3, words: WORDS_T3, chunks: T3_CHUNKS, capFrom: HOOK_END, audio: "titanic/mix-3v2.wav", cap: { top: "78%", size: 132, stroke: 20, chunks: true } };
 export const TITANIC3_FRAMES = TOTAL_T3;
 export const Titanic3: React.FC = () => {
   const f = useCurrentFrame();
@@ -19,6 +19,7 @@ export const Titanic3: React.FC = () => {
       <FilmView film={FILM} />
       {f < HOOK_END && <div style={{ position: "absolute", left: HOOK.x, width: HOOK.w, top: HOOK.y, height: HOOK.h, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", fontFamily: "'Arial Black', Impact, sans-serif", fontSize: HOOK.size, lineHeight: 1.06, color: "#ffe14d",
         WebkitTextStroke: "16px #101014", paintOrder: "stroke fill", textShadow: "0 7px 0 rgba(16,16,20,0.9)", whiteSpace: "nowrap", scale: String(pop), letterSpacing: -2 } as React.CSSProperties}>{HOOK.lines.map((l) => <div key={l}>{l}</div>)}</div>}
+      {f >= END_HOOK.a && <div style={{ position: "absolute", left: END_HOOK.x, width: END_HOOK.w, top: END_HOOK.y, height: END_HOOK.h, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", fontFamily: "Impact, 'Arial Narrow Bold', sans-serif", fontSize: END_HOOK.size, lineHeight: 1.12, color: "#ffe14d", WebkitTextStroke: "12px #101014", paintOrder: "stroke fill", textShadow: "0 7px 0 rgba(16,16,20,0.9)", whiteSpace: "nowrap", letterSpacing: -2 } as React.CSSProperties}>{END_HOOK.lines.map((l) => <div key={l}>{l}</div>)}</div>}
     </AbsoluteFill>
   );
 };

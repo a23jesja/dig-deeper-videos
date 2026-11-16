@@ -1,0 +1,68 @@
+[
+ {
+  "id": "hook",
+  "a": 0.05,
+  "b": 3.354,
+  "text": "The mountain behind me just exploded. This is Pompeii."
+ },
+ {
+  "id": "truth",
+  "a": 3.804,
+  "b": 6.648,
+  "text": "My part is made up. Everything around me is true."
+ },
+ {
+  "id": "morning",
+  "a": 7.048,
+  "b": 12.064,
+  "text": "This morning was ordinary. A town of eleven thousand people. Fresh bread at the baker's."
+ },
+ {
+  "id": "dog",
+  "a": 12.564,
+  "b": 16.264,
+  "text": "A guard dog on his chain, and a floor that says: beware of the dog."
+ },
+ {
+  "id": "shake",
+  "a": 16.714,
+  "b": 21.103,
+  "text": "The ground has been shaking for days. Nobody worries. Here, it always shakes."
+ },
+ {
+  "id": "blow",
+  "a": 21.653,
+  "b": 24.151,
+  "text": "Then, around midday, Vesuvius blows."
+ },
+ {
+  "id": "pine",
+  "a": 24.701,
+  "b": 28.967,
+  "text": "A cloud climbs out of it like a pine tree: a tall trunk, then branches."
+ },
+ {
+  "id": "ready",
+  "a": 29.367,
+  "b": 31.025,
+  "text": "Nobody is ready for this."
+ },
+ {
+  "id": "run",
+  "a": 31.575,
+  "b": 36.496,
+  "text": "The baker runs. The soldier runs. The merchant grabs his coins. I grab my cap."
+ },
+ {
+  "id": "stones",
+  "a": 36.996,
+  "b": 39.963,
+  "text": "Then the sky starts to fall. Not rain. Stones."
+ },
+ {
+  "id": "next",
+  "a": 40.513,
+  "b": 43.745,
+  "text": "And in the middle of the day, it goes dark. That is part two."
+ }
+]

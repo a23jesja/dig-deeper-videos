@@ -1,0 +1,68 @@
+[
+ {
+  "id": "hook",
+  "a": 0.05,
+  "b": 3.005,
+  "text": "The Titanic is sinking. And I am still on board."
+ },
+ {
+  "id": "truth",
+  "a": 3.355,
+  "b": 6.198,
+  "text": "My part is made up. Everything around me is true."
+ },
+ {
+  "id": "recap",
+  "a": 6.498,
+  "b": 9.781,
+  "text": "The lifeboats are gone. About 1,500 of us are left."
+ },
+ {
+  "id": "rockets",
+  "a": 10.081,
+  "b": 13.466,
+  "text": "Distress rockets burst over the ship, one after another."
+ },
+ {
+  "id": "bow",
+  "a": 13.766,
+  "b": 16.236,
+  "text": "The bow goes under. The sea comes up the deck."
+ },
+ {
+  "id": "gone",
+  "a": 16.536,
+  "b": 19.423,
+  "text": "At 2:20 in the morning, the Titanic is gone."
+ },
+ {
+  "id": "boat",
+  "a": 19.873,
+  "b": 23.587,
+  "text": "I swim for an overturned lifeboat. About thirty men cling to it."
+ },
+ {
+  "id": "dawn",
+  "a": 23.887,
+  "b": 26.708,
+  "text": "At about four, a ship arrives: the Carpathia."
+ },
+ {
+  "id": "count",
+  "a": 27.008,
+  "b": 30.985,
+  "text": "She saves about 700 people. About 1,500 are lost."
+ },
+ {
+  "id": "end",
+  "a": 31.435,
+  "b": 33.978,
+  "text": "I survived the Titanic. Most did not."
+ },
+ {
+  "id": "next",
+  "a": 34.528,
+  "b": 35.658,
+  "text": "Next: Pompeii."
+ }
+]

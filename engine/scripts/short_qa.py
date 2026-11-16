@@ -7,6 +7,22 @@ import json, os, subprocess, sys
 import numpy as np
 from PIL import Image, ImageDraw
 
+from scipy import ndimage
+def white_share(L):
+    """share of pixels above 0.95 luma in the lower half of one frame"""
+    h = L.shape[0]; return float((L[h // 2: int(h * 0.72), :] > 0.95).mean())   # lower half above the caption band (the white caption letters do not count)
+def flat_share(L, thr=0.01, B=8):
+    """share of the frame covered by the largest connected flat (low-detail) region, in 8 x 8 blocks"""
+    h, w = L.shape[0] // B * B, L.shape[1] // B * B
+    blk = L[:h, :w].reshape(h // B, B, w // B, B).transpose(0, 2, 1, 3).reshape(h // B, w // B, B * B).std(2)
+    lab, k = ndimage.label(blk < thr)
+    return float(np.bincount(lab.ravel())[1:].max() / blk.size) if k else 0.0
+WHITE_MAX, FLAT_MAX = 0.03, 1 / 3
+if "--selftest" in sys.argv:
+    rng = np.random.default_rng(1); tex = rng.random((320, 180)).astype(np.float32) * 0.5 + 0.2
+    blown = tex.copy(); blown[160:, :] = 1.0; flat = tex.copy(); flat[:200, :] = 0.3
+    ok = white_share(blown) > WHITE_MAX and white_share(tex) <= WHITE_MAX and flat_share(flat) > FLAT_MAX and flat_share(tex) <= FLAT_MAX
+    print("SELFTEST short_qa WHITE and BIGFLAT proven" if ok else "SELFTEST short_qa FAILED"); sys.exit(0 if ok else 1)
 vid, out = sys.argv[1], sys.argv[2]
 meta = json.load(open(sys.argv[3])) if len(sys.argv) > 3 else {}
 shots = meta.get("shots", [])
@@ -66,7 +82,7 @@ for s in shots or [{"id": 0, "a": 0, "b": n}]:
 # EMPTY: the lower third of a shot must not be a flat empty surface. Local detail = median over 8 x 8 blocks of the luma standard deviation,
 # then the median over the shot (calibrated on the old test: its shot 3 = 0.006, shots with planks / water / figures = 0.028 - 0.041; threshold 0.015)
 EMPTY_MIN = 0.015
-B = 8; y0 = (H * 2 // 3) // B * B; lo = luma[:, y0:y0 + (H - y0) // B * B, : W // B * B]
+B = 8; y0 = (H * 2 // 3) // B * B; lo = np.concatenate([luma[:, y0:int(H * 0.73) // B * B, : W // B * B], luma[:, int(H * 0.835) // B * B: H // B * B, : W // B * B]], axis=1)   # the caption band (73-83.5 %) does not count as detail
 blk = lo.reshape(n, lo.shape[1] // B, B, lo.shape[2] // B, B).transpose(0, 1, 3, 2, 4).reshape(n, -1, B * B).std(2)
 empty = []
 for s in shots or [{"id": 0, "a": 0, "b": n}]:
@@ -77,6 +93,20 @@ for s in shots or [{"id": 0, "a": 0, "b": n}]:
     if d < EMPTY_MIN: empty.append((s["id"], d))
 for i, d in empty: R.append(f"EMPTY shot {i}: the lower third is a flat empty surface (local detail {d:.4f} < {EMPTY_MIN})")
 if not empty: R.append("EMPTY: none (every shot's lower third has detail)")
+# WHITE: the floor must not blow out (lower half above 0.95 luma > 3 % for 6 frames in a row); BIGFLAT: no flat low-detail region over a third of the frame
+bad = []
+ws = np.array([white_share(luma[i]) for i in range(n)]); fs = np.array([flat_share(luma[i]) for i in range(0, n)])
+for s in shots or [{"id": 0, "a": 0, "b": n}]:
+    a, b = s["a"], min(s["b"], n)
+    if a >= b: continue
+    run, mx = 0, 0
+    for i in range(a, b):
+        run = run + 1 if ws[i] > WHITE_MAX else 0; mx = max(mx, run)
+    R.append(f"  shot {s['id']:>2} white (lower half >0.95) max {ws[a:b].max():.3f}, longest run over {WHITE_MAX}: {mx} f; largest flat region median {np.median(fs[a:b]):.2f}")
+    if mx >= 6: bad.append(f"WHITE shot {s['id']}: the floor blows out to white ({mx} frames in a row above {WHITE_MAX:.0%} of the lower half)")
+    if np.median(fs[a:b]) > FLAT_MAX: bad.append(f"BIGFLAT shot {s['id']}: one flat low-detail region covers {np.median(fs[a:b]):.0%} of the frame (more than a third)")
+R += bad
+if not bad: R.append("WHITE and BIGFLAT: none")
 np.savez(os.path.join(out, "perframe.npz"), diff=diff, **stats)
 
 # 2 s contact sheets, 10 x 6 frames of 108x192 each
@@ -90,4 +120,4 @@ for k in range(0, n, 60):
     S.save(os.path.join(out, f"sheet_{k:04d}.jpg"), quality=85)
 open(os.path.join(out, "report.md"), "w", encoding="utf-8").write("\n".join(R) + "\n")
 print("\n".join(R))
-sys.exit(1 if empty else 0)
+sys.exit(1 if (empty or bad) else 0)

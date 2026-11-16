@@ -44,13 +44,20 @@ import { MONA_SHOW, TOTAL_M, FLASH_M, layersM, dofAtM } from "./storyM";
 import wordsMJson from "./wordsM.json";
 import { THUMB_SHOW, layersT, dofAtT } from "./monaThumbs";
 import { Flat2D } from "./flat2d";
+import { chunkWords, chunkAt, CAP } from "./captions";
 
 type Word = { w: string; a: number; b: number; line: string };
 export type Film = {
   W: number; H: number; total: number; flashAt: number; show: Show;
   layersAt: (f: number) => { id: number; alpha: number }[];
   dofAt: (f: number) => { cInf: number; focus?: (f: number) => V3 };
-  words: Word[]; audio: string; cap: { top: string; size: number; stroke: number };
+  /** lens-blur strength of this film (default maxCoC 24, nearScale 1.2) */
+  lens?: { maxCoC: number; nearScale: number };
+  words: Word[]; audio: string; cap: { top: string; size: number; stroke: number; chunks?: boolean };
+  /** an explicit list of caption chunks (new caption style) */
+  chunks?: string[];
+  /** the first frame captions may show (the hook text holds until then) */
+  capFrom?: number;
   /** drawn as a flat 2D cartoon (flat2d.tsx) instead of in the 3D world */
   flat?: boolean;
 };
@@ -88,7 +95,7 @@ const Inner: React.FC<{ id: number; film: Film }> = ({ id, film }) => {
   const on = useMemo(() => ({ ink: true, lens: true, bloom: true, grade: true, ...(props().post ?? {}) }), []);
   const fx = useMemo(() => ({
     ink: new InkPass(scene, camera as THREE.PerspectiveCamera),
-    lens: new LensBlur({ maxCoC: 24, nearScale: 1.2 }),
+    lens: new LensBlur(film.lens ?? { maxCoC: 24, nearScale: 1.2 }),
     bloom: makeBloom(film.H),
     tone: new ToneMappingEffect({ mode: ToneMappingMode.NEUTRAL }),
     grade: new GradeEffect(GRADES.day, GRADE_STRENGTH.day),
@@ -136,7 +143,20 @@ const ShotView: React.FC<{ id: number; alpha: number; film: Film }> = ({ id, alp
 
 // ---------------- captions: one word at a time, hard swaps ----------------
 const clean = (w: string) => w.replace(/[.,:;!?]+$/g, "").replace(/^[("]+/, "");
+const ChunkCaptions: React.FC<{ film: Film }> = ({ film }) => {
+  const f = useCurrentFrame(), t = f / FPS, chunks = React.useMemo(() => chunkWords(film.words, film.chunks), [film]);
+  const c = chunkAt(chunks, t);
+  if (!c || f < (film.capFrom ?? 0)) return null;
+  const n = Math.max(0, f - Math.round(c.a * FPS)), pop = n === 0 ? 0.92 : n === 1 ? 1.05 : 1, big = /\d/.test(c.text);
+  return (
+    <AbsoluteFill>
+      <div style={{ position: "absolute", left: 0, width: 1080, top: `${CAP.centerY * 100}%`, transform: `translateY(-50%) scale(${pop})`, textAlign: "center", fontFamily: CAP.font, fontWeight: 400,
+        fontSize: c.size, letterSpacing: 1, color: big ? "#ffe14d" : "#ffffff", WebkitTextStroke: `${film.cap.stroke}px #101014`, paintOrder: "stroke fill", textShadow: "0 7px 0 rgba(16,16,20,0.92)", whiteSpace: "nowrap", lineHeight: 1, strokeLinejoin: "round" } as React.CSSProperties}>{c.text.toUpperCase()}</div>
+    </AbsoluteFill>
+  );
+};
 const Captions: React.FC<{ film: Film }> = ({ film }) => {
+  if (film.cap.chunks) return <ChunkCaptions film={film} />;
   const f = useCurrentFrame(), t = f / FPS, W = film.words;
   let cur: Word | null = null;
   for (let i = 0; i < W.length; i++) {

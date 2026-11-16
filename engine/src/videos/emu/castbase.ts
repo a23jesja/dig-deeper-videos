@@ -3,6 +3,7 @@
 // drawing. Characters are yaw-only billboards shaded by cardShade(); standing ones get a soft multiply contact blob.
 // Cards, effects and blobs live on the NOINK layer so the world ink pass never outlines their quads.
 import { pigSide, PigOpts } from "./pigtoon";
+import { dogSide, DogOpts } from "./dogtoon";
 import * as THREE from "three";
 import { Pen, bodyFront, bodySide, setTalk, fxShadow, fxContact, Outfit, FrontOpts, SideOpts } from "./toon";
 import { emuSide, emuFront, EmuOpts, EMU_HIP_X } from "./emutoon";
@@ -159,17 +160,32 @@ export const lidAt = (t: number, i: number, swaps: number[] = []) => {
 const fkey = (o: object) => JSON.stringify(o, (_k, v) => (typeof v === "number" ? q(v) : v));
 
 export type Who = { i: number; o: Outfit; okey: string };
-export type PersonOpts = { side?: boolean; mirror?: boolean; scale?: number; talk?: number; fo?: FrontOpts; so?: SideOpts; yaw?: number };
+export type PersonOpts = { side?: boolean; mirror?: boolean; scale?: number; talk?: number; fo?: FrontOpts; so?: SideOpts; yaw?: number;
+  /** in the water: the card is cut by a wavy waterline (design y of the surface, wave phase in 1/12 turns) with foam drawn on it */
+  water?: { y: number; ph: number } };
 /** one human drawing in the 600 x 1000 design space, sized by distance, lit from the scene's sun */
 export const person = (out: Stage, cam: CamInfo, who: Who, x: number, y: number, z: number, o: PersonOpts = {}, shadow = true): Place => {
   const scale = o.scale ?? 1, d = cam.pos.distanceTo(tmp.set(x, y + 1.2, z)) / scale, k = tierK(d);
   const side = !!o.side, mirror = side && !!o.mirror, light = light2D(cam, mirror), seed = seedOf(who.i);
   const talk = Math.round(clamp01(o.talk ?? 0) * 4) / 4;
   const f2: FrontOpts = { ...(o.fo ?? {}), light, seed }, s2: SideOpts = { ...(o.so ?? {}), light, seed };
-  const key = (side ? `S|${who.okey}|${fkey(s2)}` : `F|${who.okey}|${fkey(f2)}`) + `|t${talk}`;
+  const wt = o.water ? { y: Math.round(o.water.y), ph: ((Math.round(o.water.ph) % 12) + 12) % 12 } : null;
+  const key = (side ? `S|${who.okey}|${fkey(s2)}` : `F|${who.okey}|${fkey(f2)}`) + `|t${talk}` + (wt ? `|w${wt.y}|${wt.ph}` : "");
   const pl: Place = {
     key, x, y, z, scale, mirror, geo: "body", yaw: o.yaw,
-    draw: (p) => { setTalk(talk); if (side) bodySide(p, who.o, s2); else bodyFront(p, who.o, f2); setTalk(0); },
+    draw: (p) => {
+      setTalk(talk);
+      const g = p.g, ph = wt ? (wt.ph / 12) * Math.PI * 2 : 0, wy = (x: number) => (wt ? wt.y + 9 * Math.sin(x * 0.034 + ph) + 5 * Math.sin(x * 0.083 + 2 * ph + 1) : 0);
+      if (wt) { g.save(); g.beginPath(); g.moveTo(-60, -60); g.lineTo(660, -60); for (let x = 660; x >= -60; x -= 10) g.lineTo(x, wy(x)); g.closePath(); g.clip(); }
+      if (side) bodySide(p, who.o, s2); else bodyFront(p, who.o, f2);
+      if (wt) { // the waterline: a wavy edge with a foam band and a few foam flecks
+        g.restore(); g.lineCap = "round"; g.lineJoin = "round";
+        g.strokeStyle = "rgba(20,40,80,0.55)"; g.lineWidth = 7; g.beginPath(); for (let x = -40; x <= 640; x += 8) { const y = wy(x) + 5; if (x === -40) g.moveTo(x, y); else g.lineTo(x, y); } g.stroke();
+        g.strokeStyle = "rgba(245,250,255,0.95)"; g.lineWidth = 9; g.beginPath(); for (let x = -40; x <= 640; x += 8) { const y = wy(x) - 1; if (x === -40) g.moveTo(x, y); else g.lineTo(x, y); } g.stroke();
+        for (let i = 0; i < 26; i++) { const x = 10 + i * 23 + 6 * Math.sin(i * 7.3 + ph), r = 3 + 3 * Math.abs(Math.sin(i * 3.1 + ph)); g.fillStyle = "rgba(250,252,255,0.92)"; g.beginPath(); g.arc(x, wy(x) - 3 - 3 * Math.abs(Math.sin(i * 1.7 + ph)), r, 0, 7); g.fill(); }
+      }
+      setTalk(0);
+    },
     size: [Math.round(600 * k), Math.round(1000 * k), k],
   };
   out.places.push(pl);
@@ -205,15 +221,17 @@ export const emu = (out: Stage, cam: CamInfo, a: EmuAct): Place => {
 /** ground shadow under a standing card: a tight contact pool under the feet, plus by day a soft tail away from the sun */
 const CONTACT: Record<"day" | "golden" | "night", [number, number, number]> = { day: [0.2, 0.21, 0.33], golden: [0.24, 0.2, 0.33], night: [0.16, 0.18, 0.32] };
 const TAIL: [number, number, number] = [0.42, 0.44, 0.62];
+/** a film may tint the ground shadows (Pompeii: warm red-brown, never blue-violet); null = the default */
+export const SHADOW: { tail: [number, number, number] | null; contact: [number, number, number] | null } = { tail: null, contact: null };
 const toSrgb = (v: number) => { const c = clamp01(v); return c <= 0.0031308 ? 12.92 * c : 1.055 * c ** (1 / 2.4) - 0.055; };
 const hexOf = (c: [number, number, number], k: number) => "#" + c.map((v) => Math.round(255 * toSrgb(1 - (1 - v) * k)).toString(16).padStart(2, "0")).join("");
 export const blob = (out: Stage, cam: CamInfo, x: number, y: number, z: number, sc = 1, k = 1) => {
   const S = cam.sun, hl = Math.hypot(S.x, S.z) || 1, ox = -S.x / hl, oz = -S.z / hl, rot = Math.atan2(-ox, -oz);
   const el = Math.asin(Math.min(0.99, Math.max(0.1, S.y)));
   const len = Math.min(cam.light === "golden" ? 4.2 : 2.4, Math.max(0.5, 1.6 / Math.tan(el))) * sc, h = len + 0.55 * sc, c = 0.3 * h;
-  const tc = hexOf(TAIL, k * (cam.light === "golden" ? 0.85 : 1));
+  const tc = hexOf(SHADOW.tail ?? TAIL, k * (cam.light === "golden" ? 0.85 : 1));
   out.fx.push({ key: `blob|shadow|${tc}`, cw: 128, ch: 256, draw: (p) => fxShadow(p, tc), x: x + ox * c, y: y + 0.018, z: z + oz * c, w: 0.72 * sc, h, flat: true, rot });
-  const cc = hexOf(CONTACT[cam.light], k);
+  const cc = hexOf(SHADOW.contact ?? CONTACT[cam.light], k);
   out.fx.push({ key: `blob|contact|${cc}`, cw: 128, ch: 128, draw: (p) => fxContact(p, cc), x: x + ox * 0.03 * sc, y: y + 0.022, z: z + oz * 0.03 * sc, w: 0.52 * sc, h: 0.4 * sc, flat: true, rot });
 };
 
@@ -240,5 +258,18 @@ export const pig = (out: Stage, cam: CamInfo, a: PigAct): Place => {
   const pl: Place = { key: `PIG|${fkey(o)}`, x: a.x, y, z: a.z, scale, mirror: a.mirror, geo: "emuFront", draw: (p) => pigSide(p, o), size: [Math.round(900 * k), Math.round(1000 * k), k] };
   out.places.push(pl);
   if (a.shadow !== false) blob(out, cam, a.x, y, a.z, scale * 1.5);
+  return pl;
+};
+
+export type DogAct = DogOpts & { x: number; y?: number; z: number; scale?: number; mirror?: boolean; shadow?: boolean };
+/** the guard dog of Pompeii: one side-on drawing, nose to the right of the picture (mirror = nose to the left) */
+export const dog = (out: Stage, cam: CamInfo, a: DogAct): Place => {
+  const y = a.y ?? 0, scale = a.scale ?? 0.6;
+  const d = cam.pos.distanceTo(tmp.set(a.x, y + 0.4, a.z)) / scale, k = tierK(d) * 0.9;
+  const o: DogOpts = { mode: a.mode, expr: a.expr, blink: a.blink, light: light2D(cam, !!a.mirror), chain: a.chain,
+    phase: a.phase === undefined ? undefined : Math.round((((a.phase % 1) + 1) % 1) * 20) / 20, k: a.k === undefined ? undefined : q(((a.k % 1) + 1) % 1, 12) };
+  const pl: Place = { key: `DOG|${fkey(o)}`, x: a.x, y, z: a.z, scale, mirror: a.mirror, geo: "emuFront", draw: (p) => dogSide(p, o), size: [Math.round(900 * k), Math.round(1000 * k), k] };
+  out.places.push(pl);
+  if (a.shadow !== false) blob(out, cam, a.x, y, a.z, scale * 1.3);
   return pl;
 };

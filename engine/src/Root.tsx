@@ -6,6 +6,9 @@ import { PuppetCompositions } from "./videos/puppet";
 import { Titanic3Test, TITANIC3_TEST_FRAMES } from "./videos/emu/Titanic3Test";
 import { Titanic3, TITANIC3_FRAMES } from "./videos/emu/Titanic3Film";
 import { Titanic3Thumb, TITANIC3_THUMB_FRAMES } from "./videos/emu/Titanic3Thumb";
+import { Pompeii1, POMPEII1_FRAMES } from "./videos/emu/Pompeii1Film";
+import { Pompeii1Thumb, POMPEII1_THUMB_FRAMES } from "./videos/emu/Pompeii1Thumb";
+import { PompCast, POMP_CAST_FRAMES } from "./videos/emu/PompCast";
 import { EnvKit, ENV_PARTS } from "./videos/emu/env/EnvKit";
 import { ThreeWay3 } from "./videos/three3d/ThreeWay3";
 import { StyleSheet } from "./videos/style/StyleSheet";
@@ -45,6 +48,9 @@ export const Root: React.FC = () => (
     <Composition id="ThreeWay3" component={ThreeWay3} durationInFrames={300} fps={30} width={1920} height={1080} />
     <Composition id="Titanic3" component={Titanic3} durationInFrames={TITANIC3_FRAMES} fps={30} width={1080} height={1920} />
     <Composition id="Titanic3Thumb" component={Titanic3Thumb} durationInFrames={TITANIC3_THUMB_FRAMES} fps={30} width={1080} height={1920} />
+    <Composition id="Pompeii1" component={Pompeii1} durationInFrames={POMPEII1_FRAMES} fps={30} width={1080} height={1920} />
+    <Composition id="Pompeii1Thumb" component={Pompeii1Thumb} durationInFrames={POMPEII1_THUMB_FRAMES} fps={30} width={1080} height={1920} />
+    <Composition id="PompCast" component={PompCast} durationInFrames={POMP_CAST_FRAMES} fps={30} width={2240} height={1000} />
     <Composition id="Titanic3Test" component={Titanic3Test} durationInFrames={TITANIC3_TEST_FRAMES} fps={30} width={1080} height={1920} />
     <Composition id="EnvKit" component={EnvKit} durationInFrames={ENV_PARTS} fps={30} width={1920} height={1080} />
     <PuppetCompositions />

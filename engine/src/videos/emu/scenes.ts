@@ -30,7 +30,9 @@ export type Scene = Stage & { guns: GunS[]; crates: CrateS[]; truck?: TruckS; bo
 export type Show = { shots: import("./story").ShotDef[]; camAt: (id: number, f: number) => import("./story").Cam; sceneAt: (id: number, f: number, cam: CamInfo) => Scene;
   crowdFor: (id: number, f: number) => CrowdSpec | null; wheatAt: (id: number, f: number, x: number, z: number) => number;
   /** zone deck only: which set shows and how the ship stands (tilt, sea level, liner, boats ...) */
-  deckAt?: (id: number, f: number) => import("./t3sets").DeckState };
+  deckAt?: (id: number, f: number) => import("./t3sets").DeckState;
+  /** zone pompeii: what the street and the mountain do (eruption clock, falling stones, shaking), how far the daylight has drained (0..1), and the blast as the scene's light */
+  pompAt?: (id: number, f: number) => import("./pompeiiset").PompState; moodAt?: (id: number, f: number) => number; flareAt?: (id: number, f: number) => { k: number; pos: [number, number, number] } | null };
 
 export const SIR = { i: 3, o: SIR_DIGSWORTH, okey: "sir" };
 export const WHO: Record<"major" | "s1" | "s2" | "farmer", { i: number; o: Outfit; okey: string }> = {

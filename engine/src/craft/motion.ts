@@ -37,6 +37,8 @@ export type Sample = {
   pose: Pose;
   /** where the figure stands (the ground under its pelvis), in leg lengths: x = screen-right, z = toward the lens; yaw = the view angle for solve() */
   x: number; z: number; yaw: number;
+  /** how far the whole figure is lifted off the ground (climbing), in leg lengths; and how far loose things trail (-1..1, + = behind the way it faces) */
+  y: number; sway: number;
   handL: HandKind; handR: HandKind; face: Face;
   /** for things that follow late (cap, coat tails, chain): forward speed and vertical speed of the body a moment ago, leg lengths per second */
   drag: number; bounce: number;
@@ -53,6 +55,19 @@ export const ACTS: Record<string, Partial<Pose> & { shapeL?: HandKind; shapeR?: 
   windup: { lean: -13, pz: -0.1, twist: 18, armL: [[82, 10], [78, 4]], armR: [[-112, 24], [-158, 10]], shapeR: "fist", shapeL: "open", head: [0, -7, 0] },
   release: { lean: 20, pz: 0.12, twist: -20, armL: [[-40, 16], [-10, 10]], armR: [[70, 8], [60, 0]], shapeR: "open", head: [0, 4, 0] },
   talk: { armR: [[20, 14], [100, -6]], shapeR: "open", head: [0, -2, 0] },
+  /** sitting down on something: the pelvis back and low, hands on the knees */
+  sit: { py: -0.46, pz: -0.2, lean: -5, armL: [[34, 8], [78, -10]], armR: [[34, 8], [78, -10]], head: [0, 2, 0] },
+  /** on the way up from the ground: crouched, hands pushing off */
+  kneel: { py: -0.5, lean: 36, armL: [[36, 16], [14, 8]], armR: [[40, 16], [18, 8]], shapeL: "open", shapeR: "open", head: [0, -22, 0] },
+  /** hauling on a rope: leaning far back against it, both hands gripping ahead */
+  pull: { lean: -27, pz: -0.24, py: -0.1, armL: [[62, 8], [70, 0]], armR: [[72, 8], [78, 0]], shapeL: "grip", shapeR: "grip", head: [0, -8, 0], face: { brow: -1, lid: 0.3, mouth: 0.3 } },
+  /** pouring from a jug: one hand tips it, the other steadies */
+  pour: { lean: 9, armR: [[62, 10], [112, -18]], handR: 62, armL: [[40, 12], [92, -28]], shapeR: "grip", shapeL: "open", head: [0, 14, 0], face: { gaze: [0.2, 0.7] } },
+  /** flat on the ground, face down, arms flung ahead */
+  down: { lean: 86, py: -0.8, armL: [[96, 16], [100, 8]], armR: [[90, 16], [96, 8]], shapeL: "open", shapeR: "open", head: [0, -62, 0], legL: { th: [-84, 4], sh: [-90, 0], pitch: 62 }, legR: { th: [-78, 4], sh: [-97, 0], pitch: 62 }, face: { lid: 1, brow: -0.6 } },
+  /** climbing: one hand and the opposite knee high, then the other pair */
+  climbA: { lean: 6, armL: [[162, 10], [186, 4]], armR: [[70, 12], [150, 6]], shapeL: "grip", shapeR: "grip", legR: { th: [78, 6], sh: [-6, 0], pitch: 20 }, legL: { th: [6, 4], sh: [-14, 0], pitch: 30 }, head: [0, -20, 0] },
+  climbB: { lean: 6, armR: [[162, 10], [186, 4]], armL: [[70, 12], [150, 6]], shapeL: "grip", shapeR: "grip", legL: { th: [78, 6], sh: [-6, 0], pitch: 20 }, legR: { th: [6, 4], sh: [-14, 0], pitch: 30 }, head: [0, -20, 0] },
   trip: { lean: 40, py: -0.06, armL: [[62, 14], [70, 8]], armR: [[88, 10], [100, 4]], shapeL: "open", shapeR: "open", head: [0, -24, 0], face: { wide: 1, lid: 0, brow: 1, mouth: 0.8 } },
 };
 
@@ -62,7 +77,7 @@ export class Mover {
   w = 0.12;
   private feet: Record<Side, Plant[]> = { L: [], R: [] };
   private pel: PKey[] = [];
-  private yawT: Track; private lean = new Track(0); private runW = new Track(0);
+  private yawT: Track; private lean = new Track(0); private runW = new Track(0); private rise = new Track(0);
   private layers: Layer[] = []; private next: Side = "R";
   constructor(at: V2, facing: number) {
     this.P = at; this.psi = facing; this.yawT = new Track(facing);
@@ -132,6 +147,27 @@ export class Mover {
     this.layers.push({ t0: T0, t1: T0 + 0.75, in: 0.14, out: 0.45, pose: (({ shapeL, shapeR, face, ...p }) => p)(ACTS.trip), handL: "open", handR: "open", face: ACTS.trip.face, antic: 0, over: 2.2 });
     return this.walk(1.1, { run: true, tau: 0.2, step: 0.32 });
   }
+  /** fall flat forward: the body pitches down and slides a little; it lies there for `hold` seconds */
+  fall(hold = 0.8) {
+    const T0 = this.t, d = fwd(this.psi), a = ACTS.down, { shapeL, shapeR, face, ...pose } = a;
+    this.layers.push({ t0: T0, t1: T0 + 0.34 + hold + 0.3, in: 0.3, out: 0.34, pose, handL: shapeL, handR: shapeR, face, antic: 0, over: 1.2 });
+    this.pel.push({ t: T0, x: this.P[0], z: this.P[1] }); this.P = [this.P[0] + d[0] * 0.8, this.P[1] + d[1] * 0.8];
+    this.t = T0 + 0.34; this.pel.push({ t: this.t, x: this.P[0], z: this.P[1] }); this.lean.ramp(T0, T0 + 0.1, 0);
+    return this.stand(hold);
+  }
+  /** get up from the ground: gather the feet under the body, push off, stand */
+  getup() {
+    const T0 = this.t;
+    for (const s of ["L", "R"] as Side[]) this.put(s, T0 + 0.02, T0 + 0.24, this.spot(s, this.P, this.psi, 0, 0.03));
+    return this.act("kneel", 0.62, { in: 0.3, out: 0.34, antic: 0 }).stand(0.2);
+  }
+  /** climb up by `height` leg lengths: alternating hand-and-knee pulls */
+  climb(height: number, pulls = 4) {
+    const each = 0.42, T0 = this.t;
+    for (let i = 0; i < pulls; i++) { const a = ACTS[i % 2 ? "climbB" : "climbA"], { shapeL, shapeR, face, ...pose } = a; this.layers.push({ t0: T0 + i * each - 0.06, t1: T0 + (i + 1) * each + 0.1, in: 0.2, out: 0.2, pose, handL: shapeL, handR: shapeR, face, antic: 0, over: 1.4 }); }
+    this.rise.ramp(T0, T0 + pulls * each, this.rise.last() + height);
+    return this.stand(pulls * each);
+  }
   get end() { return this.t; }
 
   // ---------------- sampling ----------------
@@ -197,9 +233,11 @@ export class Mover {
       if (w > 0.5) { if (L.handL) handL = L.handL; if (L.handR) handR = L.handR; }
       if (L.face) { const ww = clamp(w, 0, 1), F = face as Record<string, unknown>, G = L.face as Record<string, unknown>; for (const key of Object.keys(G)) { const b = G[key]; F[key] = typeof b === "number" ? lerp((F[key] as number) ?? (key === "lid" ? 0.18 : 0), b, ww) : b; } }
     }
-    const lagT = t - 0.09, dt = 1 / 60, P1 = this.pelAt(lagT), P2 = this.pelAt(lagT - dt);
-    const drag = ((P1[0] - P2[0]) * f[0] + (P1[1] - P2[1]) * f[1]) / dt;
-    return { pose, x: P[0], z: P[1], yaw: psi, handL, handR, face, drag, bounce: 0, feet };
+    const dt = 1 / 60, vel = (tt: number) => { const a = this.pelAt(tt), b = this.pelAt(tt - dt); return ((a[0] - b[0]) * f[0] + (a[1] - b[1]) * f[1]) / dt; };
+    const drag = vel(t - 0.1), now = vel(t), lateLean = this.lean.at(t - 0.12) - this.lean.at(t);
+    // loose things trail behind steady motion, lag further when it starts and swing ahead when it stops
+    const sway = clamp(0.5 * drag / 3.2 + 1.5 * (now - drag) / 3.2 - lateLean / 40, -1.3, 1.3);
+    return { pose, x: P[0], z: P[1], y: this.rise.at(t), yaw: psi, handL, handR, face, drag, bounce: 0, sway, feet };
   }
 }
 

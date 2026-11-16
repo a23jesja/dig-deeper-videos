@@ -9,7 +9,7 @@ import { AbsoluteFill, useCurrentFrame } from "remotion";
 import { Ink } from "./ink";
 import { solve, POSES, Pose, Props } from "./rig";
 import { Design, FigOpts } from "./designs/common";
-import { SIR_D, BAKER_D, SOLDIER_D, MERCHANT_D, KNIGHT_D, TOMMY_D, LADY_D, DOCKER_D, BOY_D } from "./looks";
+import { SIR_D, BAKER_D, SOLDIER_D, MERCHANT_D, KNIGHT_D, TOMMY_D, LADY_D, DOCKER_D, BOY_D, GRANNY_D } from "./looks";
 import { DOG, BEAST_POSES, drawBeast } from "./beast";
 import { INK } from "./ink";
 import { Mover } from "./motion";
@@ -57,24 +57,35 @@ const paint = (g: G, fr: number) => {
       label(g, t, x, FY2 + 62, 22);
     });
   } else if (fr === 2) {
-    const cast: [Design, string][] = [[BAKER_D, "ROMERSK BAGARE, 79"], [SOLDIER_D, "ROMERSK SOLDAT, 79"], [MERCHANT_D, "ROMERSK KÖPMAN, 79"], [KNIGHT_D, "RIDDARE, 1200-TAL"], [TOMMY_D, "SOLDAT, 1916"], [LADY_D, "DAM, 1890-TAL"], [DOCKER_D, "HAMNARBETARE, 1930-TAL"], [BOY_D, "BARN"]];
-    const sc = 0.37;
-    cast.forEach(([D, name], n) => {
-      const x0 = 40 + (n % 3) * 866, FY = 400 + Math.floor(n / 3) * 460;
-      floor(g, x0, x0 + 800, FY);
-      VIEWS.forEach(([yaw], i) => fig(g, D, yaw === 90 ? POSES.standSide : POSES.stand, yaw, {}, x0 + 110 + i * 195, FY, sc));
-      label(g, name, x0 + 400, FY + 52, 24);
+    const old: Pose = { ...POSES.stand, lean: 13, head: [0, -11, 0] };
+    const cast: [Design, string, Pose?][] = [[BAKER_D, "ROMERSK BAGARE, 79"], [SOLDIER_D, "ROMERSK SOLDAT, 79"], [MERCHANT_D, "ROMERSK KÖPMAN (TJOCK)"], [KNIGHT_D, "RIDDARE, 1200-TAL"],
+      [TOMMY_D, "SOLDAT 1916 (SMAL, UNG)"], [LADY_D, "DAM, 1890-TAL"], [DOCKER_D, "HAMNARBETARE, 1930-TAL"], [GRANNY_D, "GUMMA (GAMMAL)", old], [BOY_D, "BARN"]];
+    const sc = 0.335, slot = (n: number) => [30 + (n % 4) * 645, 412 + Math.floor(n / 4) * 462];
+    cast.forEach(([D, name, pose], n) => {
+      const [x0, FY] = slot(n);
+      floor(g, x0, x0 + 610, FY);
+      VIEWS.forEach(([yaw], i) => fig(g, D, pose ? { ...(yaw === 90 ? POSES.standSide : POSES.stand), lean: pose.lean, head: pose.head } : yaw === 90 ? POSES.standSide : POSES.stand, yaw, {}, x0 + 86 + i * 148, FY, sc));
+      label(g, name, x0 + 305, FY + 46, 22);
     });
-    const x0 = 40 + 2 * 866, FY = 400 + 2 * 460; floor(g, x0, x0 + 800, FY);
-    ([[0, "stand", 70], [45, "stand", 235], [90, "strain", 490], [180, "stand", 735]] as [number, string, number][]).forEach(([yaw, pose, dx]) => { g.save(); g.setTransform(1, 0, 0, 1, 0, 0); g.translate(x0 + dx, FY); g.scale(0.4, 0.4); drawBeast(DOG)(new Ink(g, 4.6), BEAST_POSES[pose], yaw); g.restore(); });
-    label(g, "HUND (SAMMA DELAR OCH NITAR)", x0 + 400, FY + 52, 24);
+    // one side character in three expressions: the base carries them
+    { const [x0, FY] = slot(9), D = BAKER_D, P = D.props("sir"), hs = 0.62, hy = P.thigh + P.shin + P.ankle + P.spine + P.neck + P.head * 0.5;
+      ([["NEUTRAL", {}], ["RÄDD", { wide: 1, lid: 0, brow: 1, mouth: 0.75, smile: -0.6 }], ["GLAD", { smile: 1, lid: 0.3, brow: 0.35, mouth: 0.3 }]] as [string, FigOpts["face"]][]).forEach(([t, face], i) => {
+        const cx = x0 + 105 + i * 200, cy = FY - 190;
+        g.setTransform(1, 0, 0, 1, 0, 0); g.fillStyle = "#e0d0aa"; g.fillRect(cx - 95, cy - 110, 190, 230);
+        g.save(); g.beginPath(); g.rect(cx - 95, cy - 110, 190, 230); g.clip(); fig(g, D, POSES.stand, i === 2 ? 20 : 0, { face }, cx, cy + hy * hs, hs); g.restore();
+        label(g, t, cx, FY - 46, 20);
+      });
+      label(g, "SAMMA BAGARE, TRE UTTRYCK", x0 + 305, FY + 46, 22); }
+    { const [x0, FY] = slot(10); floor(g, x0, x0 + 1250, FY);
+      ([[0, "stand", 90], [45, "stand", 300], [90, "stand", 560], [90, "strain", 860], [180, "stand", 1150]] as [number, string, number][]).forEach(([yaw, pose, dx]) => { g.save(); g.setTransform(1, 0, 0, 1, 0, 0); g.translate(x0 + dx, FY); g.scale(0.44, 0.44); drawBeast(DOG)(new Ink(g, 4.6), BEAST_POSES[pose], yaw); g.restore(); });
+      label(g, "HUND: SAMMA DELAR OCH NITAR, EGET FYRBENT SKELETT", x0 + 625, FY + 46, 22); }
   } else {
     // the line-up: he must stand out among them by silhouette and by his accent colour
-    const line: [Design, number][] = [[BAKER_D, 30], [KNIGHT_D, -30], [LADY_D, 20], [SIR_D, 0], [SOLDIER_D, -25], [TOMMY_D, 35], [MERCHANT_D, -20], [DOCKER_D, 25], [BOY_D, -30]];
+    const line: [Design, number][] = [[BAKER_D, 30], [KNIGHT_D, -30], [LADY_D, 20], [TOMMY_D, 30], [SIR_D, 0], [SOLDIER_D, -25], [MERCHANT_D, -20], [GRANNY_D, 25], [DOCKER_D, 25], [BOY_D, -30]];
     for (const [row, FY] of [[0, 620], [1, 1290]] as [number, number][]) {
       floor(g, 20, CW - 20, FY);
       line.forEach(([D, yaw], i) => {
-        const x = 170 + i * 284, sc = 0.52;
+        const x = 150 + i * 255, sc = 0.5;
         if (!row) { fig(g, D, POSES.stand, yaw, {}, x, FY, sc); return; }
         const c = document.createElement("canvas"); c.width = 700; c.height = 760; const q = c.getContext("2d")!;
         q.translate(350, 720); q.scale(sc, sc); D.draw(new Ink(q, D.ol), solve(D.props("sir"), POSES.stand, yaw), {});

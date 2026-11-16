@@ -10,7 +10,8 @@ import { FigOpts, Face, frame, shoePts, thumbFlip, loaf, cane } from "./designs/
 export type Look = {
   id: string; P: Props;
   /** the head: half-width across the ears, half-depth nose to nape, height chin to crown */
-  head: { a: number; b: number; H: number };
+  /** jaw = width of the jaw (1 = square, 0.75 = narrow), round = how rounded the skull is (0 = boxy, 1 = a child's round head), eye = size of the eyes (1 = normal) */
+  head: { a: number; b: number; H: number; jaw?: number; round?: number; eye?: number };
   skin: string; brow: string;
   /** cap = tweed flat cap, helmet = Roman, greathelm = a knight's bucket helm, brodie = the steel helmet of 1916, boater / tophat = brimmed hats, band = a headband */
   hat: "cap" | "helmet" | "greathelm" | "brodie" | "boater" | "tophat" | "band" | "none"; hatCol?: string; hatBand?: string;
@@ -66,7 +67,13 @@ const at = (h: HG, az: number, rho = 1) => p3(h, h.a * Math.sin(az * R) * rho, h
 const drawHead = (k: Ink, L: Look, phiDeg: number, f: Face, o: FigOpts) => {
   const { a, b, H } = L.head, phi = phiDeg * R, h: HG = { a, b, H, sin: Math.sin(phi), cos: Math.cos(phi), w: Math.hypot(a * Math.cos(phi), b * Math.sin(phi)) }, w = h.w;
   const m = f.mouth ?? 0, away = h.cos < -0.08, skin = L.skin, skinD = shade(skin, 0.86);
-  const skull = spline(sym([[0, 6], [0.7 * w, 6], [w, -0.11 * H], [1.01 * w, -0.5 * H], [w, -0.82 * H], [0.74 * w, -0.975 * H], [0, -H]]), true, 5);
+  // the skull card: square-jawed from the front; from the side it gets a chin and a brow in front, a rounded back and a narrow nape
+  const jw = L.head.jaw ?? 1, rd = L.head.round ?? 0.3, sa = Math.abs(h.sin), fr = h.sin >= 0 ? 1 : -1, EY = L.head.eye ?? 1;
+  const prof = (side: number): P2[] => {
+    const fv = [0.7 * jw - 0.2 * rd, jw - 0.08 * rd, 1.01, 1 - 0.08 * rd, 0.74 - 0.22 * rd], sv = side === fr ? [0.6, 1.05, 0.94, 0.99, 0.7] : [0.3, 0.62, 1.04, 1.0, 0.64];
+    return [6, -0.11 * H, -0.5 * H, -0.82 * H, -0.975 * H].map((y, j) => [side * w * lerp(fv[j], sv[j], sa), y] as P2);
+  };
+  const skull = spline([[0, 6], ...prof(1), [0, -H], ...prof(-1).reverse()], true, 5);
   const nose0 = at(h, 0), yEye = -0.61 * H, yM = -0.3 * H;
   // --- parts that lie behind the skull card ---
   const mousHalf = (s: number) => {
@@ -98,12 +105,20 @@ const drawHead = (k: Ink, L: Look, phiDeg: number, f: Face, o: FigOpts) => {
   if (L.hair?.kind === "bun") { const q = at(h, 180, 1.0); piece(k, ellPts(q.x, -0.9 * H, 0.42 * a, 0.2 * H), L.hair.col); }
   piece(k, skull, skin);
   if (L.hair) {
-    const xs: number[] = []; for (let az = 116; az <= 244; az += 6) { const q = at(h, az, 1.02); if (q.d > -0.02 * b) xs.push(q.x); }
-    const top = L.hair.kind === "short" || L.hair.kind === "bun" ? -0.76 * H : L.hair.kind === "bald" ? -0.62 * H : -0.9 * H;
+    // the hairline runs from the top of the brow back behind the ear down to the nape, so the hair follows the head in every view
+    const kind = L.hair.kind, y0 = kind === "bald" ? -0.72 * H : -1.03 * H, patches: P2[][] = [];
+    for (const half of [0, 1]) {
+      const rowsH: number[][] = [];
+      for (let q = 0; q <= 8; q++) {
+        const y = lerp(y0, -0.27 * H, q / 8), edge = lerp(kind === "bald" ? 96 : 64, 150, q / 8), xs: number[] = [];
+        for (let az = half ? 180 : edge; az <= (half ? 360 - edge : 180); az += 4) { const pt = at(h, az, 1.03); if (pt.d > -0.03 * b) xs.push(pt.x); }
+        if (xs.length) rowsH.push([y, Math.min(...xs) - (Math.min(...xs) < -0.84 * w ? 40 : 0), Math.max(...xs) + (Math.max(...xs) > 0.84 * w ? 40 : 0)]);
+      }
+      if (rowsH.length > 1) patches.push([...rowsH.map(([y, x0]) => [x0 - (half ? 3 : 0), y] as P2), ...rowsH.map(([y, , x1]) => [x1 + (half ? 0 : 3), y] as P2).reverse()]);
+    }
     k.clip(skull, () => {
-      if (xs.length) { const x0 = Math.min(...xs) - (Math.min(...xs) < -0.9 * w ? 30 : 0), x1 = Math.max(...xs) + (Math.max(...xs) > 0.9 * w ? 30 : 0); k.shape(spline([[x0, -1.1 * H], [x1, -1.1 * H], [x1, -0.3 * H], [(x0 + x1) / 2, -0.22 * H], [x0, -0.3 * H]], true, 4), L.hair!.col, k.ol); }
-      if (L.hair!.kind === "short" || L.hair!.kind === "bun") k.shape([[-2 * w, -1.2 * H], [2 * w, -1.2 * H], [2 * w, top], [0, top + 0.04 * H], [-2 * w, top]], L.hair!.col, k.ol);
-      if (L.hair!.kind === "bald") for (const s of [-1, 1]) { const q = at(h, s * 90); if (Math.abs(q.d) < 0.9 * a || q.d > 0) k.shape(ellPts(q.x, -0.6 * H, 0.34 * a * Math.max(0.4, Math.abs(h.sin) + 0.45), 0.2 * H), L.hair!.col, k.ol); }
+      const all = kind === "short" || kind === "bun" ? [...patches, [[-2 * w, -1.2 * H], [2 * w, -1.2 * H], [2 * w, -0.78 * H], [0, -0.75 * H], [-2 * w, -0.78 * H]] as P2[]] : patches;
+      if (all.length) k.group(all, L.hair!.col, k.ol * 0.7);
     });
   }
   // --- the face (not drawn from behind) ---
@@ -111,14 +126,16 @@ const drawHead = (k: Ink, L: Look, phiDeg: number, f: Face, o: FigOpts) => {
     const vis = nose0.d > -0.3 * b;
     // the jaw is its own card: it slides down over a dark card when he speaks
     if (vis && m > 0.04) { const c = at(h, 0, 0.5).x; k.clip(skull, () => { k.shape([[c - 0.5 * w, -0.24 * H], [c + 0.5 * w, -0.24 * H], [c + 0.44 * w, -0.1 * H + 0.1 * H * m], [c - 0.44 * w, -0.1 * H + 0.1 * H * m]], MOUTH, 0); k.shape(ellPts(c, -0.1 * H + 0.07 * H * m, 0.24 * w, 0.045 * H), "#e0707a", 0); }); }
-    const jaw = shift(spline(sym([[0, 6], [0.7 * w, 6], [0.99 * w, -0.1 * H], [0.97 * w, -0.2 * H], [0, -0.18 * H]]), true, 4), 0, 0.1 * H * m);
-    k.clip(shift(skull, 0, 0.1 * H * m), () => piece(k, jaw, shade(skin, 0.965)));
+    const dy = 0.1 * H * m, low: P2[] = [[-2 * w, -0.19 * H + dy], [2 * w, -0.19 * H + dy], [2 * w, 60 + dy], [-2 * w, 60 + dy]];
+    k.clip(shift(skull, 0, dy), () => { k.shape(shift(low, 0, 6), "rgba(52,32,16,0.2)", 0); k.shape(low, shade(skin, 0.965)); });
+    if (m > 0.04) k.clip(low, () => k.shape(shift(skull, 0, dy), null));
+    if (vis) { const sm = f.smile ?? 0.25, xl = at(h, -30, 0.7).x, xr = at(h, 30, 0.7).x, ym = -0.19 * H + dy; k.clip(shift(skull, 0, dy), () => k.line(spline([[xl, ym - sm * 0.055 * H], [lerp(xl, xr, 0.25) + h.sin * 0.05 * a, ym + sm * 0.012 * H], [lerp(xl, xr, 0.75) + h.sin * 0.05 * a, ym + sm * 0.012 * H], [xr, ym - sm * 0.055 * H]], false, 6), 4.6)); }
     if (L.lips && vis) { const q = at(h, 0, 0.72); piece(k, ellPts(q.x, -0.215 * H + 0.1 * H * m, 0.2 * a * Math.max(0.35, Math.abs(h.cos)), 0.032 * H), L.lips); }
     if (L.beard) { const xs: P2[] = []; for (let az = -100; az <= 100; az += 20) { const q = at(h, az, 1.04); if (q.d > -0.1 * b) xs.push([q.x, -0.32 * H + 0.1 * H * m * 0.5]); } if (xs.length > 1) { const lo = xs.map(([x], i) => [x * 0.92, 0.2 * H * (1 - Math.abs(i / (xs.length - 1) - 0.5) * 1.2) + 0.1 * H * m] as P2).reverse(); piece(k, spline([...xs, ...lo], true, 4), L.beard); } }
     if (!tipBehind) pipe();
     const eye = (s: number) => {
-      const q = at(h, s * 24, 0.78); if (q.d < 0.1 * b) return;
-      const fs = clamp(Math.cos(s * 24 * R + phi), 0.3, 1) ** 0.85, r = 0.3 * a, rx = r * fs, ry = r * (1 + 0.16 * (f.wide ?? 0)), ball = ellPts(q.x, yEye, rx, ry), gz = f.gaze ?? [0, 0], lid = f.lid ?? 0.16;
+      const q = at(h, s * 26, 0.8); if (q.d < 0.1 * b) return;
+      const fs = clamp(Math.cos(s * 26 * R + phi), 0.3, 1) ** 0.85, r = 0.29 * a * EY, rx = r * fs, ry = r * (1 + 0.16 * (f.wide ?? 0)), ball = ellPts(q.x, yEye, rx, ry), gz = f.gaze ?? [0, 0], lid = f.lid ?? 0.16;
       k.shape(ball, "#fffdf6");
       k.clip(ball, () => {
         const px = q.x + gz[0] * rx * 0.5 + h.sin * rx * 0.22, py = yEye + gz[1] * ry * 0.5; k.shape(ellPts(px, py, rx * 0.5, ry * 0.5), "#2a1f1a", 0); k.dot(px - rx * 0.17, py - ry * 0.2, r * 0.13, "#ffffff");
@@ -128,13 +145,18 @@ const drawHead = (k: Ink, L: Look, phiDeg: number, f: Face, o: FigOpts) => {
       if (L.lash) for (const j of [0, 1]) k.line([[q.x + s * rx * (0.7 + 0.25 * j) * (h.cos > 0.3 ? 1 : 0.4), yEye - ry * (0.75 - 0.3 * j)], [q.x + s * rx * (1.05 + 0.3 * j) * (h.cos > 0.3 ? 1 : 0.4), yEye - ry * (1.1 - 0.35 * j)]], 3.4);
       if (L.monocle && s < 0) { const ring = ellPts(q.x, yEye, rx * 1.36, ry * 1.34); k.clip(ring, () => { k.g.globalAlpha = 0.2; k.shape(ring, "#bfe6f2", 0); k.g.globalAlpha = 0.8; k.line([[q.x - rx * 0.7, yEye + ry * 0.2], [q.x - rx * 0.1, yEye - ry * 0.8]], rx * 0.2, "#ffffff"); k.g.globalAlpha = 1; }); k.shape(ring, null, 10); const i = k.ink; k.ink = BRASS; k.shape(ring, null, 6); k.ink = i; }
       // the brow is its own piece: up for surprise, down toward the nose for a frown
-      const bi = at(h, s * 8, 0.8), bo = at(h, s * 42, 0.8), by = yEye - ry - 0.045 * H, bv = (f.brow ?? 0) * 0.05 * H, th = 0.035 * H;
-      piece(k, [[bi.x, by - bv * 0.3 + (f.brow ?? 0) * -0.02 * H * -1], [bo.x, by - bv - 0.03 * H], [bo.x, by - bv - 0.03 * H + th], [bi.x, by - bv * 0.3 + th + (f.brow ?? 0) * 0.02 * H]], L.brow);
+      const bi = at(h, s * 9, 0.8), bo = at(h, s * 44, 0.8), by = yEye - ry - 0.05 * H, bw = f.brow ?? 0, th = 0.034 * H;
+      const yi = by - 0.014 * H - 0.055 * H * Math.max(bw, 0) + 0.045 * H * Math.max(-bw, 0), yo = by + 0.008 * H - 0.04 * H * Math.max(bw, 0) - 0.022 * H * Math.max(-bw, 0);
+      piece(k, [[bi.x, yi], [(bi.x + bo.x) / 2, (yi + yo) / 2 - 0.012 * H], [bo.x, yo], [bo.x, yo + th * 0.8], [(bi.x + bo.x) / 2, (yi + yo) / 2 - 0.012 * H + th], [bi.x, yi + th]], L.brow);
     };
     const far = h.sin >= 0 ? 1 : -1;
     if (vis) eye(far);
     if (!away) { mousHalf(far); mousHalf(-far); if (L.mous && h.cos > 0.5) pin(k, [nose0.x * 0.9, yM + 1], 4); }
-    if (vis) { const t0 = at(h, 0, 0.9), c1 = at(h, -13, 0.9), c2 = at(h, 13, 0.9); piece(k, hull([[t0.x, yEye - 0.03 * H], [c1.x, -0.4 * H], [t0.x + 0.52 * a * h.sin, -0.375 * H], [c2.x, -0.4 * H], [t0.x + 0.4 * a * h.sin, -0.43 * H]]), shade(skin, 0.8)); eye(-far); }
+    if (vis) {
+      eye(-far);
+      const t0 = at(h, 0, 0.9), n1 = at(h, -7, 0.9), n2 = at(h, 7, 0.9), c1 = at(h, -13, 0.9), c2 = at(h, 13, 0.9), out = 0.5 * a * h.sin;
+      piece(k, hull([[n1.x, -0.5 * H], [n2.x, -0.5 * H], [c1.x + out * 0.5, -0.4 * H], [c2.x + out * 0.5, -0.4 * H], [t0.x + out, -0.385 * H], [t0.x + out * 0.8, -0.365 * H]]), shade(skin, 0.9));
+    }
   }
   for (const e of ears) if (Math.abs(e.e.d) >= 0.55 * a && e.e.d > 0) e.draw();
   // --- what sits on the head ---
@@ -153,7 +175,7 @@ const drawHead = (k: Ink, L: Look, phiDeg: number, f: Face, o: FigOpts) => {
     const col = L.hatCol ?? "#b9c3cd", dome = spline(sym([[0, -0.66 * H], [1.06 * w, -0.66 * H], [1.08 * w, -0.86 * H], [0.74 * w, -1.05 * H], [0, -1.1 * H]]), true, 5);
     // the crest runs from brow to nape: a thin fin from the front, a fan from the side
     const fan: P2[] = [], base: P2[] = []; for (let t = 15; t <= 165; t += 15) { const Z = b * Math.cos(t * R), q = p3(h, 0, Z * 1.02); base.push([q.x, -0.94 * H - 0.14 * H * Math.sin(t * R)]); fan.push([q.x, -0.94 * H - 0.4 * H * Math.sin(t * R)]); }
-    const fin = Math.max(10, 0.12 * a * Math.abs(h.cos)); piece(k, [...shift(base, -fin, 0), ...shift(fan, fin, 0).reverse()], L.accent);
+    const fin = Math.max(10, 0.12 * a * Math.abs(h.cos)); piece(k, hull([...shift(base, -fin, 0), ...shift(base, fin, 0), ...shift(fan, -fin, 0), ...shift(fan, fin, 0)]), L.accent);
     piece(k, dome, col);
     k.clip(dome, () => k.shape([[-2 * w, -0.74 * H], [2 * w, -0.74 * H], [2 * w, -0.64 * H], [-2 * w, -0.64 * H]], shade(col, 0.8), k.ol));
     for (const s of [-1, 1]) { const q = at(h, s * 72, 1.03); if (q.d > -0.25 * a) piece(k, spline([[q.x - 0.16 * a, -0.66 * H], [q.x + 0.16 * a, -0.66 * H], [q.x + 0.12 * a, -0.3 * H], [q.x, -0.22 * H], [q.x - 0.12 * a, -0.3 * H]], true, 4), col); }
@@ -177,8 +199,8 @@ const drawHead = (k: Ink, L: Look, phiDeg: number, f: Face, o: FigOpts) => {
     k.shape(crown, null);
   } else if (L.hat === "band") k.clip(skull, () => k.shape([[-2 * w, -0.82 * H], [2 * w, -0.82 * H], [2 * w, -0.72 * H], [-2 * w, -0.72 * H]], L.hatCol ?? CREAM, k.ol));
   // where the monocle's chain starts and bows (card coordinates of the head), if the monocle shows
-  const me = at(h, -24, 0.78), fs = clamp(Math.cos(-24 * R + phi), 0.3, 1) ** 0.85, rx = 0.3 * a * fs * 1.36, out = at(h, -70).x < me.x ? -1 : 1;
-  return L.monocle && me.d >= 0.1 * b && (!away || h.cos > -0.3) ? { start: [me.x + out * rx * 0.72, yEye + 0.3 * a * 1.34 * 0.72] as P2, bow: [at(h, -78, 1.12).x + out * 6, -0.16 * H] as P2 } : null;
+  const me = at(h, -26, 0.8), fs = clamp(Math.cos(-26 * R + phi), 0.3, 1) ** 0.85, rx = 0.29 * a * EY * fs * 1.36, out = at(h, -70).x < me.x ? -1 : 1;
+  return L.monocle && me.d >= 0.1 * b && (!away || h.cos > -0.3) ? { start: [me.x + out * rx * 0.72, yEye + 0.29 * a * EY * 1.34 * 0.72] as P2, bow: [at(h, -78, 1.12).x + out * 6, -0.16 * H] as P2 } : null;
 };
 
 // ---------------- the whole figure ----------------
@@ -189,7 +211,9 @@ export const drawCast = (L: Look) => (k: Ink, sk: Sk, o: FigOpts) => {
   /** the torso's surface: a point l to the figure's left at height a, on the front (or the back) of the body */
   const row = (a: number) => { const r = L.rows; let i = 0; while (i < r.length - 2 && r[i + 1][0] < a) i++; const t = clamp((a - r[i][0]) / (r[i + 1][0] - r[i][0]), 0, 1); return [0, 1, 2, 3].map((j) => lerp(r[i][j], r[i + 1][j], t)); };
   const S = (l: number, a: number, onBack = false) => { const r = row(a), u = clamp(l / r[1], -1, 1); return F.Q(l, (onBack ? -r[3] : r[2]) * Math.sqrt(1 - u * u), a); };
-  const outline = () => { const c = Math.abs(sk.cos), s = Math.abs(sk.sin), fr = sk.sin >= 0; return spline([...L.rows.map(([a, w, df, db]) => F.T(Math.hypot(w * c, (fr ? df : db) * s), a)), ...L.rows.map(([a, w, df, db]) => F.T(-Math.hypot(w * c, (fr ? db : df) * s), a)).reverse()], true, 5); };
+  // the hem trails behind the move and swings past when it stops: the lower rows are pushed back along the way the figure faces
+  const sw = (o.sway ?? 0) * sk.sin, hemAt = (i: number) => -sw * (i === 0 ? (L.skirt ? 46 : 26) : i === 1 ? (L.skirt ? 26 : 10) : L.skirt && i === 2 ? 10 : 0);
+  const outline = () => { const c = Math.abs(sk.cos), s = Math.abs(sk.sin), fr = sk.sin >= 0; return spline([...L.rows.map(([a, w, df, db], i) => F.T(Math.hypot(w * c, (fr ? df : db) * s) + hemAt(i), a)), ...L.rows.map(([a, w, df, db], i) => F.T(-Math.hypot(w * c, (fr ? db : df) * s) + hemAt(i), a)).reverse()], true, 5); };
   const leg = (s: Side) => {
     const H = J("hip", s), K = J("kn", s), A = J("an", s), bare = L.legs === "bare", col = bare ? L.skin : L.trous ?? "#463a37";
     const sp = shoePts(sk, s, 50, bare ? 0.27 : 0.34, bare ? 0.15 : 0.2);
@@ -227,7 +251,7 @@ export const drawCast = (L: Look) => (k: Ink, sk: Sk, o: FigOpts) => {
         k.shape([S(-20, top), S(20, top), S(0, top * 0.72)], CREAM, k.ol);
         for (const s of [-1, 1]) { const lap = [S(s * 20, top + 2), S(s * 64, top * 0.84), S(s * 48, top * 0.74), S(s * 8, top * 0.46)]; k.shape(shift(lap, 4, 5), "rgba(52,32,16,0.22)", 0); k.shape(lap, shade(L.coat, 1.14)); k.line([S(s * 8, top * 0.46), S(s * 26, L.rows[0][0])], k.ol); }
       }
-      if (jk && back) { k.line([S(0, top - 14, true), S(0, L.rows[0][0], true)], k.ol); k.shape([S(-42, top * 0.33, true), S(42, top * 0.33, true), S(42, top * 0.23, true), S(-42, top * 0.23, true)], coatD, k.ol); }
+      if (jk && back) { k.shape([S(-30, top + 10, true), S(30, top + 10, true), S(34, top - 16, true), S(-34, top - 16, true)], L.plain ? shade(L.coat, 0.84) : CREAM, k.ol); k.line([S(0, top - 16, true), S(0, L.rows[0][0], true)], k.ol); k.shape([S(-42, top * 0.33, true), S(42, top * 0.33, true), S(42, top * 0.23, true), S(-42, top * 0.23, true)], coatD, k.ol); }
       if (L.armour) { const y0 = top * 0.3; k.shape([F.T(-400, y0), F.T(400, y0), F.T(400, top + 40), F.T(-400, top + 40)], "#b9c3cd", k.ol); for (let a = y0 + 34; a < top; a += 34) k.line([F.T(-400, a), F.T(400, a)], k.ol * 0.8); }
       if (L.apron && front) k.shape([S(-L.rows[3][1] * 0.6, top * 0.78), S(L.rows[3][1] * 0.6, top * 0.78), S(L.rows[0][1] * 0.68, L.rows[0][0] + 24), S(-L.rows[0][1] * 0.68, L.rows[0][0] + 24)], L.apron, k.ol);
       if (L.apron && !front && !back) k.shadeEdge(t, L.apron, 24 * d, 0);
@@ -250,7 +274,7 @@ export const drawCast = (L: Look) => (k: Ink, sk: Sk, o: FigOpts) => {
     if (ce) { const a = sk.headTilt * R, w = (p: P2): P2 => [sk.j.skull[0] + p[0] * Math.cos(a) - p[1] * Math.sin(a), sk.j.skull[1] + p[0] * Math.sin(a) + p[1] * Math.cos(a)]; chainEnds = { start: w(ce.start), bow: w(ce.bow) }; }
   };
   const top = L.rows[L.rows.length - 1][0];
-  const chainDraw = () => { if (chainEnds && sk.cos > -0.05) { const e = chainEnds as { start: P2; bow: P2 }, end = S(-46, top * 0.8), bow: P2 = [Math.min(e.bow[0], e.start[0] + 2) * 1 + (e.bow[0] - e.start[0]) * 0, e.bow[1]]; chain(k, e.start, end, [bow[0], (bow[1] + end[1]) / 2 - 6], 6, BRASS); k.dot(end[0], end[1], 3.4, "#7d5f1a"); } };
+  const chainDraw = () => { if (chainEnds && sk.cos > -0.05) { const e = chainEnds as { start: P2; bow: P2 }, end = S(-46, top * 0.8), bow: P2 = [Math.min(e.bow[0], e.start[0] + 2) * 1 + (e.bow[0] - e.start[0]) * 0, e.bow[1]]; chain(k, e.start, end, [bow[0] - sw * 16, (bow[1] + end[1]) / 2 - 6], 6, BRASS); k.dot(end[0], end[1], 3.4, "#7d5f1a"); } };
   const { near, far } = sk;
   if (sideOn) { arm(far); leg(far); leg(near); torso(); head(); chainDraw(); arm(near); }
   else {

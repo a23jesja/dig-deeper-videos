@@ -5,8 +5,9 @@ import { Sk, Side, Props, Joint } from "../rig";
 
 export type Who = "sir" | "baker";
 /** what the face does: where the eyes look, how far the lids are down, eyes opened wide (0..1), brows up (+) or down (-), mouth open (0..1) */
-export type Face = { gaze?: P2; lid?: number; wide?: number; brow?: number; mouth?: number };
-export type FigOpts = { who?: Who; face?: Face; handL?: HandKind; handR?: HandKind; prop?: "cane" | "loaf" | null; capLift?: number };
+export type Face = { gaze?: P2; lid?: number; wide?: number; brow?: number; mouth?: number; /** corners of the mouth up (+) or down (-) */ smile?: number };
+/** sway = how far loose things (the hem of a coat or skirt, the cap, the chain) trail behind the way the figure faces, -1..1 */
+export type FigOpts = { who?: Who; face?: Face; handL?: HandKind; handR?: HandKind; prop?: "cane" | "loaf" | null; capLift?: number; sway?: number };
 /** faceW = half the width that must show in a close-up of the face (moustache tips included) */
 export type Design = { id: string; name: string; ol: number; faceW?: number; props: (who: Who) => Props; draw: (k: Ink, sk: Sk, o: FigOpts) => void };
 export const LIGHT: P2 = [0.8, 0.45]; // which way the shadow lies on a part (the light comes from the upper left)

@@ -1,4 +1,4 @@
-VERSION: 1
+VERSION: 2
 
 # Steg B: skelett och vyer för den valda figuren
 
@@ -6,8 +6,17 @@ Material (JPG, 1560 px breda) i `granskning/B/`:
 
 - `vyblad-1.jpg`: Sir Digsworth framifrån, snett framifrån, från sidan och bakifrån mellan samma hjälplinjer (hjässa, axlar, höfter, mark), och en närbild av kedjan.
 - `vyblad-2.jpg`: samma figur vriden ett helt varv i steg om 30 grader, och i rörelse: går (snett, sidan, bort), åt vänster, speglad, pekar, ryggar, springer.
-- `vyblad-3.jpg`: den gemensamma grunden: åtta bifigurer från olika epoker och en hund, var och en i fyra vyer.
+- `vyblad-3.jpg`: den gemensamma grunden: nio bifigurer från olika epoker och åldrar i fyra vyer var, samma bagare i tre uttryck, och en hund.
 - `vyblad-4.jpg`: Sir Digsworth bland bifigurerna, i färg och som svarta siluetter.
+
+## Ändrat i version 2 (efter granskningens GÖR OM, omgång 1)
+
+1. **Näsan** har hudton ett steg mörkare och pekar rakt ned framifrån; den vrids ut åt sidan först när huvudet vrids. Den ritas över ögonen i stället för under monokeln.
+2. **Viloläget är vänligt:** ögonbrynen ligger i en svag båge, och munnen har en egen linje som kan le eller hänga. På vyblad 3 står bagaren i tre uttryck (neutral, rädd, glad).
+3. **Profilen har form:** från sidan får skallen haka och panna framtill, rundad bakskalle och smal nacke. Hårlinjen går från pannan bakom örat ned till nacken och följer huvudet i varje vy. Bakifrån syns nacke och en krage.
+4. **Huvud och kropp varierar genom mått:** tre nya mått på huvudet (käkbredd, rundning, ögonstorlek). På bladet: en tydligt tjock (köpmannen), en tydligt smal och ung (soldaten 1916), en gammal (gumman, liten, framåtböjd, små ögon, vitt hår) och ett barn (runt huvud, stora ögon, kort kropp). Samma delar, andra mått.
+5. **Romerske soldatens kam** syns som en smal röd kam rakt framifrån och som en solfjäder från sidan.
+6. **Hunden** är bredare framifrån och bakifrån än i version 1, men fram- och bakvyn är fortfarande dess svagaste. **Öppen punkt:** hundens fram- och bakvy ska vara rättade innan ett djur används i steg D eller F.
 
 ## Vad som valdes och vad som ändrats
 
@@ -30,7 +39,7 @@ Figuren är inte fyra teckningar. Varje del av ansikte, hatt och kläder sitter 
 
 ## Den gemensamma grunden för bifigurer
 
-Jespers krav: alla sidokaraktärer ska ha samma form som Sir Digsworth, och variera kraftigt. Varje bifigur är en uppsättning mått och val (`Look` i `engine/src/craft/looks.ts`) på samma delar, samma nitar, samma ögon, händer och käke. Ingen ny ritkod per figur. På bladet: romersk bagare, romersk soldat, romersk köpman, riddare från 1200-talet, soldat från 1916, dam från 1890-talet, hamnarbetare från 1930-talet, barn.
+Jespers krav: alla sidokaraktärer ska ha samma form som Sir Digsworth, och variera kraftigt. Varje bifigur är en uppsättning mått och val (`Look` i `engine/src/craft/looks.ts`) på samma delar, samma nitar, samma ögon, händer och käke. Ingen ny ritkod per figur. På bladet: romersk bagare, romersk soldat, romersk köpman, riddare från 1200-talet, soldat från 1916, dam från 1890-talet, hamnarbetare från 1930-talet, gumma, barn.
 
 Det som varierar genom parametrar: skelettets mått (lång, kort, bred, barn), huvudets mått, hudton, hår (kort, flint med krans, knut, bara i nacken), skägg, mustasch, ögonfransar och läppar, huvudbonad (keps, romersk hjälm med kam, tunnhjälm, stålhjälm, halmhatt, cylinder, pannband, ingen), överdel (kavaj med slag och väst, uniform eller arbetsjacka knäppt till halsen, tunika vars längd är fri: kort tunika, lång dräkt, klänning till marken), rustning, förkläde, mantel, bälte, emblem, bara ben eller byxor, sandaler, skor eller stövlar. Hattar och kläder vrids rätt eftersom de är byggda på samma vinklar som huvudet och kroppen.
 
@@ -48,9 +57,8 @@ Samma formspråk: kartongdelar som skuggar varandra, nitar i lederna, samma papp
 
 ## Kända svagheter
 
-- Huvudet är en rundad rektangel också i profil: ansiktets profil bärs av näsa, mustasch, pipa och skärm, inte av hakan.
-- Bakifrån är huvudet en hårfyllnad utan nacke; räcker för kort tid i bild.
-- Hundens bakben lyfter något i dragposen; rättas när kedjebilden byggs i steg D.
+- Hundens fram- och bakvy är svaga och bakbenen lyfter något i dragposen; ska rättas innan ett djur används i steg D eller F.
+- Munnen är en rak springa i kartongen när den öppnas; mer form på munnen (ljud för ljud) hör till steg C.
 - Damens kjol är stel när hon går; den får eftersläng i steg C.
 - Poserna på vyblad 2 är stillbilder ur rörelsebiblioteket; själva rörelsen granskas i testklippet i steg C.
 

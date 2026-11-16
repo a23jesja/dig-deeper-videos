@@ -16,7 +16,7 @@ export type Beast = {
 };
 /** legs: [upper, lower] swing forward (+) in degrees for front-left, front-right, hind-left, hind-right */
 export type BeastPose = { pitch?: number; fl?: number[]; fr?: number[]; hl?: number[]; hr?: number[]; neck?: number; head?: [number, number]; tail?: number; mouth?: number };
-export const DOG: Beast = { id: "dog", len: 300, legU: 105, legL: 112, bodyH: 74, bodyHr: 60, bodyW: 60, neck: 84, head: { a: 54, b: 58, H: 104 }, snout: 66, ear: "flop", tail: 150, tailW: 13,
+export const DOG: Beast = { id: "dog", len: 300, legU: 105, legL: 112, bodyH: 74, bodyHr: 62, bodyW: 80, neck: 84, head: { a: 62, b: 58, H: 108 }, snout: 66, ear: "flop", tail: 150, tailW: 13,
   col: "#e0a85e", patch: "#8f5a2c", nose: "#2a1f1a", collar: "#d8342c", legW: [26, 19, 14] };
 export const BEAST_POSES: Record<string, BeastPose> = {
   stand: { fl: [3, -3], fr: [-5, 5], hl: [-6, 14], hr: [4, 8], neck: 52, tail: 40 },

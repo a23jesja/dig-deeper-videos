@@ -3,8 +3,9 @@
 // Sources and what must not be claimed: granskning/rome-pee/manus.md. In the picture nobody pays anybody, the fuller never touches
 // the jar in the street, and the collector is a man in plain dress.
 import * as THREE from "three";
-import { Film, Shot, Cam, V3, Staged, Word, play, talk, glide, smooth, mix3 } from "../stage/film";
+import { Film, Shot, Cam, V3, Staged, Word, Sound, play, talk, glide, smooth, mix3 } from "../stage/film";
 import { mover, mt, tread, wag, arm } from "../stage/acting";
+import type { MM } from "../stage/acting";
 import { lens, once, noShade, put, between, ahead, near } from "../stage/staging";
 import { romeStreet, ROME, WALK } from "../world/rome";
 import { mesh, box, ball, group, rod } from "../world/kit";
@@ -47,6 +48,18 @@ const stink = (into: THREE.Group, t: number, cam: Cam, p: V3 = [JX, WALK + 0.84,
 const NOSE = P({ armR: arm(106, 6, 167, -52), handR: 10, lean: -9 }), FAN_A = P({ armL: arm(34, 40, 100, 66) }), FAN_B = P({ armL: arm(44, 22, 118, 28) });
 const DISGUST = { brow: -0.7, lid: 0.3, smile: -1 };
 
+// ---------------- the sound of what happens: times are seconds into the shot, written with the variables the motion uses ----------------
+/** a footstep for every foot a figure puts down in the first `len` seconds of the shot. `off` = the Mover's own time minus the shot's time
+ *  (a shot that plays its figures at t + 1 has off = 1). Two feet that land together are pulled 0.06 s apart so they are heard as two */
+const feet = (m: MM, off: number, len: number, o: { g?: number; p?: number } = {}): Sound[] => {
+  const out: Sound[] = [];
+  for (const c of m.cues()) { if (c.k !== "step" || c.t - off < 0 || c.t - off > len) continue; let t = c.t - off; const last = out[out.length - 1]; if (last && t - last.t < 0.05) t = last.t + 0.06;
+    out.push({ t, k: "step", g: o.g ?? 1, p: o.p ?? 0, ...(c.run ? { run: true } : {}) }); }
+  return out.filter((c) => c.t <= len);
+};
+/** the moments of wag(m, t0, dur, a, b, period): one for each full swing, `lead` seconds from its start, kept inside the shot */
+const swings = (t0: number, dur: number, period: number, len: number, lead = 0): number[] => { const o: number[] = []; for (let t = t0; t < t0 + dur - 1e-6; t += period) if (t + lead >= 0 && t + lead < len - 0.05) o.push(t + lead); return o; };
+
 const shots: Shot[] = [];
 const add = (s: Shot) => shots.push(s);
 
@@ -57,7 +70,11 @@ const add = (s: Shot) => shots.push(s);
   sir.actAt(-1, { lean: 26, head: [0, 14, 0], armL: arm(20, 16, 60, 10), armR: arm(30, 14, 80, 0) }, 1.25, { out: 0.16, face: { brow: 0.6, gaze: [0.2, 0.8] } });
   sir.stand(0.22).step("R", -0.28, 0.2).step("L", -0.26, 0.2).stand(4);
   sir.actAt(0.2, { ...NOSE, lean: -14, head: [0, -8, 0] }, 9, { in: 0.16, over: 2.4, handR: "relaxed", face: { ...DISGUST, wide: 0.7, lid: 0, gaze: [0.2, 0.7] } }); wag(sir, 0.5, 4, FAN_A, FAN_B, 0.32, { handL: "open" });
-  add({ id: "hook", a: 0, b: cut("hook", "need"), still: 1.0,
+  const hookLen = cut("hook", "need");
+  add({ id: "hook", a: 0, b: hookLen, still: 1.0,
+    // his two steps back, then a soft whoosh for each wave of his hand (wag at 0.5, one swing every 0.32 s); the flies of the jar all through
+    sounds: [{ t: 0.02, k: "scuff", g: 0.8 }, ...feet(sir, 0, hookLen, { g: 0.9 }), ...swings(0.5, 4, 0.32, hookLen, -0.08).map((t): Sound => ({ t, k: "whoosh", dur: 0.25, g: 0.35, p: 0.15 }))],
+    beds: [{ k: "flies", a: 0, b: hookLen, g: 1 }],
     cam: (_t, u) => V.push(0.18 * u), sun: { target: [3, 0, 4], reach: 6 },
     cast: (t, T) => [play("sir", SIR_D, sir, t, [0, WALK, 0], 1.8, { talk: talk(W, T, ["hook"]) })],
     things: (g, _c, t, _T, cam) => { strongbox(g, Math.PI + 0.25); stink(g, t, cam); } });
@@ -69,7 +86,10 @@ const needMid = at("need", /^The$/) + 2.1;
   const V = lens(1.0, 0.45, 3.2, 0, -1, 9, 60);
   const v = mover(VESPASIAN_D, 1.76, 0.9, -1.55, 0); v.act("carry", 9, { wait: false, in: 0.01, face: { brow: -0.8, smile: -0.7 } }).walk(mt(v, 9));
   const ti = mover(TITUS_D, 1.84, 1.75, -2.9, 0); ti.walk(mt(ti, 9)); ti.actAt(-1, { armR: arm(40, 10, 150, -30), head: [20, 6, 0] }, 9, { handR: "relaxed", face: { brow: 0.5, gaze: [0.6, 0.2] } }); wag(ti, 0.4, 4, P({ head: [24, 4, 0] }), P({ head: [-18, 4, 0] }), 1.3);
+  const streetLen = needMid - cut("hook", "need"), vSteps = feet(v, 1.0, streetLen, { g: 1.35, p: -0.2 });      // his figures are played at t + 1.0
   add({ id: "street", a: cut("hook", "need"), b: needMid, still: 1.5,
+    // the emperor's heavy steps, his son's lighter ones, and the creak of the chest on every second step of the emperor
+    sounds: [...vSteps, ...feet(ti, 1.0, streetLen, { g: 0.8, p: 0.25 }), ...vSteps.filter((_, i) => i % 2 === 1).map((c): Sound => ({ t: c.t + 0.03, k: "creak", dur: 0.45, g: 0.5, p: -0.2 }))],
     cam: () => V.cam, sun: { target: [0.8, 0, 0], reach: 9 },
     cast: (t) => [play("ti", TITUS_D, ti, t + 1.0, [0, 0, 0], 1.84, { seed: 5 }), play("v", VESPASIAN_D, v, t + 1.0, [0, 0, 0], 1.76)],
     things: (g, c) => { const m = ahead(c.v, between(c.v.joint("wrL"), c.v.joint("wrR")), 0.2), ch = put(g, CHEST_EMPTY(), [m[0], m[1] - 0.22, m[2]], 0); lid(ch, 0); } });
@@ -85,14 +105,18 @@ const needMid = at("need", /^The$/) + 2.1;
   const ti = mover(TITUS_D, 1.84, tx, tz, V.toward(tx, tz, -26)); ti.stand(6);
   ti.actAt(-1, { lean: 16, head: [-16, 14, 0], armL: arm(20, 14, 60, 10), armR: arm(20, 14, 60, 10) }, 2.4, { out: 0.2, face: { brow: 0.8, wide: 0.5, gaze: [-0.6, 0.5] } });
   ti.actAt(1.3, { armR: arm(120, 16, 200, -40), lean: -4, head: [0, 12, 0] }, 9, { in: 0.18, over: 2.2, handR: "open", face: { brow: -0.4, lid: 0.9, smile: -0.8 } });
+  const DROP = 0.5, FALL = 0.4, BOUNCE = Math.PI / 8, SLAP = 1.3 + 0.18 - 0.02, dropAt = DROP + FALL;       // the coin leaves the box, falls for FALL s, bounces every BOUNCE s; his son's hand lands at SLAP
   add({ id: "empty", a: needMid, b: cut("need", "guess"), still: 0.7,
+    // the box turned over and shaken (0.35 to 1.25 s), the coin landing, bouncing twice and rolling off, the hand slapped to the brow
+    sounds: [{ t: 0.35, k: "rattle", dur: 0.9, g: 0.8, p: -0.2 }, { t: dropAt, k: "coin", p: 0.15 }, { t: dropAt + BOUNCE, k: "coin", g: 0.5, p: 0.2 }, { t: dropAt + 2 * BOUNCE, k: "coin", g: 0.25, p: 0.25 },
+      { t: dropAt + 0.4, k: "coinroll", dur: 0.8, g: 0.5, p: 0.3 }, { t: SLAP, k: "tap", g: 1.1, p: 0.3 }],
     cam: (_t, u) => V.push(0.15 * u), sun: { target: [0.5, 0, 0.8], reach: 6 },
     cast: (t) => [play("ti", TITUS_D, ti, t, [0, 0, 0], 1.84, { seed: 5 }), play("v", VESPASIAN_D, v, t, [0, 0, 0], 1.76)],
     things: (g, c, t, _T, cam) => {
       const flip = smooth((t - 0.05) / 0.3), mid = ahead(c.v, between(c.v.joint("wrL"), c.v.joint("wrR")), 0.22), ch = put(g, CHEST_EMPTY(), [mid[0], mid[1] - 0.2 + 0.3 * flip, mid[2]], c.v.heading * Math.PI / 180);
       ch.rotation.z = Math.PI * flip + 0.16 * Math.sin(t * 28) * (t > 0.35 && t < 1.25 ? 1 : 0); lid(ch, flip);
       // the one coin: it drops out, bounces twice and rolls off; it falls in the open between the two men, on the lens side
-      const u = t - 0.5; if (u > 0) { const fall = 0.4, y = u < fall ? 1.02 - 0.945 * (u / fall) ** 2 : 0.075 + Math.abs(Math.sin((u - fall) * 8)) * 0.22 * Math.exp(-(u - fall) * 2.4), roll = Math.max(0, u - fall), p0 = near(between(c.v.at, c.ti.at, 0.5), cam, 0.55);
+      const u = t - DROP; if (u > 0) { const fall = FALL, y = u < fall ? 1.02 - 0.945 * (u / fall) ** 2 : 0.075 + Math.abs(Math.sin((u - fall) * 8)) * 0.22 * Math.exp(-(u - fall) * 2.4), roll = Math.max(0, u - fall), p0 = near(between(c.v.at, c.ti.at, 0.5), cam, 0.55);
         const k = put(g, COIN_BIG(), [p0[0] + roll * 0.3, y, p0[2] + roll * 0.12], 0); k.rotation.set(Math.PI / 2, 0.9, u * 9); }
     } });
 }
@@ -106,7 +130,10 @@ const guessWrong = at("guess", /Wrong/) - cut("need", "guess");
   sir.actAt(guessWrong - 0.1, "recoil", 4, { in: 0.14, over: 2.4, face: { wide: 1, lid: 0, brow: 1, mouth: 0.5 } }); sir.stand(5);
   const man = mover(CITIZEN_D, 1.68, 2.95, 3.27, 62); man.actAt(-1, { armL: arm(26, 8, 60, -30), armR: arm(26, 8, 60, -30), head: [-8, 10, 0] }, stop + 0.9, { out: 0.16 });
   man.stand(stop - 0.25).act("recoil", 0.42, { in: 0.12, face: { wide: 1, lid: 0, brow: 1, mouth: 0.7 } }).turn(118, 0.3).walk(mt(man, 7), { run: true });
+  const guessLen = cut("guess", "wash") - cut("need", "guess");
   add({ id: "guess", a: cut("need", "guess"), b: cut("guess", "wash"), still: 1.25,
+    // Sir Digsworth's marching steps, the other man's running steps (the Mover marks them as runs), the scuff as he starts at "Wrong!"
+    sounds: [...feet(sir, 0, guessLen, { g: 1, p: -0.1 }), ...feet(man, 0, guessLen, { g: 0.9, p: 0.3 }), { t: guessWrong, k: "scuff", g: 0.9, p: -0.1 }],
     cam: (_t, u) => V.push(0.12 * u), sun: { target: [3, 0, 3.8], reach: 6 },
     cast: (t, T) => [play("man", CITIZEN_D, man, t, [0, WALK, 0], 1.68, { seed: 7 }), play("sir", SIR_D, sir, t, [0, WALK, 0], 1.8, { talk: talk(W, T, ["guess"]) })],
     things: (g, _c, t, _T, cam) => stink(g, t, cam) });
@@ -128,11 +155,14 @@ const washing = (into: THREE.Group, t: number, period = 0.5, splash = true) => {
 {
   // the lens stands at the shop's door: the tub in front, the fuller behind it on the left tipping a jug into it, Sir Digsworth
   // bending in from the right
-  const V = lens(ux - 2.25, 1.25, uz, 1, 0, -8, 60), [fx, fz] = V.spot(2.75, -0.56), [qx, qz] = V.spot(2.7, 0.6);
+  const V = lens(ux - 2.25, 1.25, uz, 1, 0, -8, 60), [fx, fz] = V.spot(2.75, -0.56), [qx, qz] = V.spot(2.7, 0.46);
   const f = mover(FULLER_D, 1.74, fx, fz, 28); f.stand(6); f.actAt(-1, { lean: 10, armR: arm(64, 8, 104, 0), armL: arm(52, 8, 92, 0), head: [-10, 14, 0] }, 9, { in: 0.2, handR: "grip", handL: "grip", face: { smile: 0.36, brow: 0.3, gaze: [0.5, 0.7] } });
   const sir = mover(SIR_D, 1.8, qx, qz, 196); sir.stand(6); sir.actAt(-1, { lean: 30, py: -0.08, head: [0, 4, 0], armL: arm(20, 16, 60, 10), armR: arm(30, 10, 90, 0) }, 1.8, { out: 0.16, face: { brow: 0.9, wide: 0.5, gaze: [-0.5, 0.7] } });
-  sir.actAt(0.7, { ...NOSE, lean: -10, head: [0, -6, 0] }, 4, { in: 0.16, over: 2.2, handR: "relaxed", face: { ...DISGUST, wide: 0.6, lid: 0, gaze: [-0.5, 0.6] } });
+  sir.actAt(0.7, { ...NOSE, lean: -5, head: [0, -6, 0] }, 4, { in: 0.16, over: 2.2, handR: "relaxed", face: { ...DISGUST, wide: 0.6, lid: 0, gaze: [-0.5, 0.6] } });
+  const pourLen = washMid - cut("guess", "wash");
   add({ id: "pour", a: cut("guess", "wash"), b: washMid, still: 0.4,
+    // the stream runs the whole shot; Sir Digsworth pulls back with the hand to his nose at 0.7 s (in 0.16 s)
+    sounds: [{ t: 0, k: "pour", dur: pourLen, g: 0.9, p: -0.2 }, { t: 0.7 + 0.04, k: "scuff", g: 0.8, p: 0.3 }],
     cam: (_t, u) => V.push(0.1 * u), sun: { target: [6, 0, 0], reach: 6 },
     cast: (t) => [play("f", FULLER_D, f, t, [0, uy, 0], 1.74, { seed: 9 }), play("sir", SIR_D, sir, t, [0, uy, 0], 1.8)],
     things: (g, c, t, _T, cam) => {
@@ -149,7 +179,12 @@ const washing = (into: THREE.Group, t: number, period = 0.5, splash = true) => {
   const V = lens(ux - 2.6, 1.3, uz, 1, 0, 0, 50);
   const f = mover(FULLER_D, 1.74, ux, uz, 0); f.stand(6); f.actAt(-1, { lean: 8, armL: arm(30, 20, 96, 10), armR: arm(30, 20, 96, 10), head: [0, 12, 0] }, 9, { handL: "fist", handR: "fist", face: { smile: 0.36, brow: 0.5, lid: 0.12, gaze: [0, 0.7] } });
   tread(f, -0.5, 6, 0.5, 86); wag(f, -0.5, 6, P({ armL: arm(46, 20, 110, 10), armR: arm(10, 20, 70, 10) }), P({ armL: arm(10, 20, 70, 10), armR: arm(46, 20, 110, 10) }), 1.0);
+  const treadLen = cut("wash", "tax") - washMid, TREAD0 = -0.5, TREAD_P = 0.5;       // tread(f, TREAD0, 6, TREAD_P): the cloth gives under a foot at the start of each period
+  const treads: Sound[] = []; for (let i = 0; ; i++) { const t = TREAD0 + TREAD_P * (i + 1) - 0.02; if (t > treadLen) break; if (t < -0.05) continue; const tc = Math.max(0, t);
+    treads.push({ t: tc, k: "squelch", g: 1, p: i % 2 ? 0.1 : -0.1 }); if (i % 2) treads.push({ t: tc + 0.02, k: "splash", big: 0.35, g: 0.6, p: 0.1 }); }
   add({ id: "tread", a: washMid, b: cut("wash", "tax"), still: 0.62,
+    // a squelch for every foot that comes down in the tub, a small splash with every second one
+    sounds: treads,
     cam: (_t, u) => V.push(0.12 * u), sun: { target: [6, 0, 0], reach: 6 },
     cast: (t) => [play("f", FULLER_D, f, t, [0, uy + 0.2, 0], 1.74, { seed: 9, blink: false })],
     things: (g, _c, t) => { washing(g, t - 0.5 + 6 * 0.5, 0.5); const j = put(g, JUG(), [ux - 1.15, uy, uz + 0.95], 0); j.rotation.z = 0; g.add(mesh(box(0.5, 0.05, 0.42), "#f1e4c4", { at: [ux - 1.0, uy + 0.03, uz - 0.9], rot: [0, 0.5, 0] })); } });
@@ -162,7 +197,10 @@ const washing = (into: THREE.Group, t: number, period = 0.5, splash = true) => {
   const col = mover(COLLECTOR_D, 1.78, cx, cz + 0.5, 180); col.walk(mt(col, 0.5)).turn(-76, 0.3).stand(5);
   col.actAt(-1, { armL: arm(40, 10, 104, -14), armR: arm(44, 12, 96, -30), head: [0, 12, 0] }, 9, { handL: "grip", handR: "point", face: { gaze: [-0.5, 0.5], smile: 0.36 } });
   wag(col, 1.0, 3, P({ armR: arm(44, 12, 96, -30), head: [0, 16, 0] }), P({ armR: arm(48, 10, 104, -22), head: [0, 16, 0] }), 0.3, { handR: "point" });
+  const taxLen = cut("tax", "titus") - cut("wash", "tax");
   add({ id: "tax", a: cut("wash", "tax"), b: cut("tax", "titus"), still: 1.5,
+    // the stylus on the wax with each swing of the collector's hand (wag at 1.0 s, 0.3 s a swing), a whoosh as the emperor's arm points (and again at his wag at 0.4 s), the collector's steps
+    sounds: [{ t: 0.02, k: "whoosh", dur: 0.25, g: 0.35, p: -0.2 }, { t: 0.4 - 0.08, k: "whoosh", dur: 0.2, g: 0.25, p: -0.2 }, ...feet(col, 0, taxLen, { g: 0.7, p: 0.3 }), ...swings(1.0, 3, 0.3, taxLen).map((t): Sound => ({ t, k: "scratch", g: 0.7, p: 0.3 }))],
     cam: (_t, u) => V.push(0.1 * u), sun: { target: [3, 0, 3.8], reach: 6 },
     cast: (t) => [play("col", COLLECTOR_D, col, t, [0, WALK, 0], 1.78, { seed: 6 }), play("v", VESPASIAN_D, v, t, [0, WALK, 0], 1.76)],
     things: (g, c, t, _T, cam) => { strongbox(g, -Math.PI / 2); const p = near(c.col.joint("tipL"), cam, 0.05), k = put(g, TABLET(), [p[0], p[1] + 0.06, p[2]], 0); k.lookAt(cam.pos[0], p[1], cam.pos[2]); stink(g, t, cam); } });
@@ -173,7 +211,13 @@ const washing = (into: THREE.Group, t: number, period = 0.5, splash = true) => {
   const ti = mover(TITUS_D, 1.84, tx, tz, V.toward(tx, tz, 24)); ti.stand(0.15).step("L", -0.14, 0.18).stand(5);
   ti.actAt(-1, { ...NOSE, lean: -8, roll: -8, head: [-16, -4, -6] }, 9, { in: 0.2, handR: "relaxed", face: { brow: -1, lid: 0.25, smile: -1, gaze: [-0.8, 0.5] } });
   wag(ti, 0.3, 4, P({ armL: arm(50, -10, 60, -40) }), P({ armL: arm(60, -4, 80, -26) }), 0.5, { handL: "point" });
+  wag(ti, 0.2, 4, P({ head: [-24, -4, -6], roll: -11 }), P({ head: [-6, -4, -6], roll: -5 }), 0.44);
+  ti.actAt(1.2, { armL: arm(100, 24, 156, 30), lean: -15, py: 0.02 }, 0.5, { in: 0.14, out: 0.2, antic: 0.4, over: 1.8, handL: "open" });
+  const titusLen = cut("titus", "coin") - cut("tax", "titus");
   add({ id: "titus", a: cut("tax", "titus"), b: cut("titus", "coin"), still: 1.0,
+    // his step back, and a small whoosh on each jab of his finger (wag at 0.3 s, a jab every 0.5 s); the flies
+    sounds: [...feet(ti, 0, titusLen, { g: 0.7, p: 0.2 }), ...swings(0.3, 4, 0.5, titusLen, -0.07).map((t): Sound => ({ t, k: "whoosh", dur: 0.2, g: 0.3, p: 0.2 }))],
+    beds: [{ k: "flies", a: 0, b: titusLen, g: 0.8 }],
     cam: (_t, u) => V.push(0.1 * u), sun: { target: [3, 0, 3.9], reach: 6 },
     cast: (t) => [play("ti", TITUS_D, ti, t, [0, WALK, 0], 1.84, { seed: 5 })],
     things: (g, _c, t, _T, cam) => { strongbox(g, -Math.PI / 2); stink(g, t, cam); } });
@@ -188,7 +232,14 @@ const coinAsk = at("coin", /Does/) - cut("titus", "coin");
   const ti = mover(TITUS_D, 1.84, tx, tz, -62); ti.stand(6);
   ti.actAt(-0.15, { lean: -10, pz: -0.04, head: [10, -6, 0], armL: arm(40, 20, 130, 10) }, 9, { in: 0.22, over: 2.2, handL: "open", face: { brow: 0.9, wide: 0.6, lid: 0, gaze: [-0.9, 0.5], smile: -0.6 } });
   ti.actAt(coinAsk + 0.25, { lean: 0, head: [10, 4, 0] }, 4, { in: 0.3, face: { brow: 0.4, lid: 0.3, gaze: [-0.9, 0.6], smile: -0.2 } });
+  v.actAt(0.9, { armR: arm(92, 4, 128, 0), lean: 11, pz: 0.03 }, 0.5, { in: 0.14, out: 0.2, antic: 0.3, over: 1.6, handR: "point" });
+  v.actAt(coinAsk - 0.1, { armR: arm(94, 4, 132, 0), lean: 12, head: [0, -10, 4] }, 1.2, { in: 0.18, out: 0.3, antic: 0.3, over: 1.6, handR: "point", face: { brow: 1, smile: 0.38 } });
+  ti.actAt(0.95, { lean: -17, pz: -0.07, head: [10, -10, 0] }, 0.6, { in: 0.14, out: 0.25, antic: 0.2, over: 1.6 });
+  ti.actAt(1.7, { lean: -3, head: [10, 8, 0] }, 0.45, { in: 0.2, out: 0.2, antic: 0.2, over: 1.3, face: { brow: 0.6, lid: 0.35, gaze: [-0.9, 0.7], smile: -0.4 } });
+  wag(ti, coinAsk + 0.5, 2, P({ head: [24, 4, 0] }), P({ head: [-2, 4, 0] }), 0.36);
   add({ id: "coin", a: cut("titus", "coin"), b: cut("coin", "yet"), still: 2.6,
+    // the coin comes up into the hold (his arm arrives at -0.25 + 0.3 s) and his son draws his head back (from -0.15 s, in 0.22 s)
+    sounds: [{ t: -0.25 + 0.3 + 0.05, k: "ting", g: 0.8, p: -0.2 }, { t: 0.02, k: "scuff", g: 0.6, p: 0.3 }],
     cam: (_t, u) => V.push(0.3 * smooth(u)), sun: { target: [0.9, 0, 1.6], reach: 5 },
     cast: (t, T) => [play("ti", TITUS_D, ti, t, [0, 0, 0], 1.84, { seed: 5 }), play("v", VESPASIAN_D, v, t, [0, 0, 0], 1.76, { seed: 4, talk: t > coinAsk - 0.05 ? talk(W, T, ["coin"]) : 0 })],
     things: (g, c, _t, _T, cam) => { const p = near(c.v.joint("tipR"), cam, -0.03), k = put(g, COIN(), [p[0] + 0.035, p[1] + 0.02, p[2]], 0); k.rotation.set(Math.PI / 2, 0, 0); } });
@@ -201,10 +252,13 @@ const coinAsk = at("coin", /Does/) - cut("titus", "coin");
   v.actAt(-1, { armR: arm(40, 10, 122, 4), armL: arm(20, 26, 84, 40), lean: -8, head: [6, -10, 4] }, 9, { handR: "fist", handL: "open", face: { smile: 1, lid: 0.06, wide: 0.3, brow: 0.9 } });
   for (const t0 of [0.3, 1.2]) v.actAt(t0, { armR: arm(60, 10, 150, 4), py: 0.014 }, 0.26, { in: 0.08, out: 0.16, antic: 0.3, over: 2 });
   wag(v, 0.1, 3, P({ py: 0.012, lean: -11 }), P({ py: -0.008, lean: -5 }), 0.3);
+  const TOSS = [0.36, 1.26], FLIGHT = 0.75, yetLen = cut("yet", "point") - cut("coin", "yet");       // the coin leaves his hand at each TOSS and is caught FLIGHT s later
   add({ id: "yet", a: cut("coin", "yet"), b: cut("yet", "point"), still: 0.62,
+    // a ting as each toss leaves his thumb, a tap as the coin lands in his palm
+    sounds: TOSS.flatMap((t0): Sound[] => [{ t: t0, k: "ting", g: 0.8, p: -0.1 }, ...(t0 + FLIGHT < yetLen ? [{ t: t0 + FLIGHT, k: "tap", g: 0.7, p: -0.1 } as Sound] : [])]),
     cam: (_t, u) => V.push(0.1 * u), sun: { target: [0.9, 0, 1.6], reach: 5 },
     cast: (t, T) => [play("v", VESPASIAN_D, v, t, [0, 0, 0], 1.76, { seed: 4, blink: false, talk: Math.max(0.55, talk(W, T, ["yet"])) })],
-    things: (g, c, t, _T, cam) => { const p = near(c.v.joint("tipR"), cam, 0.06); let up = 0, spin = 0; for (const t0 of [0.36, 1.26]) { const u = (t - t0) / 0.75; if (u > 0 && u < 1) { up = 0.42 * 4 * u * (1 - u); spin = u * 18.8; } }
+    things: (g, c, t, _T, cam) => { const p = near(c.v.joint("tipR"), cam, 0.06); let up = 0, spin = 0; for (const t0 of TOSS) { const u = (t - t0) / FLIGHT; if (u > 0 && u < 1) { up = 0.42 * 4 * u * (1 - u); spin = u * 18.8; } }
       const k = put(g, COIN_BIG(), [p[0], p[1] + 0.12 + up, p[2]], 0); k.rotation.set(Math.PI / 2 + spin, 0.3, 0); } });
 }
 // 11. THAT IS WHY ROME TAXED PEE: the coin lands on the heap in the strongbox by the jar; the collector marks it on his tablet
@@ -214,12 +268,16 @@ const pointMid = at("point", /^The$/) - 0.12;
   const col = mover(COLLECTOR_D, 1.78, cx, cz, V.toward(cx, cz, 16)); col.stand(6);
   col.actAt(-1, { py: -0.5, lean: 30, armL: arm(46, 10, 110, -16), armR: arm(50, 12, 100, -34), head: [0, 18, 0] }, 9, { handL: "grip", handR: "point", face: { gaze: [-0.3, 0.8], smile: 0.6 } });
   wag(col, 0.6, 3, P({ armR: arm(50, 12, 100, -34) }), P({ armR: arm(54, 10, 108, -24) }), 0.3, { handR: "point" });
+  const HEAP_FALL = 0.34, heapLen = pointMid - cut("yet", "point");       // the coin lands on the heap at HEAP_FALL and bounces every PI/16 s
   add({ id: "heap", a: cut("yet", "point"), b: pointMid, still: 0.2,
+    // the coin in the chest, louder, two small bounces; then the stylus on the tablet (wag at 0.6 s, 0.3 s a swing)
+    sounds: [{ t: HEAP_FALL, k: "coin", g: 1.5, p: -0.1 }, { t: HEAP_FALL + Math.PI / 16, k: "coin", g: 0.6, p: -0.1 }, { t: HEAP_FALL + 2 * Math.PI / 16, k: "coin", g: 0.3, p: -0.1 },
+      ...swings(0.6, 3, 0.3, heapLen).map((t): Sound => ({ t, k: "scratch", g: 0.7, p: 0.3 }))],
     cam: (_t, u) => V.push(0.12 * u), sun: { target: [3, 0, 3.9], reach: 5 },
     cast: (t) => [play("col", COLLECTOR_D, col, t, [0, WALK, 0], 1.78, { seed: 6 })],
     things: (g, c, t, _T, cam) => { strongbox(g, -0.85);
       // the emperor's coin drops in from above, lands on the heap and settles
-      const fall = 0.34, u = t / fall, top: V3 = [BOX[0], WALK + 0.5, BOX[2]], k = put(g, COIN_BIG(), u < 1 ? [top[0] - 0.1 * (1 - u), top[1] + 1.15 * (1 - u * u), top[2] + 0.25 * (1 - u)] : [top[0], top[1] + 0.07 * Math.abs(Math.sin((t - fall) * 16)) * Math.exp(-(t - fall) * 7), top[2]], 0); k.rotation.set(u < 1 ? u * 9 : 0.25, 0, u < 1 ? u * 5 : 0.2);
+      const fall = HEAP_FALL, u = t / fall, top: V3 = [BOX[0], WALK + 0.5, BOX[2]], k = put(g, COIN_BIG(), u < 1 ? [top[0] - 0.1 * (1 - u), top[1] + 1.15 * (1 - u * u), top[2] + 0.25 * (1 - u)] : [top[0], top[1] + 0.07 * Math.abs(Math.sin((t - fall) * 16)) * Math.exp(-(t - fall) * 7), top[2]], 0); k.rotation.set(u < 1 ? u * 9 : 0.25, 0, u < 1 ? u * 5 : 0.2);
       const p = near(c.col.joint("tipL"), cam, 0.05), tb = put(g, TABLET(), [p[0], p[1] + 0.06, p[2]], 0); tb.lookAt(cam.pos[0], cam.pos[1], cam.pos[2]); stink(g, t, cam); } });
 }
 // 12. THE MONEY DID NOT SMELL: Sir Digsworth, beside the jar and its flies, holds one coin to his nose and finds nothing wrong with it
@@ -229,7 +287,11 @@ const pointMid = at("point", /^The$/) - 0.12;
   sir.actAt(-1, { armL: arm(75, 14, 172, -39), handL: 0, head: [-4, 4, 0], lean: 3 }, 2.0, { out: 0.3, handL: "point", face: { brow: 0.4, lid: 0.5, gaze: [0, 0.4] } });
   sir.actAt(0.95, { armL: arm(60, 40, 128, 44), head: [8, -4, -4], lean: -3 }, 9, { in: 0.3, over: 2, handL: "point", face: { brow: 1, smile: 1, wide: 0.3, gaze: [0.5, -0.1] } });
   sir.actAt(1.1, { armR: arm(20, 34, 86, 60) }, 9, { in: 0.25, over: 2, handR: "open" });
+  const sniffLen = cut("point", "end") - pointMid;
   add({ id: "sniff", a: pointMid, b: cut("point", "end"), still: 0.3,
+    // the coin is already under his nose when the shot opens (held until 0.95 s): a sniff at once and a second, shorter one; at 0.95 s the arm swings out with it
+    sounds: [{ t: 0.12, k: "sniff", p: -0.1 }, { t: 0.42, k: "sniff", g: 0.7, p: -0.1 }, { t: 0.95 - 0.05, k: "whoosh", dur: 0.3, g: 0.3, p: 0.1 }],
+    beds: [{ k: "flies", a: 0, b: sniffLen, g: 1 }],
     cam: (_t, u) => V.push(0.1 * u), sun: { target: [3, 0, 4], reach: 6 },
     cast: (t, T) => [play("sir", SIR_D, sir, t, [0, WALK, 0], 1.8, { talk: talk(W, T, ["point"]) })],
     things: (g, c, t, _T, cam) => { const p = near(c.sir.joint("tipL"), cam, 0.05), k = put(g, COIN(), [p[0], p[1] - 0.01, p[2]], 0); k.rotation.set(Math.PI / 2, 0, 0); stink(g, t, cam); } });
@@ -242,7 +304,10 @@ const endMid = at("end", /Vespasiennes/) - 0.5;
   const sir = mover(SIR_D, 1.8, 3.0, 13.1, 180); sir.walk(mt(sir, 9));
   sir.actAt(0.2, { armR: arm(30, -6, 128, -52), lean: 2 }, 0.75, { in: 0.2, out: 0.2, handR: "grip", face: { smile: 0.6, gaze: [0, 0.4] } });
   sir.actAt(0.85, { armR: arm(26, 60, 150, 34), head: [-14, -2, 0] }, 9, { in: 0.25, over: 2, handR: "grip", face: { brow: 0.7, smile: 0.9, gaze: [-0.6, -0.2] } });
+  const walkLen = endMid - cut("point", "end");
   add({ id: "walk", a: cut("point", "end"), b: endMid, still: 2.0,
+    // his footsteps toward the lens; the hand into the jacket (0.2 s, in 0.2) and the card slid out at 0.85 s, when it appears
+    sounds: [...feet(sir, 0, walkLen, { g: 1, p: 0 }), { t: 0.2 + 0.2, k: "paper", g: 0.5 }, { t: 0.85 - 0.04, k: "paper", g: 1 }],
     cam: () => V.cam, sun: { target: [3, 0, 11], reach: 7 },
     cast: (t, T) => [play("sir", SIR_D, sir, t, [0, WALK, 0], 1.8, { talk: talk(W, T, ["end"]) })],
     things: (g, c, t, _T, cam) => { if (t < 0.85) return; const p = near(c.sir.joint("tipR"), cam, 0.05), k = put(g, CARD(), [p[0], p[1] + 0.24, p[2]], 0); k.lookAt(cam.pos[0], p[1] + 0.24, cam.pos[2]); } });
@@ -251,9 +316,12 @@ const endMid = at("end", /Vespasiennes/) - 0.5;
   const V2 = lens(3.7, 1.45, 9.5, -0.45, 0.89, 0, 58), [qx, qz] = V2.spot(2.45, 0.38), tip = at("end", /Vespasiennes/) + 0.95 - endMid;
   const s2 = mover(SIR_D, 1.8, qx, qz, 63); s2.stand(8);
   s2.actAt(-1, { armL: arm(104, 6, 118, 0), lean: 4, head: [0, -4, 0] }, 9, { handL: "grip", face: { brow: 0.8, smile: 1, gaze: [-0.8, 0] } });
-  wag(s2, 0.1, tip - 0.2, P({ armR: arm(58, 4, 64, 0) }), P({ armR: arm(64, 4, 76, 0) }), 0.4, { handR: "point" });
+  wag(s2, 0.1, tip - 0.2, P({ armR: arm(80, 4, 92, 0) }), P({ armR: arm(86, 4, 102, 0) }), 0.4, { handR: "point" });
   s2.actAt(tip, { armR: arm(118, 24, 196, 14), head: [0, -6, 0] }, 3, { in: 0.22, handR: "grip", face: { smile: 1, lid: 0.3, brow: 0.6, gaze: [-0.4, 0] } });
+  const cardLen = END - endMid;
   add({ id: "card", a: endMid, b: END, still: 0.75,
+    // his finger knocks on the card with each swing of the wag (from 0.1 s, 0.4 s a swing); the cap goes up from tip (in 0.22 s)
+    sounds: [...swings(0.1, tip - 0.2, 0.4, cardLen, 0.4 * 0.5 + 0.05).map((t): Sound => ({ t, k: "tap", g: 0.9, p: -0.3 })), { t: tip + 0.04, k: "whoosh", dur: 0.3, g: 0.5, p: -0.2 }],
     cam: (_t, u) => V2.push(0.1 * u), sun: { target: [3, 0, 11], reach: 6 },
     cast: (t, T) => [play("sir", SIR_D, s2, t, [0, WALK, 0], 1.8, { talk: talk(W, T, ["end"]), extra: { capLift: t > tip + 0.12 ? 0.5 * smooth((t - tip - 0.12) / 0.2) * (1 - smooth((t - tip - 0.8) / 0.3)) : 0 } })],
     things: (g, c, _t, _T, cam) => { const p = near(c.sir.joint("tipL"), cam, -0.04), k = put(g, CARD(), [p[0], p[1] + 0.3, p[2]], 0); k.lookAt(cam.pos[0], p[1] + 0.3, cam.pos[2]); } });
@@ -263,5 +331,10 @@ export const ROME_PEE: Film = {
   id: "rome-pee", fps: 30, seconds: END, sky: "#a9dcff", world: romeStreet, shots, words: W,
   hook: { text: ["WHY DID ROME", "TAX PEE?"], a: 0, b: L.hook.b + 0.2 },
   sign: { text: "Dramatised. The story is from Suetonius; nobody knows who paid the tax.", a: L.coin.a + 0.1, b: L.coin.a + 2.1 },
-  hits: [], audio: "craft/rome-pee.wav",
+  thumbs: [
+    { T: cut("titus", "coin") + 2.5, cam: lens(1.55, 1.5, 3.7, -0.1, -1, -1, 32).cam, words: ["A TAX", "ON PEE?!"], side: "right", at: "middle", size: 132 },
+    { T: 1.0, cam: lens(3.75, 1.45, 1.0, -0.12, 1, -9, 44).cam, words: ["ROME", "TAXED", "THIS"], side: "left", at: "middle", size: 120 },
+    { T: cut("coin", "yet") + 0.62, cam: lens(1.2, 1.5, 3.95, -0.42, -0.9, -1, 30).cam, words: ["DOES IT", "SMELL?"], side: "left", at: "middle", size: 132 },
+  ],
+  hits: [], beds: [{ k: "street", a: 0, b: END, g: 1 }], music: "roman", audio: "craft/rome-pee.wav",
 };

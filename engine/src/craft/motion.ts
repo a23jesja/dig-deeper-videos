@@ -78,7 +78,7 @@ export class Mover {
   private feet: Record<Side, Plant[]> = { L: [], R: [] };
   private pel: PKey[] = [];
   private yawT: Track; private lean = new Track(0); private runW = new Track(0); private rise = new Track(0);
-  private layers: Layer[] = []; private next: Side = "R";
+  private layers: Layer[] = []; private next: Side = "R"; private marks: { t: number; k: string; x: number; big?: number }[] = [];
   constructor(at: V2, facing: number) {
     this.P = at; this.psi = facing; this.yawT = new Track(facing);
     for (const s of ["L", "R"] as Side[]) this.feet[s].push(this.spot(s, at, facing, -1e9));
@@ -143,7 +143,7 @@ export class Mover {
   }
   /** a run that ends with the toe catching: short stuttering steps with the body pitched forward and the hands thrown out */
   stumble() {
-    const T0 = this.t;
+    const T0 = this.t; this.marks.push({ t: T0 + 0.04, k: "scuff", x: this.P[0] });
     this.layers.push({ t0: T0, t1: T0 + 0.75, in: 0.14, out: 0.45, pose: (({ shapeL, shapeR, face, ...p }) => p)(ACTS.trip), handL: "open", handR: "open", face: ACTS.trip.face, antic: 0, over: 2.2 });
     return this.walk(1.1, { run: true, tau: 0.2, step: 0.32 });
   }
@@ -153,6 +153,7 @@ export class Mover {
     this.layers.push({ t0: T0, t1: T0 + 0.34 + hold + 0.3, in: 0.3, out: 0.34, pose, handL: shapeL, handR: shapeR, face, antic: 0, over: 1.2 });
     this.pel.push({ t: T0, x: this.P[0], z: this.P[1] }); this.P = [this.P[0] + d[0] * 0.8, this.P[1] + d[1] * 0.8];
     this.t = T0 + 0.34; this.pel.push({ t: this.t, x: this.P[0], z: this.P[1] }); this.lean.ramp(T0, T0 + 0.1, 0);
+    this.marks.push({ t: T0 + 0.27, k: "thud", x: this.P[0], big: 1.1 }, { t: T0 + 0.3, k: "scuff", x: this.P[0] });
     return this.stand(hold);
   }
   /** get up from the ground: gather the feet under the body, push off, stand */
@@ -169,6 +170,13 @@ export class Mover {
     return this.stand(pulls * each);
   }
   get end() { return this.t; }
+  /** the sounds this motion makes, each at the moment it happens: a step for every foot that lands, a scuff, a thud.
+   *  t in seconds, x where it happens in leg lengths (for placing it left or right) */
+  cues(): { t: number; k: string; x: number; run?: boolean; big?: number }[] {
+    const out: { t: number; k: string; x: number; run?: boolean; big?: number }[] = [...this.marks];
+    for (const s of ["L", "R"] as Side[]) this.feet[s].slice(1).forEach((p) => { if (p.h > 0.04) out.push({ t: p.t0, k: "step", x: p.x, run: p.run }); });
+    return out.sort((a, b) => a.t - b.t);
+  }
 
   // ---------------- sampling ----------------
   private pelAt(t: number): V2 {
@@ -241,6 +249,13 @@ export class Mover {
   }
 }
 
+/** camera shake on impacts: the picture's offset in pixels at time t for a list of hits (when, how hard 0..1, how long it rings).
+ *  A pure function of time, so every frame renders the same; the hardest moment is the frame of the hit itself. */
+export const shake = (t: number, hits: { t: number; amp: number; dur?: number }[], px = 14): [number, number] => {
+  let x = 0, y = 0;
+  for (const h of hits) { const u = (t - h.t) / (h.dur ?? 0.5); if (u < 0 || u > 1) continue; const e = (1 - u) ** 2 * h.amp * px; x += Math.sin(t * 91 + h.t * 7) * e; y += Math.cos(t * 77 + h.t * 5) * e * 0.75; }
+  return [x, y];
+};
 /** eyes that blink by themselves: the upper lid's extra closing at time t (0..1); seed gives each figure its own rhythm */
 export const blink = (t: number, seed = 0) => {
   const period = 2.6 + (Math.abs(Math.sin(seed * 12.9898)) * 1.8), u = (t + seed * 0.77) % period;

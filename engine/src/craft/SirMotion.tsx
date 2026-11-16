@@ -8,15 +8,14 @@ import React from "react";
 import { AbsoluteFill, Audio, Sequence, getInputProps, staticFile, useCurrentFrame } from "remotion";
 import { Ink, hand, HandKind } from "./ink";
 import { solve, Sk } from "./rig";
-import { Mover, Sample, blink, mouthAt } from "./motion";
+import { Mover, Sample, blink, mouthAt, shake } from "./motion";
 import { SIR_D, LADY_D } from "./looks";
 import type { Design, FigOpts } from "./designs/common";
-import words from "../../voice/kit-test/words.json";
+import { SIR_TEST, SIR_TEST_FRAMES, sirTestCam, WORDS, SAY, TFPS, W } from "./sirTest";
+export { SIR_TEST_FRAMES, TFPS };
 
 type G = CanvasRenderingContext2D;
-type W = { w: string; a: number; b: number };
-const WORDS = words as W[], SAY = WORDS[WORDS.length - 1].b + 0.25;
-export const TW = 1080, TH = 1920, TFPS = 30;
+export const TW = 1080, TH = 1920;
 
 /** draw a figure from a motion sample with its soles at the screen point (x, y) */
 const play = (g: G, D: Design, s: Sample, x: number, y: number, sc: number, t: number, extra: FigOpts = {}, talk = 0, under?: (g: G, sk: Sk) => void, over?: (g: G, sk: Sk) => void) => {
@@ -31,20 +30,7 @@ const play = (g: G, D: Design, s: Sample, x: number, y: number, sc: number, t: n
 };
 
 // ---------------- the test clip ----------------
-const script = () => {
-  const m = new Mover([-3.5, 0], 90);
-  m.stand(0.2).walk(3.5).stand(0.2).turn(-90);
-  m.act({ armL: [[6, 80], [6, 85]], roll: 3, head: [22, -5, 0] }, 1.0, { handL: "point", face: { gaze: [0.9, -0.2], brow: 0.5 } });
-  const sayAt = m.end;
-  m.act({ armR: [[18, 16], [98, -8]], armL: [[4, 26], [30, 40]], head: [10, -2, 0] }, SAY, { in: 0.3, handR: "open", face: { gaze: [0.5, -0.1] } });
-  const boom = m.end;
-  m.step("R", -0.2, 0.16).act({ armL: [[16, 66], [34, 152]], armR: [[16, 66], [34, 152]], lean: -9, py: -0.07, head: [24, -10, 0] }, 0.85, { in: 0.13, over: 2.6, handL: "open", handR: "open", face: { wide: 1, lid: 0, brow: 1, mouth: 0.8, smile: -0.8, gaze: [0.9, -0.2] } });
-  const flee = m.end;
-  m.turn(-90).run(3.6).stumble().stand(0.9);
-  return { m, sayAt, boom, flee };
-};
-const S = script();
-export const SIR_TEST_FRAMES = Math.ceil(S.m.end * TFPS);
+const S = SIR_TEST;
 /** caption chunks: two or three words, never wider than the picture */
 const CAPS: { a: number; b: number; t: string }[] = (() => {
   const out: { a: number; b: number; t: string }[] = []; let cur: W[] = [];
@@ -54,7 +40,7 @@ const CAPS: { a: number; b: number; t: string }[] = (() => {
 })();
 
 export const SirTest: React.FC = () => {
-  const fr = useCurrentFrame(), p = getInputProps() as { audio?: boolean; marks?: boolean };
+  const fr = useCurrentFrame(), p = getInputProps() as { audio?: boolean; marks?: boolean; mix?: boolean };
   const D = SIR_D, P = D.props("sir"), LL = P.thigh + P.shin, sc = 1.16, px = LL * sc, FY = 1610, CX = TW / 2;
   return (
     <AbsoluteFill style={{ background: "#9fd4f7" }}>
@@ -62,9 +48,9 @@ export const SirTest: React.FC = () => {
         if (!cv) return;
         const g = cv.getContext("2d")!, t = fr / TFPS, s = S.m.sample(t);
         // the camera follows him a little late, and shakes when the mountain goes off
-        const follow = 0.5 * (S.m.sample(t - 0.35).x + S.m.sample(t - 0.1).x), camX = t < S.flee ? Math.max(-1.5, follow) : follow - 0.55 * Math.min(1, (t - S.flee) / 0.8), sh = t > S.boom && t < S.boom + 0.5 ? (1 - (t - S.boom) / 0.5) : 0;
+        const camX = sirTestCam(t), sk2 = shake(t, [{ t: S.boom, amp: 1, dur: 0.55 }, ...S.m.cues().filter((q) => q.k === "thud").map((q) => ({ t: q.t, amp: 0.5, dur: 0.3 }))]);
         const X = (xw: number, par = 1) => CX + (xw - camX * par) * px;
-        g.setTransform(1, 0, 0, 1, Math.sin(t * 91) * 12 * sh, Math.cos(t * 77) * 9 * sh);
+        g.setTransform(1, 0, 0, 1, sk2[0], sk2[1]);
         const sky = g.createLinearGradient(0, 0, 0, FY); sky.addColorStop(0, "#58b4f2"); sky.addColorStop(1, "#d9f1ff"); g.fillStyle = sky; g.fillRect(-40, -40, TW + 80, FY + 40);
         // the mountain far away, on the side he points to; it smokes from the moment he speaks and blows when he flinches
         const mx = CX + 290 - camX * px * 0.1, smoke = Math.max(0, t - S.sayAt + 0.6), big = Math.max(0, t - S.boom);
@@ -89,7 +75,8 @@ export const SirTest: React.FC = () => {
         if (c) { g.setTransform(1, 0, 0, 1, 0, 0); g.font = "900 96px 'Arial Black', Arial"; g.textAlign = "center"; g.lineJoin = "round"; g.lineWidth = 22; g.strokeStyle = "#101014"; g.strokeText(c.t.toUpperCase().replace(/[.,]/g, ""), CX, 1470); g.fillStyle = "#ffffff"; g.fillText(c.t.toUpperCase().replace(/[.,]/g, ""), CX, 1470); }
         g.setTransform(1, 0, 0, 1, 0, 0);
       }} />
-      {p.audio !== false && <Sequence from={Math.round(S.sayAt * TFPS)}><Audio src={staticFile("craft/kit-test.wav")} /></Sequence>}
+      {/* the mixed track (steps, blast, wind and the voice, from audio/craft_sfx.py); mix: false plays the voice alone */}
+      {p.audio !== false && (p.mix === false ? <Sequence from={Math.round(S.sayAt * TFPS)}><Audio src={staticFile("craft/kit-test.wav")} /></Sequence> : <Audio src={staticFile("craft/sir-test.wav")} />)}
     </AbsoluteFill>
   );
 };

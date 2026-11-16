@@ -21,7 +21,7 @@ export const DOG: Beast = { id: "dog", len: 300, legU: 105, legL: 112, bodyH: 74
 export const BEAST_POSES: Record<string, BeastPose> = {
   stand: { fl: [3, -3], fr: [-5, 5], hl: [-6, 14], hr: [4, 8], neck: 52, tail: 40 },
   /** pulling at a chain: chest down, front legs braced ahead, hind legs driving, the neck stretched */
-  strain: { pitch: 9, fl: [38, 14], fr: [24, 4], hl: [-34, -8], hr: [-46, -22], neck: 16, head: [0, -8], tail: 8, mouth: 1 },
+  strain: { pitch: 1, fl: [38, 14], fr: [26, 6], hl: [-32, -6], hr: [-42, -16], neck: 14, head: [0, -8], tail: 8, mouth: 1 },
   trot: { fl: [34, 8], fr: [-28, -52], hl: [-30, 6], hr: [26, -20], neck: 44, tail: 48 },
 };
 type V3 = [number, number, number];
@@ -35,7 +35,7 @@ export const drawBeast = (B: Beast) => (k: Ink, pose: BeastPose, yaw: number): P
   const C: V3 = [0, 0, 0], at3 = (o: V3, d: V3, l: number): V3 => [o[0] + d[0] * l, o[1] + d[1] * l, o[2] + d[2] * l], dir = (deg: number): V3 => [0, -Math.cos(deg * R), Math.sin(deg * R)];
   const Sh = at3(C, ax, B.len / 2), Hp = at3(C, ax, -B.len / 2), lw = B.bodyW * 0.72;
   const legs = ([["fl", Sh, 1], ["fr", Sh, -1], ["hl", Hp, 1], ["hr", Hp, -1]] as [keyof BeastPose, V3, number][]).map(([n, o, sx]) => {
-    const a = (pose[n] as number[] | undefined) ?? [0, 0], top: V3 = [o[0] + sx * lw, o[1] - (o === Sh ? B.bodyH : B.bodyHr) * 0.35, o[2]], kn = at3(top, dir(a[0]), B.legU), paw = at3(kn, dir(a[1]), B.legL);
+    const a = (pose[n] as number[] | undefined) ?? [0, 0], top: V3 = [o[0] + sx * lw * (o === Sh ? 0.82 : 1.28), o[1] - (o === Sh ? B.bodyH : B.bodyHr) * 0.35, o[2]], kn = at3(top, dir(a[0]), B.legU), paw = at3(kn, dir(a[1]), B.legL);
     return { top, kn, paw, sx };
   });
   const low = Math.min(...legs.map((l) => l.paw[1])) - B.legW[2];
@@ -43,15 +43,16 @@ export const drawBeast = (B: Beast) => (k: Ink, pose: BeastPose, yaw: number): P
   const nk = ((pose.neck ?? 45) * R) - pt, nd: V3 = [0, Math.sin(nk), Math.cos(nk)], nb = at3(Sh, ax, B.bodyH * 0.2), hc3 = at3(at3(nb, [0, 1, 0], B.bodyH * 0.3), nd, B.neck);
   const tl = (pose.tail ?? 30) * R, tb = at3(Hp, [0, 1, 0], B.bodyHr * 0.4), tt = at3(tb, [0, Math.sin(tl), -Math.cos(tl)], B.tail);
   const P = { sh: pr(Sh), hp: pr(Hp), nb: pr(nb), hc: pr(hc3), tb: pr(tb), tt: pr(tt) };
-  const leg = (l: (typeof legs)[number]) => { const a = pr(l.top), b = pr(l.kn), p = pr(l.paw); piece(k, seg(b, p, B.legW[1], B.legW[2]), B.col); piece(k, ellPts(p[0] + s * B.legW[2] * 0.5, p[1] + B.legW[2] * 0.3, B.legW[2] * 1.25, B.legW[2] * 0.8), shade(B.col, 0.9)); piece(k, seg(a, b, B.legW[0], B.legW[1]), B.col); pin(k, b, 5.5); };
+  const leg = (l: (typeof legs)[number]) => { const a = pr(l.top), b = pr(l.kn), p = pr(l.paw); piece(k, seg(b, p, B.legW[1], B.legW[2]), B.col); piece(k, ellPts(p[0] + s * B.legW[2] * 0.5, p[1] + B.legW[2] * 0.3, B.legW[2] * (1.25 + 0.35 * Math.abs(c)), B.legW[2] * 0.85), shade(B.col, 0.9)); piece(k, seg(a, b, B.legW[0], B.legW[1]), B.col); pin(k, b, 5.5); };
   const nearSide = s >= 0 ? -1 : 1, far = legs.filter((l) => l.sx !== nearSide), near = legs.filter((l) => l.sx === nearSide);
   const tail = () => piece(k, seg(P.tb, P.tt, B.tailW, B.tailW * 0.35), B.col);
   const body = () => {
-    const rx = (r: number) => Math.hypot(B.bodyW * c, r * 0.92 * s), parts = [ellPts(P.hp[0], P.hp[1], rx(B.bodyHr), B.bodyHr), ellPts(P.sh[0], P.sh[1], rx(B.bodyH), B.bodyH)];
+    const rx = (r: number) => Math.hypot(B.bodyW * 1.12 * c, r * 0.92 * s), parts = [ellPts(P.hp[0], P.hp[1], rx(B.bodyHr), B.bodyHr), ellPts(P.sh[0], P.sh[1], rx(B.bodyH), B.bodyH)];
     if (Math.hypot(P.sh[0] - P.hp[0], P.sh[1] - P.hp[1]) > 12) parts.push(seg(P.hp, P.sh, B.bodyHr * 0.97, B.bodyH * 0.97));
     for (const q of parts) k.shape(shift(q, 5, 6), "rgba(52,32,16,0.24)", 0);
     k.group(parts, B.col, k.ol * 1.2);
     k.clip(parts[parts.length - 1], () => k.shape(ellPts(mid(P.hp, P.sh, 0.3)[0], mid(P.hp, P.sh, 0.3)[1] - B.bodyHr * 0.5, B.len * 0.2 * Math.max(0.35, Math.abs(s)), B.bodyHr * 0.7), B.patch, 0));
+    if (c > 0.5) k.clip(parts[1], () => k.shape(ellPts(P.sh[0], P.sh[1] + B.bodyH * 0.35, B.bodyW * 0.62, B.bodyH * 0.7), shade(B.col, 1.3), 0));
   };
   let collarAt: P2 = P.nb;
   const head = () => {

@@ -44,7 +44,7 @@ const piece = (k: Ink, pts: P2[], fill: string, weave?: P2, tilt = 0) => {
 };
 const pin = (k: Ink, p: P2, r = 8) => { k.dot(p[0] + 2, p[1] + 2.5, r, "rgba(52,32,16,0.28)"); k.dot(p[0], p[1], r, "#7d5f1a"); k.dot(p[0], p[1], r - 1.8, BRASS); k.dot(p[0] - r * 0.3, p[1] - r * 0.3, r * 0.28, "#fff4c4"); };
 /** a tapered ribbon along a line of points (a moustache half, a crest): half-widths per point */
-const ribbon = (pts: P2[], w: number[]): P2[] => {
+export const ribbon = (pts: P2[], w: number[]): P2[] => {
   const c = spline(pts, false, 5), n = c.length, lf: P2[] = [], rt: P2[] = [];
   for (let i = 0; i < n; i++) {
     const a = c[Math.max(0, i - 1)], b = c[Math.min(n - 1, i + 1)], u = unit(sub(b, a)), nr: P2 = [-u[1], u[0]], t = (i / (n - 1)) * (w.length - 1), j = Math.min(w.length - 2, Math.floor(t)), ww = lerp(w[j], w[j + 1], t - j);
@@ -54,7 +54,7 @@ const ribbon = (pts: P2[], w: number[]): P2[] => {
 };
 
 /** the outline round a set of points (a peak or a nose that folds over itself when seen from the side) */
-const hull = (pts: P2[]): P2[] => {
+export const hull = (pts: P2[]): P2[] => {
   const p = pts.slice().sort((a, b) => a[0] - b[0] || a[1] - b[1]), cr = (o: P2, a: P2, b: P2) => (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]), lo: P2[] = [], up: P2[] = [];
   for (const q of p) { while (lo.length >= 2 && cr(lo[lo.length - 2], lo[lo.length - 1], q) <= 0) lo.pop(); lo.push(q); }
   for (const q of p.slice().reverse()) { while (up.length >= 2 && cr(up[up.length - 2], up[up.length - 1], q) <= 0) up.pop(); up.push(q); }
@@ -244,7 +244,7 @@ const drawHead = (k: Ink, L: Look, phiDeg: number, f: Face, o: FigOpts) => {
 export const mirrored = (L: Look, yawDeg: number) => { const y = ((((yawDeg + 180) % 360) + 360) % 360) - 180; return !!L.monocle && y > -128 && y < -52; };
 /** does the monocle show at this view angle (for the checks)? */
 export const monocleShows = (L: Look, yawDeg: number) => { if (!L.monocle) return true; const y = mirrored(L, yawDeg) ? -yawDeg : yawDeg, h = headGeo(L, y); return at(h, -26, 0.8).d >= 0.1 * L.head.b && h.cos >= -0.3; };
-const swapPose = (p: Pose): Pose => ({ ...p, px: -(p.px ?? 0), roll: -(p.roll ?? 0), twist: -(p.twist ?? 0), hipTilt: -(p.hipTilt ?? 0), head: p.head ? [-p.head[0], p.head[1], -p.head[2]] : undefined, armL: p.armR, armR: p.armL, handL: p.handR, handR: p.handL, legL: p.legR, legR: p.legL });
+export const swapPose = (p: Pose): Pose => ({ ...p, px: -(p.px ?? 0), roll: -(p.roll ?? 0), twist: -(p.twist ?? 0), hipTilt: -(p.hipTilt ?? 0), head: p.head ? [-p.head[0], p.head[1], -p.head[2]] : undefined, armL: p.armR, armR: p.armL, handL: p.handR, handR: p.handL, legL: p.legR, legR: p.legL });
 export const drawCast = (L: Look) => {
   const inner = drawTrue(L);
   return (k: Ink, sk: Sk, o: FigOpts) => {

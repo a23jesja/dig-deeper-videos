@@ -9,10 +9,10 @@ import { AbsoluteFill, Audio, Sequence, getInputProps, staticFile, useCurrentFra
 import { Ink, hand, HandKind } from "./ink";
 import { solve, Sk } from "./rig";
 import { Mover, Sample, blink, mouthAt, shake } from "./motion";
-import { SIR_D, LADY_D, BAKER_D, SIR } from "./looks";
+import { SIR_D, LADY_D, BAKER_D } from "./looks";
 import type { Design, FigOpts } from "./designs/common";
 import { SIR_TEST, SIR_TEST_FRAMES, sirTestCam, sirTestZoom, sirTestHat, VIEW, WORDS, SAY, TFPS, T_OFF, W } from "./sirTest";
-import { drawHat } from "./cast";
+import { GENT_D, GENT_BAKER_D } from "./gent";
 export { SIR_TEST_FRAMES, TFPS };
 
 type G = CanvasRenderingContext2D;
@@ -40,12 +40,12 @@ const CAPS: { a: number; b: number; t: string }[] = (() => {
   flush(); return out;
 })();
 
-export const SirTest: React.FC = () => {
-  const fr = useCurrentFrame(), p = getInputProps() as { audio?: boolean; marks?: boolean; mix?: boolean };
-  const D = SIR_D, P = D.props("sir"), LL = P.thigh + P.shin, sc = VIEW.sc, px = LL * sc, FY = VIEW.FY, CX = VIEW.CX;
+/** the picture of the test clip, played by the skin D (and the fleeing baker by the skin B): the same motion, camera and timing for any skin */
+const TestPanel: React.FC<{ D: Design; B: Design; left?: number; marks?: boolean }> = ({ D, B, left = 0, marks }) => {
+  const fr = useCurrentFrame(), p = { marks };
+  const P = D.props("sir"), LL = P.thigh + P.shin, sc = VIEW.sc, px = LL * sc, FY = VIEW.FY, CX = VIEW.CX;
   return (
-    <AbsoluteFill style={{ background: "#9fd4f7" }}>
-      <canvas width={TW} height={TH} ref={(cv) => {
+      <canvas width={TW} height={TH} style={{ position: "absolute", left, top: 0 }} ref={(cv) => {
         if (!cv) return;
         const g = cv.getContext("2d")!, t = fr / TFPS + T_OFF, s = S.m.sample(t), sb = S.b.sample(t);
         // the camera follows him a little late, and shakes when the mountain goes off
@@ -72,23 +72,41 @@ export const SirTest: React.FC = () => {
         if (p.marks) for (const side of ["L", "R"] as const) { const f = s.feet[side]; g.fillStyle = f[2] ? "#c0353a" : "#3b6fb5"; g.fillRect(X(f[0]) - 4, FY + 96 + (side === "L" ? 0 : 16), 8, 14); }
         // soft shadows under the figures (soft, so that they are not taken for a joint between two tiles)
         const shadow = (x: number, y: number) => { const gr = g.createRadialGradient(x, y, 4, x, y, 150); gr.addColorStop(0, "rgba(60,40,20,0.3)"); gr.addColorStop(1, "rgba(60,40,20,0)"); g.save(); g.translate(0, y); g.scale(1, 0.16); g.translate(0, -y); g.fillStyle = gr; g.beginPath(); g.arc(x, y, 150, 0, 7); g.fill(); g.restore(); };
-        const talking = t >= S.sayAt && t < S.sayAt + SAY, LLb = (BAKER_D.props("sir").thigh + BAKER_D.props("sir").shin) * VIEW.bakerSc, hat = sirTestHat(t);
+        const talking = t >= S.sayAt && t < S.sayAt + SAY, LLb = (B.props("sir").thigh + B.props("sir").shin) * VIEW.bakerSc, hat = sirTestHat(t);
         // the baker flees through the picture on the same motions, a step further from the lens
-        shadow(CX + (sb.x * LLb / px - camX) * px, FY + VIEW.bakerDY + 4); play(g, BAKER_D, sb, CX + (sb.x * LLb / px - camX) * px, FY + VIEW.bakerDY, VIEW.bakerSc, t + 1.3);
+        shadow(CX + (sb.x * LLb / px - camX) * px, FY + VIEW.bakerDY + 4); play(g, B, sb, CX + (sb.x * LLb / px - camX) * px, FY + VIEW.bakerDY, VIEW.bakerSc, t + 1.3);
         shadow(X(s.x), FY + 8);
         play(g, D, s, X(s.x), FY, sc, t, { hatOff: !hat.on }, talking ? mouthAt(WORDS, t - S.sayAt) : 0);
         // the cap, when it has left his head: it flies ahead of him in the fall, lands beside him, and he picks it up as he rises
-        if (!hat.on) { g.save(); g.translate(hat.x, FY - hat.y); g.rotate((hat.rot * Math.PI) / 180); g.scale(sc, sc); drawHat(new Ink(g, D.ol), SIR, s.yaw); g.restore(); }
+        if (!hat.on) { g.save(); g.translate(hat.x, FY - hat.y); g.rotate((hat.rot * Math.PI) / 180); g.scale(sc, sc); D.hat?.(new Ink(g, D.ol), s.yaw); g.restore(); }
         // captions: two or three words in the lower third, across the shins (clear of face, chest and hands, and of the bottom 15 % that the Shorts interface covers)
         const c = CAPS.find((q) => t - S.sayAt >= q.a - 0.03 && t - S.sayAt < q.b);
         if (c) { g.setTransform(1, 0, 0, 1, 0, 0); g.font = "900 96px 'Arial Black', Arial"; g.textAlign = "center"; g.lineJoin = "round"; g.lineWidth = 22; g.strokeStyle = "#101014"; g.strokeText(c.t.toUpperCase().replace(/[.,]/g, ""), CX, 1470); g.fillStyle = "#ffffff"; g.fillText(c.t.toUpperCase().replace(/[.,]/g, ""), CX, 1470); }
         g.setTransform(1, 0, 0, 1, 0, 0);
       }} />
-      {/* the mixed track (steps, blast, wind and the voice, from audio/craft_sfx.py); mix: false plays the voice alone */}
-      {p.audio !== false && (p.mix === false ? <Sequence from={Math.round((S.sayAt - T_OFF) * TFPS)}><Audio src={staticFile("craft/kit-test.wav")} /></Sequence> : <Audio src={staticFile("craft/sir-test.wav")} />)}
-    </AbsoluteFill>
   );
 };
+const TestAudio: React.FC = () => { const p = getInputProps() as { audio?: boolean; mix?: boolean }; return (<>
+      {/* the mixed track (steps, blast, wind and the voice, from audio/craft_sfx.py); mix: false plays the voice alone */}
+      {p.audio !== false && (p.mix === false ? <Sequence from={Math.round((S.sayAt - T_OFF) * TFPS)}><Audio src={staticFile("craft/kit-test.wav")} /></Sequence> : <Audio src={staticFile("craft/sir-test.wav")} />)}
+</>); };
+export const SirTest: React.FC = () => (
+  <AbsoluteFill style={{ background: "#9fd4f7" }}>
+    <TestPanel D={SIR_D} B={BAKER_D} marks={(getInputProps() as { marks?: boolean }).marks} />
+    <TestAudio />
+  </AbsoluteFill>
+);
+/** the comparison before the freeze: the same test clip, same camera and same moments, played by the two skins side by side */
+export const CMPW = TW * 2 + 24;
+const tag = (left: number, text: string) => (<div style={{ position: "absolute", left: left + 30, top: 30, padding: "14px 30px", background: "#101014", color: "#ffffff", font: "900 54px Arial", borderRadius: 14 }}>{text}</div>);
+export const SirCompare: React.FC = () => (
+  <AbsoluteFill style={{ background: "#101014" }}>
+    <TestPanel D={SIR_D} B={BAKER_D} />
+    <TestPanel D={GENT_D} B={GENT_BAKER_D} left={TW + 24} />
+    {tag(0, "A  SPRATTELGUBBEN")}{tag(TW + 24, "B  STRECKHERREN")}
+    <TestAudio />
+  </AbsoluteFill>
+);
 
 // ---------------- the sheet of motions ----------------
 type Cell = { name: string; make: () => [Mover, number[]]; D?: Design; under?: (g: G, sk: Sk) => void; over?: (g: G, sk: Sk) => void };

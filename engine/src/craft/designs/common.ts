@@ -11,7 +11,9 @@ export type FigOpts = { who?: Who; face?: Face; handL?: HandKind; handR?: HandKi
   /** the hat is not on the head (it flew off in a fall and is drawn by the scene where it lies) */
   hatOff?: boolean };
 /** faceW = half the width that must show in a close-up of the face (moustache tips included) */
-export type Design = { id: string; name: string; ol: number; faceW?: number; props: (who: Who) => Props; draw: (k: Ink, sk: Sk, o: FigOpts) => void };
+export type Design = { id: string; name: string; ol: number; faceW?: number; props: (who: Who) => Props; draw: (k: Ink, sk: Sk, o: FigOpts) => void;
+  /** the figure's hat by itself (lying or flying), its middle at the origin, seen from the angle phi */
+  hat?: (k: Ink, phiDeg: number) => void };
 export const LIGHT: P2 = [0.8, 0.45]; // which way the shadow lies on a part (the light comes from the upper left)
 
 /** the torso's own frame: Q(l, d, a) = a point l to the figure's left, d in front of the spine and a above the pelvis along the spine */

@@ -1,7 +1,7 @@
 // The Looks of the cast: Sir Digsworth and the side characters, all on the one card figure of cast.ts and the one skeleton of rig.ts.
 // A new figure is a new Look: sizes, colours, a hat, clothes. No new drawing code.
 import { Props } from "./rig";
-import { Look, drawCast } from "./cast";
+import { Look, drawCast, drawHat } from "./cast";
 import type { Design } from "./designs/common";
 
 const TWEED = "#c2904c", TEAL = "#12a594";
@@ -136,7 +136,7 @@ export const TOWNSWOMAN: Look = {
   rows: [[-400, 150, 124, 140], [-280, 134, 112, 126], [-120, 106, 88, 98], [0, 84, 68, 70], [70, 70, 58, 54], [170, 78, 66, 56], [226, 88, 54, 54], [250, 44, 34, 38]],
   legs: "trousers", feet: "shoes", sleeve: "long", arm: [24, 19, 14], leg: [28, 20, 14],
 };
-export const castDesign = (L: Look, name = L.id): Design => ({ id: L.id, name, ol: 4.6, faceW: L.head.a * 1.45, props: () => L.P, draw: drawCast(L) });
+export const castDesign = (L: Look, name = L.id): Design => ({ id: L.id, name, ol: 4.6, faceW: L.head.a * 1.45, props: () => L.P, draw: drawCast(L), hat: (k, phi) => drawHat(k, L, phi) });
 export const SIR_D = castDesign(SIR, "Sir Digsworth"), BAKER_D = castDesign(BAKER), SOLDIER_D = castDesign(SOLDIER), MERCHANT_D = castDesign(MERCHANT);
 export const KNIGHT_D = castDesign(KNIGHT), TOMMY_D = castDesign(TOMMY), LADY_D = castDesign(LADY), DOCKER_D = castDesign(DOCKER), BOY_D = castDesign(BOY), GRANNY_D = castDesign(GRANNY), ROMAN_WOMAN_D = castDesign(ROMAN_WOMAN);
 export const CUSTOMS_D = castDesign(CUSTOMS), SHIPOWNER_D = castDesign(SHIPOWNER), SAILOR_D = castDesign(SAILOR), DOCKHAND_D = castDesign(DOCKHAND), TOWNSWOMAN_D = castDesign(TOWNSWOMAN);

@@ -1,0 +1,68 @@
+[
+ {
+  "id": "hook",
+  "a": 0.05,
+  "b": 3.354,
+  "text": "The mountain behind me just exploded. This is Pompeii."
+ },
+ {
+  "id": "morning",
+  "a": 3.654,
+  "b": 7.518,
+  "text": "This morning was ordinary. Fresh bread. A guard dog on his chain."
+ },
+ {
+  "id": "shake",
+  "a": 7.668,
+  "b": 9.885,
+  "text": "The ground shook. Here, it always shakes."
+ },
+ {
+  "id": "blow",
+  "a": 10.185,
+  "b": 12.682,
+  "text": "Then, around midday, Vesuvius blows."
+ },
+ {
+  "id": "pine",
+  "a": 13.382,
+  "b": 17.649,
+  "text": "A cloud climbs out of it like a pine tree: a tall trunk, then branches."
+ },
+ {
+  "id": "ready",
+  "a": 18.049,
+  "b": 21.469,
+  "text": "About eleven thousand people live here. Nobody is ready."
+ },
+ {
+  "id": "grab",
+  "a": 21.769,
+  "b": 24.184,
+  "text": "People grab what they can carry, and run."
+ },
+ {
+  "id": "run",
+  "a": 24.534,
+  "b": 29.454,
+  "text": "The baker runs. The soldier runs. The merchant grabs his coins. I grab my cap."
+ },
+ {
+  "id": "stones",
+  "a": 29.904,
+  "b": 32.872,
+  "text": "Then the sky starts to fall. Not rain. Stones."
+ },
+ {
+  "id": "awning",
+  "a": 33.322,
+  "b": 35.848,
+  "text": "I dive under an awning. It does not hold."
+ },
+ {
+  "id": "next",
+  "a": 36.548,
+  "b": 39.78,
+  "text": "And in the middle of the day, it goes dark. That is part two."
+ }
+]

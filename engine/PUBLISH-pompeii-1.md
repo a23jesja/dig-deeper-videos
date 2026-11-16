@@ -1,3 +1,18 @@
+# WITHDRAWN (2026-11-16, evening): nothing below is published
+
+Jesper: "Pompeji-filen från kl 18 laddas inte upp. Vi väntar på förhandsvisningen i steg 7." The series is paused; Pompeii is rebuilt as
+ONE stand-alone Short (no "Part 1", no "Part 2" sign) with the craft kit and the world look. Title, description and thumbnails below
+belong to the withdrawn builds and must be rewritten for the stand-alone Short. The Metricool draft of the first build must never publish.
+
+# Publishing sheet: I Survived Pompeii, Part 1 (Short), SECOND BUILD
+
+Status 2026-11-16 18:00: the first build was rejected by Jesper ("en rad porträtt"); its Metricool post (430145541, now id 430239870) is a
+draft and must never publish. The second build ("Action, not portraits") is the file below. Jesper said "klockan 20:00 postar vi pompei när
+den är klar"; Metricool refused posts that day (account limit), so he uploads it by hand in YouTube Studio.
+- File: `videos/shorts/2026-11-16-pompeii-part-1-short-v2.mp4` (1080 x 1920, 40.5 s, -14 LUFS).
+- Thumbnails (re-made in the new look): `thumbnails/pompeii-1/thumb-1-it-just-exploded.png`, `thumb-2-not-rain-stones.png`, `thumb-3-run.png`.
+- Title, description and tags: unchanged, see below.
+
 # Publishing sheet: I Survived Pompeii, Part 1 (Short)
 
 Status 2026-11-16: scheduled in Metricool (post 430145541) for 20:00 Stockholm time the same day, on Jesper's order

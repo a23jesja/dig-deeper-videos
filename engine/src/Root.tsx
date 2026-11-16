@@ -9,6 +9,9 @@ import { Titanic3Thumb, TITANIC3_THUMB_FRAMES } from "./videos/emu/Titanic3Thumb
 import { Pompeii1, POMPEII1_FRAMES } from "./videos/emu/Pompeii1Film";
 import { Pompeii1Thumb, POMPEII1_THUMB_FRAMES } from "./videos/emu/Pompeii1Thumb";
 import { PompCast, POMP_CAST_FRAMES } from "./videos/emu/PompCast";
+import { SirChainStill, SIR_CHAIN_FRAMES } from "./videos/emu/SirChainStill";
+import { PompMoves, POMP_MOVES_FRAMES } from "./videos/emu/PompMoves";
+import { SirViews, SIR_VIEWS_FRAMES } from "./craft/SirViews";
 import { EnvKit, ENV_PARTS } from "./videos/emu/env/EnvKit";
 import { ThreeWay3 } from "./videos/three3d/ThreeWay3";
 import { StyleSheet } from "./videos/style/StyleSheet";
@@ -51,6 +54,9 @@ export const Root: React.FC = () => (
     <Composition id="Pompeii1" component={Pompeii1} durationInFrames={POMPEII1_FRAMES} fps={30} width={1080} height={1920} />
     <Composition id="Pompeii1Thumb" component={Pompeii1Thumb} durationInFrames={POMPEII1_THUMB_FRAMES} fps={30} width={1080} height={1920} />
     <Composition id="PompCast" component={PompCast} durationInFrames={POMP_CAST_FRAMES} fps={30} width={2240} height={1000} />
+    <Composition id="PompMoves" component={PompMoves} durationInFrames={POMP_MOVES_FRAMES} fps={30} width={2400} height={1300} />
+    <Composition id="SirViews" component={SirViews} durationInFrames={SIR_VIEWS_FRAMES} fps={30} width={2600} height={1400} />
+    <Composition id="SirChainStill" component={SirChainStill} durationInFrames={SIR_CHAIN_FRAMES} fps={30} width={1600} height={1250} />
     <Composition id="Titanic3Test" component={Titanic3Test} durationInFrames={TITANIC3_TEST_FRAMES} fps={30} width={1080} height={1920} />
     <Composition id="EnvKit" component={EnvKit} durationInFrames={ENV_PARTS} fps={30} width={1920} height={1080} />
     <PuppetCompositions />

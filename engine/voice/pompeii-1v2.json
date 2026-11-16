@@ -1,0 +1,63 @@
+{
+ "voice": "bm_george",
+ "speed": 1.2,
+ "gap": 0.13,
+ "lead": 0.05,
+ "lines": [
+  {
+   "id": "hook",
+   "text": "The mountain behind me just exploded. This is Pompeii.",
+   "gap": 0.3
+  },
+  {
+   "id": "morning",
+   "text": "This morning was ordinary. Fresh bread. A guard dog on his chain.",
+   "gap": 0.15
+  },
+  {
+   "id": "shake",
+   "text": "The ground shook. Here, it always shakes.",
+   "gap": 0.3
+  },
+  {
+   "id": "blow",
+   "text": "Then, around midday, Vesuvius blows.",
+   "gap": 0.7
+  },
+  {
+   "id": "pine",
+   "text": "A cloud climbs out of it like a pine tree: a tall trunk, then branches.",
+   "gap": 0.4
+  },
+  {
+   "id": "ready",
+   "text": "About eleven thousand people live here. Nobody is ready.",
+   "gap": 0.3
+  },
+  {
+   "id": "grab",
+   "text": "People grab what they can carry, and run.",
+   "gap": 0.35
+  },
+  {
+   "id": "run",
+   "text": "The baker runs. The soldier runs. The merchant grabs his coins. I grab my cap.",
+   "gap": 0.45
+  },
+  {
+   "id": "stones",
+   "text": "Then the sky starts to fall. Not rain. Stones.",
+   "gap": 0.45
+  },
+  {
+   "id": "awning",
+   "text": "I dive under an awning. It does not hold.",
+   "gap": 0.7
+  },
+  {
+   "id": "next",
+   "text": "And in the middle of the day, it goes dark. That is part two.",
+   "gap": 0.9
+  }
+ ]
+}

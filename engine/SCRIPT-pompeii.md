@@ -1,10 +1,14 @@
+> **Changed direction, 2026-11-16 evening (Jesper):** the three-part series is cancelled for now. Pompeii becomes ONE stand-alone
+> Short about the day Vesuvius erupted: the eruption in the first second, a short flashback, the flight, the dark, and the ending with
+> what was found about 1,700 years later. No "Part 2" sign, no hook to a next part. The script is rewritten for the sketch (craft kit
+> step 6) and sent with it. Everything below about parts 1 to 3 is kept as the fact base only.
+
 # I Survived Pompeii: Parts 1-3 (three Shorts, 45-50 s each, 1080 x 1920)
 
-Status 2026-11-16: Jesper approved the three scripts ("Ja kör"). Part 1 is built and scheduled for
-2026-11-16 20:00 (Metricool post 430145541). Parts 2 and 3 wait for his yes on Part 1.
-Publishing order from Jesper on 2026-11-16 15:00: "schemalägger du pompei 20:00 när den är helt färdig" = schedule Part 1 for
-20:00 Stockholm time on 2026-11-16 as soon as the two-frames-per-second review finds nothing. If it is not clean
-before 20:00, do not schedule: tell him.
+Status 2026-11-16 evening: Jesper approved the three scripts ("Ja kör"), then REJECTED the first build of Part 1 after seeing it
+("en rad porträtt"). The scheduled post (Metricool 430145541, now id 430239870) was turned into a draft and will not publish.
+Part 1 was rebuilt the same day under DAILY-RULES "Action, not portraits" with a new narration (see "Part 1, second build" below);
+it waits for his yes. Parts 2 and 3 wait for his yes on Part 1 and must follow the same section. Publish nothing without his yes.
 Order after the yes: (1) draw the Roman side characters in toon.ts, (2) build Part 1, run the layout check, send it with
 three thumbnails, (3) Parts 2 and 3 only after his yes on Part 1. One video per session. Publish nothing without his
 yes on that exact video.
@@ -118,6 +122,26 @@ Shots:
 9. stones: looking up: pale stones of different sizes fall toward the lens, bounce on the paving and the awnings.
 10. next: the daylight drains away in one shot (sky day to ash-dark, lamps not yet lit), Sir Digsworth big, looking up;
    text "PART 2". Hold 0.8 s.
+
+## Part 1, second build (2026-11-16, replaces the table above; film module src/videos/emu/pompeii1b.ts, voice voice/pompeii-1v2)
+Order: the blast in the first second, 6.5 s of the calm morning, then flight and chaos. The disclaimer is a small sign on screen
+from 6.0 to 8.0 s ("THE EVENTS ARE TRUE / MY PART IS MADE UP") and is not spoken. 112 words, 40.5 s.
+| id | text |
+|---|---|
+| hook | The mountain behind me just exploded. This is Pompeii. |
+| morning | This morning was ordinary. Fresh bread. A guard dog on his chain. |
+| shake | The ground shook. Here, it always shakes. |
+| blow | Then, around midday, Vesuvius blows. |
+| pine | A cloud climbs out of it like a pine tree: a tall trunk, then branches. |
+| ready | About eleven thousand people live here. Nobody is ready. |
+| grab | People grab what they can carry, and run. |
+| run | The baker runs. The soldier runs. The merchant grabs his coins. I grab my cap. |
+| stones | Then the sky starts to fall. Not rain. Stones. |
+| awning | I dive under an awning. It does not hold. |
+| next | And in the middle of the day, it goes dark. That is part two. |
+Facts: the same sources as above ("people grab what they can carry": coins and jewellery found with the victims, [SM] [W] [BBC]).
+Dramatised and not spoken as fact: the cart that tips, the jars that smash, the awning that comes down on Sir Digsworth.
+The 26 shots and what moves in each are listed at the top of pompeii1b.ts (the table B).
 
 ## Part 2: "I Survived Pompeii: Part 2 #Shorts" (136 words, about 49 s)
 | id | text |

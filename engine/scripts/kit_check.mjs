@@ -9,7 +9,6 @@
 //   SMALL   the biggest figure under half the picture height (medium); every figure under a third (wide)      AIR   two main figure boxes that touch or overlap
 //   WIDE    a wide or sea shot longer than 2 s; SEA: a sea shot whose lower half shows no boat       CLOSE-UP the whole face inside the safe area
 //   PROP    a set piece (davit post, a sliding bench or chair ...) in front of any character or its face
-//   SIDE    Sir Digsworth drawn in side view as a main figure
 //   CHAIN   Sir Digsworth's monocle chain: upper end on the rim, lower end inside the torso, a sag below the straight line
 //   GAZE    while an event is on, every main figure looks toward it (horizontal look has the sign of its side; lookUp >= 0.5 if it is > 15 % above the face)
 //   LAMP    no lantern or lit window of the set inside the box of a main figure
@@ -19,7 +18,7 @@
 //   COUNT   the number of figures a shot must show (60+ on the packed deck, exactly 30 on the upturned boat)
 // Crowd figures (name starting c_) count for HOOK, TAG and COUNT only. Person box and face: measured sizes (tables M / MS below).
 import fs from "node:fs"; import path from "node:path"; import { pathToFileURL } from "node:url"; import { build } from "esbuild";
-const FILMS = { titanic3: "src/videos/emu/titanic3", titanic3test: "src/videos/emu/titanic3Scenes", pompeii1: "src/videos/emu/pompeii1" };
+const FILMS = { titanic3: "src/videos/emu/titanic3", titanic3test: "src/videos/emu/titanic3Scenes", pompeii1: "src/videos/emu/pompeii1b" };
 if (process.env.FILM_MODULE) FILMS[process.argv[2] || "titanic3"] = process.env.FILM_MODULE;   // a modified copy of a film, for testing the rules with a deliberate failure
 const which = process.argv.slice(2).find((a) => !a.startsWith("--")) || "titanic3";
 if (!FILMS[which]) { console.error("unknown film " + which + " (" + Object.keys(FILMS).join(", ") + ")"); process.exit(2); }
@@ -44,6 +43,12 @@ export const run = (dump: boolean, FCo?: any) => {
   M.baker = [1.63, 1.29, 0.52, 0.58]; M.soldier = [1.77, 1.29, 0.52, 0.65]; M.merchant = [1.57, 1.29, 0.52, 0.6]; M.boy = [1.27, 1.0, 0.48, 0.52]; M.woman = [1.62, 1.28, 0.52, 0.64];   // measured on out/pomp1/meas_0003.png (scale 0.5, soles at 975)
   const DOGM: any = { sit: [1.31, 1.85], stand: [1.14, 1.85], run: [1.22, 1.9], bark: [1.2, 1.94] };   // dog card at scale 1: height of the head top, width of the drawing (m); the head sits 0.54 m toward the nose from the centre, 0.95 m up
   const MS: any = { lady: [1.26, 0.94, 0.52, 0.6], kid: [1.06, 0.77, 0.48, 0.52] };
+  // "Action, not portraits" (FC.action): people run in and out of the picture on purpose, so FRAME / AIR / SMALL / FACE-under-band are replaced by SIZE, STILL, ACTION, VARIETY and a chest-and-face CAPTION.
+  // The caption band and the big texts may cross legs and ground, never a face box or the chest (the part of the body box above 45 % of its height, measured from the feet).
+  // Crowd figures (c_) under 30 % of the picture height are background and exempt. Side mode "run" is measured like side "march" (the box width comes from o.stride); mode "fall" is 1.3 times as wide.
+  const ACT = !!FC.action, hist: any = {}, stillRun: any = {}, stillFrames = new Set<number>(), shotAction: any = {}, sizeSt: any = {}, variety: any = {};
+  const chestOf = (b: any) => ({ x0: b.x0, x1: b.x1, y0: b.y0, y1: b.y1 - 0.45 * (b.y1 - b.y0) });
+  const exempt = (b: any) => ACT && b.crowd && (b.y1 - b.y0) / H < 0.3;
   for (const s of FC.shots) {
     const kind = FC.kinds[s.id];
     if ((kind === "wide" || kind === "sea" || kind === "scenery") && s.b - s.a > 60) flag(s.id, "WIDE shot longer than 2 s", s.a, (s.b - s.a) + " frames");
@@ -67,7 +72,7 @@ export const run = (dump: boolean, FCo?: any) => {
       const boxes = [...dogBoxes, ...st.places.filter((p: any) => /^[FS]\\|/.test(p.key)).map((p: any) => {
         const parts = p.key.split("|"), o = JSON.parse(parts[2] || "{}"), sc = p.scale ?? 1, sit = o.mode === "sit", side = parts[0] === "S", arms = !!(o.point || o.cheer || o.shrug || o.wave !== undefined);
         const name = parts[1], base = name.replace(/^c_/, "").replace(/^sir.*/, "sir").replace(/^kid.*/, "kid").replace(/^\\d+$/, "gent"), crowd = name.startsWith("c_"), swim = o.swim ?? 0;
-        const [mh, mf, mfs, mw] = (sit ? MS : M)[base] ?? (sit ? MS.lady : M.sir), hgt = mh - swim, fy = mf, w = (o.swim !== undefined ? 0.7 : arms ? (base === "sir" ? 0.66 : 0.85) : side ? 0.35 + 0.45 * (o.stride ?? 1) : mw) * sc;
+        const [mh, mf, mfs, mw] = (sit ? MS : M)[base] ?? (sit ? MS.lady : M.sir), hgt = (mh - swim) * (1 - 0.25 * (o.crouch ?? 0)), fy = mf, w = (o.swim !== undefined ? 0.7 : arms ? (base === "sir" ? 0.66 : 0.85) : side ? 0.35 + 0.45 * (o.stride ?? 1) : mw) * sc * (o.mode === "fall" ? 1.3 : 1);
         const b: any = { name, crowd, opts: o, key: p.key, p, side, dist: cam.position.distanceTo(new THREE.Vector3(p.x, p.y + 1, p.z)), pass: (FC.passengers || []).includes(name), close: kind === "close", swim: !!swim, ...rect(p.x, p.y + swim, p.z, w, hgt * sc) };
         b.face = rect(p.x, p.y + (fy - mfs / 2) * sc, p.z, mfs * sc, mfs * sc);
         if (base === "sir" && arms) { const hx = px(p.x, p.y + fy * sc, p.z)[0], dx = hx - (b.x0 + b.x1) / 2; b.x0 += dx; b.x1 += dx; b.face.x0 += dx; b.face.x1 += dx; }   // Sir with raised arms: the drawn arms are symmetric about his head; the check box is centred on his feet, which a rolled camera moves away from the head
@@ -76,6 +81,22 @@ export const run = (dump: boolean, FCo?: any) => {
       const R = (b: any) => "[x " + Math.round(b.x0) + "-" + Math.round(b.x1) + ", y " + Math.round(b.y0) + "-" + Math.round(b.y1) + "]";
       const hit = (a: any, b: any, gap = 0) => Math.min(a.x1, b.x1) - Math.max(a.x0, b.x0) > -gap && Math.min(a.y1, b.y1) - Math.max(a.y0, b.y0) > 0;
       const main = boxes.filter((b: any) => !b.crowd);
+      if (ACT) {
+        const sa = (shotAction[s.id] ||= { moved: false, first: [] as any[] });
+        st.places.forEach((p: any, i: number) => {   // any figure, crowd included: a moving mode, or more than 0.3 m of travel during the shot (places are matched by their order)
+          const k = p.key.split("|"); let o: any = {}; try { o = JSON.parse(k[k[0] === "DOG" ? 1 : 2] || "{}"); } catch (e) { o = {}; }
+          if (["march", "stroll", "run", "fall", "push"].includes(o.mode) || (k[0] === "DOG" && (o.mode === "bark" || o.mode === "run"))) sa.moved = true;
+          if (!sa.first[i]) sa.first[i] = [p.x, p.z]; else if (Math.hypot(p.x - sa.first[i][0], p.z - sa.first[i][1]) > 0.3) sa.moved = true;
+        });
+        const hs = (hist[s.id] ||= {});
+        for (const b of main) if (b.key.startsWith("F|")) {   // STILL: a front figure standing or sitting, not crouching or gesturing, that moves less than 0.1 m in 10 frames
+          const o = b.opts, still0 = (o.mode === "stand" || o.mode === "sit") && !o.back && !o.crouch && !o.cheer && !o.point && o.wave === undefined && !o.shrug;
+          (hs[b.name] ||= {})[f] = [b.p.x, b.p.z]; const prev = hs[b.name][f - 10], rk = s.id + "|" + b.name;
+          if (still0 && prev && Math.hypot(b.p.x - prev[0], b.p.z - prev[1]) < 0.1) { stillRun[rk] = (stillRun[rk] || 0) + 2; stillFrames.add(f); if (stillRun[rk] > 60) flag(s.id, "STILL " + b.name + " stands still facing the camera for more than 60 frames", f, ""); } else stillRun[rk] = 0;
+        }
+        if (kind === "medium") { const ins = main.filter((b: any) => !b.behind && b.x0 >= 0 && b.x1 <= W && b.y0 >= 0 && b.y1 <= H); if (ins.length) { const ss = (sizeSt[s.id] ||= { n: 0, ok: 0 }), bh = Math.max(...ins.map((b: any) => (b.y1 - b.y0) / H)); ss.n++; if (bh >= 0.5 && bh <= 0.82) ss.ok++; } }
+        if (f - s.a <= 10 && main.length) { const bg = main.reduce((a: any, b: any) => ((b.y1 - b.y0) > (a.y1 - a.y0) ? b : a)), h = (bg.y1 - bg.y0) / H * 100; if (!variety[s.id] || h > variety[s.id].h) variety[s.id] = { h, cx: (bg.x0 + bg.x1) / 2 / W * 100, view: bg.key[0] === "S" ? "side" : bg.opts.back ? "back" : "front", kind }; }
+      }
       if (dump && f === s.a) { lines.push("shot " + s.id + " f" + f + " (" + kind + ")"); for (const b of main) lines.push("  " + b.name.padEnd(8) + " box x " + (b.x0 / W * 100).toFixed(0) + "-" + (b.x1 / W * 100).toFixed(0) + " % y " + (b.y0 / H * 100).toFixed(0) + "-" + (b.y1 / H * 100).toFixed(0) + " %  face x " + (b.face.x0 / W * 100).toFixed(0) + "-" + (b.face.x1 / W * 100).toFixed(0) + " y " + (b.face.y0 / H * 100).toFixed(0) + "-" + (b.face.y1 / H * 100).toFixed(0)); lines.push("  crowd " + (boxes.length - main.length)); }
       let big = 0;
       // no effect may cover the hook text: the rocket's head while it climbs, its whole star once it has burst
@@ -91,37 +112,37 @@ export const run = (dump: boolean, FCo?: any) => {
       }
       for (const b of main) {
         const who = b.name;
-        if (b.close) { if (b.face.x0 < 22 || b.face.x1 > W - 22 || b.face.y0 < 0.15 * H || b.face.y1 > BAND.y0) flag(s.id, "CLOSE-UP " + who + ": the whole face is not inside the safe area", f, R(b.face)); }
+        if (b.close && ACT) { /* no rule for close-ups in action films */ } else if (b.close) { if (b.face.x0 < 22 || b.face.x1 > W - 22 || b.face.y0 < 0.15 * H || b.face.y1 > BAND.y0) flag(s.id, "CLOSE-UP " + who + ": the whole face is not inside the safe area", f, R(b.face)); }
         else {
-          if ((kind !== "glide" && (b.x0 < (FC.frameSide?.[s.id] ?? 0.05) * W || b.x1 > (1 - (FC.frameSide?.[s.id] ?? 0.05)) * W)) || b.y0 < 0.05 * H || b.y1 > 0.95 * H) flag(s.id, "FRAME " + who + " not inside the picture with a 5 % margin", f, R(b));
+          if ((kind !== "glide" && (b.x0 < (FC.frameSide?.[s.id] ?? 0.05) * W || b.x1 > (1 - (FC.frameSide?.[s.id] ?? 0.05)) * W)) || b.y0 < 0.05 * H || b.y1 > 0.95 * H) { if (!ACT) flag(s.id, "FRAME " + who + " not inside the picture with a 5 % margin", f, R(b)); }
           if (b.face.y0 < 0.15 * H) flag(s.id, "FACE " + who + " in the top 15 %", f, R(b.face));
           if (b.face.y1 > 0.85 * H) flag(s.id, "FACE " + who + " in the bottom 15 %", f, R(b.face));
-          if (b.face.y1 > BAND.y0 && b.face.y0 < BAND.y1) flag(s.id, "FACE " + who + " under the caption band", f, R(b.face));
+          if (!ACT && b.face.y1 > BAND.y0 && b.face.y0 < BAND.y1) flag(s.id, "FACE " + who + " under the caption band", f, R(b.face));
         }
         big = Math.max(big, (b.y1 - b.y0) / H);
       }
       for (const T of TXTS) if (f >= T.a && f < T.b) {
-        for (const b of boxes) if (hit(b, T)) flag(s.id, "HOOK text over " + b.name, f, R(b) + " " + R(T));
+        for (const b of boxes) if (!exempt(b) && (ACT ? (hit(chestOf(b), T) || hit(b.face, T)) : hit(b, T))) flag(s.id, "HOOK text over " + b.name, f, R(b) + " " + R(T));
         if (T.y0 < 0.15 * H || T.y1 > 0.85 * H) flag(s.id, "TEXT a big text reaches into the top or bottom 15 %", f, R(T));
       }
-      if (kind === "medium" && big < 0.5) flag(s.id, "SMALL biggest figure under half the picture height", f, (big * 100).toFixed(0) + " %");
+      if (!ACT && kind === "medium" && big < 0.5) flag(s.id, "SMALL biggest figure under half the picture height", f, (big * 100).toFixed(0) + " %");
       const seaOk = (() => { const bs = FC.boats ? FC.boats(s.id, f) : []; return bs.some((q: number[]) => { const p = px(q[0], q[1], q[2]); return p[2] < 1 && p[1] > H * 0.5 && p[1] < H * 0.98 && p[0] > 0 && p[0] < W; }); })();
       if (kind === "sea" && !seaOk) flag(s.id, "SEA the lower half of the picture shows no boat on the water", f, "");
       if (kind === "wide" || kind === "sea") for (const b of main) if ((b.y1 - b.y0) / H < 0.33 && !seaOk) flag(s.id, "SMALL " + b.name + " under a third of the picture height", f, ((b.y1 - b.y0) / H * 100).toFixed(0) + " %");
-      for (let i = 0; i < main.length; i++) for (let j = i + 1; j < main.length; j++) { const a = main[i], b = main[j]; if (hit(a, b, 0.02 * W)) flag(s.id, "AIR " + a.name + " and " + b.name + " touch", f, R(a) + " " + R(b)); }
+      for (let i = 0; i < main.length; i++) for (let j = i + 1; j < main.length; j++) { const a = main[i], b = main[j]; if (!ACT && hit(a, b, 0.02 * W)) flag(s.id, "AIR " + a.name + " and " + b.name + " touch", f, R(a) + " " + R(b)); }
       // set pieces over or between the main figures
       if (FC.props) for (const p of FC.props(s.id, f)) {
         const r = rect(p.x, p.y, p.z, p.w, p.h); if (r.behind || r.x1 < 0 || r.x0 > W) continue; const pd = cam.position.distanceTo(new THREE.Vector3(p.x, p.y + 1, p.z));
         for (const b of boxes.filter((q: any) => !q.behind)) { if (pd > b.dist + 0.3) continue;   // (every character, not only the main ones; sliding props count too) a prop behind the figure is fine: only one standing in front of or between them counts
           if (hit(r, b)) flag(s.id, "PROP " + p.name + " over " + b.name, f, R(r) + " " + R(b)); if (hit(r, b.face)) flag(s.id, "PROP " + p.name + " over the face of " + b.name, f, R(r)); }
       }
-      for (const b of main) if (/^sir/.test(b.name) && b.side) flag(s.id, "SIDE Sir Digsworth in side view as a main figure (his side view is not approved)", f, R(b));
       // CHAIN: Sir Digsworth's monocle chain
       for (const b of main) if (/^sir/.test(b.name) && b.key.startsWith("F|")) {
         const o = b.opts, ch = sirChain(o), u = ch.u, rim = Math.hypot(ch.upper[0] - ch.mono[0], ch.upper[1] - ch.mono[1]), T = ch.torso;
         if (Math.abs(rim - ch.monoR) > 1.5 * u) flag(s.id, "CHAIN upper end not on the monocle rim", f, rim.toFixed(1) + " vs " + ch.monoR.toFixed(1));
         if (!(ch.lowerBody[0] > T.x0 && ch.lowerBody[0] < T.x1 && ch.lowerBody[1] > T.y0 && ch.lowerBody[1] < T.y1)) flag(s.id, "CHAIN lower end not inside the torso", f, ch.lowerBody.map(Math.round) + "");
         if (!(ch.below && ch.sag > 2.5 * u)) flag(s.id, "CHAIN does not sag below the straight line", f, "sag " + (ch.sag / u).toFixed(1) + "u");
+        if (ch.clear !== undefined && ch.clear < 2) flag(s.id, "CHAIN the chain is closer than 2u to the moustache, mouth or pipe", f, "gap " + ch.clear.toFixed(1) + "u");
       }
       // GAZE: while something happens, the main figures look toward it
       for (const e of FC.events || []) if (f >= e.a && f < e.b) {
@@ -138,7 +159,7 @@ export const run = (dump: boolean, FCo?: any) => {
       // LAMP: lit things of the set behind a main figure
       if (FC.lamps) for (const l of FC.lamps(FC.deckAt ? FC.deckAt(s.id, f) : undefined)) { const q = px(l[0], l[1], l[2]); if (q[2] > 1) continue; for (const b of main) if (q[0] > b.x0 && q[0] < b.x1 && q[1] > b.y0 && q[1] < b.y1 && (!l[4] || q[1] > b.y0 + 0.55 * (b.y1 - b.y0))) flag(s.id, "LAMP a lit window or lantern shows inside the box of " + b.name + (l[4] ? " (behind its legs)" : ""), f, Math.round(q[0]) + "," + Math.round(q[1]) + " in " + R(b)); }
       // TAG: tags and the board
-      if (kind !== "close") for (const b of boxes) if (!b.behind && !b.swim && b.face && b.face.y0 < 0.15 * H) flag(s.id, "TOPZONE the head of " + b.name + " is inside the top 15 % of the picture", f, R(b.face));
+      if (kind !== "close") for (const b of boxes) if (!b.behind && !b.swim && b.face && b.face.y0 < 0.15 * H && !(ACT && b.crowd)) flag(s.id, "TOPZONE the head of " + b.name + " is inside the top 15 % of the picture", f, R(b.face));
       const cards: { name: string; box: any }[] = [];
       for (const t of FC.tags || []) if (t.id === s.id && f >= t.a && f < t.b) cards.push({ name: "tag '" + (t.lines || [t.l1]).join(" ") + "'", box: t.box });
       if (FC.board && FC.board.id === s.id && f >= FC.board.l1) cards.push({ name: "the board", box: FC.board.box });
@@ -186,6 +207,7 @@ export const run = (dump: boolean, FCo?: any) => {
       for (let i = 0; i < chars.length; i++) for (let j = 0; j < chars.length; j++) {
         if (i === j) continue; const near = chars[i], far = chars[j];
         if (near.dist >= far.dist) continue;
+        if (ACT && (near.crowd || far.crowd)) continue;   // a town on the run: the people of the crowd pass behind and in front of each other; only the named figures may not hide one another
         if (packed && (far.y1 - far.y0) / H > 0.15) { const ix0 = Math.min(near.x1, far.face.x1) - Math.max(near.x0, far.face.x0), iy0 = Math.min(near.y1, far.face.y1) - Math.max(near.y0, far.face.y0); if (ix0 > 0 && iy0 > 0 && (near.crowd || far.crowd || true)) { flag(s.id, "OVERLAP " + near.name + " hides the face of " + far.name + " in the near rows (figures over 15 % of the height)", f, R(near) + " " + R(far.face)); continue; } }
         if (near.crowd && far.crowd && packed) continue; if (!h8(near) && !h8(far)) continue; if (packed && (near.crowd || far.crowd) && !(!near.crowd && !far.crowd)) continue;
         const ix = Math.min(near.x1, far.x1) - Math.max(near.x0, far.x0), iy = Math.min(near.y1, far.y1) - Math.max(near.y0, far.y0);
@@ -194,9 +216,10 @@ export const run = (dump: boolean, FCo?: any) => {
         else if (hit(near, far.face)) flag(s.id, "OVERLAP " + near.name + " covers the face of " + far.name, f, R(near) + " " + R(far.face));
       }
       // EDGE: nobody cut by the picture edge (close-ups excepted); figures under 8 % of the height are exempt and counted
-      if (kind !== "close") for (const b of chars) { if (b.swim && false) continue; if ((kind !== "glide" && (b.x0 < -(FC.edgeTol?.[s.id] ?? 0) * W || b.x1 > W * (1 + (FC.edgeTol?.[s.id] ?? 0)))) || b.y0 < 0 || b.y1 > H) { if (h8(b)) flag(s.id, "EDGE " + b.name + " is cut by the picture edge", f, R(b)); else exemptEdge++; } }
+      if (ACT && kind === "medium") for (const b of chars) if (!b.crowd && (b.face.x0 < 0 || b.face.x1 > W || b.face.y0 < 0 || b.face.y1 > H || b.y0 < 0)) flag(s.id, "EDGE " + b.name + ": the face or the top of the body is cut by the picture edge", f, R(b));
+      if (kind !== "close" && !ACT) for (const b of chars) { if (b.swim && false) continue; if ((kind !== "glide" && (b.x0 < -(FC.edgeTol?.[s.id] ?? 0) * W || b.x1 > W * (1 + (FC.edgeTol?.[s.id] ?? 0)))) || b.y0 < 0 || b.y1 > H) { if (h8(b)) flag(s.id, "EDGE " + b.name + " is cut by the picture edge", f, R(b)); else exemptEdge++; } }
       // CAPTION: the caption band (y 1400-1600) never over a body box (not in close-ups), a face or a sign
-      for (const b of chars) { if (b.behind) continue; if ((b.face.y1 - b.face.y0) / H <= 0.35 && (h8(b) || !b.crowd) && hit(b, { x0: 0, x1: W, y0: CAPB.y0, y1: CAPB.y1 })) flag(s.id, "CAPTION the caption band is over the body of " + b.name + " (only a face taller than 35 % of the picture may share the band)", f, R(b)); if (hit(b.face, { x0: 0, x1: W, y0: CAPB.y0, y1: CAPB.y1 })) flag(s.id, "CAPTION the caption band is over the face of " + b.name, f, R(b.face)); }
+      for (const b of chars) { if (ACT) { if (b.behind || exempt(b)) continue; const bb = { x0: 0, x1: W, y0: CAPB.y0, y1: CAPB.y1 }; if (!(FC.cover || {})[s.id] && hit(chestOf(b), bb)) flag(s.id, "CAPTION the caption band is over the chest of " + b.name, f, R(b)); /* FC.cover[id]: a counter stands between the lens and the figure from the chest down, so the band lies on the counter */ if (hit(b.face, bb)) flag(s.id, "CAPTION the caption band is over the face of " + b.name, f, R(b.face)); continue; } if (b.behind) continue; if ((b.face.y1 - b.face.y0) / H <= 0.35 && (h8(b) || !b.crowd) && hit(b, { x0: 0, x1: W, y0: CAPB.y0, y1: CAPB.y1 })) flag(s.id, "CAPTION the caption band is over the body of " + b.name + " (only a face taller than 35 % of the picture may share the band)", f, R(b)); if (hit(b.face, { x0: 0, x1: W, y0: CAPB.y0, y1: CAPB.y1 })) flag(s.id, "CAPTION the caption band is over the face of " + b.name, f, R(b.face)); }
       // WATER / FLOAT
       for (const b of chars) {
         if (b.swim) { if (!b.opts.water) flag(s.id, "WATER " + b.name + " is in the water but drawn without the wavy waterline mask", f, ""); }
@@ -217,9 +240,17 @@ export const run = (dump: boolean, FCo?: any) => {
     }
   }
   if (FC.captions) for (const c of FC.captions.chunks) { if (c.words > 3 || c.size < 96 - 1e-6 && false) flag(0, "CAPTION a chunk of " + c.words + " words", 0, c.text); if (c.text.split(" ").length > 3) flag(0, "CAPTION chunk '" + c.text + "' has more than 3 words", 0, ""); if (/\d$/.test(c.text) && FC.captions.wordsAfter?.(c)) flag(0, "CAPTION a number is split from its unit in '" + c.text + "'", 0, ""); }
-  for (const t of [...(FC.tags || []), ...(FC.board ? [FC.board] : [])]) if ((t.px ?? 0) < 120) flag(t.id, "SIGN the text of the sign is only " + (t.px ?? 0) + " px tall, the captions are 120 px", t.a ?? 0, "");
+  for (const t of [...(FC.tags || []), ...(FC.board ? [FC.board] : [])]) if (t.small ? (t.px ?? 0) < 40 : (t.px ?? 0) < 120) flag(t.id, "SIGN the text of the sign is only " + (t.px ?? 0) + " px tall, " + (t.small ? "a small sign needs 40 px" : "the captions are 120 px"), t.a ?? 0, "");
   if (FC.signFacts) { const txt = [...(FC.tags || []), ...(FC.board ? [FC.board] : [])].map((t: any) => (t.lines || []).join(" ")).join(" | "); for (const sf of FC.signFacts) if (!txt.includes(sf)) flag(0, "SIGNFACT the signs must say '" + sf + "' (the narration says about)", 0, ""); }
   if (FC.endHook) { const last = FC.total - 30, ch = FC.captions ? FC.captions.chunks.filter((c: any) => c.b * 30 > last) : []; if (FC.endHook.a > last) flag(FC.shots.length, "ENDHOOK the hook text starts at frame " + FC.endHook.a + ", later than the last second", FC.endHook.a, ""); if (FC.captions && !ch.length) flag(FC.shots.length, "ENDHOOK no caption in the last second", last, ""); }
+  if (ACT) {
+    for (const id of Object.keys(sizeSt)) { const ss = sizeSt[id]; if (ss.ok < ss.n / 2) flag(+id, "SIZE the biggest whole figure is between 50 and 82 % of the picture height in only " + ss.ok + " of " + ss.n + " frames", 0, ""); }
+    const fn = Math.max(1, FC.total ?? 1); if (stillFrames.size * 2 / fn > 0.25) flag(0, "STILL " + (stillFrames.size * 2) + " of " + fn + " frames (" + Math.round(stillFrames.size * 200 / fn) + " %) show somebody standing still facing the camera, the limit is 25 %", 0, "");
+    const ids = FC.shots.map((q: any) => q.id), na = ids.filter((id: number) => shotAction[id]?.moved).length; lines.push("ACTION: " + na + " of " + ids.length + " shots have action"); if (na * 3 < ids.length * 2) flag(0, "ACTION only " + na + " of " + ids.length + " shots have action, two in three are needed", 0, "");
+    for (let i = 1; i < ids.length; i++) { const a = variety[ids[i - 1]], b = variety[ids[i]]; if (a && b && Math.abs(a.h - b.h) < 8 && Math.abs(a.cx - b.cx) < 10 && a.view === b.view && a.kind === b.kind) flag(ids[i], "VARIETY shots " + ids[i - 1] + " and " + ids[i] + " frame the subject alike (height " + a.h.toFixed(0) + " / " + b.h.toFixed(0) + " %, centre " + a.cx.toFixed(0) + " / " + b.cx.toFixed(0) + " %, " + a.view + ", " + a.kind + ")", 0, ""); }
+  }
+  if (FC.flashback && FC.flashback.b - FC.flashback.a > 240) flag(0, "FLASHBACK the flashback is " + (FC.flashback.b - FC.flashback.a) + " frames, the limit is 240 (8 s)", FC.flashback.a, "");
+  if (FC.disclaimer) { const d = FC.disclaimer, n = d.b - d.a; if (d.a < 150) flag(0, "DISCLAIMER the disclaimer starts at frame " + d.a + ", inside the first five seconds", d.a, ""); if (n < 55 || n > 65) flag(0, "DISCLAIMER the disclaimer lasts " + n + " frames, it must be 55-65 (two seconds)", d.a, ""); }
   if (exemptEdge) lines.push("EDGE: " + exemptEdge + " figure-frames under 8 % of the picture height were exempt from the edge rule (far rows)");
   return { frames, fails: [...fails].map(([k, e]) => k + "  (" + e.n + " frames, first " + e.f + ")  " + e.ex), lines };
 };
@@ -227,6 +258,7 @@ export const selftest = () => {
   const cam = { pos: [0, 1.2, 0] as [number, number, number], look: [0, 1.2, 10] as [number, number, number], fov: 40, roll: 0 };
   const P = (name: string, x: number, y: number, z: number, o: any = {}) => ({ key: "F|" + name + "|" + JSON.stringify({ mode: "stand", ...o }) + "|t0", x, y, z, scale: 1 });
   const mk = (places: any[], extra: any = {}, kind = "medium") => ({ shots: [{ id: 1, a: 0, b: 2, light: "night" }], kinds: { 1: kind }, camAt: () => cam, sceneAt: () => ({ places, fx: [] }), total: 90, onSurface: () => true, ...extra });
+  const mkA = (fn: (f: number) => any[], extra: any = {}, kind = "medium", b = 100) => ({ shots: [{ id: 1, a: 0, b, light: "night" }], kinds: { 1: kind }, camAt: () => cam, sceneAt: (_id: number, f: number) => ({ places: fn(f), fx: [] }), total: 90, onSurface: () => true, action: true, ...extra });
   const has = (fc: any, rule: string) => (run(false, fc) as any).fails.some((l: string) => l.includes(": " + rule + " "));
   const cases: [string, any, any][] = [
     ["POLE", mk([P("officer", 0, 0, 4)], { props: () => [{ name: "davit", x: 0, y: 1.0, z: 8, w: 0.3, h: 1 }] }), mk([P("officer", 0, 0, 4)], { props: () => [{ name: "davit", x: 3, y: 1.0, z: 8, w: 0.3, h: 1 }] })],
@@ -244,6 +276,10 @@ export const selftest = () => {
     ["OVERLAP", mk([P("c_a", 0, 0, 3.5), P("c_b", 0.05, 0, 4.5)], { packed: [1] }), mk([P("c_a", -0.5, 0, 3.5), P("c_b", 0.7, 0, 4.5)], { packed: [1] })],
     ["BURST", mk([], { rockets: [{ t0: -1.8, rise: 1.3, from: [3, 1, 12], apex: [3, 3.1, 12], radius: 1 }] }), mk([], { rockets: [{ t0: -1.8, rise: 1.3, from: [0, 1, 12], apex: [0, 3.0, 12], radius: 0.6 }] })],
     ["SIGNFACT", mk([], { signFacts: ["ABOUT 700"], tags: [{ id: 1, a: 0, b: 10, box: { x0: 100, y0: 300, x1: 700, y1: 500 }, lines: ["700 SAVED"], px: 120 }] }), mk([], { signFacts: ["ABOUT 700"], tags: [{ id: 1, a: 0, b: 10, box: { x0: 100, y0: 300, x1: 700, y1: 500 }, lines: ["ABOUT 700", "SAVED"], px: 120 }] })],
+    ["STILL", mkA(() => [P("officer", 0, 0, 4)]), mkA((f) => [P("officer", f * 0.04 - 2, 0, 4)])],
+    ["FLASHBACK", mk([], { flashback: { a: 0, b: 300 } }), mk([], { flashback: { a: 0, b: 200 } })],
+    ["DISCLAIMER", mk([], { disclaimer: { a: 100, b: 160 } }), mk([], { disclaimer: { a: 200, b: 260 } })],
+    ["CAPTION", mkA(() => [P("officer", 0, 0, 4)], { band: { y0: 1000, y1: 1200 } }), mkA(() => [P("officer", 0, 0, 4)], { band: { y0: 1350, y1: 1600 } })],
     ["ENDHOOK", mk([], { endHook: { a: 80 }, captions: { chunks: [{ a: 0, b: 2, text: "A B", words: 2, size: 120 }] } }), mk([], { endHook: { a: 40 }, captions: { chunks: [{ a: 0, b: 3, text: "A B", words: 2, size: 120 }] } })],
   ];
   const proven: string[] = [], broken: string[] = [];

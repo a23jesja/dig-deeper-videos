@@ -145,7 +145,9 @@ const CAMS: Record<number, Key[]> = {
 };
 /** thumbnails only: 1 = Sir shocked in the water at the lens, 2 = Sir big at the edge of the upturned boat */
 export const THUMB = { mode: -1 };
-export const camAtT3 = (id: number, f: number): Cam => THUMB.mode === 2 && id === 11 ? zoom([RAFT.x, SEA + 1.7, RAFT.z - 5.1], [RAFT.x, SEA + 1.6, RAFT.z + 2], 40, 1, { roll: 0 }) as Cam : run(CAMS[id], f);
+export const camAtT3 = (id: number, f: number): Cam => THUMB.mode === 2 && id === 11 ? zoom([RAFT.x, SEA + 1.7, RAFT.z - 5.1], [RAFT.x, SEA + 1.6, RAFT.z + 2], 40, 1, { roll: 0 }) as Cam : deckCam(id, f, run(CAMS[id], f));
+/** on the tilted deck the figures stand 7.5 cm above its nominal plane (on top of the planks): the lens rises with them, so every framing stays as it was */
+const deckCam = (id: number, f: number, c: Cam): Cam => (stAt(id, f).set === "deck" ? { ...c, pos: [c.pos[0], c.pos[1] + 0.075, c.pos[2]], look: [c.look[0], c.look[1] + 0.075, c.look[2]] } : c);
 export const dofAtT3 = dofFrom([
   { f: 0, cInf: 3, focus: () => W0(5.7, 1.4, 8.9, 0.2) },
   { f: A_T3[1], cInf: 0 },
@@ -383,6 +385,9 @@ export const sceneAtT3 = (id: number, f: number, cam: CamInfo): Scene => {
     stand(out, cam, SIR_B, [1.5, ly, 5.0], { expr: "neutral", look: turn * -1, facing: turn > 0.5 ? -1 : 0 }, f, { talk: talkOf(f) });
   }
   void SIR_DIGSWORTH; void ({} as SideOpts);
+  // feet ON the deck (Jesper 2026-11-16: "båda skorna ska synas hela i varje bild och stå ovanpå däcket"): the planks and the strakes laid over
+  // them lie 3 to 5 cm above the deck's nominal plane, which swallowed the shoes; everybody standing on the tilted deck is lifted clear of them
+  if (st.set === "deck") for (const pl of out.places) if (!/\|w-?\d/.test(pl.key)) pl.y += 0.075;
   return out;
 };
 export const SHOW_T3: Show = { shots: SHOTS_T3, camAt: camAtT3, sceneAt: sceneAtT3, crowdFor: () => null, wheatAt: () => 1, deckAt };

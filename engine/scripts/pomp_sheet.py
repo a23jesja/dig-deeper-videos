@@ -5,7 +5,7 @@ import os, subprocess, sys
 import numpy as np
 from PIL import Image, ImageDraw
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "audio"))
-from pompeii1_audio import C, BLAST, TOTAL  # noqa: E402
+from pompeii1b_audio import CUTS as C, BLAST, TOTAL  # noqa: E402
 
 vid, out = sys.argv[1], sys.argv[2]
 W, H = 340, 604

@@ -31,6 +31,22 @@ export type PompState = {
   pines?: boolean;
   /** stones fall only behind this z (the figures and the lens are in front of it) */
   zmax?: number;
+  /** how far up the street from zmax the stones fall (default 33.6 m) */
+  stoneSpan?: number;
+  /** size of the stones (1 = as built; a lens close above them takes smaller ones) */
+  stoneScale?: number;
+  /** half the width of the strip the stones fall on (default: the road and both pavements) */
+  stoneHalf?: number;
+  /** how far each awning has come down, 0 (up) .. 1 (on the ground): asked per awning by its side (-1 left, 1 right) and the z of its shop */
+  awnDrop?: (side: number, z: number) => number;
+  /** the handcart: where it stands, which way it points and how far it has tipped over onto its side (radians) */
+  cart?: { x: number; z: number; yaw: number; roll: number; y?: number };
+  /** loose amphorae (standing, falling, rolling): position, tilt about x and z, size */
+  pots?: { x: number; y: number; z: number; rx?: number; rz?: number; s?: number }[];
+  /** amphorae that have smashed: where, and the seconds since (the shards fly, fall and lie) */
+  smash?: { x: number; y: number; z: number; t: number; seed?: number }[];
+  /** seconds for the lightning's clock (bolts flash in the base of the column); undefined = none */
+  bolts?: number;
 };
 
 export const X = 3.5;                       // the line of the facades, both sides
@@ -47,12 +63,14 @@ type Awn = { side: number; z: number; hw: number; yTop: number; drop: number; le
 const AWN: Awn[] = [];
 
 const parts: Part[] = [];
-let awnGroups: { g: THREE.Group; ph: number }[] = [];
+let awnGroups: { g: THREE.Group; ph: number; side: number; z: number; y0: number; len: number; drop: number }[] = [];
 let clouds: THREE.Mesh[] = [];
 let cloudInfo: { kind: number; u: number; a: number; q: number; s: number; c: number }[] = [];
 let craterGlow: THREE.Group, fireBalls: THREE.Mesh[] = [], jet: THREE.Mesh, core: THREE.Mesh, rocks: THREE.Mesh[] = [], fireGlow: THREE.Sprite;
 let stoneMesh: THREE.InstancedMesh, pinesNear: THREE.Group;
-let airNear: THREE.Points, airFar: THREE.Points, airAsh: THREE.Points, fgAmph: THREE.Group, fgCol: THREE.Group, fgAwn: THREE.Mesh, fgFlee: THREE.Group;
+let airNear: THREE.Points, airFar: THREE.Points, airAsh: THREE.Points, fgAmph: THREE.Group, fgCol: THREE.Group, fgAwn: THREE.Mesh;
+let cartG: THREE.Group, potMeshes: THREE.Mesh[] = [], shardMesh: THREE.InstancedMesh, boltMeshes: THREE.Mesh[] = [], boltGlow: THREE.Sprite;
+const POT_N = 12, SHARD_N = 160, SHARD_PER = 16;
 const CS = 0.55;
 const AIR_N = 260, AIR_F = 900, AIR_A = 300;
 const airSeed = (n: number, seed: number) => { const r = prng(seed); return Array.from({ length: n }, () => [r(), r(), r(), r()]); };
@@ -250,7 +268,7 @@ export const buildPompeii = (root: THREE.Group) => {
         const val = new THREE.Mesh(new THREE.PlaneGeometry(aw, 0.22), lam("awnV" + c1, () => ({ color: c1, side: THREE.DoubleSide })));
         val.rotation.y = Math.PI / 2; val.position.set(-nx * len, -drop - 0.11, 0); val.castShadow = true; g.add(val);
         const rb = new Batch(); for (const sg of [-1, 1]) rb.add(rod(V(-nx * len, -drop, sg * aw / 2), V(0, 0.55, sg * aw / 2), 0.012), col("#5a4630")); rb.build(g, false);
-        root.add(g); awnGroups.push({ g, ph: ui * 1.7 });
+        root.add(g); awnGroups.push({ g, ph: ui * 1.7, side: nx, z: oc, y0, len, drop });
         AWN.push({ side: nx, z: oc, hw: aw / 2, yTop: y0, drop, len });
       }
     }
@@ -279,7 +297,7 @@ export const buildPompeii = (root: THREE.Group) => {
       b.add(new THREE.CylinderGeometry(0.62, 0.7, 0.25, 22, 1, false).translate(ox + nx * 0.2, 0.7, oz), STONE_D);
       const mouthX = ox - nx * 1.0;
       b.add(box(mouthX + nx * 0.02, 0.78, oz, 0.1, 0.95, 1.1), col("#1c1410"));
-      const gl = new THREE.Mesh(new THREE.PlaneGeometry(0.8, 0.62), new THREE.MeshBasicMaterial({ color: new THREE.Color(2.6, 1.15, 0.3), fog: false })); gl.rotation.y = nx * -Math.PI / 2; gl.position.set(mouthX - nx * 0.04, 1.2, oz); gl.layers.set(3); root.add(gl);
+      const gl = new THREE.Mesh(new THREE.PlaneGeometry(0.8, 0.62), new THREE.MeshBasicMaterial({ color: new THREE.Color(0.95, 0.34, 0.07), fog: false })); gl.rotation.y = nx * -Math.PI / 2; gl.position.set(mouthX - nx * 0.04, 1.2, oz); gl.layers.set(3); root.add(gl);
       const fire = makeFire(V(mouthX + nx * 0.2, 0.86, oz), 0.5, { power: 22 }); root.add(fire.obj); parts.push(fire);
       b.add(box(nx * (X + 2.2), 0, oc + 1.55, 0.7, 0.55, 0.9), plaster("#b09a78"));
       // a stack of firewood beside the oven and a bench of loaves (behind the baker, so the lower third of the oven shot is not an empty wall)
@@ -316,7 +334,6 @@ export const buildPompeii = (root: THREE.Group) => {
     const wood = col("#8a5a34"), ring = col("#3a2a1e"), stripes = lam("stallAwn", () => ({ map: stripeTex("#c8402a", "#f1e6c8"), side: THREE.DoubleSide }));
     const barrel = (x: number, y: number, z: number) => { const pf = [[0, 0], [0.26, 0], [0.31, 0.2], [0.33, 0.38], [0.31, 0.56], [0.26, 0.75], [0, 0.75]].map(([r, h]) => new THREE.Vector2(r, h)); b.add(new THREE.LatheGeometry(pf, 14).translate(x, y, z), wood); for (const h of [0.14, 0.62]) b.add(new THREE.CylinderGeometry(0.325, 0.325, 0.035, 14).translate(x, y + h, z), ring); };
     barrel(-3.1, 0.26, 4.1); barrel(-2.75, 0.26, 4.5); barrel(3.1, 0.26, -2.3); barrel(3.0, 0.26, 4.4);
-    b.add(box(3.0, 0.5, 6.6, 0.9, 0.1, 1.3), wood); for (const sz of [-0.55, 0.55]) b.add(new THREE.CylinderGeometry(0.3, 0.3, 0.07, 14).rotateZ(Math.PI / 2).translate(3.0 + 0.5, 0.3, 6.6 + sz * 0), wood); b.add(new THREE.CylinderGeometry(0.3, 0.3, 0.07, 14).rotateZ(Math.PI / 2).translate(2.5, 0.3, 6.6), wood); b.add(rod(V(3.0, 0.55, 7.25), V(3.0, 0.9, 8.4), 0.03), wood);
     const stall = (x: number, z: number, side: number) => { b.add(box(x, 0.26, z, 0.7, 0.75, 1.5), wood); for (const sz of [-0.7, 0.7]) b.add(rod(V(x + side * 0.3, 0.26, z + sz), V(x + side * 0.3, 2.0, z + sz), 0.03), wood);
       for (let k = 0; k < 5; k++) b.add(new THREE.SphereGeometry(0.13, 8, 6).scale(1, 0.7, 1).translate(x, 1.1, z - 0.55 + k * 0.28), col(["#c24a2a", "#d9a02e", "#6a8a3c", "#c9a25a", "#a8452f"][k]));
       for (const k of [-1, 1]) b.add(new THREE.CylinderGeometry(0.2, 0.17, 0.25, 10).translate(x, 1.28, z + k * 0.35), col("#a07a4a")); };
@@ -342,10 +359,12 @@ export const buildPompeii = (root: THREE.Group) => {
   fireGlow = glow("#ff4a08", 60, 0.7); craterGlow.add(fireGlow);
   core = new THREE.Mesh(new THREE.ConeGeometry(1, 1, 10, 1, true).translate(0, 0.5, 0), new THREE.MeshBasicMaterial({ color: new THREE.Color(1.3, 0.65, 0.07), fog: false, side: THREE.DoubleSide })); core.layers.set(3); craterGlow.add(core);
   root.add(craterGlow);
-  const ash = (h: string) => lam("ash" + h, () => ({ color: h, fog: false })), mats = ["#8a3a18", "#4a3026", "#6a5448", "#8e7a68", "#b09c88"].map(ash), sg = new THREE.IcosahedronGeometry(1, 2), rc = prng(31);
+  // the column is grey ash, drawn with its own flat greys (the red light of the street does not turn it brown): glowing at the foot,
+  // dark in the trunk's shadow side, pale where the crown catches the daylight above the town
+  const ash = (h: string) => new THREE.MeshBasicMaterial({ color: h, fog: false }), mats = ["#c26a2e", "#5b5552", "#77716d", "#928c87", "#aaa49e", "#c4beb7", "#6a6460"].map(ash), sg = new THREE.IcosahedronGeometry(1, 2), rc = prng(31);
   clouds = []; cloudInfo = [];
-  for (let i = 0; i < 230; i++) {
-    const kind = i < 78 ? 0 : i < 160 ? 1 : 2;   // 0 trunk, 1 crown, 2 skirt at the crater
+  for (let i = 0; i < 300; i++) {
+    const kind = i < 90 ? 0 : i < 250 ? 1 : 2;   // 0 trunk, 1 crown, 2 skirt at the crater
     const m = new THREE.Mesh(sg, mats[0]); m.castShadow = false; m.receiveShadow = false; m.visible = false; clouds.push(m); root.add(m);
     cloudInfo.push({ kind, u: rc(), a: rc() * 6.283, q: rc(), s: 0.7 + 0.6 * rc(), c: rc() });
   }
@@ -357,7 +376,26 @@ export const buildPompeii = (root: THREE.Group) => {
   { const b2 = new Batch(); fgAmph = new THREE.Group(); amphora(b2, 0, 0, 0, 0, 0.0, 0.8, "#e8a066"); amphora(b2, 0.42, 0, 0.1, 0, 0.12, 0.66, "#dd9058"); amphora(b2, -0.4, 0, 0.05, 0, -0.1, 0.72, "#efb078"); amphora(b2, 0.1, 0, -0.45, 0, 0.05, 0.6, "#d88850"); b2.build(fgAmph, false); fgAmph.visible = false; root.add(fgAmph);
     const b3 = new Batch(), cream = col("#efe2c4"); fgCol = new THREE.Group(); b3.add(new THREE.CylinderGeometry(0.16, 0.18, 1.55, 14).translate(0, 0.9, 0), cream); b3.add(box(0, 0, 0, 0.5, 0.2, 0.5), col("#e2d2ae")); b3.add(box(0, 0.12, 0, 0.4, 0.1, 0.4), col("#e2d2ae")); b3.add(box(0, 1.65, 0, 0.5, 0.2, 0.5), col("#e2d2ae")); b3.add(box(0, 1.58, 0, 0.36, 0.1, 0.36), col("#e2d2ae")); b3.build(fgCol, false); fgCol.visible = false; root.add(fgCol);
     fgAwn = new THREE.Mesh(new THREE.PlaneGeometry(2.4, 1.0).rotateX(-Math.PI / 2.4), lam("fgAwn", () => ({ map: stripeTex("#c8402a", "#f1e6c8"), side: THREE.DoubleSide }))); fgAwn.visible = false; root.add(fgAwn);
-    fgFlee = new THREE.Group(); for (let i = 0; i < 6; i++) { const bm = new THREE.MeshBasicMaterial({ color: i % 2 ? "#26100a" : "#1a0a06", fog: false }); const sh = new THREE.Mesh(new THREE.SphereGeometry(0.3, 10, 8).scale(1.3, 0.8, 0.8), bm), hd = new THREE.Mesh(new THREE.SphereGeometry(0.17, 10, 8), bm); hd.position.set(0, 0.34, 0); const g = new THREE.Group(); g.add(sh, hd); g.layers.set(3); fgFlee.add(g); } fgFlee.visible = false; root.add(fgFlee); }
+  }
+  // ---- things that break: the handcart, loose amphorae and their shards, lightning in the column ----
+  { const cb = new Batch(), wood = col("#8a5a34"), woodD = col("#6b4a2e"), iron = col("#3a2a1e"); cartG = new THREE.Group();
+    cb.add(box(0, 0.62, 0, 1.0, 0.1, 1.7), wood); for (const sx of [-0.5, 0.5]) cb.add(box(sx, 0.72, 0, 0.06, 0.34, 1.7), woodD); cb.add(box(0, 0.72, -0.85, 1.0, 0.34, 0.06), woodD);
+    for (const sx of [-0.58, 0.58]) { cb.add(new THREE.CylinderGeometry(0.5, 0.5, 0.08, 18).rotateZ(Math.PI / 2).translate(sx, 0.5, -0.1), wood); cb.add(new THREE.CylinderGeometry(0.1, 0.1, 0.12, 10).rotateZ(Math.PI / 2).translate(sx, 0.5, -0.1), iron); for (let k = 0; k < 4; k++) cb.add(box(sx, 0.5 - 0.03, -0.1, 0.1, 0.06, 0.92).applyMatrix4(new THREE.Matrix4().makeTranslation(sx, 0.5, -0.1).multiply(new THREE.Matrix4().makeRotationX((k * Math.PI) / 4)).multiply(new THREE.Matrix4().makeTranslation(-sx, -0.5, 0.1))), woodD); }
+    for (const sx of [-0.42, 0.42]) cb.add(rod(V(sx, 0.64, 0.85), V(sx, 0.78, 2.0), 0.035), woodD);
+    for (const [x, z, k] of [[-0.25, -0.45, 0], [0.22, -0.3, 1], [-0.05, 0.25, 2]] as const) amphora(cb, x, 0.67, z, 0, 0, 0.62, ["#c47a4a", "#b86a3e", "#c98a58"][k]);
+    for (const [x, z] of [[0.28, 0.5], [-0.3, 0.6]] as const) { cb.add(new THREE.CylinderGeometry(0.2, 0.16, 0.22, 10).translate(x, 0.78, z), col("#b98a4e")); cb.add(new THREE.SphereGeometry(0.17, 9, 6).scale(1, 0.55, 1).translate(x, 0.92, z), col("#c98c4a")); }
+    cb.build(cartG, true); cartG.visible = false; cartG.rotation.order = "YZX"; root.add(cartG);
+    const pg = new THREE.LatheGeometry([[0, 0], [0.04, 0.0], [0.1, 0.1], [0.2, 0.32], [0.235, 0.55], [0.2, 0.78], [0.11, 0.94], [0.075, 1.04], [0.1, 1.1], [0.095, 1.13], [0, 1.13]].map(([r, h]) => new THREE.Vector2(r, h)), 14);
+    potMeshes = []; for (let i = 0; i < POT_N; i++) { const m = new THREE.Mesh(pg, col(["#c47a4a", "#b86a3e", "#c98a58", "#bd7040"][i % 4])); m.castShadow = true; m.visible = false; m.rotation.order = "ZXY"; potMeshes.push(m); root.add(m); }
+    const shg = new THREE.TetrahedronGeometry(1, 0).scale(1, 0.35, 0.8); shardMesh = new THREE.InstancedMesh(shg, col("#c47a4a"), SHARD_N); shardMesh.frustumCulled = false; shardMesh.castShadow = true; shardMesh.visible = false; root.add(shardMesh);
+    // lightning: four fixed jagged bolts in the lower trunk, each a ribbon facing the town; one or two flash at a time for two frames
+    boltMeshes = []; const br = prng(57);
+    for (let k = 0; k < 5; k++) { const pos: number[] = [], idx: number[] = []; let x = (br() - 0.5) * 16, y = 62 - 14 * br(), w = 0.75; const n = 9;
+      for (let i = 0; i <= n; i++) { pos.push(x - w, y, 0, x + w, y, 0); if (i < n) { const a = i * 2; idx.push(a, a + 2, a + 1, a + 1, a + 2, a + 3); } x += (br() - 0.5) * 9; y -= (48 / n) * (0.6 + 0.8 * br()); w *= 0.93; }
+      const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3)); g.setIndex(idx);
+      const m = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ color: new THREE.Color(2.3, 2.1, 1.5), fog: false, side: THREE.DoubleSide })); m.layers.set(3); m.renderOrder = 5; m.visible = false; m.frustumCulled = false; boltMeshes.push(m); root.add(m); }
+    boltGlow = glow("#ffe6b0", 70, 0.55); boltGlow.visible = false; root.add(boltGlow);
+  }
   // ---- falling stones of pumice ----
   const stoneGeo = new THREE.IcosahedronGeometry(1, 1).toNonIndexed(); { const p = stoneGeo.attributes.position as THREE.BufferAttribute, seen = new Map<string, number>(); for (let i = 0; i < p.count; i++) { const k = p.getX(i).toFixed(3) + p.getY(i).toFixed(3) + p.getZ(i).toFixed(3); if (!seen.has(k)) seen.set(k, 0.78 + 0.34 * ((Math.sin(i * 12.9898 + k.length * 78.233) * 43758.5453) % 1 + 1) % 1); const f = seen.get(k)!; p.setXYZ(i, p.getX(i) * f, p.getY(i) * f * 0.85, p.getZ(i) * f); } stoneGeo.computeVertexNormals(); }
   stoneMesh = new THREE.InstancedMesh(stoneGeo, lam("pumice", () => ({ color: "#f1ece0" })), STONE_N); stoneMesh.frustumCulled = false; stoneMesh.castShadow = true; stoneMesh.visible = false; root.add(stoneMesh);
@@ -366,9 +404,9 @@ export const buildPompeii = (root: THREE.Group) => {
 const _m4 = new THREE.Matrix4(), _q = new THREE.Quaternion(), _e = new THREE.Euler(), _p = new THREE.Vector3(), _s = new THREE.Vector3();
 const sm01 = (x: number) => { const u = Math.max(0, Math.min(1, x)); return u * u * (3 - 2 * u); };
 /** the column at `t` seconds after the blast: height of the trunk above the crater and the width of the crown */
-export const column = (t: number) => ({ H: 300 * (1 - Math.exp(-t / 2.6)), R: 20 + 78 * sm01((t - 0.5) / 9), top: 300 * (1 - Math.exp(-t / 2.6)) });
-const landY = (x: number, z: number): number => {
-  for (const a of AWN) { const dist = Math.abs(a.side * X - x); if (Math.sign(x) === a.side && dist < a.len && Math.abs(z - a.z) < a.hw) return a.yTop - a.drop * (dist / a.len); }
+export const column = (t: number) => ({ H: 300 * (1 - Math.exp(-t / 2.6)), R: 18 + 74 * sm01((t - 1.5) / 8), top: 300 * (1 - Math.exp(-t / 2.6)) });
+const landY = (x: number, z: number, st: PompState): number => {
+  for (const a of AWN) { if (st.awnDrop && st.awnDrop(a.side, a.z) > 0.4) continue; const dist = Math.abs(a.side * X - x); if (Math.sign(x) === a.side && dist < a.len && Math.abs(z - a.z) < a.hw) return a.yTop - a.drop * (dist / a.len); }
   return Math.abs(x) > ROAD && Math.abs(x) < X ? 0.27 : 0.03;
 };
 
@@ -389,7 +427,28 @@ export const updatePompeii = (t: number, st: PompState = {}, cam?: THREE.Perspec
     fgAmph.visible = !!fg.amph; if (fg.amph) { put(fgAmph, 1.7, fg.amph * 0.78, -0.93); fgAmph.rotation.set(0, 0.5, 0); fgAmph.scale.setScalar(0.62); }
     fgCol.visible = !!fg.col; if (fg.col) { put(fgCol, 2.2, fg.col * 1.08, -0.98); fgCol.rotation.set(0, 0, 0); fgCol.scale.setScalar(1.35); }
     fgAwn.visible = !!fg.awn; if (fg.awn) { put(fgAwn, 1.9, fg.awn * 0.85, 0.95); fgAwn.scale.setScalar(0.45); fgAwn.rotation.set(0, 0, 0); fgAwn.quaternion.copy(cam.quaternion); fgAwn.rotateX(-0.9); fgAwn.rotateZ(fg.awn * 0.25); }
-    fgFlee.visible = !!fg.flee; if (fg.flee) { fgFlee.children.forEach((g, i) => { const x = (((t * 0.55 + i * 0.37) % 2.2) - 1.1) * (i % 2 ? 1 : -1); put(g, 1.4 + 0.15 * (i % 3), x, -1.09 + 0.04 * (i % 2)); g.quaternion.copy(cam.quaternion); g.scale.setScalar(0.34 + 0.08 * (i % 3)); }); }
+  }
+  // the awnings tremble with the ground; one that comes down swings on its wall, tears off and lies on the pavement
+  for (const a of awnGroups) {
+    const d = Math.max(0, Math.min(1, st.awnDrop ? st.awnDrop(a.side, a.z) : 0)), sh = (st.shake ?? 0) * 0.07 * Math.sin(t * 23 + a.ph) + (st.shake ?? 0) * 0.03 * Math.sin(t * 37 + a.ph * 2);
+    // it sags under the stones; then it tears off the WALL: the wall edge swings down and away while the ropes still hold the outer edge
+    // (so the cloth falls away from the doorway, never across it), and at last the whole thing drops flat into the street
+    const sag = 0.35 * sm01(d / 0.25), phi = (Math.PI / 2) * sm01((d - 0.25) / 0.35), fall = sm01((d - 0.6) / 0.4);
+    const rot = (x: number, y: number, an: number): [number, number] => [x * Math.cos(an) - y * Math.sin(an), x * Math.sin(an) + y * Math.cos(an)];
+    const s0 = a.side * (sh + sag), [ex, ey] = rot(-a.side * a.len, -a.drop, s0), [ox, oy] = rot(-ex, -ey, -a.side * phi);   // (ex, ey): the outer edge, the pivot once the wall edge has torn loose
+    const hx = a.side * X + ex + ox, hy = a.y0 + ey + oy, hr = s0 - a.side * phi, lx = a.side * (X - 2.0), ly = 0.62;       // hanging from its ropes; lying in the street
+    a.g.rotation.set(0.1 * fall * Math.sin(a.ph), 0, hr * (1 - fall)); a.g.position.set(hx + (lx - hx) * fall, hy + (ly - hy) * fall, a.z);
+  }
+  cartG.visible = !!st.cart; if (st.cart) { cartG.position.set(st.cart.x, st.cart.y ?? 0, st.cart.z); cartG.rotation.set(0, st.cart.yaw, st.cart.roll); }
+  potMeshes.forEach((m, i) => { const q = st.pots?.[i]; m.visible = !!q; if (q) { m.position.set(q.x, q.y, q.z); m.rotation.set(q.rx ?? 0, 0, q.rz ?? 0); m.scale.setScalar(q.s ?? 0.9); } });
+  shardMesh.visible = !!st.smash?.length;
+  if (st.smash?.length) {
+    let n = 0;
+    for (const sm of st.smash.slice(0, SHARD_N / SHARD_PER)) { const r = prng(77 + (sm.seed ?? 0) * 13 + Math.round(sm.x * 10));
+      for (let k = 0; k < SHARD_PER; k++) { const a = r() * 6.283, v = 1.2 + 3.2 * r(), vy = 1.5 + 3.5 * r(), size = 0.05 + 0.09 * r(), tt = Math.max(0, sm.t), tl = (vy + Math.sqrt(vy * vy + 19.6 * Math.max(0, sm.y))) / 9.8, te = Math.min(tt, tl);
+        _p.set(sm.x + Math.cos(a) * v * te, Math.max(0.03 + size * 0.3, sm.y + vy * te - 4.9 * te * te), sm.z + Math.sin(a) * v * te); _e.set(te * 9 * r(), a, te * 7 * r()); _s.setScalar(sm.t < 0 ? 0 : size); _m4.compose(_p, _q.setFromEuler(_e), _s); shardMesh.setMatrixAt(n++, _m4); } }
+    for (; n < SHARD_N; n++) { _s.setScalar(0); _p.set(0, -50, 0); _m4.compose(_p, _q.identity(), _s); shardMesh.setMatrixAt(n, _m4); }
+    shardMesh.instanceMatrix.needsUpdate = true;
   }
   // ---- the cloud ----
   const E = st.eruptT, on = E !== undefined && E >= 0, mats = (clouds as unknown as { mats: THREE.Material[] }).mats;
@@ -403,34 +462,38 @@ export const updatePompeii = (t: number, st: PompState = {}, cam?: THREE.Perspec
     fireGlow.position.set(SUMMIT[0], SUMMIT[1] + 8, SUMMIT[2]); fireGlow.scale.setScalar(55 * (0.55 + 0.45 * fk) * Math.min(1, e / 0.4) * (1 + 0.08 * Math.sin(t * 27)));
     clouds.forEach((m, i) => {
       const c = cloudInfo[i], rise = 1 - Math.exp(-e / 2.6);
-      let x = 0, y = 0, z = 0, r = 10;
-      if (c.kind === 0) {           // the trunk: a bundle of billows going up, wider and paler higher up
-        const u = c.u, rad = (6 + 6 * u + 14 * c.q) * (0.55 + 0.45 * sm01(e / 2));
-        x = Math.cos(c.a) * rad * 0.7; z = Math.sin(c.a) * rad * 0.7; y = 4 + u * H * 0.9; r = (10 + 10 * u) * c.s * (0.5 + 0.5 * sm01(e / 1.2));
-        m.material = mats[u < 0.18 ? 0 : u < 0.55 ? 1 : 2];
-      } else if (c.kind === 1) {    // the crown: billows spread flat at the top of the trunk, drooping toward the edges: the branches of the pine
-        const rho = Math.sqrt(c.u) * R * 0.95, drop = 0.16 * rho + 8 * c.q, wide = sm01((e - 0.8) / 2.5);
-        x = Math.cos(c.a) * rho * wide; z = Math.sin(c.a) * rho * wide; y = H * 0.92 + 10 - drop * wide + 6 * c.q; r = (13 + 12 * (1 - c.u)) * c.s * wide * (0.5 + 0.5 * rise);
-        m.material = mats[3 + (c.c > 0.5 ? 1 : 0)];
-      } else {                      // the skirt: dark ash pouring over the crater rim
-        const rho = (6 + 22 * c.u) * sm01(e / 2), drop = 4 * c.u;
-        x = Math.cos(c.a) * rho; z = Math.sin(c.a) * rho; y = 2 + 14 * c.q * rise - drop; r = (9 + 10 * c.q) * c.s * (0.4 + 0.6 * sm01(e / 1.5));
-        m.material = mats[c.c > 0.5 ? 1 : 0];
+      let x = 0, y = 0, z = 0, r = 10, flat = 1;
+      if (c.kind === 0) {           // the trunk: a narrow bundle of billows going straight up, a little wider near the top
+        const u = c.u, rad = (4 + 5 * u * u + 7 * c.q) * (0.55 + 0.45 * sm01(e / 2));
+        x = Math.cos(c.a) * rad * 0.7; z = Math.sin(c.a) * rad * 0.7; y = 4 + u * H * 0.92; r = (8.5 + 5 * u) * c.s * (0.5 + 0.5 * sm01(e / 1.2));
+        m.material = mats[u < 0.07 ? 0 : Math.cos(c.a - 0.9) > 0.25 ? (u < 0.4 ? 1 : 2) : u < 0.5 ? 2 : 3];
+      } else if (c.kind === 1) {    // the crown: billows spread wide and flat on top of the trunk and droop at the rim: the branches of the umbrella pine
+        const rho = Math.sqrt(c.u) * R * 1.0, wide = sm01((e - 0.8) / 2.5), drop = (0.1 * rho + 0.004 * rho * rho) * 0.9 + 9 * c.q;
+        x = Math.cos(c.a) * rho * wide; z = Math.sin(c.a) * rho * wide * 0.8; y = H * 0.94 + 12 - drop * wide + 10 * (1 - c.q) * (1 - Math.sqrt(c.u)); r = (15 + 12 * (1 - c.u)) * c.s * (0.35 + 0.65 * wide) * (0.5 + 0.5 * rise); flat = 0.72;
+        m.material = mats[c.q > 0.62 ? 6 : c.q > 0.4 ? 3 : c.c > 0.5 ? 5 : 4];   // the hanging billows (high q = low) are in shadow, the top is pale
+      } else {                      // the skirt: ash pouring over the crater rim, lit from below by the fire
+        const rho = (5 + 20 * c.u) * sm01(e / 2), drop = 4 * c.u;
+        x = Math.cos(c.a) * rho; z = Math.sin(c.a) * rho; y = 2 + 12 * c.q * rise - drop; r = (8 + 9 * c.q) * c.s * (0.4 + 0.6 * sm01(e / 1.5));
+        m.material = mats[c.q < 0.3 ? 0 : c.c > 0.5 ? 1 : 2];
       }
-      const cp2 = st.cap ?? 1, wk = 0.5 + 0.5 * cp2; m.position.set(SUMMIT[0] + x * CS * wk, SUMMIT[1] + y * CS * cp2, SUMMIT[2] + z * CS * wk); m.scale.setScalar(Math.max(0.01, r * CS * wk)); m.visible = e > 0.02;
+      const cp2 = st.cap ?? 1, wk = 0.5 + 0.5 * cp2, rr = Math.max(0.01, r * CS * wk); m.position.set(SUMMIT[0] + x * CS * wk, SUMMIT[1] + y * CS * cp2, SUMMIT[2] + z * CS * wk); m.scale.set(rr, rr * flat, rr); m.visible = e > 0.02;
     });
   } else clouds.forEach((m) => { m.visible = false; });
+  // lightning in the foot of the column: a bolt or two for two frames, several times a second
+  { const bt = st.bolts, fr = bt === undefined ? -1 : Math.floor(bt * 30), slot = Math.floor(fr / 7), on2 = on && E! > 1.1 && fr >= 0 && fr % 7 < 2 && fr1(Math.sin(slot * 91.7) * 43758.5) > 0.25;
+    boltMeshes.forEach((m, k) => { const pick = on2 && (Math.floor(fr1(Math.sin(slot * 12.9) * 43758.5) * 5) === k || (slot % 3 === 0 && (k + slot) % 5 === 0)); m.visible = pick; if (pick) { m.position.set(SUMMIT[0], SUMMIT[1] - 4, SUMMIT[2] + 16); m.scale.set(slot % 2 ? 1 : -1, 1, 1); } });
+    boltGlow.visible = false; if (false as boolean) { boltGlow.position.set(SUMMIT[0], SUMMIT[1] + 28, SUMMIT[2] + 14); boltGlow.scale.setScalar(46); } }
   // ---- the stones ----
   const S = st.stones, avoid = st.avoid ?? [];
   stoneMesh.visible = S !== undefined && S >= 0;
   if (S !== undefined && S >= 0) {
     const r = prng(1234);
     for (let i = 0; i < STONE_N; i++) {
-      const u = i / STONE_N, t0 = 7 * Math.pow(u, 1.25) + 0.25 * r(), size = 0.04 + 0.13 * Math.pow(r(), 1.8) + (i % 23 === 0 ? 0.07 : 0), vf = 14 + 8 * r();
-      let x = (r() - 0.5) * 2 * (ROAD + 1.15), z = (st.zmax ?? 4.3) - 24 * r() * r() * 1.4, y0 = 7 + 18 * r();
+      const u = i / STONE_N, t0 = 7 * Math.pow(u, 1.25) + 0.25 * r(), size = (0.04 + 0.13 * Math.pow(r(), 1.8) + (i % 23 === 0 ? 0.07 : 0)) * (st.stoneScale ?? 1), vf = 14 + 8 * r();
+      let x = (r() - 0.5) * 2 * (st.stoneHalf ?? ROAD + 1.15), z = (st.zmax ?? 4.3) - (st.stoneSpan ?? 33.6) * r() * r(), y0 = 7 + 18 * r();
       const alpha = r(), yaw = r() * 6.283, tum = 2 + 4 * r();
       for (const [ax, , ar] of avoid) { const dx = x - ax; if (Math.abs(dx) < ar) x = ax + (dx >= 0 ? 1 : -1) * (ar + 0.1 + 0.9 * alpha); }
-      const ly = landY(x, z) + size * 0.5, tau = S - t0;
+      const ly = landY(x, z, st) + size * 0.5, tau = S - t0;
       let y = y0 + ly;
       if (tau < 0) { _s.setScalar(0); _p.set(x, -50, z); _m4.compose(_p, _q.identity(), _s); stoneMesh.setMatrixAt(i, _m4); continue; }
       const tf = y0 / vf;
@@ -455,5 +518,5 @@ export const GOLD_L = { ...LIGHTS.golden, lit: [1.55, 1.05, 0.55], shade: [0.55,
 export const GOLD_K = { ...LOOK.golden, sky: { c: ["#fff0b8", "#ffe29a", "#ffd682", "#ffcf78", "#f5c570"], e: LOOK.golden.sky.e }, sat: 1.05, bounce: [0.06, 0.03, 0] };
 export const FIRE_L = { ...LIGHTS.golden, lit: [1.55, 0.6, 0.2], shade: [0.34, 0.14, 0.08], lift: [0.11, 0.04, 0.02], charTint: [1.0, 0.72, 0.5], blob: [0.6, 0.45, 0.4], fog: "#d0561e", fogNear: 25, fogFar: 260, sunCol: "#ff8a30", sunI: 4.6, sky: "#e07a40", ground: "#7a3a1c", hemiI: 0.7 };
 export const FIRE_K = { ...LOOK.golden, sky: { c: ["#ffb040", "#f07a2a", "#c8402a", "#8a1c22", "#4a0c16"], e: [0, 6, 14, 26, 50] }, sat: 1.1, bounce: [0.08, 0.03, 0] };
-export const ASH_L = { ...LIGHTS.golden, lit: [0.7, 0.3, 0.14], shade: [0.2, 0.08, 0.05], lift: [0.05, 0.02, 0.01], charTint: [0.9, 0.62, 0.42], blob: [0.5, 0.4, 0.36], fog: "#3a160c", fogNear: 12, fogFar: 170, sunCol: "#ff7028", sunI: 2.4, sky: "#5a2a18", ground: "#2a1208", hemiI: 0.55 };
-export const ASH_K = { ...LOOK.golden, sky: { c: ["#8a3a14", "#5a2410", "#3a160c", "#260e08", "#180804"], e: [0, 6, 14, 26, 50] }, sat: 0.95, bounce: [0.05, 0.02, 0] };
+export const ASH_L = { ...LIGHTS.golden, lit: [0.34, 0.15, 0.08], shade: [0.085, 0.04, 0.03], lift: [0.02, 0.01, 0.008], charTint: [0.62, 0.42, 0.3], blob: [0.5, 0.4, 0.36], fog: "#170a07", fogNear: 6, fogFar: 120, sunCol: "#ff6a24", sunI: 1.5, sky: "#2a130c", ground: "#120805", hemiI: 0.4 };
+export const ASH_K = { ...LOOK.golden, sky: { c: ["#4a1c0c", "#2a100a", "#180a07", "#100605", "#0a0403"], e: [0, 6, 14, 26, 50] }, sat: 0.9, bounce: [0.03, 0.012, 0] };

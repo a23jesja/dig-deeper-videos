@@ -103,11 +103,13 @@ export const dogSide = (p: Pen, o: DogOpts = {}) => {
 };
 
 // ---------------- small cards of the street ----------------
-/** a round loaf of bread with scored top, 220 x 160 canvas */
+/** a round Roman loaf scored into eight wedges (the bread found in Pompeii's ovens), seen a little from above, 220 x 160 canvas */
 export const fxLoaf = (p: Pen) => {
-  p.ell(110, 90, 90, 56, "#c98c4a", 9);
-  p.ell(98, 72, 56, 28, "#dba463", 0);
-  for (const x of [58, 94, 130, 166]) p.stroke([[x - 14, 48], [x + 6, 108]], 7, "#8a5424");
+  p.ell(110, 92, 96, 58, "#b9763a", 9);                       // the thick side of the loaf
+  p.ell(110, 76, 92, 50, "#d99a52", 7);                       // the top
+  p.ell(96, 62, 50, 20, "#e8b673", 0);                        // a lighter crust where the light falls
+  for (let i = 0; i < 4; i++) { const a = (i / 4) * Math.PI + 0.2, dx = 86 * Math.cos(a), dy = 46 * Math.sin(a); p.stroke([[110 - dx, 76 - dy], [110 + dx, 76 + dy]], 7, "#8a5424"); }
+  p.ell(110, 76, 13, 8, "#8a5424", 0);
 };
 /** a gold coin, 100 x 100 canvas */
 export const fxCoin = (p: Pen) => { p.ell(50, 50, 38, 38, "#e9b93a", 8); p.ell(50, 50, 24, 24, null, 4, 0, 360); p.stroke([[40, 52], [60, 52]], 5, "#b98a22"); };

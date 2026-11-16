@@ -72,6 +72,24 @@ his say-so.
   - Captions: two or three words at a time, big, in a band below the characters, never on a body, face or sign.
   - The last second holds a hook or a question, with its caption.
 
+## The world look (Jesper 2026-11-18, from reference Shorts he showed)
+This is what the pictures should look like, with our own characters, props and stories. Copy the craft, never
+the designs, characters or scenes of another channel.
+- **Real 3D props with a toon finish.** Ships, wheels, barrels, pots, carts, ovens and buildings are modelled
+  objects with flat bright colours, two or three tones of shading and a black outline, not flat walls with a
+  texture. Simple shapes are fine; they must have thickness and cast shadows.
+- **Clear, saturated colours.** Each object keeps its own colour: red hull, blue sky, yellow brass, green
+  shutters. The colour mood of a scene tints the light, it never turns the whole picture one brown or orange hue.
+  Daylight scenes are bright.
+- **One strong light with crisp shadows.** Shadows of masts, ropes, awnings and people fall across floors and
+  walls and show the shape of the place.
+- **The camera is inside the scene.** Wide lens, close to objects: behind a wheel, past a foreground figure's
+  shoulder, low on the deck looking up, high looking down. Something big is near the lens in most shots.
+- **Characters use the world.** They hold, pour, steer, carry, are tied to, lean on and climb the props. A
+  character is seldom alone on an empty floor.
+- **Something worth seeing in the distance:** another ship, a storm, a mountain, a crowd.
+- **Glow, blur and particles are seasoning.** Use them in a few shots, lightly. Most shots are sharp and clear.
+
 ## Light and atmosphere (Jesper 2026-11-17, from Pompeii onward)
 The goal is that every video looks better than the one before. Borrow the lighting of cinematic edits, never their
 pictures: all art stays our own.
@@ -88,12 +106,65 @@ pictures: all art stays our own.
 - **One step better each video:** before building, name one thing in the look that will be better than last time,
   and say in the delivery note what it was.
 
+## Action, not portraits (after the Pompeii part 1 preview, 2026-11-18)
+A Short must not be a row of characters standing still in the middle of the picture while the voice describes
+what happens. Show it.
+- **In at least two shots of three somebody does something:** runs across the picture, falls, carries, throws,
+  ducks, pushes, climbs. A verb in the script ("runs", "grabs") is shown as that movement, with a real run or
+  walk cycle that moves the character through the scene.
+- **Standing still facing the camera:** at most two seconds at a time and at most a quarter of the video.
+- **Framing varies:** no two shots in a row with the same size and position of the subject. Mix close-up,
+  waist-up, full figure from the side, from above, from the ground, over a shoulder. The subject fills 50 to 80 %
+  of the height. The lower half of the picture is never just ground.
+- **Captions** sit in the lower third and may cross legs or ground, never a face, chest, hands or a sign. Do not
+  shrink or lift the characters to make room for them.
+- **Panic looks like panic:** crowds run in different directions, drop things and bump into each other. Nobody in
+  the background stands still. Things break: awnings fall, pots smash, carts tip.
+- **Disclaimer:** a small sign for two seconds, never spoken, never inside the first five seconds.
+- **After the hook the story keeps moving:** a flashback to the calm before is at most eight seconds.
+- **Foreground blur is something from the scene** (a pillar, an amphora, a running shoulder), never a row of dark
+  heads. The thing the voice talks about is always in focus.
+
+## The craft kit (Jesper 2026-11-18): built once, used in every video
+Five things that make the videos look professional. Build them in this order, each with a test sheet or test clip
+sent to Jesper, and reuse them from then on.
+1. **Views.** Every character can be drawn from the front, three-quarter, side and back, with the same
+   proportions, clothes and colours. Sir Digsworth first, then a shared base for side characters. Characters turn
+   toward what they look at and where they go. The monocle, pipe and chain sit right in every view.
+2. **Motion library.** Walk, run, stop, turn, stumble, fall, get up, duck, carry, throw, point, recoil, climb,
+   sit. Each has a wind-up before the move, a small overshoot after, and cap, chain, coat and held things that
+   follow a moment late. Feet stay on the ground they stand on and never slide. Cycles move the character through
+   the scene at a speed that matches the feet.
+3. **Hands and mouth.** Hand shapes: open, fist, pointing, gripping, holding. Mouth shapes driven by the word
+   timings already made for the captions, so the speaker's mouth moves with the voice. Eyes look at things and
+   blink.
+4. **Sound on the picture.** Footsteps, thuds, breaking pots, wind, crowd, fire, water, placed on the frame where
+   the move happens. Camera shake on impacts. Own synthesized sounds or CC0 sounds with the licence read first
+   and noted in the repo. Music stays low under the voice.
+5. **Sketch first.** Before a full build: a rough version with stills in the right order and length and the voice
+   on top, sent to Jesper as a contact sheet and a small clip. Build fully only after his yes. The sketch must
+   already pass "Action, not portraits".
+
 ## The first second of every Short (hard rule)
 - Frame one shows the most striking moment of the story: one big subject filling the picture, already moving.
 - The hook is on screen as text while the voice says it. No intro, no year, no establishing shot first.
 - Date, place and background come after the hook.
 
-## The series format (Jesper 2026-11-14)
+## Series paused, stand-alone history Shorts now (Jesper 2026-11-18)
+This section overrides "The series format" below and the series parts of "Where we are now".
+- **No more series episodes for now.** No "part 1, 2, 3" Shorts and no "Sir Digsworth survives ..." seasons until
+  Jesper says the animation, graphics and feel are top notch.
+- **When the series comes back it is made as long videos**, episodes of about 7-12 minutes, not as Shorts.
+- **Now: stand-alone history Shorts.** Each one tells one complete true story with a beginning, a turn and an end,
+  and needs no other video to make sense. Pick stories that are funny, frightening, adventurous, full of action or
+  simply fascinating, like the emu war. Sir Digsworth is the host and may be in the scene, but the story is the
+  event, not his survival.
+- **No cliffhanger to a next part.** End on the punchline, the twist or the strangest fact.
+- **Pompeii becomes one stand-alone Short** about the day Vesuvius erupted, not part 1 of three.
+- **Each Short is also practice:** it uses the craft kit and the world look, and should be better made than the
+  one before.
+
+## The series format (Jesper 2026-11-14, paused 2026-11-18: see the section above)
 **"Sir Digsworth survives history":** Sir Digsworth is dropped into a real, famous historical event and has to get
 through it. The events around him are true and sourced; his own journey is dramatised, and each episode says so.
 - **Only eras that draw crowds and are full of action:** the Second World War, the age of knights, the Cold War,
@@ -185,11 +256,13 @@ code, acted emotions), `kmilo93sd/agent-video-editor` (pacing, cuts, captions, t
 `ZLHad/OpenVideoHarness` (the agent checks its own frames).
 
 ## Save usage (Jesper 2026-11-13: the weekly limit runs out too fast)
-- **Right model for the job.** The most capable model only for script writing, scene design and the final review.
-  A cheaper model (Sonnet) for building scenes from an approved plan, fixing errors, rendering, file work and git.
-  The cheapest (Haiku) for lookups and simple checks. Subagents never run on the most capable model by default.
-- **No agent swarms.** At most one helper agent at a time, and only when it saves more than it costs. No "verifier"
-  agents looking at pictures; the main session reviews.
+- **Right model for the job (changed by Jesper 2026-11-18: quality first).** The most capable model writes the
+  script, plans every shot, and writes the staging, camera and animation code (story, cast, world, run and fall
+  cycles), because that is where the videos have looked amateurish. A cheaper model (Sonnet) only for rendering,
+  voice, captions, file work and git. The cheapest (Haiku) for lookups.
+- **One review before delivery, by the most capable model:** two frames per second, each checked against
+  "Staging checks" and "Action, not portraits". Fix, render again, and send only when it passes. Still no agent
+  swarms: at most one helper agent at a time.
 - **Let scripts do the checking.** Black, frozen, off-screen and loudness checks run as scripts on the rendered file.
   Look at pictures only where a script flags something, plus one contact sheet per scene at small size.
 - **Rendering costs nothing; looking costs.** Render freely on the graphics card, but do not read full-size frames

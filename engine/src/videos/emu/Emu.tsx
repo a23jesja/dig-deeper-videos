@@ -58,6 +58,8 @@ export type Film = {
   chunks?: string[];
   /** the first frame captions may show (the hook text holds until then) */
   capFrom?: number;
+  /** a veil of darkness over the picture, under the captions: 0 (none) .. 1 (black) */
+  dimAt?: (f: number) => number;
   /** drawn as a flat 2D cartoon (flat2d.tsx) instead of in the 3D world */
   flat?: boolean;
 };
@@ -186,6 +188,7 @@ export const FilmView: React.FC<{ film: Film }> = ({ film }) => {
     <AbsoluteFill style={{ background: "#cfe3f2" }}>
       {film.layersAt(f).map((l, i) => film.flat ? <Flat2D key={i ? "over" : "base"} show={film.show} id={l.id} alpha={l.alpha} W={film.W} H={film.H} /> : <ShotView key={i ? "over" : "base"} id={l.id} alpha={l.alpha} film={film} />)}
       {flash > 0 && <AbsoluteFill style={{ background: "#ffffff", opacity: flash }} />}
+      {film.dimAt && film.dimAt(f) > 0 && <AbsoluteFill style={{ background: "#0a0403", opacity: film.dimAt(f) }} />}
       {p.captions !== false && <Captions film={film} />}
       {p.audio !== false && <Audio src={staticFile(film.audio)} />}
     </AbsoluteFill>

@@ -71,7 +71,7 @@ export const Root: React.FC = () => (
     <Composition id="SirTest" component={SirTest} durationInFrames={SIR_TEST_FRAMES} fps={TFPS} width={TW} height={TH} />
     <Composition id="SirMoves" component={SirMoves} durationInFrames={1} fps={30} width={MVW} height={MVH} />
     <Composition id="SirCompare" component={SirCompare} durationInFrames={SIR_TEST_FRAMES} fps={TFPS} width={CMPW} height={TH} />
-    <Composition id="GentViews" component={GentViews} durationInFrames={1} fps={30} width={GW} height={GH} />
+    <Composition id="GentViews" component={GentViews} durationInFrames={2} fps={30} width={GW} height={GH} />
     <Composition id="BostonStills" component={BostonStills} durationInFrames={BOSTON_STILLS} fps={30} width={1080} height={1920} />
     <Composition id="SirChainStill" component={SirChainStill} durationInFrames={SIR_CHAIN_FRAMES} fps={30} width={1600} height={1250} />
     <Composition id="Titanic3Test" component={Titanic3Test} durationInFrames={TITANIC3_TEST_FRAMES} fps={30} width={1080} height={1920} />

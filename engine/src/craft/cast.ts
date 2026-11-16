@@ -88,6 +88,13 @@ const capDraw = (k: Ink, L: Look, h: HG, lift: number, away: boolean, stage: "be
   pin(k, [capX, yb - 0.345 * H], 6);
   k.g.restore();
 };
+/** how far the head is drawn turned when the figure is seen from the angle phi. From the side the head stays turned a little toward
+ *  the lens (56 degrees instead of 90), so that both the moustache's shape and the face are those of the front view and he is the
+ *  same man from every side; past the side view it swings on to the true angle, so the back of the head is the back of the head. */
+export const faceTurn = (phiDeg: number) => {
+  const y = ((((phiDeg + 180) % 360) + 360) % 360) - 180, a = Math.abs(y), s = y < 0 ? -1 : 1;
+  return s * (a <= 45 ? a : a <= 90 ? 45 + (a - 45) * (11 / 45) : a <= 110 ? 56 + (a - 90) * (54 / 20) : a);
+};
 const headGeo = (L: Look, phiDeg: number): HG => { const { a, b, H } = L.head, phi = phiDeg * R; return { a, b, H, sin: Math.sin(phi), cos: Math.cos(phi), w: Math.hypot(a * Math.cos(phi), b * Math.sin(phi)) }; };
 /** a figure's hat by itself, lying or flying: its middle at the origin, seen from the angle phi */
 export const drawHat = (k: Ink, L: Look, phiDeg: number) => {
@@ -96,9 +103,9 @@ export const drawHat = (k: Ink, L: Look, phiDeg: number) => {
   k.g.restore(); k.ink = ink0;
 };
 
-const drawHead = (k: Ink, L: Look, phiDeg: number, f: Face, o: FigOpts) => {
-  const HAT = o.hatOff ? "none" : L.hat;
-  const { a, b, H } = L.head, phi = phiDeg * R, h: HG = { a, b, H, sin: Math.sin(phi), cos: Math.cos(phi), w: Math.hypot(a * Math.cos(phi), b * Math.sin(phi)) }, w = h.w;
+const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
+  const HAT = o.hatOff ? "none" : L.hat, phiDeg = faceTurn(phiTrue);
+  const { a, b, H } = L.head, u = H / 200, phi = phiDeg * R, h: HG = { a, b, H, sin: Math.sin(phi), cos: Math.cos(phi), w: Math.hypot(a * Math.cos(phi), b * Math.sin(phi)) }, w = h.w;
   // away = seen from behind. The limit lies well past the profile, so that the small turns of the head in a walk seen from the side never flip the face parts behind the skull
   const m = f.mouth ?? 0, away = h.cos < -0.3, skin = L.skin, skinD = shade(skin, 0.86);
   // the skull card: square-jawed from the front; from the side it gets a chin and a brow in front, a rounded back and a narrow nape
@@ -108,22 +115,22 @@ const drawHead = (k: Ink, L: Look, phiDeg: number, f: Face, o: FigOpts) => {
     return [6, -0.11 * H, -0.5 * H, -0.82 * H, -0.975 * H].map((y, j) => [side * w * lerp(fv[j], sv[j], sa), y] as P2);
   };
   const skull = spline([[0, 6], ...prof(1), [0, -H], ...prof(-1).reverse()], true, 5);
-  const nose0 = at(h, 0), yEye = -0.61 * H, yM = -0.3 * H;
+  const nose0 = at(h, 0), yEye = -0.565 * H, yM = -0.315 * H, yJaw = -0.18 * H, drop = 0.16 * H * m;
   // --- parts that lie behind the skull card ---
   const mousHalf = (s: number) => {
     if (!L.mous) return; const M = L.mous, r = M.span * a;
     // From the front and from behind the two halves spread to the sides. From the side the near half sweeps back across the cheek
     // to its curled tip and the far half shows as a waxed point out in front of the face, so the same moustache reads in profile.
-    const G = ([[0, 0, b * 1.0], [0.3 * a, 2, b * 0.98], [0.62 * r, 7, b * 0.74], [0.86 * r, 6, b * 0.5], [0.98 * r, -8 * M.curl, b * 0.38], [0.97 * r, -30 * M.curl, b * 0.36]] as number[][]).map(([X, y, Z]) => [p3(h, s * X, Z).x, yM + y] as P2);
+    const G = ([[0, 0, b * 1.0], [0.3 * a, 2, b * 0.98], [0.62 * r, 7, b * 0.74], [0.86 * r, 6, b * 0.5], [0.98 * r, -8 * M.curl, b * 0.38], [0.97 * r, -30 * M.curl, b * 0.36]] as number[][]).map(([X, y, Z]) => [p3(h, s * X, Z).x, yM + y * u] as P2);
     const dirx = h.sin >= 0 ? 1 : -1, nearHalf = s * dirx < 0, k2 = M.span / 1.24;
-    const S = (nearHalf ? [[0.97, 0], [0.74, 7], [0.42, 10], [0.12, 2], [-0.02, -16 * M.curl], [0.06, -34 * M.curl]] : [[0.97, 0], [1.1, 4], [1.26, 1], [1.38, -9 * M.curl], [1.4, -24 * M.curl], [1.34, -34 * M.curl]]).map(([x, y]) => [dirx * b * (0.97 + (x - 0.97) * k2), yM + y] as P2);
+    const S = (nearHalf ? [[0.97, 0], [0.74, 7], [0.42, 10], [0.12, 2], [-0.02, -16 * M.curl], [0.06, -34 * M.curl]] : [[0.97, 0], [1.1, 4], [1.26, 1], [1.38, -9 * M.curl], [1.4, -24 * M.curl], [1.34, -34 * M.curl]]).map(([x, y]) => [dirx * b * (0.97 + (x - 0.97) * k2), yM + y * u] as P2);
     const q = Math.abs(h.sin) ** 2 * (h.cos > -0.3 ? 1 : 0), P = G.map((g, n) => [lerp(g[0], S[n][0], q), lerp(g[1], S[n][1], q)] as P2);
     piece(k, ribbon(P, [M.w, M.w, M.w * 0.88, M.w * 0.66, M.w * 0.42, M.w * 0.18]), M.col);
   };
   const pipe = () => {
-    if (!L.pipe) return; const r0 = at(h, 30), t = p3(h, a * 0.5 + a * 0.62, b * 0.86 + a * 0.5), y0 = -0.2 * H + 0.09 * H * m, y1 = y0 + 0.11 * H;
-    piece(k, seg([r0.x, y0], [t.x, y1], 5, 5, 0, 0.3, true), "#3a2618");
-    piece(k, [[t.x - 15, y1 - 34], [t.x + 15, y1 - 34], [t.x + 12, y1 + 7], [t.x - 12, y1 + 7]], "#8a4f2a");
+    if (!L.pipe) return; const r0 = at(h, 34), t = p3(h, a * 0.5 + a * 0.62, b * 0.86 + a * 0.5), y0 = yJaw - 0.01 * H + drop * 0.6, y1 = y0 + 0.11 * H;
+    piece(k, seg([r0.x, y0], [t.x, y1], 5 * u, 5 * u, 0, 0.3, true), "#3a2618");
+    piece(k, [[t.x - 15 * u, y1 - 34 * u], [t.x + 15 * u, y1 - 34 * u], [t.x + 12 * u, y1 + 7 * u], [t.x - 12 * u, y1 + 7 * u]], "#8a4f2a");
     return t.d;
   };
   const ear = (s: number) => { const e = at(h, s * 90); return { e, draw: () => piece(k, ellPts(e.x, -0.5 * H, 0.17 * a, 0.12 * H), skinD) }; };
@@ -160,28 +167,36 @@ const drawHead = (k: Ink, L: Look, phiDeg: number, f: Face, o: FigOpts) => {
   // --- the face (not drawn from behind) ---
   if (!away || h.cos > -0.3) {
     const vis = nose0.d > -0.3 * b;
-    // the jaw is its own card: it slides down over a dark card when he speaks
-    if (vis && m > 0.04) { const c = at(h, 0, 0.5).x; k.clip(skull, () => { k.shape([[c - 0.5 * w, -0.24 * H], [c + 0.5 * w, -0.24 * H], [c + 0.44 * w, -0.1 * H + 0.1 * H * m], [c - 0.44 * w, -0.1 * H + 0.1 * H * m]], MOUTH, 0); k.shape(ellPts(c, -0.1 * H + 0.07 * H * m, 0.24 * w, 0.045 * H), "#e0707a", 0); }); }
-    const dy = 0.1 * H * m, low: P2[] = [[-2 * w, -0.19 * H + dy], [2 * w, -0.19 * H + dy], [2 * w, 60 + dy], [-2 * w, 60 + dy]];
+    // the jaw is its own card: it slides down over a dark card when he speaks. The mouth is large and lies clear of the moustache,
+    // so that it reads at phone size: a line that bends with the mood when shut, a dark opening with a tongue (and teeth in a laugh) when open
+    const sm = f.smile ?? 0.25, mw = (0.44 + 0.12 * Math.max(sm, 0)) * w;
+    if (vis && m > 0.04) { const c = at(h, 0, 0.5).x; k.clip(skull, () => {
+      k.shape([[c - mw, yJaw - 0.05 * H], [c + mw, yJaw - 0.05 * H], [c + mw * 0.9, yJaw + drop + 0.06 * H], [c - mw * 0.9, yJaw + drop + 0.06 * H]], MOUTH, 0);
+      k.shape(ellPts(c, yJaw + drop + 0.01 * H, mw * 0.56, 0.06 * H), "#e0707a", 0);
+      if (sm > 0.3 && m > 0.45) k.shape([[c - mw * 0.82, yJaw - 0.06 * H], [c + mw * 0.82, yJaw - 0.06 * H], [c + mw * 0.78, yJaw + 0.035 * H], [c - mw * 0.78, yJaw + 0.035 * H]], "#fffdf6", k.ol * 0.6);
+    }); }
+    const dy = drop, low: P2[] = [[-2 * w, yJaw + dy], [2 * w, yJaw + dy], [2 * w, 60 + dy], [-2 * w, 60 + dy]];
     k.clip(shift(skull, 0, dy), () => { k.shape(shift(low, 0, 6), "rgba(52,32,16,0.2)", 0); k.shape(low, shade(skin, 0.965)); });
     if (m > 0.04) k.clip(low, () => k.shape(shift(skull, 0, dy), null));
-    if (vis) { const sm = f.smile ?? 0.25, xl = at(h, -30, 0.7).x, xr = at(h, 30, 0.7).x, ym = -0.19 * H + dy; k.clip(shift(skull, 0, dy), () => k.line(spline([[xl, ym - sm * 0.055 * H], [lerp(xl, xr, 0.25) + h.sin * 0.05 * a, ym + sm * 0.012 * H], [lerp(xl, xr, 0.75) + h.sin * 0.05 * a, ym + sm * 0.012 * H], [xr, ym - sm * 0.055 * H]], false, 6), 4.6)); }
-    if (L.lips && vis) { const q = at(h, 0, 0.72); piece(k, ellPts(q.x, -0.215 * H + 0.1 * H * m, 0.2 * a * Math.max(0.35, Math.abs(h.cos)), 0.032 * H), L.lips); }
-    if (L.beard) { const xs: P2[] = []; for (let az = -100; az <= 100; az += 20) { const q = at(h, az, 1.04); if (q.d > -0.1 * b) xs.push([q.x, -0.32 * H + 0.1 * H * m * 0.5]); } if (xs.length > 1) { const lo = xs.map(([x], i) => [x * 0.92, 0.2 * H * (1 - Math.abs(i / (xs.length - 1) - 0.5) * 1.2) + 0.1 * H * m] as P2).reverse(); piece(k, spline([...xs, ...lo], true, 4), L.beard); } }
+    if (vis) { const xl = at(h, -36, 0.72).x, xr = at(h, 36, 0.72).x, ym = yJaw + dy; k.clip(shift(skull, 0, dy), () => k.line(spline([[xl, ym - sm * 0.075 * H], [lerp(xl, xr, 0.25) + h.sin * 0.05 * a, ym + sm * 0.018 * H], [lerp(xl, xr, 0.75) + h.sin * 0.05 * a, ym + sm * 0.018 * H], [xr, ym - sm * 0.075 * H]], false, 6), 6.4 * u)); }
+    if (L.lips && vis) { const q = at(h, 0, 0.72); piece(k, ellPts(q.x, yJaw - 0.025 * H + drop, 0.2 * a * Math.max(0.35, Math.abs(h.cos)), 0.032 * H), L.lips); }
+    if (L.beard) { const xs: P2[] = []; for (let az = -100; az <= 100; az += 20) { const q = at(h, az, 1.04); if (q.d > -0.1 * b) xs.push([q.x, -0.32 * H + drop * 0.5]); } if (xs.length > 1) { const lo = xs.map(([x], i) => [x * 0.92, 0.2 * H * (1 - Math.abs(i / (xs.length - 1) - 0.5) * 1.2) + drop] as P2).reverse(); piece(k, spline([...xs, ...lo], true, 4), L.beard); } }
     if (!tipBehind) pipe();
     const eye = (s: number) => {
-      const q = at(h, s * 26, 0.8); if (q.d < 0.1 * b) return;
-      const fs = clamp(Math.cos(s * 26 * R + phi), 0.42, 1) ** 0.85, r = 0.29 * a * EY, rx = r * fs, ry = r * (1 + 0.16 * (f.wide ?? 0)), ball = ellPts(q.x, yEye, rx, ry), gz = f.gaze ?? [0, 0], lid = f.lid ?? 0.16;
-      k.shape(ball, "#fffdf6");
-      k.clip(ball, () => {
+      const q = at(h, s * 28, 0.8); if (q.d < 0.1 * b) return;
+      const fs = clamp(Math.cos(s * 28 * R + phi), 0.42, 1) ** 0.85, r = 0.32 * a * EY, rx = r * fs, ry = r * (1 + 0.16 * (f.wide ?? 0)), ball = ellPts(q.x, yEye, rx, ry), gz = f.gaze ?? [0, 0], lid = f.lid ?? 0.16;
+      const happy = lid > 0.75 && (f.smile ?? 0) > 0.4;
+      k.shape(ball, happy ? shade(skin, 0.93) : "#fffdf6");
+      if (happy) k.line(spline([[q.x - rx * 0.78, yEye + ry * 0.3], [q.x, yEye - ry * 0.42], [q.x + rx * 0.78, yEye + ry * 0.3]], false, 8), 6.4 * u);
+      else k.clip(ball, () => {
         const px = q.x + gz[0] * rx * 0.5 + h.sin * rx * 0.22, py = yEye + gz[1] * ry * 0.5; k.shape(ellPts(px, py, rx * 0.5, ry * 0.5), "#2a1f1a", 0); k.dot(px - rx * 0.17, py - ry * 0.2, r * 0.13, "#ffffff");
-        if (lid > 0.01) { const y = yEye - ry + 2 * ry * lid; k.shape([[q.x - rx - 2, yEye - ry - 2], [q.x + rx + 2, yEye - ry - 2], [q.x + rx + 2, y], [q.x - rx - 2, y]], shade(skin, 0.86), 0); k.line([[q.x - rx - 2, y], [q.x + rx + 2, y]], 4, LINE, "butt"); }
+        if (lid > 0.01) { const y = yEye - ry + 2 * ry * lid; k.shape([[q.x - rx - 2, yEye - ry - 2], [q.x + rx + 2, yEye - ry - 2], [q.x + rx + 2, y], [q.x - rx - 2, y]], shade(skin, 0.86), 0); k.line([[q.x - rx - 2, y], [q.x + rx + 2, y]], 4.6 * u, LINE, "butt"); }
       });
       k.shape(ball, null);
       if (L.lash) for (const j of [0, 1]) k.line([[q.x + s * rx * (0.7 + 0.25 * j) * (h.cos > 0.3 ? 1 : 0.4), yEye - ry * (0.75 - 0.3 * j)], [q.x + s * rx * (1.05 + 0.3 * j) * (h.cos > 0.3 ? 1 : 0.4), yEye - ry * (1.1 - 0.35 * j)]], 3.4);
       if (L.monocle && s < 0) { const ring = ellPts(q.x, yEye, Math.max(rx * 1.36, ry * 1.02), ry * 1.34); k.clip(ring, () => { k.g.globalAlpha = 0.2; k.shape(ring, "#bfe6f2", 0); k.g.globalAlpha = 0.8; k.line([[q.x - rx * 0.7, yEye + ry * 0.2], [q.x - rx * 0.1, yEye - ry * 0.8]], rx * 0.2, "#ffffff"); k.g.globalAlpha = 1; }); k.shape(ring, null, 12.5); const i = k.ink; k.ink = BRASS; k.shape(ring, null, 7.5); k.ink = i; }
       // the brow is its own piece: up for surprise, down toward the nose for a frown
-      const bi = at(h, s * 9, 0.8), bo = at(h, s * 44, 0.8), by = yEye - ry - 0.05 * H, bw = f.brow ?? 0, th = 0.034 * H;
+      const bi = at(h, s * 9, 0.8), bo = at(h, s * 46, 0.8), by = yEye - ry - 0.04 * H, bw = f.brow ?? 0, th = 0.04 * H;
       const yi = by - 0.014 * H - 0.055 * H * Math.max(bw, 0) + 0.045 * H * Math.max(-bw, 0), yo = by + 0.008 * H - 0.04 * H * Math.max(bw, 0) - 0.022 * H * Math.max(-bw, 0);
       piece(k, [[bi.x, yi], [(bi.x + bo.x) / 2, (yi + yo) / 2 - 0.012 * H], [bo.x, yo], [bo.x, yo + th * 0.8], [(bi.x + bo.x) / 2, (yi + yo) / 2 - 0.012 * H + th], [bi.x, yi + th]], L.brow);
     };
@@ -191,7 +206,7 @@ const drawHead = (k: Ink, L: Look, phiDeg: number, f: Face, o: FigOpts) => {
     if (vis) {
       eye(-far);
       const t0 = at(h, 0, 0.9), n1 = at(h, -7, 0.9), n2 = at(h, 7, 0.9), c1 = at(h, -13, 0.9), c2 = at(h, 13, 0.9), out = 0.5 * a * h.sin;
-      piece(k, hull([[n1.x, -0.52 * H], [n2.x, -0.52 * H], [c1.x + out * 0.5, -0.4 * H], [c2.x + out * 0.5, -0.4 * H], [t0.x + out, -0.4 * H], [t0.x + out * 0.86, -0.365 * H], [t0.x, -0.35 * H]]), shade(skin, 0.9));
+      piece(k, hull([[n1.x, -0.49 * H], [n2.x, -0.49 * H], [c1.x + out * 0.5, -0.385 * H], [c2.x + out * 0.5, -0.385 * H], [t0.x + out, -0.385 * H], [t0.x + out * 0.86, -0.35 * H], [t0.x, -0.335 * H]]), shade(skin, 0.9));
     }
   }
   for (const e of ears) if (Math.abs(e.e.d) >= 0.55 * a && e.e.d > 0) e.draw();
@@ -233,8 +248,8 @@ const drawHead = (k: Ink, L: Look, phiDeg: number, f: Face, o: FigOpts) => {
     piece(k, spline([[-0.86 * w, yb3 - 0.1 * H], [-0.7 * w, yb3 - 0.3 * H], [0, yb3 - 0.36 * H], [0.7 * w, yb3 - 0.3 * H], [0.86 * w, yb3 - 0.1 * H], [0, yb3 - 0.05 * H]], true, 5), shade(col, 1.25));
   } else if (HAT === "band") k.clip(skull, () => k.shape([[-2 * w, -0.82 * H], [2 * w, -0.82 * H], [2 * w, -0.72 * H], [-2 * w, -0.72 * H]], L.hatCol ?? CREAM, k.ol));
   // where the monocle's chain starts and bows (card coordinates of the head), if the monocle shows
-  const me = at(h, -26, 0.8), fs = clamp(Math.cos(-26 * R + phi), 0.42, 1) ** 0.85, rx = Math.max(0.29 * a * EY * fs * 1.36, 0.29 * a * EY * 1.02), out = at(h, -70).x < me.x ? -1 : 1;
-  return L.monocle && me.d >= 0.1 * b && (!away || h.cos > -0.3) ? { start: [me.x + out * rx * 0.72, yEye + 0.29 * a * EY * 1.34 * 0.72] as P2, bow: [at(h, -78, 1.12).x + out * 6, -0.16 * H] as P2 } : null;
+  const me = at(h, -28, 0.8), fs = clamp(Math.cos(-28 * R + phi), 0.42, 1) ** 0.85, rx = Math.max(0.32 * a * EY * fs * 1.36, 0.32 * a * EY * 1.02), out = at(h, -70).x < me.x ? -1 : 1;
+  return L.monocle && me.d >= 0.1 * b && (!away || h.cos > -0.3) ? { start: [me.x + out * rx * 0.72, yEye + 0.32 * a * EY * 1.34 * 0.72] as P2, bow: [at(h, -78, 1.12).x + out * 6, -0.16 * H] as P2 } : null;
 };
 
 // ---------------- the whole figure ----------------
@@ -243,7 +258,7 @@ const drawHead = (k: Ink, L: Look, phiDeg: number, f: Face, o: FigOpts) => {
  *  (left and right limbs are swapped before the mirror), only the skin is flipped. */
 export const mirrored = (L: Look, yawDeg: number) => { const y = ((((yawDeg + 180) % 360) + 360) % 360) - 180; return !!L.monocle && y > -128 && y < -52; };
 /** does the monocle show at this view angle (for the checks)? */
-export const monocleShows = (L: Look, yawDeg: number) => { if (!L.monocle) return true; const y = mirrored(L, yawDeg) ? -yawDeg : yawDeg, h = headGeo(L, y); return at(h, -26, 0.8).d >= 0.1 * L.head.b && h.cos >= -0.3; };
+export const monocleShows = (L: Look, yawDeg: number) => { if (!L.monocle) return true; const y = mirrored(L, yawDeg) ? -yawDeg : yawDeg, h = headGeo(L, faceTurn(y)); return at(h, -28, 0.8).d >= 0.1 * L.head.b && h.cos >= -0.3; };
 export const swapPose = (p: Pose): Pose => ({ ...p, px: -(p.px ?? 0), roll: -(p.roll ?? 0), twist: -(p.twist ?? 0), hipTilt: -(p.hipTilt ?? 0), head: p.head ? [-p.head[0], p.head[1], -p.head[2]] : undefined, armL: p.armR, armR: p.armL, handL: p.handR, handR: p.handL, legL: p.legR, legR: p.legL });
 export const drawCast = (L: Look) => {
   const inner = drawTrue(L);

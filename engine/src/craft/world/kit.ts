@@ -8,7 +8,7 @@ export const INK3 = "#17121c";
 let RAMP: THREE.DataTexture | null = null;
 /** the three tones of every toon surface: shadow, half-tone, light */
 const ramp = () => {
-  if (!RAMP) { RAMP = new THREE.DataTexture(new Uint8Array([120, 120, 120, 255, 196, 196, 196, 255, 255, 255, 255, 255]), 3, 1, THREE.RGBAFormat); RAMP.minFilter = RAMP.magFilter = THREE.NearestFilter; RAMP.needsUpdate = true; }
+  if (!RAMP) { RAMP = new THREE.DataTexture(new Uint8Array([150, 150, 150, 255, 208, 208, 208, 255, 255, 255, 255, 255]), 3, 1, THREE.RGBAFormat); RAMP.minFilter = RAMP.magFilter = THREE.NearestFilter; RAMP.needsUpdate = true; }
   return RAMP;
 };
 const mats = new Map<string, THREE.MeshToonMaterial>();
@@ -24,9 +24,11 @@ const OUTLINE = new THREE.ShaderMaterial({
   vertexShader: `uniform float px; uniform float res; attribute float lineW;
     void main() { vec4 mv = modelViewMatrix * vec4(position, 1.0); vec3 n = normalize(normalMatrix * normal);
       float k = px * lineW * 2.0 * (-mv.z) / (res * projectionMatrix[1][1]); mv.xyz += n * k; gl_Position = projectionMatrix * mv; }`,
-  fragmentShader: `void main() { gl_FragColor = vec4(0.008, 0.006, 0.012, 1.0); }`,
+  fragmentShader: `void main() { gl_FragColor = vec4(0.033, 0.018, 0.011, 1.0); }`,
 });
 export const setOutline = (px: number, res: number) => { OUTLINE.uniforms.px.value = px; OUTLINE.uniforms.res.value = res; };
+/** the width of the contour on the screen, in pixels of a picture `res` high (the figures on cards are drawn with the same width) */
+export const outlinePx = () => ({ px: OUTLINE.uniforms.px.value as number, res: OUTLINE.uniforms.res.value as number });
 const hulls = new WeakMap<THREE.BufferGeometry, THREE.BufferGeometry>();
 const hullOf = (g: THREE.BufferGeometry, w: number) => {
   let h = hulls.get(g);
@@ -63,6 +65,11 @@ export const slab = (key: string, pts: [number, number][], depth: number) => G("
   const s = new THREE.Shape(pts.map(([x, y]) => new THREE.Vector2(x, y))); const g = new THREE.ExtrudeGeometry(s, { depth, bevelEnabled: false }); g.translate(0, 0, -depth / 2); return g;
 });
 
+/** a flat shape with thickness and holes in it (a wall with an arched gateway) */
+export const slabHoles = (key: string, pts: [number, number][], holes: [number, number][][], depth: number) => G("h" + key, () => {
+  const s = new THREE.Shape(pts.map(([x, y]) => new THREE.Vector2(x, y))); for (const h of holes) s.holes.push(new THREE.Path(h.map(([x, y]) => new THREE.Vector2(x, y))));
+  const g = new THREE.ExtrudeGeometry(s, { depth, bevelEnabled: false, curveSegments: 1 }); g.translate(0, 0, -depth / 2); return g;
+});
 /** a solid with a flat outline seen from above (a hull, a deck, a pier): pts = [x, z] round the outline, from height y0 up to y1 */
 export const prism = (key: string, pts: [number, number][], y0: number, y1: number) => G("p" + key + y0 + y1, () => {
   const g = new THREE.ExtrudeGeometry(new THREE.Shape(pts.map(([x, z]) => new THREE.Vector2(x, -z))), { depth: y1 - y0, bevelEnabled: false }); g.rotateX(-Math.PI / 2); g.translate(0, y0, 0); return g;
@@ -88,16 +95,25 @@ export const paint = (key: string, w: number, h: number, draw: (g: CanvasRenderi
 };
 
 // ---------------- light ----------------
-export type Sun = { from: [number, number, number]; color?: string; power?: number; sky?: string; ground?: string; fill?: number; reach?: number };
-/** one strong light with crisp shadows, and a weak sky light so shadows keep their colour. `reach` = half the size of the lit area */
+export type Sun = { from: [number, number, number]; color?: string; power?: number; sky?: string; ground?: string; fill?: number; reach?: number; /** light thrown back from the ground and the walls onto the sides turned from the sun (no shadows) */ bounce?: number };
+/** one strong light with crisp shadows, a sky light so shadows keep their colour, and a weak light back from the lit side of the
+ *  street onto the side in shade. `reach` = half the size of the area that gets shadows. Aim it for each shot with `aimSun`. */
 export const sunRig = (o: Sun, target: [number, number, number] = [0, 0, 0]) => {
-  const sun = new THREE.DirectionalLight(o.color ?? "#fff4dc", o.power ?? 3.1), R = o.reach ?? 26;
-  sun.position.set(target[0] + o.from[0], target[1] + o.from[1], target[2] + o.from[2]); sun.target.position.set(...target);
-  sun.castShadow = true; sun.shadow.mapSize.set(4096, 4096); sun.shadow.bias = -0.0004; sun.shadow.normalBias = 0.02; sun.shadow.radius = 1.2;
-  const c = sun.shadow.camera; c.left = -R; c.right = R; c.top = R; c.bottom = -R; c.near = 1; c.far = 160; c.updateProjectionMatrix();
-  const hemi = new THREE.HemisphereLight(o.sky ?? "#cfe4ff", o.ground ?? "#b79a7a", o.fill ?? 1.25);
-  return group([sun, sun.target, hemi]);
+  const sun = new THREE.DirectionalLight(o.color ?? "#fff4dc", o.power ?? 3.1);
+  sun.castShadow = true; sun.shadow.mapSize.set(4096, 4096); sun.shadow.bias = -0.0003; sun.shadow.normalBias = 0.012; sun.shadow.radius = 1;
+  const hemi = new THREE.HemisphereLight(o.sky ?? "#cfe4ff", o.ground ?? "#b79a7a", o.fill ?? 1.25), g = group([sun, sun.target, hemi]);
+  if (o.bounce) { const b = new THREE.DirectionalLight("#fff0d8", o.bounce); b.position.set(-o.from[0], o.from[1] * 0.35, -o.from[2]); b.castShadow = false; g.add(b, b.target); }
+  g.userData.sun = sun; g.userData.from = o.from; aimSun(g, target, o.reach ?? 26);
+  return g;
 };
+/** point the shadow area at what a shot shows: the smaller the area, the sharper the edge of every shadow in it */
+export const aimSun = (rig: THREE.Object3D, target: [number, number, number], reach: number) => {
+  const sun = rig.userData.sun as THREE.DirectionalLight, f = rig.userData.from as [number, number, number];
+  sun.position.set(target[0] + f[0], target[1] + f[1], target[2] + f[2]); sun.target.position.set(...target); sun.target.updateMatrixWorld();
+  const c = sun.shadow.camera; c.left = -reach; c.right = reach; c.top = reach; c.bottom = -reach; c.near = 1; c.far = 160; c.updateProjectionMatrix();
+};
+/** the direction toward the sun, for what has to know it (the shade on the cards) */
+export const sunDir = (rig: THREE.Object3D) => new THREE.Vector3(...(rig.userData.from as [number, number, number])).normalize();
 /** a sky as a huge inward ball with a painted vertical gradient */
 export const skyDome = (top: string, horizon: string, low = horizon) => {
   const t = paint(`sky${top}${horizon}${low}`, 16, 512, (g) => { const gr = g.createLinearGradient(0, 0, 0, 512); gr.addColorStop(0, top); gr.addColorStop(0.5, horizon); gr.addColorStop(1, low); g.fillStyle = gr; g.fillRect(0, 0, 16, 512); });
@@ -106,15 +122,31 @@ export const skyDome = (top: string, horizon: string, low = horizon) => {
 };
 
 // ---------------- figures as cards ----------------
-/** a figure drawn in code on a card that stands in the world, faces the lens and casts its own shadow.
- *  w, h = size of the card in metres, feet = where the soles are on the canvas (0..1 from the top), draw paints the canvas */
-export const card = (key: string, cw: number, ch: number, w: number, h: number, feet: number, draw: (g: CanvasRenderingContext2D) => void) => {
+/** the shade that falls on a card: the card keeps its drawn colours, and where an awning, a column or a wall stands between it and
+ *  the sun a cool tone is laid over the drawing. The shadow is looked up a little toward the sun from the card, so that the card
+ *  never shades itself. */
+const shadeMat = (map: THREE.Texture, toSun: THREE.Vector3) => {
+  const m = new THREE.ShadowMaterial({ color: "#1c2a4a", opacity: 0.36, transparent: true, depthWrite: false, side: THREE.DoubleSide });
+  m.polygonOffset = true; m.polygonOffsetFactor = -2; m.polygonOffsetUnits = -4;
+  m.onBeforeCompile = (sh) => {
+    sh.uniforms.cardMap = { value: map }; sh.uniforms.toSun = { value: toSun };
+    sh.vertexShader = sh.vertexShader.replace("void main() {", "uniform vec3 toSun; varying vec2 vCardUv;\nvoid main() { vCardUv = uv;")
+      .replace("#include <shadowmap_vertex>", "worldPosition.xyz += toSun * 0.3;\n#include <shadowmap_vertex>");
+    sh.fragmentShader = sh.fragmentShader.replace("void main() {", "uniform sampler2D cardMap; varying vec2 vCardUv;\nvoid main() { if (texture2D(cardMap, vCardUv).a < 0.5) discard;");
+  };
+  return m;
+};
+/** a figure drawn in code on a card that stands in the world, faces the lens, casts its own shadow and takes the shade of the world.
+ *  w, h = size of the card in metres, feet = where the soles are on the canvas (0..1 from the top), draw paints the canvas;
+ *  toSun = the direction toward the sun (kit.sunDir), without it the card takes no shade */
+export const card = (key: string, cw: number, ch: number, w: number, h: number, feet: number, draw: (g: CanvasRenderingContext2D) => void, toSun?: THREE.Vector3) => {
   const cv = document.createElement("canvas"); cv.width = cw; cv.height = ch; draw(cv.getContext("2d")!);
   const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 16; t.name = key;
   const geo = new THREE.PlaneGeometry(w, h); geo.translate(0, h * (feet - 0.5), 0);
   const m = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ map: t, transparent: true, alphaTest: 0.5, side: THREE.DoubleSide }));
   m.customDepthMaterial = new THREE.MeshDepthMaterial({ depthPacking: THREE.RGBADepthPacking, map: t, alphaTest: 0.5 });
   m.castShadow = true; m.receiveShadow = false;
+  if (toSun) { const sh = new THREE.Mesh(geo, shadeMat(t, toSun)); sh.receiveShadow = true; sh.castShadow = false; sh.renderOrder = 2; m.add(sh); }
   return m;
 };
 /** turn a card to face the camera (about the vertical axis only, so the feet stay on the ground) */

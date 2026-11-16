@@ -251,9 +251,9 @@ export class Mover {
     // arms, shoulders and bounce follow the feet, so they start, stop and change gait with them
     const sep = clamp((rel.R.lz - rel.L.lz) / lerp(0.52, 0.95, run), -1.25, 1.25), air = Math.min(rel.L.y, rel.R.y);
     // the arms swing against the legs (left arm forward with the right foot); in a walk they hang almost straight and the hand is loose
-    const up = lerp(19, 46, run) * sep, bend = lerp(7, 82, run), fw = (q: number) => 11 * Math.max(0, q) * (1 - run);
+    const up = lerp(17, 46, run) * sep, bend = lerp(6, 82, run), fw = (q: number) => 6 * Math.max(0, q) * (1 - run);
     pose.armL = [[up, lerp(8, 14, run)], [up + bend + fw(sep), 5]]; pose.armR = [[-up, lerp(8, 14, run)], [-up + bend + fw(-sep), 5]];
-    pose.handL = pose.handR = 18;
+    pose.handL = pose.handR = 8;
     pose.twist = -9 * sep * (1 + 0.6 * run); pose.lean = this.lean.at(t); pose.head = [0, -(pose.lean ?? 0) * 0.45, 0];
     // the body rises over the standing foot and sinks when both feet are apart (walk); in a run it sinks into each landing and
     // lifts while both feet are in the air
@@ -263,7 +263,8 @@ export class Mover {
     pose.px = 0.02 * Math.sin(2.3 * t + 0.4) * still; pose.roll = 1.3 * Math.sin(2.3 * t + 1.0) * still; pose.hipTilt = -1.6 * Math.sin(2.3 * t + 0.4) * still;
     pose.head = [3 * Math.sin(1.1 * t) * still, (pose.head as number[])[1], 1.6 * Math.sin(1.7 * t + 2) * still];
     pose.armL[1][0] += 3 * Math.sin(2.3 * t) * still; pose.armR[1][0] -= 3 * Math.sin(2.3 * t + 0.7) * still;
-    let handL: HandKind = run > 0.5 ? "fist" : "relaxed", handR: HandKind = handL; const face: Face = {};
+    // a hand that swings in a walk or pumps in a run is loosely closed; an open hand would read as reaching out
+    let handL: HandKind = run > 0.5 || Math.abs(sep) > 0.08 ? "fist" : "relaxed", handR: HandKind = handL; const face: Face = {};
     for (const L of this.layers) {
       const w = this.weight(L, t); if (!w) continue;
       const P0 = pose as Record<string, unknown>, Lp = L.pose as Record<string, unknown>;

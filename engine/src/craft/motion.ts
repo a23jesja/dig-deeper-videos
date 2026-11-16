@@ -31,7 +31,7 @@ class Track {
 /** one footprint: the foot stands at (x, z) pointing `ang` from t0 until t1; h = how high it swung to get there */
 type Plant = { t0: number; t1: number; x: number; z: number; ang: number; h: number; run: boolean };
 type PKey = { t: number; x: number; z: number };
-export type Face = { gaze?: V2; lid?: number; wide?: number; brow?: number; mouth?: number };
+export type Face = { gaze?: V2; lid?: number; wide?: number; brow?: number; mouth?: number; smile?: number };
 export type Layer = { t0: number; t1: number; in: number; out: number; pose: Partial<Pose>; handL?: HandKind; handR?: HandKind; face?: Face; antic: number; over: number };
 export type Sample = {
   pose: Pose;

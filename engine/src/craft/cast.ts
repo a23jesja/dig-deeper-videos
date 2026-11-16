@@ -155,7 +155,7 @@ const drawHead = (k: Ink, L: Look, phiDeg: number, f: Face, o: FigOpts) => {
     if (vis) {
       eye(-far);
       const t0 = at(h, 0, 0.9), n1 = at(h, -7, 0.9), n2 = at(h, 7, 0.9), c1 = at(h, -13, 0.9), c2 = at(h, 13, 0.9), out = 0.5 * a * h.sin;
-      piece(k, hull([[n1.x, -0.5 * H], [n2.x, -0.5 * H], [c1.x + out * 0.5, -0.4 * H], [c2.x + out * 0.5, -0.4 * H], [t0.x + out, -0.385 * H], [t0.x + out * 0.8, -0.365 * H]]), shade(skin, 0.9));
+      piece(k, hull([[n1.x, -0.52 * H], [n2.x, -0.52 * H], [c1.x + out * 0.5, -0.4 * H], [c2.x + out * 0.5, -0.4 * H], [t0.x + out, -0.4 * H], [t0.x + out * 0.86, -0.365 * H], [t0.x, -0.35 * H]]), shade(skin, 0.9));
     }
   }
   for (const e of ears) if (Math.abs(e.e.d) >= 0.55 * a && e.e.d > 0) e.draw();

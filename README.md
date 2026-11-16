@@ -5,7 +5,40 @@ Rendered videos and the video engine for the YouTube channel **Sir Digsworth** (
 Videos in `videos/` are public so Metricool can fetch them by raw URL:
 `https://raw.githubusercontent.com/a23jesja/dig-deeper-videos/main/videos/<file>.mp4`
 
-## Status 2026-11-16, evening: what is built, where it is, what remains
+## Status 2026-11-16, night: the big build, step by step
+
+The big build (DAILY-RULES.md "One big build, then the look is frozen") runs in steps A to G. This list is kept current.
+
+| Step | State |
+|---|---|
+| **A. Own character design** | **Sheet sent, waiting for Jesper's choice.** Six directions for Sir Digsworth on one sheet: `granskning/A/blad.jpg`, one picture per direction in `granskning/A/riktning-1.jpg` to `-6.jpg`, the note with one sentence per direction in `granskning/klar-A.md`. |
+| B. Skeleton and views | Skeleton built ahead of time (`engine/src/craft/rig.ts`); the four views of the chosen figure wait for the choice. |
+| C. Motion, hands and mouth | Not started (the rig already has planted feet, eight poses and five hand shapes). |
+| D. The world | Not started. |
+| E. Sound | Not started. |
+| F. Pompeii as one stand-alone Short | Not started. |
+| G. Freeze | Not started. |
+
+### Step A: where things are
+- `engine/src/craft/rig.ts`: the skeleton, separate from every drawing. A pose holds joint angles and foot targets and no sizes, so the
+  same pose fits every design; planted feet are solved from where the sole lands (the base for "feet never slide"). The skeleton is
+  solved in 3D and turned by the view angle, so every view is equally tall and wide. Poses so far: stand, standSide, run, runCap,
+  recoil, point, skid, stumble, throw, lunge.
+- `engine/src/craft/ink.ts`: the pen (shapes with an ink line, a second flat tone, cut hatching, a tweed weave that moves with its
+  part, eyes with lids, gaze and shine, hands as relaxed / open / fist / point / grip, the monocle and its thin chain).
+- `engine/src/craft/designs/`: one file per direction (`mole`, `woodcut`, `pear`, `puppet`, `lanky`, `bighead`), `common.ts` (torso
+  frame, limbs, shoes from every side, draw order) and `soft.ts` (a body set by numbers). After the choice the five others are removed.
+- `engine/src/craft/SirDesigns.tsx`: the sheet. `PROPS='{"audio":false}' node scripts/stills.mjs SirDesigns out/craft/designs_ 0 0.5 jpeg`
+  (all six) and `... SirDesign out/craft/design_ 0-5 1 jpeg` (one per picture).
+- The work on the old figure in `engine/src/craft/toon.ts` is not used by any of this; the old films still build from it.
+
+### Reviews
+At each STOP the material is put in `granskning/<step>/` with `granskning/klar-<step>.md` (first line `VERSION: n`) and committed.
+By Jesper's order of 2026-11-16 the review itself is done by the local review session `dig-deeper-videos-11` (it gets step, version
+and file paths by message and answers GODKÄND or GÖR OM, three rounds at most); this replaces waiting for answer files on the branch
+`claude/emu-short-cloud`. Only Jesper decides the character design in step A and whether a finished video is published.
+
+## Status 2026-11-16, evening: what was built before the big build
 
 Work was stopped here on Jesper's order ("Committa och pusha allt arbete till main nu, även det som inte är klart ... Bygg inget mer").
 Read `DAILY-RULES.md` first, above all "One big build, then the look is frozen", "Our own character design", "Series paused,
@@ -44,7 +77,7 @@ All of the above sits on the old figure and mixes pose and drawing in one file. 
 drawing, so treat this code as a source of ideas for step B and C, not as the base to extend.
 
 ### What remains (Jesper's steps; stop and wait for his yes where it says STOP)
-- **A. Own character design.** Six clearly different directions for Sir Digsworth, drawn in code on one sheet: front, side, an
+- **A. Own character design (sheet sent, see the table at the top).** Six clearly different directions for Sir Digsworth, drawn in code on one sheet: front, side, an
   action pose with weight, and next to a side character. Among them a mole or badger in tweed, people in woodcut style, a human
   with an own body shape, and three more. Limbs with shape and real hands and feet, eyes that can act, monocle, tweed cap,
   moustache and pipe kept, rim light in one picture, no model from any other channel or studio. One sentence per direction. STOP.

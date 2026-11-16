@@ -35,6 +35,17 @@ The session decides and does everything itself. Jesper is asked for **one thing 
 **Phase 2 starts when two Shorts in a row reach 65 % or more:** long videos of 7-12 minutes in the proven look,
 one every two weeks, plus 3-5 Shorts a week cut from them.
 
+## One big build, then the look is frozen (Jesper 2026-11-18) - read this first
+We have changed style about six times in a week and published almost nothing new. This ends here.
+- **One build, about a week:** our own character design, the skeleton, the views, the motion library, hands and
+  mouth, the world look and the sound. All of it in the engine's shared code.
+- **Then the look is frozen.** No new style, no new character design, no new engine. Do not suggest one.
+- **After that, one improvement per video.** Before building, name the one thing that will be better than last
+  time; in the delivery note, say what it was. Small polish only, inside the frozen look.
+- **Videos go out.** A video that passes the checks and Jesper's yes is published; it is not held back for
+  another round of polish. What the numbers show decides the next improvement.
+- **Only Jesper can unfreeze the look.**
+
 ## Our own character design (Jesper 2026-11-18) - overrides the character part of the next section
 The round-head, bean-body, stick-limb figures look like those of several well-known channels. Jesper wants
 figures nobody else uses. Until he has picked a design, no new video is built with the old figures.

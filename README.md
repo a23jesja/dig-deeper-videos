@@ -11,9 +11,9 @@ The big build (DAILY-RULES.md "One big build, then the look is frozen") runs in 
 
 | Step | State |
 |---|---|
-| **A. Own character design** | **Sheet sent, waiting for Jesper's choice.** Six directions for Sir Digsworth on one sheet: `granskning/A/blad.jpg`, one picture per direction in `granskning/A/riktning-1.jpg` to `-6.jpg`, the note with one sentence per direction in `granskning/klar-A.md`. |
+| **A. Own character design** | **Sheet approved for showing by the review session (`granskning/svar-A.md` lists what to fix on the chosen one), waiting for Jesper's choice.** Six directions for Sir Digsworth on one sheet: `granskning/A/blad.jpg`, one picture per direction in `granskning/A/riktning-1.jpg` to `-6.jpg`, the note with one sentence per direction in `granskning/klar-A.md`. |
 | B. Skeleton and views | Skeleton built ahead of time (`engine/src/craft/rig.ts`); the four views of the chosen figure wait for the choice. |
-| C. Motion, hands and mouth | Not started (the rig already has planted feet, eight poses and five hand shapes). |
+| C. Motion, hands and mouth | First pass built ahead of the choice, on the skeleton only: `engine/src/craft/motion.ts` (footsteps planned in world space so feet cannot slide; stand, walk, run, stop, turn, step, stumble; acting layers with wind-up and overshoot: point, recoil, duck, carry, wind-up and release of a throw, talk; blink; mouth from word timings) and the test stage `MotionTest` (`engine/src/craft/MotionTest.tsx`, props `design` 0-5 and `marks`). Not built yet: fall, get up, climb, sit, pour, pull, late follow-through of clothes, mouth shapes per sound. The test clip is made after the choice, with the chosen figure. |
 | D. The world | Not started. |
 | E. Sound | Not started. |
 | F. Pompeii as one stand-alone Short | Not started. |

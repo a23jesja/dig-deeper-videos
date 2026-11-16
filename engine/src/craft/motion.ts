@@ -1,0 +1,218 @@
+// The motion library of the cast, built on the skeleton only (rig.ts), so it fits every design.
+// A Mover is a small script of moves (stand, walk, run, turn, act ...). It plans every footstep on the ground in world space first:
+// a foot is either planted at one fixed spot or in the air between two spots, and the pelvis travels over the planted feet. The feet
+// can therefore never slide, and the figure moves exactly as far as its steps carry it. Upper-body acting (point, recoil, duck ...)
+// is laid on top as layers whose weight dips the wrong way first (the wind-up) and shoots a little past (the overshoot).
+// All distances are in leg lengths (thigh + shin), all times in seconds; sample(t) is a pure function of time.
+import { Pose, Seg, Side, FootIK, LegFK } from "./rig";
+import type { HandKind } from "./ink";
+
+const R = Math.PI / 180;
+const clamp = (x: number, a: number, b: number) => Math.max(a, Math.min(b, x));
+const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+const smooth = (u: number) => (u <= 0 ? 0 : u >= 1 ? 1 : u * u * (3 - 2 * u));
+type V2 = [number, number];
+const fwd = (psi: number): V2 => [Math.sin(psi * R), Math.cos(psi * R)], left = (psi: number): V2 => [Math.cos(psi * R), -Math.sin(psi * R)];
+const other = (s: Side): Side => (s === "L" ? "R" : "L");
+
+/** a number that changes over time: keys joined by smooth ramps */
+class Track {
+  k: [number, number][] = [];
+  constructor(v0 = 0) { this.k.push([-1e9, v0]); }
+  last() { return this.k[this.k.length - 1][1]; }
+  /** hold the present value until t0, then reach v at t1 */
+  ramp(t0: number, t1: number, v: number) { this.k.push([t0, this.at(t0)], [Math.max(t1, t0 + 1e-4), v]); this.k.sort((a, b) => a[0] - b[0]); }
+  at(t: number) {
+    const k = this.k; let i = 0; while (i < k.length - 1 && k[i + 1][0] <= t) i++;
+    if (i >= k.length - 1) return k[k.length - 1][1];
+    return lerp(k[i][1], k[i + 1][1], smooth((t - k[i][0]) / (k[i + 1][0] - k[i][0])));
+  }
+}
+/** one footprint: the foot stands at (x, z) pointing `ang` from t0 until t1; h = how high it swung to get there */
+type Plant = { t0: number; t1: number; x: number; z: number; ang: number; h: number; run: boolean };
+type PKey = { t: number; x: number; z: number };
+export type Face = { gaze?: V2; lid?: number; wide?: number; brow?: number; mouth?: number };
+export type Layer = { t0: number; t1: number; in: number; out: number; pose: Partial<Pose>; handL?: HandKind; handR?: HandKind; face?: Face; antic: number; over: number };
+export type Sample = {
+  pose: Pose;
+  /** where the figure stands (the ground under its pelvis), in leg lengths: x = screen-right, z = toward the lens; yaw = the view angle for solve() */
+  x: number; z: number; yaw: number;
+  handL: HandKind; handR: HandKind; face: Face;
+  /** for things that follow late (cap, coat tails, chain): forward speed and vertical speed of the body a moment ago, leg lengths per second */
+  drag: number; bounce: number;
+  /** debug: the footprints in the world [x, z, planted] */
+  feet: Record<Side, [number, number, boolean]>;
+};
+
+// ---------------- acting poses (upper body; the feet stay with the planner) ----------------
+export const ACTS: Record<string, Partial<Pose> & { shapeL?: HandKind; shapeR?: HandKind; face?: Face }> = {
+  point: { lean: 7, twist: -8, armR: [[84, 6], [82, 0]], armL: [[-22, 12], [-4, 8]], head: [0, -4, 0], shapeR: "point", face: { brow: -0.5, lid: 0.1 } },
+  recoil: { lean: -17, pz: -0.13, py: -0.05, armL: [[48, 26], [128, 16]], armR: [[72, 22], [146, 8]], shapeL: "open", shapeR: "open", head: [0, -9, 0], face: { wide: 1, lid: 0, brow: 1, mouth: 0.6 } },
+  duck: { py: -0.4, lean: 30, armL: [[150, 24], [236, 8]], armR: [[156, 24], [240, 8]], shapeL: "open", shapeR: "open", head: [0, 22, 0], face: { lid: 0.7, brow: -1 } },
+  carry: { lean: -5, armL: [[26, 10], [96, -8]], armR: [[26, 10], [96, -8]], shapeL: "grip", shapeR: "grip" },
+  windup: { lean: -13, pz: -0.1, twist: 18, armL: [[82, 10], [78, 4]], armR: [[-112, 24], [-158, 10]], shapeR: "fist", shapeL: "open", head: [0, -7, 0] },
+  release: { lean: 20, pz: 0.12, twist: -20, armL: [[-40, 16], [-10, 10]], armR: [[70, 8], [60, 0]], shapeR: "open", head: [0, 4, 0] },
+  talk: { armR: [[20, 14], [100, -6]], shapeR: "open", head: [0, -2, 0] },
+  trip: { lean: 40, py: -0.06, armL: [[62, 14], [70, 8]], armR: [[88, 10], [100, 4]], shapeL: "open", shapeR: "open", head: [0, -24, 0], face: { wide: 1, lid: 0, brow: 1, mouth: 0.8 } },
+};
+
+export class Mover {
+  t = 0; P: V2; psi: number;
+  /** half the distance between the feet when standing, in leg lengths */
+  w = 0.12;
+  private feet: Record<Side, Plant[]> = { L: [], R: [] };
+  private pel: PKey[] = [];
+  private yawT: Track; private lean = new Track(0); private runW = new Track(0);
+  private layers: Layer[] = []; private next: Side = "R";
+  constructor(at: V2, facing: number) {
+    this.P = at; this.psi = facing; this.yawT = new Track(facing);
+    for (const s of ["L", "R"] as Side[]) this.feet[s].push(this.spot(s, at, facing, -1e9));
+    this.pel.push({ t: 0, x: at[0], z: at[1] });
+  }
+  private spot(s: Side, P: V2, psi: number, t0: number, h = 0.08, run = false): Plant {
+    const l = left(psi), k = s === "L" ? this.w : -this.w;
+    return { t0, t1: 1e9, x: P[0] + l[0] * k, z: P[1] + l[1] * k, ang: psi + (s === "L" ? 11 : -11), h, run };
+  }
+  private lastPlant(s: Side) { return this.feet[s][this.feet[s].length - 1]; }
+  /** lift a foot at `lift` and put it down at `land` on a new spot */
+  private put(s: Side, lift: number, land: number, p: Plant) {
+    const prev = this.lastPlant(s); prev.t1 = Math.max(prev.t0 + 0.02, Math.min(lift, land - 0.06)); p.t0 = land; this.feet[s].push(p);
+  }
+  stand(dur: number) { this.t += dur; this.pel.push({ t: this.t, x: this.P[0], z: this.P[1] }); return this; }
+  /** walk `dist` leg lengths the way the figure faces, then bring the feet together */
+  walk(dist: number, o: { run?: boolean; step?: number; tau?: number } = {}) {
+    const run = !!o.run, tau = o.tau ?? (run ? 0.3 : 0.5), ref = o.step ?? (run ? 0.95 : 0.52);
+    const n = Math.max(2, Math.round(dist / ref + 0.5)), L = dist / (n - 0.5), T0 = this.t, d = fwd(this.psi), P0 = this.P;
+    const half = run ? 0.3 : 0.55, lead = run ? 0.25 : 0.4, m = (k: number) => T0 + (k + lead) * tau, at = (a: number): V2 => [P0[0] + d[0] * a, P0[1] + d[1] * a];
+    this.pel.push({ t: T0, x: P0[0], z: P0[1] });
+    for (let k = 1; k <= n; k++) { const p = at((k - 0.5) * L); this.pel.push({ t: m(k), x: p[0], z: p[1] }); }
+    let s = this.next;
+    for (let k = 1; k <= n + 1; k++) {
+      const a = (Math.min(k, n) - 0.5) * L, land = k <= n ? m(k) - half * tau : m(n) + (run ? 0.5 : 0.45) * tau;
+      const lift = k <= 2 ? Math.max(T0 + 0.02, land - (run ? 1.05 : k === 1 ? 0.8 : 0.9) * tau) : m(k - 2) + half * tau;
+      this.put(s, lift, land, this.spot(s, at(a), this.psi, land, k > n ? 0.05 : run ? 0.3 : 0.11, run));
+      s = other(s);
+    }
+    this.next = s; this.P = at((n - 0.5) * L); this.t = m(n) + (run ? 0.8 : 0.72) * tau;
+    this.pel.push({ t: this.t, x: this.P[0], z: this.P[1] });
+    // lean into the move, and a small lean back past upright when it stops (the overshoot)
+    this.lean.ramp(T0, T0 + tau * 1.2, run ? 17 : 3.5); this.lean.ramp(m(n) - tau * 0.6, m(n) + tau * 0.35, run ? -9 : -2.5); this.lean.ramp(m(n) + tau * 0.35, this.t + 0.18, 0);
+    this.runW.ramp(T0, T0 + tau, run ? 1 : 0); this.runW.ramp(m(n) - tau * 0.3, this.t, 0);
+    return this;
+  }
+  run(dist: number, o: { step?: number; tau?: number } = {}) { return this.walk(dist, { ...o, run: true }); }
+  /** turn on the spot by `deg` (positive = toward the figure's left); each quarter turn is two small steps */
+  turn(deg: number, dur?: number) {
+    const parts = Math.max(1, Math.ceil(Math.abs(deg) / 95)), each = deg / parts, td = (dur ?? 0.3 * parts + 0.15) / parts;
+    for (let i = 0; i < parts; i++) {
+      const T0 = this.t, psi1 = this.psi + each, a: Side = each > 0 ? "L" : "R", b = other(a);
+      this.put(a, T0 + 0.02, T0 + td * 0.5, this.spot(a, this.P, psi1, 0, 0.06));
+      this.put(b, T0 + td * 0.46, T0 + td * 0.96, this.spot(b, this.P, psi1, 0, 0.06));
+      this.yawT.ramp(T0, T0 + td, psi1); this.psi = psi1; this.t = T0 + td;
+    }
+    this.pel.push({ t: this.t, x: this.P[0], z: this.P[1] });
+    return this;
+  }
+  /** move one foot: `ahead` leg lengths forward (negative = back), e.g. the step back of a recoil */
+  step(s: Side, ahead: number, dur = 0.22) {
+    const prev = this.lastPlant(s), d = fwd(this.psi);
+    this.put(s, this.t + 0.02, this.t + dur, { t0: 0, t1: 1e9, x: prev.x + d[0] * ahead, z: prev.z + d[1] * ahead, ang: prev.ang, h: 0.08, run: false });
+    return this;
+  }
+  /** lay an acting pose over the body for `dur` seconds. wait = false starts it without moving the clock (so it plays over the next move) */
+  act(name: keyof typeof ACTS | Partial<Pose>, dur: number, o: { in?: number; out?: number; wait?: boolean; antic?: number; over?: number; face?: Face; handL?: HandKind; handR?: HandKind } = {}) {
+    const a = typeof name === "string" ? ACTS[name] : (name as Partial<Pose> & { shapeL?: HandKind; shapeR?: HandKind; face?: Face }), { shapeL: handL, shapeR: handR, face, ...pose } = a;
+    this.layers.push({ t0: this.t, t1: this.t + dur, in: o.in ?? 0.28, out: o.out ?? 0.3, pose, handL: o.handL ?? handL, handR: o.handR ?? handR, face: o.face ?? face, antic: o.antic ?? 0.16, over: o.over ?? 1.6 });
+    if (o.wait !== false) this.stand(dur);
+    return this;
+  }
+  /** a run that ends with the toe catching: short stuttering steps with the body pitched forward and the hands thrown out */
+  stumble() {
+    const T0 = this.t;
+    this.layers.push({ t0: T0, t1: T0 + 0.75, in: 0.14, out: 0.45, pose: (({ shapeL, shapeR, face, ...p }) => p)(ACTS.trip), handL: "open", handR: "open", face: ACTS.trip.face, antic: 0, over: 2.2 });
+    return this.walk(1.1, { run: true, tau: 0.2, step: 0.32 });
+  }
+  get end() { return this.t; }
+
+  // ---------------- sampling ----------------
+  private pelAt(t: number): V2 {
+    const k = this.pel; if (t <= k[0].t) return [k[0].x, k[0].z]; if (t >= k[k.length - 1].t) return [k[k.length - 1].x, k[k.length - 1].z];
+    let i = 0; while (k[i + 1].t <= t) i++;
+    const a = k[i], b = k[i + 1], h = b.t - a.t, u = (t - a.t) / h;
+    const tan = (j: number, c: "x" | "z") => {
+      if (j <= 0 || j >= k.length - 1) return 0;
+      const d0 = k[j][c] - k[j - 1][c], d1 = k[j + 1][c] - k[j][c]; if (d0 * d1 <= 0) return 0;
+      const s = (k[j + 1][c] - k[j - 1][c]) / (k[j + 1].t - k[j - 1].t), lim = 3 * Math.min(Math.abs(d0) / (k[j].t - k[j - 1].t), Math.abs(d1) / (k[j + 1].t - k[j].t));
+      return Math.sign(s) * Math.min(Math.abs(s), lim);
+    };
+    const H = (c: "x" | "z") => { const u2 = u * u, u3 = u2 * u; return (2 * u3 - 3 * u2 + 1) * a[c] + (u3 - 2 * u2 + u) * h * tan(i, c) + (-2 * u3 + 3 * u2) * b[c] + (u3 - u2) * h * tan(i + 1, c); };
+    return [H("x"), H("z")];
+  }
+  /** a foot at time t: where it is, how high, which way it points, how it is pitched, whether it stands */
+  private footAt(s: Side, t: number) {
+    const f = this.feet[s]; let i = 0; while (i < f.length - 1 && f[i + 1].t0 <= t) i++;
+    const p = f[i];
+    if (t <= p.t1 || i === f.length - 1) {
+      // planted: heel first as it lands, onto the toe before it leaves
+      const land = clamp((t - p.t0) / 0.07, 0, 1), leave = p.t1 > 1e8 ? 0 : clamp((t - (p.t1 - (p.run ? 0.07 : 0.16))) / (p.run ? 0.07 : 0.16), 0, 1);
+      return { x: p.x, z: p.z, y: 0, ang: p.ang, pitch: (p.run ? -4 : -14) * (1 - land) * (i ? 1 : 0) + (p.run ? 34 : 30) * smooth(leave), down: true };
+    }
+    const q = f[i + 1], u = clamp((t - p.t1) / (q.t0 - p.t1), 0, 1), e = smooth(u), far = Math.hypot(q.x - p.x, q.z - p.z);
+    const up = Math.sin(Math.PI * Math.min(1, u * 1.08)) ** 0.8 * q.h * (far > 0.05 || q.h < 0.09 ? 1 : 0.6);
+    return { x: lerp(p.x, q.x, e), z: lerp(p.z, q.z, e), y: up, ang: lerp(p.ang, q.ang, e), pitch: lerp(p.run ? 34 : 30, q.run ? -4 : -14, smooth(clamp(u * 1.5 - 0.1, 0, 1))) + (q.run ? 28 : 8) * Math.sin(Math.PI * u) * (u < 0.5 ? 1 : 0.3), down: false };
+  }
+  private weight(l: Layer, t: number) {
+    if (t <= l.t0 || t >= l.t1) return 0;
+    const u = (t - l.t0) / l.in, v = (l.t1 - t) / l.out;
+    let w = 1;
+    if (u < 1) { const a = 0.2; if (u < a && l.antic) w = -l.antic * Math.sin((Math.PI * u) / a); else { const q = (u - (l.antic ? a : 0)) / (1 - (l.antic ? a : 0)) - 1; w = 1 + (l.over + 1) * q * q * q + l.over * q * q; } }
+    return v < 1 ? Math.min(w, smooth(v)) : w;
+  }
+  sample(t: number): Sample {
+    const P = this.pelAt(t), psi = this.yawT.at(t), f = fwd(psi), l = left(psi), run = this.runW.at(t);
+    const pose: Pose = {}, feet = {} as Sample["feet"], rel = {} as Record<Side, { lx: number; lz: number; y: number }>;
+    for (const s of ["L", "R"] as Side[]) {
+      const ft = this.footAt(s, t), dx = ft.x - P[0], dz = ft.z - P[1], lx = dx * l[0] + dz * l[1], lz = dx * f[0] + dz * f[1], sg = s === "L" ? 1 : -1;
+      rel[s] = { lx, lz, y: ft.y }; feet[s] = [ft.x, ft.z, ft.down];
+      const ik: FootIK = { x: sg * lx, z: lz, y: ft.y, pitch: ft.pitch, toe: sg * (ft.ang - psi) };
+      if (s === "L") pose.legL = ik; else pose.legR = ik;
+    }
+    // arms, shoulders and bounce follow the feet, so they start, stop and change gait with them
+    const sep = clamp((rel.R.lz - rel.L.lz) / lerp(0.52, 0.95, run), -1.25, 1.25), air = Math.min(rel.L.y, rel.R.y);
+    const up = lerp(24, 46, run) * sep, bend = lerp(12, 82, run);
+    pose.armL = [[up, lerp(9, 14, run)], [up + bend + 8 * Math.abs(sep) * (1 - run), 5]]; pose.armR = [[-up, lerp(9, 14, run)], [-up + bend + 8 * Math.abs(sep) * (1 - run), 5]];
+    pose.twist = -9 * sep * (1 + 0.6 * run); pose.lean = this.lean.at(t); pose.head = [0, -(pose.lean ?? 0) * 0.45, 0];
+    pose.py = -0.012 - run * (0.07 - 0.5 * air - 0.03 * Math.abs(sep));
+    let handL: HandKind = run > 0.5 ? "fist" : "relaxed", handR: HandKind = handL; const face: Face = {};
+    for (const L of this.layers) {
+      const w = this.weight(L, t); if (!w) continue;
+      const P0 = pose as Record<string, unknown>, Lp = L.pose as Record<string, unknown>;
+      for (const key of Object.keys(Lp)) {
+        const a = P0[key], b = Lp[key];
+        if (typeof b === "number") P0[key] = lerp((a as number) ?? 0, b, w);
+        else if (key === "head") { const h = (a as number[]) ?? [0, 0, 0], g = b as number[]; P0[key] = [0, 1, 2].map((i) => lerp(h[i], g[i], w)); }
+        else if (key === "armL" || key === "armR") { const h = a as [Seg, Seg], g = b as [Seg, Seg]; P0[key] = [0, 1].map((i) => [lerp(h[i][0], g[i][0], w), lerp(h[i][1], g[i][1], w)]); }
+        else if ((key === "legL" || key === "legR") && w > 0.5) P0[key] = b as LegFK;
+      }
+      if (w > 0.5) { if (L.handL) handL = L.handL; if (L.handR) handR = L.handR; }
+      if (L.face) { const ww = clamp(w, 0, 1), F = face as Record<string, unknown>, G = L.face as Record<string, unknown>; for (const key of Object.keys(G)) { const b = G[key]; F[key] = typeof b === "number" ? lerp((F[key] as number) ?? (key === "lid" ? 0.18 : 0), b, ww) : b; } }
+    }
+    const lagT = t - 0.09, dt = 1 / 60, P1 = this.pelAt(lagT), P2 = this.pelAt(lagT - dt);
+    const drag = ((P1[0] - P2[0]) * f[0] + (P1[1] - P2[1]) * f[1]) / dt;
+    return { pose, x: P[0], z: P[1], yaw: psi, handL, handR, face, drag, bounce: 0, feet };
+  }
+}
+
+/** eyes that blink by themselves: the upper lid's extra closing at time t (0..1); seed gives each figure its own rhythm */
+export const blink = (t: number, seed = 0) => {
+  const period = 2.6 + (Math.abs(Math.sin(seed * 12.9898)) * 1.8), u = (t + seed * 0.77) % period;
+  return u < 0.14 ? Math.sin((Math.PI * u) / 0.14) : 0;
+};
+/** the mouth from the caption word timings: opens on each word and closes between words (a = start, b = end in seconds) */
+export const mouthAt = (words: { a: number; b: number; w: string }[], t: number) => {
+  for (const w of words) if (t >= w.a - 0.02 && t <= w.b + 0.03) {
+    const n = Math.max(1, Math.round((w.b - w.a) / 0.17)), u = clamp((t - w.a) / Math.max(0.08, w.b - w.a), 0, 1);
+    return 0.18 + 0.72 * Math.abs(Math.sin(Math.PI * u * n)) * Math.sin(Math.PI * clamp(u * 1.1, 0, 1)) ** 0.4;
+  }
+  return 0;
+};

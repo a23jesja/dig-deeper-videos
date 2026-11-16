@@ -13,6 +13,7 @@ import { SirChainStill, SIR_CHAIN_FRAMES } from "./videos/emu/SirChainStill";
 import { PompMoves, POMP_MOVES_FRAMES } from "./videos/emu/PompMoves";
 import { SirViews, SIR_VIEWS_FRAMES } from "./craft/SirViews";
 import { SirDesigns, SirDesign, SIR_DESIGN_FRAMES, PW, PH } from "./craft/SirDesigns";
+import { MotionTest, MOTION_FRAMES, MW, MH, MFPS } from "./craft/MotionTest";
 import { EnvKit, ENV_PARTS } from "./videos/emu/env/EnvKit";
 import { ThreeWay3 } from "./videos/three3d/ThreeWay3";
 import { StyleSheet } from "./videos/style/StyleSheet";
@@ -59,6 +60,7 @@ export const Root: React.FC = () => (
     <Composition id="SirViews" component={SirViews} durationInFrames={SIR_VIEWS_FRAMES} fps={30} width={2600} height={1400} />
     <Composition id="SirDesigns" component={SirDesigns} durationInFrames={1} fps={30} width={PW * 2} height={PH * 3} />
     <Composition id="SirDesign" component={SirDesign} durationInFrames={SIR_DESIGN_FRAMES} fps={30} width={PW} height={PH} />
+    <Composition id="MotionTest" component={MotionTest} durationInFrames={MOTION_FRAMES} fps={MFPS} width={MW} height={MH} />
     <Composition id="SirChainStill" component={SirChainStill} durationInFrames={SIR_CHAIN_FRAMES} fps={30} width={1600} height={1250} />
     <Composition id="Titanic3Test" component={Titanic3Test} durationInFrames={TITANIC3_TEST_FRAMES} fps={30} width={1080} height={1920} />
     <Composition id="EnvKit" component={EnvKit} durationInFrames={ENV_PARTS} fps={30} width={1920} height={1080} />

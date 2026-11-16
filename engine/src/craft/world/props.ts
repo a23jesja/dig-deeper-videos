@@ -1,21 +1,23 @@
 // Props of a Roman street, each a real object with thickness, its own colour and its own shadow (world kit, kit.ts).
 // Sizes in metres. Each function returns a group standing on y = 0 at its own origin.
 import * as THREE from "three";
-import { mesh, group, box, cyl, ball, torus, lathe, slab, paint, INK3 } from "./kit";
+import { mesh, group, box, cyl, ball, torus, lathe, slab, paint, rod, INK3 } from "./kit";
 
 const D2 = Math.PI / 180;
 export const C = {
-  bread: "#eab45c", crust: "#8f5520", terra: "#d2693a", terraD: "#a94e2a", wood: "#b0703c", woodD: "#7d4a26", iron: "#4a4d5a", gold: "#f6c52e", plaster: "#f3e6c8", ochre: "#efc35a",
+  bread: "#f6c66a", crust: "#a8672a", terra: "#d2693a", terraD: "#a94e2a", wood: "#b0703c", woodD: "#7d4a26", iron: "#4a4d5a", gold: "#f6c52e", plaster: "#f3e6c8", ochre: "#efc35a",
   red: "#c8402f", stone: "#9fa2ae", stoneL: "#c9c6bd", lava: "#666873", marble: "#f3eee2", green: "#3f9a5c", blue: "#3b7fc4", cloth: "#f4ead2", basket: "#d2a85a", sack: "#dccba0",
 };
 
-/** a round Roman loaf scored in eight (panis quadratus) */
+/** a round Roman loaf scored in eight (panis quadratus): the cuts run from the middle down over the shoulder of the crust */
 export const loaf = (r = 0.15) => {
-  const g = group([mesh(lathe(`loaf${r}`, [[0, 0], [0.9 * r, 0], [r, 0.22 * r], [0.95 * r, 0.48 * r], [0.66 * r, 0.7 * r], [0.3 * r, 0.8 * r], [0, 0.82 * r]]), C.bread)]);
-  // eight cuts from the middle down the slope of the crust
-  for (let i = 0; i < 8; i++) { const a = i * 45 * D2; g.add(mesh(box(0.62 * r, 0.035 * r, 0.06 * r), C.crust, { at: [Math.cos(a) * 0.4 * r, 0.745 * r, -Math.sin(a) * 0.4 * r], rot: [0, a, -0.36], line: 0, shadow: false })); }
-  g.add(mesh(cyl(0.07 * r, 0.07 * r, 0.03 * r, 10), C.crust, { at: [0, 0.82 * r, 0], line: 0, shadow: false }));
-  g.add(mesh(torus(0.97 * r, 0.035 * r), C.crust, { at: [0, 0.3 * r, 0], rot: [Math.PI / 2, 0, 0], line: 0, shadow: false }));
+  const g = group([mesh(lathe(`loaf${r}`, [[0, 0], [0.9 * r, 0], [r, 0.22 * r], [0.95 * r, 0.48 * r], [0.66 * r, 0.7 * r], [0.3 * r, 0.8 * r], [0, 0.82 * r]]), C.bread, { glow: "#5c3c10" })]);
+  for (let i = 0; i < 8; i++) {
+    const a = i * 45 * D2, at = (rad: number, y: number): [number, number, number] => [Math.cos(a) * rad * r, y * r, -Math.sin(a) * rad * r];
+    g.add(mesh(box(0.52 * r, 0.04 * r, 0.075 * r), C.crust, { at: at(0.36, 0.79), rot: [0, a, -0.2], line: 0, shadow: false }));
+    g.add(mesh(box(0.4 * r, 0.04 * r, 0.075 * r), C.crust, { at: at(0.79, 0.62), rot: [0, a, -0.66], line: 0, shadow: false }));
+  }
+  g.add(mesh(torus(0.985 * r, 0.035 * r), C.crust, { at: [0, 0.3 * r, 0], rot: [Math.PI / 2, 0, 0], line: 0, shadow: false }));
   return g;
 };
 /** a two-handled wine jar */
@@ -112,6 +114,36 @@ export const chainLink = (a: [number, number, number], b: [number, number, numbe
   return g;
 };
 export const ring = (at: [number, number, number]) => mesh(torus(0.07, 0.016, 12), C.iron, { at });
+
+// ---------------- a wharf and a ship (Boston, 1773) ----------------
+/** a chest of tea: a wooden box bound with rope, a paper label on its side */
+export const teaChest = (w = 0.62, h = 0.5, d = 0.5, col = "#cfa055") => group([
+  mesh(box(w, h, d), col, { at: [0, h / 2, 0] }),
+  mesh(box(w + 0.03, 0.05, d + 0.03), "#8a5e2c", { at: [0, h - 0.03, 0], line: 0.6 }), mesh(box(w + 0.03, 0.05, d + 0.03), "#8a5e2c", { at: [0, 0.03, 0], line: 0.6 }),
+  mesh(box(0.045, h + 0.02, d + 0.035), "#5a3a22", { at: [-w * 0.24, h / 2, 0], line: 0 }), mesh(box(0.045, h + 0.02, d + 0.035), "#5a3a22", { at: [w * 0.24, h / 2, 0], line: 0 }),
+  mesh(box(w * 0.3, h * 0.36, 0.012), "#f6ecd0", { at: [0, h * 0.52, d / 2 + 0.008], line: 0.5, shadow: false }), mesh(box(w * 0.3, h * 0.36, 0.012), "#f6ecd0", { at: [0, h * 0.52, -d / 2 - 0.008], line: 0.5, shadow: false }),
+]);
+/** a cask with iron hoops, standing on its end */
+export const barrel = (h = 0.95, r = 0.34, col = "#b97a42") => { const k = h / 0.95, g = group([mesh(lathe(`barrel${h}${r}`, [[r * 0.8, 0], [r * 0.95, 0.18 * k], [r, 0.475 * k], [r * 0.95, 0.77 * k], [r * 0.8, 0.95 * k], [0.001, 0.95 * k]]), col)]); for (const y of [0.1, 0.34, 0.61, 0.85]) g.add(mesh(torus(r * (y > 0.2 && y < 0.8 ? 0.99 : 0.9), 0.022, 20), C.iron, { at: [0, y * k, 0], rot: [Math.PI / 2, 0, 0], line: 0 })); return g; };
+/** a coil of rope lying on the planks */
+export const ropeCoil = (r = 0.36, turns = 4) => { const g = new THREE.Group(); for (let i = 0; i < turns; i++) g.add(mesh(torus(r - i * 0.02, 0.05, 22), i % 2 ? "#dcc38a" : "#cfb478", { at: [0, 0.05 + i * 0.085, 0], rot: [Math.PI / 2, 0, i * 0.4], line: 0.7 })); return g; };
+/** a mooring post */
+export const bollard = (h = 0.75) => group([mesh(cyl(0.13, 0.16, h, 12), "#5a4634", { at: [0, h / 2, 0] }), mesh(cyl(0.19, 0.19, 0.09, 12), "#3f3126", { at: [0, h, 0] })]);
+/** a lamp on a wooden post; lit = the glass glows (for the night scenes) */
+export const lampPost = (h = 2.9, lit = false) => group([
+  mesh(box(0.14, h, 0.14), "#5a4634", { at: [0, h / 2, 0] }), mesh(box(0.5, 0.08, 0.08), "#5a4634", { at: [0.18, h - 0.2, 0] }),
+  mesh(box(0.26, 0.34, 0.26), lit ? "#ffd75a" : "#f1e2a0", { at: [0.38, h - 0.5, 0] }), mesh(box(0.32, 0.06, 0.32), C.iron, { at: [0.38, h - 0.31, 0] }), mesh(box(0.3, 0.05, 0.3), C.iron, { at: [0.38, h - 0.69, 0] }),
+]);
+export const crate = (s = 0.7, col = "#c08a4e") => group([mesh(box(s, s, s), col, { at: [0, s / 2, 0] }), mesh(box(s + 0.03, 0.07, s + 0.03), "#8a5e2c", { at: [0, s - 0.04, 0], line: 0.6 }), mesh(box(0.08, s, s + 0.03), "#8a5e2c", { at: [0, s / 2, 0], rot: [0, 0, 0.7], line: 0 })]);
+/** a furled sail on its yard, the yard lying along x */
+export const yard = (len = 9) => group([rod([-len / 2, 0, 0], [len / 2, 0, 0], 0.11, "#7a5a36"), mesh(cyl(0.22, 0.22, len * 0.86, 12), "#f3ead2", { at: [0, -0.2, 0.05], rot: [0, 0, Math.PI / 2] })]);
+/** a ship's mast with two yards, a top and its shrouds down to the rail (the rail is `beam` from the mast on each side) */
+export const mast = (h = 20, beam = 3.5, deck = 0) => {
+  const g = group([rod([0, deck, 0], [0, h, 0], 0.26, "#8a6a3e"), mesh(cyl(0.9, 0.7, 0.14, 14), "#7a5a36", { at: [0, h * 0.52, 0] })]);
+  const y1 = yard(beam * 2.5); y1.position.set(0, h * 0.46, 0); const y2 = yard(beam * 1.9); y2.position.set(0, h * 0.78, 0); g.add(y1, y2);
+  for (const s of [-1, 1]) for (const dz of [-0.9, -0.3, 0.3, 0.9]) g.add(rod([0, h * 0.5, 0], [s * beam, deck + 0.85, dz * 1.4], 0.03, "#3a3028", { line: 0.5 }));
+  return g;
+};
 
 // ---------------- buildings ----------------
 const tiles = (col: string) => paint(`tiles${col}`, 256, 256, (g) => {

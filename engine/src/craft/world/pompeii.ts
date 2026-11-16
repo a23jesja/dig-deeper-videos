@@ -29,13 +29,14 @@ const bakery = () => {
   g.add(mesh(box(0.42, 0.5, W), C.woodD, { at: [x0 + 0.05, WALK + H - 0.25, 0] }));                            // lintel
   g.add(mesh(box(D + 0.6, 0.16, W + 0.6), C.terra, { at: [x0 + D / 2, WALK + H + 0.08, 0] }));                  // roof
   const cn = counter(3.0, 0.95, 0.6); cn.rotation.y = -Math.PI / 2; cn.position.set(x0 - 0.15, WALK, 0); g.add(cn);
-  for (const [z, x, r] of [[-1.05, 0, 0.17], [-0.62, 0.06, 0.16], [-0.2, -0.04, 0.17], [0.24, 0.05, 0.16], [-0.42, -0.02, 0.15]] as number[][]) { const l = loaf(r); l.position.set(x0 - 0.15 + x, WALK + 0.95 + (z === -0.42 ? 0.13 : 0), z); l.rotation.y = z * 3; g.add(l); }
-  const bk = basket(0.3, 0.26); bk.position.set(x0 - 0.15, WALK + 0.95, 0.95); g.add(bk);
-  for (const [dx, dz, dy] of [[0, 0, 0.2], [0.12, 0.1, 0.3], [-0.1, 0.06, 0.32]] as number[][]) { const l = loaf(0.13); l.position.set(x0 - 0.15 + dx, WALK + 0.95 + dy, 0.95 + dz); l.rotation.set(0.5, dx * 9, 0.3); g.add(l); }
+  for (const [z, x, r, up] of [[-1.3, 0, 0.18, 0], [-0.52, 0.12, 0.17, 0], [-0.2, -0.06, 0.18, 0], [-0.36, 0.04, 0.16, 0.145], [0.12, 0.14, 0.17, 0], [0.62, -0.03, 0.18, 0]] as number[][]) { const l = loaf(r); l.position.set(x0 - 0.15 + x, WALK + 0.95 + up + (z > -1 && z < 0.4 ? 0.035 : 0), z); l.rotation.y = z * 3; g.add(l); }
+  g.add(mesh(box(0.5, 0.035, 1.25), C.wood, { at: [x0 - 0.13, WALK + 0.967, -0.2] }));                              // the bread board
+  const bk = basket(0.3, 0.26); bk.position.set(x0 - 0.15, WALK + 0.95, 1.2); g.add(bk);
+  for (const [dx, dz, dy] of [[0, 0, 0.2], [0.12, 0.1, 0.3], [-0.1, 0.06, 0.32]] as number[][]) { const l = loaf(0.13); l.position.set(x0 - 0.15 + dx, WALK + 0.95 + dy, 1.2 + dz); l.rotation.set(0.5, dx * 9, 0.3); g.add(l); }
   const ov = oven(); ov.rotation.y = -Math.PI / 2; ov.position.set(x0 + D - 1.1, WALK + 0.1, -1.1); g.add(ov);
   const ml = mill(); ml.position.set(x0 + D - 1.0, WALK + 0.1, 1.25); g.add(ml);
-  const tb = table(1.0, 1.3, 0.82); tb.position.set(x0 + 1.42, WALK + 0.1, 0.72); tb.rotation.y = 0.1; g.add(tb);
-  for (const [dx, dz, r, dy] of [[-0.2, -0.4, 0.2, 0], [0.16, -0.05, 0.21, 0], [-0.22, 0.3, 0.19, 0], [0.2, 0.42, 0.18, 0], [-0.04, -0.2, 0.17, 0.15]] as number[][]) { const l = loaf(r); l.position.set(x0 + 1.42 + dx, WALK + 0.1 + 0.855 + dy, 0.72 + dz); l.rotation.y = dx * 9 + dz; g.add(l); }
+  const tb = table(1.0, 1.3, 0.82); tb.position.set(x0 + 3.0, WALK + 0.1, -0.2); tb.rotation.y = 0.1; g.add(tb);
+  for (const [dx, dz, r, dy] of [[-0.2, -0.4, 0.2, 0], [0.16, -0.05, 0.21, 0], [-0.22, 0.3, 0.19, 0], [0.2, 0.42, 0.18, 0], [-0.04, -0.2, 0.17, 0.15]] as number[][]) { const l = loaf(r); l.position.set(x0 + 3.0 + dx, WALK + 0.1 + 0.855 + dy, -0.2 + dz); l.rotation.y = dx * 9 + dz; g.add(l); }
   const sk = sack(0.34); sk.position.set(x0 + 0.9, WALK + 0.1, -1.6); g.add(sk);
   const aw = awning(3.6, 1.7, 3.0, C.red, C.cloth); aw.rotation.y = -Math.PI / 2; aw.position.set(x0 - 0.1, WALK, 0); g.add(aw);
   return g;
@@ -43,20 +44,21 @@ const bakery = () => {
 
 export type Shot = { cam: [number, number, number]; look: [number, number, number]; fov: number; tilt?: number };
 export const POMPEII_SHOTS: Shot[] = [
-  // 1. behind the baker's counter: loaves right under the lens, the baker at the left holding one out, Sir Digsworth walking past outside
-  { cam: [6.35, 1.66, 1.0], look: [1.6, 1.22, -0.55], fov: 56 },
+  // 1. behind the baker's counter: his loaves right under the lens, Sir Digsworth walking past on the sidewalk outside
+  { cam: [4.8, 1.52, 0.42], look: [3.1, 1.36, -0.72], fov: 58 },
   // 2. low from the ground past the cart's wheel: the soldier at his column, the gate and Vesuvius at the end of the street
-  { cam: [-1.5, 0.3, 5.7], look: [-1.3, 2.25, -6], fov: 60 },
+  { cam: [-1.45, 0.3, 5.75], look: [-1.85, 1.95, -6], fov: 64 },
   // 3. from above: the merchant counting coins at his table, the dog pulling at its chain
-  { cam: [2.0, 3.2, 10.95], look: [2.95, 0.72, 8.75], fov: 48, tilt: 0.5 },
+  { cam: [1.75, 3.4, 11.5], look: [2.9, 0.75, 8.95], fov: 50, tilt: 0.5 },
 ];
 /** the ring in the wall that the dog is chained to */
-export const DOG_RING: [number, number, number] = [3.98, WALK + 0.55, 9.6];
+export const DOG_RING: [number, number, number] = [3.98, WALK + 0.55, 9.3];
 
 export const pompeiiStreet = () => {
   const root = new THREE.Group();
   root.add(skyDome("#2f86e0", "#a9dcff", "#e8f6ff"));
-  root.add(sunRig({ from: [-9, 15, 7], power: 1.85, fill: 1.7, reach: 30 }, [0, 0, -2]));
+  // a bright day: the sky light is strong enough that things in shadow keep their own colour
+  root.add(sunRig({ from: [-9, 15, 7], power: 1.5, fill: 2.1, reach: 30 }, [0, 0, -2]));
   // ground, road, sidewalks, stepping stones
   root.add(mesh(box(400, 0.2, 400), "#d8c79a", { at: [0, -0.32, -100], line: 0, shadow: false }));
   root.add(mesh(box(4.2, 0.3, 70), "#ffffff", { at: [0, -0.15, -12], map: (paving(), paint("paving", 512, 512, () => {}, [1.4, 22])), line: 0 }));
@@ -92,16 +94,18 @@ export const pompeiiStreet = () => {
   root.add(mesh(box(0.6, 0.36, 7.4), C.marble, { at: [-2.55, WALK + 3.48, -0.6] }), mesh(box(1.9, 0.14, 7.6), C.terra, { at: [-3.3, WALK + 3.73, -0.6], rot: [0, 0, 0.16] }));
   // the cart on the road, loaded with jars and sacks
   { const c = cart(); c.position.set(-0.2, 0, 3.75); c.rotation.y = 0.12; root.add(c); const a = amphora(0.9); a.position.set(-0.4, 0.77, 3.4); a.rotation.z = 0.2; root.add(a); const j = jar(0.6); j.position.set(0.1, 0.77, 3.9); root.add(j); const s = sack(0.3); s.position.set(-0.45, 0.77, 4.25); root.add(s); }
+  // things left on the paving by the cart: a basket of loaves and a jar, near the lens of the second shot
+  { const b = basket(0.2, 0.16); b.position.set(-2.02, 0, 4.72); root.add(b); for (const [dx, dz] of [[0, 0], [0.1, 0.08]] as number[][]) { const l = loaf(0.1); l.position.set(-2.02 + dx, 0.13 + dx, 4.72 + dz); l.rotation.set(0.3, dx * 8, 0.2); root.add(l); } const j = jar(0.5); j.position.set(-0.95, 0, 4.75); root.add(j); }
   // street furniture
   { const f = fountain(); f.position.set(-2.9, WALK, 9.4); f.rotation.y = Math.PI / 2; root.add(f); }
   for (const [x, zz, t] of [[-3.5, 4.6, 0], [-3.2, 4.1, 1], [3.6, -6.2, 0], [3.3, -6.8, 2], [-3.4, -8.5, 1], [3.5, 13, 0]] as number[][]) { const o = t === 0 ? amphora(0.95) : t === 1 ? jar(0.7) : basket(); o.position.set(x, WALK, zz); if (t === 0) { o.rotation.z = 0.24; o.position.y += 0.02; } root.add(o); }
   // the merchant's table with his coins, a stool, and the ring his dog is chained to
-  { const t = table(1.25, 0.72, 0.74); t.position.set(2.85, WALK, 8.35); t.rotation.y = -0.55; root.add(t); const c = coins(34, 3); c.position.set(2.78, WALK + 0.78, 8.38); c.rotation.y = -0.55; root.add(c); const s = stool(); s.position.set(3.42, WALK, 7.72); root.add(s); const b = basket(0.2, 0.18); b.position.set(3.22, WALK + 0.78, 8.05); root.add(b); root.add(ring([3.98, WALK + 0.55, 9.6])); }
+  { const t = table(1.25, 0.72, 0.74); t.position.set(2.85, WALK, 8.35); t.rotation.y = -0.55; root.add(t); const c = coins(34, 3); c.position.set(2.78, WALK + 0.78, 8.38); c.rotation.y = -0.55; root.add(c); const s = stool(); s.position.set(3.42, WALK, 7.72); root.add(s); const b = basket(0.24, 0.22); b.position.set(3.75, WALK, 8.55); root.add(b); root.add(ring([3.98, WALK + 0.55, 9.3])); }
   // the town gate that closes the street, and Vesuvius behind it
   for (const s of [-1, 1]) root.add(mesh(box(3.4, 8.5, 3.2), C.stoneL, { at: [s * 4.0, 4.25, -40] }), mesh(box(3.8, 0.5, 3.6), C.stone, { at: [s * 4.0, 8.7, -40] }));
   root.add(mesh(box(4.8, 2.6, 2.6), C.stoneL, { at: [0, 6.4, -40] }), mesh(box(11.6, 0.4, 3.0), C.stone, { at: [0, 7.9, -40], line: 0.7 }));
-  root.add(mesh(lathe("vesuvio", [[330, 0], [250, 38], [170, 86], [112, 122]], 28), "#63a850", { at: [20, -2, -560], shadow: false, receive: false, line: 1.1 }));
-  root.add(mesh(lathe("vesuvioTop", [[112, 122], [62, 150], [26, 166], [0.001, 170]], 28), "#a89c86", { at: [20, -2, -560], shadow: false, receive: false, line: 1.1 }));
+  root.add(mesh(lathe("vesuvio", [[340, 0], [270, 26], [190, 74], [124, 128]], 28), "#63a850", { at: [20, -2, -560], shadow: false, receive: false, line: 1.1 }), mesh(lathe("vesuvioWood", [[346, 0], [300, 12], [262, 30], [258, 30]], 28), "#3f8a4a", { at: [20, -2, -560], shadow: false, receive: false, line: 0.8 }));
+  root.add(mesh(lathe("vesuvioTop", [[124, 128], [76, 172], [36, 204], [10, 218], [0.001, 221]], 28), "#b0a28a", { at: [20, -2, -560], shadow: false, receive: false, line: 1.1 }));
   for (const [x, y, zz, s] of [[-170, 150, -520, 34], [150, 190, -600, 44], [-40, 235, -640, 30], [260, 120, -500, 26]] as number[][]) { const c = cloud(s); c.position.set(x, y, zz); root.add(c); }
   return root;
 };

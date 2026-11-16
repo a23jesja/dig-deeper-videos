@@ -13,9 +13,9 @@ const ramp = () => {
 };
 const mats = new Map<string, THREE.MeshToonMaterial>();
 /** a flat toon colour (cached per colour and texture) */
-export const toon = (color: string, map?: THREE.Texture, side: THREE.Side = THREE.FrontSide) => {
-  const key = color + (map ? map.uuid : "") + side; let m = mats.get(key);
-  if (!m) { m = new THREE.MeshToonMaterial({ color, gradientMap: ramp(), map: map ?? null, side }); mats.set(key, m); }
+export const toon = (color: string, map?: THREE.Texture, side: THREE.Side = THREE.FrontSide, glow?: string) => {
+  const key = color + (map ? map.uuid : "") + side + (glow ?? ""); let m = mats.get(key);
+  if (!m) { m = new THREE.MeshToonMaterial({ color, gradientMap: ramp(), map: map ?? null, side, emissive: glow ?? "#000000" }); mats.set(key, m); }
   return m;
 };
 /** the black contour: the object's hull pushed out along its normals and drawn inside out, a constant width on the screen */
@@ -37,10 +37,11 @@ const hullOf = (g: THREE.BufferGeometry, w: number) => {
   }
   return h;
 };
-export type MeshO = { at?: [number, number, number]; rot?: [number, number, number]; scale?: [number, number, number] | number; line?: number; shadow?: boolean; receive?: boolean; map?: THREE.Texture; side?: THREE.Side };
+/** glow = a colour the thing gives off by itself, so that it keeps its colour in deep shade (bread under an awning, a lamp) */
+export type MeshO = { at?: [number, number, number]; rot?: [number, number, number]; scale?: [number, number, number] | number; line?: number; shadow?: boolean; receive?: boolean; map?: THREE.Texture; side?: THREE.Side; glow?: string };
 /** a toon mesh with its outline. line = width of its contour (1 = normal, 0 = none) */
 export const mesh = (geo: THREE.BufferGeometry, color: string, o: MeshO = {}) => {
-  const m = new THREE.Mesh(geo, toon(color, o.map, o.side));
+  const m = new THREE.Mesh(geo, toon(color, o.map, o.side, o.glow));
   m.castShadow = o.shadow !== false; m.receiveShadow = o.receive !== false;
   if (o.at) m.position.set(...o.at); if (o.rot) m.rotation.set(...o.rot);
   if (o.scale !== undefined) (typeof o.scale === "number" ? m.scale.setScalar(o.scale) : m.scale.set(...o.scale));
@@ -61,6 +62,17 @@ export const lathe = (key: string, prof: [number, number][], n = 24) => G("l" + 
 export const slab = (key: string, pts: [number, number][], depth: number) => G("e" + key, () => {
   const s = new THREE.Shape(pts.map(([x, y]) => new THREE.Vector2(x, y))); const g = new THREE.ExtrudeGeometry(s, { depth, bevelEnabled: false }); g.translate(0, 0, -depth / 2); return g;
 });
+
+/** a solid with a flat outline seen from above (a hull, a deck, a pier): pts = [x, z] round the outline, from height y0 up to y1 */
+export const prism = (key: string, pts: [number, number][], y0: number, y1: number) => G("p" + key + y0 + y1, () => {
+  const g = new THREE.ExtrudeGeometry(new THREE.Shape(pts.map(([x, z]) => new THREE.Vector2(x, -z))), { depth: y1 - y0, bevelEnabled: false }); g.rotateX(-Math.PI / 2); g.translate(0, y0, 0); return g;
+});
+/** a round rod from a to b (a mast, a spar, a rope, a rail) */
+export const rod = (a: [number, number, number], b: [number, number, number], r: number, color: string, o: MeshO = {}) => {
+  const A = new THREE.Vector3(...a), B = new THREE.Vector3(...b), len = A.distanceTo(B), m = mesh(cyl(r, r, 1, 10), color, o);
+  m.scale.set(1, len, 1); m.position.copy(A).lerp(B, 0.5); m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), B.clone().sub(A).normalize());
+  return m;
+};
 
 // ---------------- painted flat textures ----------------
 const texs = new Map<string, THREE.CanvasTexture>();

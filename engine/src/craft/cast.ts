@@ -14,9 +14,11 @@ export type Look = {
   head: { a: number; b: number; H: number; jaw?: number; round?: number; eye?: number };
   skin: string; brow: string;
   /** cap = tweed flat cap, helmet = Roman, greathelm = a knight's bucket helm, brodie = the steel helmet of 1916, boater / tophat = brimmed hats, band = a headband */
-  hat: "cap" | "helmet" | "greathelm" | "brodie" | "boater" | "tophat" | "band" | "none"; hatCol?: string; hatBand?: string;
+  hat: "cap" | "helmet" | "greathelm" | "brodie" | "boater" | "tophat" | "tricorn" | "band" | "none"; hatCol?: string; hatBand?: string;
+  /** width of the brim of a brimmed hat (1 = as drawn; a white brodie with a small brim is a mob cap) */
+  brim?: number;
   /** short = hair on top and behind, bald = a wreath at the sides, back = only behind (under a hat), bun = on top with a knot behind */
-  hair?: { col: string; kind: "short" | "bald" | "back" | "bun" };
+  hair?: { col: string; kind: "short" | "bald" | "back" | "bun" | "queue" };
   lash?: boolean; lips?: string;
   /** moustache: colour, how far the tips reach (in head half-widths), how far they turn up, thickness at the root */
   mous?: { col: string; span: number; curl: number; w: number }; beard?: string;
@@ -28,6 +30,8 @@ export type Look = {
   rows: number[][];
   armour?: boolean; apron?: string; cloak?: string; belt?: string;
   legs: "trousers" | "bare"; trous?: string; feet: "shoes" | "sandals" | "boots"; spats?: boolean; sleeve: "long" | "short";
+  /** knee breeches: the colour of the stockings below the knee; buckle = a buckle on the shoe */
+  stockings?: string; buckle?: boolean; cuffs?: string;
   /** half-widths of arm and leg at root, joint and end */
   arm: number[]; leg: number[];
 };
@@ -132,10 +136,12 @@ const drawHead = (k: Ink, L: Look, phiDeg: number, f: Face, o: FigOpts) => {
   if (HAT === "cap") capDraw(k, L, h, o.capLift ?? 0, away, "behind");
   // --- the skull, the hair on it ---
   if (L.hair?.kind === "bun") { const q = at(h, 180, 1.0); piece(k, ellPts(q.x, -0.9 * H, 0.42 * a, 0.2 * H), L.hair.col); }
+  const queue = () => { const q = at(h, 180, 1.0), dx = -0.16 * b * h.sin; piece(k, seg([q.x, -0.3 * H], [q.x + dx, 0.2 * H], 0.11 * a, 0.045 * a), L.hair!.col); piece(k, seg([q.x + dx * 0.1, -0.27 * H], [q.x + dx * 0.24, -0.19 * H], 0.13 * a, 0.13 * a, 0, 0.3, true), "#2a2220"); };
+  if (L.hair?.kind === "queue" && h.cos > -0.3) queue();
   piece(k, skull, skin);
   if (L.hair) {
     // the hairline runs from the top of the brow back behind the ear down to the nape, so the hair follows the head in every view
-    const kind = o.hatOff && L.hair.kind === "back" ? "short" : L.hair.kind, y0 = kind === "bald" ? -0.72 * H : -1.03 * H, patches: P2[][] = [];
+    const tailed = L.hair.kind === "queue", kind = tailed || (o.hatOff && L.hair.kind === "back") ? "short" : L.hair.kind, y0 = kind === "bald" ? -0.72 * H : -1.03 * H, patches: P2[][] = [];
     for (const half of [0, 1]) {
       const rowsH: number[][] = [];
       for (let q = 0; q <= 8; q++) {
@@ -150,6 +156,7 @@ const drawHead = (k: Ink, L: Look, phiDeg: number, f: Face, o: FigOpts) => {
       if (all.length) k.group(all, L.hair!.col, k.ol * 0.7);
     });
   }
+  if (L.hair?.kind === "queue" && h.cos <= -0.3) queue();
   // --- the face (not drawn from behind) ---
   if (!away || h.cos > -0.3) {
     const vis = nose0.d > -0.3 * b;
@@ -210,13 +217,20 @@ const drawHead = (k: Ink, L: Look, phiDeg: number, f: Face, o: FigOpts) => {
     });
     k.shape(helm, null);
   } else if (HAT === "brodie" || HAT === "boater" || HAT === "tophat") {
-    const col = L.hatCol ?? "#8a8448", yb2 = -0.8 * H, rb = (HAT === "brodie" ? 1.5 : HAT === "boater" ? 1.55 : 1.34) * w, ch = HAT === "tophat" ? 0.62 * H : HAT === "boater" ? 0.2 * H : 0.3 * H;
+    const col = L.hatCol ?? "#8a8448", yb2 = -0.8 * H, rb = (HAT === "brodie" ? 1.5 : HAT === "boater" ? 1.55 : 1.34) * w * (L.brim ?? 1), ch = HAT === "tophat" ? 0.62 * H : HAT === "boater" ? 0.2 * H : 0.3 * H;
     const brim = ellPts(0, yb2, rb, 0.055 * H + 0.02 * H * Math.abs(h.sin));
     const crown = HAT === "brodie" ? spline([[-1.03 * w, yb2], [-0.92 * w, yb2 - ch * 0.7], [0, yb2 - ch], [0.92 * w, yb2 - ch * 0.7], [1.03 * w, yb2], [0, yb2 + 0.02 * H]], true, 5)
       : ([[-1.0 * w, yb2], [-1.02 * w, yb2 - ch], [1.02 * w, yb2 - ch], [1.0 * w, yb2]] as P2[]);
     piece(k, brim, shade(col, 0.86)); piece(k, crown, col);
     if (L.hatBand) k.clip(crown, () => k.shape([[-2 * w, yb2 - 0.11 * H], [2 * w, yb2 - 0.11 * H], [2 * w, yb2 + 0.02 * H], [-2 * w, yb2 + 0.02 * H]], L.hatBand!, k.ol));
     k.shape(crown, null);
+  } else if (HAT === "tricorn") {
+    // three corners, one over the brow; the brim is turned up between them
+    const col = L.hatCol ?? "#2a2a30", yb3 = -0.82 * H, rim: P2[] = [], top: P2[] = [];
+    for (let az = 0; az < 360; az += 10) { const c = Math.max(0, Math.cos(3 * az * R)), r = 1.12 + 0.52 * c ** 1.5, q = p3(h, r * a * Math.sin(az * R), r * b * Math.cos(az * R)); rim.push([q.x, yb3 + 0.03 * H]); top.push([q.x * 0.92, yb3 - 0.2 * H * (1 - c)]); }
+    const brimPts = hull([...rim, ...top]); piece(k, brimPts, col);
+    k.clip(brimPts, () => k.line(hull(top), 5, L.hatBand ?? "#e7bb48"));
+    piece(k, spline([[-0.86 * w, yb3 - 0.1 * H], [-0.7 * w, yb3 - 0.3 * H], [0, yb3 - 0.36 * H], [0.7 * w, yb3 - 0.3 * H], [0.86 * w, yb3 - 0.1 * H], [0, yb3 - 0.05 * H]], true, 5), shade(col, 1.25));
   } else if (HAT === "band") k.clip(skull, () => k.shape([[-2 * w, -0.82 * H], [2 * w, -0.82 * H], [2 * w, -0.72 * H], [-2 * w, -0.72 * H]], L.hatCol ?? CREAM, k.ol));
   // where the monocle's chain starts and bows (card coordinates of the head), if the monocle shows
   const me = at(h, -26, 0.8), fs = clamp(Math.cos(-26 * R + phi), 0.42, 1) ** 0.85, rx = Math.max(0.29 * a * EY * fs * 1.36, 0.29 * a * EY * 1.02), out = at(h, -70).x < me.x ? -1 : 1;
@@ -254,10 +268,12 @@ const drawTrue = (L: Look) => (k: Ink, sk: Sk, o: FigOpts) => {
     const H = J("hip", s), K = J("kn", s), A = J("an", s), bare = L.legs === "bare", col = bare ? L.skin : L.trous ?? "#463a37";
     const sp = shoePts(sk, s, 50, bare ? 0.27 : 0.34, bare ? 0.15 : 0.2);
     if (L.skirt) { piece(k, sp.pts, "#2a2220"); return; }
-    piece(k, seg(K, A, L.leg[1], L.leg[2], bare ? 6 : 3), col);
+    piece(k, seg(K, A, L.leg[1] * (L.stockings ? 0.86 : 1), L.leg[2], bare || L.stockings ? 6 : 3), L.stockings ?? col);
     if (L.feet === "sandals") { piece(k, sp.pts, shade(L.skin, 0.97)); for (const u of [0.3, 0.6]) k.line([add(add(sp.O, sp.ex, sp.span * u), sp.up, 2), add(add(sp.O, sp.ex, sp.span * (u + 0.05)), sp.up, P.foot * (u < 0.5 ? 0.27 : 0.18))], 6, "#7a4a2a", "butt"); k.line([sp.O, add(sp.O, sp.ex, sp.span)], 7, "#7a4a2a", "butt"); }
     else { piece(k, sp.pts, "#2a2220"); if (L.feet === "boots") piece(k, seg(mid(K, A, 0.5), add(A, [0, P.ankle * 0.3]), L.leg[2] + 5, L.leg[2] + 6, 0, 0.3, true), "#3a2a22"); if (L.spats) piece(k, seg(mid(K, A, 0.84), add(A, [0, P.ankle * 0.45]), L.leg[2] + 3, L.leg[2] + 7, 0, 0.3, true), "#f6eedb"); }
     piece(k, seg(H, K, L.leg[0], L.leg[1]), col);
+    if (L.stockings) piece(k, seg(mid(K, A, 0.02), mid(K, A, 0.14), L.leg[1] * 1.04, L.leg[1] * 0.98, 0, 0.3, true), shade(col, 0.8));
+    if (L.buckle && L.feet === "shoes") { const c = add(add(sp.O, sp.ex, sp.span * 0.55), sp.up, P.foot * 0.2); k.shape([[c[0] - 9, c[1] - 8], [c[0] + 9, c[1] - 8], [c[0] + 9, c[1] + 8], [c[0] - 9, c[1] + 8]], BRASS, k.ol * 0.7); }
     pin(k, K, 7);
   };
   const arm = (s: Side) => {
@@ -266,8 +282,10 @@ const drawTrue = (L: Look) => (k: Ink, sk: Sk, o: FigOpts) => {
     if (o.prop === "loaf" && s === "L") loaf(k, mid(W, T, 0.9), P.hand * 0.62);
     if (o.prop === "cane" && s === "R") { const g = mid(W, T, 0.45); cane(k, g, W[1] < sk.j.pelvis[1] ? add(g, unit(sub(W, E)), P.fore * 1.4) : [g[0] + 14 * d, 0], 9); }
     if (long && !L.armCol) piece(k, seg(mid(E, W, 0.84), mid(E, W, 1.05), L.arm[2] * 0.84, L.arm[2] * 0.84, 0, 0.3, true), CREAM);
+    const cuff = () => { if (long && L.cuffs) piece(k, seg(mid(E, W, 0.6), mid(E, W, 0.9), L.arm[2] + 7, L.arm[2] + 9, 0, 0.3, true), L.cuffs); };
     hs();
     piece(k, seg(E, W, L.arm[1], L.arm[2], long ? 2 : 5), col, long && L.weave ? E : undefined);
+    cuff();
     piece(k, seg(Sh, E, L.arm[0], L.arm[1]), col, long && L.weave ? Sh : undefined);
     if (!long) piece(k, seg(Sh, mid(Sh, E, 0.5), L.arm[0] + 6, L.arm[0] + 4), L.coat);
     if (L.armour) piece(k, seg(add(Sh, [0, -6]), mid(Sh, E, 0.32), L.arm[0] + 12, L.arm[0] + 10), "#b9c3cd");

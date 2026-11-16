@@ -195,6 +195,28 @@ sent to Jesper, and reuse them from then on.
 - The hook is on screen as text while the voice says it. No intro, no year, no establishing shot first.
 - Date, place and background come after the hook.
 
+## The format: "Why did they do that?" (Jesper 2026-11-19) - what every Short is from now on
+Strange but true tricks, habits and solutions from history. One question per Short, shown as a small scene.
+Examples: why sailors poured oil on the sea in a storm, why plague doctors wore beaks, why Rome taxed urine.
+- **The question is the hook.** It is on screen and spoken in the first second, over a picture where the strange
+  thing is already happening. The answer comes in the last third, not before.
+- **Shape, 25-40 seconds:** question and strange picture (0-2 s), the problem people had (to about 10 s), what
+  they did, shown as action (to about 25 s), the answer and one last surprising fact. No part 2, no cliffhanger.
+- **Small and sharp:** one place, two or three characters, one clear action. No crowd scenes unless the story is
+  about a crowd.
+- **Worlds:** build one world and make about eight Shorts in it before the next: first the Roman street already
+  built for the test, then a sailing ship, then a medieval castle or town. Props and side characters are reused.
+- **Long videos come from the Shorts:** when a world has eight approved Shorts, they are joined with new links
+  from Sir Digsworth into one video of 8-12 minutes ("Ten strange things about life on a pirate ship").
+- **True or myth is our edge.** Many popular "history facts" are false. Every claim is checked against at least
+  two solid sources (museum, university, primary source, peer-reviewed or a recognised historian) before the
+  script is written. If the popular story is a myth, the Short says so and tells what is true instead. If the
+  sources disagree, Sir Digsworth says "probably" or "according to". Sources go in the description.
+- **Sir Digsworth** is in the scene as the curious visitor who asks, pokes, gets it wrong and finds out.
+- **Mix the tone:** funny, frightening, clever, disgusting. Record which kind keeps viewers best in GROWTH.md.
+- **Disasters and big events** ("the worst days in history") are an occasional larger video, not the weekly
+  format.
+
 ## Series paused, stand-alone history Shorts now (Jesper 2026-11-18)
 This section overrides "The series format" below and the series parts of "Where we are now".
 - **No more series episodes for now.** No "part 1, 2, 3" Shorts and no "Sir Digsworth survives ..." seasons until

@@ -94,6 +94,49 @@ export const ROMAN_WOMAN: Look = {
   rows: [[-400, 132, 110, 124], [-280, 122, 102, 114], [-120, 104, 86, 96], [0, 86, 70, 72], [70, 72, 60, 56], [170, 80, 68, 58], [228, 90, 56, 56], [252, 44, 34, 38]],
   legs: "trousers", feet: "sandals", sleeve: "short", arm: [24, 19, 14], leg: [28, 20, 14],
 };
+// ---------------- Boston, 1773 ----------------
+const COLONIST: Props = { thigh: 212, shin: 200, ankle: 24, foot: 126, hipW: 54, shW: 102, spine: 266, shDrop: 26, neck: 24, head: 190, upper: 146, fore: 134, hand: 84 };
+const coat = [[-150, 110, 80, 86], [-20, 96, 78, 76], [70, 82, 70, 60], [180, 96, 76, 66], [240, 106, 60, 60], [266, 52, 38, 42]];
+/** a customs officer of the Crown: black tricorn with gold edge, navy coat with buff cuffs, breeches, a powdered queue */
+export const CUSTOMS: Look = {
+  id: "customs", P: COLONIST, head: { a: 84, b: 90, H: 188, jaw: 0.92, round: 0.3 }, skin: "#f2cba6", brow: "#8a8a90",
+  hat: "tricorn", hatCol: "#26262c", hatBand: "#e7bb48", hair: { col: "#e6e3dc", kind: "queue" },
+  top: "jacket", coat: "#2f4f86", accent: "#ecd9a0", cuffs: "#ecd9a0", rows: coat,
+  legs: "trousers", trous: "#ecd9a0", stockings: "#fbf7ee", feet: "shoes", buckle: true, sleeve: "long", arm: [29, 23, 17], leg: [36, 26, 16],
+};
+/** the ship's owner: a stout merchant in bottle green with a brown tricorn */
+export const SHIPOWNER: Look = {
+  id: "shipowner", P: { ...COLONIST, thigh: 198, shin: 188, hipW: 68, shW: 114, spine: 274 }, head: { a: 96, b: 98, H: 188, jaw: 1.1, round: 0.6 }, skin: "#f0c4a0", brow: "#7a6a5a",
+  hat: "tricorn", hatCol: "#5a3d28", hatBand: "#c9a03c", hair: { col: "#b9b4aa", kind: "queue" },
+  top: "jacket", coat: "#2f7a52", accent: "#c8402f", cuffs: "#c9a03c",
+  rows: [[-150, 138, 110, 112], [-20, 140, 132, 108], [70, 142, 150, 100], [180, 124, 122, 86], [244, 118, 72, 70], [272, 60, 44, 48]],
+  legs: "trousers", trous: "#3a3a44", stockings: "#fbf7ee", feet: "shoes", buckle: true, sleeve: "long", arm: [33, 26, 19], leg: [42, 30, 18],
+};
+/** a sailor: bare-headed with a tarred queue, a short blue jacket, wide pale trousers */
+export const SAILOR: Look = {
+  id: "sailor", P: { ...COLONIST, shW: 110 }, head: { a: 88, b: 92, H: 188, jaw: 1.04, round: 0.25 }, skin: "#e3b088", brow: "#2f2218",
+  hat: "band", hatCol: "#c8402f", hair: { col: "#2f2218", kind: "queue" },
+  top: "jacket", plain: true, coat: "#356fb0", accent: "#fbf3df",
+  rows: [[-30, 104, 78, 80], [20, 100, 80, 76], [100, 96, 80, 70], [190, 106, 80, 68], [242, 112, 62, 62], [268, 54, 40, 44]],
+  legs: "trousers", trous: "#efe6cf", feet: "shoes", sleeve: "long", arm: [32, 26, 19], leg: [40, 32, 26],
+};
+/** a dock hand: shirt sleeves, a leather apron, breeches and grey stockings */
+export const DOCKHAND: Look = {
+  id: "dockhand", P: COLONIST, head: { a: 88, b: 90, H: 186, jaw: 1.0, round: 0.4 }, skin: "#eebf96", brow: "#6a4424",
+  hat: "none", hair: { col: "#6a4424", kind: "queue" },
+  top: "tunic", coat: "#f4ecd8", accent: "#8a5a36", apron: "#8a5a36", belt: "#5a3a22",
+  rows: [[-40, 104, 80, 82], [20, 100, 82, 78], [100, 94, 80, 70], [190, 104, 78, 68], [242, 110, 62, 62], [268, 54, 40, 44]],
+  legs: "trousers", trous: "#6b5a44", stockings: "#b9b6ae", feet: "shoes", sleeve: "long", arm: [30, 24, 18], leg: [37, 27, 17],
+};
+/** a woman of the town: a white mob cap, a dress to the ground, a shawl */
+export const TOWNSWOMAN: Look = {
+  id: "townswoman", P: { ...COLONIST, thigh: 200, shin: 190, shW: 86, hipW: 50, spine: 248, upper: 134, fore: 124, hand: 74, head: 182 }, head: { a: 82, b: 86, H: 180, jaw: 0.84, round: 0.6, eye: 1.08 }, skin: "#f6d2b0", brow: "#7a4a2a",
+  hat: "brodie", hatCol: "#fdfaf2", brim: 0.74, hair: { col: "#7a4a2a", kind: "back" }, lash: true, lips: "#d0504c",
+  top: "tunic", skirt: true, coat: "#b8433a", accent: "#fbf3df", cloak: "#fbf3df", belt: "#fbf3df",
+  rows: [[-400, 150, 124, 140], [-280, 134, 112, 126], [-120, 106, 88, 98], [0, 84, 68, 70], [70, 70, 58, 54], [170, 78, 66, 56], [226, 88, 54, 54], [250, 44, 34, 38]],
+  legs: "trousers", feet: "shoes", sleeve: "long", arm: [24, 19, 14], leg: [28, 20, 14],
+};
 export const castDesign = (L: Look, name = L.id): Design => ({ id: L.id, name, ol: 4.6, faceW: L.head.a * 1.45, props: () => L.P, draw: drawCast(L) });
 export const SIR_D = castDesign(SIR, "Sir Digsworth"), BAKER_D = castDesign(BAKER), SOLDIER_D = castDesign(SOLDIER), MERCHANT_D = castDesign(MERCHANT);
 export const KNIGHT_D = castDesign(KNIGHT), TOMMY_D = castDesign(TOMMY), LADY_D = castDesign(LADY), DOCKER_D = castDesign(DOCKER), BOY_D = castDesign(BOY), GRANNY_D = castDesign(GRANNY), ROMAN_WOMAN_D = castDesign(ROMAN_WOMAN);
+export const CUSTOMS_D = castDesign(CUSTOMS), SHIPOWNER_D = castDesign(SHIPOWNER), SAILOR_D = castDesign(SAILOR), DOCKHAND_D = castDesign(DOCKHAND), TOWNSWOMAN_D = castDesign(TOWNSWOMAN);

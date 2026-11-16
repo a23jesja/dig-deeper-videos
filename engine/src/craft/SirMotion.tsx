@@ -55,14 +55,14 @@ const CAPS: { a: number; b: number; t: string }[] = (() => {
 
 export const SirTest: React.FC = () => {
   const fr = useCurrentFrame(), p = getInputProps() as { audio?: boolean; marks?: boolean };
-  const D = SIR_D, P = D.props("sir"), LL = P.thigh + P.shin, sc = 1.0, px = LL * sc, FY = 1500, CX = TW / 2;
+  const D = SIR_D, P = D.props("sir"), LL = P.thigh + P.shin, sc = 1.16, px = LL * sc, FY = 1610, CX = TW / 2;
   return (
     <AbsoluteFill style={{ background: "#9fd4f7" }}>
       <canvas width={TW} height={TH} ref={(cv) => {
         if (!cv) return;
         const g = cv.getContext("2d")!, t = fr / TFPS, s = S.m.sample(t);
         // the camera follows him a little late, and shakes when the mountain goes off
-        const follow = 0.5 * (S.m.sample(t - 0.35).x + S.m.sample(t - 0.1).x), camX = t < S.flee ? Math.max(-1.75, follow) : follow - 0.55 * Math.min(1, (t - S.flee) / 0.8), sh = t > S.boom && t < S.boom + 0.5 ? (1 - (t - S.boom) / 0.5) : 0;
+        const follow = 0.5 * (S.m.sample(t - 0.35).x + S.m.sample(t - 0.1).x), camX = t < S.flee ? Math.max(-1.5, follow) : follow - 0.55 * Math.min(1, (t - S.flee) / 0.8), sh = t > S.boom && t < S.boom + 0.5 ? (1 - (t - S.boom) / 0.5) : 0;
         const X = (xw: number, par = 1) => CX + (xw - camX * par) * px;
         g.setTransform(1, 0, 0, 1, Math.sin(t * 91) * 12 * sh, Math.cos(t * 77) * 9 * sh);
         const sky = g.createLinearGradient(0, 0, 0, FY); sky.addColorStop(0, "#58b4f2"); sky.addColorStop(1, "#d9f1ff"); g.fillStyle = sky; g.fillRect(-40, -40, TW + 80, FY + 40);
@@ -84,9 +84,9 @@ export const SirTest: React.FC = () => {
         g.fillStyle = "rgba(60,40,20,0.25)"; g.beginPath(); g.ellipse(X(s.x), FY + 10, 120, 16, 0, 0, 7); g.fill();
         const talking = t >= S.sayAt && t < S.sayAt + SAY;
         play(g, D, s, X(s.x), FY, sc, t, {}, talking ? mouthAt(WORDS, t - S.sayAt) : 0);
-        // captions: two or three words in the lower third, under the figure
+        // captions: two or three words in the lower third, across the shins (clear of face, chest and hands, and of the bottom 15 % that the Shorts interface covers)
         const c = CAPS.find((q) => t - S.sayAt >= q.a - 0.03 && t - S.sayAt < q.b);
-        if (c) { g.setTransform(1, 0, 0, 1, 0, 0); g.font = "900 96px 'Arial Black', Arial"; g.textAlign = "center"; g.lineJoin = "round"; g.lineWidth = 22; g.strokeStyle = "#101014"; g.strokeText(c.t.toUpperCase().replace(/[.,]/g, ""), CX, 1740); g.fillStyle = "#ffffff"; g.fillText(c.t.toUpperCase().replace(/[.,]/g, ""), CX, 1740); }
+        if (c) { g.setTransform(1, 0, 0, 1, 0, 0); g.font = "900 96px 'Arial Black', Arial"; g.textAlign = "center"; g.lineJoin = "round"; g.lineWidth = 22; g.strokeStyle = "#101014"; g.strokeText(c.t.toUpperCase().replace(/[.,]/g, ""), CX, 1470); g.fillStyle = "#ffffff"; g.fillText(c.t.toUpperCase().replace(/[.,]/g, ""), CX, 1470); }
         g.setTransform(1, 0, 0, 1, 0, 0);
       }} />
       {p.audio !== false && <Sequence from={Math.round(S.sayAt * TFPS)}><Audio src={staticFile("craft/kit-test.wav")} /></Sequence>}

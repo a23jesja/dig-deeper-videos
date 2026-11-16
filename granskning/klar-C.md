@@ -4,7 +4,7 @@ VERSION: 1
 
 Material i `granskning/C/`:
 
-- `testklipp.mp4` (540x960, cirka 14 sekunder, med röst): Sir Digsworth går in från sidan, stannar, vänder sig mot oss, pekar på berget, säger "I say! That mountain was not smoking yesterday.", rycker till när berget smäller, vänder sig, springer ut och snubblar.
+- `testklipp.mp4` (540x960, 13,6 sekunder, med röst): Sir Digsworth går in från sidan, stannar, vänder sig mot oss, pekar på berget, säger "I say! That mountain was not smoking yesterday.", rycker till när berget smäller, vänder sig, springer ut och snubblar.
 - `rorelseblad.jpg` (1560 px): en ruta per rörelse med tre ögonblick: gå, springa, stanna, vända sig, snubbla, falla, resa sig, ducka, bära, kasta, peka, rygga tillbaka, klättra, sitta, hälla, dra, en bifigur vars kjol följer med, och handformerna.
 
 ## Hur rörelserna är byggda
@@ -19,7 +19,7 @@ Allt ligger i skelettet (`engine/src/craft/motion.ts` på `rig.ts`) och gäller 
 - **Händer:** öppen, knuten, pekande, greppande, hållande (vila).
 - **Mun:** käken fälls ned i takt med rösten, styrd av ordtiderna som också ger undertexterna (`engine/voice/kit-test/words.json`).
 - **Ögon:** blicken riktas mot det han tittar på (berget) och han blinkar av sig själv.
-- **Undertexter** i klippet: två till tre ord, i nedre tredjedelen under figuren.
+- **Undertexter** i klippet: två till tre ord, i nedre tredjedelen över skenbenen, fria från ansikte, bröst och händer och från de nedersta 15 % som Shorts-gränssnittet täcker. Figuren fyller cirka 63 % av bildhöjden.
 
 ## Att titta på
 

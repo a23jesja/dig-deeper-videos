@@ -72,7 +72,9 @@ export const pirateShip = () => {
   root.add(skyDome("#2a7fdc", "#9fd6ff", "#e6f5ff"));
   const rig = sunRig({ from: [9, 14, 6], power: 1.55, fill: 1.8, bounce: 0.8, reach: 12 }, [0, 0, 0]); root.add(rig); root.userData.rig = rig;
   // the sea
-  root.add(mesh(box(1600, 0.2, 1600), "#ffffff", { at: [0, SEA - 0.1, 0], map: (waves(), paint("seawaves", 512, 512, () => {}, [60, 60])), line: 0, shadow: false }));
+  // the sea, which drifts: the stage calls tick with the film's time
+  const sea = mesh(box(1600, 0.2, 1600), "#ffffff", { at: [0, SEA - 0.1, 0], map: (waves(), paint("seawaves", 512, 512, () => {}, [60, 60])), line: 0, shadow: false }); root.add(sea);
+  root.userData.tick = (t: number) => { const m = (sea.material as THREE.MeshToonMaterial).map; if (m) m.offset.set(t * 0.012 + 0.004 * Math.sin(t * 1.3), t * 0.02); };
   // the hull: a dark body with a yellow strake, a pointed bow, a square stern
   const hullC = "#4a2f22";
   root.add(mesh(box(W * 2 + 0.3, 2.9, 17), hullC, { at: [0, -1.5, 0] }), mesh(box(W * 2 + 0.36, 0.45, 17.04), C.ochre, { at: [0, -0.5, 0], line: 0.6 }), mesh(box(W * 2 + 0.36, 0.2, 17.04), "#2b1d1a", { at: [0, -0.95, 0], line: 0 }));

@@ -17,7 +17,7 @@ import { MotionTest, MOTION_FRAMES, MW, MH, MFPS } from "./craft/MotionTest";
 import { CastViews, CAST_VIEW_FRAMES, CW, CH } from "./craft/CastViews";
 import { SirTest, SirMoves, SIR_TEST_FRAMES, TW, TH, TFPS, MVW, MVH } from "./craft/SirMotion";
 import { SetViews, SET_VIEWS } from "./craft/world/SetViews";
-import { RomePee, ROME_PEE_FRAMES, PiratePlank, PIRATE_PLANK_FRAMES } from "./craft/shorts/comps";
+import { RomePee, ROME_PEE_FRAMES, PiratePlank, PIRATE_PLANK_FRAMES, PiratePlankThumbs, RomePeeThumbs } from "./craft/shorts/comps";
 import { PompeiiStills, POMPEII_STILLS } from "./craft/world/PompeiiStills";
 import { BostonStills, BOSTON_STILLS } from "./craft/world/BostonStills";
 import { EnvKit, ENV_PARTS } from "./videos/emu/env/EnvKit";
@@ -73,6 +73,8 @@ export const Root: React.FC = () => (
     <Composition id="SirMoves" component={SirMoves} durationInFrames={1} fps={30} width={MVW} height={MVH} />
     <Composition id="RomePee" component={RomePee} durationInFrames={ROME_PEE_FRAMES} fps={30} width={1080} height={1920} />
     <Composition id="PiratePlank" component={PiratePlank} durationInFrames={PIRATE_PLANK_FRAMES} fps={30} width={1080} height={1920} />
+    <Composition id="PiratePlankThumbs" component={PiratePlankThumbs} durationInFrames={3} fps={30} width={1280} height={720} />
+    <Composition id="RomePeeThumbs" component={RomePeeThumbs} durationInFrames={3} fps={30} width={1280} height={720} />
     <Composition id="SetViews" component={SetViews} durationInFrames={SET_VIEWS} fps={30} width={1080} height={1920} />
     <Composition id="BostonStills" component={BostonStills} durationInFrames={BOSTON_STILLS} fps={30} width={1080} height={1920} />
     <Composition id="SirChainStill" component={SirChainStill} durationInFrames={SIR_CHAIN_FRAMES} fps={30} width={1600} height={1250} />

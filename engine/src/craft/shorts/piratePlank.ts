@@ -57,6 +57,16 @@ const drips = (g: THREE.Group, a: Staged, t: number, cam: Cam, n = 7) => {
   for (let k = 0; k < n; k++) { const j = (["elL", "elR", "wrL", "wrR", "crown", "pelvis", "neck"] as const)[k % 7], p = near(a.joint(j), cam, 0.06), u = (t * 1.6 + k * 0.37) % 1, y = p[1] - 0.05 - 1.3 * u * u;
     if (y > a.at[1] + 0.03) g.add(mesh(ball(0.022, 6), "#9fd4f6", { at: [p[0] + 0.03 * Math.sin(k * 5), y, p[2]], scale: [1, 1.7, 1], line: 0, shadow: false })); }
 };
+/** where somebody or something stands in the sea at (x, z): a row of small swells toward the lens that hides the straight cut of
+ *  the water across a figure, and broken foam round it (never a ring) */
+const waterline = (g: THREE.Group, x: number, z: number, cam: Cam, t: number, w = 0.9) => {
+  const dx = cam.pos[0] - x, dz = cam.pos[2] - z, n = Math.hypot(dx, dz) || 1, ux = dx / n, uz = dz / n, rx = -uz, rz = ux;
+  for (let i = 0; i < 13; i++) { const o = (i / 12 - 0.5) * w * 1.25, r = 0.055 + 0.025 * ((i * 7) % 3), d = 0.05 + 0.025 * (i % 3);
+    g.add(mesh(ball(1, 10), i % 2 ? "#ffffff" : "#cfe9fb", { at: [x + rx * o + ux * d, SEA + 0.01 + 0.02 * Math.sin(t * 4 + i * 1.7), z + rz * o + uz * d], scale: [r * 1.5, r * 0.5, r * 0.8], rot: [0, Math.atan2(rx, rz) + Math.PI / 2, 0], line: 0.35, shadow: false })); }
+  for (let i = 0; i < 16; i++) { const a = i * 2.4 + 0.3, rr = w * (0.62 + 0.36 * ((i * 5) % 4) / 3) + 0.04 * Math.sin(t * 3 + i);
+    if (Math.cos(a) * rr * ux + Math.sin(a) * rr * 0.8 * uz > 0.45 * w) continue;   // none close under the lens, where they would look like floes
+    g.add(mesh(ball(1, 8), i % 3 ? "#ffffff" : "#d6ecfb", { at: [x + Math.cos(a) * rr, SEA + 0.008, z + Math.sin(a) * rr * 0.8], scale: [0.06 + 0.03 * (i % 3), 0.01, 0.03 + 0.02 * (i % 2)], rot: [0, a * 1.7, 0], line: 0, shadow: false })); }
+};
 /** a coin in the air: thrown from p at time 0 with the speed v, turning as it goes */
 const tossed = (g: THREE.Group, k: number, p: V3, v: V3, u: number, floor: number) => {
   if (u < 0) return; const y = p[1] + v[1] * u - 4.9 * u * u; const c = put(g, COINS[k % COINS.length](), [p[0] + v[0] * u, Math.max(floor + 0.02, y), p[2] + v[2] * u]); c.rotation.set(y > floor + 0.02 ? Math.PI / 2 + u * 14 : 0, k, 0);
@@ -73,15 +83,17 @@ const add = (s: Shot) => shots.push(s);
   sir.actAt(-1, { armL: arm(8, 82, 20, 96), armR: arm(8, 82, 20, 96), lean: -3, head: [0, 12, 0] }, 9, { in: 0.01, handL: "open", handR: "open", face: { wide: 1, lid: 0, brow: 1, smile: -1, mouth: 0.5, gaze: [0.4, 0.9] } });
   // he snatches his foot away from the jaws and nearly goes over backward
   sir.actAt(-0.2, { legL: { th: [70, 10], sh: [-40, 0], pitch: 30 }, lean: -16, pz: -0.06, armL: arm(60, 70, 130, 60), armR: arm(40, 80, 100, 96) }, 0.95, { in: 0.12, out: 0.3, antic: 0, over: 1.6, handL: "open", handR: "open" });
-  wag(sir, 0.8, 4, P({ roll: 8, armL: arm(8, 58, 20, 66), armR: arm(8, 104, 24, 122) }), P({ roll: -8, armL: arm(8, 104, 24, 122), armR: arm(8, 58, 20, 66) }), 0.7, { handL: "open", handR: "open" });
+  wag(sir, 0.8, 0.9, P({ roll: 8, armL: arm(8, 58, 20, 66), armR: arm(8, 104, 24, 122) }), P({ roll: -8, armL: arm(8, 104, 24, 122), armR: arm(8, 58, 20, 66) }), 0.7, { handL: "open", handR: "open" });
+  // and again when it comes back
+  sir.actAt(1.72, { legR: { th: [74, 10], sh: [-44, 0], pitch: 30 }, lean: -18, pz: -0.07, armL: arm(50, 76, 120, 70), armR: arm(64, 70, 136, 60) }, 0.9, { in: 0.12, out: 0.25, antic: 0.2, over: 1.6, handL: "open", handR: "open" });
   const cap = mover(CAPTAIN_D, 1.86, 3.55, PL.z, 90); cap.stand(6);
   cap.actAt(-1, { armR: arm(76, 4, 84, 0), armL: arm(14, 8, 44, 4), lean: 8 }, 9, { in: 0.01, handR: "grip", handL: "fist", face: { brow: -1, smile: 0.3, lid: 0.15 } });
   for (const t0 of [0.9, 1.7]) cap.actAt(t0, { armR: arm(86, 4, 90, 0), pz: 0.08, lean: 15 }, 0.34, { in: 0.09, out: 0.2, antic: 0.4, over: 1.6, handR: "grip" });
   add({ id: "hook", a: 0, b: cut("hook", "story"), still: 0.14,
-    sounds: [{ t: 0, k: "splash", g: 1.1, p: -0.5 }, { t: 0.19, k: "snap", p: -0.4 }, { t: 0.56, k: "splash", g: 0.9, p: -0.5 }, { t: 0.05, k: "creak", g: 0.7 }, { t: 0.9, k: "whoosh", g: 0.5, p: 0.5 }, { t: 1.3, k: "creak", g: 0.6 }, { t: 1.7, k: "whoosh", g: 0.5, p: 0.5 }],
+    sounds: [{ t: 0, k: "splash", g: 1.1, p: -0.5 }, { t: 0.19, k: "snap", p: -0.4 }, { t: 0.56, k: "splash", g: 0.9, p: -0.5 }, { t: 0.05, k: "creak", g: 0.7 }, { t: 0.9, k: "whoosh", g: 0.5, p: 0.5 }, { t: 1.3, k: "creak", g: 0.6 }, { t: 1.7, k: "whoosh", g: 0.5, p: 0.5 }, { t: 1.62, k: "splash", g: 1.0, p: -0.4 }, { t: 2.14, k: "snap", p: -0.4 }, { t: 2.5, k: "splash", g: 0.8, p: -0.4 }],
     cam: (_t, u) => V.push(0.2 * u), sun: { target: [4.6, 0, 0.6], reach: 7 },
     cast: (t, T) => [play("cap", CAPTAIN_D, cap, t, [0, PL.y, 0], 1.86, { seed: 5 }), play("sir", SIR_D, sir, t, [0, PL.y, 0], 1.8, { talk: talk(W, T, ["hook"]), blink: false })],
-    things: (g, c, t, _T, cam) => { sword(g, c.cap, cam, 4); lunge(g, kx, kz, -150, (t + 0.36) / 1.05, 2.05, 1.05); if (t > 1.0) circling(g, kx + 0.2, kz + 0.9, 0.8, t, 1.7, 2.2); } });
+    things: (g, c, t, _T, cam) => { sword(g, c.cap, cam, 4); lunge(g, kx, kz, -150, (t + 0.36) / 1.05, 2.05, 1.05); if (t > 1.0 && t < 1.5) circling(g, kx + 0.2, kz + 0.9, 0.8, t, 1.7, 2.2); lunge(g, kx + 0.25, kz + 0.2, -150, (t - 1.62) / 1.0, 1.95, 1.0); } });
 }
 // 2. A PLANK, A SWORD, A SHARK: from above. He counts them off: the plank under his feet, the blade behind him, and the shark, which
 //    comes up again as he points at it
@@ -124,12 +136,12 @@ const storyMid = at("story", /^Just/) - 0.12;
 {
   const a0 = cut("story", "rules"), V = lens(0.9, 1.14, 3.9, 0, -1, 0, 50), [cx, cz] = V.spot(2.0, -0.2), [qx, qz] = V.spot(2.8, 0.36), open = at("rules", /^Real/) - a0 - 0.05, rap = at("rules", /^written/) - a0;
   const cap = mover(CAPTAIN_D, 1.86, cx, cz, V.toward(cx, cz, 6)); cap.stand(8);
-  cap.actAt(-1, { armL: arm(74, 26, 150, 6), armR: arm(10, 14, 40, 0), head: [0, 2, 0] }, open + 0.1, { in: 0.01, out: 0.14, handL: "grip", handR: "fist", face: { brow: -0.5, smile: 0.36, lid: 0.15, gaze: [0.5, 0] } });
+  cap.actAt(-1, { armL: arm(74, 26, 150, 6), armR: arm(10, 14, 40, 0), head: [0, 2, 0] }, open + 0.1 + 1, { in: 0.01, out: 0.14, handL: "grip", handR: "fist", face: { brow: -0.5, smile: 0.36, lid: 0.15, gaze: [0.5, 0] } });
   wag(cap, 0.05, open - 0.1, P({ armL: arm(74, 40, 150, 26), head: [10, 2, 0] }), P({ armL: arm(74, 12, 150, -14), head: [-10, 2, 0] }), 0.36, { handL: "grip" });
   cap.actAt(open, { armL: arm(40, 30, 100, 4), armR: arm(34, 30, 100, 10), head: [0, 6, 0] }, 9, { in: 0.16, antic: 0.3, over: 1.6, handL: "grip", handR: "point", face: { brow: 0.4, smile: 0.38, lid: 0.1, gaze: [0, 0.6] } });
   wag(cap, rap, 3, P({ armR: arm(44, 16, 104, -34) }), P({ armR: arm(36, 28, 96, -8) }), 0.34, { handR: "point" });
   const sir = mover(SIR_D, 1.8, qx, qz, V.toward(qx, qz, -20)); sir.stand(8);
-  sir.actAt(-1, { armL: arm(8, 12, 20, 0), head: [-10, 0, 0] }, open + 0.5, { in: 0.01, out: 0.2, face: { brow: 0.8, wide: 0.3, gaze: [-0.7, 0.1] } });
+  sir.actAt(-1, { armL: arm(8, 12, 20, 0), head: [-10, 0, 0] }, open + 0.5 + 1, { in: 0.01, out: 0.2, face: { brow: 0.8, wide: 0.3, gaze: [-0.7, 0.1] } });
   sir.actAt(open + 0.15, { lean: 15, armR: arm(84, 22, 152, -14), head: [-18, 12, -6] }, 9, { in: 0.3, antic: 0.3, over: 1.5, handR: "grip", face: { brow: 1, wide: 0.5, lid: 0, gaze: [-0.8, 0.6] } });
   add({ id: "rules", a: a0, b: cut("rules", "limb"), still: rap + 0.35,
     sounds: [{ t: 0.1, k: "whoosh", g: 0.3 }, { t: 0.46, k: "whoosh", g: 0.3 }, { t: open + 0.05, k: "paper", p: -0.2 }, ...[0, 0.34, 0.68].map((d) => ({ t: rap + d, k: "tap", g: 0.8, p: -0.1 }))],
@@ -153,21 +165,23 @@ const limbA = cut("rules", "limb");
 {
   const V = lens(-1.75, 1.1, 4.0, 1, -0.1, 4, 50), [mx, mz] = V.spot(2.6, -0.36), [cx, cz] = V.spot(3.3, 0.5), give = at("limb", /^paid/) - limbA - 0.12;
   const cap = mover(CAPTAIN_D, 1.86, cx, cz, V.toward(cx, cz, -40)); cap.stand(8);
-  cap.actAt(-1, { armL: arm(30, 10, 84, -6), armR: arm(30, 10, 84, -6), lean: -6, twist: -10, head: [8, 0, 0] }, give + 0.2, { in: 0.01, out: 0.16, handL: "grip", handR: "grip", face: { smile: 0.2, brow: 0.6, gaze: [-0.7, -0.4] } });
+  cap.actAt(-1, { armL: arm(30, 10, 84, -6), armR: arm(30, 10, 84, -6), lean: -6, twist: -10, head: [8, 0, 0] }, give + 0.2 + 1, { in: 0.01, out: 0.16, handL: "grip", handR: "grip", face: { smile: 0.2, brow: 0.6, gaze: [-0.7, -0.4] } });
   for (const t0 of [0.75, 1.15]) cap.actAt(t0, { head: [8, 14, 0] }, 0.3, { in: 0.1, out: 0.14, antic: 0.2, over: 1.4 });
   cap.actAt(give - 0.2, { armL: arm(80, 8, 92, 0), armR: arm(84, 8, 96, 0), lean: 14, pz: 0.06 }, 0.6, { in: 0.2, out: 0.3, antic: 0.5, over: 1.6, handL: "open", handR: "open" });
   cap.actAt(give + 0.45, { armR: arm(40, 30, 130, 30), armL: arm(10, 12, 30, 0), head: [8, -4, 0] }, 9, { in: 0.3, handR: "open", face: { smile: 0.38, brow: 0.6, gaze: [-0.8, 0.2] } });
   const m = mover(MATE_D, 1.8, mx, mz, V.toward(mx, mz, 44)); m.stand(8);
-  m.actAt(-1, { armL: arm(10, 12, 30, 0), armR: arm(20, 12, 60, -6), head: [0, 6, 0] }, 0.5, { in: 0.01, out: 0.2, handL: "relaxed", handR: "fist", face: { brow: 0.6, smile: -0.5, lid: 0.25, gaze: [0.4, 0.5] } });
+  m.actAt(-1, { armL: arm(10, 12, 30, 0), armR: arm(20, 12, 60, -6), head: [0, 6, 0] }, 0.5 + 1, { in: 0.01, out: 0.2, handL: "relaxed", handR: "fist", face: { brow: 0.6, smile: -0.5, lid: 0.25, gaze: [0.4, 0.5] } });
   m.actAt(0.15, { armR: arm(122, 16, 176, 0), lean: -3, head: [6, -12, 0] }, give - 0.4, { in: 0.3, out: 0.2, antic: 0.4, over: 1.8, handR: "fist", face: { brow: 0.9, smile: -0.5, lid: 0.15, gaze: [0.5, -0.8] } });
   m.actAt(give - 0.3, { armL: arm(50, 14, 100, 0), armR: arm(50, 14, 100, 0), head: [0, 2, 0] }, 0.5, { in: 0.2, out: 0.15, handL: "open", handR: "fist", face: { brow: 0.8, wide: 0.4, lid: 0, gaze: [0.8, 0] } });
   m.actAt(give, { armL: arm(44, 10, 100, -14), armR: arm(44, 10, 100, -14), py: -0.14, lean: 10, head: [0, 12, 0] }, 9, { in: 0.14, over: 2.6, handL: "grip", handR: "fist", face: { wide: 1, lid: 0, brow: 1, smile: 0.9, mouth: 0.6, gaze: [0, 0.7] } });
+  wag(m, give + 0.7, 3, P({ py: -0.06, armL: arm(52, 10, 108, -14), armR: arm(52, 10, 108, -14), head: [0, 4, 0] }), P({ py: -0.15, armL: arm(42, 10, 98, -14), armR: arm(42, 10, 98, -14), head: [0, 14, 0] }), 0.5, { handL: "grip", handR: "fist" });
+  cap.actAt(give + 1.15, { armR: arm(120, 30, 190, -34), head: [8, 6, 0] }, 0.7, { in: 0.2, out: 0.25, antic: 0.3, over: 1.5, handR: "relaxed", face: { smile: 0.38, brow: 0.7, gaze: [-0.8, 0.2] } });
   add({ id: "paid", a: limbA, b: cut("limb", "maroon"), still: give + 0.42,
     sounds: [{ t: 0.15, k: "whoosh", g: 0.4, p: -0.2 }, { t: 0.5, k: "ting", p: -0.2 }, { t: give - 0.2, k: "whoosh", g: 0.6, p: 0.3 }, { t: give + 0.03, k: "sack", p: -0.2 }, ...[0.62, 0.7, 0.76, 0.84, 0.9, 1.0].map((d, i) => ({ t: give + d, k: "coin", g: 0.7, p: -0.4 + 0.1 * i }))],
     cam: (_t, u) => V.push(0.16 * u), sun: { target: [1.4, 0, 3.7], reach: 6 },
     cast: (t) => [play("cap", CAPTAIN_D, cap, t, [0, 0, 0], 1.86, { seed: 5 }), play("m", MATE_D, m, t, [0, 0, 0], 1.8, { seed: 7, blink: false })],
     things: (g, c, t, _T, cam) => { hooked(g, c.m, cam);
-      const from = between(c.cap.joint("wrL"), c.cap.joint("wrR")), to = between(c.m.joint("wrL"), c.m.joint("wrR")), u = smooth((t - give + 0.12) / 0.2), p = near(between(from, to, u), cam, 0.14), s = put(g, SACK(), [p[0], p[1] - 0.2 + 0.3 * Math.sin(Math.PI * u) * (u < 1 ? 1 : 0), p[2]]); s.lookAt(cam.pos[0], s.position.y, cam.pos[2]);
+      const from: V3 = t < give + 0.3 ? between(c.cap.joint("wrL"), c.cap.joint("wrR")) : between(c.m.joint("wrL"), c.m.joint("wrR")), to = between(c.m.joint("wrL"), c.m.joint("wrR")), u = smooth((t - give + 0.12) / 0.2), p = near(between(from, to, u), cam, 0.14), s = put(g, SACK(), [p[0], p[1] - 0.2 + 0.3 * Math.sin(Math.PI * u) * (u < 1 ? 1 : 0), p[2]]); s.lookAt(cam.pos[0], s.position.y, cam.pos[2]);
       for (let i = 0; i < 6; i++) tossed(g, i, [to[0], to[1] + 0.3, to[2] + 0.1], [0.3 * Math.sin(i * 1.9), 2.5 + 0.4 * (i % 3), -0.35 - 0.3 * Math.abs(Math.cos(i * 2.3))], t - give - 0.04 - i * 0.03, 0); } });
 }
 // 6. CHEAT THE CREW: over the captain's shoulder. He holds up the coin he has found in the man's headscarf; the man claps both
@@ -193,31 +207,31 @@ const maroonMid = at("maroon", /^and$/) - 0.08;
 const [ix, iy, iz] = SHIP.island, sand = (x: number, z: number) => iy - 0.3 + 0.95 * Math.sqrt(Math.max(0, 1 - ((x - ix) / 5.2) ** 2 - ((z - iz) / 3.8) ** 2));
 const gunA = at("maroon", /^with$/) - 0.12;
 {
-  const V = aim(SHIP.palm[0], SHIP.palm[2], 6.6, 0.55, 176, iy + 1.5, 6, 46), [px, pz] = V.spot(4.3, -0.12);
-  const pir = mover(PIRATE_D, 1.76, px + 0.75, pz + 0.1, -98); pir.walk(mt(pir, 0.75), { run: true }).stand(6);
-  pir.actAt(-1, { armL: arm(118, 6, 132, 0), armR: arm(30, 24, 70, 10), lean: 8, head: [0, -8, 0] }, 9, { in: 0.01, handR: "fist", handL: "fist", face: { wide: 0.6, lid: 0, brow: -1, mouth: 0.8, smile: -1, gaze: [-0.6, -0.3] } });
-  wag(pir, 0.3, 5, P({ armL: arm(128, 6, 150, 0), py: 0.03 }), P({ armL: arm(108, 6, 112, 0), py: -0.02 }), 0.3, { handL: "fist" });
+  const V = aim(SHIP.palm[0], SHIP.palm[2], 6.6, 0.55, 176, iy + 1.5, 6, 46), [px, pz] = V.spot(4.3, -0.2);
+  const pir = mover(PIRATE_D, 1.76, px + 0.75, pz + 0.1, -68); pir.walk(mt(pir, 0.75), { run: true }).stand(6);
+  pir.actAt(-1, { armR: arm(132, 6, 150, 0), armL: arm(20, 30, 70, 30), lean: 8, head: [26, -8, 0] }, 9, { in: 0.01, handR: "fist", handL: "fist", face: { wide: 0.6, lid: 0, brow: -1, mouth: 0.8, smile: -1, gaze: [-0.6, -0.3] } });
+  wag(pir, 0.3, 5, P({ armR: arm(142, 6, 168, 0), py: 0.03 }), P({ armR: arm(120, 6, 128, 0), py: -0.02 }), 0.3, { handR: "fist" });
   add({ id: "island", a: maroonMid, b: gunA, still: 1.3,
     sounds: [0.08, 0.3, 0.52].map((t) => ({ t, k: "step", run: true, surface: "sand", g: 0.8 })), beds: [{ k: "surf", a: 0, b: 2.1, g: 1 }],
     cam: (_t, u) => V.push(-0.2 * u), sun: { target: [ix, iy, iz], reach: 8 },
     cast: (t) => { const a = play("pir", PIRATE_D, pir, t, [0, 0, 0], 1.76, { seed: 8, blink: false }); a.at[1] = sand(a.at[0], a.at[2]) - 0.02; return [a]; },
-    things: (g, _c, t) => { const [sx, sz] = V.spot(62 + 2.5 * t, -9.6); put(g, SLOOP(), [sx, SEA - 0.4, sz], 0.5); } });
+    things: (g, _c, t) => { const [sx, sz] = V.spot(112 + 3 * t, -20.5); put(g, SLOOP(), [sx, SEA - 0.4, sz], 0.5); } });
 }
 // 8. WITH A GUN AND A BOTTLE OF WATER: from the sand. The pistol and the bottle they left him stand near the lens; behind them he
 //    drops to his knees and hangs his head, the ship small on the horizon
 {
-  const V = lens(ix - 1.5, iy + 1.12, iz + 3.4, -0.04, -1, -4, 56), [px, pz] = V.spot(3.6, 0.05), [gx, gz] = V.spot(2.0, -0.3), [bx, bz] = V.spot(2.1, 0.34);
-  const pir = mover(PIRATE_D, 1.76, px, pz, V.toward(px, pz, -8)); pir.stand(8);
-  pir.actAt(-1, { armL: arm(20, 16, 50, 6), armR: arm(20, 16, 50, 6), head: [0, -6, 0] }, 0.5, { in: 0.01, out: 0.14, handL: "fist", handR: "fist", face: { brow: -0.6, smile: -1, lid: 0.1, gaze: [0, -0.3] } });
-  pir.actAt(0.22, { py: -0.52, lean: 14, armL: arm(26, 14, 44, 4), armR: arm(26, 14, 44, 4), head: [0, 4, 0] }, 9, { in: 0.2, antic: 0.2, over: 1.8, handL: "open", handR: "open", face: { brow: 1, smile: -1, lid: 0.3, gaze: [0, 0.6] } });
-  pir.actAt(0.85, { head: [0, 30, 0], lean: 22 }, 9, { in: 0.4, over: 1.2, face: { brow: 1, smile: -1, lid: 0.55, gaze: [0, 1] } });
-  wag(pir, 1.2, 3, P({ head: [9, 30, 0] }), P({ head: [-9, 30, 0] }), 0.7);
+  const V = lens(ix - 1.5, iy + 0.9, iz + 3.3, -0.04, -1, 1, 56), [px, pz] = V.spot(3.3, 0.05), [gx, gz] = V.spot(1.75, -0.12), [bx, bz] = V.spot(1.8, 0.33);
+  const pir = mover(PIRATE_D, 1.76, px + 0.1, pz - 1.0, V.toward(px, pz, -4)); pir.walk(mt(pir, 1.0), { step: 0.8 }).stand(8);
+  pir.actAt(-1, { armL: arm(8, 14, 20, 6), armR: arm(8, 14, 20, 6), head: [0, 16, 0], lean: 8 }, 1.2 + 1, { in: 0.01, out: 0.2, handL: "relaxed", handR: "relaxed", face: { brow: 1, smile: -1, lid: 0.3, gaze: [0, 0.8] } });
+  const sit = 1.0;
+  pir.actAt(sit, { py: -0.5, pz: -0.16, lean: 20, armL: arm(88, 12, 160, -30), armR: arm(88, 12, 160, -30), head: [0, 26, 0] }, 9, { in: 0.26, antic: 0.3, over: 1.6, handL: "open", handR: "open", face: { brow: 1, smile: -1, lid: 0.5, gaze: [0, 1] } });
+  wag(pir, sit + 0.45, 3, P({ head: [8, 26, 0], roll: 2 }), P({ head: [-8, 26, 0], roll: -2 }), 0.6);
   add({ id: "gun", a: gunA, b: cut("maroon", "answer"), still: 1.3,
-    sounds: [{ t: 0.4, k: "thud", g: 0.7, surface: "sand" }], beds: [{ k: "surf", a: 0, b: 2.4, g: 1 }],
+    sounds: [{ t: 0.2, k: "step", surface: "sand", g: 0.7 }, { t: 0.6, k: "step", surface: "sand", g: 0.7 }, { t: sit + 0.22, k: "thud", g: 0.7, surface: "sand" }], beds: [{ k: "surf", a: 0, b: 2.4, g: 1 }],
     cam: (_t, u) => V.push(0.12 * u), sun: { target: [ix, iy, iz], reach: 8 },
-    cast: (t) => { const a = play("pir", PIRATE_D, pir, t, [0, 0, 0], 1.76, { seed: 8 }); a.at[1] += sand(a.at[0], a.at[2]) - 0.02; return [a]; },
-    things: (g, _c, t) => { const b = put(g, BOTTLE(), [bx, sand(bx, bz) - 0.02, bz]); b.scale.setScalar(1.15); b.rotation.z = 0.08; const p = put(g, PISTOL(), [gx - 0.2, sand(gx, gz) + 0.16, gz]); p.rotation.z = 0.2; p.scale.setScalar(0.9);
-      const [sx, sz] = V.spot(80 + 2.5 * t, -9); put(g, SLOOP(), [sx, SEA - 0.4, sz], 0.5); } });
+    cast: (t) => { const a = play("pir", PIRATE_D, pir, t, [0, 0, 0], 1.76, { seed: 8, blink: false }); a.at[1] += sand(a.at[0], a.at[2]) - 0.02; return [a]; },
+    things: (g, _c, t) => { const b = put(g, BOTTLE(), [bx, sand(bx, bz) - 0.02, bz]); b.rotation.z = 0.08; const p = put(g, PISTOL(), [gx - 0.16, sand(gx, gz) + 0.16, gz]); p.rotation.z = 0.2; p.scale.setScalar(0.85);
+      const [sx, sz] = V.spot(118 + 3 * t, -27); put(g, SLOOP(), [sx, SEA - 0.4, sz], 0.5); } });
 }
 // 9. BUT THE PLANK? ALMOST NEVER RECORDED: from the plank, looking back at the ship. The captain shakes his head and wags a finger,
 //    then comes for the lens with both hands
@@ -225,23 +239,26 @@ const answerMid = at("answer", /^Unwanted/) - 0.2;
 {
   const V = lens(5.2, PL.y + 0.3, PL.z, -1, 0, 15, 60), go = at("answer", /^recorded/) + 0.25 - cut("maroon", "answer");
   const cap = mover(CAPTAIN_D, 1.86, 2.75, PL.z, 90); cap.stand(go).walk(mt(cap, 0.9)).stand(4);
-  cap.actAt(-1, { armL: arm(30, 40, 100, 50), armR: arm(30, 40, 100, 50), head: [0, 10, 0], lean: 2 }, 1.1, { in: 0.01, out: 0.2, handL: "open", handR: "open", face: { brow: 1, lid: 0.1, smile: -0.4, gaze: [0, 0.8] } });
-  cap.actAt(0.85, { armR: arm(60, 16, 150, 4), armL: arm(-10, 20, 30, 30), head: [0, 6, 0] }, go - 0.75, { in: 0.2, out: 0.15, handR: "point", handL: "fist", face: { brow: -0.6, lid: 0.25, smile: -0.5, gaze: [0, 0.6] } });
-  wag(cap, 1.0, go - 1.0, P({ head: [24, 6, 0], armR: arm(60, 30, 150, 24) }), P({ head: [-24, 6, 0], armR: arm(60, 2, 150, -18) }), 0.44, { handR: "point" });
+  cap.actAt(-1, { armL: arm(10, 20, 40, 20), armR: arm(10, 20, 40, 20), head: [0, 22, 0], lean: 8 }, 0.75 + 1, { in: 0.01, out: 0.14, handL: "fist", handR: "fist", face: { brow: -0.4, lid: 0.15, smile: -0.4, gaze: [0, 1] } });
+  for (const t0 of [0.08, 0.36]) cap.actAt(t0, { legR: { th: [34, 8], sh: [-30, 0], pitch: -10 }, py: 0.01 }, 0.24, { in: 0.1, out: 0.08, antic: 0, over: 1.2 });
+  cap.actAt(0.62, { armL: arm(44, 54, 124, 74), armR: arm(44, 54, 124, 74), head: [0, -2, 8], lean: -6, py: 0.02 }, 0.4, { in: 0.14, out: 0.16, antic: 0.4, over: 1.7, handL: "open", handR: "open", face: { brow: 1, lid: 0.1, smile: -0.4, gaze: [0, 0.3] } });
+  cap.actAt(0.98, { armR: arm(64, 44, 152, 40), armL: arm(-10, 20, 30, 30), head: [0, 6, 0] }, go - 0.88, { in: 0.2, out: 0.15, handR: "point", handL: "fist", face: { brow: -0.6, lid: 0.25, smile: -0.5, gaze: [0, 0.6] } });
+  wag(cap, 1.1, go - 1.1, P({ head: [24, 6, 0], armR: arm(64, 56, 152, 56) }), P({ head: [-24, 6, 0], armR: arm(64, 34, 152, 24) }), 0.44, { handR: "point" });
   cap.actAt(go, { armL: arm(70, 24, 60, 10), armR: arm(70, 24, 60, 10), lean: 20, head: [0, 14, 0] }, 9, { in: 0.25, antic: 0.5, over: 1.5, handL: "open", handR: "open", face: { brow: -1, lid: 0, smile: 0.7, mouth: 0.4, gaze: [0, 0.8] } });
   add({ id: "never", a: cut("maroon", "answer"), b: answerMid, still: 1.5,
-    sounds: [{ t: go + 0.15, k: "step", surface: "wood" }, { t: go + 0.5, k: "step", surface: "wood", g: 1.2 }, { t: go + 0.3, k: "whoosh", g: 0.7 }],
+    sounds: [{ t: 0.2, k: "step", surface: "wood", g: 0.9 }, { t: 0.48, k: "step", surface: "wood", g: 0.9 }, { t: 0.3, k: "creak", g: 0.6 }, { t: go + 0.15, k: "step", surface: "wood" }, { t: go + 0.5, k: "step", surface: "wood", g: 1.2 }, { t: go + 0.3, k: "whoosh", g: 0.7 }],
     cam: (t) => V.push(-0.2 * smooth((t - go) / 0.6), 0, 6 * smooth((t - go) / 0.6)), sun: { target: [2, 0, 0.6], reach: 6 },
-    cast: (t) => [play("cap", CAPTAIN_D, cap, t, [0, 0.02, 0], 1.86, { seed: 5 })] });
+    cast: (t) => [play("cap", CAPTAIN_D, cap, t, [0, 0.02, 0], 1.86, { seed: 5, blink: false })] });
 }
-// 10. UNWANTED MEN SIMPLY WENT OVER THE SIDE: from over the water, aft of the plank (which is behind the lens). The captain carries
-//     him to the rail over his head and heaves; the lens follows him as he turns over in the air and goes in with a splash
-const SPLASH: V3 = [4.9, SEA, 3.5];
+// 10. UNWANTED MEN SIMPLY WENT OVER THE SIDE: along the ship's side from just aft of the plank (which is behind the lens): the rail
+//     and the captain on the right, open sea on the left. He carries him to the rail over his head and heaves; the lens follows
+//     him out over the water as he turns over in the air and goes in with a splash
+const SPLASH: V3 = [5.0, SEA, 4.2];
 const heave = at("answer", /^simply/) + 0.05 - answerMid, fly = 1.2, hit = answerMid + heave + fly;
 {
-  const POS: V3 = [5.5, 1.75, 1.15], RAIL = 2.3;
+  const POS: V3 = [4.05, 2.25, 0.98], RAIL = 2.3;
   const cap = mover(CAPTAIN_D, 1.86, RAIL - 0.95, SPLASH[2], 90); cap.walk(mt(cap, 0.95)).stand(6);
-  cap.actAt(-1, { armL: arm(166, 16, 184, 4), armR: arm(166, 16, 184, 4), lean: -4 }, heave + 0.02, { in: 0.01, out: 0.1, handL: "open", handR: "open", face: { brow: -1, lid: 0.2, smile: 0.36 } });
+  cap.actAt(-1, { armL: arm(166, 16, 184, 4), armR: arm(166, 16, 184, 4), lean: -4 }, heave + 0.02 + 1, { in: 0.01, out: 0.1, handL: "open", handR: "open", face: { brow: -1, lid: 0.2, smile: 0.36 } });
   cap.actAt(heave - 0.3, { armL: arm(190, 16, 200, 4), armR: arm(190, 16, 200, 4), lean: -16, py: -0.08 }, 0.3, { in: 0.2, out: 0.06, antic: 0, over: 1, handL: "open", handR: "open" });
   cap.actAt(heave, { armL: arm(104, 16, 100, 4), armR: arm(104, 16, 100, 4), lean: 22, pz: 0.1 }, 0.6, { in: 0.1, out: 0.3, antic: 0, over: 1.8, handL: "open", handR: "open" });
   cap.actAt(heave + 0.7, { armL: arm(40, 14, 110, -30), armR: arm(40, 14, 110, -30), head: [0, 12, 0] }, 9, { in: 0.25, handL: "open", handR: "open", face: { smile: 0.38, brow: 0.5, lid: 0.2, gaze: [0, 0.6] } });
@@ -249,13 +266,13 @@ const heave = at("answer", /^simply/) + 0.05 - answerMid, fly = 1.2, hit = answe
   sir.actAt(-1, { armL: arm(70, 60, 110, 70), armR: arm(140, 50, 170, 40), legL: { th: [40, 14], sh: [-30, 0], pitch: 20 }, legR: { th: [-24, 10], sh: [-70, 0], pitch: 30 }, head: [0, -10, 0] }, 9, { in: 0.01, handL: "open", handR: "open", face: { wide: 1, lid: 0, brow: 1, mouth: 1 } });
   wag(sir, 0, 5, P({ legL: { th: [-20, 14], sh: [-60, 0], pitch: 20 }, legR: { th: [44, 10], sh: [-26, 0], pitch: 30 }, armL: arm(140, 50, 170, 40), armR: arm(70, 60, 110, 70) }), P({ legL: { th: [40, 14], sh: [-30, 0], pitch: 20 }, legR: { th: [-24, 10], sh: [-70, 0], pitch: 30 } }), 0.4, { handL: "open", handR: "open" });
   /** where the middle of him is, and how far he has turned */
-  const x0 = RAIL + 0.1, y0 = 2.75, flight = (t: number, cx: number): [V3, number] => { if (t < heave) return [[cx + 0.1, y0 + 0.02 * Math.sin(t * 14), SPLASH[2]], 90 + 5 * Math.sin(t * 9)]; const u = t - heave, vx = (SPLASH[0] - x0) / fly, vy = (SEA - 0.3 - y0 + 4.9 * fly * fly) / fly; return [[x0 + vx * u, y0 + vy * u - 4.9 * u * u, SPLASH[2]], 90 + 400 * u]; };
+  const x0 = RAIL + 0.1, y0 = 2.52, flight = (t: number, cx: number): [V3, number] => { if (t < heave) return [[cx + 0.1, y0 + 0.02 * Math.sin(t * 14), SPLASH[2]], 90 + 5 * Math.sin(t * 9)]; const u = t - heave, vx = (SPLASH[0] - x0) / fly, vy = (SEA - 0.3 - y0 + 4.9 * fly * fly) / fly; return [[x0 + vx * u, y0 + vy * u - 4.9 * u * u, SPLASH[2]], 90 + 400 * u]; };
   const capX = (t: number) => RAIL - 0.95 + 0.95 * smooth(t / (heave - 0.25));
-  add({ id: "over", a: answerMid, b: cut("answer", "origin"), still: heave + 0.14,
+  add({ id: "over", a: answerMid, b: cut("answer", "origin"), still: heave + 0.45,
     sounds: [{ t: 0.12, k: "step", surface: "wood", p: 0.4 }, { t: 0.5, k: "step", surface: "wood", p: 0.3 }, { t: heave - 0.05, k: "whoosh", g: 0.9, p: 0.2 }, { t: heave + 0.05, k: "fall", dur: fly - 0.1, p: 0 }, { t: heave + fly, k: "splash", g: 1.4, big: 1.4, p: -0.2 }],
     // the lens holds the two of them at the rail, then follows him down to the water
-    cam: (t) => { const [p] = flight(Math.min(t, heave + fly), capX(t)), k = smooth((t - heave - 0.3) / 0.5), look: V3 = [p[0] * k + (capX(t) + 0.15) * (1 - k), Math.max(SEA + 0.9, p[1] - 0.2) * k + 2.0 * (1 - k), SPLASH[2]]; return { pos: POS, look, fov: 52 }; },
-    sun: { target: [3.5, 0, 3.4], reach: 7 },
+    cam: (t) => { const [p] = flight(Math.min(t, heave + fly), capX(t)), k = smooth((t - heave - 0.05) / 0.5), look: V3 = [(p[0] - 0.35) * k + (capX(t) + 0.3) * (1 - k), Math.max(SEA + 0.9, p[1] - 0.2) * k + 1.85 * (1 - k), SPLASH[2]]; return { pos: POS, look, fov: 58 }; },
+    sun: { target: [3.2, 0, 4.2], reach: 7 },
     cast: (t, T) => { const c = play("cap", CAPTAIN_D, cap, t, [0, 0, 0], 1.86, { seed: 5 }), [p, spin] = flight(t, c.at[0]);
       return t > heave + fly + 0.05 ? [c] : [c, { ...play("sir", SIR_D, sir, t, [0, 0, 0], 1.8, { talk: talk(W, T, ["answer"]), blink: false }), at: p, spin }]; },
     things: (g, _c, t) => { splash(g, SPLASH, t - heave - fly, 1.3); } });
@@ -273,7 +290,7 @@ const originMid = at("origin", /^like$/) - 0.1;
     cam: (_t, u) => V.push(0.1 * u), sun: { target: [wx, SEA, wz], reach: 6 },
     cast: (t, T) => [play("sir", SIR_D, sir, t, [0, bob(t), 0], 1.8, { talk: Math.max(talk(W, T, ["origin"]), t < 0.5 ? 0.8 : 0), blink: false })],
     things: (g, c, t, _T, cam) => { const a = c.sir, p = near(a.joint("tipR"), cam, 0.05), k = put(g, BOOK_T(), [p[0], p[1] + 0.2, p[2]]); k.lookAt(cam.pos[0], p[1] + 0.2, cam.pos[2]);
-      const f = put(g, FOAM2(), [wx, SEA + 0.03, wz]); f.scale.setScalar(1.25 + 0.1 * Math.sin(t * 5));
+      waterline(g, wx, wz, cam, t, 0.95);
       // what he spits out, in an arc
       if (t < 0.9) { const m = near(a.joint("skull"), cam, 0.2); for (let i = 0; i < 8; i++) { const u = i / 8; g.add(mesh(ball(0.03, 6), "#bfe3fb", { at: [m[0] - 0.12 - 0.5 * u, m[1] - 0.2 + 0.5 * u - 0.9 * u * u, m[2]], line: 0, shadow: false })); } } } });
 }
@@ -282,26 +299,31 @@ const originMid = at("origin", /^like$/) - 0.1;
 {
   const V = lens(2.25, 1.25, 4.6, -0.05, -1, 3, 54), [qx, qz] = V.spot(3.3, -0.3), [cx, cz] = V.spot(3.7, 0.52), tI = at("origin", /Treasure/) - originMid, tP = at("origin", /Peter/) - originMid;
   const sir = mover(SIR_D, 1.8, qx, qz, V.toward(qx, qz, 6)); sir.stand(9);
-  sir.actAt(-1, { armR: arm(30, 20, 70, 0), armL: arm(30, 14, 76, 0), head: [0, 2, 0] }, tI + 0.3, { in: 0.01, out: 0.2, handL: "grip", handR: "grip", face: { smile: 0.6, brow: 0.6, gaze: [0, 0] } });
+  sir.actAt(-1, { armR: arm(30, 20, 70, 0), armL: arm(30, 14, 76, 0), head: [0, 2, 0] }, tI + 0.3 + 1, { in: 0.01, out: 0.2, handL: "grip", handR: "grip", face: { smile: 0.6, brow: 0.6, gaze: [0, 0] } });
   sir.actAt(tI - 0.1, { armR: arm(124, 22, 174, 8), head: [-10, -4, 0] }, 9, { in: 0.24, antic: 0.4, over: 2, handR: "grip", face: { smile: 1, brow: 1, lid: 0.1, gaze: [-0.6, -0.3] } });
   sir.actAt(tP - 0.14, { armL: arm(34, 22, 80, 16), head: [14, 0, 0], twist: -8 }, 9, { in: 0.2, antic: 0.5, over: 2.2, handL: "grip", face: { smile: 1, brow: 1, lid: 0.1, gaze: [0.8, 0.1] } });
   const cap = mover(CAPTAIN_D, 1.86, cx, cz, V.toward(cx, cz, -22)); cap.stand(9);
-  cap.actAt(-1, { armL: arm(128, 30, 206, -24), armR: arm(10, 12, 30, 0), head: [-14, 0, 6] }, tP + 0.2, { in: 0.01, out: 0.2, handL: "relaxed", face: { brow: 0.8, lid: 0.1, smile: -0.3, gaze: [-0.8, 0] } });
+  cap.actAt(-1, { armL: arm(128, 30, 206, -24), armR: arm(10, 12, 30, 0), head: [-14, 0, 6] }, tP + 0.2 + 1, { in: 0.01, out: 0.2, handL: "relaxed", face: { brow: 0.8, lid: 0.1, smile: -0.3, gaze: [-0.8, 0] } });
   cap.actAt(tP + 0.05, { lean: 18, armR: arm(46, 4, 70, -24), armL: arm(10, 12, 30, 0), head: [-18, 16, 0] }, 9, { in: 0.26, antic: 0.3, over: 1.6, handR: "point", face: { brow: 1, wide: 0.9, lid: 0, mouth: 0.4, gaze: [-0.7, 0.7] } });
   cap.actAt(tP + 0.75, { lean: 4, armL: arm(40, 10, 150, -44), head: [-6, -2, 0] }, 9, { in: 0.22, antic: 0.3, over: 1.8, handL: "point", face: { brow: 1, wide: 1, lid: 0, mouth: 0.7, smile: 0.5, gaze: [-0.4, 0] } });
   add({ id: "books", a: originMid, b: END, still: tP + 1.05,
     sounds: [{ t: tI + 0.12, k: "book", p: -0.3 }, { t: tP + 0.06, k: "book", p: 0.3 }, ...[0.2, 0.55, 0.95, 1.3, 1.7, 2.1, 2.5].map((t) => ({ t, k: "drip", g: 0.7, p: -0.2 }))],
     cam: (_t, u) => V.push(0.14 * u), sun: { target: [1.5, 0, 1.4], reach: 6 },
-    cast: (t, T) => [play("cap", CAPTAIN_D, cap, t, [0, 0, 0], 1.86, { seed: 5, blink: false }), play("sir", SIR_D, sir, t, [0, 0, 0], 1.8, { talk: talk(W, T, ["origin"]) })],
+    cast: (t, T) => [play("cap", CAPTAIN_D, cap, t, [0, 0, 0], 1.86, { seed: 5, blink: false }), play("sir", SIR_D, sir, t, [0, 0, 0], 1.8, { talk: talk(W, T, ["origin"]), blink: false })],
     things: (g, c, t, _T, cam) => {
       const hold = (b: THREE.Object3D, p: V3, up: number, d: number) => { const q = near(p, cam, d); put(g, b, [q[0], q[1] + up, q[2]]); b.lookAt(cam.pos[0], q[1] + up, cam.pos[2]); };
-      hold(BOOK_T(), c.sir.joint("tipR"), 0.14, 0.08); hold(BOOK_P(), c.sir.joint("tipL"), -0.02, 0.1);
+      hold(BOOK_T(), c.sir.joint("tipR"), 0.2, -0.04); const pl = c.sir.joint("tipL"); hold(BOOK_P(), [pl[0] + 0.15, pl[1], pl[2]], 0.06, -0.04);
       drips(g, c.sir, t, cam); g.add(mesh(ball(1, 14), "#9fd4f6", { at: [c.sir.at[0], 0.012, c.sir.at[2]], scale: [0.5, 0.01, 0.34], line: 0.5, shadow: false })); } });
 }
 
 export const PIRATE_PLANK: Film = {
   id: "pirate-plank", fps: 30, seconds: END, sky: "#9fd6ff", world: pirateShip, shots, words: W,
   hook: { text: ["DID PIRATES", "MAKE YOU WALK", "THE PLANK?"], a: 0, b: L.hook.b + 0.2, size: 96 },
-  sign: { text: "Dramatised. The rules are from pirate articles printed in 1724.", a: limbA + 0.5, b: limbA + 2.5 },
+  sign: { text: "Dramatised. The rules are from pirate articles printed in 1724.", a: maroonMid + 0.04, b: maroonMid + 2.04 },
+  thumbs: [
+    { T: 0.14, cam: aim(5.62, PL.z, 4.3, -0.75, -55, 0.35, 0, 38).cam, words: ["WALK THE", "PLANK?"], side: "right", at: "bottom", size: 136 },
+    { T: answerMid + heave + 0.5, cam: { pos: [4.3, 2.1, 0.6], look: [3.2, 1.75, 4.2], fov: 44 }, words: ["NO PLANK", "NEEDED"], side: "left", at: "bottom", size: 124, tilt: 3 },
+    { T: cut("story", "rules") + 2.4, cam: lens(1.5, 1.2, 4.0, -0.34, -1, 3, 32).cam, words: ["REAL", "PIRATE", "RULES"], side: "left", at: "middle", size: 128 },
+  ],
   hits: [{ t: hit, amp: 1, dur: 0.4 }], beds: [{ k: "sea", a: 0, b: END, g: 1 }, { k: "wind", a: 0, b: END, g: 0.35 }], music: "shanty", audio: "craft/pirate-plank.wav",
 };

@@ -9,15 +9,16 @@ import { useThree } from "@react-three/fiber";
 import { setOutline, aimSun, sunDir } from "../world/kit";
 import { figureCard } from "../world/people";
 import { shake } from "../motion";
-import { Film, Staged, shotAt, captions } from "./film";
+import { Film, Cam, Staged, shotAt, captions } from "./film";
 
 export const SW = 1080, SH = 1920;
 const dispose = (g: THREE.Object3D) => g.traverse((o) => { const m = o as THREE.Mesh; if (!m.isMesh || !m.userData.own) return; m.geometry?.dispose(); for (const mat of (Array.isArray(m.material) ? m.material : [m.material]) as THREE.MeshBasicMaterial[]) { mat.map?.dispose(); mat.dispose(); } (m.customDepthMaterial as THREE.Material | undefined)?.dispose(); });
 
-const Scene: React.FC<{ film: Film }> = ({ film }) => {
-  const fr = useCurrentFrame(), T = fr / film.fps, { camera } = useThree(), shot = shotAt(film, T), t = T - shot.a, u = t / (shot.b - shot.a);
+/** at, view, res: a still of the film at the time `at` from the camera `view`, on a picture `res` pixels high (a thumbnail) */
+const Scene: React.FC<{ film: Film; at?: number; view?: Cam; res?: number }> = ({ film, at, view, res }) => {
+  const fr = useCurrentFrame(), T = at ?? fr / film.fps, { camera } = useThree(), shot = shotAt(film, T), t = T - shot.a, u = t / (shot.b - shot.a);
   const world = useMemo(() => film.world(), [film]), last = useRef<THREE.Group | null>(null);
-  const cam = shot.cam(t, u), rig = world.userData.rig as THREE.Object3D;
+  const cam = view ?? shot.cam(t, u), rig = world.userData.rig as THREE.Object3D;
   const frame = useMemo(() => {
     if (last.current) dispose(last.current);
     const g = new THREE.Group(), seen = { fov: cam.fov, toSun: sunDir(rig) }, staged: Record<string, Staged> = {};
@@ -28,11 +29,12 @@ const Scene: React.FC<{ film: Film }> = ({ film }) => {
     }
     shot.things?.(g, staged, t, T, cam);
     last.current = g; return g;
-  }, [fr, film]);
-  const c = camera as THREE.PerspectiveCamera, sk = film.hits ? shake(T, film.hits, 1) : [0, 0];
+  }, [fr, film, at]);
+  const c = camera as THREE.PerspectiveCamera, sk = film.hits && at === undefined ? shake(T, film.hits, 1) : [0, 0];
   c.position.set(cam.pos[0] + sk[0] * 0.012, cam.pos[1] + sk[1] * 0.012, cam.pos[2]); c.fov = cam.fov; c.near = 0.1; c.far = 3000; c.lookAt(cam.look[0] + sk[0] * 0.012, cam.look[1] + sk[1] * 0.012, cam.look[2]); c.updateProjectionMatrix();
   aimSun(rig, shot.sun?.target ?? cam.look, shot.sun?.reach ?? 9);
-  setOutline(3.4, SH);
+  (world.userData.tick as ((t: number) => void) | undefined)?.(T);   // what moves by itself in the world (the sea)
+  setOutline(res ? 2.6 : 3.4, res ?? SH);
   return (<><primitive object={world} dispose={null} /><primitive object={frame} dispose={null} /></>);
 };
 
@@ -59,6 +61,22 @@ export const Stage: React.FC<{ film: Film }> = ({ film }) => {
       </ThreeCanvas>
       {p.words !== false && <Words film={film} />}
       {p.audio !== false && film.audio && <Audio src={staticFile(film.audio)} />}
+    </AbsoluteFill>
+  );
+};
+/** the film's thumbnail proposals, one per frame of the composition (1280 x 720) */
+export const TW = 1280, TH = 720;
+export const Thumbs: React.FC<{ film: Film }> = ({ film }) => {
+  const list = film.thumbs ?? [], k = list[Math.min(list.length - 1, useCurrentFrame())], px = k?.size ?? 124;
+  if (!k) return null;
+  return (
+    <AbsoluteFill style={{ background: film.sky }}>
+      <ThreeCanvas width={TW} height={TH} shadows="soft" flat gl={{ antialias: true }} camera={{ fov: 45, near: 0.1, far: 3000 }}>
+        <Scene film={film} at={k.T} view={k.cam} res={TH} />
+      </ThreeCanvas>
+      <AbsoluteFill style={{ justifyContent: k.at === "top" ? "flex-start" : k.at === "bottom" ? "flex-end" : "center", alignItems: k.side === "left" ? "flex-start" : "flex-end", padding: "34px 44px" }}>
+        <div style={{ ...big(px), textAlign: k.side === "left" ? "left" : "right", lineHeight: 0.98, transform: `rotate(${k.tilt ?? -3}deg)` }}>{k.words.map((l, i) => <div key={i} style={{ color: i === k.words.length - 1 ? "#ffd83a" : "#ffffff" }}>{l}</div>)}</div>
+      </AbsoluteFill>
     </AbsoluteFill>
   );
 };

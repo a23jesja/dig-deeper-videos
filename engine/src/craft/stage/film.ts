@@ -32,6 +32,8 @@ export type Shot = {
 export type Sound = { t: number; k: string; g?: number; p?: number; dur?: number; big?: number; run?: boolean; surface?: string };
 /** a sound that lies under a stretch of the film (the sea, wind, flies) */
 export type Bed = { k: string; a: number; b: number; g?: number };
+/** a thumbnail proposal (1280 x 720): one moment of the film, a camera of its own, a few big words on one side of the picture */
+export type Thumb = { T: number; cam?: Cam; words: string[]; side: "left" | "right"; at?: "top" | "middle" | "bottom"; size?: number; tilt?: number };
 export type Caption = { a: number; b: number; text: string };
 export type Film = {
   id: string; fps: number; seconds: number; sky: string;
@@ -47,6 +49,8 @@ export type Film = {
   hits?: { t: number; amp: number; dur?: number }[];
   /** what lies under the whole film (film seconds), and the name of its music in audio/film_music.py */
   beds?: Bed[]; music?: string;
+  /** thumbnail proposals, clearly different from each other */
+  thumbs?: Thumb[];
   audio?: string;
 };
 
@@ -63,11 +67,12 @@ export const play = (name: string, D: Design, m: Mover, tm: number, origin: V3, 
 };
 /** how far the mouth is open at film time T for the one who says the lines `ids` (0 when somebody else speaks) */
 export const talk = (words: Word[], T: number, ids?: string[]) => { const w = ids ? words.filter((q) => ids.includes(q.line ?? "")) : words; return w.length && T >= w[0].a - 0.05 && T <= w[w.length - 1].b + 0.1 ? mouthAt(w, T) : 0; };
-/** caption chunks from the word timings: two or three words, never wider than the picture, a new chunk after a full stop */
+/** caption chunks from the word timings: two or three words, never wider than the picture, a new chunk after a full stop and
+ *  after a comma that ends two words or more */
 export const captions = (words: Word[], skip: (w: Word) => boolean = () => false): Caption[] => {
   const out: Caption[] = []; let cur: Word[] = [];
   const flush = () => { if (cur.length) out.push({ a: cur[0].a, b: cur[cur.length - 1].b + 0.12, text: cur.map((q) => q.w).join(" ").toUpperCase().replace(/[.,":;]/g, "") }); cur = []; };
-  for (const w of words) { if (skip(w)) { flush(); continue; } if (cur.length && (cur.length >= 3 || [...cur, w].map((q) => q.w).join(" ").length > 14 || /[.!?]"?$/.test(cur[cur.length - 1].w) || w.line !== cur[0].line)) flush(); cur.push(w); }
+  for (const w of words) { if (skip(w)) { flush(); continue; } if (cur.length && (cur.length >= 3 || [...cur, w].map((q) => q.w).join(" ").length > 14 || /[.!?]"?$/.test(cur[cur.length - 1].w) || (cur.length >= 2 && /,$/.test(cur[cur.length - 1].w)) || w.line !== cur[0].line)) flush(); cur.push(w); }
   flush();
   // a caption stays until the next one comes, if the gap is short, so that the band does not flicker
   out.forEach((c, i) => { const n = out[i + 1]; if (n && n.a - c.b < 0.25) c.b = n.a; });

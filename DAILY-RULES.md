@@ -150,7 +150,21 @@ sent to Jesper, and reuse them from then on.
 - The hook is on screen as text while the voice says it. No intro, no year, no establishing shot first.
 - Date, place and background come after the hook.
 
-## The series format (Jesper 2026-11-14)
+## Series paused, stand-alone history Shorts now (Jesper 2026-11-18)
+This section overrides "The series format" below and the series parts of "Where we are now".
+- **No more series episodes for now.** No "part 1, 2, 3" Shorts and no "Sir Digsworth survives ..." seasons until
+  Jesper says the animation, graphics and feel are top notch.
+- **When the series comes back it is made as long videos**, episodes of about 7-12 minutes, not as Shorts.
+- **Now: stand-alone history Shorts.** Each one tells one complete true story with a beginning, a turn and an end,
+  and needs no other video to make sense. Pick stories that are funny, frightening, adventurous, full of action or
+  simply fascinating, like the emu war. Sir Digsworth is the host and may be in the scene, but the story is the
+  event, not his survival.
+- **No cliffhanger to a next part.** End on the punchline, the twist or the strangest fact.
+- **Pompeii becomes one stand-alone Short** about the day Vesuvius erupted, not part 1 of three.
+- **Each Short is also practice:** it uses the craft kit and the world look, and should be better made than the
+  one before.
+
+## The series format (Jesper 2026-11-14, paused 2026-11-18: see the section above)
 **"Sir Digsworth survives history":** Sir Digsworth is dropped into a real, famous historical event and has to get
 through it. The events around him are true and sourced; his own journey is dramatised, and each episode says so.
 - **Only eras that draw crowds and are full of action:** the Second World War, the age of knights, the Cold War,

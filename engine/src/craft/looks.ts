@@ -96,6 +96,39 @@ export const ROMAN_WOMAN: Look = {
   rows: [[-400, 132, 110, 124], [-280, 122, 102, 114], [-120, 104, 86, 96], [0, 86, 70, 72], [70, 72, 60, 56], [170, 80, 68, 58], [228, 90, 56, 56], [252, 44, 34, 38]],
   legs: "trousers", feet: "sandals", sleeve: "short", arm: [24, 19, 14], leg: [28, 20, 14],
 };
+// ---------------- Rome, about AD 70 ----------------
+/** the emperor Vespasian: stocky, bald with a wreath, a white tunic under a purple cloak */
+export const VESPASIAN: Look = {
+  id: "vespasian", P: { ...ROMAN, thigh: 195, shin: 185, spine: 280, hipW: 68, shW: 120, upper: 142, fore: 130 }, head: { a: 124, b: 122, H: 240, jaw: 1.14, round: 0.35 }, skin: "#eebf96", brow: "#8a8078",
+  hat: "band", hatCol: "#e2b93a", hair: { col: "#9a9088", kind: "bald" },
+  top: "tunic", coat: "#fbf6ea", accent: "#7a2f8a", cloak: "#7a2f8a", belt: "#e2b93a",
+  rows: [[-300, 132, 106, 108], [-150, 138, 124, 108], [0, 142, 140, 106], [110, 136, 128, 96], [205, 122, 100, 80], [254, 122, 68, 68], [280, 60, 44, 48]],
+  legs: "bare", feet: "sandals", sleeve: "short", arm: [32, 26, 18], leg: [42, 30, 19],
+};
+/** his son Titus: younger and slimmer, dark hair, a red cloak */
+export const TITUS: Look = {
+  id: "titus", P: { ...ROMAN, thigh: 215, shin: 205, spine: 268, shW: 104 }, head: { a: 106, b: 110, H: 232, jaw: 0.96, round: 0.3, eye: 1.05 }, skin: "#efc39c", brow: "#2e2018",
+  hat: "none", hair: { col: "#2e2018", kind: "short" },
+  top: "tunic", coat: "#fbf6ea", accent: "#c8402f", cloak: "#c8402f", belt: "#b98a3a",
+  rows: [[-210, 112, 86, 90], [-100, 106, 86, 84], [0, 100, 84, 78], [100, 98, 82, 72], [200, 110, 80, 70], [250, 112, 62, 62], [276, 54, 40, 44]],
+  legs: "bare", feet: "sandals", sleeve: "short", arm: [28, 22, 16], leg: [36, 26, 17],
+};
+/** a fuller at his work: a short work tunic hitched up, a headband, strong arms */
+export const FULLER: Look = {
+  id: "fuller", P: { ...ROMAN, shW: 112 }, head: { a: 112, b: 112, H: 230, jaw: 1.06, round: 0.3 }, skin: "#d9a070", brow: "#3a2418",
+  hat: "band", hatCol: "#3f9a8c", hair: { col: "#3a2418", kind: "short" }, beard: "#3a2418",
+  top: "tunic", coat: "#8fb86a", accent: "#3f7a4a", belt: "#6b4424",
+  rows: [[-110, 114, 86, 90], [-10, 108, 90, 84], [100, 102, 90, 76], [200, 112, 82, 70], [248, 114, 62, 62], [272, 56, 40, 44]],
+  legs: "bare", feet: "sandals", sleeve: "short", arm: [31, 25, 17], leg: [38, 27, 18],
+};
+/** a man of the street in a plain blue tunic */
+export const CITIZEN: Look = {
+  id: "citizen", P: { ...ROMAN, thigh: 200, shin: 190 }, head: { a: 110, b: 112, H: 228, jaw: 0.94, round: 0.5 }, skin: "#e3b088", brow: "#5a3a22",
+  hat: "none", hair: { col: "#5a3a22", kind: "short" },
+  top: "tunic", coat: "#3b7fc4", accent: "#f6c95e", belt: "#f6c95e",
+  rows: [[-190, 114, 88, 92], [-60, 110, 92, 86], [60, 104, 92, 78], [190, 110, 82, 70], [244, 112, 62, 62], [268, 56, 40, 44]],
+  legs: "bare", feet: "sandals", sleeve: "short", arm: [28, 22, 16], leg: [36, 26, 17],
+};
 // ---------------- Boston, 1773 ----------------
 const COLONIST: Props = { thigh: 212, shin: 200, ankle: 24, foot: 126, hipW: 54, shW: 102, spine: 266, shDrop: 26, neck: 24, head: 238, upper: 146, fore: 134, hand: 84 };
 const coat = [[-150, 110, 80, 86], [-20, 96, 78, 76], [70, 82, 70, 60], [180, 96, 76, 66], [240, 106, 60, 60], [266, 52, 38, 42]];
@@ -141,4 +174,5 @@ export const TOWNSWOMAN: Look = {
 export const castDesign = (L: Look, name = L.id): Design => ({ id: L.id, name, ol: 4.6, faceW: L.head.a * 1.45, props: () => L.P, draw: drawCast(L), hat: (k, phi) => drawHat(k, L, phi) });
 export const SIR_D = castDesign(SIR, "Sir Digsworth"), BAKER_D = castDesign(BAKER), SOLDIER_D = castDesign(SOLDIER), MERCHANT_D = castDesign(MERCHANT);
 export const KNIGHT_D = castDesign(KNIGHT), TOMMY_D = castDesign(TOMMY), LADY_D = castDesign(LADY), DOCKER_D = castDesign(DOCKER), BOY_D = castDesign(BOY), GRANNY_D = castDesign(GRANNY), ROMAN_WOMAN_D = castDesign(ROMAN_WOMAN);
+export const VESPASIAN_D = castDesign(VESPASIAN), TITUS_D = castDesign(TITUS), FULLER_D = castDesign(FULLER), CITIZEN_D = castDesign(CITIZEN);
 export const CUSTOMS_D = castDesign(CUSTOMS), SHIPOWNER_D = castDesign(SHIPOWNER), SAILOR_D = castDesign(SAILOR), DOCKHAND_D = castDesign(DOCKHAND), TOWNSWOMAN_D = castDesign(TOWNSWOMAN);

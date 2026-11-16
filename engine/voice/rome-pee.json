@@ -1,0 +1,17 @@
+{
+ "voice": "bm_george",
+ "speed": 1.06,
+ "gap": 0.16,
+ "lead": 0.05,
+ "lines": [
+  { "id": "hook", "text": "Why did Rome tax pee?", "gap": 0.3 },
+  { "id": "need", "text": "Rome. The new emperor, Vespasian, needs money. A great deal of it.", "gap": 0.22 },
+  { "id": "guess", "text": "I guessed: a fine for peeing in the street. Wrong!", "gap": 0.2 },
+  { "id": "wash", "text": "Pee was useful. Laundries washed wool with it.", "gap": 0.2 },
+  { "id": "tax", "text": "So Vespasian put a tax on it.", "gap": 0.2 },
+  { "id": "titus", "text": "His son Titus complained.", "gap": 0.18 },
+  { "id": "coin", "text": "So the emperor held a coin under his nose. Does it smell?", "gap": 0.3 },
+  { "id": "yet", "text": "No. Yet it comes from pee.", "gap": 0.35 },
+  { "id": "end", "text": "That is why: money. And in Paris, street urinals were later named after him: vespasiennes.", "say": "That is why: money. And in Paris, street urinals were later named after him: vespa-zyenns.", "gap": 0.2 }
+ ]
+}

@@ -4,7 +4,7 @@
 import * as THREE from "three";
 import { card, outlinePx } from "./kit";
 import { Ink } from "../ink";
-import { solve, Pose, Props } from "../rig";
+import { solve, Pose, Props, Joint } from "../rig";
 import type { Design, FigOpts } from "../designs/common";
 import { Beast, BeastPose, drawBeast } from "../beast";
 
@@ -32,9 +32,11 @@ const place = (key: string, cw: number, ch: number, feet: number, s: number, mpu
   return { mesh: m, world: (ux, uy) => [x + Math.cos(az) * ux * mpu, y - uy * mpu, z - Math.sin(az) * ux * mpu] };
 };
 /** a figure of the cast. tilt (0..1) leans the card back toward a camera that looks down on it */
-export const figureCard = (D: Design, pose: Pose, o: FigOpts, sp: Spot, cam: number[], tilt = 0, seen?: Seen): Placed => {
+export const figureCard = (D: Design, pose: Pose, o: FigOpts, sp: Spot, cam: number[], tilt = 0, seen?: Seen): Placed & { /** where a joint of the skeleton is in the world (to put a real thing in a hand) */ joint: (j: Joint) => [number, number, number] } => {
   const P = D.props(o.who ?? "sir"), T = bodyH(P), s = 1.15, cw = Math.round(T * 1.9 * s), ch = Math.round(T * 1.42 * s), mpu = (sp.h ?? 1.75) / T;
-  return place(`${D.id}:${sp.at.join()}:${cam.join()}`, cw, ch, 0.93, s, mpu, sp, cam, tilt, (g, yaw) => D.draw(new Ink(g, lineFor(D.ol, mpu, sp.at, cam, seen)), solve(P, pose, yaw), o), seen);
+  const sk0 = solve(P, pose, sp.heading - Math.atan2(cam[0] - sp.at[0], cam[2] - sp.at[2]) / D2R);
+  const pl = place(`${D.id}:${sp.at.join()}:${cam.join()}`, cw, ch, 0.93, s, mpu, sp, cam, tilt, (g, yaw) => D.draw(new Ink(g, lineFor(D.ol, mpu, sp.at, cam, seen)), solve(P, pose, yaw), o), seen);
+  return { ...pl, joint: (j) => pl.world(sk0.j[j][0], sk0.j[j][1]) };
 };
 /** a four-legged animal; h = height at the shoulder in metres. `collar` = where a chain meets its collar, in the world */
 export const beastCard = (B: Beast, pose: BeastPose, sp: Spot, cam: number[], tilt = 0, seen?: Seen): Placed & { collar: [number, number, number] } => {

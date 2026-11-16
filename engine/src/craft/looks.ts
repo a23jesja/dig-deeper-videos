@@ -12,7 +12,7 @@ export const SIR: Look = {
   P: { thigh: 235, shin: 225, ankle: 26, foot: 132, hipW: 50, shW: 96, spine: 255, shDrop: 26, neck: 30, head: 200, upper: 150, fore: 140, hand: 84 },
   head: { a: 86, b: 92, H: 200 }, skin: "#f6cfa6", brow: "#4f3019",
   hat: "cap", hatCol: TWEED, hatBand: TEAL, hair: { col: "#6a4a2c", kind: "back" },
-  mous: { col: "#4f3019", span: 1.24, curl: 1, w: 11 }, monocle: true, pipe: true,
+  mous: { col: "#4f3019", span: 1.24, curl: 1, w: 13 }, monocle: true, pipe: true,
   top: "jacket", coat: TWEED, accent: TEAL, weave: true,
   rows: [[-78, 104, 76, 80], [-10, 84, 66, 68], [70, 70, 58, 54], [170, 86, 68, 60], [232, 100, 58, 58], [258, 50, 36, 40]],
   legs: "trousers", trous: "#463a37", feet: "shoes", spats: true, sleeve: "long", arm: [30, 24, 17], leg: [34, 25, 17],

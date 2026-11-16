@@ -19,7 +19,9 @@ export type Props = {
 export type Seg = [number, number];
 /** a planted foot: where the sole lands, in leg lengths, x out from under its own hip, z forward, y above the ground;
  *  pitch > 0 = on the toe (heel lifted), pitch < 0 = on the heel (toe lifted); toe = how far the foot is turned out */
-export type FootIK = { x?: number; z?: number; y?: number; pitch?: number; toe?: number };
+export type FootIK = { x?: number; z?: number; y?: number; pitch?: number; toe?: number;
+  /** on the way to or from a free leg (falling, getting up): the leg is this much (0..1) the free leg `fk`, the rest the planted one, so the change has no jump */
+  fk?: LegFK; fkW?: number };
 /** a free leg: thigh and shin directions */
 export type LegFK = { th: Seg; sh: Seg; pitch?: number; toe?: number };
 export type Leg = FootIK | LegFK;
@@ -97,12 +99,12 @@ export const solve = (P: Props, pose: Pose, yaw = 0): Sk => {
       const ca = (a * a + d * d - b * b) / (2 * a * d), F: V3 = [s * 0.16, 0, 1], w = norm(sub(F, [u[0] * dot(F, u), u[1] * dot(F, u), u[2] * dot(F, u)]));
       v[`kn${side}`] = add(add(H, u, a * ca), w, a * Math.sqrt(Math.max(0, 1 - ca * ca)));
       v[`an${side}`] = A; v[`heel${side}`] = f.heel; v[`toe${side}`] = f.toe;
+      if (l.fk && l.fkW) {
+        const q = Math.max(0, Math.min(1, l.fkW)), kn = add(H, dir(l.fk.th, s), P.thigh), an = add(kn, dir(l.fk.sh, s), P.shin), g = footFrom(P, s, l.fk.pitch ?? 0, l.fk.toe ?? 8, { ankle: an });
+        const mixv = (p: V3, r: V3): V3 => [p[0] + (r[0] - p[0]) * q, p[1] + (r[1] - p[1]) * q, p[2] + (r[2] - p[2]) * q];
+        v[`kn${side}`] = mixv(v[`kn${side}`], kn); v[`an${side}`] = mixv(A, an); v[`heel${side}`] = mixv(f.heel, g.heel); v[`toe${side}`] = mixv(f.toe, g.toe);
+      }
     }
-  }
-  // free legs only: stand the figure on its lowest point
-  if (!planted.length) {
-    const low = Math.min(v.heelL[1], v.toeL[1], v.heelR[1], v.toeR[1]);
-    for (const k of Object.keys(v) as Joint[]) v[k] = [v[k][0], v[k][1] - low, v[k][2]];
   }
   const lean = (pose.lean ?? 0) * R, roll = (pose.roll ?? 0) * R, tw = (pose.twist ?? 0) * R;
   const d: V3 = [Math.sin(roll), Math.cos(roll) * Math.cos(lean), Math.cos(roll) * Math.sin(lean)];
@@ -116,6 +118,13 @@ export const solve = (P: Props, pose: Pose, yaw = 0): Sk => {
     const sh = add(add(v.neck, d, -P.shDrop), ax, s * P.shW), el = add(sh, dir(arm[0], s), P.upper), wr = add(el, dir(arm[1], s), P.fore);
     const hb = (side === "L" ? pose.handL : pose.handR) ?? 0;
     v[`sh${side}`] = sh; v[`el${side}`] = el; v[`wr${side}`] = wr; v[`tip${side}`] = add(wr, dir([arm[1][0] + hb, arm[1][1]], s), P.hand);
+  }
+  // free legs only (a climb, a body on the ground): rest the figure on its lowest point. If that is not a foot, the figure lies
+  // down, and the thickness of the body keeps the spine above the ground.
+  if (!planted.length) {
+    const feet = Math.min(v.heelL[1], v.toeL[1], v.heelR[1], v.toeR[1]), all = Math.min(...(Object.keys(v) as Joint[]).map((k) => v[k][1]));
+    const low = all < feet - 1 ? all - P.hipW * 0.9 : feet;
+    for (const k of Object.keys(v) as Joint[]) v[k] = [v[k][0], v[k][1] - low, v[k][2]];
   }
   const c = Math.cos(yaw * R), sn = Math.sin(yaw * R), j = {} as Record<Joint, P2>, z = {} as Record<Joint, number>;
   for (const k of Object.keys(v) as Joint[]) { j[k] = [v[k][0] * c + v[k][2] * sn, -v[k][1]]; z[k] = v[k][2] * c - v[k][0] * sn; }

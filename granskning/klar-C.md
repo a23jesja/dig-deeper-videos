@@ -1,11 +1,41 @@
-VERSION: 2
+VERSION: 3
 
 # Steg C: rörelser, händer och mun
 
 Material i `granskning/C/`:
 
-- `testklipp.mp4` (540x960, 13,4 sekunder, med röst och ljud): Sir Digsworth går in från sidan, stannar, vänder sig mot oss, pekar på bergets topp, säger "I say! That mountain was not smoking yesterday." med en gest på varje betonat ord, rycker till när berget smäller, vänder sig, springer, snubblar, faller, reser sig och springer ut ur bild. Bagaren flyr genom samma bild.
+- `testklipp.mp4` (540x960, 13,0 sekunder, med röst och ljud): Sir Digsworth går in från sidan, stannar, vänder sig mot oss, pekar på bergets topp, säger "I say! That mountain was not smoking yesterday." med en gest på varje betonat ord, rycker till när berget smäller, vänder sig, springer, snubblar, faller, reser sig och springer ut ur bild. Bagaren flyr genom samma bild.
 - `rorelseblad.jpg` (1560 px): en ruta per rörelse med tre ögonblick: gå, springa, stanna, vända sig, snubbla, falla, resa sig, ducka, bära, kasta, peka, rygga tillbaka, klättra, sitta, hälla, dra, en bifigur vars kjol följer med, och handformerna.
+
+## Ändrat i version 3
+
+Version 3 svarar på tre listor: granskningssessionens fyra punkter (omgång 2), Jespers två egna punkter och molnsessionens sju.
+
+### Jespers punkter
+- **Monokeln syns åt båda håll, alltid.** När figuren är vänd åt vänster i sidvy ritas skinnet spegelvänt: posen är den sanna (vänster och höger lem byts före speglingen), bara utseendet vänds, så monokel, kedja, pipa och mustasch ser likadana ut åt vänster som åt höger. Det är en regel i figuren (`mirrored` i `engine/src/craft/cast.ts`), inte ett val per bild. Snett framifrån åt vänster ritas sant (monokeln sitter på hans högra öga och syns).
+- **Samma man i profil.** Hårlinjen ligger längre bak, så kind och tinning syns; mustaschen är lika kraftig från sidan som framifrån (den närmaste halvan sveper bakåt över kinden till sin uppåtböjda spets, den bortre sticker fram som en vaxad spets framför ansiktet); monokeln är en rund, tydlig guldram också i profil. **Vybladen i `granskning/B/` är omritade** med det nya huvudet.
+
+### Molnsessionens punkter
+1. Vänstervänd sidvy: se ovan.
+2. **Gång:** armarna pendlar mot benen (vänster arm fram med höger fot), hänger nästan raka med lös hand, ingen utsträckt hand; kroppen höjs över den stående foten och sjunker när fötterna är isär, en gång per steg.
+3. **Vändning:** figuren vrids steglöst, och en kvarts vändning tar nu 0,56 s, så vyn snett framifrån syns i flera bildrutor (största vridning per bildruta i klippet: 8 grader).
+4. **Löpning:** längre steg (1,22 benlängder mot 0,95), foten är i marken under mindre än ett halvt steg, så mellan två fötter är båda i luften, och kroppen lyfter i svävfasen.
+5. **Fall:** hela figuren är inom bild (kameran drar sig bakåt och centrerar på kroppen); kepsen flyger av, landar framför honom, och han tar den på sig när han reser sig.
+6. **Bifiguren** springer inte igenom honom: bagaren har ett eget spår längre bort och passerar bakom medan Sir Digsworth ligger; som mest är 17 % av bagaren dold och inget ansikte täcks.
+7. **Resa sig:** från liggande dras knäna in under kroppen (händer och knän), sedan huk, sedan upp, på samma plats. Benen går nu steglöst mellan fria och planterade (ingen växling som hackar).
+
+### Kontroller i skript, för alla videor
+`node scripts/craft_check.mjs <klipp>` (från `engine/`; klippen listas i `src/craft/cueList.ts`, reglerna står i `src/craft/checks.ts`) räknar på skeletten före rendering och stoppar med fel om:
+- monokeln inte syns i någon sidvy, åt vänster eller höger,
+- en figur vrids mer än 22,5 grader på en bildruta (en vändning utan mellanvy),
+- en figur döljer mer än en fjärdedel av en annan, eller något av dess ansikte.
+För testklippet: `node scripts/craft_check.mjs sirTest` ger "CRAFT CHECK OK". Självtest gjort: en dubbelgångare på samma plats och en vändning på en bildruta ger utslag.
+
+### Granskningssessionens punkter (omgång 2)
+1. **Rörelser går över i varandra utan viloläge.** Det här är ändrat i biblioteket, inte bara i klippet. En gång eller ett språng kan hållas igång (`keep`): då sätts inget avslutande steg och kroppen rätar inte upp sig, och nästa rörelse fortsätter i samma steg. Snubblingen växer ur språnget; ska han falla hålls också snubblingen igång och dess framåtlutning ligger kvar tills fallet tar den ända ned. Uppresningen går direkt in i nästa rörelse ur huk (`getup({ into: true })`). Även ryggningen tonar ut medan han redan vänder sig.
+2. **Bagaren:** se molnsessionens punkt 6.
+3. **Hela figuren är inom bilden.** Under talet står han ett steg längre in och gesterna på "not" och "yesterday" är snävare, så båda händerna har marginal. I fallet: se molnsessionens punkt 5. Skelettet kan nu vila en liggande figur på sin lägsta punkt.
+4. **Pekningen hålls mot toppen** så länge "that mountain" varar, utan ansats åt fel håll.
 
 ## Ändrat i version 2 (efter granskningens GÖR OM, omgång 1)
 
@@ -49,7 +79,6 @@ Allt ligger i skelettet (`engine/src/craft/motion.ts` på `rig.ts`) och gäller 
 
 - Munnen öppnas ord för ord, inte ljud för ljud. Det räcker i helfigur; närbilder på tal behöver munformer per ljud (inte byggt).
 - Klättra, sitta, hälla, dra och bära är poser med ansats och översläng; rekvisitan på bladet är bara ritad i rutan. Att figuren verkligen håller i världens föremål byggs i steg D.
-- I ren vänsterprofil (språnget ut) syns pipan men inte monokeln; kortet kan speglas när regin vill visa den.
 - Sir Digsworths mun ligger under mustaschen, så hans glädje syns mest i ögon och ögonbryn. Från granskningen av steg B: "glad" på bifigurer ska ha uppåtböjd mun och öppna ögon; munlinjen kan nu böjas tydligare, men uttrycken är inte visade på ett eget blad.
 - Hunden är fortfarande öppen punkt från steg B (fram- och bakvy).
 

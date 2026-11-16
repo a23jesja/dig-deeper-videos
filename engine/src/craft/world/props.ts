@@ -5,14 +5,16 @@ import { mesh, group, box, cyl, ball, torus, lathe, slab, paint, INK3 } from "./
 
 const D2 = Math.PI / 180;
 export const C = {
-  bread: "#e0a548", crust: "#9a5f24", terra: "#d2693a", terraD: "#a94e2a", wood: "#b0703c", woodD: "#7d4a26", iron: "#4a4d5a", gold: "#f6c52e", plaster: "#f3e6c8", ochre: "#efc35a",
+  bread: "#eab45c", crust: "#8f5520", terra: "#d2693a", terraD: "#a94e2a", wood: "#b0703c", woodD: "#7d4a26", iron: "#4a4d5a", gold: "#f6c52e", plaster: "#f3e6c8", ochre: "#efc35a",
   red: "#c8402f", stone: "#9fa2ae", stoneL: "#c9c6bd", lava: "#666873", marble: "#f3eee2", green: "#3f9a5c", blue: "#3b7fc4", cloth: "#f4ead2", basket: "#d2a85a", sack: "#dccba0",
 };
 
 /** a round Roman loaf scored in eight (panis quadratus) */
 export const loaf = (r = 0.15) => {
   const g = group([mesh(lathe(`loaf${r}`, [[0, 0], [0.9 * r, 0], [r, 0.22 * r], [0.95 * r, 0.48 * r], [0.66 * r, 0.7 * r], [0.3 * r, 0.8 * r], [0, 0.82 * r]]), C.bread)]);
-  for (let i = 0; i < 4; i++) g.add(mesh(box(1.75 * r, 0.05 * r, 0.07 * r), C.crust, { at: [0, 0.76 * r, 0], rot: [0, i * 45 * D2, 0], line: 0, shadow: false }));
+  // eight cuts from the middle down the slope of the crust
+  for (let i = 0; i < 8; i++) { const a = i * 45 * D2; g.add(mesh(box(0.62 * r, 0.035 * r, 0.06 * r), C.crust, { at: [Math.cos(a) * 0.4 * r, 0.745 * r, -Math.sin(a) * 0.4 * r], rot: [0, a, -0.36], line: 0, shadow: false })); }
+  g.add(mesh(cyl(0.07 * r, 0.07 * r, 0.03 * r, 10), C.crust, { at: [0, 0.82 * r, 0], line: 0, shadow: false }));
   g.add(mesh(torus(0.97 * r, 0.035 * r), C.crust, { at: [0, 0.3 * r, 0], rot: [Math.PI / 2, 0, 0], line: 0, shadow: false }));
   return g;
 };

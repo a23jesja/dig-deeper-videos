@@ -9,9 +9,10 @@ import { AbsoluteFill, Audio, Sequence, getInputProps, staticFile, useCurrentFra
 import { Ink, hand, HandKind } from "./ink";
 import { solve, Sk } from "./rig";
 import { Mover, Sample, blink, mouthAt, shake } from "./motion";
-import { SIR_D, LADY_D, BAKER_D } from "./looks";
+import { SIR_D, LADY_D, BAKER_D, SIR } from "./looks";
 import type { Design, FigOpts } from "./designs/common";
-import { SIR_TEST, SIR_TEST_FRAMES, sirTestCam, WORDS, SAY, TFPS, T_OFF, W } from "./sirTest";
+import { SIR_TEST, SIR_TEST_FRAMES, sirTestCam, sirTestZoom, sirTestHat, VIEW, WORDS, SAY, TFPS, T_OFF, W } from "./sirTest";
+import { drawHat } from "./cast";
 export { SIR_TEST_FRAMES, TFPS };
 
 type G = CanvasRenderingContext2D;
@@ -41,7 +42,7 @@ const CAPS: { a: number; b: number; t: string }[] = (() => {
 
 export const SirTest: React.FC = () => {
   const fr = useCurrentFrame(), p = getInputProps() as { audio?: boolean; marks?: boolean; mix?: boolean };
-  const D = SIR_D, P = D.props("sir"), LL = P.thigh + P.shin, sc = 1.16, px = LL * sc, FY = 1610, CX = TW / 2;
+  const D = SIR_D, P = D.props("sir"), LL = P.thigh + P.shin, sc = VIEW.sc, px = LL * sc, FY = VIEW.FY, CX = VIEW.CX;
   return (
     <AbsoluteFill style={{ background: "#9fd4f7" }}>
       <canvas width={TW} height={TH} ref={(cv) => {
@@ -50,8 +51,9 @@ export const SirTest: React.FC = () => {
         // the camera follows him a little late, and shakes when the mountain goes off
         const camX = sirTestCam(t), sk2 = shake(t, [{ t: S.boom, amp: 1, dur: 0.55 }, ...S.m.cues().filter((q) => q.k === "thud").map((q) => ({ t: q.t, amp: 0.5, dur: 0.3 }))]);
         const X = (xw: number, par = 1) => CX + (xw - camX * par) * px;
-        g.setTransform(1, 0, 0, 1, sk2[0], sk2[1]);
-        const sky = g.createLinearGradient(0, 0, 0, FY); sky.addColorStop(0, "#58b4f2"); sky.addColorStop(1, "#d9f1ff"); g.fillStyle = sky; g.fillRect(-40, -40, TW + 80, FY + 40);
+        // the zoom is about the point on the ground in the middle of the picture
+        const zm = sirTestZoom(t); g.setTransform(zm, 0, 0, zm, CX * (1 - zm) + sk2[0], FY * (1 - zm) + sk2[1]);
+        const sky = g.createLinearGradient(0, 0, 0, FY); sky.addColorStop(0, "#58b4f2"); sky.addColorStop(1, "#d9f1ff"); g.fillStyle = sky; g.fillRect(-400, -500, TW + 800, FY + 500);
         // the mountain far away, on the side he points to; it smokes from the moment he speaks and blows when he flinches
         const mx = CX + 380 - camX * px * 0.1, MY = FY - 900, smoke = Math.max(0, t - S.sayAt + 0.6), big = Math.max(0, t - S.boom);
         g.fillStyle = "#6fb05a"; g.strokeStyle = "#33241b"; g.lineWidth = 6; g.beginPath(); g.moveTo(mx - 620, FY - 130); g.lineTo(mx - 70, MY); g.lineTo(mx + 70, MY); g.lineTo(mx + 560, FY - 130); g.closePath(); g.fill(); g.stroke();
@@ -59,10 +61,10 @@ export const SirTest: React.FC = () => {
         // smoke (flat grey puffs: a stand-in until the world of step D), in open sky beside him, never behind his head
         for (let i = 0; i < 9; i++) { const life = smoke * 0.5 - i * 0.22; if (life <= 0) continue; const bg = Math.min(big, 1.6), r = 34 + i * 7 + bg * (10 + i * 5), y = MY - 10 - Math.min(life, 2.6) * (70 + bg * 40) - i * 30; g.fillStyle = i % 2 ? "#8e8a92" : "#a7a3ab"; g.beginPath(); g.arc(mx + Math.sin(i * 2.1) * (26 + bg * 26) + life * 10, y, r, 0, 7); g.fill(); g.lineWidth = 5; g.stroke(); }
         // a wall and the ground: tiles fixed in the world
-        g.fillStyle = "#f0dfb6"; g.fillRect(-40, FY - 150, TW + 80, 150); g.fillStyle = "#c8402f"; g.fillRect(-40, FY - 70, TW + 80, 70); g.lineWidth = 6; g.strokeRect(-40, FY - 150, TW + 80, 150);
-        g.fillStyle = "#d9c79c"; g.fillRect(-40, FY, TW + 80, TH - FY + 40);
-        for (let i = -40; i < 40; i++) { const x0 = X(i * 0.5), x1 = X((i + 1) * 0.5); if (x1 < -50 || x0 > TW + 50) continue; g.fillStyle = i % 2 ? "#cdb98c" : "#e3d3aa"; g.fillRect(x0, FY, x1 - x0, 84); g.strokeStyle = "#8f7d55"; g.lineWidth = 4; g.strokeRect(x0, FY, x1 - x0, 84); }
-        g.strokeStyle = "#33241b"; g.lineWidth = 6; g.beginPath(); g.moveTo(-40, FY); g.lineTo(TW + 40, FY); g.stroke();
+        g.fillStyle = "#f0dfb6"; g.fillRect(-400, FY - 150, TW + 800, 150); g.fillStyle = "#c8402f"; g.fillRect(-400, FY - 70, TW + 800, 70); g.lineWidth = 6; g.strokeRect(-400, FY - 150, TW + 800, 150);
+        g.fillStyle = "#d9c79c"; g.fillRect(-400, FY, TW + 800, TH - FY + 400);
+        for (let i = -40; i < 40; i++) { const x0 = X(i * 0.5), x1 = X((i + 1) * 0.5); if (x1 < -400 || x0 > TW + 400) continue; g.fillStyle = i % 2 ? "#cdb98c" : "#e3d3aa"; g.fillRect(x0, FY, x1 - x0, 84); g.strokeStyle = "#8f7d55"; g.lineWidth = 4; g.strokeRect(x0, FY, x1 - x0, 84); }
+        g.strokeStyle = "#33241b"; g.lineWidth = 6; g.beginPath(); g.moveTo(-400, FY); g.lineTo(TW + 400, FY); g.stroke();
         // two things standing on the ground: a milestone and a jar
         const stone = X(-2.6); g.fillStyle = "#b9b6ae"; g.beginPath(); g.moveTo(stone - 46, FY); g.lineTo(stone - 40, FY - 190); g.quadraticCurveTo(stone, FY - 240, stone + 40, FY - 190); g.lineTo(stone + 46, FY); g.closePath(); g.fill(); g.stroke();
         g.fillStyle = "#33241b"; g.font = "700 40px Georgia"; g.textAlign = "center"; g.fillText("IX", stone, FY - 110);
@@ -70,11 +72,13 @@ export const SirTest: React.FC = () => {
         if (p.marks) for (const side of ["L", "R"] as const) { const f = s.feet[side]; g.fillStyle = f[2] ? "#c0353a" : "#3b6fb5"; g.fillRect(X(f[0]) - 4, FY + 96 + (side === "L" ? 0 : 16), 8, 14); }
         // soft shadows under the figures (soft, so that they are not taken for a joint between two tiles)
         const shadow = (x: number, y: number) => { const gr = g.createRadialGradient(x, y, 4, x, y, 150); gr.addColorStop(0, "rgba(60,40,20,0.3)"); gr.addColorStop(1, "rgba(60,40,20,0)"); g.save(); g.translate(0, y); g.scale(1, 0.16); g.translate(0, -y); g.fillStyle = gr; g.beginPath(); g.arc(x, y, 150, 0, 7); g.fill(); g.restore(); };
-        const talking = t >= S.sayAt && t < S.sayAt + SAY, LLb = (BAKER_D.props("sir").thigh + BAKER_D.props("sir").shin) * 1.1;
+        const talking = t >= S.sayAt && t < S.sayAt + SAY, LLb = (BAKER_D.props("sir").thigh + BAKER_D.props("sir").shin) * VIEW.bakerSc, hat = sirTestHat(t);
         // the baker flees through the picture on the same motions, a step further from the lens
-        shadow(CX + (sb.x * LLb / px - camX) * px, FY - 22); play(g, BAKER_D, sb, CX + (sb.x * LLb / px - camX) * px, FY - 26, 1.1, t + 1.3);
+        shadow(CX + (sb.x * LLb / px - camX) * px, FY + VIEW.bakerDY + 4); play(g, BAKER_D, sb, CX + (sb.x * LLb / px - camX) * px, FY + VIEW.bakerDY, VIEW.bakerSc, t + 1.3);
         shadow(X(s.x), FY + 8);
-        play(g, D, s, X(s.x), FY, sc, t, {}, talking ? mouthAt(WORDS, t - S.sayAt) : 0);
+        play(g, D, s, X(s.x), FY, sc, t, { hatOff: !hat.on }, talking ? mouthAt(WORDS, t - S.sayAt) : 0);
+        // the cap, when it has left his head: it flies ahead of him in the fall, lands beside him, and he picks it up as he rises
+        if (!hat.on) { g.save(); g.translate(hat.x, FY - hat.y); g.rotate((hat.rot * Math.PI) / 180); g.scale(sc, sc); drawHat(new Ink(g, D.ol), SIR, s.yaw); g.restore(); }
         // captions: two or three words in the lower third, across the shins (clear of face, chest and hands, and of the bottom 15 % that the Shorts interface covers)
         const c = CAPS.find((q) => t - S.sayAt >= q.a - 0.03 && t - S.sayAt < q.b);
         if (c) { g.setTransform(1, 0, 0, 1, 0, 0); g.font = "900 96px 'Arial Black', Arial"; g.textAlign = "center"; g.lineJoin = "round"; g.lineWidth = 22; g.strokeStyle = "#101014"; g.strokeText(c.t.toUpperCase().replace(/[.,]/g, ""), CX, 1470); g.fillStyle = "#ffffff"; g.fillText(c.t.toUpperCase().replace(/[.,]/g, ""), CX, 1470); }

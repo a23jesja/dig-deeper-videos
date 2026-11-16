@@ -28,15 +28,15 @@ const Scene: React.FC = () => {
   const figs = useMemo(() => {
     const g = new THREE.Group(), c = shot.cam, t = shot.tilt ?? 0, add = (m: { mesh: THREE.Mesh }) => g.add(m.mesh);
     // Sir Digsworth walks along the sidewalk past the bakery, his eyes on the bread
-    add(figureCard(SIR_D, { ...WALKING, head: [-34, 4, 0] }, { face: { gaze: [-0.5, 0.2], brow: 0.5, smile: 0.6 }, sway: 0.4 }, { at: [3.05, WALK, -0.7], heading: 180, h: 1.8 }, c, t));
+    add(figureCard(SIR_D, { ...WALKING, head: [-34, 4, 0] }, { face: { gaze: [-0.5, 0.2], brow: 0.5, smile: 0.6 }, sway: 0.4 }, { at: [3.2, WALK, -0.72], heading: 180, h: 1.8 }, c, t));
     // the baker holds a loaf out over his counter
-    add(figureCard(BAKER_D, { ...POSES.stand, lean: 8, armL: [[66, 12], [84, 2]], armR: [[30, 10], [60, -10]], head: [14, -2, 0] }, { prop: "loaf", handL: "grip", face: { smile: 1, brow: 0.3 } }, { at: [4.62, WALK + 0.1, -1.0], heading: -62, h: 1.72 }, c, t));
+    add(figureCard(BAKER_D, { ...POSES.stand, lean: 8, armL: [[66, 12], [84, 2]], armR: [[30, 10], [60, -10]], head: [14, -2, 0] }, { prop: "loaf", handL: "grip", face: { smile: 1, brow: 0.3 } }, { at: [4.5, WALK + 0.1, 0.78], heading: -112, h: 1.72 }, c, t));
     // the soldier leans back against his column, arms crossed, one foot over the other
     add(figureCard(SOLDIER_D, { ...POSES.stand, lean: -9, pz: -0.05, legL: { x: 0.04, toe: 20 }, legR: { x: -0.1, z: 0.12, pitch: 26, toe: 10 }, armL: [[24, 6], [104, -46]], armR: [[28, 6], [98, -50]], head: [26, 2, 0] }, { handL: "fist", handR: "fist", face: { lid: 0.4, smile: 0.2 } }, { at: [-2.08, WALK, 2.72], heading: 84, h: 1.8 }, c, t));
     // the merchant sits at his table counting coins
     add(figureCard(MERCHANT_D, { ...POSES.stand, py: -0.42, pz: -0.16, lean: 16, legL: { x: 0.08, z: 0.3, toe: 14 }, legR: { x: 0.08, z: 0.3, toe: 14 }, armL: [[58, 16], [74, -14]], armR: [[64, 12], [84, -8]], head: [0, 20, 0] }, { handR: "point", handL: "open", face: { gaze: [0, 0.8], brow: -0.3, smile: 0.5 } }, { at: [3.5, WALK, 7.72], heading: -42, h: 1.66 }, c, t));
     // the dog strains at its chain toward the street; the chain is real and runs from the ring in the wall to its collar
-    const dog = beastCard(DOG, BEAST_POSES.strain, { at: [2.25, WALK, 10.0], heading: -112, h: 0.56 }, c, t); add(dog);
+    const dog = beastCard(DOG, BEAST_POSES.strain, { at: [2.3, WALK, 9.7], heading: -100, h: 0.56 }, c, t); add(dog);
     g.add(chainLink(DOG_RING, dog.collar, 0.07, 18));
     // people on their way down the street
     add(figureCard(ROMAN_WOMAN_D, { ...WALKING2 }, { sway: 0.5, face: { smile: 0.5 } }, { at: [-3.0, WALK, -3.4], heading: 12, h: 1.62 }, c, t));

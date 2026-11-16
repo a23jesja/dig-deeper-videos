@@ -34,8 +34,8 @@ const bakery = () => {
   for (const [dx, dz, dy] of [[0, 0, 0.2], [0.12, 0.1, 0.3], [-0.1, 0.06, 0.32]] as number[][]) { const l = loaf(0.13); l.position.set(x0 - 0.15 + dx, WALK + 0.95 + dy, 0.95 + dz); l.rotation.set(0.5, dx * 9, 0.3); g.add(l); }
   const ov = oven(); ov.rotation.y = -Math.PI / 2; ov.position.set(x0 + D - 1.1, WALK + 0.1, -1.1); g.add(ov);
   const ml = mill(); ml.position.set(x0 + D - 1.0, WALK + 0.1, 1.25); g.add(ml);
-  const tb = table(1.5, 0.75, 0.86); tb.position.set(x0 + 1.75, WALK + 0.1, 0.55); tb.rotation.y = 0.12; g.add(tb);
-  for (const [dx, dz, r] of [[-0.45, 0.05, 0.19], [0.0, -0.08, 0.2], [0.42, 0.1, 0.18], [-0.2, 0.2, 0.16]] as number[][]) { const l = loaf(r); l.position.set(x0 + 1.75 + dx, WALK + 0.1 + 0.9, 0.55 + dz); l.rotation.y = dx * 5; g.add(l); }
+  const tb = table(1.0, 1.3, 0.82); tb.position.set(x0 + 1.42, WALK + 0.1, 0.72); tb.rotation.y = 0.1; g.add(tb);
+  for (const [dx, dz, r, dy] of [[-0.2, -0.4, 0.2, 0], [0.16, -0.05, 0.21, 0], [-0.22, 0.3, 0.19, 0], [0.2, 0.42, 0.18, 0], [-0.04, -0.2, 0.17, 0.15]] as number[][]) { const l = loaf(r); l.position.set(x0 + 1.42 + dx, WALK + 0.1 + 0.855 + dy, 0.72 + dz); l.rotation.y = dx * 9 + dz; g.add(l); }
   const sk = sack(0.34); sk.position.set(x0 + 0.9, WALK + 0.1, -1.6); g.add(sk);
   const aw = awning(3.6, 1.7, 3.0, C.red, C.cloth); aw.rotation.y = -Math.PI / 2; aw.position.set(x0 - 0.1, WALK, 0); g.add(aw);
   return g;
@@ -43,12 +43,12 @@ const bakery = () => {
 
 export type Shot = { cam: [number, number, number]; look: [number, number, number]; fov: number; tilt?: number };
 export const POMPEII_SHOTS: Shot[] = [
-  // 1. behind the baker's counter, bread close to the lens, Sir Digsworth walking past on the sidewalk outside
-  { cam: [6.35, 1.66, 1.0], look: [-2.0, 1.2, -0.9], fov: 56 },
-  // 2. low from the ground past the cart, the soldier at his column, Vesuvius at the end of the street
-  { cam: [0.45, 0.3, 6.6], look: [-2.3, 2.25, -6], fov: 54 },
+  // 1. behind the baker's counter: loaves right under the lens, the baker at the left holding one out, Sir Digsworth walking past outside
+  { cam: [6.35, 1.66, 1.0], look: [1.6, 1.22, -0.55], fov: 56 },
+  // 2. low from the ground past the cart's wheel: the soldier at his column, the gate and Vesuvius at the end of the street
+  { cam: [-1.5, 0.3, 5.7], look: [-1.3, 2.25, -6], fov: 60 },
   // 3. from above: the merchant counting coins at his table, the dog pulling at its chain
-  { cam: [0.55, 4.7, 12.4], look: [2.75, 0.7, 8.6], fov: 46, tilt: 0.5 },
+  { cam: [2.0, 3.2, 10.95], look: [2.95, 0.72, 8.75], fov: 48, tilt: 0.5 },
 ];
 /** the ring in the wall that the dog is chained to */
 export const DOG_RING: [number, number, number] = [3.98, WALK + 0.55, 9.6];
@@ -56,7 +56,7 @@ export const DOG_RING: [number, number, number] = [3.98, WALK + 0.55, 9.6];
 export const pompeiiStreet = () => {
   const root = new THREE.Group();
   root.add(skyDome("#2f86e0", "#a9dcff", "#e8f6ff"));
-  root.add(sunRig({ from: [-9, 15, 7], power: 1.85, fill: 1.55, reach: 30 }, [0, 0, -2]));
+  root.add(sunRig({ from: [-9, 15, 7], power: 1.85, fill: 1.7, reach: 30 }, [0, 0, -2]));
   // ground, road, sidewalks, stepping stones
   root.add(mesh(box(400, 0.2, 400), "#d8c79a", { at: [0, -0.32, -100], line: 0, shadow: false }));
   root.add(mesh(box(4.2, 0.3, 70), "#ffffff", { at: [0, -0.15, -12], map: (paving(), paint("paving", 512, 512, () => {}, [1.4, 22])), line: 0 }));
@@ -91,7 +91,7 @@ export const pompeiiStreet = () => {
   for (const cz of [2.6, -0.6, -3.8]) { const c = column(3.3, 0.23); c.position.set(-2.55, WALK, cz); root.add(c); }
   root.add(mesh(box(0.6, 0.36, 7.4), C.marble, { at: [-2.55, WALK + 3.48, -0.6] }), mesh(box(1.9, 0.14, 7.6), C.terra, { at: [-3.3, WALK + 3.73, -0.6], rot: [0, 0, 0.16] }));
   // the cart on the road, loaded with jars and sacks
-  { const c = cart(); c.position.set(-1.25, 0, 4.9); c.rotation.y = 0.42; root.add(c); const a = amphora(0.9); a.position.set(-1.4, 0.77, 4.6); a.rotation.z = 0.2; root.add(a); const j = jar(0.6); j.position.set(-0.95, 0.77, 5.1); root.add(j); const s = sack(0.3); s.position.set(-1.5, 0.77, 5.5); root.add(s); }
+  { const c = cart(); c.position.set(-0.2, 0, 3.75); c.rotation.y = 0.12; root.add(c); const a = amphora(0.9); a.position.set(-0.4, 0.77, 3.4); a.rotation.z = 0.2; root.add(a); const j = jar(0.6); j.position.set(0.1, 0.77, 3.9); root.add(j); const s = sack(0.3); s.position.set(-0.45, 0.77, 4.25); root.add(s); }
   // street furniture
   { const f = fountain(); f.position.set(-2.9, WALK, 9.4); f.rotation.y = Math.PI / 2; root.add(f); }
   for (const [x, zz, t] of [[-3.5, 4.6, 0], [-3.2, 4.1, 1], [3.6, -6.2, 0], [3.3, -6.8, 2], [-3.4, -8.5, 1], [3.5, 13, 0]] as number[][]) { const o = t === 0 ? amphora(0.95) : t === 1 ? jar(0.7) : basket(); o.position.set(x, WALK, zz); if (t === 0) { o.rotation.z = 0.24; o.position.y += 0.02; } root.add(o); }

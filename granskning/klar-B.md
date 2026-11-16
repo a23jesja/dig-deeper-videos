@@ -9,6 +9,10 @@ Material (JPG, 1560 px breda) i `granskning/B/`:
 - `vyblad-3.jpg`: den gemensamma grunden: nio bifigurer från olika epoker och åldrar i fyra vyer var, samma bagare i tre uttryck, och en hund.
 - `vyblad-4.jpg`: Sir Digsworth bland bifigurerna, i färg och som svarta siluetter.
 
+## Uppdaterat efter steg C (2026-11-16)
+
+Vybladen är omritade efter Jespers två punkter på testklippet: (1) monokeln syns åt båda håll, eftersom skinnet speglas när figuren är vänd åt vänster i sidvy (posen är den sanna, bara utseendet vänds; se `mirrored` i `cast.ts`); (2) huvudet i profil har mindre hår, en mustasch lika kraftig som framifrån och en rund, tydlig monokel. Avsnittet "Åt vänster" nedan gäller därför inte längre som ett regival: speglingen är regeln.
+
 ## Ändrat i version 2 (efter granskningens GÖR OM, omgång 1)
 
 1. **Näsan** har hudton ett steg mörkare och pekar rakt ned framifrån; den vrids ut åt sidan först när huvudet vrids. Den ritas över ögonen i stället för under monokeln.

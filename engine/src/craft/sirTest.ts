@@ -3,7 +3,10 @@
 // Sir Digsworth walks in from the side, stops, turns to us, points at the mountain, says his line with a gesture on each stressed
 // word, flinches when it blows, runs, stumbles, falls, gets up and runs out of the picture. The baker flees through the same picture
 // on the same motions.
-import { Mover } from "./motion";
+import { Mover, hatAt } from "./motion";
+import { solve } from "./rig";
+import { SIR, BAKER } from "./looks";
+import type { Frame } from "./checks";
 import words from "../../voice/kit-test/words.json";
 
 export type W = { w: string; a: number; b: number };
@@ -21,40 +24,64 @@ const script = () => {
   m.stand(SAY);
   // a gesture on each stressed word: "I SAY! That MOUNTAIN was NOT smoking YESTERDAY."
   m.actAt(w(0) - 0.08, { armR: [[24, 26], [150, 6]], lean: -3, head: [0, -6, 0] }, 0.6, { in: 0.14, out: 0.2, handR: "point", face: { brow: 0.8, wide: 0.4 } });
-  m.actAt(w(2) - 0.05, POINT as never, 0.72, { in: 0.16, out: 0.22, handL: "point", face: { gaze: [0.9, -0.35], brow: 0.3 } });
-  m.actAt(w(5) - 0.08, { armR: [[14, 48], [62, 58]], armL: [[10, 30], [40, 30]], px: -0.04, head: [-9, 3, 5] }, 0.42, { in: 0.12, out: 0.16, handR: "open", handL: "open", face: { brow: -0.6, lid: 0.1 } });
-  m.actAt(w(7) - 0.06, { armL: [[12, 40], [74, 66]], armR: [[12, 40], [74, 66]], py: 0.012, head: [8, -3, -6] }, 0.7, { in: 0.16, out: 0.25, handL: "open", handR: "open", face: { brow: 1, wide: 0.5, gaze: [0.5, -0.1] } });
+  m.actAt(w(2) - 0.05, POINT as never, WORDS[3].b - WORDS[2].a + 0.32, { in: 0.16, out: 0.2, antic: 0, handL: "point", face: { gaze: [0.9, -0.35], brow: 0.3 } });
+  m.actAt(w(5) - 0.08, { armR: [[14, 34], [62, 42]], armL: [[10, 26], [40, 30]], px: -0.04, head: [-9, 3, 5] }, 0.42, { in: 0.12, out: 0.16, handR: "open", handL: "open", face: { brow: -0.6, lid: 0.1 } });
+  m.actAt(w(7) - 0.06, { armL: [[12, 30], [76, 50]], armR: [[12, 30], [76, 50]], py: 0.012, head: [8, -3, -6] }, 0.7, { in: 0.16, out: 0.25, handL: "open", handR: "open", face: { brow: 1, wide: 0.5, gaze: [0.5, -0.1] } });
   const boom = m.end;
-  m.step("R", -0.2, 0.16).act({ armL: [[16, 66], [34, 152]], armR: [[16, 66], [34, 152]], lean: -9, py: -0.07, head: [24, -10, 0] }, 0.8, { in: 0.13, over: 2.6, handL: "open", handR: "open", face: { ...FEAR, gaze: [0.9, -0.3] } });
+  // the flinch is still fading when he turns to run: no rest pose between the two
+  m.step("R", -0.2, 0.16).act({ armL: [[16, 66], [34, 152]], armR: [[16, 66], [34, 152]], lean: -9, py: -0.07, head: [24, -10, 0] }, 0.95, { in: 0.13, out: 0.4, over: 2.6, wait: false, handL: "open", handR: "open", face: { ...FEAR, gaze: [0.9, -0.3] } }).stand(0.6);
   const flee = m.end;
   m.turn(-90); const run0 = m.end;
-  m.run(2.8).stumble().fall(0.4);
+  // the run goes straight on into the stumble, the stumble into the fall, and he gets up straight into the next run
+  m.run(2.8, { keep: true }).stumble({ fall: true }); const fall0 = m.end;
+  m.fall(1.0);
   const fell = m.end;
-  m.getup(); const up = m.end;
+  m.getup({ into: true }); const up = m.end;
   m.run(6);
   // the fear stays on his face from the bang to the end; half-way through the first run he looks back at the mountain
   m.actAt(flee, {}, m.end - flee, { in: 0.1, face: FEAR });
   m.actAt(run0 + 0.35, { head: [70, -4, 0] }, 0.5, { in: 0.14, out: 0.18, face: { ...FEAR, gaze: [0.9, -0.2] } });
-  // the baker: off to the right until the bang, then he runs through the picture the same way
-  const b = new Mover([3.9, 0], -90);
-  b.stand(boom + 0.75).run(19);
+  // the baker flees the same way in a lane further from the lens. He is timed to pass while Sir Digsworth lies flat, so that
+  // only the baker's shins are behind the fallen body and neither face is ever covered.
+  const K = 0.824, lie = m.sample(fell - 0.5).x, mk = (tb: number) => { const b = new Mover([3.9, 0], -90); b.stand(tb).run(19); return b; };
+  let tb = boom + 0.4; for (let q = boom + 0.2; q < boom + 3; q += 0.04) { if (mk(q).sample(fall0 + 0.36).x * K >= lie + 1.25) { tb = q; break; } }
+  const b = mk(tb);
   b.actAt(boom, {}, 20, { face: FEAR });
-  b.actAt(boom + 0.5, { armL: [[150, 20], [200, 10]], armR: [[150, 20], [200, 10]] }, 20, { in: 0.3, handL: "open", handR: "open" });
-  return { m, b, sayAt, boom, flee, fell, up, end: up + 0.72 };
+  b.actAt(tb - 0.1, { armL: [[150, 20], [200, 10]], armR: [[150, 20], [200, 10]] }, 20, { in: 0.3, handL: "open", handR: "open" });
+  return { m, b, sayAt, boom, flee, fall0, fell, up, end: up + 0.55 };
 };
 export const SIR_TEST = script();
 export const SIR_TEST_FRAMES = Math.round((SIR_TEST.end - T_OFF) * TFPS);
 const smooth = (u: number) => (u <= 0 ? 0 : u >= 1 ? 1 : u * u * (3 - 2 * u));
 const CAM0 = SIR_TEST.m.sample(T_OFF).x + 0.8;
-/** the camera, in leg lengths along the ground (script time): it lets him walk in, follows a little late, rests with him in the left
- *  third so that the mountain and its smoke stand free beside him, follows the flight, and stops so that he runs out of the picture */
+/** the camera, in leg lengths along the ground (script time): it lets him walk in, follows a little late, rests with him a little
+ *  left of the middle so that the mountain and its smoke stand free beside him and his gestures have room on both sides, keeps up
+ *  with the flight, centres on the whole body when he lies on the ground, and stops so that he runs out of the picture */
 export const sirTestCam = (t: number) => {
   const S = SIR_TEST, at = (q: number) => 0.5 * (S.m.sample(q - 0.35).x + S.m.sample(q - 0.1).x);
-  const rest = 0.3 * smooth((t - S.sayAt + 1.6) / 0.9);
+  const rest = 0.12 * smooth((t - S.sayAt + 1.6) / 0.9);
   if (t < S.flee) return Math.max(CAM0, at(t)) + rest;
-  // in the flight the camera keeps up with him (no lag: he would outrun it) and leaves him room ahead
-  const k = smooth((t - S.flee) / 0.7), held = S.m.sample(Math.min(t, S.up - 0.25) - 0.05).x - 0.24;
-  return (Math.max(CAM0, at(S.flee)) + 0.3) * (1 - k) + held * k;
+  const k = smooth((t - S.flee) / 0.7), lying = smooth((t - S.fall0) / 0.4), held = S.m.sample(Math.min(t, S.up - 0.3) - 0.05).x - 0.24 - 0.2 * lying;
+  return (Math.max(CAM0, at(S.flee)) + 0.12) * (1 - k) + held * k;
+};
+/** the camera pulls back for the fall so that the whole body lies inside the picture, and comes in again as he gets up */
+export const sirTestZoom = (t: number) => { const S = SIR_TEST; return 1 - 0.17 * smooth((t - S.fall0 + 0.15) / 0.4) * (1 - smooth((t - S.fell - 0.1) / 0.5)); };
+/** how the clip maps the ground to the picture: the middle, the ground line, the scale of each figure, the baker's lane */
+export const VIEW = { CX: 540, FY: 1610, sc: 1.16, bakerSc: 1.1, bakerDY: -54 };
+const LLs = (SIR.P.thigh + SIR.P.shin) * VIEW.sc, LLb = (BAKER.P.thigh + BAKER.P.shin) * VIEW.bakerSc;
+/** where the two figures' soles are on the picture at script time t */
+export const sirTestSpots = (t: number) => { const cam = sirTestCam(t), s = SIR_TEST.m.sample(t), b = SIR_TEST.b.sample(t); return { s, b, sx: VIEW.CX + (s.x - cam) * LLs, bx: VIEW.CX + b.x * LLb - cam * LLs }; };
+/** Sir Digsworth's cap at script time t: on his head, or where it flies or lies (picture x, height above the ground line in pixels) */
+export const sirTestHat = (t: number) => { const h = hatAt(SIR_TEST.m, SIR.P, t), cam = sirTestCam(t); return { on: h.on, x: VIEW.CX + h.x * VIEW.sc - cam * LLs, y: h.y * VIEW.sc, rot: h.rot }; };
+/** what stands where on every frame, for the staging checks (scripts/craft_check.mjs sirTest) */
+export const sirTestFrames = (): Frame[] => {
+  const out: Frame[] = [];
+  for (let f = 0; f < SIR_TEST_FRAMES; f++) {
+    const t = f / TFPS + T_OFF, q = sirTestSpots(t), figs: Frame["figs"] = [{ name: "Sir Digsworth", look: SIR, sk: solve(SIR.P, q.s.pose, q.s.yaw), x: q.sx, y: VIEW.FY, sc: VIEW.sc, order: 1 }];
+    if (q.bx > -300 && q.bx < 1380) figs.push({ name: "the baker", look: BAKER, sk: solve(BAKER.P, q.b.pose, q.b.yaw), x: q.bx, y: VIEW.FY + VIEW.bakerDY, sc: VIEW.bakerSc, order: 0 });
+    out.push({ t: f / TFPS, figs });
+  }
+  return out;
 };
 /** every sound of the clip on the frame it happens (clip frames) */
 export const sirTestCues = () => {

@@ -105,6 +105,8 @@ export const drawHat = (k: Ink, L: Look, phiDeg: number) => {
 
 const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
   const HAT = o.hatOff ? "none" : L.hat, phiDeg = faceTurn(phiTrue);
+  // the head stays turned toward the lens in a side view, so the eyes carry the direction: they look the way the body faces
+  const ahead = Math.sin((((((phiTrue - phiDeg + 180) % 360) + 360) % 360) - 180) * R);
   const { a, b, H } = L.head, u = H / 200, phi = phiDeg * R, h: HG = { a, b, H, sin: Math.sin(phi), cos: Math.cos(phi), w: Math.hypot(a * Math.cos(phi), b * Math.sin(phi)) }, w = h.w;
   // away = seen from behind. The limit lies well past the profile, so that the small turns of the head in a walk seen from the side never flip the face parts behind the skull
   const m = f.mouth ?? 0, away = h.cos < -0.3, skin = L.skin, skinD = shade(skin, 0.86);
@@ -189,7 +191,7 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
       k.shape(ball, happy ? shade(skin, 0.93) : "#fffdf6");
       if (happy) k.line(spline([[q.x - rx * 0.78, yEye + ry * 0.3], [q.x, yEye - ry * 0.42], [q.x + rx * 0.78, yEye + ry * 0.3]], false, 8), 6.4 * u);
       else k.clip(ball, () => {
-        const px = q.x + gz[0] * rx * 0.5 + h.sin * rx * 0.22, py = yEye + gz[1] * ry * 0.5; k.shape(ellPts(px, py, rx * 0.5, ry * 0.5), "#2a1f1a", 0); k.dot(px - rx * 0.17, py - ry * 0.2, r * 0.13, "#ffffff");
+        const px = q.x + clamp(gz[0] * 0.5 + h.sin * 0.22 + ahead * 0.5, -0.56, 0.56) * rx, py = yEye + gz[1] * ry * 0.5; k.shape(ellPts(px, py, rx * 0.5, ry * 0.5), "#2a1f1a", 0); k.dot(px - rx * 0.17, py - ry * 0.2, r * 0.13, "#ffffff");
         if (lid > 0.01) { const y = yEye - ry + 2 * ry * lid; k.shape([[q.x - rx - 2, yEye - ry - 2], [q.x + rx + 2, yEye - ry - 2], [q.x + rx + 2, y], [q.x - rx - 2, y]], shade(skin, 0.86), 0); k.line([[q.x - rx - 2, y], [q.x + rx + 2, y]], 4.6 * u, LINE, "butt"); }
       });
       k.shape(ball, null);

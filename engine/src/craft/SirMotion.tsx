@@ -12,7 +12,6 @@ import { Mover, Sample, blink, mouthAt, shake } from "./motion";
 import { SIR_D, LADY_D, BAKER_D } from "./looks";
 import type { Design, FigOpts } from "./designs/common";
 import { SIR_TEST, SIR_TEST_FRAMES, sirTestCam, sirTestZoom, sirTestHat, VIEW, WORDS, SAY, TFPS, T_OFF, W } from "./sirTest";
-import { GENT_D, GENT_BAKER_D } from "./gent";
 export { SIR_TEST_FRAMES, TFPS };
 
 type G = CanvasRenderingContext2D;
@@ -93,17 +92,6 @@ const TestAudio: React.FC = () => { const p = getInputProps() as { audio?: boole
 export const SirTest: React.FC = () => (
   <AbsoluteFill style={{ background: "#9fd4f7" }}>
     <TestPanel D={SIR_D} B={BAKER_D} marks={(getInputProps() as { marks?: boolean }).marks} />
-    <TestAudio />
-  </AbsoluteFill>
-);
-/** the comparison before the freeze: the same test clip, same camera and same moments, played by the two skins side by side */
-export const CMPW = TW * 2 + 24;
-const tag = (left: number, text: string) => (<div style={{ position: "absolute", left: left + 30, top: 30, padding: "14px 30px", background: "#101014", color: "#ffffff", font: "900 54px Arial", borderRadius: 14 }}>{text}</div>);
-export const SirCompare: React.FC = () => (
-  <AbsoluteFill style={{ background: "#101014" }}>
-    <TestPanel D={SIR_D} B={BAKER_D} />
-    <TestPanel D={GENT_D} B={GENT_BAKER_D} left={TW + 24} />
-    {tag(0, "A  SPRATTELGUBBEN")}{tag(TW + 24, "B  STRECKHERREN")}
     <TestAudio />
   </AbsoluteFill>
 );

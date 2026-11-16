@@ -107,6 +107,26 @@ what happens. Show it.
 - **Foreground blur is something from the scene** (a pillar, an amphora, a running shoulder), never a row of dark
   heads. The thing the voice talks about is always in focus.
 
+## The craft kit (Jesper 2026-11-18): built once, used in every video
+Five things that make the videos look professional. Build them in this order, each with a test sheet or test clip
+sent to Jesper, and reuse them from then on.
+1. **Views.** Every character can be drawn from the front, three-quarter, side and back, with the same
+   proportions, clothes and colours. Sir Digsworth first, then a shared base for side characters. Characters turn
+   toward what they look at and where they go. The monocle, pipe and chain sit right in every view.
+2. **Motion library.** Walk, run, stop, turn, stumble, fall, get up, duck, carry, throw, point, recoil, climb,
+   sit. Each has a wind-up before the move, a small overshoot after, and cap, chain, coat and held things that
+   follow a moment late. Feet stay on the ground they stand on and never slide. Cycles move the character through
+   the scene at a speed that matches the feet.
+3. **Hands and mouth.** Hand shapes: open, fist, pointing, gripping, holding. Mouth shapes driven by the word
+   timings already made for the captions, so the speaker's mouth moves with the voice. Eyes look at things and
+   blink.
+4. **Sound on the picture.** Footsteps, thuds, breaking pots, wind, crowd, fire, water, placed on the frame where
+   the move happens. Camera shake on impacts. Own synthesized sounds or CC0 sounds with the licence read first
+   and noted in the repo. Music stays low under the voice.
+5. **Sketch first.** Before a full build: a rough version with stills in the right order and length and the voice
+   on top, sent to Jesper as a contact sheet and a small clip. Build fully only after his yes. The sketch must
+   already pass "Action, not portraits".
+
 ## The first second of every Short (hard rule)
 - Frame one shows the most striking moment of the story: one big subject filling the picture, already moving.
 - The hook is on screen as text while the voice says it. No intro, no year, no establishing shot first.

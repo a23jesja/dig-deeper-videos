@@ -6,11 +6,11 @@ import * as THREE from "three";
 import { Film, Shot, Cam, V3, Staged, play } from "../stage/film";
 import { mover, MM } from "../stage/acting";
 import { lens, once, noShade, near, palm, fuseSmoke } from "../stage/staging";
-import { Stand, PISTOL, SABRE, MUG, SPYGLASS, BUCKET, LINSTOCK, FIDDLE, BOW, GRAPES, BUNDLE, wield, spy, spyEye, spyPose, aimPose, usePose, sheathed, drawSabre, drawPose, reach, liftPose, haul, haulPose, carryBy, fiddlePose, fiddlePlay, citharaPose, citharaHold, shoulderPose, onShoulder, inHand, letGo } from "../stage/grips";
+import { GLADIUS, NET, STICK, TRIDENT, SHIELD_ARM, shieldOn, pole, polePose, Stand, PISTOL, SABRE, MUG, SPYGLASS, BUCKET, LINSTOCK, FIDDLE, BOW, GRAPES, BUNDLE, wield, spy, spyEye, spyPose, aimPose, usePose, sheathed, drawSabre, drawPose, reach, liftPose, haul, haulPose, carryBy, fiddlePose, fiddlePlay, citharaPose, citharaHold, shoulderPose, onShoulder, inHand, letGo } from "../stage/grips";
 import { flagSea } from "../world/ship";
 import { group, mesh, box } from "../world/kit";
-import { spyglass, pistolHeld, sabre, mugHeld, scabbard, bucketHeld, linstock, chest, fiddle, fiddleBow, fiddleByNeck, cithara, grapes, bundleHeld } from "../world/props";
-import { CUSTOMS_D, SHIPOWNER_D, PIRATE_D, SAILOR_D, PIRATE2_D, CAPTAIN_D, COOK_D, GUNNER_D, DOCKER_D, DOCKHAND_D, NERO_D, NERO_STAGE_D, ROMAN_WOMAN2_D, CITIZEN_D, BLACKBEARD_D } from "../looks";
+import { gladius, scutum, trident, netBunch, refStick, spyglass, pistolHeld, sabre, mugHeld, scabbard, bucketHeld, linstock, chest, fiddle, fiddleBow, fiddleByNeck, cithara, grapes, bundleHeld } from "../world/props";
+import { MURMILLO_D, RETIARIUS_D, REFEREE_D, CUSTOMS_D, SHIPOWNER_D, PIRATE_D, SAILOR_D, PIRATE2_D, CAPTAIN_D, COOK_D, GUNNER_D, DOCKER_D, DOCKHAND_D, NERO_D, NERO_STAGE_D, ROMAN_WOMAN2_D, CITIZEN_D, BLACKBEARD_D } from "../looks";
 import type { HandKind } from "../ink";
 import type { Pose } from "../rig";
 import type { Design, Face } from "../designs/common";
@@ -138,3 +138,38 @@ const cardBB = (id: string, figs: Fig[], thing: (g: THREE.Group, c: Staged[], ca
 for (const [view, turn] of [["front", 0], ["slant", 28], ["side", 58], ["otherside", -50]] as [string, number][])
   cardBB(`blackbeard-look-${view}`, [{ D: BLACKBEARD_D, h: 1.92, turn, pose: () => ({ armL: [[14, 22], [30, 18]], armR: [[14, 22], [30, 18]] }), face: { brow: -0.9, lid: 0.15, smile: 0.25 } }], (g, [a], cam) => fuseSmoke(g, a, 1.3 + turn * 0.01, cam));
 export const LOOK_BLACKBEARD: Film = { ...GRIP_SHEET, id: "look-blackbeard", seconds: shotsBB.length * LEN, shots: shotsBB };
+
+// ---------------- sheet 4: the arena: the gladius and the shield, the trident and the net, the referee's stick ----------------
+const shots4: Shot[] = [];
+const card4 = (id: string, figs: Fig[], thing: (g: THREE.Group, c: Staged[], cam: Cam) => void, W = V) => { card2(id, figs, thing, W); const s = shots2.pop()!, a = shots4.length * LEN; shots4.push({ ...s, a, b: a + LEN }); };
+const GLAD = once(() => noShade(gladius(0.5))), SCUTUM = once(() => noShade(scutum())), TRI = once(() => noShade(trident(1.6))), NETB = once(() => noShade(netBunch(0.17))), STICK_O = once(() => noShade(refStick(1.35)));
+const WIDE = lens(X, 1.2, Z + 2.3, 0, -1, -2, 80);      // a trident is longer than a man is tall: a wider lens, still on the main deck
+/** a point beside a figure standing at `at` and facing `heading`: `r` metres to his right, `f` forward, `up` high */
+const by = (at: V3, heading: number, r: number, f: number, up: number): V3 => { const h = (heading * Math.PI) / 180; return [at[0] - Math.cos(h) * r + Math.sin(h) * f, at[1] + up, at[2] + Math.sin(h) * r + Math.cos(h) * f]; };
+const MUR: Omit<Fig, "turn" | "pose"> = { D: MURMILLO_D, h: 1.84, hands: LR, face: { brow: -0.7, lid: 0.15 } };
+// the gladius in his right fist with the shield on his left arm: at the ready, thrust, lowered
+for (const [view, turn] of [...VIEWS, ["otherside", -58], ["back", 180]] as [string, number][]) {
+  card4(`gladius-ready-${view}`, [{ ...MUR, turn, pose: () => ({ ...usePose(GLADIUS, "ready", "R"), armL: SHIELD_ARM }) }], (g, [a], cam) => { wield(g, GLAD(), GLADIUS, "ready", a, "R", cam); shieldOn(g, SCUTUM(), a, "L", cam); }, WIDE);
+  if (view === "back") continue;
+  card4(`gladius-thrust-${view}`, [{ ...MUR, turn, pose: () => ({ ...usePose(GLADIUS, "thrust", "R"), armL: SHIELD_ARM, lean: 8 }) }], (g, [a], cam) => { wield(g, GLAD(), GLADIUS, "thrust", a, "R", cam); shieldOn(g, SCUTUM(), a, "L", cam); }, WIDE);
+  card4(`gladius-lowered-${view}`, [{ ...MUR, turn, pose: () => ({ ...usePose(GLADIUS, "lowered", "R"), armL: SHIELD_ARM }) }], (g, [a], cam) => { wield(g, GLAD(), GLADIUS, "lowered", a, "R", cam); shieldOn(g, SCUTUM(), a, "L", cam); }, WIDE);
+}
+// the trident: thrust in both hands (the rear hand at his hip), and held up in one; the net gathered in a fist, carried and swung back
+const RET: Omit<Fig, "turn" | "pose"> = { D: RETIARIUS_D, h: 1.86, hands: LR, face: { brow: -0.6, lid: 0.1 } };
+for (const [view, turn] of [["slant", 30], ["side", 58]] as [string, number][]) {
+  card4(`trident-thrust-${view}`, [{ ...RET, dx: -0.62, turn, pose: (s) => polePose(s, "R", by(s.at, s.heading, 0.14, 0.16, 0.98), by(s.at, s.heading, 0.1, 3, 1.5), 0.5) }],
+    (g, [a], cam) => pole(g, TRI(), a, cam, "R", by(a.at, a.heading, 0.1, 3, 1.5), { len: 1.9, name: "trident" }), WIDE);
+}
+both((view, turn) => {
+  card4(`trident-ready-${view}`, [{ ...RET, turn, pose: () => ({ ...usePose(TRIDENT, "ready", "L"), ...usePose(NET, "carry", "R") }) }], (g, [a], cam) => { wield(g, TRI(), TRIDENT, "ready", a, "L", cam, { at: 0.75 }); wield(g, NETB(), NET, "carry", a, "R", cam); }, WIDE);
+  card4(`net-swing-${view}`, [{ ...RET, turn, pose: () => ({ ...usePose(NET, "swing", "R"), ...usePose(TRIDENT, "ready", "L") }) }], (g, [a], cam) => { wield(g, NETB(), NET, "swing", a, "R", cam); wield(g, TRI(), TRIDENT, "ready", a, "L", cam, { at: 0.75 }); }, WIDE);
+});
+// the referee's stick: upright in one hand, and across in both, the way he parts two fighters
+const REF: Omit<Fig, "turn" | "pose"> = { D: REFEREE_D, h: 1.74, hands: LR, face: { brow: 0.4 } };
+both((view, turn) => {
+  card4(`stick-ready-${view}`, [{ ...REF, turn, pose: () => usePose(STICK, "ready", "R") }], (g, [a], cam) => wield(g, STICK_O(), STICK, "ready", a, "R", cam, { at: 0.4 }));
+  card4(`stick-across-${view}`, [{ ...REF, turn: turn ? 30 : 0, pose: (s) => polePose(s, "L", by(s.at, s.heading, -0.24, 0.3, 1.12), by(s.at, s.heading, 3, 0.3, 1.12), 0.48) }],
+    (g, [a], cam) => pole(g, STICK_O(), a, cam, "L", by(a.at, a.heading, 3, 0.3, 1.12), { back: 0.36, len: 1.35, name: "stick" }));
+});
+export const GRIP_SHEET_4: Film = { ...GRIP_SHEET, id: "grip-sheet-4", seconds: shots4.length * LEN, shots: shots4 };
+

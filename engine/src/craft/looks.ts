@@ -323,3 +323,31 @@ export const ROMAN_WOMAN3: Look = { ...ROMAN_WOMAN, id: "romanwoman3", head: { a
 export const GIRL: Look = { ...BOY, id: "girl", skin: "#e8b88a", brow: "#3a2418", hair: { col: "#3a2418", kind: "bun" }, lash: true, coat: "#e9b83a", accent: "#fbf3df", belt: "#c8402f" };
 export const OLDMAN: Look = { ...CITIZEN, id: "oldman", head: { a: 108, b: 112, H: 226, jaw: 0.86, round: 0.4, eye: 0.8 }, skin: "#d9a882", brow: "#e8e4dc", hair: { col: "#e8e4dc", kind: "bald" }, beard: "#e8e4dc", coat: "#9a7a4a", accent: "#6b4a2e", belt: "#6b4a2e" };
 export const ROMAN_WOMAN2_D = castDesign(ROMAN_WOMAN2), ROMAN_WOMAN3_D = castDesign(ROMAN_WOMAN3), GIRL_D = castDesign(GIRL), OLDMAN_D = castDesign(OLDMAN);
+
+// ---------------- the arena (gladiators-death) ----------------
+/** the heavy gladiator (a murmillo): broad and bare-chested, a bronze helmet with a broad brim and a tall red crest, a loincloth under a
+ *  wide belt, a quilted guard on his sword arm, a greave on his left shin; he carries the big shield and the short sword */
+export const MURMILLO: Look = {
+  id: "murmillo", P: { ...ROMAN, thigh: 215, shin: 200, hipW: 66, shW: 126, spine: 270, upper: 150, fore: 138, hand: 92 }, head: { a: 112, b: 116, H: 236, jaw: 1.12, round: 0.3 }, skin: "#d69c70", brow: "#2a1c14",
+  hat: "helmet", hatCol: "#c9a24a", brim: 1, crestH: 0.56, mous: { col: "#2a1c14", span: 0.9, curl: 0, w: 12 },
+  top: "tunic", bare: true, coat: "#d69c70", accent: "#d8342c", loin: "#f3ead6", balteus: "#8a5a30", manica: "R", greave: "L",
+  rows: [[-72, 112, 86, 90], [-10, 106, 88, 82], [90, 108, 94, 76], [200, 128, 92, 74], [254, 128, 66, 66], [280, 56, 40, 44]],
+  legs: "bare", feet: "sandals", sleeve: "short", arm: [35, 28, 20], leg: [41, 30, 20],
+};
+/** the net fighter (a retiarius): lean and quick, bareheaded, a loincloth under a belt, the quilted guard on his left arm and the metal
+ *  guard standing up from his left shoulder; he carries the trident and the net */
+export const RETIARIUS: Look = {
+  id: "retiarius", P: { ...ROMAN, thigh: 222, shin: 212, hipW: 52, shW: 102, spine: 262 }, head: { a: 104, b: 108, H: 228, jaw: 0.96, round: 0.35 }, skin: "#b9784c", brow: "#1a120c",
+  hat: "none", hair: { col: "#1a120c", kind: "short" },
+  top: "tunic", bare: true, coat: "#b9784c", accent: "#3f6fd0", loin: "#e9dcc0", balteus: "#6b4424", manica: "L", galerus: "L",
+  rows: [[-70, 98, 78, 82], [-10, 92, 76, 72], [90, 92, 80, 66], [198, 108, 78, 64], [248, 110, 58, 58], [270, 50, 36, 40]],
+  legs: "bare", feet: "sandals", sleeve: "short", arm: [28, 22, 16], leg: [34, 25, 17],
+};
+/** the referee of the games (summa rudis): an older man in a white tunic with two purple stripes, his long stick in hand */
+export const REFEREE: Look = {
+  id: "referee", P: ROMAN, head: { a: 108, b: 112, H: 228, jaw: 0.9, round: 0.4, eye: 0.86 }, skin: "#e2b48c", brow: "#dcd6cc", hair: { col: "#dcd6cc", kind: "bald" }, beard: "#dcd6cc",
+  hat: "none", top: "tunic", coat: "#f6f1e4", accent: "#7a2f8a", clavi: "#7a2f8a", belt: "#8a5a36",
+  rows: [[-150, 114, 86, 90], [-20, 108, 92, 84], [100, 102, 92, 76], [200, 108, 78, 68], [244, 110, 60, 60], [268, 54, 40, 44]],
+  legs: "bare", feet: "sandals", sleeve: "short", arm: [28, 22, 16], leg: [35, 25, 17],
+};
+export const MURMILLO_D = castDesign(MURMILLO, "the murmillo"), RETIARIUS_D = castDesign(RETIARIUS, "the net fighter"), REFEREE_D = castDesign(REFEREE, "the referee");

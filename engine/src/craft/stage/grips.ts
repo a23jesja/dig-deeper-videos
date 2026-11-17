@@ -24,7 +24,7 @@ export type Use = {
    *  (90 = straight up, -60 = down and forward) whatever the arm does */ turn?: number; level?: number;
   ok: Ok;
 };
-export type Prop = { name: string; uses: Record<string, Use>; /** a hilt with a guard and a knuckle bow: where the guard is along x, the middle of the bow, and how far the blade may turn off the forearm (degrees) */ hilt?: { guard: number; bow: [number, number]; turn: number; /** where the pommel is along x: it shows beyond the fist, and the bow is fixed to it */ pommel: number } };
+export type Prop = { name: string; uses: Record<string, Use>; /** a hilt with a guard and (a sabre) a knuckle bow: where the guard is along x, the middle of the bow, and how far the blade may turn off the forearm (degrees) */ hilt?: { guard: number; bow?: [number, number]; turn: number; /** where the pommel is along x: it shows beyond the fist, and the bow is fixed to it */ pommel: number } };
 const dot = (a: [number, number], b: [number, number]) => a[0] * b[0] + a[1] * b[1];
 const ang = (d: [number, number]) => (Math.atan2(d[1], d[0]) * 180) / Math.PI;
 const within = (lo: number, hi: number, what: string): Ok => (d) => (ang(d) >= lo && ang(d) <= hi ? null : `${what} (it points ${ang(d).toFixed(0)} degrees from level, allowed ${lo} to ${hi})`);
@@ -84,6 +84,24 @@ export const GRAPES: Prop = { name: "grapes", uses: {
 } };
 /** a bundle (props.ts bundleHeld): by its knot, hanging below the hand; carried on the shoulder with `onShoulder` */
 export const BUNDLE: Prop = { name: "bundle", uses: { carry: { arm: A(6, 14, 12, 8), level: 0, ok: within(-8, 8, "a bundle hangs from its knot") } } };
+/** the gladius (props.ts gladius): held as the sabre is, the hand right behind the small guard and the pommel showing beyond the fist,
+ *  the straight blade carrying on along the forearm. It has no knuckle bow */
+export const GLADIUS: Prop = { name: "gladius", hilt: { guard: 0.054, turn: 40, pommel: -0.094 }, uses: {
+  ready: { arm: A(66, 30, 108, 24), turn: 18, ok: within(-10, 80, "a gladius at the ready points forward and up, at the man in front of him") },
+  thrust: { arm: A(86, 22, 90, 14), turn: 0, ok: within(-30, 30, "a gladius thrust points straight ahead along the arm") },
+  raised: { arm: A(160, 26, 184, 10), turn: 4, ok: within(55, 120, "a raised gladius points up") },
+  lowered: { arm: A(16, 12, 52, 8), turn: 10, ok: within(-100, -20, "a lowered gladius has its point down and forward, clear of his legs") },
+} };
+/** the net gathered in a fist (props.ts netBunch), hanging below the hand: carried low, or swung back to throw */
+export const NET: Prop = { name: "net", uses: {
+  carry: { arm: A(14, 18, 40, 12), level: 0, ok: within(-8, 8, "a gathered net hangs from the fist") },
+  /** wound up to throw: the arm up and back, the bunch hanging behind his head */
+  swing: { arm: A(166, 34, 214, 26), level: 0, ok: within(-8, 8, "a gathered net hangs from the fist") },
+} };
+/** the referee's stick (props.ts refStick) held upright in one hand beside him; held across in both hands with `pole` */
+/** the trident held in one hand near its middle (wield with `at`), standing up beside him; in two hands with `pole` */
+export const TRIDENT: Prop = { name: "trident", uses: { ready: { arm: A(22, 16, 74, 6), level: 84, ok: within(60, 105, "a trident held ready stands up beside him, prongs up") } } };
+export const STICK: Prop = { name: "stick", uses: { ready: { arm: A(22, 16, 74, 6), level: 80, ok: within(55, 105, "a stick held ready stands up beside him") } } };
 
 /** what the script check has seen in the frame it is reading: one row per thing in a hand, falling or set down */
 export const AUDIT: { on: boolean; rows: { id: string; prop: string; use: string; holder: string; err: string | null; at?: V3 }[] } = { on: false, rows: [] };
@@ -124,9 +142,9 @@ export const wield = (into: THREE.Group, o: THREE.Object3D, P: Prop, use: string
  *  the fingers (down and away from the body), and the blade must carry on along the forearm */
 const hiltWrong = (o: THREE.Object3D, H: NonNullable<Prop["hilt"]>, a: Staged, side: Side, cam: Cam, s: number, seen: [number, number]): string | null => {
   const P2 = pic(cam), pm = palm(a, side), w = (x: number, y: number): V3 => { const q = new THREE.Vector3(x, y, 0).applyMatrix4(o.matrixWorld); return [q.x, q.y, q.z]; };
-  o.updateMatrixWorld(true); const g = Math.hypot(...P2(pm, w(H.guard, 0))), r = fistR(a, side, cam), bow = P2(pm, w(H.bow[0], H.bow[1])), f = unit(P2(a.joint(el(side)), a.joint(wr(side))));
+  o.updateMatrixWorld(true); const g = Math.hypot(...P2(pm, w(H.guard, 0))), r = fistR(a, side, cam), bow = H.bow ? P2(pm, w(H.bow[0], H.bow[1])) : null, f = unit(P2(a.joint(el(side)), a.joint(wr(side))));
   const turn = (Math.acos(Math.max(-1, Math.min(1, dot(f, seen)))) * 180) / Math.PI, pom = Math.hypot(...P2(pm, w(H.pommel, 0)));
-  return g > r + 0.03 ? `the hand is ${(g * 100).toFixed(0)} cm from the guard (it belongs right behind it)` : knuckleSide(bow, seen, s) <= 0 ? "the knuckle bow is on the palm side, not over the outside of the fingers" : turn > H.turn ? `the blade turns ${turn.toFixed(0)} degrees off the forearm (at most ${H.turn}: it carries on along the arm)` : pom < r + 0.012 ? `the pommel is inside the fist (${(pom * 100).toFixed(1)} cm from the middle of the hand, the fist reaches ${(r * 100).toFixed(1)} cm; the knuckle bow would end at the side of the fist like a loose hook)` : bladeOverLegs(o, a, cam) ?? freeHandOnBlade(o, a, side, cam);
+  return g > r + 0.03 ? `the hand is ${(g * 100).toFixed(0)} cm from the guard (it belongs right behind it)` : bow && knuckleSide(bow, seen, s) <= 0 ? "the knuckle bow is on the palm side, not over the outside of the fingers" : turn > H.turn ? `the blade turns ${turn.toFixed(0)} degrees off the forearm (at most ${H.turn}: it carries on along the arm)` : pom < r + 0.012 ? `the pommel is inside the fist (${(pom * 100).toFixed(1)} cm from the middle of the hand, the fist reaches ${(r * 100).toFixed(1)} cm; the knuckle bow would end at the side of the fist like a loose hook)` : bladeOverLegs(o, a, cam) ?? freeHandOnBlade(o, a, side, cam);
 };
 /** does the other hand (the one not on the hilt) touch the blade in the picture? A free hand is kept clear of the blade */
 const freeHandOnBlade = (o: THREE.Object3D, a: Staged, side: Side, cam: Cam): string | null => {
@@ -488,3 +506,38 @@ export const auditGrips = (film: Film, step = 0.1) => {
       prev = now; } } } finally { AUDIT.on = false; }
   return { bad, held, spots };
 };
+
+// ---------------- long things in two hands, and a shield on the arm ----------------
+/** where the hands lie on a long thing held in two (metres along it): the rear hand this far from the butt, the front hand this much further on */
+export const POLE = { back: 0.32, gap: 0.5 };
+/** A long thing held in two hands (a trident, a referee's stick): the shaft runs through both fists along the line from the rear hand toward
+ *  `aim` in the picture, its butt `back` behind the rear hand. `o` = the model (butt at the origin, shaft along +x), `len` = its length (the
+ *  front hand must be on it). The rear hand is `rear`; the other holds it `gap` further on (`one` = the rear hand only) */
+export const pole = (into: THREE.Group, o: THREE.Object3D, a: Staged, cam: Cam, rear: Side, aim: V3, opt: { back?: number; gap?: number; one?: boolean; len?: number; name?: string } = {}) => {
+  const P2 = pic(cam), back = opt.back ?? POLE.back, front: Side = rear === "L" ? "R" : "L", pr = palm(a, rear), d = unit(P2(pr, aim)), butt = aside(pr, cam, -d[0] * back, -d[1] * back);
+  span(into, o, butt, aside(butt, cam, d[0], d[1]), cam, 0.05); fingers(into, a, opt.one ? [rear] : [rear, front], cam, 0.17);
+  if (AUDIT.on) { const lie = (s: Side) => { const v = P2(butt, palm(a, s)); return { off: Math.abs(v[0] * d[1] - v[1] * d[0]), along: dot(v, d), r: fistR(a, s, cam) }; }, r = lie(rear), f = opt.one ? null : lie(front), len = opt.len ?? 1.4;
+    const err = r.off > r.r ? `the rear hand is ${(r.off * 100).toFixed(0)} cm off the shaft` : f && f.off > f.r ? `the front hand is ${(f.off * 100).toFixed(0)} cm off the shaft` : f && (f.along < r.along + 0.15 || f.along > len) ? "the front hand is not further along the shaft than the rear hand" : null;
+    AUDIT.rows.push({ id: o.uuid, prop: opt.name ?? "pole", use: "two hands", holder: `${a.name} ${opt.one ? rear : `${rear}+${front}`}`, err, at: palm(a, rear) }); }
+  return o;
+};
+/** The arms of a figure holding a long thing in two hands: the rear hand at `grip` (a point in the world: at his hip for a thrust, at his
+ *  chest to hold it across), the front hand `gap` further on along the line toward `aim` in the picture (for a mover's actAt) */
+export const polePose = (s: Stand, rear: Side, grip: V3, aim: V3, gap = POLE.gap): Partial<Pose> => {
+  const sp = { at: s.at, heading: s.heading, h: s.h }, base = (s.pose ?? {}) as Pose, d = unit(pic(s.cam)(grip, aim)), front: Side = rear === "L" ? "R" : "L";
+  return { [rear === "L" ? "armL" : "armR"]: reachArm(s.D, base, {}, sp, s.cam.pos, rear, grip), [front === "L" ? "armL" : "armR"]: reachArm(s.D, base, {}, sp, s.cam.pos, front, aside(grip, s.cam, d[0] * gap, d[1] * gap)) } as Partial<Pose>;
+};
+/** the arm that carries a shield: the upper arm down and a little forward, the forearm level across his belly, so that the fist (behind
+ *  the shield's boss) is in front of that side of his body and the shield covers it */
+export const SHIELD_ARM = A(24, 8, 92, -30);
+/** The scutum on the arm (props.ts scutum): its grip behind the boss in the fist of `side`, upright, its face turned half way between the
+ *  lens and the way the holder faces, so that from the front it covers him and from the side it is seen foreshortened in front of him.
+ *  Seen from behind, it is on his far side */
+export const shieldOn = (into: THREE.Group, o: THREE.Object3D, a: Staged, side: Side, cam: Cam, opt: { tilt?: number } = {}) => {
+  const h = (a.heading * Math.PI) / 180, fx = Math.sin(h), fz = Math.cos(h), pm = palm(a, side), cx = cam.pos[0] - pm[0], cz = cam.pos[2] - pm[2], cn = Math.hypot(cx, cz) || 1, toward = (fx * cx + fz * cz) / cn;
+  let nx = fx + cx / cn, nz = fz + cz / cn; if (Math.hypot(nx, nz) < 0.3) { nx = fx; nz = fz; }
+  const p = near(pm, cam, toward < -0.2 ? -0.16 : 0.08); o.position.set(p[0], p[1], p[2]); o.rotation.set(0, Math.atan2(nx, nz), 0); o.rotateX(((opt.tilt ?? 0) * Math.PI) / 180); into.add(o);
+  if (AUDIT.on) AUDIT.rows.push({ id: o.uuid, prop: "shield", use: "on arm", holder: `${a.name} ${side}`, err: null, at: pm });
+  return o;
+};
+

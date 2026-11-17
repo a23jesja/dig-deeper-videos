@@ -43,6 +43,14 @@ export type Look = {
   /** torso rows [height above the pelvis, half-width from the front, depth in front of the spine, depth behind] from the hem up */
   rows: number[][];
   armour?: boolean; apron?: string; cloak?: string; belt?: string;
+  /** a gladiator: the chest bare (the torso in the skin's colour, with the lines of the chest), a loincloth (`loin`) under a wide belt (`balteus`) */
+  bare?: boolean; loin?: string; balteus?: string;
+  /** a gladiator's quilted guard on one arm (manica); the net fighter's metal guard standing up from that shoulder (galerus); a metal greave on one shin */
+  manica?: Side; galerus?: Side; greave?: Side;
+  /** two coloured stripes down the front and the back of a tunic (a referee's) */
+  clavi?: string;
+  /** how tall the crest of a helmet stands (a part of the head's height; a soldier's is 0.4) */
+  crestH?: number;
   legs: "trousers" | "bare"; trous?: string; feet: "shoes" | "sandals" | "boots"; spats?: boolean; sleeve: "long" | "short";
   /** knee breeches: the colour of the stockings below the knee; buckle = a buckle on the shoe */
   stockings?: string; buckle?: boolean; cuffs?: string;
@@ -285,7 +293,8 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
   } else if (HAT === "helmet") {
     const col = L.hatCol ?? "#b9c3cd", dome = spline(sym([[0, -0.66 * H], [1.06 * w, -0.66 * H], [1.08 * w, -0.86 * H], [0.74 * w, -1.05 * H], [0, -1.1 * H]]), true, 5);
     // the crest runs from brow to nape: a thin fin from the front, a fan from the side
-    const fan: P2[] = [], base: P2[] = []; for (let t = 15; t <= 165; t += 15) { const Z = b * Math.cos(t * R), q = p3(h, 0, Z * 1.02); base.push([q.x, -0.94 * H - 0.14 * H * Math.sin(t * R)]); fan.push([q.x, -0.94 * H - 0.4 * H * Math.sin(t * R)]); }
+    const fan: P2[] = [], base: P2[] = []; for (let t = 15; t <= 165; t += 15) { const Z = b * Math.cos(t * R), q = p3(h, 0, Z * 1.02); base.push([q.x, -0.94 * H - 0.14 * H * Math.sin(t * R)]); fan.push([q.x, -0.94 * H - (L.crestH ?? 0.4) * H * Math.sin(t * R)]); }
+    if (L.brim) piece(k, ellPts(0, -0.68 * H, 1.32 * w * L.brim, 0.05 * H + 0.06 * H * Math.abs(h.sin)), shade(col, 0.9));
     const fin = Math.max(10, 0.12 * a * Math.abs(h.cos)); piece(k, hull([...shift(base, -fin, 0), ...shift(base, fin, 0), ...shift(fan, -fin, 0), ...shift(fan, fin, 0)]), L.accent);
     piece(k, dome, col);
     k.clip(dome, () => k.shape([[-2 * w, -0.74 * H], [2 * w, -0.74 * H], [2 * w, -0.64 * H], [-2 * w, -0.64 * H]], shade(col, 0.8), k.ol));
@@ -366,6 +375,7 @@ const drawTrue = (L: Look) => (k: Ink, sk: Sk, o: FigOpts) => {
     const sp = shoePts(sk, s, 50, bare ? 0.27 : 0.34, bare ? 0.15 : 0.2);
     if (L.skirt) { piece(k, sp.pts, "#2a2220"); return; }
     piece(k, seg(K, A, L.leg[1] * (L.stockings ? 0.86 : 1), L.leg[2], bare || L.stockings ? 6 : 3), L.stockings ?? col);
+    if (L.greave === s) { piece(k, seg(mid(K, A, 0.04), mid(K, A, 0.86), L.leg[1] + 6, L.leg[2] + 5, 0, 0.3, true), "#c9ced6"); k.line([mid(K, A, 0.1), mid(K, A, 0.8)], k.ol * 0.5); }
     if (L.feet === "sandals") { piece(k, sp.pts, shade(L.skin, 0.97)); for (const u of [0.3, 0.6]) k.line([add(add(sp.O, sp.ex, sp.span * u), sp.up, 2), add(add(sp.O, sp.ex, sp.span * (u + 0.05)), sp.up, P.foot * (u < 0.5 ? 0.27 : 0.18))], 6, "#7a4a2a", "butt"); k.line([sp.O, add(sp.O, sp.ex, sp.span)], 7, "#7a4a2a", "butt"); }
     else { piece(k, sp.pts, "#2a2220"); if (L.feet === "boots") piece(k, seg(mid(K, A, 0.5), add(A, [0, P.ankle * 0.3]), L.leg[2] + 5, L.leg[2] + 6, 0, 0.3, true), "#3a2a22"); if (L.spats) piece(k, seg(mid(K, A, 0.84), add(A, [0, P.ankle * 0.45]), L.leg[2] + 3, L.leg[2] + 7, 0, 0.3, true), "#f6eedb"); }
     piece(k, seg(H, K, L.leg[0], L.leg[1]), col);
@@ -386,6 +396,9 @@ const drawTrue = (L: Look) => (k: Ink, sk: Sk, o: FigOpts) => {
     piece(k, seg(Sh, E, L.arm[0], L.arm[1]), col, long && L.weave ? Sh : undefined);
     if (!long) piece(k, seg(Sh, mid(Sh, E, 0.5), L.arm[0] + 6, L.arm[0] + 4), L.coat);
     if (L.armour) piece(k, seg(add(Sh, [0, -6]), mid(Sh, E, 0.32), L.arm[0] + 12, L.arm[0] + 10), "#b9c3cd");
+    if (L.manica === s) { const mc = "#efe6cf", band = (A0: P2, B0: P2, wa: number, wb: number) => { piece(k, seg(A0, B0, wa, wb, 2), mc); const dv = unit(sub(B0, A0)), pp: P2 = [-dv[1], dv[0]]; for (const u of [0.2, 0.4, 0.6, 0.8]) { const m = mid(A0, B0, u), w0 = (wa + (wb - wa) * u) * 0.95; k.line([add(m, pp, -w0), add(m, pp, w0)], k.ol * 0.55); } };
+      band(mid(E, W, 0.02), mid(E, W, 0.9), L.arm[1] + 5, L.arm[2] + 5); band(Sh, E, L.arm[0] + 5, L.arm[1] + 5); }
+    if (L.galerus === s) { const out = Math.sign(Sh[0] - sk.j.neck[0]) || 1, q = (x: number, y: number): P2 => [Sh[0] + out * x, Sh[1] + y]; piece(k, [q(-8, -10), q(74, -2), q(96, -112), q(40, -118)], "#c9ced6"); k.line([q(14, -40), q(84, -38)], k.ol * 0.6); }
     pin(k, Sh, 8); pin(k, E, 7);
   };
   let chainEnds: { start: P2; bow: P2 } | null = null;
@@ -393,8 +406,13 @@ const drawTrue = (L: Look) => (k: Ink, sk: Sk, o: FigOpts) => {
     const top = L.rows[L.rows.length - 1][0], t = outline();
     piece(k, seg(F.T(0, top - 12), sk.j.skull, P.head * 0.12, P.head * 0.115, 0, 0.3, true), L.skin);
     if (L.cloak && back) piece(k, spline([S(-L.rows[3][1] * 0.9, top - 10, true), S(L.rows[3][1] * 0.9, top - 10, true), S(L.rows[1][1] * 1.05, L.rows[0][0] + 40, true), S(-L.rows[1][1] * 1.05, L.rows[0][0] + 40, true)], true, 4), L.cloak);
-    piece(k, t, L.coat, weave, F.tilt);
+    piece(k, t, L.bare ? L.skin : L.coat, weave, F.tilt);
     k.clip(t, () => {
+      if (L.bare && front) { for (const s of [-1, 1]) k.line(spline([S(s * 52, top * 0.66), S(s * 26, top * 0.56), S(s * 4, top * 0.62)], false, 6), k.ol * 0.6); k.dot(S(0, top * 0.36)[0], S(0, top * 0.36)[1], 4, shade(L.skin, 0.7)); }
+      if (L.bare && back) k.line([S(0, top * 0.86, true), S(0, top * 0.36, true)], k.ol * 0.5);
+      if (L.clavi && (front || back)) for (const s of [-1, 1]) k.shape([S(s * 22 - 7, top + 6, back), S(s * 22 + 7, top + 6, back), S(s * 22 + 7, L.rows[0][0] - 10, back), S(s * 22 - 7, L.rows[0][0] - 10, back)], L.clavi, 0);
+      if (L.loin) { k.shape([F.T(-400, L.rows[0][0] - 20), F.T(400, L.rows[0][0] - 20), F.T(400, top * 0.14), F.T(-400, top * 0.14)], L.loin, k.ol); if (front) k.shape([S(-26, top * 0.14), S(26, top * 0.14), S(18, L.rows[0][0] + 6), S(-18, L.rows[0][0] + 6)], shade(L.loin, 0.88), k.ol * 0.7); }
+      if (L.balteus) { k.shape([F.T(-400, top * 0.12), F.T(400, top * 0.12), F.T(400, top * 0.27), F.T(-400, top * 0.27)], L.balteus, k.ol); if (front) for (const l of [-40, -14, 14, 40]) k.dot(S(l, top * 0.195)[0], S(l, top * 0.195)[1], 5, BRASS); }
       if (jk && L.plain && front) { k.line([S(0, top), S(0, L.rows[0][0])], k.ol); for (const s of [-1, 1]) k.shape([S(s * 30, top * 0.74), S(s * 62, top * 0.74), S(s * 62, top * 0.56), S(s * 30, top * 0.56)], shade(L.coat, 1.12), k.ol); k.shape([S(-30, top + 4), S(30, top + 4), S(22, top - 26), S(0, top - 14), S(-22, top - 26)], shade(L.coat, 0.84), k.ol); }
       if (L.emblem === "cross" && front) { k.shape([S(-10, top * 0.84), S(10, top * 0.84), S(10, top * 0.2), S(-10, top * 0.2)], L.accent, 0); k.shape([S(-38, top * 0.66), S(38, top * 0.66), S(38, top * 0.52), S(-38, top * 0.52)], L.accent, 0); }
       if (jk && !L.plain && front) {

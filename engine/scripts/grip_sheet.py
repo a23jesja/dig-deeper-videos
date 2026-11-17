@@ -23,12 +23,14 @@ if mode == "sheet":
     # the pictures of a grip-sheet film (shots named <prop>-<use>-<view>), one row per prop (four to a row), in the film's order
     title = sys.argv[6] if len(sys.argv) > 6 else "GREPPBLAD"
     PROP = {"spyglass": "KIKARE", "pistol": "PISTOL", "sabre": "SABEL", "mug": "MUGG", "bucket": "HINK", "rope": "LINA", "linstock": "LUNTSTAKE", "chest": "KISTA",
-            "fiddle": "FIOL OCH STRÅKE", "cithara": "CITHARA", "grapes": "DRUVKLASE", "bundle": "KNYTE"}
+            "fiddle": "FIOL OCH STRÅKE", "cithara": "CITHARA", "grapes": "DRUVKLASE", "bundle": "KNYTE",
+            "gladius": "GLADIUS OCH SKÖLD", "trident": "TREUDD", "net": "NÄT", "stick": "DOMARKÄPP", "shield": "SKÖLD", "pole": "STÅNG"}
     USE = {"look": "i bruk: vid ögat", "aim": "i bruk: siktar", "ready": "i bruk: i fästet", "hold": "i bruk: i örat", "lowered": "sänkt", "raised": "höjd", "sheathed": "i skidan, axelgehäng",
            "chop": "hugg: dragen bakåt", "struck": "hugg: genom", "carry": "buren", "haul": "halas", "fire": "mot kanonen", "hand": "i handen", "falling": "släppt, faller", "landed": "landad",
-           "play": "spelar", "shoulder": "på axeln", "draw1": "dras 1: handen sluten om fästet", "draw2": "dras 2: fästet upp längs baljan", "draw3": "dras 3: klingan nästan ute"}
-    USE2 = {("bucket", "raised"): "lyft", ("linstock", "ready"): "redo", ("cithara", "hold"): "i famnen", ("grapes", "hold"): "hålls upp", ("chest", "carry"): "buren av två i handtagen"}
-    VIEW = {"front": "framifrån", "side": "från sidan", "scab": "snett från baljans sida", "right": "från sidan, mot höger", "left": "från sidan, mot vänster"}
+           "play": "spelar", "shoulder": "på axeln", "draw1": "dras 1: handen sluten om fästet", "draw2": "dras 2: fästet upp längs baljan", "draw3": "dras 3: klingan nästan ute",
+           "thrust": "stöt", "swing": "uppdraget för kast", "across": "tvärs i båda händerna"}
+    USE2 = {("bucket", "raised"): "lyft", ("linstock", "ready"): "redo", ("cithara", "hold"): "i famnen", ("grapes", "hold"): "hålls upp", ("chest", "carry"): "buren av två i handtagen", ("trident", "ready"): "upprätt i ena handen, nätet i den andra", ("trident", "thrust"): "stöt med båda händerna", ("net", "swing"): "uppdraget för kast, treudden i andra handen", ("stick", "ready"): "upprätt i ena handen", ("gladius", "ready"): "i bruk: i fästet, skölden på armen"}
+    VIEW = {"front": "framifrån", "side": "från sidan", "scab": "snett från baljans sida", "right": "från sidan, mot höger", "left": "från sidan, mot vänster", "otherside": "från andra sidan (svärdsidan)", "back": "bakifrån", "slant": "snett framifrån"}
     first = {}
     for s in spots:
         if s["frame"] in have: first.setdefault(s["shot"], s)

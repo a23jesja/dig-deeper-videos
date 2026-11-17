@@ -147,3 +147,16 @@ Bildkontrollens flaggor: EMPTY i bild 5, 9, 12 och 13 är stora släta ytor i n�
 Slutet: sista ordet "strings." 30,87-31,29 s; sedan knäpper Nero på strängarna (bild 13 från 31,17 s), en sträng brister vid 32,15 s (ljudet "snap") och han tittar förskräckt; koden på 0,85 s leder in i första bildrutan, där rösten börjar på ruta 0.
 
 Leverans: `leverans/nero-fiddle/nero-fiddle.mp4` (33,81 s, 1013 rutor, -14,02 LUFS), `nero-fiddle-telefon.mp4` (24,8 MiB), `nero-fiddle-liten.mp4`, tre miniatyrer ur videon och `text.md`.
+
+## Färdig video version 2: granskningens tre punkter och Jespers "Ja testa det" om slutet
+1. **Ingen text över ett ansikte (trädgårdarna, 12-14 s):** flickan är nu omkring tolv år (1,50 m i stället för 1,12 m). Hennes ansikte ligger hela vägen ovanför texten när hon går mot kameran, och bara kroppen är bakom "BACK AND OPENED", "HIS OWN" och "GARDENS TO". Textraden ligger på samma höjd i hela filmen.
+2. **Näven runt citharans arm (scenen 20,4-22,1 s, och 28 s):** vänster hand siktar nu på mitten av den yttre uppåtgående armen (den siktade på 0,37 av bredden, halvt på strängarna). En citharа som hålls följer näven som håller den, så armen går genom näven också när han gungar och lutar sig.
+3. **Näven framför i närbilden (29,4-30,6 s):** hela näven ritas långt framför ramen och strängarna. Kamerans riktning tas med i greppet: kameran ser upp från sidan, och armen syntes 12 cm från där den föll rakt på figurens kort.
+4. **Slutet (Jesper: "Ja testa det"):** närbilden på strängarna slutar på "strings.", och strängen brister 0,06 s efter ordet. Nero stirrar på den, och koden leder in i första bilden. Från sista ordets slut (31,29 s) till "Did" är det **1,45 s** (var 2,5 s). Svarta flaggan har 2,32 s. Testet är inskrivet i GROWTH.md.
+
+Läst: hela filmen två bilder i sekunden i telefonstorlek, slutet tio bilder i sekunden, flickans passage i full storlek, och varje sak i en hand var halv sekund ur den färdiga videon (`v2-grepp-narbilder.jpg`). Näven på citharan i scenen, i närbilden och när strängen brister: `v2-naven-pa-citharan.jpg`.
+
+Kontroller: filmkontrollen OK (15 bilder, 32,7 s). Greppkontrollen har 422 avläsningar utan fel; den mäter nu också hur långt citharan måste flyttas för att möta handen. NO SHEETS OK. Bildkontrollens flaggor är desamma som i version 1 (släta ytor i närbilder; ljus sten och sand, inte utbränt).
+
+Leverans: `leverans/nero-fiddle/nero-fiddle.mp4` (982 rutor, 32,73 s bild, -14,02 LUFS; behållaren anger 32,79 s eftersom sista ljudpaketet avrundas uppåt), `nero-fiddle-telefon.mp4` (23,9 MiB), `nero-fiddle-liten.mp4` och tre miniatyrer ur videon.
+

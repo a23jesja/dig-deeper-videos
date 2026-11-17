@@ -1,7 +1,21 @@
 {
  "_about": "Shared pronunciation locks for every film. Key = the written word (lower case, whole word only). ph = phonemes in the Kokoro/espeak IPA alphabet (see kokoro_onnx/config.json vocab); stress marks ˈ ˌ go before the vowel. Applied by make_voice.py through pronunciation.py; captions and words.json keep the written word. Add a word here once and it is fixed in all videos.",
  "words": {
-  "vespasian": { "ph": "vɛspˈeɪʒən", "note": "espeak gives vɛspˈeɪziən (z + extra vowel); British is ves-PAY-zhun" },
-  "vespasiennes": { "ph": "vˌɛspazjˈɛn", "note": "French vés-pa-ZYEN, final s silent; espeak read it as an English plural (vˈɛspɐsˌiənz). Replaces the old 'say' respelling." }
+  "vespasian": {
+   "ph": "vɛspˈeɪʒən",
+   "note": "espeak gives vɛspˈeɪziən (z + extra vowel); British is ves-PAY-zhun"
+  },
+  "vespasiennes": {
+   "ph": "vˌɛspazjˈɛn",
+   "note": "French vés-pa-ZYEN, final s silent; espeak read it as an English plural (vˈɛspɐsˌiənz). Replaces the old 'say' respelling."
+  },
+  "cithara": {
+   "ph": "sˈɪθəɹə",
+   "note": "SITH-uh-ruh (Oxford); locked so that it is not read as kith-AH-ra or chi-THA-ra"
+  },
+  "tacitus": {
+   "ph": "tˈæsɪtəs",
+   "note": "TASS-i-tus"
+  }
  }
 }

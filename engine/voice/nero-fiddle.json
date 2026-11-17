@@ -1,0 +1,69 @@
+{
+ "voice": "bm_george",
+ "speed": 1.06,
+ "gap": 0.16,
+ "lead": 0.05,
+ "risk": [
+  "Nero",
+  "fiddle",
+  "Flames",
+  "Tacitus",
+  "gardens",
+  "homeless",
+  "rumour",
+  "Troy",
+  "perhaps",
+  "Fiddled",
+  "thousand",
+  "cithara",
+  "lyre",
+  "seven strings"
+ ],
+ "lines": [
+  {
+   "id": "hook",
+   "text": "Did Nero really fiddle while Rome burned?",
+   "gap": 0.3
+  },
+  {
+   "id": "flames",
+   "text": "Flames everywhere, and he plays a tune!",
+   "gap": 0.25
+  },
+  {
+   "id": "notso",
+   "text": "Not so fast.",
+   "gap": 0.25
+  },
+  {
+   "id": "away",
+   "text": "When the fire began, says Tacitus, Nero was not even in Rome.",
+   "gap": 0.25
+  },
+  {
+   "id": "gardens",
+   "text": "He came back and opened his own gardens to the homeless.",
+   "gap": 0.25
+  },
+  {
+   "id": "six",
+   "text": "The fire raged for six days.",
+   "gap": 0.25
+  },
+  {
+   "id": "rumour",
+   "text": "And a rumour spread: while Rome burned, Nero sang of the fall of Troy.",
+   "gap": 0.3
+  },
+  {
+   "id": "answer",
+   "text": "Sang, perhaps. Fiddled, never. The fiddle came about a thousand years later.",
+   "gap": 0.3
+  },
+  {
+   "id": "cithara",
+   "text": "His instrument was the cithara, a kind of lyre with seven strings.",
+   "gap": 0.2
+  }
+ ]
+}

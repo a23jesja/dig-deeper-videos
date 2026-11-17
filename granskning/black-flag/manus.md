@@ -185,3 +185,18 @@ Också rättat på samma kod:
 - **Bildbyten i sekund 0-5:** 2,33 s (gissningen) och 4,43 s (svaret). Bild ett är i rörelse från ruta ett: besättningen med händerna uppe, flaggan på väg upp.
 - **Slutet leder tillbaka:** efter "It worked" och droppen på Sir Digsworths mössa kommer en kod på 0,9 s på handelsskeppets däck en stund före första bildrutan; kameran glider in i exakt första bildens läge, så att sista rutan går över i första.
 - **Texten:** frågan står 2,38 s i två rader (minst 1,5 s per rad).
+
+## Färdig video version 5: den femte omgången (Jesper: "svarta flaggan kan få en till omgång"), på greppblad 3:s kod
+Granskningens fem punkter på version 4, alla med den godkända greppkoden från greppblad 3:
+1. **Kaptenens vändning (bild 8, omkring 18,7-19,3 s):** hela kroppen vänder sig, 120 grader på 0,55 s, och huvudet lägger bara till de sista 40 graderna, så att han står nästan rakt mot oss. Pistolen är kvar i vänster hand och sänks under samma halva sekund (den föll på tre rutor medan huvudet vred sig som en uggla).
+2. **Dragningen (bild 7, omkring 15,1-15,8 s):** han ser genom kikaren från sidan, sänker den och vänder sig tills vi ser honom snett från baljans sida. Han sticker kikaren under vänster arm (dess bortre ände sticker ut bakom ryggen), tar baljan med vänster hand under mynningen och drar med höger hand uppåt och framåt längs baljans linje. Klingan kommer ut ur mynningen så långt som handen har dragit. När den är fri följer fästet med handen, och spetsen svänger ner, ut från kroppen och upp över axeln till hugget, aldrig tvärs över bröstet eller huvudet.
+3. **Frågetexten** slutar på klippet vid 2,33 s.
+4. **Kikaren (bild 7, 14,0-14,6 s):** okularet på ögat vi ser, det andra ögat knipet, en näve vid okularet och den andra längre ut på det breda röret. Röret pekar nästan vågrätt mot slupens kvarterdäck (förut 45 grader uppåt mot flaggan, och då nådde den stöttande handen inte röret). Kikarlagret tog slut innan bilden började, så posen och det knipta ögat föll bort; det är rättat.
+5. **Varje sabel enligt blad 3:**
+   - Handen ligger mot parerstången och bygeln runt fingrarna, fast i knappen.
+   - I bild 5 ligger klingorna redo bakom duken och följer armen upp. En pekade bakåt i 167 grader när den dök upp.
+   - Den sänkta huggaren efter hugget har bygeln på knogsidan. Knogsidan väger nu "bort från kroppen" tyngre, så att bygeln inte slår om när klingan pekar ner och ut.
+   - Den fria handen hålls borta från klingan, och knappen syns.
+
+Också: skeppspojken står så att kikaren inte går över hans ansikte. Kontroller: filmkontrollen OK, greppkontrollen 392 avläsningar utan fel.
+

@@ -305,6 +305,22 @@ Keep the Kokoro `bm_george` voice; no human narrator. Everything else in this pl
 Because the voice is synthetic, the script, pacing and pictures have to carry more: vary sentence length, leave pauses
 for jokes, and time every picture to the word.
 
+## Pronunciation (Jesper 2026-11-17: "live" was read as in "live broadcast" in the Pompeii Short)
+The voice guesses how to say words that are spelled the same but sound different, and the transcript check
+cannot catch it, because the spelling is the same either way.
+- **Before recording, scan the script for risk words:** live, lives, read, lead, wind, wound, tear, close, bow,
+  row, bass, dove, minute, use, house, present, record, object, desert, content, refuse, perfect, separate,
+  estimate, graduate, plus every number, year, date, Roman numeral, abbreviation, unit, and foreign or ancient
+  name (Vesuvius, Pliny, Herculaneum).
+- **For each one, first try to rewrite** so the word is gone or cannot be misread ("people call this home"
+  instead of "people live here"; "seventy-nine A.D." written out).
+- **If the word must stay, fix its sound** with a phoneme override for that word. Read the documentation of the
+  installed kokoro-onnx and misaki versions for how; do not guess the syntax. Keep the fixed words in one shared
+  file in the engine (`pronunciation`), so each word is solved once for all videos.
+- **Listen check:** after recording, cut out each risk word with half a second around it into one short file
+  and list them in the delivery note, so Jesper can hear them in a minute. The reviewer cannot judge sound.
+- A wrong pronunciation is a reason to record the line again, never to publish as it is.
+
 ## Use the installed skills (Jesper 2026-11-14: the session had skipped all of them)
 Load these before the matching step instead of writing everything from scratch, and say in the final message which
 ones were used:

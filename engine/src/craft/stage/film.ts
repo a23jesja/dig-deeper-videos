@@ -42,6 +42,7 @@ export type Bed = { k: string; a: number; b: number; g?: number };
  *  top and bottom 15 %, of faces and of signs); cam = another lens than the film's (only for a long video's thumbnail) */
 export type Thumb = { T: number; cam?: Cam; words: string[]; y?: number; side?: "left" | "right" | "center"; size?: number; tilt?: number };
 export type Caption = { a: number; b: number; text: string };
+export type Solid = { name: string; x: [number, number]; z: [number, number]; top: number; named?: string };
 export type Film = {
   id: string; fps: number; seconds: number; sky: string;
   /** the world, built once; its sun rig is in userData.rig (kit.sunRig) */
@@ -59,6 +60,10 @@ export type Film = {
   /** a tint laid over the whole picture at the film time T, under the words: a CSS background (a gradient) that is multiplied with
    *  the picture, so that the world and the figures take the same light (a night with a fire in it, a red evening). null = none */
   grade?: (T: number) => string | null;
+  /** what a figure may not stand in or walk through (scripts/film_info.mjs check): boxes on the ground of the world, with the height
+   *  of their top (a figure whose feet are above the top is on it, not in it). named = the box belongs to a named thing of the world
+   *  and does not count in a shot that hides that thing */
+  solids?: Solid[];
   /** thumbnail proposals, clearly different from each other */
   thumbs?: Thumb[];
   audio?: string;

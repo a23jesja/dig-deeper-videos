@@ -213,13 +213,15 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
       // The corrected beard. Outer edge: from one sideburn down the jaw to a rounded foot under the chin and up to the other sideburn,
       // with tufts along it. Inner edge: from the sideburn across the cheek to the corner of the mouth, under the lower lip, and back.
       // So the mouth lies open in it, as large as on a shaven face. What lies under the jaw's hinge goes down with the jaw.
-      const A = 100, seen = (q: { d: number }) => q.d > -0.12 * b, outer: P2[] = [], inner: P2[] = [];
+      // In a sour or frightened face (smile below 0) the opening round the mouth is shallow and its corners sit lower: the deep bowl
+      // under the lower lip read as a grin whatever the mouth itself did.
+      const A = 100, seen = (q: { d: number }) => q.d > -0.12 * b, outer: P2[] = [], inner: P2[] = [], sour = Math.min(1, Math.max(0, -(f.smile ?? 0.25))) * 0.07 * H;
       for (let az = -A; az <= A; az += 4) { const q = at(h, az, 1.05); if (!seen(q)) continue; const t = Math.abs(az) / A, low = Math.max(0, 1 - Math.abs(az) / 72);
         const y = (t > 0.69 ? lerp(-0.02 * H, -0.5 * H, (t - 0.69) / 0.31) : lerp(0.2 * H, -0.02 * H, (t / 0.69) ** 1.6)) + (Math.abs(az) < 66 ? 0.05 * H * (1 - Math.abs(((az + 132) % 24) - 12) / 12) : 0) + drop * low;      // five tufts along the foot
         outer.push([q.x * (t > 0.69 ? 1 : lerp(0.9, 1, t / 0.69)), y]); }
-      const cheek = (side: number, u: number): P2 | null => { const q = at(h, side * lerp(40, 96, u), 0.99); return seen(q) ? [q.x, lerp(yJaw - 0.08 * H, -0.56 * H, u ** 1.3)] : null; };
+      const cheek = (side: number, u: number): P2 | null => { const q = at(h, side * lerp(40, 96, u), 0.99); return seen(q) ? [q.x, lerp(yJaw - 0.08 * H + sour, -0.56 * H, u ** 1.3)] : null; };
       for (let u = 1; u >= 0; u -= 0.125) { const q = cheek(1, u); if (q) inner.push(q); }
-      for (let az = 40; az >= -40; az -= 8) { const q = at(h, az, 0.9); if (seen(q)) inner.push([q.x, lerp(yJaw + 0.105 * H, yJaw - 0.08 * H, (Math.abs(az) / 40) ** 2) + drop * (1 - 0.5 * (Math.abs(az) / 40) ** 2)]); }
+      for (let az = 40; az >= -40; az -= 8) { const q = at(h, az, 0.9); if (seen(q)) inner.push([q.x, lerp(yJaw + 0.105 * H - sour, yJaw - 0.08 * H + sour, (Math.abs(az) / 40) ** 2) + drop * (1 - 0.5 * (Math.abs(az) / 40) ** 2)]); }
       for (let u = 0; u <= 1; u += 0.125) { const q = cheek(-1, u); if (q) inner.push(q); }
       if (outer.length > 2 && inner.length > 2) piece(k, spline([...outer, ...inner], true, 2), L.beard);
     }

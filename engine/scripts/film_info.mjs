@@ -22,11 +22,23 @@ else if (what === "check") {
       const d = Math.hypot(cam.pos[0] - a.at[0], cam.pos[2] - a.at[2]), el = (Math.atan2(cam.pos[1] - (a.at[1] + a.h * 0.5), d) * 180) / Math.PI;
       if (el > 35) { bad.push(`${s.id} at ${t.toFixed(2)} s: ${a.name} is seen from ${el.toFixed(0)} degrees above (at most 35 for a figure on a card)`); break; } } }
   }
+  // nobody stands in somebody else, nobody stands in a rail, a mast or a wall, nobody jumps from one place to another between frames
+  for (const s of film.shots) {
+    const len = s.b - s.a, seen = new Set(), prev = new Map();
+    for (let t = 0; t < len; t += 0.1) { const cast = s.cast(t, s.a + t);
+      for (let i = 0; i < cast.length; i++) { const a = cast[i];
+        for (let k = i + 1; k < cast.length; k++) { const b = cast[k], d = Math.hypot(a.at[0] - b.at[0], a.at[2] - b.at[2]);
+          if (d < 0.3 && Math.abs(a.at[1] - b.at[1]) < 0.4 && !seen.has(a.name + b.name)) { seen.add(a.name + b.name); bad.push(`${s.id} at ${t.toFixed(1)} s: ${a.name} stands in ${b.name} (${d.toFixed(2)} m apart)`); } }
+        for (const q of film.solids ?? []) { if (q.named && s.hide?.includes(q.named)) continue;
+          if (a.at[0] > q.x[0] - 0.1 && a.at[0] < q.x[1] + 0.1 && a.at[2] > q.z[0] - 0.1 && a.at[2] < q.z[1] + 0.1 && a.at[1] < q.top - 0.05 && !seen.has(a.name + q.name)) { seen.add(a.name + q.name); bad.push(`${s.id} at ${t.toFixed(1)} s: ${a.name} stands in ${q.name}`); } }
+        const p = prev.get(a.name); if (p && a.spin === undefined) { const v = Math.hypot(a.at[0] - p[0], a.at[2] - p[2]) / 0.1; if (v > 7 && !seen.has(a.name + "jump")) { seen.add(a.name + "jump"); bad.push(`${s.id} at ${t.toFixed(1)} s: ${a.name} moves ${v.toFixed(0)} m/s (a jump between two frames)`); } }
+        prev.set(a.name, a.at); } }
+  }
   if (film.seconds < 25 || film.seconds > 40) bad.push(`the film is ${film.seconds.toFixed(1)} s (25 to 40)`);
   if (film.hook.a > 0.01) bad.push("the question is not on screen from the first frame");
   if (film.sign && film.sign.a < 5) bad.push("the sign comes before second five");
   if (bad.length) { console.error(`FILM CHECK FAILED for ${name}:`); for (const b of bad) console.error("  " + b); process.exit(1); }
-  console.log(`FILM CHECK OK for ${name}: ${film.shots.length} shots, ${film.seconds.toFixed(1)} s, no figure seen from more than 35 degrees above`);
+  console.log(`FILM CHECK OK for ${name}: ${film.shots.length} shots, ${film.seconds.toFixed(1)} s, no figure seen from more than 35 degrees above, none standing in another or in a solid, none jumping`);
 }
 else if (what === "audio") {
   // everything the sound needs (audio/film_audio.py): each shot's sounds on their frames, the beds, the voice, the music, the impacts

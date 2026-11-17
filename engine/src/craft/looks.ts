@@ -289,6 +289,16 @@ const shirt = (id: string, o: Partial<Look>): Look => ({
   legs: "trousers", trous: "#6b5a44", feet: "shoes", sleeve: "long", arm: [30, 24, 18], leg: [37, 27, 17], ...o });
 export const SHIRT_A = shirt("shirta", { beard: "#5a3a22" }), SHIRT_B = shirt("shirtb", { skin: "#c98f60", brow: "#221812", hair: { col: "#221812", kind: "queue" }, trous: "#3f5f86", P: { ...COLONIST, thigh: 225, shin: 215, shW: 98 } }),
   SHIRT_C = shirt("shirtc", { skin: "#f4d2b4", brow: "#c9a24a", hair: { col: "#d9b45a", kind: "bald" }, mous: { col: "#c9a24a", span: 0.8, curl: 0.3, w: 11 }, trous: "#7a4a3a", P: { ...COLONIST, thigh: 195, shin: 185, shW: 112, hipW: 62 } });
+export const SHIRT_D = shirt("shirtd", { skin: "#f6d6bc", brow: "#b5532a", hair: { col: "#c4662a", kind: "short" }, trous: "#4a6a4a", P: { ...COLONIST, thigh: 190, shin: 180, shW: 90, hipW: 46 }, head: { a: 100, b: 106, H: 224, jaw: 0.84, round: 0.7, eye: 1.04 } }),
+  SHIRT_E = shirt("shirte", { skin: "#8a5a3a", brow: "#1a1410", hair: { col: "#1a1410", kind: "bald" }, beard: "#1a1410", trous: "#2b2a33", P: { ...COLONIST, thigh: 215, shin: 205, shW: 124, hipW: 66 }, head: { a: 124, b: 120, H: 238, jaw: 1.14, round: 0.25, eye: 0.86 },
+    rows: [[-60, 126, 96, 98], [20, 122, 100, 92], [100, 116, 100, 84], [195, 126, 96, 80], [250, 126, 68, 68], [276, 60, 44, 48]], arm: [36, 29, 20], leg: [42, 30, 20] });
+/** the master of a big merchant ship: a grey cocked hat with a white edge, a wine-red coat, white breeches, a thin moustache */
+export const FRENCH_CAPT: Look = { ...CUSTOMS, id: "frenchcapt", P: { ...COLONIST, thigh: 222, shin: 212, shW: 98, hipW: 50 }, head: { a: 102, b: 110, H: 236, jaw: 0.86, round: 0.3, eye: 0.9 }, skin: "#f0c8a2", brow: "#5a3a22",
+  hatCol: "#5a5a66", hatBand: "#fbf6ea", hair: { col: "#5a3a22", kind: "queue" }, mous: { col: "#5a3a22", span: 1.1, curl: 0.7, w: 9 }, coat: "#8a2f4a", accent: "#fbf3df", cuffs: "#fbf3df", trous: "#fbf7ee" };
+/** his mate: broad and dark, a white cap, a red jacket, blue trousers, a short beard */
+export const FRENCH_MATE: Look = { ...SAILOR, id: "frenchmate", P: { ...COLONIST, thigh: 200, shin: 190, shW: 120, hipW: 64 }, head: { a: 118, b: 118, H: 232, jaw: 1.1, round: 0.4, eye: 0.88 }, skin: "#c98f60", brow: "#221812",
+  hatCol: "#fbf6ea", hair: { col: "#221812", kind: "short" }, beard: "#221812", coat: "#c8402f", accent: "#fbf3df", trous: "#356fb0",
+  rows: [[-30, 116, 88, 90], [20, 112, 90, 86], [100, 108, 90, 80], [190, 118, 90, 76], [242, 122, 66, 66], [268, 58, 42, 46]] };
 /** a look as a design the rig can play. Every look wears the corrected beard and the corrected open mouth (cast.ts beard2, mouth2: their
  *  sheets were approved by the reviewer on 17 Nov 2026); a look that sets either flag itself keeps its own value */
 export const castDesign = (L0: Look, name = L0.id): Design => { const L: Look = { beard2: true, mouth2: true, ...L0 }; return { id: L.id, name, ol: 4.6, faceW: L.head.a * 1.45, props: () => L.P, draw: drawCast(L), hat: (k, phi) => drawHat(k, L, phi) }; };
@@ -300,3 +310,4 @@ export const CUSTOMS_D = castDesign(CUSTOMS), SHIPOWNER_D = castDesign(SHIPOWNER
 export const OLDHAND_D = castDesign(OLDHAND), COOK_D = castDesign(COOK), SHIPBOY_D = castDesign(SHIPBOY), PIRATE2_D = castDesign(PIRATE2), GUNNER_D = castDesign(GUNNER), CORSAIR_D = castDesign(CORSAIR);
 export const SHIRT_A_D = castDesign(SHIRT_A), SHIRT_B_D = castDesign(SHIRT_B), SHIRT_C_D = castDesign(SHIRT_C);
 export const NERO_D = castDesign(NERO, "Nero"), NERO_STAGE_D = castDesign(NERO_STAGE), RUNNER_D = castDesign(RUNNER);
+export const SHIRT_D_D = castDesign(SHIRT_D), SHIRT_E_D = castDesign(SHIRT_E), FRENCH_CAPT_D = castDesign(FRENCH_CAPT), FRENCH_MATE_D = castDesign(FRENCH_MATE);

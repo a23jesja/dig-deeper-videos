@@ -1,6 +1,6 @@
 # Short 3: Why did pirates fly a black flag?
 
-SKISS, VERSION 1 (manus version 2 med granskningens ändringar; rösten är inspelad, 30,8 s; filmen är 32,2 s och har 12 bilder; det som skiljer bilderna från tabellen står sist). Två skepp till havs, skrämmande med rolig vändning, SANT. Beräknad längd 32-34 sekunder, 11 bilder, 90 ord, Kokoro bm_george. Fråga nr 21 i `granskning/fragor.md`. Tiderna nedan är uppskattade efter plankfilmens takt (83 ord på 30,3 s); de riktiga tiderna kommer ur rösten.
+SKISS, VERSION 2 (manus version 2 med granskningens ändringar; rösten är oförändrad, 30,8 s; filmen är 32,2 s och har 12 bilder; vad som är ändrat sedan skiss version 1 står sist, under "Skiss version 2"). Ingen skylt i bild: noten om att scenerna är dramatiserade och källan står i beskrivningen (`leverans/black-flag/text.md`). Två skepp till havs, skrämmande med rolig vändning, SANT. Beräknad längd 32-34 sekunder, 11 bilder, 90 ord, Kokoro bm_george. Fråga nr 21 i `granskning/fragor.md`. Tiderna nedan är uppskattade efter plankfilmens takt (83 ord på 30,3 s); de riktiga tiderna kommer ur rösten.
 
 Planerad för onsdag 18 november. Filmens id i motorn: `black-flag`.
 
@@ -50,7 +50,7 @@ Johnson är läst i bokens råtext (Project Gutenberg nr 40580, hämtad från Gu
 - Annan film än plankfilmen: ingen planka, inga regler, ingen ö, Sir Digsworth är åskådare och inte offer, och handlingen går mellan två skepp i stället för på ett däck.
 - Ingen bild liknar den före: däck med fem man och flaggan bakom (1), nära ansikte (2), tre man vid reling (3), två skepp i vid bild (4), nära på flagglinan (5), kaptenen i halvfigur över vattnet (6), kikare och segel (7), annat skepp i rött ljus (8), kistor som bärs förbi en rad (9), litet skepp med presenningen (10), det stora skeppet och Sir Digsworth (11).
 - Ingen står stilla mot kameran: varje bild har en handling med början och slut (flaggan upp, fingret över halsen, handen fram, hukar och kikar, flaggbytet, pantomimen, seglet ned, kanonen och den röda flaggan, kistorna, presenningen, händerna upp).
-- Ingen undertextruta över ansikte, bröst, händer eller skylt.
+- Ingen undertextruta över ansikte, bröst eller händer. Ingen skylt i bild (Jespers besked 17 november).
 
 ## Vad som är bättre än i plank- och Romfilmen
 
@@ -61,8 +61,16 @@ Johnson är läst i bokens råtext (Project Gutenberg nr 40580, hämtad från Gu
 5. **Ljus som berättar.** Himlen slår om till rött när den röda flaggan går upp; de två första filmerna har samma ljus rakt igenom.
 6. **Nya skägg och munnar från början** på alla figurer.
 
+Efter Jespers besked 17 november, en punkt per område (allt i motorns gemensamma kod, så att nästa film har det):
+
+- **Animation:** det som hålls sitter i handen. Ny gemensam kod (`hold`, `carry`, `palmThen` i `stage/staging.ts`) lägger föremålets grepp i handflatan och vrider det efter underarmen ruta för ruta: hink, mugg, kikare, pistol, huggare, luntstake. Kistan bärs mellan två mäns händer och följer dem. Det som släpps faller från den plats där handen var när den släppte (hinken, muggen, kikaren) och blir liggande.
+- **Grafik:** männen är olika: längder från 1,28 till 1,90 m, olika kroppar, hår, skägg, hudfärg och kläder. De fem i vita skjortor är fem olika looks, och det stora skeppets fyra man är fyra olika. Ingen bild har två likadana figurer.
+- **Ljus:** himlen och ljuset slår om till rött när den röda flaggan går upp (bild 8). Skuggan som gjorde Sir Digsworth grå i bild 2 är borta.
+- **Effekter:** tyg som vajar (fyra flaggor och presenningen), krutrök från pistol och kanon med kameraskak, segel som faller, droppar från presenningen.
+- **Rörelse:** tyngd i det som bärs (böjda knän, korta långsamma steg med kistorna), förberedelse före varje hugg och kast, och en ny kontroll i `film_info check` som stoppar filmen om en figur står i en annan figur eller i ett föremål (mast, kanon, tunna, låda, reling) eller byter plats mellan två rutor.
+
 ## Uttal
-- Riskord att kontrollera på fonemnivå när rösten görs: pirates, offer, friendly, mercy, treasure, hoisted, tarpaulin (betoning på andra stavelsen), "It worked". "1724" finns bara i bild.
+- Riskord att kontrollera på fonemnivå när rösten görs: pirates, offer, friendly, mercy, treasure, hoisted, tarpaulin (betoning på andra stavelsen), "It worked". "1724" sägs inte och står inte i bild; det står i beskrivningen.
 
 ## Det här behöver byggas (allt i motorns gemensamma kod)
 - Flagga som tyg (upp, ned, vaj) och flagglina; fallande segel; ett andra skrov bredvid det första; kista, relingskanon med rökpuff, kikare, presenning, tunna.
@@ -71,7 +79,7 @@ Johnson är läst i bokens råtext (Project Gutenberg nr 40580, hämtad från Gu
 ## Version 2: granskningens ändringar av manus version 1 (GODKÄND MED ÄNDRINGAR)
 1. "Pirates crept close" har blivit "Pirates often crept close" (källorna säger "Other pirates" och "often").
 2. Svaret har blivit "The black flag was meant to win the treasure without a fight." (källorna säger vad flaggan var till för, inte att den alltid lyckades).
-3. Presenningen: rösten bär listen, "One crew had no black flag, so they hoisted a dirty tarpaulin and fired a gun. It worked." De vita skjortorna står kvar i bild, skylten står kvar.
+3. Presenningen: rösten bär listen, "One crew had no black flag, so they hoisted a dirty tarpaulin and fired a gun. It worked." De vita skjortorna står kvar i bild. (Skylten togs bort i skiss version 2 efter Jespers besked.)
 4. "Some ships gave up at the very sight." står kvar.
 5. Gissningen sägs som en fråga och undertexten har frågetecknet.
 Dessutom från granskningen: varje figur i en grupp gör något eget och ingen står stilla vänd mot kameran; telefonkopia under 28 MiB läggs i leveransen från början.
@@ -92,3 +100,26 @@ Rösten är oförändrad från manus version 2. Filmen är 32,2 s, 967 bildrutor
 12. **Bild 12:** det stora skeppets flagga är en vit flagga som halas ned medan besättningens händer går upp en efter en. Sir Digsworth säger "It worked." till oss med en axelryckning, ser upp, och droppen landar på hans keps.
 
 Tre thumbnailförslag är valda ur filmens egna bildrutor (0,6 s, röda flaggan, presenningen); de visas med den färdiga videon.
+
+## Skiss version 2: ändrat efter granskningens sju punkter och Jespers besked 17 november
+Rösten, texten och klippens tider är oförändrade. Skisspaketet i `granskning/black-flag/skiss/` är nytt.
+
+Granskningens punkter:
+1. **Bild 1:** kameran står lägre och närmare (ingen relingskant i nederkanten). Sir Digsworth kikar fram bakom masten med ansiktet i bild (masten täcker bara kinden och örat), ser på oss, upp mot flaggan och drar in huvudet. Kocken tappar sin hink: den hänger i hans hand, faller och välter på däcket.
+2. **Bild 3 och 6:** närmare, de tre fyller bilden från midjan. Bild 6 är tagen snett från sidan och har två man (kaptenen och en av hans män, som först granskar sina naglar och sedan härmar handen på hjärtat); akterlanternan är dold i den bilden så att ingenting står bakom ett huvud.
+3. **Bild 4:** sedd från handelsskeppet, över den vinkande sjömannens axel. Alla fyra pirater hukar bakom tyget så att bara hattar och ögon syns, bredvid varandra. Den långe reser sig, vinkar tillbaka och dras ned av kaptenen. Den vänliga flaggan vajar över dem.
+4. **Bild 7:** kikaren hålls i handen, från sidan, snett uppåt mot flaggan. Han sänker den (den hänger i handen framför rocken), sväljer, släpper den (den faller från handen och blir liggande bakom relingen), drar huggaren och hugger av fallet. Seglet faller och händerna går upp en efter en. Skeppspojken står till vänster bakom repet, sjömannen till höger.
+5. **Bild 9:** skatten är mitt i bilden: en stor kista med en liten öppen guldkista ovanpå, buren av två pirater med böjda knän och korta steg. Besättningen står i rad bakom med händerna uppe. Huggarna sitter i bältena. Piratkaptenen är inte med i bilden.
+6. **Bild 10:** piraten vid kistan syns hel, med tomma händer; han kastar ut flaskan och stöveln, vänder kistan upp och ned, ställer ned den och skakar på huvudet med sur min.
+7. **Bild 12:** det stora skeppets fyra man med händerna uppe och den vita flaggan som halas ned är bilden. Sir Digsworth står vid vänster kant, ser på dem, säger "It worked." med en axelryckning och ser upp mot presenningen; en droppe landar på kepsen.
+
+Jespers besked:
+- **Skylten "Dramatised ..." är borta** ur alla bilder. Noten står i beskrivningen.
+- **Grepp:** allt som hålls ligger i handen genom den gemensamma greppkoden (se "Vad som är bättre"). Jag har läst rutorna med grepp, lyft och bärande i halv storlek: hinken (bild 1), muggen (bild 4 och 5), kikaren och huggaren (bild 7), pistolen (bild 8), kistorna (bild 9), flaggkistan (bild 10), luntstaken och fallet (bild 11).
+- **Ingenting i något annat:** kontrollen `film_info check` går igenom (ingen figur i en annan eller i mast, kanon, tunna, låda, reling). I bild 11 stod kanonjären och den förste i skjortraden i kanonerna; de är flyttade.
+- **Olika människor:** se "Grafik" ovan.
+- Bild 2: skuggan över Sir Digsworth är borttagen (den gjorde hela figuren grå).
+
+En ändring i den frysta figuren, som granskningen behöver ta ställning till: i ett skäggigt ansikte med sur eller rädd min (leende under noll) är öppningen i skägget runt munnen grundare och mungiporna sitter lägre. Den djupa bågen under underläppen läste som ett flin vad munnen än gjorde (kanonjären i bild 10). Glada och neutrala ansikten är oförändrade. Koden: `engine/src/craft/cast.ts`, "sour".
+
+Svagast i skiss version 2, enligt min egen läsning: bild 1 är trång (fem man och Sir Digsworth på liten yta, sjömannen syns bara delvis bakom kocken); i bild 9 skymmer kistorna en del av raden bakom; i bild 11 är de fem i vita skjortor små i bilden.

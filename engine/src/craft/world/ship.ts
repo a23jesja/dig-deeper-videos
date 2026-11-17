@@ -126,7 +126,8 @@ export const pirateShip = () => {
     for (const s of [-1, 1]) { for (const z of [q.z + 0.1, 6.1, 7.3, 8.4]) root.add(mesh(box(0.1, 0.8, 0.1), "#e8cf8a", { at: [s * (W - 0.12), q.y + 0.5, z] })); root.add(mesh(box(0.16, 0.09, 8.5 - q.z + 0.06), "#e8cf8a", { at: [s * (W - 0.12), q.y + 0.92, (q.z + 8.5) / 2], line: 0.7 }), mesh(box(0.08, 0.06, 8.5 - q.z), "#e8cf8a", { at: [s * (W - 0.12), q.y + 0.52, (q.z + 8.5) / 2], line: 0.5 })); }
     for (const x of [-2.0, -1.0, 1.0, 2.0]) root.add(mesh(box(0.1, 0.8, 0.1), "#e8cf8a", { at: [x, q.y + 0.5, 8.42] })); root.add(mesh(box(W * 2 - 0.2, 0.09, 0.16), "#e8cf8a", { at: [0, q.y + 0.92, 8.42], line: 0.7 }), mesh(box(W * 2 - 0.3, 0.06, 0.08), "#e8cf8a", { at: [0, q.y + 0.52, 8.42], line: 0.5 }));
     { const [sx, sy, sz] = SHIP.staff.at; root.add(rod([sx, sy, sz], [sx, sy + SHIP.staff.h, sz], 0.05, "#8a6a3e"), mesh(ball(0.09, 10), C.gold, { at: [sx, sy + SHIP.staff.h + 0.06, sz] }), mesh(box(0.22, 0.12, 0.22), "#7a5a36", { at: [sx, sy + 0.06, sz] })); }
-    root.add(rod([0, q.y, 8.4], [0, q.y + 2.0, 8.4], 0.05, C.iron), mesh(box(0.34, 0.44, 0.34), "#ffd75a", { at: [0, q.y + 2.2, 8.4] }), mesh(box(0.42, 0.08, 0.42), C.iron, { at: [0, q.y + 2.46, 8.4] })); }
+    // the stern lantern: a named thing (a shot that looks aft past somebody's head can leave it out, Shot.hide "lantern")
+    { const lg = group([rod([0, q.y, 8.4], [0, q.y + 2.0, 8.4], 0.05, C.iron), mesh(box(0.34, 0.44, 0.34), "#ffd75a", { at: [0, q.y + 2.2, 8.4] }), mesh(box(0.42, 0.08, 0.42), C.iron, { at: [0, q.y + 2.46, 8.4] })]); lg.name = "lantern"; root.add(lg); (root.userData.named as THREE.Object3D[]).push(lg); } }
   // on deck: the hatch with its grating, guns on the port side, casks and crates, coils of rope, a pile of shot, a bucket
   root.add(mesh(box(1.9, 0.22, 1.6), "#8a5e2c", { at: [-0.3, 0.11, 2.4] })); for (let i = 0; i < 5; i++) root.add(mesh(box(1.7, 0.03, 0.12), "#2b1d1a", { at: [-0.3, 0.235, 1.8 + i * 0.3], line: 0, shadow: false }));
   for (const z of [-3.6, 0.2]) { const c = cannon(); c.rotation.y = Math.PI; c.position.set(-1.9, 0, z); root.add(c); root.add(mesh(box(0.2, 0.5, 0.7), "#2b1d1a", { at: [-W, 0.45, z], line: 0, shadow: false })); }
@@ -218,3 +219,14 @@ export const flagSea = () => {
   root.userData.tick = (T: number) => { base(T); const k = Math.max(0, Math.min(1, dusk.at(T))); (veil.material as THREE.MeshBasicMaterial).opacity = k; veil.visible = k > 0.001; sun.color.copy(day).lerp(red, k); hemi.color.copy(skyDay).lerp(skyRed, k); };
   return root;
 };
+/** what a figure may not stand in or walk through in flagSea (Film.solids): rails, masts, the waist cloth, the water between the
+ *  ships, the guns and casks on the sloop's deck. The merchant's parts are named, so they do not count where a shot hides her */
+export const FLAGSEA_SOLIDS = [
+  { name: "the sloop's port rail", x: [-2.88, -2.72], z: [-8.5, 4.9], top: 0.95 }, { name: "the sloop's starboard rail", x: [2.72, 2.88], z: [-8.5, 4.9], top: 0.95 },
+  { name: "the waist cloth", x: [-2.84, -2.72], z: [5.0, 7.75], top: FLAGSEA.cloth }, { name: "the quarterdeck's front", x: [-2.8, 2.8], z: [4.9, 5.0], top: SHIP.aft },
+  { name: "the sloop's mast", x: [-0.25, 0.25], z: [-1.85, -1.35], top: 13 }, { name: "the flagstaff", x: [-2.48, -2.32], z: [8.02, 8.18], top: 6 },
+  { name: "a gun", x: [-2.5, -1.4], z: [-0.15, 0.55], top: 0.6 }, { name: "a gun", x: [-2.5, -1.4], z: [-3.95, -3.25], top: 0.6 }, { name: "the casks", x: [-2.55, -1.25], z: [-2.05, -1.1], top: 0.9 },
+  { name: "the water between the ships", x: [-5.1, -2.9], z: [-6, 9], top: 99, named: "merchant" },
+  { name: "the merchant's starboard rail", x: [-5.28, -5.12], z: [-6, 9], top: 1.2, named: "merchant" }, { name: "the merchant's port rail", x: [-11.28, -11.12], z: [-6, 9], top: 1.2, named: "merchant" },
+  { name: "the merchant's after mast", x: [-9.0, -8.6], z: [4.3, 4.7], top: 10, named: "merchant" }, { name: "the merchant's main mast", x: [-8.45, -7.95], z: [-1.35, -0.85], top: 13, named: "merchant" },
+] as { name: string; x: [number, number]; z: [number, number]; top: number; named?: string }[];

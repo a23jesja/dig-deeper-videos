@@ -56,6 +56,13 @@ export const hold = (into: THREE.Group, o: THREE.Object3D, a: Staged, side: "L" 
   const v = view(cam), p = near(palm(a, side, opt.slide ?? 0.45), cam, opt.d ?? -0.035), ang = opt.level !== undefined ? (opt.level * Math.PI) / 180 : forearm(a, side, cam) + ((opt.turn ?? 0) * Math.PI) / 180;
   o.position.set(p[0], p[1] + (opt.lift ?? 0), p[2]); o.rotation.set(0, Math.atan2(-v.rz, v.rx) + (opt.flip ? Math.PI : 0), opt.flip ? -ang + Math.PI : ang); into.add(o); return o;
 };
+/** the point r metres to the right of p in the picture (and `up` metres higher) */
+export const aside = (p: V3, cam: Cam, r: number, up = 0): V3 => { const v = view(cam); return [p[0] + v.rx * r, p[1] + up, p[2] + v.rz * r]; };
+/** A thing that lies from one point to another (a fiddle from under the chin to the hand on its neck, a bow from the hand across the
+ *  strings): its origin is put at `a`, d metres toward the lens, and its own x axis is turned toward `b` in the picture's plane */
+export const span = (into: THREE.Group, o: THREE.Object3D, a: V3, b: V3, cam: Cam, d = 0.04) => {
+  const v = view(cam), p = near(a, cam, d); o.position.set(p[0], p[1], p[2]); o.rotation.set(0, Math.atan2(-v.rz, v.rx), Math.atan2(b[1] - a[1], (b[0] - a[0]) * v.rx + (b[2] - a[2]) * v.rz)); into.add(o); return o;
+};
 /** A thing carried between two hands (of one figure or of two): its middle is put half way between the two palms and it is turned
  *  so that its own x axis runs from the first palm to the second, in the picture's plane. Returns the two palms, for the handles or
  *  the rope a film draws from the thing's ends into the hands */

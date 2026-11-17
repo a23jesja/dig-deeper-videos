@@ -311,3 +311,9 @@ export const OLDHAND_D = castDesign(OLDHAND), COOK_D = castDesign(COOK), SHIPBOY
 export const SHIRT_A_D = castDesign(SHIRT_A), SHIRT_B_D = castDesign(SHIRT_B), SHIRT_C_D = castDesign(SHIRT_C);
 export const NERO_D = castDesign(NERO, "Nero"), NERO_STAGE_D = castDesign(NERO_STAGE), RUNNER_D = castDesign(RUNNER);
 export const SHIRT_D_D = castDesign(SHIRT_D), SHIRT_E_D = castDesign(SHIRT_E), FRENCH_CAPT_D = castDesign(FRENCH_CAPT), FRENCH_MATE_D = castDesign(FRENCH_MATE);
+/** more people of Rome, so that a crowd has women and men of different age, colour and face (their heights are set where they are cast) */
+export const ROMAN_WOMAN2: Look = { ...ROMAN_WOMAN, id: "romanwoman2", head: { a: 108, b: 112, H: 232, jaw: 0.92, round: 0.45, eye: 0.96 }, skin: "#b9825a", brow: "#1c1410", hair: { col: "#1c1410", kind: "back" }, coat: "#b0483c", accent: "#f0e2c0", cloak: "#f0e2c0", belt: "#e9b83a" };
+export const ROMAN_WOMAN3: Look = { ...ROMAN_WOMAN, id: "romanwoman3", head: { a: 100, b: 108, H: 220, jaw: 0.8, round: 0.75, eye: 1.16 }, skin: "#f6d3b4", brow: "#a8662a", hair: { col: "#c08a3a", kind: "bun" }, coat: "#7a6ab0", accent: "#fbf3df", cloak: "#c9d6e8", belt: "#fbf3df" };
+export const GIRL: Look = { ...BOY, id: "girl", skin: "#e8b88a", brow: "#3a2418", hair: { col: "#3a2418", kind: "bun" }, lash: true, coat: "#e9b83a", accent: "#fbf3df", belt: "#c8402f" };
+export const OLDMAN: Look = { ...CITIZEN, id: "oldman", head: { a: 108, b: 112, H: 226, jaw: 0.86, round: 0.4, eye: 0.8 }, skin: "#d9a882", brow: "#e8e4dc", hair: { col: "#e8e4dc", kind: "bald" }, beard: "#e8e4dc", coat: "#9a7a4a", accent: "#6b4a2e", belt: "#6b4a2e" };
+export const ROMAN_WOMAN2_D = castDesign(ROMAN_WOMAN2), ROMAN_WOMAN3_D = castDesign(ROMAN_WOMAN3), GIRL_D = castDesign(GIRL), OLDMAN_D = castDesign(OLDMAN);

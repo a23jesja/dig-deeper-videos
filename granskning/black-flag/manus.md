@@ -1,6 +1,6 @@
 # Short 3: Why did pirates fly a black flag?
 
-SKISS, VERSION 2 (manus version 2 med granskningens ändringar; rösten är oförändrad, 30,8 s; filmen är 32,2 s och har 12 bilder; vad som är ändrat sedan skiss version 1 står sist, under "Skiss version 2"). Ingen skylt i bild: noten om att scenerna är dramatiserade och källan står i beskrivningen (`leverans/black-flag/text.md`). Två skepp till havs, skrämmande med rolig vändning, SANT. Beräknad längd 32-34 sekunder, 11 bilder, 90 ord, Kokoro bm_george. Fråga nr 21 i `granskning/fragor.md`. Tiderna nedan är uppskattade efter plankfilmens takt (83 ord på 30,3 s); de riktiga tiderna kommer ur rösten.
+FÄRDIG VIDEO, VERSION 1 (skiss version 2 är GODKÄND; de tre punkterna därifrån är rättade, se sist; manus version 2 med granskningens ändringar; rösten är oförändrad, 30,8 s; filmen är 32,2 s och har 12 bilder; vad som är ändrat sedan skiss version 1 står sist, under "Skiss version 2"). Ingen skylt i bild: noten om att scenerna är dramatiserade och källan står i beskrivningen (`leverans/black-flag/text.md`). Två skepp till havs, skrämmande med rolig vändning, SANT. Beräknad längd 32-34 sekunder, 11 bilder, 90 ord, Kokoro bm_george. Fråga nr 21 i `granskning/fragor.md`. Tiderna nedan är uppskattade efter plankfilmens takt (83 ord på 30,3 s); de riktiga tiderna kommer ur rösten.
 
 Planerad för onsdag 18 november. Filmens id i motorn: `black-flag`.
 
@@ -123,3 +123,9 @@ Jespers besked:
 En ändring i den frysta figuren, som granskningen behöver ta ställning till: i ett skäggigt ansikte med sur eller rädd min (leende under noll) är öppningen i skägget runt munnen grundare och mungiporna sitter lägre. Den djupa bågen under underläppen läste som ett flin vad munnen än gjorde (kanonjären i bild 10). Glada och neutrala ansikten är oförändrade. Koden: `engine/src/craft/cast.ts`, "sour".
 
 Svagast i skiss version 2, enligt min egen läsning: bild 1 är trång (fem man och Sir Digsworth på liten yta, sjömannen syns bara delvis bakom kocken); i bild 9 skymmer kistorna en del av raden bakom; i bild 11 är de fem i vita skjortor små i bilden.
+
+## Färdig video version 1: de tre punkterna från skissens godkännande
+Skiss version 2 blev GODKÄND (commit 3cbad88) med tre saker att ta med. Röst, text och klipptider är oförändrade.
+1. **Bild 6 ("show mercy"):** tagen från handelsskeppets däck över handelskaptenens axel, med lång brännvidd. Hans hatt och axel ligger i nedre vänstra hörnet (det är honom det sägs till). Piratkaptenen har klivit upp på en kista bakom tyget och syns från midjan; hans man står bredvid. Tyget är en smal remsa nedtill. Gesten med båda armarna ut är smalare så att händerna ryms i bilden.
+2. **Bild 12 ("It worked"):** kameran står längre in på slupens däck, så att alla fyra på det stora skeppet ryms, i två rader med de långa bak; de två främre sträcker armarna rakt upp så att ansiktena bakom syns. Sir Digsworth står vid högerkanten i tre kvarts vy: han ser upp mot presenningen medan han säger det, vänder sig sedan mot oss och rycker på axlarna, får droppen på kepsen och ser upp igen med handen mot kepsen.
+3. **Bild 1:** de fem står spridda i två rader så att varje ansikte syns (pojken och kocken fram, sjömannen, kaptenen och den gamle bak i luckorna). Kocken bär hinken lågt i handen; när händerna går upp släpper han den och den faller rakt ned från handen och välter, utan att gå in i någon. Pojken håller händerna mot kinderna i stället för uppe, så att han inte skymmer sjömannen bakom.

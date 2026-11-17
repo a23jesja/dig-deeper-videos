@@ -3,7 +3,7 @@
  "file": "public/craft/black-flag.wav",
  "seconds": 32.23,
  "integrated_lufs": -14.0,
- "true_peak_db": -2.21,
+ "true_peak_db": -1.47,
  "voice_lufs": -13.5,
  "music_lufs": -29.6,
  "effects_lufs": -24.5,
@@ -11,9 +11,9 @@
  "loudest_400ms_lufs": {
   "voice": -9.5,
   "music": -16.4,
-  "effects": -12.6
+  "effects": -12.8
  },
- "cues": 117,
+ "cues": 121,
  "beds": 2,
  "hits": 3,
  "music": "shanty"

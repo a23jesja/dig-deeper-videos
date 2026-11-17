@@ -329,8 +329,8 @@ function layered<T extends THREE.Object3D>(g: T, parts: Record<number, "back" | 
 // ---------------- props made to be held: the grip at the origin, the working end along +x, up along +y ----------------
 /** a sabre (a pirate's cutlass, a captain's hanger) to hold: the grip, a fist long, lies across the origin; the guard and the blade
  *  stand off along +x, the pommel along -x; the knuckle bow runs under the grip from guard to pommel (it lies over the fingers) */
-export const sabre = (blade = 0.62) => layered(group([mesh(box(0.1, 0.045, 0.045), "#5a3a22", { at: [0, 0, 0], shadow: false }), mesh(box(0.03, 0.2, 0.08), C.gold, { at: [0.06, 0, 0], line: 0.6, shadow: false }),
-  mesh(knuckleBow([[0.056, -0.034], [0.042, -0.062], [0, -0.07], [-0.04, -0.06], [-0.064, -0.02]]), C.gold, { line: 0.5, shadow: false }), mesh(ball(0.028, 8), C.gold, { at: [-0.062, 0, 0], line: 0.5, shadow: false }),
+export const sabre = (blade = 0.62) => layered(group([mesh(box(0.155, 0.045, 0.045), "#5a3a22", { at: [-0.022, 0, 0], shadow: false }), mesh(box(0.03, 0.2, 0.08), C.gold, { at: [0.06, 0, 0], line: 0.6, shadow: false }),
+  mesh(knuckleBow([[0.056, -0.034], [0.04, -0.066], [-0.01, -0.078], [-0.066, -0.07], [-0.102, -0.028]]), C.gold, { line: 0.5, shadow: false }), mesh(ball(0.03, 8), C.gold, { at: [-0.104, 0, 0], line: 0.5, shadow: false }),
   Object.assign(mesh(slab("sabre" + blade, [[0, -0.04], [blade * 0.64, -0.045], [blade, 0.07], [blade * 0.95, 0.115], [blade * 0.58, 0.058], [0, 0.046]], 0.022), "#e9eef4", { at: [0.074, 0, -0.011], line: 0.9, shadow: false }), { name: "blade" })]), { 2: "front" });
 /** a knuckle bow: one bent bar through the given points (x, y), from the guard round the outside of the fingers to the pommel,
  *  fixed at both ends */
@@ -351,7 +351,7 @@ export const bundleHeld = (r = 0.2, col = "#d9c08a") => { const sack = group([me
   sack.position.y = -r * 0.82; sack.name = "sack"; knot.name = "knot"; return group([sack, knot]); };
 /** a cutlass in its scabbard, to hang at a belt: the throat of the scabbard at the origin, the sheath along +x (`len` long), the hilt
  *  standing out of it along -x, a leather frog over the throat that takes the belt */
-export const scabbard = (len = 0.5) => layered(group([mesh(box(len, 0.075, 0.035), "#3a2a22", { at: [len / 2, 0, 0], line: 0.9, shadow: false }), mesh(box(0.07, 0.085, 0.045), C.gold, { at: [len - 0.03, 0, 0], line: 0.6, shadow: false }),
+export const scabbard = (len = 0.5) => layered(group([mesh(box(len, 0.095, 0.035), "#3a2a22", { at: [len / 2, 0.003, 0], line: 0.9, shadow: false }), mesh(box(0.07, 0.105, 0.045), C.gold, { at: [len - 0.03, 0, 0], line: 0.6, shadow: false }),
   mesh(box(0.09, 0.16, 0.05), "#5a3a22", { at: [0.06, 0.03, 0], line: 0.7, shadow: false }), mesh(box(0.14, 0.05, 0.05), "#5a3a22", { at: [-0.08, 0, 0], shadow: false }), mesh(box(0.04, 0.2, 0.08), C.gold, { at: [-0.01, 0, 0], line: 0.6, shadow: false }),
   mesh(knuckleBow([[-0.02, -0.034], [-0.04, -0.062], [-0.085, -0.072], [-0.13, -0.06], [-0.158, -0.02]]), C.gold, { line: 0.5, shadow: false }), mesh(ball(0.028, 8), C.gold, { at: [-0.158, 0, 0], line: 0.5, shadow: false })]), { 0: "back", 1: "back" }, [3, 4, 5, 6]);
 /** a flag as a painted cloth that hangs from its upper inner corner (the origin): w along +x, h down. kind: the black flag with a

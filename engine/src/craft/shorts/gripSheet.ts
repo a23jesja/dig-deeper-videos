@@ -120,10 +120,14 @@ const shots3: Shot[] = [];
 const card3 = (id: string, figs: Fig[], thing: (g: THREE.Group, c: Staged[], cam: Cam) => void) => { const before = shots2.length; card2(id, figs, thing); const s = shots2.pop()!; void before; const a = shots3.length * LEN; shots3.push({ ...s, a, b: a + LEN }); };
 const SAB3 = once(() => noShade(sabre(0.6))), SCAB3 = once(() => noShade(scabbard(0.5))), GLASS3 = once(() => { const s = noShade(spyglass()); s.scale.setScalar(1.2); return s; });
 both((view, turn) => card3(`sabre-ready-${view}`, [{ D: PIRATE_D, h: 1.8, turn, pose: () => usePose(SABRE, "ready", "R"), hands: R1, face: { brow: -0.6 } }], (g, [a], cam) => wield(g, SAB3(), SABRE, "ready", a, "R", cam)));
-for (const [k, n] of [[0, 1], [0.45, 2], [0.85, 3]] as [number, number][]) both((view, turn) => card3(`sabre-draw${n}-${view}`, [{ D: CAPTAIN_D, h: 1.86, turn, pose: (s) => { const body = { twist: 8 + 14 * k, lean: -5 * k }; return { ...drawPose({ ...s, pose: body }, "L", k), ...body }; }, hands: R1, face: { brow: -0.8, lid: 0.1 } }], (g, [a], cam) => drawSabre(g, SAB3(), SCAB3(), a, "L", cam, k)));
+// the draw only where it can be read: at a slant from the scabbard's side (the hand crosses his belly to the hilt, the blade comes out
+// forward along the sheath, clear of his face)
+const DRAW_VIEWS: [string, number][] = [["scab", -28]];
+for (const [k, n] of [[0, 1], [0.45, 2], [0.85, 3]] as [number, number][]) for (const [view, turn] of DRAW_VIEWS) card3(`sabre-draw${n}-${view}`, [{ D: CAPTAIN_D, h: 1.86, turn, pose: (s) => { const body = { twist: 6 + 36 * k, lean: -10 * k }; return { ...drawPose({ ...s, pose: body }, "L", k), ...body }; }, hands: LR, face: { brow: -0.8, lid: 0.1 } }], (g, [a], cam) => drawSabre(g, SAB3(), SCAB3(), a, "L", cam, k));
 both((view, turn) => card3(`sabre-raised-${view}`, [{ D: PIRATE2_D, h: 1.9, turn, pose: () => usePose(SABRE, "raised", "R"), hands: R1, face: { brow: -0.8, mouth: 0.5 } }], (g, [a], cam) => wield(g, SAB3(), SABRE, "raised", a, "R", cam)));
 both((view, turn) => card3(`sabre-lowered-${view}`, [{ D: PIRATE_D, h: 1.8, turn, pose: () => usePose(SABRE, "lowered", "R"), hands: R1 }], (g, [a], cam) => wield(g, SAB3(), SABRE, "lowered", a, "R", cam)));
 both((view, turn) => card3(`sabre-sheathed-${view}`, [{ D: PIRATE2_D, h: 1.9, turn, pose: () => (turn ? {} : { armL: [[18, 30], [26, 22]] }) }], (g, [a], cam) => sheathed(g, SCAB3(), a, "L", cam)));
-both((view, turn, way) => { const seen: V3 = [X + way * 6, 1.95, Z + 1.2], dx = -way * 0.25;
-  card3(`spyglass-look-${view}`, [{ D: CUSTOMS_D, h: 1.9, dx, turn, pose: (s) => spyPose(s, seen), hands: LR, face: { shut: spyEye(V.cam, [X + dx, 0, Z], seen, V.toward(X + dx, Z, turn)), lid: 0.7, brow: -0.3 } }], (g, [a], cam) => spy(g, GLASS3(), a, cam, seen)); });
+// the spyglass only with his head turned to what he looks at: seen from the side, looking either way
+for (const [view, turn, way] of [["right", 58, 1], ["left", -58, -1]] as [string, number, number][]) { const seen: V3 = [X + way * 6, 1.95, Z + 1.2], dx = -way * 0.25;
+  card3(`spyglass-look-${view}`, [{ D: CUSTOMS_D, h: 1.9, dx, turn, pose: (s) => spyPose(s, seen), hands: LR, face: { shut: spyEye(V.cam, [X + dx, 0, Z], seen, V.toward(X + dx, Z, turn)), lid: 0.7, brow: -0.3 } }], (g, [a], cam) => spy(g, GLASS3(), a, cam, seen)); }
 export const GRIP_SHEET_3: Film = { ...GRIP_SHEET, id: "grip-sheet-3", seconds: shots3.length * LEN, shots: shots3 };

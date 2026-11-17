@@ -78,10 +78,12 @@ const searchArm = (cost: (q: number[]) => number): ArmPose => {
 /** The arm (upper arm and forearm, as in a pose) that puts a figure's hand on a point in the world, as seen from the lens: the
  *  middle of the closed fingers of `side` comes to lie over `target` in the picture. Use it to build a use pose once (both hands
  *  on a spyglass), not on every frame */
-export const reachArm = (D: Design, pose: Pose, o: FigOpts, sp: Spot, cam: number[], side: "L" | "R", target: [number, number, number], slide = 0.5): ArmPose => {
+export const reachArm = (D: Design, pose: Pose, o: FigOpts, sp: Spot, cam: number[], side: "L" | "R", target: [number, number, number], slide = 0.5, /** where the elbow should go, if the hand can be put on the point that way (a lifted elbow) */ elbow?: [number, number, number]): ArmPose => {
   const P = D.props(o.who ?? "sir"), mpu = (sp.h ?? 1.75) / bodyH(P), [x, y, z] = sp.at, az = Math.atan2(cam[0] - x, cam[2] - z), yaw = sp.heading - az / D2R;
   const tx = ((target[0] - x) * Math.cos(az) - (target[2] - z) * Math.sin(az)) / mpu, ty = -(target[1] - y) / mpu, key = side === "L" ? "armL" : "armR", wr = `wr${side}` as Joint, tip = `tip${side}` as Joint;
-  return searchArm((q) => { const sk = solve(P, { ...pose, [key]: [[q[0], q[1]], [q[2], q[3]]] }, yaw), W = sk.j[wr], T = sk.j[tip]; return Math.hypot(W[0] + (T[0] - W[0]) * slide - tx, W[1] + (T[1] - W[1]) * slide - ty); });
+  const el = `el${side}` as Joint, ex = elbow ? ((elbow[0] - x) * Math.cos(az) - (elbow[2] - z) * Math.sin(az)) / mpu : 0, ey = elbow ? -(elbow[1] - y) / mpu : 0;
+  return searchArm((q) => { const sk = solve(P, { ...pose, [key]: [[q[0], q[1]], [q[2], q[3]]] }, yaw), W = sk.j[wr], T = sk.j[tip], E = sk.j[el];
+    return Math.hypot(W[0] + (T[0] - W[0]) * slide - tx, W[1] + (T[1] - W[1]) * slide - ty) + (elbow ? 0.02 * Math.hypot(E[0] - ex, E[1] - ey) : 0); });
 };
 /** The arm that points straight at something: the whole arm, shoulder to hand, lies along `dir` in the picture (x to the right, y
  *  up) and is stretched as far as it is drawn (an aimed pistol, a pointing finger). `bend` 0..1 lets the elbow give a little */

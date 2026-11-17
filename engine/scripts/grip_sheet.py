@@ -28,7 +28,7 @@ if mode == "sheet":
            "chop": "hugg: dragen bakåt", "struck": "hugg: genom", "carry": "buren", "haul": "halas", "fire": "mot kanonen", "hand": "i handen", "falling": "släppt, faller", "landed": "landad",
            "play": "spelar", "shoulder": "på axeln", "draw1": "dras 1: handen sluten om fästet", "draw2": "dras 2: fästet upp längs baljan", "draw3": "dras 3: klingan nästan ute"}
     USE2 = {("bucket", "raised"): "lyft", ("linstock", "ready"): "redo", ("cithara", "hold"): "i famnen", ("grapes", "hold"): "hålls upp", ("chest", "carry"): "buren av två i handtagen"}
-    VIEW = {"front": "framifrån", "side": "från sidan"}
+    VIEW = {"front": "framifrån", "side": "från sidan", "scab": "snett från baljans sida", "right": "från sidan, mot höger", "left": "från sidan, mot vänster"}
     first = {}
     for s in spots:
         if s["frame"] in have: first.setdefault(s["shot"], s)

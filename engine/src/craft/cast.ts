@@ -316,6 +316,8 @@ export const drawFingers = (L: Look) => (k: Ink, sk0: Sk, sides: Side[], whole?:
     const kind = whole?.[s0]; hand(k, W, len(sub(T, W)) > 6 ? angle(W, T) : angle(E, W), sk.P.hand, kind ?? "fist", L.skin, thumbFlip(sk, s), false, k.ol, "all"); }
   if (mir) k.g.restore();
 };
+/** is p inside the closed outline `poly` */
+const within = (poly: P2[], p: P2) => { let i = false; for (let a = 0, b = poly.length - 1; a < poly.length; b = a++) { const [xa, ya] = poly[a], [xb, yb] = poly[b]; if (ya > p[1] !== yb > p[1] && p[0] < ((xb - xa) * (p[1] - ya)) / (yb - ya) + xa) i = !i; } return i; };
 export const drawCast = (L: Look) => {
   const inner = drawTrue(L);
   return (k: Ink, sk: Sk, o: FigOpts) => {
@@ -323,6 +325,8 @@ export const drawCast = (L: Look) => {
     k.g.save(); k.g.scale(-1, 1);
     inner(k, solve(sk.P, swapPose(sk.pose), -sk.yaw), { ...o, handL: o.handR, handR: o.handL, face: o.face ? { ...o.face, gaze: o.face.gaze ? [-o.face.gaze[0], o.face.gaze[1]] : undefined } : undefined });
     k.g.restore();
+    // drawn as its mirror image, the drawing's left arm is the figure's right
+    const m = k.marks, hl = m.hidL, hr = m.hidR; delete m.hidL; delete m.hidR; if (hl) m.hidR = hl; if (hr) m.hidL = hr;
   };
 };
 const drawTrue = (L: Look) => (k: Ink, sk: Sk, o: FigOpts) => {
@@ -401,12 +405,18 @@ const drawTrue = (L: Look) => (k: Ink, sk: Sk, o: FigOpts) => {
   const top = L.rows[L.rows.length - 1][0];
   const chainDraw = () => { if (chainEnds && sk.cos > -0.05) { const e = chainEnds as { start: P2; bow: P2 }, end = S(-46, top * 0.8), bow: P2 = [Math.min(e.bow[0], e.start[0] + 2) * 1 + (e.bow[0] - e.start[0]) * 0, e.bow[1]]; chain(k, e.start, end, [bow[0] - sw * 16, (bow[1] + end[1]) / 2 - 6], 6, BRASS); k.dot(end[0], end[1], 3.4, "#7d5f1a"); } };
   const { near, far } = sk;
-  if (sideOn) { arm(far); leg(far); leg(near); torso(); head(); chainDraw(); arm(near); }
+  // the head as drawn (an ellipse round the middle of the skull) and the torso's outline: an arm drawn before them is hidden where it
+  // lies over them. A hand whose forearm is hidden that way is noted ("hidL", "hidR"): if it holds something, its fist would float
+  const hc = mid(sk.j.skull, sk.j.crown, 0.5), hw = Math.hypot(L.head.a * sk.cos, L.head.b * sk.sin), hh = L.head.H / 2, tor = outline();
+  const inHead = (p: P2) => ((p[0] - hc[0]) / hw) ** 2 + ((p[1] - hc[1]) / hh) ** 2 < 1, inTorso = (p: P2) => within(tor, p), inBody = (p: P2) => inHead(p) || inTorso(p);
+  const hid = (s: Side, by: (p: P2) => boolean) => { const W = sk.j[`wr${s}`]; if (by(W) && by(mid(sk.j[`el${s}`], W, 0.5))) k.mark(`hid${s}`, W[0], W[1]); };
+  if (sideOn) { hid(far, inBody); arm(far); leg(far); leg(near); torso(); head(); chainDraw(); arm(near); }
   else {
-    const late = (s: Side) => sk.z[`wr${s}`] - sk.z[`sh${s}`] > P.upper * 0.6;
+    // seen from the front, a hand at the face is in front of the face: its arm is drawn after the head, never behind it
+    const late = (s: Side) => sk.z[`wr${s}`] - sk.z[`sh${s}`] > P.upper * 0.6, atFace = (s: Side) => !back && inHead(sk.j[`wr${s}`]);
     leg(far); leg(near);
-    if (back) { for (const s of [far, near]) if (late(s)) arm(s); torso(); for (const s of [far, near]) if (!late(s)) arm(s); head(); }
-    else { torso(); for (const s of [far, near]) if (!late(s)) arm(s); head(); chainDraw(); for (const s of [far, near]) if (late(s)) arm(s); }
+    if (back) { for (const s of [far, near]) if (late(s)) { hid(s, inBody); arm(s); } torso(); for (const s of [far, near]) if (!late(s)) { hid(s, inHead); arm(s); } head(); }
+    else { torso(); for (const s of [far, near]) if (!late(s) && !atFace(s)) { hid(s, inHead); arm(s); } head(); chainDraw(); for (const s of [far, near]) if (late(s) || atFace(s)) arm(s); }
   }
   k.ink = ink0;
 };

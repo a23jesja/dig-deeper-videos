@@ -63,8 +63,11 @@ export const forearm = (a: Staged, side: "L" | "R", cam: Cam) => { const e = a.j
  *  layers: the palm and the thumb on the figure's card, behind the thing, and these fingers in front of it, so that the thing lies in
  *  the hand and not on it. `d` = how far in front of the figure's card (metres toward the lens); the layer is brought nearer along the
  *  lines of sight, so that the fingers stay exactly over the figure's own hand in the picture */
+/** the hands that hold something while their forearm is hidden behind the head or the body (the drawing notes it; grips.ts auditGrips reads it) */
+export const UNSEEN: string[] = [];
 export const fingers = (into: THREE.Group, a: Staged, sides: ("L" | "R")[], cam: Cam, d = 0.1, whole = false) => {
   if (a.spin !== undefined) return null;
+  for (const s of sides) if (a.mark?.(`hid${s}`)) UNSEEN.push(`${a.name} ${s}`);
   const m = fingersCard(a.D, a.pose, a.o, { at: a.at, heading: a.heading, h: a.h }, cam.pos, sides, a.seen, whole); if (!m) return null;
   const dist = Math.hypot(cam.pos[0] - m.position.x, cam.pos[1] - m.position.y, cam.pos[2] - m.position.z) || 1, k = 1 - d / dist, p0 = m.position.clone();
   m.position.set(cam.pos[0] + (m.position.x - cam.pos[0]) * k, cam.pos[1] + (m.position.y - cam.pos[1]) * k, cam.pos[2] + (m.position.z - cam.pos[2]) * k); m.scale.multiplyScalar(k);

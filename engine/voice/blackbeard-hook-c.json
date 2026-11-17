@@ -1,0 +1,24 @@
+{
+ "voice": "bm_george",
+ "speed": 1.06,
+ "gap": 0.16,
+ "lead": 0.0,
+ "risk": [
+  "Blackbeard's",
+  "beard",
+  "smoke"
+ ],
+ "note": "Hook-lab opening clip (DAILY-RULES): bm_george stands in until Jesper has chosen the new voice in the voice trial.",
+ "lines": [
+  {
+   "id": "hook",
+   "text": "Why does Blackbeard's beard smoke?",
+   "gap": 0.45
+  },
+  {
+   "id": "hello",
+   "text": "Oh. Hello.",
+   "gap": 0.2
+  }
+ ]
+}

@@ -4,7 +4,7 @@
 // Shared set: every Short on the sailing ship uses it.
 import * as THREE from "three";
 import { mesh, group, box, cyl, ball, lathe, slab, rod, paint, torus, sunRig, skyDome } from "./kit";
-import { C, barrel, crate, ropeCoil, wheel, cloud, doorway, painted } from "./props";
+import { C, barrel, crate, ropeCoil, wheel, cloud, doorway, painted, yardSail, yard } from "./props";
 
 export const SEA = -2.3;
 /** where things are, for the films that play here */
@@ -120,7 +120,8 @@ export const pirateShip = () => {
     for (const x of [-0.2, -0.95]) root.add(mesh(box(0.5, 0.4, 0.06), "#f6e3a0", { at: [x, 0.62, q.z - 0.03], line: 0.6 }), mesh(box(0.06, 0.4, 0.07), "#5a3a22", { at: [x, 0.62, q.z - 0.04], line: 0, shadow: false }));
     for (let i = 0; i < 4; i++) root.add(mesh(box(0.9, 0.275, 0.3), "#c98f52", { at: [-2.2, 0.1375 + i * 0.275, q.z - 1.05 + i * 0.3] }));
     for (const x of [-2.6, -1.3, 0, 1.3, 2.6]) root.add(mesh(box(0.1, 0.8, 0.1), "#e8cf8a", { at: [x, q.y + 0.5, q.z + 0.1] })); root.add(mesh(box(W * 2 - 0.3, 0.09, 0.16), "#e8cf8a", { at: [0, q.y + 0.92, q.z + 0.1], line: 0.7 }));
-    const w = wheel(0.55); w.position.set(0, q.y + 0.95, q.z + 1.6); root.add(w, mesh(box(0.2, 0.95, 0.2), "#5a4634", { at: [0, q.y + 0.47, q.z + 1.75] }));
+    // the wheel on its post: a named thing, so that a shot from inboard on the quarterdeck can leave it out (Shot.hide "wheel")
+    { const w = wheel(0.55); w.position.set(0, q.y + 0.95, q.z + 1.6); const wg = group([w, mesh(box(0.2, 0.95, 0.2), "#5a4634", { at: [0, q.y + 0.47, q.z + 1.75] })]); wg.name = "wheel"; root.add(wg); (root.userData.named as THREE.Object3D[]).push(wg); }
     // the rail round the quarterdeck, and the flagstaff on the port quarter
     for (const s of [-1, 1]) { for (const z of [q.z + 0.1, 6.1, 7.3, 8.4]) root.add(mesh(box(0.1, 0.8, 0.1), "#e8cf8a", { at: [s * (W - 0.12), q.y + 0.5, z] })); root.add(mesh(box(0.16, 0.09, 8.5 - q.z + 0.06), "#e8cf8a", { at: [s * (W - 0.12), q.y + 0.92, (q.z + 8.5) / 2], line: 0.7 }), mesh(box(0.08, 0.06, 8.5 - q.z), "#e8cf8a", { at: [s * (W - 0.12), q.y + 0.52, (q.z + 8.5) / 2], line: 0.5 })); }
     for (const x of [-2.0, -1.0, 1.0, 2.0]) root.add(mesh(box(0.1, 0.8, 0.1), "#e8cf8a", { at: [x, q.y + 0.5, 8.42] })); root.add(mesh(box(W * 2 - 0.2, 0.09, 0.16), "#e8cf8a", { at: [0, q.y + 0.92, 8.42], line: 0.7 }), mesh(box(W * 2 - 0.3, 0.06, 0.08), "#e8cf8a", { at: [0, q.y + 0.52, 8.42], line: 0.5 }));
@@ -151,5 +152,69 @@ export const pirateShip = () => {
   { const s = farShip(); s.position.set(...SHIP.merchant); s.rotation.y = 0.5; root.add(s); }
   for (const [x, y, z, s] of [[-170, 110, -420, 34], [150, 150, -500, 44], [-40, 190, -540, 30], [260, 100, -400, 26], [-220, 120, 300, 36], [200, 140, 340, 40], [420, 130, -60, 38]] as number[][]) { const c = cloud(s); c.position.set(x, y, z); if (Math.abs(x) > 300) c.rotation.y = Math.PI / 2; root.add(c); }
   void group; void painted;
+  return root;
+};
+
+// ---------------- two ships side by side (the Short about the black flag) ----------------
+/** a small merchant ship, whole across her deck. In her own space she lies along z with her bow toward -z and her starboard side
+ *  (+x) toward the ship alongside; her deck is at y = MERCHANT_DECK. Aft stands a thin mast (BRIG.mast) whose sail is not part of
+ *  her: the world adds it as a thing of its own (yardSail), so that a film can strike it. Her crew stand between that mast and the
+ *  starboard rail. `strake` = the colour of her painted band (another colour = another ship) */
+export const BRIG = { half: 3.0, rail: 0.85, mast: [-0.6, 3.0] as [number, number], sail: { x: -0.6, z: 3.0, top: 7.4, w: 5.6, h: 4.4 }, pins: [2.86, 4.3] as [number, number] };
+export const merchantBrig = (strake = "#3f77b4", len = 15) => {
+  const g = new THREE.Group(), d = MERCHANT_DECK, H = BRIG.half, hullC = "#6a4630", wallC = "#96683c", deckMap = (planks("brigdeck", "#e0c48c", "#d2b276", "#96744a"), paint("brigdeck", 256, 256, () => {}, [3, 1]));
+  const bowZ = -len / 2, q = Math.PI / 4, dia = H * Math.SQRT2 + 0.06;
+  g.add(mesh(box(H * 2 + 0.3, 2.9 + d, len), hullC, { at: [0, d - 0.05 - (2.9 + d) / 2, 0] }), mesh(box(H * 2 + 0.36, 0.4, len + 0.02), strake, { at: [0, d - 0.35, 0], line: 0.6 }), mesh(box(H * 2 + 0.36, 0.14, len + 0.02), "#f1e4c4", { at: [0, d - 0.72, 0], line: 0 }));
+  g.add(mesh(box(dia, 2.9 + d, dia), hullC, { at: [0, d - 0.05 - (2.9 + d) / 2, bowZ], rot: [0, q, 0] }), mesh(box(dia + 0.06, 0.4, dia + 0.06), strake, { at: [0, d - 0.35, bowZ], rot: [0, q, 0], line: 0.6 }));
+  g.add(mesh(box(H * 2, 0.16, len), "#ffffff", { at: [0, d - 0.08, 0], map: deckMap, line: 0 }), mesh(box(dia - 0.2, 0.16, dia - 0.2), "#e0c48c", { at: [0, d - 0.08, bowZ], rot: [0, q, 0], line: 0 }));
+  // her bulwarks with a painted band and the rail on top; gun ports on her sides
+  for (const s of [-1, 1]) {
+    g.add(mesh(box(0.16, BRIG.rail - 0.05, len), wallC, { at: [s * H, d + (BRIG.rail - 0.05) / 2, 0] }), mesh(box(0.3, 0.09, len + 0.06), "#e8cf8a", { at: [s * H, d + BRIG.rail, 0], line: 0.7 }), mesh(box(0.2, 0.13, len + 0.02), "#f1e4c4", { at: [s * H, d + 0.5, 0], line: 0.5 }), mesh(box(0.2, 0.07, len + 0.02), strake, { at: [s * H, d + 0.33, 0], line: 0 }));
+    g.add(mesh(box(0.16, BRIG.rail - 0.05, dia), wallC, { at: [s * H / 2, d + (BRIG.rail - 0.05) / 2, bowZ - H / 2], rot: [0, s * q, 0] }), mesh(box(0.3, 0.09, dia + 0.05), "#e8cf8a", { at: [s * H / 2, d + BRIG.rail, bowZ - H / 2], rot: [0, s * q, 0], line: 0.7 }));
+    for (const z of [-4.6, -1.6, 1.4, 4.4]) g.add(mesh(box(0.08, 0.5, 0.6), "#3a2a22", { at: [s * (H + 0.17), d - 1.25, z], line: 0.6, shadow: false }));
+  }
+  g.add(mesh(box(H * 2, BRIG.rail - 0.05, 0.16), wallC, { at: [0, d + (BRIG.rail - 0.05) / 2, len / 2] }), mesh(box(H * 2 + 0.2, 0.09, 0.3), "#e8cf8a", { at: [0, d + BRIG.rail, len / 2], line: 0.7 }));
+  // the main mast forward with two yards (her big sails are furled), its shrouds; the thin mast aft
+  { const mz = -2.6; g.add(rod([0, d, mz], [0, d + 13.5, mz], 0.22, "#8a6a3e"), mesh(cyl(0.34, 0.34, 0.12, 14), "#7a5a36", { at: [0, d + 0.06, mz] }));
+    for (const [y, l] of [[6.2, 7.2], [10.4, 5.6]]) { const yd = yard(l); yd.position.set(0, d + y, mz + 0.24); g.add(yd); }
+    for (const s of [-1, 1]) { for (const z of [mz - 0.9, mz, mz + 0.9]) g.add(rod([s * H, d + BRIG.rail, z], [0, d + 9.6, mz], 0.028, "#3a3028", { line: 0.4 }));
+      for (let i = 1; i < 9; i++) { const u = i / 10, y = d + BRIG.rail + (9.6 - BRIG.rail) * u, x = s * H * (1 - u); g.add(rod([x, y, mz - 0.9 * (1 - u)], [x, y, mz + 0.9 * (1 - u)], 0.016, "#3a3028", { line: 0, shadow: false })); } }
+    g.add(mesh(box(1.9, 0.9, 0.1), "#8a6a3e", { at: [0, d + 0.45, mz + 0.9] }), mesh(box(2.1, 0.08, 0.2), "#e8cf8a", { at: [0, d + 0.9, mz + 0.9], line: 0.6 })); }
+  { const [mx, mz] = BRIG.mast; g.add(rod([mx, d, mz], [mx, d + 10.4, mz], 0.17, "#8a6a3e"), mesh(cyl(0.28, 0.28, 0.12, 14), "#7a5a36", { at: [mx, d + 0.06, mz] }), mesh(cyl(0.2, 0.2, 0.1, 12), "#7a5a36", { at: [mx, d + 2.9, mz], line: 0.6 })); }
+  // on deck: a hatch with its grating, casks and crates out of the way of the crew, the pin rail on the starboard side with its coils,
+  // a lantern aft (she is steered with a tiller, out of the way)
+  g.add(mesh(box(1.7, 0.22, 1.5), "#8a5e2c", { at: [-1.2, d + 0.11, 1.4] })); for (let i = 0; i < 4; i++) g.add(mesh(box(1.5, 0.03, 0.12), "#2b1d1a", { at: [-1.2, d + 0.235, 0.9 + i * 0.33], line: 0, shadow: false }));
+  { const b1 = barrel(0.95, 0.34); b1.position.set(-2.3, d, 0.2); const b2 = barrel(0.8, 0.3, "#c98a4a"); b2.position.set(-2.35, d, 6.6); const c1 = crate(0.7); c1.position.set(-2.2, d, 5.8); const r1 = ropeCoil(0.36, 3); r1.position.set(-1.6, d, -0.6); g.add(b1, b2, c1, r1); }
+  { const [px, pz] = BRIG.pins; g.add(mesh(box(0.12, 0.06, 1.3), "#7a5a36", { at: [px, d + 0.62, pz], line: 0.6 }));
+    for (const z of [-0.5, -0.17, 0.17, 0.5]) g.add(mesh(cyl(0.022, 0.022, 0.24, 6), "#5a3a22", { at: [px, d + 0.68, pz + z], line: 0.5, shadow: false }));
+    for (const z of [-0.5, 0.17]) g.add(mesh(torus(0.12, 0.034, 14), "#dcc38a", { at: [px - 0.07, d + 0.44, pz + z], rot: [0, Math.PI / 2, 0], scale: [1, 1.5, 1], line: 0.6, shadow: false })); }
+  { g.add(rod([0, d + BRIG.rail, len / 2], [0, d + 2.5, len / 2], 0.05, C.iron), mesh(box(0.3, 0.4, 0.3), "#ffd75a", { at: [0, d + 2.7, len / 2] }), mesh(box(0.38, 0.08, 0.38), C.iron, { at: [0, d + 2.94, len / 2] })); }
+  return g;
+};
+/** where things are in the world of the two ships (world coordinates) */
+export const FLAGSEA = { mx: -8.2, mz: 1.5, cloth: SHIP.aft + 1.15, staff: [SHIP.staff.at[0], SHIP.staff.at[2]] as [number, number], staffTop: 6.0, rail: -8.2 + BRIG.half, deck: MERCHANT_DECK,
+  /** the merchant's after mast, the plane of its sail and the height of its yard, her pin rail (world) */
+  mast: [-8.2 + BRIG.mast[0], 1.5 + BRIG.mast[1]] as [number, number], yard: MERCHANT_DECK + BRIG.sail.top, pins: [-8.2 + BRIG.pins[0], 1.5 + BRIG.pins[1]] as [number, number] };
+/** how far the evening has come at the film time T (0 = clear day, 1 = a red evening): the film sets it, the world's light follows */
+export const dusk = { at: (_T: number) => 0 };
+/** the pirate sloop with a merchant ship lying close on her port side. The sloop's plank is gone; along her quarterdeck's port rail a
+ *  waist cloth is lashed up, breast high, behind which a crew can hide. Named things (Shot.hide): "merchant" (the whole merchant
+ *  ship), "msail" (the sail on her after mast) and the sloop's "wheel". The light turns to a red evening by `dusk.at` */
+export const flagSea = () => {
+  const root = pirateShip(), W = SHIP.half, q = SHIP.quarter, x = -(W - 0.12) - 0.11, z0 = q.z + 0.12, z1 = 7.72, top = FLAGSEA.cloth;
+  const old = root.userData.named as THREE.Object3D[]; old.find((o) => o.name === "plank")!.visible = false;
+  root.add(mesh(box(0.05, top - SHIP.aft, z1 - z0), "#e2cf9e", { at: [x, (top + SHIP.aft) / 2, (z0 + z1) / 2], line: 0.8 }), mesh(box(0.06, 0.15, z1 - z0), "#b3261e", { at: [x, top - 0.22, (z0 + z1) / 2], line: 0, shadow: false }));
+  for (let z = z0; z <= z1 + 0.01; z += (z1 - z0) / 4) root.add(rod([x + 0.06, SHIP.aft, z], [x + 0.06, top + 0.06, z], 0.035, "#8a6a3e"), mesh(torus(0.05, 0.014, 10), "#dcc38a", { at: [x + 0.03, top - 0.08, z], rot: [0, Math.PI / 2, 0], line: 0.5, shadow: false }));
+  // her flagstaff is lengthened, so that a flag run up to its top flies clear above every head
+  { const [sx, , sz] = SHIP.staff.at; root.add(rod([sx, SHIP.staff.at[1] + SHIP.staff.h, sz], [sx, FLAGSEA.staffTop, sz], 0.04, "#8a6a3e"), mesh(ball(0.07, 10), C.gold, { at: [sx, FLAGSEA.staffTop + 0.05, sz] })); }
+  const brig = merchantBrig(); brig.name = "merchant"; brig.position.set(FLAGSEA.mx, 0, FLAGSEA.mz);
+  const sail = yardSail(BRIG.sail.w, BRIG.sail.h); sail.name = "msail"; sail.position.set(FLAGSEA.mx + BRIG.sail.x, MERCHANT_DECK + BRIG.sail.top, FLAGSEA.mz + BRIG.sail.z);
+  root.add(brig, sail); root.userData.named = [...old.filter((o) => o.name !== "plank"), brig, sail];
+  // the evening: a red veil inside the sky, and the sun and the sky light turn warm
+  const veilTex = paint("duskveil", 16, 512, (g) => { const gr = g.createLinearGradient(0, 0, 0, 512); gr.addColorStop(0, "#7a2440"); gr.addColorStop(0.42, "#e8503a"); gr.addColorStop(0.56, "#ffb060"); gr.addColorStop(1, "#ffb060"); g.fillStyle = gr; g.fillRect(0, 0, 16, 512); });
+  const veil = new THREE.Mesh(new THREE.SphereGeometry(880, 24, 16), new THREE.MeshBasicMaterial({ map: veilTex, side: THREE.BackSide, fog: false, depthWrite: false, transparent: true, opacity: 0 })); veil.renderOrder = -9; root.add(veil);
+  const rig = root.userData.rig as THREE.Object3D, sun = rig.userData.sun as THREE.DirectionalLight, hemi = rig.children.find((o) => (o as THREE.HemisphereLight).isHemisphereLight) as THREE.HemisphereLight;
+  const day = sun.color.clone(), skyDay = hemi.color.clone(), red = new THREE.Color("#ff8a5a"), skyRed = new THREE.Color("#ff9a8a"), base = root.userData.tick as (t: number) => void;
+  root.userData.tick = (T: number) => { base(T); const k = Math.max(0, Math.min(1, dusk.at(T))); (veil.material as THREE.MeshBasicMaterial).opacity = k; veil.visible = k > 0.001; sun.color.copy(day).lerp(red, k); hemi.color.copy(skyDay).lerp(skyRed, k); };
   return root;
 };

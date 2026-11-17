@@ -1,6 +1,6 @@
 # Short 3: Why did pirates fly a black flag?
 
-MANUS, VERSION 2 (granskningens ändringar av version 1 införda, se sist; inget är byggt). Två skepp till havs, skrämmande med rolig vändning, SANT. Beräknad längd 32-34 sekunder, 11 bilder, 90 ord, Kokoro bm_george. Fråga nr 21 i `granskning/fragor.md`. Tiderna nedan är uppskattade efter plankfilmens takt (83 ord på 30,3 s); de riktiga tiderna kommer ur rösten.
+SKISS, VERSION 1 (manus version 2 med granskningens ändringar; rösten är inspelad, 30,8 s; filmen är 32,2 s och har 12 bilder; det som skiljer bilderna från tabellen står sist). Två skepp till havs, skrämmande med rolig vändning, SANT. Beräknad längd 32-34 sekunder, 11 bilder, 90 ord, Kokoro bm_george. Fråga nr 21 i `granskning/fragor.md`. Tiderna nedan är uppskattade efter plankfilmens takt (83 ord på 30,3 s); de riktiga tiderna kommer ur rösten.
 
 Planerad för onsdag 18 november. Filmens id i motorn: `black-flag`.
 
@@ -75,3 +75,20 @@ Johnson är läst i bokens råtext (Project Gutenberg nr 40580, hämtad från Gu
 4. "Some ships gave up at the very sight." står kvar.
 5. Gissningen sägs som en fråga och undertexten har frågetecknet.
 Dessutom från granskningen: varje figur i en grupp gör något eget och ingen står stilla vänd mot kameran; telefonkopia under 28 MiB läggs i leveransen från början.
+
+## Skiss version 1: så blev bilderna (det som skiljer sig från tabellen ovan)
+Rösten är oförändrad från manus version 2. Filmen är 32,2 s, 967 bildrutor, 12 bilder. Skisspaketet ligger i `granskning/black-flag/skiss/`.
+1. **Tolv bilder, inte elva:** presenningen är delad i två bilder: "One crew had no black flag," (kistan gås igenom) och "so they hoisted a dirty tarpaulin and fired a gun." (hissningen, skjortorna, kanonen).
+2. **Flaggan** är svart med ett vitt timglas i alla bilder, inte bara i den första, så att den är samma flagga hela filmen. Ingen dödskalle någonstans.
+3. **Bild 1:** besättningen har backat in på däck med händerna uppe och ser sig om mot flaggan; Sir Digsworth står vid masten i förgrunden och ser på oss i första rutan, sedan på flaggan, och hukar sig sist.
+4. **Bild 2:** flaggans skugga går över Sir Digsworth medan han säger gissningen.
+5. **Bild 4:** sedd inifrån piratskeppet: fyra pirater hukar bakom ett uppspänt skyddstyg på relingen, en reser sig för att kika och trycks ned av kaptenen. Sjömannen på handelsskeppet står på en låda och vinkar över tygets kant.
+6. **Bild 5:** sedd nerifrån handelsskeppets däck, bakom sjömannen: piraterna reser sig en efter en bakom tyget med huggarna i luften.
+7. **Bild 7:** handelskaptenen hugger av fallet med sin huggare (inget rep vid relingen); bakom honom står sjömannen och skeppspojken, och händerna går upp en efter en, hans egna sist.
+8. **Bild 8:** den envise kaptenen har en pistol, inte en relingskanon. Han står med ryggen mot oss; när den röda flaggan är uppe sticker han pistolen bakom ryggen, där bara vi ser den, och ser sig om över axeln.
+9. **Bild 9:** piratkaptenen har kommit ombord på handelsskeppet och står närmast oss: han gäspar, huggaren sitter i bältet (han klappar inte flaggstången). Två pirater släpar och skjuter kistorna längs däcket (de bär dem inte), förbi besättningen. Den som kliar sig på näsan är kocken. På piratskeppet hänger vakten över relingen med hakan i handen.
+10. **Bild 10:** flaggkistan står på en låda; ur den kommer en flaska och en stövel, och sedan vänds den upp och ned och skakas. Den andre håller det tomma flaggfallet och får syn på presenningen.
+11. **Bild 11:** sedd från akterdäck: presenningen rycks av en tunna vid masten (flugor), hissas och droppar; männen i vita skjortor kommer gående i rad längs däcket för om masten och ställer upp sig, var och en med sin min; kanonen avfyras på "fired a gun" (rök ut över sidan, kameran skakar).
+12. **Bild 12:** det stora skeppets flagga är en vit flagga som halas ned medan besättningens händer går upp en efter en. Sir Digsworth säger "It worked." till oss med en axelryckning, ser upp, och droppen landar på hans keps.
+
+Tre thumbnailförslag är valda ur filmens egna bildrutor (0,6 s, röda flaggan, presenningen); de visas med den färdiga videon.

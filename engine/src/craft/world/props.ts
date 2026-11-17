@@ -377,3 +377,56 @@ export const spyglass = () => group([mesh(cyl(0.028, 0.034, 0.26, 10), C.gold, {
 /** flat white clouds far away */
 export const cloud = (s = 30) => { const g = new THREE.Group(); for (const [x, y, r] of [[0, 0, 1], [0.9, 0.1, 0.72], [-0.95, 0.05, 0.66], [0.35, 0.42, 0.7], [-0.4, 0.36, 0.6]]) g.add(mesh(ball(1, 14), "#ffffff", { at: [x * s, y * s, 0], scale: [r * s, r * s * 0.6, r * s * 0.3], shadow: false, receive: false, line: 0.6 })); return g; };
 export { INK3 };
+
+// ---------------- flags as cloth, smoke, small things of a deck ----------------
+export type FlagKind = "pirate" | "red" | "friendly" | "tarpaulin" | "white";
+const flagPaint = (kind: FlagKind, g: CanvasRenderingContext2D, r: () => number) => {
+  const W = 384, H = 256, edge = (c: string) => { g.strokeStyle = c; g.lineWidth = 9; g.strokeRect(4.5, 4.5, W - 9, H - 9); };
+  if (kind === "pirate") { // black, with a white hourglass (one of the signs Greenwich lists; no skull)
+    g.fillStyle = "#1b181f"; g.fillRect(0, 0, W, H); g.fillStyle = "#f6f1e4";
+    g.beginPath(); g.moveTo(132, 52); g.lineTo(252, 52); g.lineTo(200, 128); g.lineTo(252, 204); g.lineTo(132, 204); g.lineTo(184, 128); g.closePath(); g.fill();
+    g.fillRect(118, 40, 148, 16); g.fillRect(118, 200, 148, 16); g.fillStyle = "#1b181f"; g.beginPath(); g.moveTo(156, 70); g.lineTo(228, 70); g.lineTo(192, 112); g.closePath(); g.fill(); edge("#050407");
+  } else if (kind === "red") { g.fillStyle = "#d42a20"; g.fillRect(0, 0, W, H); g.fillStyle = "#b81f18"; for (const x of [96, 200, 300]) g.fillRect(x, 0, 10, H); edge("#6e120e"); }
+  else if (kind === "friendly") { // a made-up merchant ensign: blue and white stripes, a yellow disc in the upper corner by the staff
+    for (let i = 0; i < 5; i++) { g.fillStyle = i % 2 ? "#fbf6ea" : "#2f6fc0"; g.fillRect(0, (i * H) / 5, W, H / 5 + 1); }
+    g.fillStyle = "#2f6fc0"; g.fillRect(0, 0, 150, (H * 3) / 5); g.fillStyle = "#f6c52e"; g.beginPath(); g.arc(75, 77, 44, 0, 7); g.fill(); edge("#1c3f73");
+  } else if (kind === "white") { g.fillStyle = "#fbf8ee"; g.fillRect(0, 0, W, H); g.fillStyle = "#e6dfcb"; for (const x of [110, 240]) g.fillRect(x, 0, 8, H); edge("#8f8a7a"); }
+  else { // a tarpaulin: tarred canvas, stained and patched, its edge frayed
+    g.fillStyle = "#6f5d44"; g.fillRect(0, 0, W, H);
+    for (let i = 0; i < 26; i++) { g.fillStyle = ["#4a3d2c", "#5c4b35", "#857150", "#3a3024"][i % 4]; g.beginPath(); g.ellipse(r() * W, r() * H, 14 + r() * 40, 8 + r() * 22, r() * 3, 0, 7); g.fill(); }
+    g.fillStyle = "#93805c"; g.fillRect(232, 46, 84, 66); g.strokeStyle = "#2c241a"; g.lineWidth = 4; g.setLineDash([9, 7]); g.strokeRect(236, 50, 76, 58); g.setLineDash([]);
+    g.fillStyle = "#2c241a"; for (const [x, y] of [[40, 30], [40, 226], [344, 30], [344, 226]]) { g.beginPath(); g.arc(x, y, 9, 0, 7); g.fill(); }
+    g.strokeStyle = "#2c241a"; g.lineWidth = 5; for (let i = 0; i < 9; i++) { g.beginPath(); g.moveTo(W - 2, 14 + i * 28); g.lineTo(W - 16 - r() * 14, 22 + i * 28); g.stroke(); } edge("#241d15");
+  }
+};
+/** a flag as cloth that moves. It hangs from its hoist (the edge at x = 0, from the origin down to -h) and flies toward +x.
+ *  `wave(t, wind)` lays it for the time t: wind 1 = flying out, 0 = hanging limp along the staff. The cloth is made once and reshaped. */
+export const clothFlag = (kind: FlagKind, w = 1.5, h = 1.0) => {
+  const NX = 16, NY = 6, geo = new THREE.PlaneGeometry(w, h, NX, NY), m = mesh(geo, "#ffffff", { line: 0, map: paint("cloth" + kind, 384, 256, (g, r) => flagPaint(kind, g, r)), side: THREE.DoubleSide });
+  m.receiveShadow = false;
+  const wave = (t: number, wind = 1) => { const p = geo.getAttribute("position") as THREE.BufferAttribute, k = Math.max(0, Math.min(1, wind));
+    for (let j = 0; j <= NY; j++) for (let i = 0; i <= NX; i++) { const u = i / NX, v = j / NY;
+      const fx = u * w * (0.97 - 0.03 * Math.sin(t * 5.1 + v * 2)), fy = -v * h - 0.1 * w * u * u + 0.03 * w * u * Math.sin(t * 3.3 - u * 5), fz = 0.1 * w * u * Math.sin(u * 7.4 - t * 9 + v * 1.1) + 0.03 * w * u * Math.sin(u * 15 - t * 13);
+      const lx = u * w * 0.16 + 0.025 * Math.sin(v * 6 + u * 9), ly = -v * h * 0.92 - u * w * 0.72, lz = 0.05 * Math.sin(u * 13 + t * 2.2 + v * 3);
+      p.setXYZ(j * (NX + 1) + i, lx + (fx - lx) * k, ly + (fy - ly) * k, lz + (fz - lz) * k); }
+    p.needsUpdate = true; geo.computeVertexNormals(); geo.computeBoundingSphere(); return m; };
+  wave(0, 1); return { obj: m, wave };
+};
+/** powder smoke from a gun fired at p toward (dx, dz): u = seconds since the shot. A flash for a moment, then puffs that roll out, rise and thin away */
+export const gunSmoke = (into: THREE.Object3D, p: [number, number, number], dx: number, dz: number, u: number, big = 1) => {
+  if (u < 0 || u > 2.6) return; const n = Math.hypot(dx, dz) || 1; dx /= n; dz /= n;
+  if (u < 0.09) into.add(mesh(ball(0.2 * big, 10), "#ffe27a", { at: [p[0] + dx * 0.25 * big, p[1], p[2] + dz * 0.25 * big], scale: [1.5, 0.8, 1.5], line: 0, shadow: false, glow: "#ffb030" }));
+  for (let k = 0; k < 9; k++) { const s = Math.min(1, u / 0.5), far = (0.35 + 0.22 * k) * big * (1 - Math.exp(-u * 3.2)), up = (0.1 + 0.05 * (k % 3)) * u * u + 0.12 * Math.sin(k * 2.3) * s, side = 0.2 * Math.sin(k * 1.9) * big * s, rr = (0.13 + 0.035 * (k % 4)) * big * (0.5 + 0.9 * s) * Math.max(0, 1 - Math.max(0, u - 1.2) / 1.4);
+    if (rr > 0.01) into.add(mesh(ball(1, 10), k % 3 ? "#f2efe8" : "#d9d5cc", { at: [p[0] + dx * far - dz * side, p[1] + up, p[2] + dz * far + dx * side], scale: [rr, rr * 0.85, rr], line: 0.5, shadow: false })); }
+};
+/** a wooden bucket with two hoops, standing on y = 0 */
+export const bucket = (h = 0.3) => group([mesh(lathe(`bucket${h}`, [[h * 0.46, 0], [h * 0.6, h], [h * 0.53, h], [h * 0.42, h * 0.1]], 14), "#b0703c"), mesh(torus(h * 0.5, h * 0.035, 16), C.iron, { at: [0, h * 0.28, 0], rot: [Math.PI / 2, 0, 0], line: 0, shadow: false }), mesh(torus(h * 0.57, h * 0.035, 16), C.iron, { at: [0, h * 0.8, 0], rot: [Math.PI / 2, 0, 0], line: 0, shadow: false })]);
+/** a tin mug with a handle (its handle toward +x) */
+export const mug = (h = 0.13) => group([mesh(cyl(h * 0.36, h * 0.32, h, 12), "#b9c3cd", { at: [0, h / 2, 0], line: 0.8, shadow: false }), mesh(arc(h * 0.26, h * 0.06, Math.PI, 10), "#b9c3cd", { at: [h * 0.36, h / 2, 0], rot: [0, 0, -Math.PI / 2], line: 0.6, shadow: false })]);
+/** a sail on its yard, seen broadside: the yard lies along z at the origin and the canvas hangs down from it, w wide and h deep.
+ *  `drop` 0 = set and drawing, 1 = struck: the canvas lies bunched under the yard */
+export const yardSail = (w = 5.6, h = 4.4, drop = 0) => { const k = 1 - 0.86 * Math.max(0, Math.min(1, drop)), g = new THREE.Group();
+  g.add(rod([0, 0, -w / 2 - 0.3], [0, 0, w / 2 + 0.3], 0.09, "#7a5a36"), mesh(box(0.1 + 0.34 * (1 - k), h * k, w), "#f6efdc", { at: [0, -h * k / 2 - 0.06, 0], line: 0.9 }));
+  for (let z = -w / 2 + 0.7; z < w / 2; z += 0.7) g.add(mesh(box(0.11 + 0.35 * (1 - k), h * k - 0.1, 0.02), "#cbb98c", { at: [0, -h * k / 2 - 0.06, z], line: 0, shadow: false }));
+  if (k > 0.5) g.add(mesh(box(0.115, 0.14, w - 0.3), "#e4d6b0", { at: [0, -h * k * 0.55, 0], line: 0, shadow: false }));
+  return g; };

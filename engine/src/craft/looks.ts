@@ -212,6 +212,63 @@ export const CASTAWAY: Look = {
   rows: [[-120, 108, 84, 86], [-20, 104, 86, 82], [90, 98, 84, 74], [190, 106, 80, 68], [242, 110, 62, 62], [266, 54, 40, 44]],
   legs: "bare", feet: "sandals", sleeve: "short", arm: [28, 22, 16], leg: [36, 26, 17],
 };
+// ---------------- a merchant ship's crew and more pirates (the Short about the black flag) ----------------
+/** an old deck hand: bald with a grey beard, a loose shirt, blue trousers */
+export const OLDHAND: Look = {
+  id: "oldhand", P: { ...COLONIST, thigh: 205, shin: 195, shW: 106 }, head: { a: 112, b: 114, H: 232, jaw: 1.0, round: 0.4, eye: 0.9 }, skin: "#e9b48a", brow: "#8a8078",
+  hat: "none", hair: { col: "#9a9088", kind: "bald" }, beard: "#9a9088",
+  top: "tunic", coat: "#f4ecd8", accent: "#8a5a36", belt: "#5a3a22",
+  rows: [[-40, 104, 80, 82], [20, 100, 82, 78], [100, 94, 80, 70], [190, 104, 78, 68], [242, 110, 62, 62], [268, 54, 40, 44]],
+  legs: "trousers", trous: "#3f5f86", feet: "shoes", sleeve: "long", arm: [30, 24, 18], leg: [37, 27, 17],
+};
+/** the ship's cook: short and stout, bald, a white apron over a yellow shirt */
+export const COOK: Look = {
+  id: "cook", P: { ...COLONIST, thigh: 180, shin: 170, hipW: 70, shW: 116, spine: 262 }, head: { a: 122, b: 122, H: 232, jaw: 1.12, round: 0.65, eye: 0.9 }, skin: "#f0bf9c", brow: "#7a4a2a",
+  hat: "band", hatCol: "#fbf6ea", hair: { col: "#7a4a2a", kind: "bald" }, mous: { col: "#7a4a2a", span: 0.9, curl: 0.2, w: 12 },
+  top: "tunic", coat: "#e9b83a", accent: "#8a5a36", apron: "#fdf9ef", belt: "#8a5a36",
+  rows: [[-150, 138, 110, 112], [-20, 140, 132, 108], [70, 142, 150, 100], [180, 124, 122, 86], [244, 118, 72, 70], [272, 60, 44, 48]],
+  legs: "trousers", trous: "#5a4a3a", feet: "shoes", sleeve: "short", arm: [33, 26, 19], leg: [42, 30, 18],
+};
+/** the ship's boy: small, a blue band round red hair, a striped-free white shirt, short trousers */
+export const SHIPBOY: Look = {
+  id: "shipboy", P: { thigh: 112, shin: 106, ankle: 18, foot: 88, hipW: 38, shW: 62, spine: 150, shDrop: 16, neck: 10, head: 220, upper: 84, fore: 78, hand: 58 }, head: { a: 110, b: 112, H: 215, jaw: 0.84, round: 1, eye: 1.32 }, skin: "#f6cfa6", brow: "#b8742e",
+  hat: "band", hatCol: "#356fb0", hair: { col: "#c4762a", kind: "short" },
+  top: "tunic", coat: "#fbf3df", accent: "#356fb0", belt: "#356fb0",
+  rows: [[-56, 74, 58, 60], [0, 70, 60, 56], [76, 62, 54, 48], [128, 64, 42, 42], [146, 36, 28, 30]],
+  legs: "trousers", trous: "#7a5a3a", feet: "shoes", sleeve: "short", arm: [19, 15, 11], leg: [24, 18, 12],
+};
+/** a pirate of the same crew: an orange headscarf, a purple waistcoat, a dark beard */
+export const PIRATE2: Look = {
+  id: "pirate2", P: { ...COLONIST, thigh: 222, shin: 212, shW: 104 }, head: { a: 106, b: 112, H: 234, jaw: 0.94, round: 0.25, eye: 0.86 }, skin: "#b9814f", brow: "#221812",
+  hat: "band", hatCol: "#e98a2c", hair: { col: "#221812", kind: "queue" }, beard: "#221812",
+  top: "jacket", plain: true, coat: "#7a4a9a", accent: "#fbf3df",
+  rows: [[-30, 100, 76, 78], [20, 96, 78, 74], [100, 92, 78, 68], [190, 102, 78, 66], [242, 108, 60, 60], [268, 52, 38, 42]],
+  legs: "trousers", trous: "#3a3a44", feet: "boots", sleeve: "long", armCol: "#fbf3df", arm: [29, 23, 17], leg: [36, 28, 22],
+};
+/** a gunner of another pirate crew: big and bald with a red beard, a brown sleeveless jerkin, bare arms */
+export const GUNNER: Look = {
+  id: "gunner", P: { ...COLONIST, thigh: 210, shin: 200, shW: 122, hipW: 64, spine: 282 }, head: { a: 122, b: 120, H: 236, jaw: 1.14, round: 0.3, eye: 0.84 }, skin: "#eeb894", brow: "#b5532a",
+  hat: "none", hair: { col: "#b5532a", kind: "bald" }, beard: "#b5532a",
+  top: "tunic", coat: "#7a5a3a", accent: "#c8402f", belt: "#c8402f",
+  rows: [[-40, 122, 92, 94], [20, 118, 96, 88], [100, 112, 98, 82], [195, 124, 94, 78], [250, 124, 66, 66], [276, 60, 44, 48]],
+  legs: "trousers", trous: "#2b2a33", feet: "boots", sleeve: "short", arm: [36, 29, 20], leg: [42, 30, 20],
+};
+/** his mate: lean, a brown cocked hat without gold, a mustard coat, a grey moustache */
+export const CORSAIR: Look = {
+  id: "corsair", P: { ...COLONIST, thigh: 220, shin: 210, shW: 100, hipW: 50 }, head: { a: 104, b: 112, H: 236, jaw: 0.9, round: 0.3, eye: 0.88 }, skin: "#e9c3a0", brow: "#8a8a90",
+  hat: "tricorn", hatCol: "#5a3d28", hair: { col: "#b9b4aa", kind: "queue" }, mous: { col: "#9a958c", span: 1.0, curl: 0.5, w: 12 },
+  top: "jacket", coat: "#c9952c", accent: "#fbf3df", cuffs: "#5a3d28", rows: coat,
+  legs: "trousers", trous: "#4a5a6a", feet: "boots", sleeve: "long", arm: [28, 22, 16], leg: [34, 25, 17],
+};
+/** men made to stand on deck in white shirts: three of them, told apart by hair, beard and build */
+const shirt = (id: string, o: Partial<Look>): Look => ({
+  id, P: COLONIST, head: { a: 110, b: 113, H: 232, jaw: 1.0, round: 0.35, eye: 0.88 }, skin: "#eebf96", brow: "#5a3a22",
+  hat: "none", hair: { col: "#5a3a22", kind: "short" },
+  top: "tunic", coat: "#fdfaf0", accent: "#d8d2c0", belt: "#6b5a44",
+  rows: [[-60, 106, 82, 84], [20, 102, 84, 78], [100, 96, 82, 70], [190, 106, 80, 68], [242, 112, 62, 62], [268, 54, 40, 44]],
+  legs: "trousers", trous: "#6b5a44", feet: "shoes", sleeve: "long", arm: [30, 24, 18], leg: [37, 27, 17], ...o });
+export const SHIRT_A = shirt("shirta", { beard: "#5a3a22" }), SHIRT_B = shirt("shirtb", { skin: "#c98f60", brow: "#221812", hair: { col: "#221812", kind: "queue" }, trous: "#3f5f86", P: { ...COLONIST, thigh: 225, shin: 215, shW: 98 } }),
+  SHIRT_C = shirt("shirtc", { skin: "#f4d2b4", brow: "#c9a24a", hair: { col: "#d9b45a", kind: "bald" }, mous: { col: "#c9a24a", span: 0.8, curl: 0.3, w: 11 }, trous: "#7a4a3a", P: { ...COLONIST, thigh: 195, shin: 185, shW: 112, hipW: 62 } });
 /** a look as a design the rig can play. Every look wears the corrected beard and the corrected open mouth (cast.ts beard2, mouth2: their
  *  sheets were approved by the reviewer on 17 Nov 2026); a look that sets either flag itself keeps its own value */
 export const castDesign = (L0: Look, name = L0.id): Design => { const L: Look = { beard2: true, mouth2: true, ...L0 }; return { id: L.id, name, ol: 4.6, faceW: L.head.a * 1.45, props: () => L.P, draw: drawCast(L), hat: (k, phi) => drawHat(k, L, phi) }; };
@@ -220,3 +277,5 @@ export const KNIGHT_D = castDesign(KNIGHT), TOMMY_D = castDesign(TOMMY), LADY_D 
 export const VESPASIAN_D = castDesign(VESPASIAN), TITUS_D = castDesign(TITUS), FULLER_D = castDesign(FULLER), CITIZEN_D = castDesign(CITIZEN), COLLECTOR_D = castDesign(COLLECTOR);
 export const CAPTAIN_D = castDesign(CAPTAIN), PIRATE_D = castDesign(PIRATE), MATE_D = castDesign(MATE), CASTAWAY_D = castDesign(CASTAWAY);
 export const CUSTOMS_D = castDesign(CUSTOMS), SHIPOWNER_D = castDesign(SHIPOWNER), SAILOR_D = castDesign(SAILOR), DOCKHAND_D = castDesign(DOCKHAND), TOWNSWOMAN_D = castDesign(TOWNSWOMAN);
+export const OLDHAND_D = castDesign(OLDHAND), COOK_D = castDesign(COOK), SHIPBOY_D = castDesign(SHIPBOY), PIRATE2_D = castDesign(PIRATE2), GUNNER_D = castDesign(GUNNER), CORSAIR_D = castDesign(CORSAIR);
+export const SHIRT_A_D = castDesign(SHIRT_A), SHIRT_B_D = castDesign(SHIRT_B), SHIRT_C_D = castDesign(SHIRT_C);

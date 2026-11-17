@@ -32,8 +32,8 @@ A black flag meant "give up and live". Would you have struck your sail, or fough
 | File | Words | Frame in the video |
 |---|---|---|
 | `thumbnail-1.png` | WHY A BLACK FLAG? | 0:00.6 (0.60 s, frame 18): the crew with their hands up, the black flag over them, Sir Digsworth by the mast |
-| `thumbnail-2.png` | RED MEANT NO MERCY | 0:18.9 (18.91 s, frame 567): the red flag, the pirates' blades, the captain who fought back with his pistol lowered at his side |
-| `thumbnail-3.png` | NO FLAG? NO PROBLEM | 0:28.3 (28.34 s, frame 850): the tarpaulin up the mast, the row of men in white shirts behind the gun, the gunner on one knee with his match |
+| `thumbnail-2.png` | RED MEANT NO MERCY | 0:18.8 (18.82 s, frame 565): the red flag, the pirates' blades, the captain who fought back with his pistol lowered at his side |
+| `thumbnail-3.png` | NO FLAG? NO PROBLEM | 0:28.3 (28.27 s, frame 848): the tarpaulin up the mast, the row of men in white shirts behind the gun, the gunner on one knee with his linstock |
 
 Small copies: `thumbnail-1-liten.jpg`, `thumbnail-2-liten.jpg`, `thumbnail-3-liten.jpg` (270x480). In the video the same frame carries its caption instead of the thumbnail's words.
 
@@ -41,4 +41,4 @@ Small copies: `thumbnail-1-liten.jpg`, `thumbnail-2-liten.jpg`, `thumbnail-3-lit
 `black-flag-telefon.mp4`: 1080x1920, under 28 MiB, the sound copied unchanged.
 
 ## Listen check (pronunciation)
-`riskord.wav` (about 21 s): every risk word with half a second round it; `riskord.md` lists where each lies in the narration and in the file. Words in it: pirates, offer, friendly flag, mercy, the very sight, treasure, hoisted, tarpaulin, fired a gun, It worked. No word needed locking in this film. Nobody has listened to the file yet.
+`riskord.wav` (about 21 s): every risk word with half a second round it; `riskord.md` lists where each lies in the narration and in the file. Words in it: pirates, offer, friendly flag, mercy, the very sight, treasure, hoisted, tarpaulin, fired a gun, It worked. No word needed locking in this film. Made again on 17 November with the new first line ("Why did pirates fly black flags?"); nobody has listened to the file yet.

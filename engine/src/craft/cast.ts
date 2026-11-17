@@ -22,6 +22,8 @@ export type Look = {
   lash?: boolean; lips?: string;
   /** moustache: colour, how far the tips reach (in head half-widths), how far they turn up, thickness at the root */
   mous?: { col: string; span: number; curl: number; w: number }; beard?: string;
+  /** true = the mouth is drawn on top of the beard (the corrected beard, not used in a video before the reviewer has approved its sheet) */
+  beardMouth?: boolean;
   monocle?: boolean; pipe?: boolean;
   /** jacket = lapels over a waistcoat (plain = buttoned to the neck, as a uniform or a work jacket); tunic = one garment whose length is its rows
    *  (a short tunic, a long robe, a dress to the ground with skirt = true) */
@@ -182,19 +184,28 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
     if (m > 0.04) k.clip(low, () => k.shape(shift(skull, 0, dy), null));
     if (vis) { const xl = at(h, -36, 0.72).x, xr = at(h, 36, 0.72).x, ym = yJaw + dy; k.clip(shift(skull, 0, dy), () => k.line(spline([[xl, ym - sm * 0.075 * H], [lerp(xl, xr, 0.25) + h.sin * 0.05 * a, ym + sm * 0.018 * H], [lerp(xl, xr, 0.75) + h.sin * 0.05 * a, ym + sm * 0.018 * H], [xr, ym - sm * 0.075 * H]], false, 6), 6.4 * u)); }
     if (L.lips && vis) { const q = at(h, 0, 0.72); piece(k, ellPts(q.x, yJaw - 0.025 * H + drop, 0.2 * a * Math.max(0.35, Math.abs(h.cos)), 0.032 * H), L.lips); }
-    if (L.beard) { const xs: P2[] = []; for (let az = -100; az <= 100; az += 20) { const q = at(h, az, 1.04); if (q.d > -0.1 * b) xs.push([q.x, -0.32 * H + drop * 0.5]); } if (xs.length > 1) { const lo = xs.map(([x], i) => [x * 0.92, 0.2 * H * (1 - Math.abs(i / (xs.length - 1) - 0.5) * 1.2) + drop] as P2).reverse(); piece(k, spline([...xs, ...lo], true, 4), L.beard); } }
+    if (L.beard) { const xs: P2[] = []; for (let az = -100; az <= 100; az += 20) { const q = at(h, az, 1.04); if (q.d > -0.1 * b) xs.push([q.x, -0.32 * H + drop * 0.5]); } if (xs.length > 1) { const lo = xs.map(([x], i) => [x * 0.92, 0.2 * H * (1 - Math.abs(i / (xs.length - 1) - 0.5) * 1.2) + drop] as P2).reverse(); piece(k, spline([...xs, ...lo], true, 4), L.beard); }
+      // the mouth lies on top of the beard, in a patch of skin of its own (the lips), so that a bearded man's mouth reads as well as
+      // a shaven one's: a line that bends with the mood when shut, the dark opening with tongue (and teeth in a laugh) when open
+      if (vis && L.beardMouth) { const xl = at(h, -36, 0.72).x, xr = at(h, 36, 0.72).x, cx = (xl + xr) / 2 + h.sin * 0.05 * a, half = Math.max(0.2 * a * 0.3, (xr - xl) / 2), cy = yJaw + drop * 0.5, open = m > 0.04;
+        // open, the mouth is wider in a laugh and rounder and taller in a fright, as on a shaven face
+        const wd = open ? 1 + 0.28 * Math.max(sm, 0) - 0.2 * Math.max(-sm, 0) : 1, ry = (0.05 * H + drop * 0.5) * (open ? 1 + 0.18 * Math.max(-sm, 0) : 1), lips = ellPts(cx, cy, half * 0.82 * wd, ry);
+        piece(k, lips, shade(skin, 0.965));
+        if (m > 0.04) k.clip(lips, () => { const hole = ellPts(cx, cy + 0.004 * H, half * 0.66 * wd, Math.max(0.018 * H, ry - 0.022 * H)); k.shape(hole, MOUTH, 0); k.clip(hole, () => { k.shape(ellPts(cx, cy + ry * 0.62, half * 0.42 * wd, ry * 0.5), "#e0707a", 0); if (sm > 0.3 && m > 0.45) k.shape([[cx - half * 1.5, cy - ry], [cx + half * 1.5, cy - ry], [cx + half * 1.5, cy - ry * 0.3], [cx - half * 1.5, cy - ry * 0.3]], "#fffdf6", k.ol * 0.6); }); });
+        else k.clip(lips, () => k.line(spline([[cx - half * 0.7, cy - sm * 0.03 * H], [cx - half * 0.3, cy + sm * 0.014 * H], [cx + half * 0.3, cy + sm * 0.014 * H], [cx + half * 0.7, cy - sm * 0.03 * H]], false, 6), 6.4 * u)); } }
     if (!tipBehind) pipe();
     const eye = (s: number) => {
       const q = at(h, s * 28, 0.8); if (q.d < 0.1 * b) return;
       const fs = clamp(Math.cos(s * 28 * R + phi), 0.42, 1) ** 0.85, r = 0.32 * a * EY, rx = r * fs, ry = r * (1 + 0.16 * (f.wide ?? 0)), ball = ellPts(q.x, yEye, rx, ry), gz = f.gaze ?? [0, 0], lid = f.lid ?? 0.16;
-      const happy = lid > 0.75 && (f.smile ?? 0) > 0.4;
-      k.shape(ball, happy ? shade(skin, 0.93) : "#fffdf6");
-      if (happy) k.line(spline([[q.x - rx * 0.78, yEye + ry * 0.3], [q.x, yEye - ry * 0.42], [q.x + rx * 0.78, yEye + ry * 0.3]], false, 8), 6.4 * u);
-      else k.clip(ball, () => {
+      // a shut eye is one arc and nothing else (no outline of the open eye is left round it, which read as spectacles): it bows upward
+      // in a smile and downward otherwise
+      const shut = lid > 0.86, bow = (f.smile ?? 0) > 0.4 ? -1 : 1;
+      if (shut) k.line(spline([[q.x - rx * 0.86, yEye - bow * ry * 0.14], [q.x, yEye + bow * ry * 0.34], [q.x + rx * 0.86, yEye - bow * ry * 0.14]], false, 8), 6.4 * u);
+      else { k.shape(ball, "#fffdf6"); k.clip(ball, () => {
         const px = q.x + clamp(gz[0] * 0.5 + h.sin * 0.22 + ahead * 0.5, -0.56, 0.56) * rx, py = yEye + gz[1] * ry * 0.5; k.shape(ellPts(px, py, rx * 0.5, ry * 0.5), "#2a1f1a", 0); k.dot(px - rx * 0.17, py - ry * 0.2, r * 0.13, "#ffffff");
         if (lid > 0.01) { const y = yEye - ry + 2 * ry * lid; k.shape([[q.x - rx - 2, yEye - ry - 2], [q.x + rx + 2, yEye - ry - 2], [q.x + rx + 2, y], [q.x - rx - 2, y]], shade(skin, 0.86), 0); k.line([[q.x - rx - 2, y], [q.x + rx + 2, y]], 4.6 * u, LINE, "butt"); }
       });
-      k.shape(ball, null);
+      k.shape(ball, null); }
       if (L.lash) for (const j of [0, 1]) k.line([[q.x + s * rx * (0.7 + 0.25 * j) * (h.cos > 0.3 ? 1 : 0.4), yEye - ry * (0.75 - 0.3 * j)], [q.x + s * rx * (1.05 + 0.3 * j) * (h.cos > 0.3 ? 1 : 0.4), yEye - ry * (1.1 - 0.35 * j)]], 3.4);
       if (L.monocle && s < 0) { const ring = ellPts(q.x, yEye, Math.max(rx * 1.36, ry * 1.02), ry * 1.34); k.clip(ring, () => { k.g.globalAlpha = 0.2; k.shape(ring, "#bfe6f2", 0); k.g.globalAlpha = 0.8; k.line([[q.x - rx * 0.7, yEye + ry * 0.2], [q.x - rx * 0.1, yEye - ry * 0.8]], rx * 0.2, "#ffffff"); k.g.globalAlpha = 1; }); k.shape(ring, null, 12.5); const i = k.ink; k.ink = BRASS; k.shape(ring, null, 7.5); k.ink = i; }
       // the brow is its own piece: up for surprise, down toward the nose for a frown

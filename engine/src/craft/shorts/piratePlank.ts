@@ -178,6 +178,7 @@ const limbA = cut("rules", "limb");
   const m = mover(MATE_D, 1.8, mx, mz, V.toward(mx, mz, 44)); m.stand(8);
   m.actAt(-1, { armL: arm(10, 12, 30, 0), armR: arm(20, 12, 60, -6), head: [0, 6, 0] }, 0.5 + 1, { in: 0.01, out: 0.2, handL: "relaxed", handR: "fist", face: { brow: 0.6, smile: -0.5, lid: 0.25, gaze: [0.4, 0.5] } });
   m.actAt(0.15, { armR: arm(112, 2, 138, -4), lean: -3, head: [6, -12, 0] }, give - 0.4, { in: 0.3, out: 0.2, antic: 0.4, over: 1.8, handR: "fist", face: { brow: 0.9, smile: -0.5, lid: 0.15, gaze: [0.5, -0.8] } });
+  wag(m, 0.55, give - 1.0, P({ armR: arm(120, 2, 152, -4), head: [10, -14, 0] }), P({ armR: arm(104, 2, 122, -4), head: [2, -8, 0] }), 0.42, { handR: "fist" });
   m.actAt(give - 0.3, { armL: arm(50, 14, 100, 0), armR: arm(50, 14, 100, 0), head: [0, 2, 0] }, 0.5, { in: 0.2, out: 0.15, handL: "open", handR: "fist", face: { brow: 0.8, wide: 0.4, lid: 0, gaze: [0.8, 0] } });
   m.actAt(give, { armL: arm(44, 10, 100, -14), armR: arm(44, 10, 100, -14), py: -0.14, lean: 5, head: [0, 10, 0] }, 9, { in: 0.14, over: 2.6, handL: "grip", handR: "fist", face: { wide: 1, lid: 0, brow: 1, smile: 0.9, mouth: 0.6, gaze: [0, 0.7] } });
   wag(m, give + 0.7, 3, P({ py: -0.06, armL: arm(52, 10, 108, -14), armR: arm(52, 10, 108, -14), head: [0, 4, 0] }), P({ py: -0.15, armL: arm(42, 10, 98, -14), armR: arm(42, 10, 98, -14), head: [0, 14, 0] }), 0.5, { handL: "grip", handR: "fist" });
@@ -238,6 +239,9 @@ const gunA = at("maroon", /^with$/) - 0.12;
     cast: (t) => { const a = play("pir", PIRATE_D, pir, t, [0, 0, 0], 1.76, { seed: 8, blink: false }); a.at[1] += sand(a.at[0], a.at[2]) - 0.02; return [a]; },
     things: (g, _c, t) => { const b = put(g, BOTTLE(), [bx, sand(bx, bz) - 0.02, bz]); b.rotation.z = 0.08; const p = put(g, PISTOL(), [gx - 0.16, sand(gx, gz) + 0.16, gz]); p.rotation.z = 0.2; p.scale.setScalar(0.85);
       const [sx, sz] = V.spot(125 + 3 * t, 24); put(g, SLOOP(), [sx, SEA - 0.4, sz], 0.5);
+      // the prints of those who set the things down, and shells beside them
+      for (let i = 0; i < 4; i++) { const [fx, fz] = V.spot(1.0 + i * 0.13, 0.1 + (i % 2 ? 0.06 : -0.06)); g.add(mesh(ball(1, 14), "#d2b76c", { at: [fx, sand(fx, fz) + 0.002, fz], scale: [0.032, 0.004, 0.075], line: 0, shadow: false })); }
+      for (const [d, l, c] of [[1.15, 0.5, "#fbf3df"], [1.25, -0.25, "#e89a8a"], [1.05, -0.3, "#c9b8a0"], [1.6, 0.52, "#fbf3df"]] as [number, number, string][]) { const [qx, qz] = V.spot(d, l); g.add(mesh(ball(0.03, 10), c, { at: [qx, sand(qx, qz) + 0.004, qz], scale: [1.3, 0.4, 1], line: 0.6, shadow: false })); }
       // the prints he leaves in the sand
       for (let i = 0; i < 5; i++) { const z = pz - 1.0 + i * 0.24, x = px + 0.1 + (i % 2 ? 0.09 : -0.09); if (t > 0.1 + i * 0.2) g.add(mesh(ball(1, 8), "#d6bb72", { at: [x, sand(x, z) + 0.002, z], scale: [0.05, 0.006, 0.11], line: 0, shadow: false })); } } });
 }

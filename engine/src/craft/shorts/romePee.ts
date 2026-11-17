@@ -125,7 +125,7 @@ const needMid = at("need", /^The$/) + 2.1;
 const guessWrong = at("guess", /Wrong/) - cut("need", "guess");
 {
   const V = lens(0.3, 0.9, 3.8, 1, 0, 8, 56);
-  const sir = mover(SIR_D, 1.8, 3.25, 5.05, 180); sir.walk(mt(sir, 0.74)).stand(0.1); const stop = sir.t;
+  const sir = mover(SIR_D, 1.8, 3.25, 5.05, 180); sir.walk(mt(sir, 0.94)).stand(0.1); const stop = sir.t;
   wag(sir, -0.4, guessWrong + 0.3, P({ armR: arm(104, 6, 150, 0), lean: 8, head: [0, -4, 0] }), P({ armR: arm(96, 6, 118, 0), lean: 8, head: [0, -4, 0] }), 0.36, { handR: "point", face: { brow: -0.8, smile: -0.4 } });
   sir.actAt(guessWrong - 0.1, "recoil", 4, { in: 0.14, over: 2.4, face: { wide: 1, lid: 0, brow: 1, mouth: 0.5 } }); sir.stand(5);
   const man = mover(CITIZEN_D, 1.68, 2.95, 3.27, 62); man.actAt(-1, { armL: arm(26, 8, 60, -30), armR: arm(26, 8, 60, -30), head: [-8, 10, 0] }, stop + 0.9, { out: 0.16 });
@@ -155,10 +155,10 @@ const washing = (into: THREE.Group, t: number, period = 0.5, splash = true) => {
 {
   // the lens stands at the shop's door: the tub in front, the fuller behind it on the left tipping a jug into it, Sir Digsworth
   // bending in from the right
-  const V = lens(ux - 2.25, 1.25, uz, 1, 0, -8, 60), [fx, fz] = V.spot(2.75, -0.56), [qx, qz] = V.spot(2.7, 0.46);
+  const V = lens(ux - 2.25, 1.25, uz, 1, 0, -8, 60), [fx, fz] = V.spot(2.75, -0.56), [qx, qz] = V.spot(2.7, 0.4);
   const f = mover(FULLER_D, 1.74, fx, fz, 28); f.stand(6); f.actAt(-1, { lean: 10, armR: arm(64, 8, 104, 0), armL: arm(52, 8, 92, 0), head: [-10, 14, 0] }, 9, { in: 0.2, handR: "grip", handL: "grip", face: { smile: 0.36, brow: 0.3, gaze: [0.5, 0.7] } });
   const sir = mover(SIR_D, 1.8, qx, qz, 196); sir.stand(6); sir.actAt(-1, { lean: 30, py: -0.08, head: [0, 4, 0], armL: arm(20, 16, 60, 10), armR: arm(30, 10, 90, 0) }, 1.8, { out: 0.16, face: { brow: 0.9, wide: 0.5, gaze: [-0.5, 0.7] } });
-  sir.actAt(0.7, { ...NOSE, lean: -5, head: [0, -6, 0] }, 4, { in: 0.16, over: 2.2, handR: "relaxed", face: { ...DISGUST, wide: 0.6, lid: 0, gaze: [-0.5, 0.6] } });
+  sir.actAt(0.7, { ...NOSE, lean: -5, py: -0.1, head: [0, -6, 0] }, 4, { in: 0.16, over: 2.2, handR: "relaxed", face: { ...DISGUST, wide: 0.6, lid: 0, gaze: [-0.5, 0.6] } });
   const pourLen = washMid - cut("guess", "wash");
   add({ id: "pour", a: cut("guess", "wash"), b: washMid, still: 0.4,
     // the stream runs the whole shot; Sir Digsworth pulls back with the hand to his nose at 0.7 s (in 0.16 s)
@@ -209,7 +209,7 @@ const washing = (into: THREE.Group, t: number, period = 0.5, splash = true) => {
 }
 // 8. HIS SON TITUS COMPLAINED: Titus leans away from the jar with a hand over his nose and jabs a finger at it
 {
-  const V = lens(0.9, 1.4, 3.9, 1, 0, 0, 54), [tx, tz] = V.spot(2.0, 0.3);
+  const V = lens(0.9, 1.4, 3.9, 1, 0, 0, 54), [tx, tz] = V.spot(2.0, 0.2);
   const ti = mover(TITUS_D, 1.84, tx, tz, V.toward(tx, tz, 24)); ti.stand(0.15).step("L", -0.14, 0.18).stand(5);
   ti.actAt(-1, { ...NOSE, lean: -8, roll: -8, head: [-16, -4, -6] }, 9, { in: 0.2, handR: "relaxed", face: { brow: -1, lid: 0.25, smile: -1, gaze: [-0.8, 0.5] } });
   wag(ti, 0.3, 4, P({ armL: arm(46, -10, 54, -40) }), P({ armL: arm(72, 0, 98, -14) }), 0.5, { handL: "point" });
@@ -325,9 +325,9 @@ const endMid = at("end", /Vespasiennes/) - 0.5;
   const V2 = lens(3.55, 1.55, 9.75, -0.45, 0.89, 2, 58), [qx, qz] = V2.spot(1.95, 0.21), tip = at("end", /Vespasiennes/) + 0.95 - endMid;
   const s2 = mover(SIR_D, 1.8, qx, qz, 63); s2.stand(8);
   s2.actAt(-1, { armL: arm(50, 6, 150, 0), lean: 4, head: [0, -4, 0] }, 9 + 1, { handL: "grip", face: { brow: 0.8, smile: 1, gaze: [-0.8, 0] } });
-  wag(s2, 0.1, tip - 0.2, P({ armR: arm(30, 4, 112, 0) }), P({ armR: arm(30, 4, 124, 0) }), 0.4, { handR: "point" });
+  wag(s2, 0.1, tip - 0.2, P({ armR: arm(18, 4, 114, 0) }), P({ armR: arm(18, 4, 126, 0) }), 0.4, { handR: "point" });
   // then he turns to the lens, delighted, the open hand still under the name
-  s2.actAt(tip, { armR: arm(30, 4, 104, 0), head: [30, -4, 0], lean: 0 }, 3, { in: 0.22, antic: 0.3, over: 1.6, handR: "open", face: { smile: 1, lid: 0, wide: 0.4, brow: 1, gaze: [0.6, 0] } });
+  s2.actAt(tip, { armR: arm(18, 4, 108, 0), head: [30, -4, 0], lean: 0 }, 3, { in: 0.22, antic: 0.3, over: 1.6, handR: "open", face: { smile: 1, lid: 0, wide: 0.4, brow: 1, gaze: [0.6, 0] } });
   const cardLen = END - endMid;
   add({ id: "card", a: endMid, b: END, still: 0.75,
     // his finger knocks on the card with each swing of the wag (from 0.1 s, 0.4 s a swing); he turns to the lens at tip (in 0.22 s)

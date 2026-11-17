@@ -8,7 +8,7 @@ Why did Rome tax pee? #Shorts
 - Why did Rome put a tax on pee? #Shorts
 
 ## Description
-Why did Rome tax pee? The emperor Vespasian needed money, laundries washed wool with urine, and when his son Titus complained about the new tax, Vespasian held a coin under his nose and asked if it smelled.
+Why did Rome tax pee? The emperor Vespasian's treasury was empty, and laundries washed wool with urine. So he taxed it. When his son Titus complained, Vespasian held a coin under his nose and asked if it smelled.
 
 The scene is dramatised. Neither ancient writer says where or when the conversation took place, or exactly who paid the tax.
 

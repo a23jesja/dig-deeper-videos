@@ -69,11 +69,26 @@ export const play = (name: string, D: Design, m: Mover, tm: number, origin: V3, 
 export const talk = (words: Word[], T: number, ids?: string[]) => { const w = ids ? words.filter((q) => ids.includes(q.line ?? "")) : words; return w.length && T >= w[0].a - 0.05 && T <= w[w.length - 1].b + 0.1 ? mouthAt(w, T) : 0; };
 /** caption chunks from the word timings: two or three words, never wider than the picture, a new chunk after a full stop and
  *  after a comma that ends two words or more */
+/** how wide a caption is in the caption type, in letters of ordinary width (the band holds about 9.3; a little more is set a little smaller) */
+export const capWidth = (t: string) => [...t.toUpperCase().replace(/[.,":;]/g, "")].reduce((n, ch) => n + (ch === " " ? 0.44 : /[I!']/.test(ch) ? 0.47 : /[MW]/.test(ch) ? 1.4 : 1), 0) * 0.68;
+const WEAK_ART = /^(a|an|the)$/i, WEAK_LINK = /^(and|of|on|in|with|to|for|from|at|by|as|or|but|his|her|its)$/i, bare = (w: string) => w.replace(/[^A-Za-z']/g, "");
+/** the captions of a film: the words two or three at a time. A caption never runs past a comma or a full stop, and inside a clause
+ *  the breaks are chosen so that no caption ends on "a", "the" or "of", no name is split in two and no word stands alone if it can be helped */
 export const captions = (words: Word[], skip: (w: Word) => boolean = () => false): Caption[] => {
-  const out: Caption[] = []; let cur: Word[] = [];
-  const flush = () => { if (cur.length) out.push({ a: cur[0].a, b: cur[cur.length - 1].b + 0.12, text: cur.map((q) => q.w).join(" ").toUpperCase().replace(/[.,":;]/g, "") }); cur = []; };
-  for (const w of words) { if (skip(w)) { flush(); continue; } if (cur.length && (cur.length >= 3 || [...cur, w].map((q) => q.w).join(" ").length > 14 || /[.!?]"?$/.test(cur[cur.length - 1].w) || (cur.length >= 2 && /,$/.test(cur[cur.length - 1].w)) || w.line !== cur[0].line)) flush(); cur.push(w); }
-  flush();
+  const out: Caption[] = [], clauses: Word[][] = []; let cur: Word[] = [];
+  for (const w of words) { if (skip(w)) { if (cur.length) clauses.push(cur); cur = []; continue; } if (cur.length && w.line !== cur[0].line) { clauses.push(cur); cur = []; } cur.push(w); if (/[.,!?;:]"?$/.test(w.w)) { clauses.push(cur); cur = []; } }
+  if (cur.length) clauses.push(cur);
+  for (const c of clauses) {
+    // the cheapest way to cut the clause into pieces of one to three words (dynamic programming over where the last piece starts)
+    const n = c.length, best: number[] = [0], from: number[] = [0];
+    const cost = (i: number, j: number) => { const ws = c.slice(i, j), last = bare(ws[ws.length - 1].w), text = ws.map((q) => q.w).join(" ");
+      let k = 0.6; if (ws.length > 1 && capWidth(text) > 9.5) k += 50; if (ws.length === 1 && n > 1) k += j < n ? 2.3 : 2;
+      if (j < n) { if (WEAK_ART.test(last)) k += 3; else if (WEAK_LINK.test(last)) k += 1.5; if (i + 0 <= j - 1 && /^[A-Z]/.test(c[j - 1].w) && /^[A-Z]/.test(c[j].w) && j - 1 > 0) k += 3; }
+      return k; };
+    for (let j = 1; j <= n; j++) { best[j] = Infinity; for (let i = Math.max(0, j - 3); i < j; i++) { const v = best[i] + cost(i, j); if (v < best[j]) { best[j] = v; from[j] = i; } } }
+    const cuts: number[] = []; for (let j = n; j > 0; j = from[j]) cuts.unshift(j);
+    let i = 0; for (const j of cuts) { const ws = c.slice(i, j); out.push({ a: ws[0].a, b: ws[ws.length - 1].b + 0.12, text: ws.map((q) => q.w).join(" ").toUpperCase().replace(/[.,":;]/g, "") }); i = j; }
+  }
   // a caption stays until the next one comes, if the gap is short, so that the band does not flicker
   out.forEach((c, i) => { const n = out[i + 1]; if (n && n.a - c.b < 0.25) c.b = n.a; });
   return out;

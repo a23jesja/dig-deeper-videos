@@ -25,7 +25,7 @@ const PL = SHIP.plank;
 // ---------------- the things of the ship (made once, moved by the shots) ----------------
 const CUTLASS = once(() => noShade(cutlass())), FIN = once(() => sharkFin(0.66)), FOAM = once(() => foamRing(0.42)), FOAM2 = once(() => foamRing(0.5));
 const COINS = [0, 1, 2, 3, 4, 5, 6, 7].map(() => once(() => noShade(coin(0.045))));
-const BOOK_T = once(() => storyBook(["TREASURE", "ISLAND"], "island", 0.36, 0.46, "#2f6f8f")), BOOK_P = once(() => storyBook(["PETER PAN"], "plank")), SHEET = once(() => articlesSheet(0.36, 0.475)), SACK = once(() => noShade(moneySack(0.24, "800")));
+const BOOK_T = once(() => storyBook(["TREASURE", "ISLAND"], "island", 0.46, 0.56, "#2f6f8f")), BOOK_P = once(() => storyBook(["PETER", "PAN"], "plank", 0.42, 0.52)), SHEET = once(() => articlesSheet(0.36, 0.475)), SACK = once(() => noShade(moneySack(0.24, "800")));
 const SHARK = once(() => sharkBody(2.3, 1)), SHARK_SHUT = once(() => sharkBody(2.3, 0.12));
 const HOOK = once(() => hookHand()), BOTTLE = once(() => bottle(0.34)), PISTOL = once(() => pistol()), SLOOP = once(() => farSloop());
 /** the cutlass in a figure's right hand: the blade points the way he faces, raised by `deg` degrees */
@@ -51,7 +51,8 @@ const splash = (g: THREE.Group, p: V3, u: number, big = 1) => {
     if (y > 0) g.add(mesh(ball(0.07 * big * Math.max(0.4, 1 - u * 0.5), 8), k % 2 ? "#ffffff" : "#bfe3fb", { at: [p[0] + x, p[1] + y, p[2] + z], line: 0.5, shadow: false })); }
   // the water that stands up where it went in: a low crown of tongues leaning outward, gone in half a second
   const col = Math.sin(Math.PI * Math.min(1, u / 0.55)); if (u < 0.55) for (let k = 0; k < 7; k++) { const a = (k / 7) * 6.283 + 0.5, r = 0.2 * big * (0.6 + u * 2);
-    g.add(mesh(ball(1, 8), k % 2 ? "#ffffff" : "#d6ecfb", { at: [p[0] + Math.cos(a) * r, p[1] + 0.22 * big * col, p[2] + Math.sin(a) * r], scale: [0.09 * big, (0.2 + 0.28 * col) * big, 0.09 * big], rot: [Math.sin(a) * 0.5, 0, -Math.cos(a) * 0.5], line: 0.5, shadow: false })); }
+    g.add(mesh(ball(1, 16), k % 2 ? "#ffffff" : "#d6ecfb", { at: [p[0] + Math.cos(a) * r, p[1] + 0.16 * big * col, p[2] + Math.sin(a) * r], scale: [0.13 * big, (0.14 + 0.2 * col) * big, 0.13 * big], rot: [Math.sin(a) * 0.5, 0, -Math.cos(a) * 0.5], line: 0.35, shadow: false }));
+      g.add(mesh(ball(0.085 * big, 12), k % 2 ? "#d6ecfb" : "#ffffff", { at: [p[0] + Math.cos(a) * r * 1.25, p[1] + (0.3 + 0.24 * col) * big * col, p[2] + Math.sin(a) * r * 1.25], line: 0.35, shadow: false })); }
   for (const [o, f] of [[0, FOAM], [0.25, FOAM2]] as [number, () => THREE.Object3D][]) { const v = u - o; if (v > 0) { const r = put(g, f(), [p[0], p[1] + 0.02, p[2]]); r.scale.setScalar(0.6 + v * 2.6 * big); } }
 };
 /** drops falling from somebody who is soaked */
@@ -88,7 +89,7 @@ const add = (s: Shot) => shots.push(s);
   wag(sir, 0.8, 0.9, P({ roll: 8, armL: arm(8, 58, 20, 66), armR: arm(8, 104, 24, 122) }), P({ roll: -8, armL: arm(8, 104, 24, 122), armR: arm(8, 58, 20, 66) }), 0.7, { handL: "open", handR: "open" });
   // and again when it comes back
   sir.actAt(1.72, { legR: { th: [74, 10], sh: [-44, 0], pitch: 30 }, lean: -18, pz: -0.07, armL: arm(50, 76, 120, 70), armR: arm(64, 70, 136, 60) }, 0.9, { in: 0.12, out: 0.25, antic: 0.2, over: 1.6, handL: "open", handR: "open" });
-  const cap = mover(CAPTAIN_D, 1.86, 3.55, PL.z, 90); cap.stand(6);
+  const cap = mover(CAPTAIN_D, 1.86, 3.22, PL.z, 90); cap.stand(6);
   cap.actAt(-1, { armR: arm(76, 4, 84, 0), armL: arm(14, 8, 44, 4), lean: 8 }, 9, { in: 0.01, handR: "grip", handL: "fist", face: { brow: -1, smile: 0.3, lid: 0.15 } });
   for (const t0 of [0.9, 1.7]) cap.actAt(t0, { armR: arm(86, 4, 90, 0), pz: 0.08, lean: 15 }, 0.34, { in: 0.09, out: 0.2, antic: 0.4, over: 1.6, handR: "grip" });
   add({ id: "hook", a: 0, b: cut("hook", "story"), still: 0.14,
@@ -136,15 +137,17 @@ const storyMid = at("story", /^Just/) - 0.12;
 // 4. NOT QUITE. REAL PIRATES HAD WRITTEN RULES: on deck. The captain wags a rolled paper at him, then lets it fall open: the
 //    articles. He raps on them; Sir Digsworth leans in and reads through his monocle
 {
-  const a0 = cut("story", "rules"), V = lens(0.9, 1.14, 3.9, 0, -1, 0, 50), [cx, cz] = V.spot(2.0, -0.2), [qx, qz] = V.spot(2.8, 0.36), open = at("rules", /^Real/) - a0 - 0.05, rap = at("rules", /^written/) - a0;
-  const cap = mover(CAPTAIN_D, 1.86, cx, cz, V.toward(cx, cz, 6)); cap.stand(8);
+  const a0 = cut("story", "rules"), V = lens(0.9, 1.0, 4.2, 0, -1, 0, 54), [cx, cz] = V.spot(2.3, -0.3), [qx, qz] = V.spot(3.2, 0.56), open = at("rules", /^Real/) - a0 - 0.05, rap = at("rules", /^written/) - a0;
+  const cap = mover(CAPTAIN_D, 1.86, cx, cz, V.toward(cx, cz, 14)); cap.stand(8);
   cap.actAt(-1, { armL: arm(74, 26, 150, 6), armR: arm(10, 14, 40, 0), head: [0, 2, 0] }, open + 0.1 + 1, { in: 0.01, out: 0.14, handL: "grip", handR: "fist", face: { brow: -0.5, smile: 0.36, lid: 0.15, gaze: [0.5, 0] } });
   wag(cap, 0.05, open - 0.1, P({ armL: arm(74, 40, 150, 26), head: [10, 2, 0] }), P({ armL: arm(74, 12, 150, -14), head: [-10, 2, 0] }), 0.36, { handL: "grip" });
-  cap.actAt(open, { armL: arm(40, 30, 100, 4), armR: arm(34, 30, 100, 10), head: [0, 6, 0] }, 9, { in: 0.16, antic: 0.3, over: 1.6, handL: "grip", handR: "point", face: { brow: 0.4, smile: 0.38, lid: 0.1, gaze: [0, 0.6] } });
-  wag(cap, rap, 3, P({ armR: arm(44, 16, 104, -34) }), P({ armR: arm(36, 28, 96, -8) }), 0.34, { handR: "point" });
-  const sir = mover(SIR_D, 1.8, qx, qz, V.toward(qx, qz, -20)); sir.stand(8);
+  cap.actAt(open, { armL: arm(16, 10, 150, -30), armR: arm(34, 30, 100, 10), head: [0, 6, 0] }, 9, { in: 0.16, antic: 0.3, over: 1.6, handL: "grip", handR: "point", face: { brow: 0.4, smile: 0.38, lid: 0.1, gaze: [0, 0.6] } });
+  wag(cap, rap, 3, P({ armR: arm(44, 16, 104, -34), head: [12, 13, 0] }), P({ armR: arm(36, 28, 96, -8), head: [12, 2, 0] }), 0.34, { handR: "point" });
+  const sir = mover(SIR_D, 1.8, qx, qz, V.toward(qx, qz, -30)); sir.stand(8);
   sir.actAt(-1, { armL: arm(8, 12, 20, 0), head: [-10, 0, 0] }, open + 0.5 + 1, { in: 0.01, out: 0.2, face: { brow: 0.8, wide: 0.3, gaze: [-0.7, 0.1] } });
-  sir.actAt(open + 0.15, { lean: 15, armR: arm(84, 22, 152, -14), head: [-18, 12, -6] }, 9, { in: 0.3, antic: 0.3, over: 1.5, handR: "grip", face: { brow: 1, wide: 0.5, lid: 0, gaze: [-0.8, 0.6] } });
+  sir.actAt(open + 0.15, { lean: 13, armR: arm(84, 22, 152, -14), head: [-18, 12, -6] }, 9, { in: 0.3, antic: 0.3, over: 1.5, handR: "grip", face: { brow: 1, wide: 0.5, lid: 0, gaze: [-0.8, 0.6] } });
+  // what he reads there makes him look up at the captain and point at it
+  sir.actAt(rap + 0.55, { lean: 6, armL: arm(70, 10, 96, 0), head: [-24, -6, 0] }, 9, { in: 0.2, antic: 0.4, over: 1.8, handL: "point", face: { brow: 1, wide: 1, lid: 0, mouth: 0.5, gaze: [-0.9, -0.3] } });
   add({ id: "rules", a: a0, b: cut("rules", "limb"), still: rap + 0.35,
     sounds: [{ t: 0.1, k: "whoosh", g: 0.3 }, { t: 0.46, k: "whoosh", g: 0.3 }, { t: open + 0.05, k: "paper", p: -0.2 }, ...[0, 0.34, 0.68].map((d) => ({ t: rap + d, k: "tap", g: 0.8, p: -0.1 }))],
     cam: (_t, u) => V.push(0.14 * u), sun: { target: [0.9, 0, 1.6], reach: 5 },
@@ -153,7 +156,8 @@ const storyMid = at("story", /^Just/) - 0.12;
       if (t < open) { const p = near(c.cap.joint("tipL"), cam, 0.06); g.add(rod([p[0] - 0.02, p[1] - 0.12, p[2]], [p[0] + 0.04, p[1] + 0.26, p[2]], 0.04, "#f3e6c4", { line: 0.7, shadow: false })); return; }
       // the sheet falls open from his hands and swings to rest
       const u = (t - open) / 0.22, s = u < 1 ? 0.12 + 0.88 * smooth(u) : 1 + 0.06 * Math.sin((t - open - 0.22) * 16) * Math.exp(-(t - open - 0.22) * 6), p = near(c.cap.joint("neck"), cam, 0.16), top = p[1] - 0.1, k = put(g, SHEET(), [p[0], top - 0.2375 * s, p[2]]);
-      k.lookAt(cam.pos[0], top - 0.2375 * s, cam.pos[2]); k.scale.set(1, s, 1); k.rotation.z += 0.04; } });
+      const jolt = [0, 0.34, 0.68].reduce((n, d) => n + (t - rap - d > 0 ? Math.exp(-(t - rap - d) * 10) : 0), 0);
+      k.lookAt(cam.pos[0], top - 0.2375 * s, cam.pos[2]); k.scale.set(1, s, 1); k.rotation.z += 0.04 + 0.08 * jolt; k.position.y -= 0.025 * jolt; } });
 }
 /** the hook on the end of his right arm: it covers the fist of the drawing, points on along the forearm and curls in the plane of the picture */
 function hooked(g: THREE.Group, a: Staged, cam: Cam) {
@@ -165,7 +169,7 @@ function hooked(g: THREE.Group, a: Staged, cam: Cam) {
 //    hand was; the captain nods at it and swings a heavy sack into his arms. He sags under it and coins jump out
 const limbA = cut("rules", "limb");
 {
-  const V = lens(-1.75, 1.05, 4.0, 1, -0.1, 0, 52), [mx, mz] = V.spot(2.6, -0.22), [cx, cz] = V.spot(3.3, 0.56), give = at("limb", /^paid/) - limbA - 0.12;
+  const V = lens(-1.75, 1.05, 4.0, 1, -0.1, 0, 56), [mx, mz] = V.spot(2.8, -0.4), [cx, cz] = V.spot(3.4, 0.62), give = at("limb", /^paid/) - limbA - 0.12;
   const cap = mover(CAPTAIN_D, 1.86, cx, cz, V.toward(cx, cz, -40)); cap.stand(8);
   cap.actAt(-1, { armL: arm(30, 10, 84, -6), armR: arm(30, 10, 84, -6), lean: -6, twist: -10, head: [8, 0, 0] }, give + 0.2 + 1, { in: 0.01, out: 0.16, handL: "grip", handR: "grip", face: { smile: 0.2, brow: 0.6, gaze: [-0.7, -0.4] } });
   for (const t0 of [0.75, 1.15]) cap.actAt(t0, { head: [8, 14, 0] }, 0.3, { in: 0.1, out: 0.14, antic: 0.2, over: 1.4 });
@@ -175,7 +179,7 @@ const limbA = cut("rules", "limb");
   m.actAt(-1, { armL: arm(10, 12, 30, 0), armR: arm(20, 12, 60, -6), head: [0, 6, 0] }, 0.5 + 1, { in: 0.01, out: 0.2, handL: "relaxed", handR: "fist", face: { brow: 0.6, smile: -0.5, lid: 0.25, gaze: [0.4, 0.5] } });
   m.actAt(0.15, { armR: arm(112, 2, 138, -4), lean: -3, head: [6, -12, 0] }, give - 0.4, { in: 0.3, out: 0.2, antic: 0.4, over: 1.8, handR: "fist", face: { brow: 0.9, smile: -0.5, lid: 0.15, gaze: [0.5, -0.8] } });
   m.actAt(give - 0.3, { armL: arm(50, 14, 100, 0), armR: arm(50, 14, 100, 0), head: [0, 2, 0] }, 0.5, { in: 0.2, out: 0.15, handL: "open", handR: "fist", face: { brow: 0.8, wide: 0.4, lid: 0, gaze: [0.8, 0] } });
-  m.actAt(give, { armL: arm(44, 10, 100, -14), armR: arm(44, 10, 100, -14), py: -0.14, lean: 10, head: [0, 12, 0] }, 9, { in: 0.14, over: 2.6, handL: "grip", handR: "fist", face: { wide: 1, lid: 0, brow: 1, smile: 0.9, mouth: 0.6, gaze: [0, 0.7] } });
+  m.actAt(give, { armL: arm(44, 10, 100, -14), armR: arm(44, 10, 100, -14), py: -0.14, lean: 5, head: [0, 10, 0] }, 9, { in: 0.14, over: 2.6, handL: "grip", handR: "fist", face: { wide: 1, lid: 0, brow: 1, smile: 0.9, mouth: 0.6, gaze: [0, 0.7] } });
   wag(m, give + 0.7, 3, P({ py: -0.06, armL: arm(52, 10, 108, -14), armR: arm(52, 10, 108, -14), head: [0, 4, 0] }), P({ py: -0.15, armL: arm(42, 10, 98, -14), armR: arm(42, 10, 98, -14), head: [0, 14, 0] }), 0.5, { handL: "grip", handR: "fist" });
   cap.actAt(give + 1.15, { armR: arm(120, 30, 190, -34), head: [8, 6, 0] }, 0.7, { in: 0.2, out: 0.25, antic: 0.3, over: 1.5, handR: "relaxed", face: { smile: 0.38, brow: 0.7, gaze: [-0.8, 0.2] } });
   add({ id: "paid", a: limbA, b: cut("limb", "maroon"), still: give + 0.42,
@@ -222,7 +226,7 @@ const gunA = at("maroon", /^with$/) - 0.12;
 // 8. WITH A GUN AND A BOTTLE OF WATER: from the sand. The pistol and the bottle they left him stand near the lens; behind them he
 //    drops to his knees and hangs his head, the ship small on the horizon
 {
-  const V = lens(ix - 1.5, iy + 0.9, iz + 3.3, -0.04, -1, 1, 56), [px, pz] = V.spot(3.3, 0.05), [gx, gz] = V.spot(1.75, -0.12), [bx, bz] = V.spot(1.8, 0.33);
+  const V = lens(ix - 1.5, iy + 1.0, iz + 2.6, -0.04, -1, -5, 56), [px, pz] = V.spot(3.0, 0.06), [gx, gz] = V.spot(1.5, -0.1), [bx, bz] = V.spot(1.45, 0.3);
   const pir = mover(PIRATE_D, 1.76, px + 0.1, pz - 1.0, V.toward(px, pz, -4)); pir.walk(mt(pir, 1.0), { step: 0.8 }).stand(8);
   pir.actAt(-1, { armL: arm(8, 14, 20, 6), armR: arm(8, 14, 20, 6), head: [0, 16, 0], lean: 8 }, 1.2 + 1, { in: 0.01, out: 0.2, handL: "relaxed", handR: "relaxed", face: { brow: 1, smile: -1, lid: 0.3, gaze: [0, 0.8] } });
   const sit = 1.0;
@@ -233,19 +237,21 @@ const gunA = at("maroon", /^with$/) - 0.12;
     cam: (_t, u) => V.push(0.12 * u), sun: { target: [ix, iy, iz], reach: 8 },
     cast: (t) => { const a = play("pir", PIRATE_D, pir, t, [0, 0, 0], 1.76, { seed: 8, blink: false }); a.at[1] += sand(a.at[0], a.at[2]) - 0.02; return [a]; },
     things: (g, _c, t) => { const b = put(g, BOTTLE(), [bx, sand(bx, bz) - 0.02, bz]); b.rotation.z = 0.08; const p = put(g, PISTOL(), [gx - 0.16, sand(gx, gz) + 0.16, gz]); p.rotation.z = 0.2; p.scale.setScalar(0.85);
-      const [sx, sz] = V.spot(118 + 3 * t, -27); put(g, SLOOP(), [sx, SEA - 0.4, sz], 0.5); } });
+      const [sx, sz] = V.spot(125 + 3 * t, 24); put(g, SLOOP(), [sx, SEA - 0.4, sz], 0.5);
+      // the prints he leaves in the sand
+      for (let i = 0; i < 5; i++) { const z = pz - 1.0 + i * 0.24, x = px + 0.1 + (i % 2 ? 0.09 : -0.09); if (t > 0.1 + i * 0.2) g.add(mesh(ball(1, 8), "#d6bb72", { at: [x, sand(x, z) + 0.002, z], scale: [0.05, 0.006, 0.11], line: 0, shadow: false })); } } });
 }
 // 9. BUT THE PLANK? ALMOST NEVER RECORDED: from the plank, looking back at the ship. The captain shakes his head and wags a finger,
 //    then comes for the lens with both hands
 const answerMid = at("answer", /^Unwanted/) - 0.2;
 {
   const V = lens(5.2, PL.y + 0.3, PL.z, -1, 0, 15, 60), go = at("answer", /^recorded/) + 0.25 - cut("maroon", "answer");
-  const cap = mover(CAPTAIN_D, 1.86, 2.75, PL.z, 90); cap.stand(go).walk(mt(cap, 0.9)).stand(4);
+  const cap = mover(CAPTAIN_D, 1.86, 3.1, PL.z, 90); cap.stand(go).walk(mt(cap, 0.5)).stand(4);
   cap.actAt(-1, { armL: arm(10, 20, 40, 20), armR: arm(10, 20, 40, 20), head: [0, 22, 0], lean: 8 }, 0.75 + 1, { in: 0.01, out: 0.14, handL: "fist", handR: "fist", face: { brow: -0.4, lid: 0.15, smile: -0.4, gaze: [0, 1] } });
   for (const t0 of [0.08, 0.36]) cap.actAt(t0, { legR: { th: [34, 8], sh: [-30, 0], pitch: -10 }, py: 0.01 }, 0.24, { in: 0.1, out: 0.08, antic: 0, over: 1.2 });
   cap.actAt(0.62, { armL: arm(44, 54, 124, 74), armR: arm(44, 54, 124, 74), head: [0, -2, 8], lean: -6, py: 0.02 }, 0.4, { in: 0.14, out: 0.16, antic: 0.4, over: 1.7, handL: "open", handR: "open", face: { brow: 1, lid: 0.1, smile: -0.4, gaze: [0, 0.3] } });
-  cap.actAt(0.98, { armR: arm(64, 44, 152, 40), armL: arm(-10, 20, 30, 30), head: [0, 6, 0] }, go - 0.88, { in: 0.2, out: 0.15, handR: "point", handL: "fist", face: { brow: -0.6, lid: 0.25, smile: -0.5, gaze: [0, 0.6] } });
-  wag(cap, 1.1, go - 1.1, P({ head: [24, 6, 0], armR: arm(64, 56, 152, 56) }), P({ head: [-24, 6, 0], armR: arm(64, 34, 152, 24) }), 0.44, { handR: "point" });
+  cap.actAt(0.98, { armR: arm(64, 22, 156, 18), armL: arm(-10, 20, 30, 30), head: [0, 6, 0] }, go - 0.88, { in: 0.2, out: 0.15, handR: "point", handL: "fist", face: { brow: -0.6, lid: 0.25, smile: -0.5, gaze: [0, 0.6] } });
+  wag(cap, 1.1, go - 1.1, P({ head: [24, 6, 0], armR: arm(64, 30, 156, 34) }), P({ head: [-24, 6, 0], armR: arm(64, 12, 156, 2) }), 0.44, { handR: "point" });
   cap.actAt(go, { armL: arm(70, 24, 60, 10), armR: arm(70, 24, 60, 10), lean: 20, head: [0, 14, 0] }, 9, { in: 0.25, antic: 0.5, over: 1.5, handL: "open", handR: "open", face: { brow: -1, lid: 0, smile: 0.7, mouth: 0.4, gaze: [0, 0.8] } });
   add({ id: "never", a: cut("maroon", "answer"), b: answerMid, still: 1.5,
     sounds: [{ t: 0.2, k: "step", surface: "wood", g: 0.9 }, { t: 0.48, k: "step", surface: "wood", g: 0.9 }, { t: 0.3, k: "creak", g: 0.6 }, { t: go + 0.15, k: "step", surface: "wood" }, { t: go + 0.5, k: "step", surface: "wood", g: 1.2 }, { t: go + 0.3, k: "whoosh", g: 0.7 }],
@@ -291,7 +297,7 @@ const originMid = at("origin", /^like$/) - 0.1;
     sounds: [{ t: 0.05, k: "bubble" }, { t: 0.28, k: "spray", p: -0.2 }, { t: 0.9, k: "drip" }, { t: 1.3, k: "drip" }], beds: [{ k: "lap", a: 0, b: 1.8, g: 1 }],
     cam: (_t, u) => V.push(0.1 * u), sun: { target: [wx, SEA, wz], reach: 6 },
     cast: (t, T) => [play("sir", SIR_D, sir, t, [0, bob(t), 0], 1.8, { talk: Math.max(talk(W, T, ["origin"]), t < 0.5 ? 0.8 : 0), blink: false })],
-    things: (g, c, t, _T, cam) => { const a = c.sir, p = near(a.joint("tipR"), cam, 0.05), k = put(g, BOOK_T(), [p[0], p[1] + 0.2, p[2]]); k.lookAt(cam.pos[0], p[1] + 0.2, cam.pos[2]);
+    things: (g, c, t, _T, cam) => { const a = c.sir, p = near(a.joint("tipR"), cam, 0.05), k = put(g, BOOK_T(), [p[0], p[1] + 0.25, p[2]]); k.lookAt(cam.pos[0], p[1] + 0.25, cam.pos[2]);
       waterline(g, wx, wz, cam, t, 0.95);
       // what he spits out, in an arc
       if (t < 0.9) { const m = near(a.joint("skull"), cam, 0.2); for (let i = 0; i < 8; i++) { const u = i / 8; g.add(mesh(ball(0.03, 6), "#bfe3fb", { at: [m[0] - 0.12 - 0.5 * u, m[1] - 0.2 + 0.5 * u - 0.9 * u * u, m[2]], line: 0, shadow: false })); } } } });
@@ -299,11 +305,11 @@ const originMid = at("origin", /^like$/) - 0.1;
 // 12. LIKE TREASURE ISLAND AND PETER PAN: back on deck, dripping. He holds up one book, then thrusts the other at the captain, who
 //     bends over its cover, points at the pirate on it and then at himself
 {
-  const V = lens(2.25, 1.25, 4.6, -0.05, -1, 3, 54), [qx, qz] = V.spot(3.3, -0.3), [cx, cz] = V.spot(3.7, 0.52), tI = at("origin", /Treasure/) - originMid, tP = at("origin", /Peter/) - originMid;
+  const V = lens(2.25, 1.25, 4.6, -0.05, -1, 2, 56), [qx, qz] = V.spot(3.0, -0.3), [cx, cz] = V.spot(3.3, 0.47), tI = at("origin", /Treasure/) - originMid, tP = at("origin", /Peter/) - originMid;
   const sir = mover(SIR_D, 1.8, qx, qz, V.toward(qx, qz, 6)); sir.stand(9);
-  sir.actAt(-1, { armR: arm(30, 20, 70, 0), armL: arm(30, 14, 76, 0), head: [0, 2, 0] }, tI + 0.3 + 1, { in: 0.01, out: 0.2, handL: "grip", handR: "grip", face: { smile: 0.6, brow: 0.6, gaze: [0, 0] } });
-  sir.actAt(tI - 0.1, { armR: arm(124, 22, 174, 8), head: [-10, -4, 0] }, 9, { in: 0.24, antic: 0.4, over: 2, handR: "grip", face: { smile: 1, brow: 1, lid: 0.1, gaze: [-0.6, -0.3] } });
-  sir.actAt(tP - 0.14, { armL: arm(34, 22, 80, 16), head: [14, 0, 0], twist: -8 }, 9, { in: 0.2, antic: 0.5, over: 2.2, handL: "grip", face: { smile: 1, brow: 1, lid: 0.1, gaze: [0.8, 0.1] } });
+  sir.actAt(-1, { armR: arm(140, 10, 170, 0), armL: arm(44, 14, 92, 0), head: [0, 2, 0] }, 9 + 1, { in: 0.01, out: 0.2, handL: "grip", handR: "grip", face: { smile: 0.6, brow: 0.6, gaze: [0, 0] } });
+  sir.actAt(tI - 0.1, { armR: arm(174, 5, 181, 0), py: 0.03, head: [-8, -8, 0] }, 9, { in: 0.24, antic: 0.4, over: 2, handR: "grip", face: { smile: 1, brow: 1, lid: 0.1, gaze: [-0.6, -0.3] } });
+  sir.actAt(tP - 0.14, { armL: arm(44, 24, 82, 14), head: [14, 0, 0], twist: -8 }, 9, { in: 0.2, antic: 0.25, over: 2.2, handL: "grip", face: { smile: 1, brow: 1, lid: 0.1, gaze: [0.8, 0.1] } });
   const cap = mover(CAPTAIN_D, 1.86, cx, cz, V.toward(cx, cz, -22)); cap.stand(9);
   cap.actAt(-1, { armL: arm(128, 30, 206, -24), armR: arm(10, 12, 30, 0), head: [-14, 0, 6] }, tP + 0.2 + 1, { in: 0.01, out: 0.2, handL: "relaxed", face: { brow: 0.8, lid: 0.1, smile: -0.3, gaze: [-0.8, 0] } });
   cap.actAt(tP + 0.05, { lean: 18, armR: arm(46, 4, 70, -24), armL: arm(10, 12, 30, 0), head: [-18, 16, 0] }, 9, { in: 0.26, antic: 0.3, over: 1.6, handR: "point", face: { brow: 1, wide: 0.9, lid: 0, mouth: 0.4, gaze: [-0.7, 0.7] } });
@@ -314,7 +320,7 @@ const originMid = at("origin", /^like$/) - 0.1;
     cast: (t, T) => [play("cap", CAPTAIN_D, cap, t, [0, 0, 0], 1.86, { seed: 5, blink: false }), play("sir", SIR_D, sir, t, [0, 0, 0], 1.8, { talk: talk(W, T, ["origin"]), blink: false })],
     things: (g, c, t, _T, cam) => {
       const hold = (b: THREE.Object3D, p: V3, up: number, d: number) => { const q = near(p, cam, d); put(g, b, [q[0], q[1] + up, q[2]]); b.lookAt(cam.pos[0], q[1] + up, cam.pos[2]); };
-      hold(BOOK_T(), c.sir.joint("tipR"), 0.2, -0.04); const pl = c.sir.joint("tipL"); hold(BOOK_P(), [pl[0] + 0.15, pl[1], pl[2]], 0.06, -0.04);
+      hold(BOOK_T(), c.sir.joint("tipR"), 0.25, -0.04); const pl = c.sir.joint("tipL"); hold(BOOK_P(), [pl[0] + 0.04, pl[1], pl[2]], 0.08, -0.04);
       drips(g, c.sir, t, cam); g.add(mesh(ball(1, 14), "#9fd4f6", { at: [c.sir.at[0], 0.012, c.sir.at[2]], scale: [0.5, 0.01, 0.34], line: 0.5, shadow: false })); } });
 }
 
@@ -323,9 +329,9 @@ export const PIRATE_PLANK: Film = {
   hook: { text: ["DID PIRATES", "MAKE YOU WALK", "THE PLANK?"], a: 0, b: L.hook.b + 0.2, size: 96 },
   sign: { text: "Dramatised. The rules are from pirate articles printed in 1724.", a: maroonMid + 0.04, b: maroonMid + 2.04 },
   thumbs: [
-    { T: 0.14, cam: aim(5.62, PL.z, 4.3, -0.75, -55, 0.35, 0, 38).cam, words: ["WALK THE", "PLANK?"], side: "right", at: "bottom", size: 136 },
+    { T: 0.14, cam: aim(5.62, PL.z, 4.7, -0.75, -55, 0.35, 1.5, 38).cam, words: ["WALK THE", "PLANK?"], side: "right", at: "bottom", size: 136 },
     { T: answerMid + heave + 0.5, cam: { pos: [4.3, 2.1, 0.6], look: [3.2, 1.75, 4.2], fov: 44 }, words: ["NO PLANK", "NEEDED"], side: "left", at: "bottom", size: 124, tilt: 3 },
-    { T: cut("story", "rules") + 2.4, cam: lens(1.5, 1.2, 4.0, -0.34, -1, 3, 32).cam, words: ["REAL", "PIRATE", "RULES"], side: "left", at: "middle", size: 128 },
+    { T: cut("story", "rules") + 2.4, cam: lens(0.9, 1.25, 4.2, -0.28, -1, 2, 34).cam, words: ["REAL", "PIRATE", "RULES"], side: "left", at: "middle", size: 128 },
   ],
   hits: [{ t: hit, amp: 1, dur: 0.4 }], beds: [{ k: "sea", a: 0, b: END, g: 1 }, { k: "wind", a: 0, b: END, g: 0.35 }], music: "shanty", audio: "craft/pirate-plank.wav",
 };

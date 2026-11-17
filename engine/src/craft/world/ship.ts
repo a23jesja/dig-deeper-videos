@@ -73,7 +73,7 @@ export const pirateShip = () => {
   const rig = sunRig({ from: [9, 14, 6], power: 1.55, fill: 1.8, bounce: 0.8, reach: 12 }, [0, 0, 0]); root.add(rig); root.userData.rig = rig;
   // the sea
   // the sea, which drifts: the stage calls tick with the film's time
-  const sea = mesh(box(1600, 0.2, 1600), "#ffffff", { at: [0, SEA - 0.1, 0], map: (waves(), paint("seawaves", 512, 512, () => {}, [60, 60])), line: 0, shadow: false }); root.add(sea);
+  const sea = mesh(box(1600, 0.2, 1600), "#ffffff", { at: [0, SEA - 0.1, 0], map: (waves(), paint("seawaves", 512, 512, () => {}, [130, 130])), line: 0, shadow: false }); root.add(sea);
   root.userData.tick = (t: number) => { const m = (sea.material as THREE.MeshToonMaterial).map; if (m) m.offset.set(t * 0.012 + 0.004 * Math.sin(t * 1.3), t * 0.02); };
   // the hull: a dark body with a yellow strake, a pointed bow, a square stern
   const hullC = "#4a2f22";
@@ -87,7 +87,12 @@ export const pirateShip = () => {
   for (const s of [-1, 1]) root.add(mesh(box(0.16, 0.9, 4.05), "#a8562f", { at: [s * 1.42, 0.45, -9.93], rot: [0, s * Math.PI / 4, 0] }), mesh(box(0.3, 0.09, 4.1), "#e8cf8a", { at: [s * 1.42, 0.94, -9.93], rot: [0, s * Math.PI / 4, 0], line: 0.7 }));
   root.add(mesh(box(W * 2, 0.9, 0.16), "#a8562f", { at: [0, 0.45, 8.5] }));
   // the plank: lashed down on deck, reaching out over the water
-  { const p = SHIP.plank; root.add(mesh(box(p.x1 - p.x0 + 0.9, 0.07, 0.52), "#e3c68c", { at: [(p.x0 - 0.9 + p.x1) / 2, p.y - 0.035, p.z] })); for (const x of [1.9, 2.45]) root.add(mesh(box(0.1, 0.12, 0.6), "#5a4634", { at: [x, p.y + 0.03, p.z], line: 0.6 })); }
+  { const p = SHIP.plank; root.add(mesh(box(p.x1 - p.x0 + 0.9, 0.07, 0.52), "#e3c68c", { at: [(p.x0 - 0.9 + p.x1) / 2, p.y - 0.035, p.z] })); for (const x of [1.9, 2.45]) root.add(mesh(box(0.1, 0.12, 0.6), "#5a4634", { at: [x, p.y + 0.03, p.z], line: 0.6 }));
+    // its two boards, the grain in them, the nails of the battens underneath, a knot
+    root.add(mesh(box(p.x1 - p.x0 + 0.8, 0.006, 0.014), "#a8854e", { at: [(p.x0 - 0.9 + p.x1) / 2, p.y + 0.002, p.z + 0.02], line: 0, shadow: false }));
+    for (const [x, z, l] of [[3.0, -0.15, 1.1], [4.4, -0.11, 0.8], [5.3, -0.17, 0.5], [3.5, 0.16, 0.9], [4.9, 0.13, 0.9], [2.7, 0.19, 0.4]]) root.add(mesh(box(l, 0.005, 0.008), "#c9a868", { at: [x, p.y + 0.002, p.z + z], line: 0, shadow: false }));
+    for (const x of [3.3, 4.6, 5.75]) for (const z of [-0.19, -0.07, 0.09, 0.2]) root.add(mesh(ball(0.016, 6), "#5a4634", { at: [x, p.y + 0.004, p.z + z], scale: [1, 0.4, 1], line: 0, shadow: false }));
+    root.add(mesh(ball(0.035, 8), "#b08a52", { at: [4.05, p.y + 0.001, p.z - 0.13], scale: [1.4, 0.1, 1], line: 0, shadow: false })); }
   // the mast with its boom and gaff, the mainsail and the jib, shrouds with ratlines on both sides
   const [mx, , mz] = SHIP.mast, top = SHIP.mastTop;
   root.add(rod([mx, 0, mz], [mx, top, mz], 0.22, "#8a6a3e"), mesh(cyl(0.34, 0.34, 0.12, 14), "#7a5a36", { at: [mx, 0.06, mz] }), mesh(cyl(0.6, 0.5, 0.14, 14), "#7a5a36", { at: [mx, 9.4, mz] }));
@@ -127,7 +132,17 @@ export const pirateShip = () => {
   { const [ix, iy, iz] = SHIP.island; root.add(mesh(ball(1, 20), "#f1dc9a", { at: [ix, iy - 0.3, iz], scale: [5.2, 0.95, 3.8], shadow: false, line: 0.9 })); const p = palm(2.5); p.position.set(...SHIP.palm); root.add(p);
     // on the sand: a starfish, shells, a piece of driftwood
     for (const [x, z, c, r] of [[2.3, 1.5, "#fbf3df", 0.07], [-0.7, 2.6, "#f4c9a0", 0.06], [2.9, 0.4, "#fbf3df", 0.08]] as [number, number, string, number][]) root.add(mesh(ball(r, 8), c, { at: [ix + x, iy - 0.3 + 0.95 * Math.sqrt(Math.max(0, 1 - (x / 5.2) ** 2 - (z / 3.8) ** 2)) , iz + z], scale: [1, 0.35, 1], line: 0.6, shadow: false }));
-    root.add(rod([ix - 2.6, iy + 0.42, iz + 1.2], [ix - 1.5, iy + 0.5, iz + 0.9], 0.07, "#b89a6a")); }
+    root.add(rod([ix - 2.6, iy + 0.42, iz + 1.2], [ix - 1.5, iy + 0.5, iz + 0.9], 0.07, "#b89a6a"));
+    // the sand is not bare: ripples the wind has drawn across it, tufts of beach grass, pebbles and shells, foam where the sea meets it
+    const sy = (x: number, z: number) => iy - 0.3 + 0.95 * Math.sqrt(Math.max(0, 1 - (x / 5.2) ** 2 - (z / 3.8) ** 2));
+    for (let i = 0; i < 22; i++) { const z0 = -3.0 + i * 0.29 + 0.08 * Math.sin(i * 2.1), x0 = -4.2 + ((i * 37) % 10) * 0.42, len = 1.5 + ((i * 13) % 5) * 0.35; let prev: [number, number, number] | null = null;
+      for (let k = 0; k <= 6; k++) { const x = x0 + (len * k) / 6, z = z0 + 0.06 * Math.sin(k * 1.3 + i); if (1 - (x / 5.2) ** 2 - (z / 3.8) ** 2 < 0.12) { prev = null; continue; } const q: [number, number, number] = [ix + x, sy(x, z) - 0.006, iz + z]; if (prev) root.add(rod(prev, q, 0.024, "#dcc37e", { line: 0, shadow: false })); prev = q; } }
+    for (const [x, z, s] of [[-2.9, 0.2, 1], [-0.4, -0.9, 1.2], [1.9, -0.3, 0.9], [-3.4, -1.4, 1.1], [-1.9, 2.5, 0.8], [0.4, 0.7, 0.7], [3.2, -1.6, 1.2], [-0.9, -2.2, 1], [-2.4, 1.5, 0.75], [-0.2, 2.1, 0.7]] as number[][]) for (let k = 0; k < 6; k++) { const a = k * 1.05 + x;
+      root.add(rod([ix + x + 0.03 * Math.cos(a), sy(x, z) - 0.02, iz + z + 0.03 * Math.sin(a)], [ix + x + (0.1 + 0.03 * (k % 3)) * s * Math.cos(a), sy(x, z) + (0.26 + 0.06 * (k % 3)) * s, iz + z + 0.1 * s * Math.sin(a)], 0.014, k % 2 ? "#6aa84f" : "#4f8f3f", { line: 0.5, shadow: false })); }
+    for (let i = 0; i < 26; i++) { const x = -4.0 + ((i * 61) % 80) / 10, z = -2.6 + ((i * 29) % 56) / 10; if (1 - (x / 5.2) ** 2 - (z / 3.8) ** 2 < 0.1) continue;
+      root.add(mesh(ball(0.035 + 0.02 * (i % 3), 8), ["#fbf3df", "#f4c9a0", "#c9b8a0", "#e89a8a", "#b9a184"][i % 5], { at: [ix + x, sy(x, z), iz + z], scale: [1.3, 0.4, 1], rot: [0, i, 0], line: 0.5, shadow: false })); }
+    { const x = -1.2, z = 2.0; for (let k = 0; k < 5; k++) { const a = (k / 5) * 6.283; root.add(mesh(ball(1, 8), "#f08a3c", { at: [ix + x + 0.07 * Math.cos(a), sy(x, z) + 0.004, iz + z + 0.07 * Math.sin(a)], scale: [0.09, 0.02, 0.035], rot: [0, -a, 0], line: 0.6, shadow: false })); } }
+    for (let i = 0; i < 64; i++) { const a = (i / 64) * 6.283, k = 0.955 + 0.012 * Math.sin(i * 2.7); root.add(mesh(ball(1, 8), i % 3 ? "#ffffff" : "#d6ecfb", { at: [ix + 5.2 * k * Math.cos(a), SEA + 0.015, iz + 3.8 * k * Math.sin(a)], scale: [0.3 + 0.08 * (i % 3), 0.02, 0.1 + 0.03 * (i % 2)], rot: [0, -a + Math.PI / 2, 0], line: 0, shadow: false })); } }
   { const s = farShip(); s.position.set(...SHIP.merchant); s.rotation.y = 0.5; root.add(s); }
   for (const [x, y, z, s] of [[-170, 110, -420, 34], [150, 150, -500, 44], [-40, 190, -540, 30], [260, 100, -400, 26], [-220, 120, 300, 36], [200, 140, 340, 40], [420, 130, -60, 38]] as number[][]) { const c = cloud(s); c.position.set(x, y, z); if (Math.abs(x) > 300) c.rotation.y = Math.PI / 2; root.add(c); }
   void group; void painted;

@@ -15,11 +15,11 @@ VERSION 2 (skissens andra omgång). Romersk gata, äcklig och rolig, SANT. 32,3 
 | 13,1-15,4 | So Vespasian put a tax on it. | Kejsaren pekar; uppbördsmannen (civil, med vaxtavla) antecknar bakom sin kassakista bredvid krukan. Ingen betalar. | [S1] [S2] |
 | 15,4-17,6 | His son Titus complained. | Titus lutar sig bort från krukan med armen för näsan och hugger med pekfingret mot kistan. | [S1]: "found fault"; [S2]: "expressed his indignation". |
 | 17,6-21,3 | The emperor held a coin under his nose. Does it smell? | Kejsaren i profil håller myntet mellan fingrarna under Titus näsa; Titus drar huvudet bakåt. Amfiteaterbygget bakom. Skylt 17,8-19,8 s: "Dramatised. The story is from Suetonius; nobody knows who paid the tax." | [S1] |
-| 21,3-23,3 | No. Yet it comes from pee. | Kejsaren skrattar och singlar myntet högt, två gånger. | [S1]: When Titus said "No," he replied, "Yet it comes from urine." |
+| 21,3-23,3 | No. Yet it comes from pee. | Kejsaren, hel i bild, skrattar med handen på magen och singlar myntet högt, två gånger; bakom honom skakar Titus på huvudet, slår ut med handen och går sin väg nedför gatan. | [S1]: When Titus said "No," he replied, "Yet it comes from urine." |
 | 23,3-25,4 | That is why Rome taxed pee. | Myntet landar på guldhögen i kistan vid krukan; uppbördsmannen prickar av det på vaxtavlan. | Poängen i [S1]. |
 | 25,4-27,0 | The money did not smell. | Sir Digsworth, bredvid krukan och dess flugor, håller ett mynt under näsan och finner inget fel på det. | [S1] [S2] |
-| 27,0-30,4 | In Paris, street urinals were later named after him. | Sir Digsworth kommer gående uppför gatan mot linsen, tar fram ett bildkort ur kavajen och håller upp det; templet bakom. | [V1] [V2] |
-| 30,4-32,3 | Vespasiennes. | Nära: kortet med en parisisk pissoar och namnet; han knackar på namnet och lyfter på kepsen. | [V1] [V2] |
+| 27,0-30,4 | In Paris, street urinals were later named after him. | Sir Digsworth kommer gående uppför gatan mot linsen, som backar framför honom; han tar fram ett bildkort ur kavajen och håller upp det; templet bakom. | [V1] [V2] |
+| 30,4-32,3 | Vespasiennes. | Nära: kortet med en parisisk pissoar och namnet; han knackar under namnet med fingret och vänder sig sedan förtjust mot linsen. | [V1] [V2] |
 
 ## Källor (alla lästa i sidans råtext)
 

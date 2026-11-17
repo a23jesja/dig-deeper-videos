@@ -58,7 +58,7 @@ export const romeStreet = () => {
   root.add(mesh(box(600, 0.2, 600), "#dccb9c", { at: [0, -0.32, -100], line: 0, shadow: false }));
   root.add(mesh(box(4.2, 0.3, 80), "#ffffff", { at: [0, -0.15, 0], map: (paving(), paint("paving", 512, 512, () => {}, [1.4, 26])), line: 0 }));
   for (const s of [-1, 1]) {
-    root.add(mesh(box(2.0, WALK + 0.3, 80), "#ffffff", { at: [s * 3.1, (WALK - 0.3) / 2, 0], map: (slabs(), paint("slabs", 256, 256, () => {}, [1, 34])) }));
+    root.add(mesh(box(2.0, WALK + 0.3, 80), "#ffffff", { at: [s * 3.1, (WALK - 0.3) / 2, 0], map: (slabs(), paint("slabs", 256, 256, () => {}, [3, 100])) }));
     root.add(mesh(box(0.22, WALK + 0.32, 80), C.stoneL, { at: [s * 2.1, (WALK - 0.28) / 2, 0], line: 0.7 }));
   }
   // stepping stones across the road, in two places

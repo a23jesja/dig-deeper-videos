@@ -100,7 +100,7 @@ for (const [view, turn] of [["side", 90], ["front", 40]] as [string, number][]) 
 const LOW = lens(X, 1.05, Z + 2.6, 0, -1, -13, 52);      // the mug's pictures look lower, so that the deck it lands on is in them
 card2("mug-hand-side", [{ D: SAILOR_D, h: 1.82, turn: 58, pose: () => usePose(MUG, "hold", "R"), hands: R1 }], (g, [a], cam) => wield(g, MUG_DROP(), MUG, "hold", a, "R", cam), LOW);
 for (const [id, tt] of [["mug-falling-side", 0.3], ["mug-landed-side", 1.4]] as [string, number][]) card2(id, [{ D: SAILOR_D, h: 1.82, turn: 58, pose: () => usePose(MUG, "hold", "R"), hands: { handR: "open" }, face: { wide: 1, lid: 0, brow: 1, mouth: 0.5, gaze: [0.3, 0.9] } }],
-  (g, [a], cam) => { letGo(g, MUG_DROP(), MUG, near(palm(a, "R"), cam, 0.05), [0, 0, 0], tt, 0, cam, { centre: [0.07, 0], r: 0.065, spin: 0.6 }); }, LOW);
+  (g, [a], cam) => { letGo(g, MUG_DROP(), MUG, near(palm(a, "R"), cam, 0.05), [0, 0, 0], tt, 0, cam, { centre: [0.07, 0], r: 0.065, spin: 0.6, rests: [0, -90] }); }, LOW);
 // the fiddle and its bow: played, and lowered (the fiddle by its neck, the bow by its frog)
 both((view, turn) => card2(`fiddle-play-${view}`, [{ D: NERO_D, h: 1.74, turn, pose: (s) => fiddlePose(s), hands: LR, face: { lid: 0.5, brow: 0.6, smile: 0.5 } }], (g, [a], cam) => fiddlePlay(g, FID(), BOW_O(), a, cam)));
 both((view, turn) => card2(`fiddle-lowered-${view}`, [{ D: NERO_D, h: 1.74, turn, pose: () => ({ ...usePose(FIDDLE, "lowered", "L"), ...usePose(BOW, "lowered", "R") }), hands: LR }], (g, [a], cam) => { wield(g, FID_NECK(), FIDDLE, "lowered", a, "L", cam); wield(g, BOW_O(), BOW, "lowered", a, "R", cam); }));

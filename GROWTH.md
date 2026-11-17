@@ -47,15 +47,25 @@ that?"); the other Shorts keep that shape.
   baseline table above. Fill in their numbers here when they exist, so that the test has something fair to be
   measured against.
 
-| Short (new look, "Why did they do that?") | Length | Views | Average view | Share watched | Subscribers gained |
-|---|---|---|---|---|---|
-| Did pirates really make you walk the plank? | 30.4 s | __ | __ | __ % | __ |
-| Why did Rome tax pee? | 32.7 s | __ | __ | __ % | __ |
-| Why did pirates fly a black flag? | __ | __ | __ | __ % | __ |
-| Did Nero really fiddle while Rome burned? | __ | __ | __ | __ % | __ |
-| Did gladiators really fight to the death? | __ | __ | __ | __ % | __ |
-| Why did Blackbeard light fuses in his beard? | __ | __ | __ | __ % | __ |
-| **TEST, 45-55 s:** Were animals really put on trial? | __ | __ | __ | __ % | __ |
+| Short (new look, "Why did they do that?") | Length | Opening type | Stayed and watched | Biggest drop at | Views | Average view | Share watched | Subscribers gained |
+|---|---|---|---|---|---|---|---|---|
+| Did pirates really make you walk the plank? | 30.4 s | c (built before the hook lab) | __ % | __ s | __ | __ | __ % | __ |
+| Why did Rome tax pee? | 32.7 s | a (built before the hook lab) | __ % | __ s | __ | __ | __ % | __ |
+| Why did pirates fly a black flag? | __ | a (built before the hook lab) | __ % | __ s | __ | __ | __ % | __ |
+| Did Nero fiddle while Rome burned? | __ | a (built before the hook lab) | __ % | __ s | __ | __ | __ % | __ |
+| Did gladiators fight to the death? | __ | __ | __ % | __ s | __ | __ | __ % | __ |
+| Blackbeard and the burning fuses | __ | __ | __ % | __ s | __ | __ | __ % | __ |
+| **TEST, 45-55 s:** Were animals really put on trial? | __ | __ | __ % | __ s | __ | __ | __ % | __ |
+
+**Opening types (DAILY-RULES, "The hook lab", Jesper 17 November 2026):** (a) the strangest moment already
+happening, (b) a shocking statement spoken over action, (c) Sir Digsworth in trouble with the question on screen.
+From the next Short that is built, seconds 0-5 are built first in all three versions and the strongest is chosen
+before the rest is built. For every Short, record the opening type, "stayed and watched" in percent and the second
+where the retention curve drops most; Jesper sends the numbers from YouTube. After ten Shorts, the opening type
+with the best numbers becomes the default. The types for the four Shorts built before the hook lab are the review
+session's reading of their first frame: the plank (Sir Digsworth at the end of the plank over the shark) is c;
+Rome (the jar, the gold and the held nose), the black flag (hands up under the rising flag) and Nero (the emperor
+fiddling before the burning city) are a.
 
 ## What the Emu War retention curve showed (Engagement tab, read by Jesper 17 November 2026)
 - 49.5 % stayed; 50.5 % swiped away in the first second.

@@ -32,6 +32,8 @@ const within = (lo: number, hi: number, what: string): Ok => (d) => (ang(d) >= l
  *  the holder; lowered, it points down and forward */
 export const PISTOL: Prop = { name: "pistol", uses: {
   aim: { arm: A(84, 26, 92, 20), turn: 0, ok: within(-35, 35, "an aimed pistol points away from the holder along his arm") },
+  /** held up and out along the arm (shaken at someone, kicked up by its shot) */
+  up: { arm: A(122, 46, 154, 40), turn: 0, ok: within(-35, 95, "a pistol held up points away from the holder along his arm") },
   lowered: { arm: A(12, 12, 26, 6), level: -62, ok: within(-85, -35, "a lowered pistol points down and forward") },
 } };
 /** the sabre (props.ts sabre): held by the hilt, the blade away from the body; lowered, the point is down and forward */
@@ -39,6 +41,8 @@ export const SABRE: Prop = { name: "sabre", uses: {
   ready: { arm: A(46, 24, 92, 20), turn: 52, ok: within(20, 85, "a sabre at the ready has its blade up and away from the body") },
   raised: { arm: A(150, 34, 186, 14), level: 72, ok: within(45, 110, "a raised sabre points up") },
   lowered: { arm: A(14, 14, 30, 8), level: -58, ok: within(-85, -30, "a lowered sabre has its point down and forward") },
+  /** being drawn: the blade still down along the scabbard it comes out of */
+  draw: { arm: A(34, -24, 70, -70), level: -100, ok: within(-150, -55, "a sabre being drawn points down along its scabbard") },
   /** a cut: drawn back over the shoulder, then brought down through what it cuts */
   chop: { arm: A(165, 22, 222, 8), level: 128, ok: within(95, 170, "a sabre drawn back to cut points up and back over his shoulder") },
   struck: { arm: A(62, 16, 68, 8), level: -26, ok: within(-65, 5, "after the cut the blade points down and forward") },
@@ -94,13 +98,15 @@ export const usePose = (P: Prop, use: string, side: Side): Partial<Pose> => (sid
 /** Puts a prop in a figure's hand for one of its uses: the grip in the closed fingers, the working end where the use says, the top
  *  up, the fingers and the thumb laid over it. `o` = the prop's model (grip at the origin, working end along +x, top along +y).
  *  `blend` = [another use, 0..1] turns it part of the way toward that use (a pistol coming down, a mug going to the mouth) */
-export const wield = (into: THREE.Group, o: THREE.Object3D, P: Prop, use: string, a: Staged, side: Side, cam: Cam, opt: { d?: number; blend?: [string, number] } = {}) => {
+export const wield = (into: THREE.Group, o: THREE.Object3D, P: Prop, use: string, a: Staged, side: Side, cam: Cam, opt: { d?: number; blend?: [string, number]; /** the grip lies this far along the thing's own x from its origin (a spyglass held by its middle) */ at?: number } = {}) => {
   const P2 = pic(cam), s = outward(a, side, cam), f = unit(P2(a.joint(el(side)), a.joint(wr(side))));
   const local = (U: Use): number => (U.level !== undefined ? U.level : ang([f[0] * s, f[1]]) + (U.turn ?? 0));
   let deg = local(P.uses[use]); if (opt.blend) { let to = local(P.uses[opt.blend[0]]); while (to - deg > 180) to -= 360; while (to - deg < -180) to += 360; deg += (to - deg) * opt.blend[1]; }
   const r = (deg * Math.PI) / 180, mine: [number, number] = [Math.cos(r), Math.sin(r)];
   grip(into, o, a, side, cam, [mine[0] * s, mine[1]], { d: opt.d, lean: s });
-  if (AUDIT.on) { const off = Math.hypot(...P2(palm(a, side), [o.position.x, o.position.y, o.position.z])), w = new THREE.Vector3(1, 0, 0).applyQuaternion(o.quaternion), seen = unit(P2([0, 0, 0], [w.x, w.y, w.z]));
+  if (opt.at) o.position.sub(new THREE.Vector3(opt.at * o.scale.x, 0, 0).applyQuaternion(o.quaternion));
+  const gp: V3 = opt.at ? (new THREE.Vector3(opt.at * o.scale.x, 0, 0).applyQuaternion(o.quaternion).add(o.position).toArray() as V3) : [o.position.x, o.position.y, o.position.z];
+  if (AUDIT.on) { const off = Math.hypot(...P2(palm(a, side), gp)), w = new THREE.Vector3(1, 0, 0).applyQuaternion(o.quaternion), seen = unit(P2([0, 0, 0], [w.x, w.y, w.z]));
     const err = off > fistR(a, side, cam) ? `the grip is ${(off * 100).toFixed(0)} cm from the hand` : opt.blend && opt.blend[1] > 0.02 && opt.blend[1] < 0.98 ? null : (opt.blend && opt.blend[1] >= 0.98 ? P.uses[opt.blend[0]] : P.uses[use]).ok([seen[0] * s, seen[1]]);
     AUDIT.rows.push({ id: o.uuid, prop: P.name, use, holder: `${a.name} ${side}`, err, at: palm(a, side) }); }
   return o;
@@ -119,7 +125,7 @@ export const spy = (into: THREE.Group, o: THREE.Object3D, a: Staged, cam: Cam, t
   span(into, o, eye, aside(eye, cam, d[0], d[1]), cam, 0); fingers(into, a, opt.one ? [H.near] : [H.near, H.far], cam, 0.24);
   if (AUDIT.on) { const lie = (s: Side) => { const v = P2(e0, palm(a, s)); return { off: Math.abs(v[0] * d[1] - v[1] * d[0]), along: dot(v, d), r: fistR(a, s, cam) }; }, n1 = lie(H.near), n2 = opt.one ? null : lie(H.far);
     const err = a.mark && !a.mark("eyeA") && !a.mark("eyeB") ? "the eye it is put to is not in view" : !(Math.abs(a.o.face?.shut ?? 0) > 0.5 && Math.sign(a.o.face?.shut ?? 0) === spyEye(cam, a.at, target)) ? "the eye at the eyepiece is open beside it (face.shut = spyEye)" : n1.off > n1.r ? `the near hand is ${(n1.off * 100).toFixed(0)} cm off the tube` : n1.along < 0.08 || n1.along > len ? "the near hand is not on the tube" : n2 && n2.off > n2.r ? `the supporting hand is ${(n2.off * 100).toFixed(0)} cm off the tube` : n2 && (n2.along > len || n2.along < n1.along + 0.08) ? "the supporting hand is not further out on the tube" : null;
-    AUDIT.rows.push({ id: o.uuid, prop: "spyglass", use: "look", holder: a.name, err, at: mix3(e0, palm(a, opt.one ? H.near : H.far), 0.5) }); }
+    AUDIT.rows.push({ id: o.uuid, prop: "spyglass", use: "look", holder: `${a.name} ${opt.one ? H.near : `${H.near}+${H.far}`}`, err, at: mix3(e0, palm(a, opt.one ? H.near : H.far), 0.5) }); }
   return o;
 };
 /** Where a thing that has left a hand is t seconds later: let go at `p0` with the speed `v0` (metres a second; nothing = dropped), it
@@ -134,11 +140,13 @@ export const fallen = (p0: V3, v0: V3, t: number, floor: number, opt: { bounce?:
  *  from its grip in its own terms, and `r`, how far its middle stays above the floor when it lies there), turning in the picture's plane
  *  about that middle, and once down it settles onto the nearest side, so that it never jumps. `p0` = where its grip was when it was let
  *  go (as wield put it there), `from` = the angle it had in the hand, `mirror` = it was held turned over (pointing to the left) */
-export const letGo = (into: THREE.Group, o: THREE.Object3D, P: Prop | string, p0: V3, v0: V3, t: number, floor: number, cam: Cam, opt: { bounce?: number; spin?: number; from?: number; centre?: [number, number]; r?: number; mirror?: boolean } = {}) => {
+export const letGo = (into: THREE.Group, o: THREE.Object3D, P: Prop | string, p0: V3, v0: V3, t: number, floor: number, cam: Cam, opt: { bounce?: number; spin?: number; from?: number; centre?: [number, number]; r?: number; mirror?: boolean; /** the angles it may come to rest at (degrees; a mug on its bottom or on its side with the ear up, never on its ear) */ rests?: number[] } = {}) => {
   const c = opt.centre ?? [0, 0], m = opt.mirror ? -1 : 1, a0 = ((opt.from ?? 0) * Math.PI) / 180;
   const R = (a: number): [number, number] => [Math.cos(a) * m * c[0] - Math.sin(a) * c[1], Math.sin(a) * m * c[0] + Math.cos(a) * c[1]];
   const f = fallen(aside(p0, cam, ...R(a0)), v0, t, floor + (opt.r ?? 0), opt);
-  let a = a0 + f.turn; if (f.landed) { const q = Math.round(a / (Math.PI / 2)) * (Math.PI / 2), u = Math.max(0, Math.min(1, (t - f.t1) / 0.2)); a += (q - a) * u * u * (3 - 2 * u); }
+  let a = a0 + f.turn; if (f.landed) { const R90 = Math.PI / 2, ok = (opt.rests ?? [0, 90, 180, 270]).map((d) => (((d * m) % 360) + 360) % 360 * (Math.PI / 180));
+    let q = a, best = Infinity; for (let k = Math.floor(a / (2 * Math.PI)) - 1; k <= Math.floor(a / (2 * Math.PI)) + 1; k++) for (const r of ok) { const c = r + 2 * Math.PI * k; if (Math.abs(c - a) < best) { best = Math.abs(c - a); q = c; } }
+    const u = Math.max(0, Math.min(1, (t - f.t1) / (0.2 + 0.12 * Math.min(1, best / R90)))); a += (q - a) * u * u * (3 - 2 * u); }
   const r = R(a), org = aside(f.at, cam, -r[0], -r[1]); span(into, o, org, aside(org, cam, Math.cos(a), Math.sin(a)), cam, 0); if (opt.mirror) o.rotateY(Math.PI);
   if (AUDIT.on) AUDIT.rows.push({ id: o.uuid, prop: typeof P === "string" ? P : P.name, use: f.landed ? "landed" : "falling", holder: "", err: null, at: f.at });
   return f;
@@ -191,18 +199,28 @@ const strap = (into: THREE.Group, of: THREE.Object3D, a: V3, b: V3, cam: Cam, d:
   let s = STRAPS.get(of); if (!s) { s = group([mesh(box(1, w, 0.014), "#4a3020", { at: [0.5, 0, 0], line: 0.6, shadow: false })]); STRAPS.set(of, s); }
   const P2 = pic(cam); span(into, s, a, b, cam, d); s.scale.set(Math.max(0.01, Math.hypot(...P2(a, b))), 1, 1); return s;
 };
-export const sheathed = (into: THREE.Group, o: THREE.Object3D, a: Staged, side: Side, cam: Cam) => {
+type Body = { joint: (n: string) => V3; heading: number; at: V3 };
+/** where a scabbard at the hip hangs: its throat, the angle it lies at in the picture, and whether it is at the far hip */
+const scabbardAt = (a: Body, side: Side, cam: Cam) => {
   const P2 = pic(cam), h = (a.heading * Math.PI) / 180, fwd = P2([0, 0, 0], [Math.sin(h), 0, Math.cos(h)])[0], hip = a.joint(side === "L" ? "hipL" : "hipR"), other = a.joint(side === "L" ? "hipR" : "hipL");
   // seen from the side, a sabre at the far hip lies behind him: only the hilt shows in front of his belly and the sheath behind his legs
   const toCam = [cam.pos[0] - a.at[0], cam.pos[2] - a.at[2]], leftNear = Math.cos(h) * toCam[0] - Math.sin(h) * toCam[1] > 0, farHip = (side === "L") !== leftNear;
   const front = Math.abs(fwd) < 0.35, out = P2(other, hip)[0] >= 0 ? 1 : -1, at: V3 = [hip[0], hip[1] + 0.07, hip[2]], p = near(front ? aside(at, cam, out * 0.11) : farHip ? aside(at, cam, Math.sign(fwd) * 0.11, -0.02) : at, cam, !front && farHip ? -0.08 : 0.04);
-  const fx = cam.look[0] - cam.pos[0], fz = cam.look[2] - cam.pos[2], lie = front ? -90 + out * 15 : (fwd > 0 ? -1 : 1) * (farHip ? 145 : 128) + (fwd > 0 ? 0 : 180);
-  o.position.set(p[0], p[1], p[2]); o.rotation.set(0, Math.atan2(-fx, -fz), (lie * Math.PI) / 180);
-  if (front || !farHip) o.traverse((c) => { if (c.userData.layer === "back") { c.userData.z0 ??= c.position.z; c.position.z = c.userData.z0 - 0.14; } });
+  const lie = front ? -90 + out * 15 : (fwd > 0 ? -1 : 1) * (farHip ? 145 : 128) + (fwd > 0 ? 0 : 180);
+  return { p, lie, front, farHip, out, at };
+};
+/** where the grip of a sheathed sabre is (for the hand that draws it): 8 cm up the hilt from the scabbard's throat */
+export const hiltAt = (a: Body, side: Side, cam: Cam): V3 => { const S = scabbardAt(a, side, cam), r = (S.lie * Math.PI) / 180; return aside(S.p, cam, -0.08 * Math.cos(r), -0.08 * Math.sin(r)); };
+/** the hilt of a sheathed sabre, for a figure that is not on the stage yet (to solve the arm that draws it) */
+export const hiltFor = (s: Stand, side: Side): V3 => hiltAt({ joint: bare(s), heading: s.heading, at: s.at }, side, s.cam);
+export const sheathed = (into: THREE.Group, o: THREE.Object3D, a: Staged, side: Side, cam: Cam, opt: { drawn?: boolean } = {}) => {
+  const S = scabbardAt(a as unknown as Body, side, cam), fx = cam.look[0] - cam.pos[0], fz = cam.look[2] - cam.pos[2];
+  o.position.set(S.p[0], S.p[1], S.p[2]); o.rotation.set(0, Math.atan2(-fx, -fz), (S.lie * Math.PI) / 180);
+  o.traverse((c) => { if (c.userData.layer === "back") { c.userData.z0 ??= c.position.z; c.position.z = c.userData.z0 - (S.front || !S.farHip ? 0.14 : 0); } if (c.userData.hilt) c.visible = !opt.drawn; });
   // the baldric: over the other shoulder, across his chest, down to the frog that holds the scabbard
-  const top = a.joint(sh(side === "L" ? "R" : "L")), frog = aside(p, cam, 0, 0.0);
-  strap(into, o, [top[0], top[1] + 0.05, top[2]], front ? aside(frog, cam, -out * 0.02, 0.02) : frog, cam, 0.035);
-  if (AUDIT.on) AUDIT.rows.push({ id: o.uuid, prop: "sabre", use: "sheathed", holder: "", err: null, at });
+  const top = a.joint(sh(side === "L" ? "R" : "L"));
+  strap(into, o, [top[0], top[1] + 0.05, top[2]], S.front ? aside(S.p, cam, -S.out * 0.02, 0.02) : S.p, cam, 0.035);
+  if (AUDIT.on) AUDIT.rows.push({ id: o.uuid, prop: "sabre", use: opt.drawn ? "scabbard" : "sheathed", holder: "", err: null, at: S.at });
   into.add(o); return o;
 };
 // ---------------- two hands on one thing, and things on the shoulder ----------------
@@ -214,6 +232,8 @@ const J = (a: Staged) => (n: string) => a.joint(n as "neck");
 const at2 = (p: V3, cam: Cam, v: [number, number], k = 1): V3 => aside(p, cam, v[0] * k, v[1] * k);
 /** the arm that puts the middle of a figure's closed fingers on a point (for a pose built once) */
 export const reach = (s: Stand, side: Side, target: V3): Partial<Pose> => ({ [side === "L" ? "armL" : "armR"]: reachArm(s.D, (s.pose ?? {}) as Pose, {}, { at: s.at, heading: s.heading, h: s.h }, s.cam.pos, side, target) } as Partial<Pose>);
+/** the joints of a figure that is not on the stage yet, where it will stand (for poses built once) */
+export const jointsOf = (s: Stand) => bare(s);
 const bare = (s: Stand) => { const j = bareJoints(s.D, (s.pose ?? {}) as Pose, {}, { at: s.at, heading: s.heading, h: s.h }, s.cam.pos).joint; return (n: string) => j(n as "neck"); };
 
 /** A hand raised with something hanging from it (a bucket, a lantern): up from the shoulder and out to his side, or forward when he is
@@ -276,9 +296,11 @@ export const carryBy = (into: THREE.Group, o: THREE.Object3D, a: Staged, sa: Sid
   let pa = palm(a, sa), pb = palm(b, sb); const P2 = pic(cam); if (P2(pa, pb)[0] < 0) [pa, pb] = [pb, pa];
   const g = o.userData.grips as V3[], G = Math.abs(g[1][0] - g[0][0]), hy = g[0][1], v = P2(pa, pb), n = Math.hypot(v[0], v[1]) || 1, dir: [number, number] = [v[0] / n, v[1] / n];
   const origin = aside(mix3(pa, pb, 0.5), cam, hy * dir[1], -hy * dir[0]); span(into, o, origin, aside(origin, cam, dir[0], dir[1]), cam, d);
-  if (a === b) fingers(into, a, [sa, sb], cam, d + 0.06); else { fingers(into, a, [sa], cam, d + 0.06); fingers(into, b, [sb], cam, d + 0.06); }
-  if (AUDIT.on) { const err = Math.abs(n - G) > 0.1 ? `the hands are ${(Math.abs(n - G) * 50).toFixed(0)} cm off the handles` : null;
-    AUDIT.rows.push({ id: `${o.uuid}:a`, prop: "chest", use: "carry", holder: `${a.name} ${sa}`, err, at: pa }, { id: `${o.uuid}:b`, prop: "chest", use: "carry", holder: `${b.name} ${sb}`, err, at: pb }); }
+  const fd = d + ((o.userData.depth as number) ?? 0.1) / 2 + 0.2;      // the fingers well in front of the whole chest (its corners reach nearer the lens than its face), so that the hand in the ring shows
+  if (a === b) fingers(into, a, [sa, sb], cam, fd); else { fingers(into, a, [sa], cam, fd); fingers(into, b, [sb], cam, fd); }
+  if (AUDIT.on) { const err = Math.abs(n - G) > 0.1 ? `the hands are ${(Math.abs(n - G) * 100).toFixed(0)} cm too ${n > G ? "far apart" : "close together"} for the handles` : null;
+    if (a === b) AUDIT.rows.push({ id: o.uuid, prop: "chest", use: "carry", holder: `${a.name} ${sa}+${sb}`, err, at: pa });
+    else AUDIT.rows.push({ id: `${o.uuid}:a`, prop: "chest", use: "carry", holder: `${a.name} ${sa}`, err, at: pa }, { id: `${o.uuid}:b`, prop: "chest", use: "carry", holder: `${b.name} ${sb}`, err, at: pb }); }
   return o;
 };
 /** A bundle carried over the shoulder: his hand holds the knot in front of his shoulder and the bundle hangs behind his back. `o` =
@@ -295,10 +317,32 @@ export const onShoulder = (into: THREE.Group, o: THREE.Object3D, a: Staged, side
 /** the bundle back in its place below the knot, for carrying it in the hand with `wield` */
 export const inHand = (o: THREE.Object3D, r = 0.2) => { const sack = o.getObjectByName("sack"); if (sack) sack.position.set(0, -r * 0.82, 0); return o; };
 
+/** runs something without noting it for the script check (a thing placed only to find out where its end would be) */
+export const quiet = <T,>(f: () => T): T => { const on = AUDIT.on; AUDIT.on = false; try { return f(); } finally { AUDIT.on = on; } };
+/** A thing on its way from one hold to another (from the eye to the hand, from one hand to the other): it is put both ways, and laid
+ *  k of the way from the first to the second; the fingers of the nearer hold are kept. `holder` names the hands on it meanwhile
+ *  ("mc R+L" while it changes hands) */
+export const blend = (into: THREE.Group, o: THREE.Object3D, k: number, A: (g: THREE.Group) => void, B: (g: THREE.Group) => void, P: string, holder: string, at?: V3) => {
+  const ga = new THREE.Group(), gb = new THREE.Group();
+  quiet(() => A(ga)); const pa = o.position.clone(), qa = o.quaternion.clone();
+  quiet(() => B(gb)); const pb = o.position.clone(), qb = o.quaternion.clone();
+  o.position.lerpVectors(pa, pb, k); o.quaternion.slerpQuaternions(qa, qb, k);
+  const keep = k < 0.5 ? ga : gb, drop = k < 0.5 ? gb : ga;
+  for (const c of [...keep.children]) if (c !== o) into.add(c);
+  drop.traverse((c) => { const m = c as THREE.Mesh; if (!m.isMesh || c === o || o.getObjectById(c.id)) return; m.geometry?.dispose(); for (const mat of (Array.isArray(m.material) ? m.material : [m.material]) as THREE.MeshBasicMaterial[]) { mat.map?.dispose(); mat.dispose(); } });
+  into.add(o);
+  if (AUDIT.on) AUDIT.rows.push({ id: o.uuid, prop: P, use: "between", holder, err: null, at: at ?? [o.position.x, o.position.y, o.position.z] });
+  return o;
+};
+/** which way a thing held in this hand is laid (true = turned over, its working end to the left), for letGo's `mirror` */
+export const heldOver = (a: Staged, side: Side, cam: Cam) => outward(a, side, cam) < 0;
+
 /** The script check. Stages every figure of every shot on every tenth of a second, lets the shot put its things in their hands, and
  *  lists what is wrong: a grip that is not in the hand, a working end outside what the use allows, a thing that changes hand from
  *  one frame to the next, and a thing that leaves a hand without being set down, thrown or dropped. Needs a `document`
  *  (scripts/film_info.mjs gives it a stand-in that keeps count of the canvas transforms, so that the eyes are where they are drawn) */
+/** two holders share a hand ("mc R" and "mc R+L"): a thing that passes from hand to hand through both hands */
+const shares = (a: string, b: string) => { const [na, ha] = a.split(" "), [nb, hb] = b.split(" "); return na === nb && !!ha && !!hb && ha.split("+").some((h) => hb.split("+").includes(h)); };
 export const auditGrips = (film: Film, step = 0.1) => {
   const bad: string[] = [], spots: { shot: string; frame: number; prop: string; use: string; holder: string; x: number; y: number }[] = []; let held = 0; AUDIT.on = true;
   const lensOf = new THREE.PerspectiveCamera(50, 1080 / 1920, 0.1, 900);
@@ -313,7 +357,7 @@ export const auditGrips = (film: Film, step = 0.1) => {
       for (const [id, was] of prev) { if (!was.holder) continue; const is = now.get(id);
         if (!is) bad.push(`${at}: the ${was.prop} leaves ${was.holder}'s hand without being set down, thrown or dropped`);
         else if (is.holder && is.holder !== was.holder && is.holder.split(" ")[0] !== was.holder.split(" ")[0]) bad.push(`${at}: the ${was.prop} jumps from ${was.holder} to ${is.holder} between two frames`);
-        else if (is.holder && is.holder !== was.holder) bad.push(`${at}: the ${was.prop} changes hand (${was.holder} to ${is.holder}) between two frames`); }
+        else if (is.holder && is.holder !== was.holder && !shares(was.holder, is.holder)) bad.push(`${at}: the ${was.prop} changes hand (${was.holder} to ${is.holder}) between two frames`); }
       prev = now; } } } finally { AUDIT.on = false; }
   return { bad, held, spots };
 };

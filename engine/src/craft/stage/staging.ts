@@ -41,6 +41,13 @@ export const palmThen = (a: Actor, side: "L" | "R", cam: Cam, slide = 0.45): V3 
   p.mesh.traverse((o) => { const m = o as THREE.Mesh; if (!m.isMesh) return; m.geometry?.dispose(); for (const mat of (Array.isArray(m.material) ? m.material : [m.material]) as THREE.MeshBasicMaterial[]) { mat.map?.dispose(); mat.dispose(); } });
   return at;
 };
+/** A figure as it stands at another moment than the frame being drawn, with its joints (it is drawn once to find them, and let go
+ *  again): for working out where a thing in its hand was at that moment (the muzzle when the pistol went off) */
+export const stageAt = (a: Actor, cam: Cam): Staged => {
+  const p = figureCard(a.D, a.pose, a.o, { at: a.at, heading: a.heading, h: a.h }, cam.pos), s = { ...a, joint: p.joint, mesh: p.mesh, mark: p.mark } as Staged;
+  p.mesh.traverse((o) => { const m = o as THREE.Mesh; if (!m.isMesh) return; m.geometry?.dispose(); for (const mat of (Array.isArray(m.material) ? m.material : [m.material]) as THREE.MeshBasicMaterial[]) { mat.map?.dispose(); mat.dispose(); } });
+  return s;
+};
 /** the way the lens looks along the ground, and what is to the right in the picture */
 const view = (cam: Cam) => { const fx = cam.look[0] - cam.pos[0], fz = cam.look[2] - cam.pos[2], n = Math.hypot(fx, fz) || 1; return { rx: -fz / n, rz: fx / n }; };
 /** the angle of a figure's forearm in the picture (radians, 0 = pointing to the right, 90 degrees = straight up) */

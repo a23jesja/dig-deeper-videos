@@ -1,62 +1,62 @@
 [
  {
   "id": "hook",
-  "a": 0.05,
-  "b": 2.266,
-  "text": "Why did pirates fly a black flag?"
+  "a": 0.0,
+  "b": 2.179,
+  "text": "Why did pirates fly black flags?"
  },
  {
   "id": "guess",
-  "a": 2.566,
-  "b": 4.385,
+  "a": 2.479,
+  "b": 4.299,
   "text": "To say: we will kill you all?"
  },
  {
   "id": "offer",
-  "a": 4.635,
-  "b": 6.075,
+  "a": 4.549,
+  "b": 5.988,
   "text": "No. It was an offer."
  },
  {
   "id": "creep",
-  "a": 6.325,
-  "b": 10.96,
+  "a": 6.238,
+  "b": 10.874,
   "text": "Pirates often crept close under a friendly flag, then ran up the black one."
  },
  {
   "id": "meant",
-  "a": 11.21,
-  "b": 13.937,
+  "a": 11.124,
+  "b": 13.85,
   "text": "It meant: give up now, and we show mercy."
  },
  {
   "id": "sight",
-  "a": 14.187,
-  "b": 16.55,
+  "a": 14.1,
+  "b": 16.463,
   "text": "Some ships gave up at the very sight."
  },
  {
   "id": "red",
-  "a": 16.8,
-  "b": 20.122,
+  "a": 16.713,
+  "b": 20.036,
   "text": "Fight back, and a red flag might follow: no mercy."
  },
  {
   "id": "answer",
-  "a": 20.422,
-  "b": 24.011,
+  "a": 20.336,
+  "b": 23.924,
   "text": "The black flag was meant to win the treasure without a fight."
  },
  {
   "id": "tarp",
-  "a": 24.311,
-  "b": 29.466,
+  "a": 24.224,
+  "b": 29.379,
   "text": "One crew had no black flag, so they hoisted a dirty tarpaulin and fired a gun."
  },
  {
   "id": "worked",
-  "a": 29.766,
-  "b": 30.617,
+  "a": 29.679,
+  "b": 30.531,
   "text": "It worked."
  }
 ]

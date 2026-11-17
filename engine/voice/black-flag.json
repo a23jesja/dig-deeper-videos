@@ -2,18 +2,69 @@
  "voice": "bm_george",
  "speed": 1.06,
  "gap": 0.16,
- "lead": 0.05,
- "risk": ["pirates", "offer", "friendly flag", "mercy", "the very sight", "treasure", "hoisted", "tarpaulin", "fired a gun", "It worked"],
+ "lead": 0.0,
+ "risk": [
+  "pirates",
+  "offer",
+  "friendly flag",
+  "mercy",
+  "the very sight",
+  "treasure",
+  "hoisted",
+  "tarpaulin",
+  "fired a gun",
+  "It worked"
+ ],
  "lines": [
-  { "id": "hook", "text": "Why did pirates fly a black flag?", "gap": 0.3 },
-  { "id": "guess", "text": "To say: we will kill you all?", "gap": 0.25 },
-  { "id": "offer", "text": "No. It was an offer.", "gap": 0.25 },
-  { "id": "creep", "text": "Pirates often crept close under a friendly flag, then ran up the black one.", "gap": 0.25 },
-  { "id": "meant", "text": "It meant: give up now, and we show mercy.", "gap": 0.25 },
-  { "id": "sight", "text": "Some ships gave up at the very sight.", "gap": 0.25 },
-  { "id": "red", "text": "Fight back, and a red flag might follow: no mercy.", "gap": 0.3 },
-  { "id": "answer", "text": "The black flag was meant to win the treasure without a fight.", "gap": 0.3 },
-  { "id": "tarp", "text": "One crew had no black flag, so they hoisted a dirty tarpaulin and fired a gun.", "gap": 0.3 },
-  { "id": "worked", "text": "It worked.", "gap": 0.2 }
+  {
+   "id": "hook",
+   "text": "Why did pirates fly black flags?",
+   "gap": 0.3
+  },
+  {
+   "id": "guess",
+   "text": "To say: we will kill you all?",
+   "gap": 0.25
+  },
+  {
+   "id": "offer",
+   "text": "No. It was an offer.",
+   "gap": 0.25
+  },
+  {
+   "id": "creep",
+   "text": "Pirates often crept close under a friendly flag, then ran up the black one.",
+   "gap": 0.25
+  },
+  {
+   "id": "meant",
+   "text": "It meant: give up now, and we show mercy.",
+   "gap": 0.25
+  },
+  {
+   "id": "sight",
+   "text": "Some ships gave up at the very sight.",
+   "gap": 0.25
+  },
+  {
+   "id": "red",
+   "text": "Fight back, and a red flag might follow: no mercy.",
+   "gap": 0.3
+  },
+  {
+   "id": "answer",
+   "text": "The black flag was meant to win the treasure without a fight.",
+   "gap": 0.3
+  },
+  {
+   "id": "tarp",
+   "text": "One crew had no black flag, so they hoisted a dirty tarpaulin and fired a gun.",
+   "gap": 0.3
+  },
+  {
+   "id": "worked",
+   "text": "It worked.",
+   "gap": 0.2
+  }
  ]
 }

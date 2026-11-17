@@ -254,8 +254,9 @@ export const chest = (open = false, coinsIn = false, w = 0.62, h = 0.36, d = 0.4
   for (const x of [-w * 0.3, w * 0.3]) g.add(mesh(box(0.05, h + 0.02, d + 0.035), C.iron, { at: [x, h / 2, 0], line: 0 }));
   const lid = group([mesh(box(w + 0.02, 0.07, d + 0.02), "#7a4e28", { at: [0, 0.035, d / 2] }), mesh(box(0.09, 0.09, 0.03), C.gold, { at: [0, 0.02, d + 0.02], line: 0.5 })], [0, h, -d / 2]);
   lid.rotation.x = open ? -1.9 : 0; lid.userData.lid = true; g.add(lid);
-  for (const s of [-1, 1]) g.add(mesh(arc(0.05, 0.011, Math.PI, 10), C.iron, { at: [s * (w / 2 + 0.014), h * 0.68, 0], rot: [0, 0, -s * Math.PI / 2], line: 0.4, shadow: false }));
-  g.userData.grips = [[-(w / 2 + 0.06), h * 0.68, 0], [w / 2 + 0.06, h * 0.68, 0]];
+  // an iron ring at each end, wider than a fist, so that the ring shows round the hand that holds it by its outer bar
+  for (const s of [-1, 1]) g.add(mesh(arc(0.08, 0.013, Math.PI, 12), C.iron, { at: [s * (w / 2 + 0.014), h * 0.68, 0], rot: [0, 0, -s * Math.PI / 2], line: 0.4, shadow: false }));
+  g.userData.grips = [[-(w / 2 + 0.084), h * 0.68, 0], [w / 2 + 0.084, h * 0.68, 0]]; g.userData.depth = d;
   // what shows when the lid is up: a dark inside with a rim, and gold heaped over the brim if there is any
   if (open) { g.add(mesh(box(w - 0.07, 0.02, d - 0.07), coinsIn ? "#d9a520" : "#2a1c16", { at: [0, h + 0.008, 0], line: 0.4, shadow: false }));
     if (coinsIn) { g.add(mesh(ball(1, 14), C.gold, { at: [0, h - 0.01, 0], scale: [w * 0.4, 0.11, d * 0.36], line: 0.6, shadow: false }));
@@ -322,7 +323,9 @@ export const cutlass = () => layered(group([mesh(box(0.2, 0.06, 0.06), "#5a3a22"
   mesh(slab("cutlass2", [[0, -0.055], [0.58, -0.06], [0.9, 0.1], [0.86, 0.16], [0.52, 0.08], [0, 0.065]], 0.03), "#e9eef4", { at: [0.17, 0, -0.015], line: 0.9, shadow: false })]), { 0: "back", 2: "front" });
 /** marks the parts of a held thing (by their place in the group) that lie behind the hand ("back": a grip the fist hides) or over the
  *  fingers ("front": a knuckle bow); stage/staging.ts `hold` puts them there. The cutlass: grip, guard, knuckle bow, blade */
-function layered<T extends THREE.Object3D>(g: T, parts: Record<number, "back" | "front">): T { for (const i in parts) g.children[+i].userData.layer = parts[i]; return g; }
+/** marks parts of a held thing to lie behind the hand ("back") or over the fingers ("front"), and the parts that are a hilt (a scabbard hides
+ *  them when its sabre is drawn) */
+function layered<T extends THREE.Object3D>(g: T, parts: Record<number, "back" | "front">, hilt: number[] = []): T { for (const i in parts) g.children[+i].userData.layer = parts[i]; for (const i of hilt) if (g.children[i]) g.children[i].userData.hilt = true; return g; }
 // ---------------- props made to be held: the grip at the origin, the working end along +x, up along +y ----------------
 /** a sabre (a pirate's cutlass, a captain's hanger) to hold: the grip, a fist long, lies across the origin; the guard and the blade
  *  stand off along +x, the pommel along -x; the knuckle bow runs under the grip from guard to pommel (it lies over the fingers) */
@@ -347,7 +350,7 @@ export const bundleHeld = (r = 0.2, col = "#d9c08a") => { const sack = group([me
  *  standing out of it along -x, a leather frog over the throat that takes the belt */
 export const scabbard = (len = 0.5) => layered(group([mesh(box(len, 0.075, 0.035), "#3a2a22", { at: [len / 2, 0, 0], line: 0.9, shadow: false }), mesh(box(0.07, 0.085, 0.045), C.gold, { at: [len - 0.03, 0, 0], line: 0.6, shadow: false }),
   mesh(box(0.09, 0.16, 0.05), "#5a3a22", { at: [0.06, 0.03, 0], line: 0.7, shadow: false }), mesh(box(0.14, 0.05, 0.05), "#5a3a22", { at: [-0.08, 0, 0], shadow: false }), mesh(box(0.04, 0.2, 0.08), C.gold, { at: [-0.01, 0, 0], line: 0.6, shadow: false }),
-  mesh(arc(0.07, 0.013, Math.PI), C.gold, { at: [-0.085, -0.02, 0], rot: [0, 0, Math.PI], scale: [1, 0.62, 1], line: 0.5, shadow: false }), mesh(ball(0.028, 8), C.gold, { at: [-0.158, 0, 0], line: 0.5, shadow: false })]), { 0: "back", 1: "back" });
+  mesh(arc(0.07, 0.013, Math.PI), C.gold, { at: [-0.085, -0.02, 0], rot: [0, 0, Math.PI], scale: [1, 0.62, 1], line: 0.5, shadow: false }), mesh(ball(0.028, 8), C.gold, { at: [-0.158, 0, 0], line: 0.5, shadow: false })]), { 0: "back", 1: "back" }, [3, 4, 5, 6]);
 /** a flag as a painted cloth that hangs from its upper inner corner (the origin): w along +x, h down. kind: the black flag with a
  *  skull and crossed bones, or a plain white one */
 export const flagCloth = (kind: "black" | "white", w = 1.5, h = 1.0) => mesh(box(w, h, 0.02), "#ffffff", { at: [w / 2, -h / 2, 0], line: 0.6, shadow: false, map: paint(`flag${kind}`, 384, 256, (g) => {

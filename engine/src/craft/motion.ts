@@ -32,7 +32,7 @@ class Track {
 /** `out` = when this foot would leave the ground if the gait simply went on (so the next move can carry on from it without a stop) */
 type Plant = { t0: number; t1: number; x: number; z: number; ang: number; h: number; run: boolean; out?: number };
 type PKey = { t: number; x: number; z: number };
-export type Face = { gaze?: V2; lid?: number; wide?: number; brow?: number; mouth?: number; smile?: number };
+export type Face = { gaze?: V2; lid?: number; wide?: number; brow?: number; mouth?: number; smile?: number; /** one eye shut: the eye on the left (-1) or the right (1) of the picture (designs/common.ts) */ shut?: number };
 export type Layer = { t0: number; t1: number; in: number; out: number; pose: Partial<Pose>; handL?: HandKind; handR?: HandKind; face?: Face; antic: number; over: number };
 export type Sample = {
   pose: Pose;

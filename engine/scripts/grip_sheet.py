@@ -15,6 +15,7 @@ def font(n):
 mode, spots, pre, out = sys.argv[1], json.load(open(sys.argv[2])), sys.argv[3], sys.argv[4]
 frame = lambda n: f"{pre}{n:04d}.jpg"
 have = {s["frame"] for s in spots if os.path.exists(frame(s["frame"]))}
+import os.path
 def cut(n, x, y, r, k):
     im = Image.open(frame(n)); w, h = im.size; x0 = min(max(0, x - r), w - 2 * r); y0 = min(max(0, y - r), h - 2 * r)
     return im.crop((x0, y0, x0 + 2 * r, y0 + 2 * r)).resize((2 * r * k, 2 * r * k), Image.LANCZOS)
@@ -53,7 +54,14 @@ if mode == "sheet":
             x, y = c * 800, TOP + r * (800 + LAB); C.paste(cut(s["frame"], s["x"], s["y"], 200, 2), (x, y + LAB)); dc.rectangle([x, y, x + 799, y + LAB - 1], fill="#222"); dc.text((x + 12, y + 16), lab[:46], fill="white", font=font(30))
     S.save(out, quality=86); C.save(sys.argv[5], quality=90); print(out, S.size, sys.argv[5], C.size, len(order), "pictures")
 else:
-    cells = [s for s in spots if s["frame"] in have and 0 <= s["x"] <= 1080 and 0 <= s["y"] <= 1920]
+    # each rendered frame takes the check's readings of the nearest frame it made (it reads every tenth of a second)
+    rendered = sorted({int(f[-8:-4]) for f in os.listdir(os.path.dirname(pre) or ".") if f.startswith(os.path.basename(pre)) and f.endswith(".jpg")})
+    cells = []
+    for n in rendered:
+        near = [s for s in spots if abs(s["frame"] - n) <= 2]
+        if not near: continue
+        best = min(abs(s["frame"] - n) for s in near)
+        cells += [dict(s, frame=n) for s in near if abs(s["frame"] - n) == best and 0 <= s["x"] <= 1080 and 0 <= s["y"] <= 1920]
     cols = 6; R, K, LAB = 150, 2, 40; n = max(1, len(cells)); S = Image.new("RGB", (2 * R * K * cols, 60 + (2 * R * K + LAB) * ((n + cols - 1) // cols)), "white"); d = ImageDraw.Draw(S); f = font(24)
     d.text((16, 14), (sys.argv[5] if len(sys.argv) > 5 else "held things") + ": every held thing on the frames read, enlarged twice", fill="black", font=font(28))
     for i, s in enumerate(cells):

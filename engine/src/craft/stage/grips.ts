@@ -124,7 +124,7 @@ const hiltWrong = (o: THREE.Object3D, H: NonNullable<Prop["hilt"]>, a: Staged, s
   const P2 = pic(cam), pm = palm(a, side), w = (x: number, y: number): V3 => { const q = new THREE.Vector3(x, y, 0).applyMatrix4(o.matrixWorld); return [q.x, q.y, q.z]; };
   o.updateMatrixWorld(true); const g = Math.hypot(...P2(pm, w(H.guard, 0))), r = fistR(a, side, cam), bow = P2(pm, w(H.bow[0], H.bow[1])), f = unit(P2(a.joint(el(side)), a.joint(wr(side))));
   const turn = (Math.acos(Math.max(-1, Math.min(1, dot(f, seen)))) * 180) / Math.PI, pom = Math.hypot(...P2(pm, w(H.pommel, 0)));
-  return g > r + 0.03 ? `the hand is ${(g * 100).toFixed(0)} cm from the guard (it belongs right behind it)` : dot(bow, [s * 0.7, -0.7]) <= 0 ? "the knuckle bow is on the palm side, not over the outside of the fingers" : turn > H.turn ? `the blade turns ${turn.toFixed(0)} degrees off the forearm (at most ${H.turn}: it carries on along the arm)` : pom < r + 0.012 ? `the pommel is inside the fist (${(pom * 100).toFixed(1)} cm from the middle of the hand, the fist reaches ${(r * 100).toFixed(1)} cm; the knuckle bow would end at the side of the fist like a loose hook)` : bladeOverLegs(o, a, cam) ?? freeHandOnBlade(o, a, side, cam);
+  return g > r + 0.03 ? `the hand is ${(g * 100).toFixed(0)} cm from the guard (it belongs right behind it)` : knuckleSide(bow, seen, s) <= 0 ? "the knuckle bow is on the palm side, not over the outside of the fingers" : turn > H.turn ? `the blade turns ${turn.toFixed(0)} degrees off the forearm (at most ${H.turn}: it carries on along the arm)` : pom < r + 0.012 ? `the pommel is inside the fist (${(pom * 100).toFixed(1)} cm from the middle of the hand, the fist reaches ${(r * 100).toFixed(1)} cm; the knuckle bow would end at the side of the fist like a loose hook)` : bladeOverLegs(o, a, cam) ?? freeHandOnBlade(o, a, side, cam);
 };
 /** does the other hand (the one not on the hilt) touch the blade in the picture? A free hand is kept clear of the blade */
 const freeHandOnBlade = (o: THREE.Object3D, a: Staged, side: Side, cam: Cam): string | null => {
@@ -134,6 +134,9 @@ const freeHandOnBlade = (o: THREE.Object3D, a: Staged, side: Side, cam: Cam): st
     for (const h of hand) if (Math.hypot(...P2(h, [q.x, q.y, q.z])) < r * 0.8) return "the free hand touches the blade in the picture (keep it clear of the blade)"; }
   return null;
 };
+/** which side of the blade the bow lies on, measured across the blade only: above 0 = the knuckle side (away from his body, and down
+ *  when the blade is up; staging.ts grip lays it so) */
+const knuckleSide = (bow: [number, number], seen: [number, number], s: number) => { const k: [number, number] = [s * 0.85, -0.5], kb = dot(k, seen), bb = dot(bow, seen); return dot([bow[0] - bb * seen[0], bow[1] - bb * seen[1]], [k[0] - kb * seen[0], k[1] - kb * seen[1]]); };
 /** does the blade cross the outline of the legs in the picture (it would look as if it went through them)? */
 const bladeOverLegs = (o: THREE.Object3D, a: Staged, cam: Cam): string | null => {
   const B = o.getObjectByName("blade") as THREE.Mesh | undefined; if (!B?.geometry) return null;
@@ -143,6 +146,16 @@ const bladeOverLegs = (o: THREE.Object3D, a: Staged, cam: Cam): string | null =>
   for (let i = 2; i <= 10; i++) { const q = new THREE.Vector3(bb.min.x + (bb.max.x - bb.min.x) * (i / 10), (bb.min.y + bb.max.y) / 2, 0).applyMatrix4(B.matrixWorld), p = P2(base, [q.x, q.y, q.z]);
     for (const s of ["L", "R"] as Side[]) { const L = leg(s); if (segD(p, L[0], L[1]) < w || segD(p, L[1], L[2]) < w * 0.8) return "the blade crosses his legs in the picture (it would look as if it went through them)"; } }
   return null;
+};
+/** A long thing (a spyglass) clamped under the arm of `side`, to free his hands: across the side of his chest at the armpit, pointing
+ *  the way he faces and a little down, his upper arm down over it. It lies just behind his card, so that his body hides its middle and
+ *  its two ends show in front of his chest and behind his back. `at` = where along its own x its middle is */
+export const underArm = (into: THREE.Group, o: THREE.Object3D, a: Staged, side: Side, cam: Cam, opt: { at?: number; d?: number; /** +1 = its far end forward (the way he faces), -1 = back behind him (the default: it keeps clear of whoever stands in front of him) */ way?: number } = {}) => {
+  const f = facing(a.heading, cam), dir = (Math.sign(f) || 1) * (opt.way ?? -1), p0 = mix3(a.joint(sh(side)), a.joint(el(side)), 0.32), m = aside(near(p0, cam, -(opt.d ?? 0.07)), cam, 0, -0.03), r = (-22 * Math.PI) / 180;
+  span(into, o, m, aside(m, cam, dir * Math.cos(r), Math.sin(r)), cam, 0);
+  if (opt.at) o.position.sub(new THREE.Vector3(opt.at * o.scale.x, 0, 0).applyQuaternion(o.quaternion));
+  if (AUDIT.on) AUDIT.rows.push({ id: o.uuid, prop: "spyglass", use: "under arm", holder: `${a.name} ${side}`, err: Math.abs(f) < 0.2 ? "seen straight from the front a thing under the arm cannot be seen to be there" : null, at: m });
+  return o;
 };
 /** the hands of a figure on a spyglass that points at `target`: the far hand is the one on the side he looks to */
 const spyHands = (shL: V3, shR: V3, eye: V3, target: V3, cam: Cam): { near: Side; far: Side } => { const P2 = pic(cam), d = unit(P2(eye, target)); return dot(P2(eye, shL), d) > dot(P2(eye, shR), d) ? { near: "R", far: "L" } : { near: "L", far: "R" }; };
@@ -274,11 +287,12 @@ export const sheathed = (into: THREE.Group, o: THREE.Object3D, a: Staged, side: 
  *  the front the hilt would come up past his face (the real draw comes toward the lens), and at the far hip the blade would vanish
  *  into his body. `sab` = props.ts sabre, `scab` =
  *  props.ts scabbard (its hilt is hidden while the sabre is out of it) */
-export const drawSabre = (into: THREE.Group, sab: THREE.Object3D, scab: THREE.Object3D, a: Staged, hip: Side, cam: Cam, k: number, len = 0.6) => {
+export const drawSabre = (into: THREE.Group, sab: THREE.Object3D, scab: THREE.Object3D, a: Staged, hip: Side, cam: Cam, k: number, len = 0.6, opt: { /** the scabbard and the hand on it are put by the film itself (the sabre is inside a blend) */ noScabbard?: boolean; /** k is taken from where the drawing hand is along the sheath's line (the hand pulls the sabre), not from the clock */ follow?: boolean } = {}) => {
   const S = scabbardAt(a as unknown as Body, hip, cam, true), r = (S.lie * Math.PI) / 180, ax: [number, number] = [Math.cos(r), Math.sin(r)], hand: Side = hip === "L" ? "R" : "L";
-  sheathed(into, scab, a, hip, cam, { drawn: true, held: true }); fingers(into, a, [hip], cam, 0.1 + depth(cam, onCard(a.at, cam, S.along(0.08)), S.along(0.08)));
+  if (!opt.noScabbard) { sheathed(into, scab, a, hip, cam, { drawn: true, held: true }); fingers(into, a, [hip], cam, 0.1 + depth(cam, onCard(a.at, cam, S.along(0.08)), S.along(0.08))); }
   // the sabre's grip k of the way out along the sheath's line, its blade pointing back down the line into the throat, and only what
   // is out of the sheath showing; the fist is drawn in front of the grip wherever the grip is
+  if (opt.follow) { const P0 = pic(cam), h0 = onCard(a.at, cam, S.along(-0.08)), h1 = onCard(a.at, cam, S.along(-0.08 - len)), line = P0(h0, h1), L2 = dot(line, line) || 1; k = Math.max(0, Math.min(1, dot(P0(h0, palm(a, hand)), line) / L2)); }
   const hilt = S.along(-0.08 - len * k), blade = sab.getObjectByName("blade");
   grip(into, sab, a, hand, cam, ax, { d: 0.05, knuckle: Math.sign(ax[0]) || 1, fingers: false });
   sab.quaternion.premultiply(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(1, 0, 0).applyQuaternion(sab.quaternion), S.d3)); sab.position.set(...hilt);

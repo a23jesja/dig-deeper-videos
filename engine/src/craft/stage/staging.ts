@@ -112,7 +112,9 @@ export const hold = (into: THREE.Group, o: THREE.Object3D, a: Staged, side: "L" 
 export const grip = (into: THREE.Group, o: THREE.Object3D, a: Staged, side: "L" | "R", cam: Cam, dir: [number, number], opt: { d?: number; slide?: number; lean?: number; fingers?: boolean; /** the way away from his body (+1 right, -1 left): the thing's -y (a sabre's knuckle bow) is laid toward the knuckles, down and that way */ knuckle?: number } = {}) => {
   const v = view(cam), d = opt.d ?? 0.05, p = near(palm(a, side, opt.slide ?? 0.5), cam, d), n = Math.hypot(dir[0], dir[1]) || 1, ux = dir[0] / n, uy = dir[1] / n;
   let over = -uy * (opt.lean ?? 0) * 0.35 + ux < 0, yx = over ? uy : -uy, yy = over ? -ux : ux;
-  if (opt.knuckle !== undefined) { const kx = opt.knuckle * 0.7, ky = -0.7; if (-(yx * kx + yy * ky) < (yx * kx + yy * ky)) { yx = -yx; yy = -yy; } over = ux * yy - uy * yx < 0; }
+  // the knuckles face away from his body, and down as well when the blade is up: so that a blade lowered down and away (nearly along
+  // "down and away") still has its bow on the outside
+  if (opt.knuckle !== undefined) { const kx = opt.knuckle * 0.85, ky = -0.5; if (-(yx * kx + yy * ky) < (yx * kx + yy * ky)) { yx = -yx; yy = -yy; } over = ux * yy - uy * yx < 0; }
   const X = new THREE.Vector3(v.rx * ux, uy, v.rz * ux), Y = new THREE.Vector3(v.rx * yx, yy, v.rz * yx), Z = new THREE.Vector3().crossVectors(X, Y);
   o.position.set(p[0], p[1], p[2]); o.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(X, Y, Z));
   layers(o, d, over); into.add(o); if (d > 0 && opt.fingers !== false) fingers(into, a, [side], cam, d + 0.12);

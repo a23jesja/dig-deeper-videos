@@ -416,7 +416,10 @@ Every video and Short gets its own thumbnail, made and checked before the video 
   Jesper generates the picture by hand in Google Flow, with the frozen character sheet as reference image. Rules:
   the character must be recognisably ours (same clothes, colours, monocle, cap), the scene must happen in the
   video, one big face with one strong emotion, saturated colours, a plain background, at most three words.
-  The code-drawn variants are still made, so there is always a choice. Shorts keep frame-based thumbnails.
+  The code-drawn variants are still made, so there is always a choice. For Shorts the build session still
+  delivers frame-based thumbnails; Jesper may make a painted one himself (Flow, which he already pays for, or a
+  free tier of ChatGPT) if the app lets him upload it. Painted pictures are made by Jesper by hand only: no
+  session generates images, spends credits or drives an image service.
 - **Three variants** are rendered and sent to Jesper together with the video; he picks one. Nothing is published
   with a thumbnail he has not approved.
 - **One idea, readable in one second:** one big subject that IS the story, Sir Digsworth large with a clear reaction

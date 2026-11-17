@@ -1,6 +1,6 @@
 # Short 1: Why did Rome tax pee?
 
-FÄRDIG VIDEO, VERSION 3. Romersk gata, äcklig och rolig, SANT. 32,7 sekunder, 14 bilder, 83 ord, Kokoro bm_george. Fråga nr 1 i `granskning/fragor.md`.
+FÄRDIG VIDEO, VERSION 4. Romersk gata, äcklig och rolig, SANT. 32,7 sekunder, 14 bilder, 83 ord, Kokoro bm_george. Fråga nr 1 i `granskning/fragor.md`.
 
 ## Manus, med källa per påstående
 
@@ -105,3 +105,10 @@ Ingen har lyssnat på ljudet; rösten är oförändrad sedan version 2.
 16. Bild 10: purpurtoga, myntet singlas högt två gånger, vänsterhanden på magen.
 17. Slutet är två olika bilder med handling: han kommer gående och drar fram kortet (helfigur, låg kamera, templet), sedan nära på kortet där han knackar på namnet och lyfter på kepsen.
 18. Titus reagerar: kliar sig på hakan och ser sig om i bild 2, tittar i kistan och slår handen för pannan i bild 3.
+
+## Version 4: answers to review round 3
+
+- Point 1 (13.0 to 15.2 s, the tax is put on): Vespasian no longer holds one pointing pose. He points at the jar, draws his finger back to his chest and stabs it down at the jar again; turns to the collector and swings his open hand up; brings it down flat on the strongbox lid on "tax" and again on "it", and three coins of the heap hop at each blow; then he looks round at the collector and nods. His body turns toward the collector for the second half of the shot, so he faces the lens only in the first 0.6 s. The collector straightens a little later than before, takes out his tablet, starts at the first blow and writes. The raised right hand of version 3, which touched the left edge of the frame, is gone (the hand goes to his belt). New sounds: the hand on the lid twice, the coins, small whooshes; a small camera shake on each blow.
+- Point 2 (22.0 s, the walk): the emperor now flips the coin from his outer hand, the one away from Titus. In flight the coin keeps to one line beside his head on the free side, between his head and the edge of the frame, and his face is clear in every frame. He catches it in the same hand, draws it in to his belt and wags a finger at Titus. Titus's raised hand was brought in a little so that it stays clear of the left edge.
+- By Jesper's word on 17 Nov ("Rom videon ska ha de nya skäggen och munnarna"): the corrected beard and the corrected open mouth, whose sheets the reviewer approved the same day, are switched on for every look in `engine/src/craft/looks.ts` (castDesign). In this film that changes the fuller's beard and every open or angry mouth; motion, camera and voice are unchanged. The pirate film was not re-rendered.
+- Nothing else was changed. Nobody has listened to the audio.

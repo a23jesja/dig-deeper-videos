@@ -22,10 +22,10 @@ export type Look = {
   lash?: boolean; lips?: string;
   /** moustache: colour, how far the tips reach (in head half-widths), how far they turn up, thickness at the root */
   mous?: { col: string; span: number; curl: number; w: number }; beard?: string;
-  /** true = the corrected beard (not used in a video before the reviewer has approved its sheet): it starts at the sideburns, follows
+  /** true = the corrected beard (its sheet was approved on 17 Nov 2026; looks.ts castDesign switches it on for every look): it starts at the sideburns, follows
    *  the jaw to a rounded foot with tufts, leaves the mouth open, moves down with the jaw, and has a moustache of its own over the lip */
   beard2?: boolean;
-  /** true = the corrected open mouth (not used in a video before the reviewer has approved its sheet): an open mouth is the opening
+  /** true = the corrected open mouth (its sheet was approved on 17 Nov 2026; looks.ts castDesign switches it on for every look): an open mouth is the opening
    *  alone, with no mouth line across it; the mood lies in the opening's shape (its upper edge and the lower lip bend up at the
    *  corners in a smile, down in anger and fear), and a narrow angry opening shows clenched teeth */
   mouth2?: boolean;

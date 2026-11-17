@@ -3,18 +3,18 @@
  "file": "public/craft/rome-pee.wav",
  "seconds": 32.7,
  "integrated_lufs": -14.02,
- "true_peak_db": -2.65,
- "voice_lufs": -13.6,
+ "true_peak_db": -2.72,
+ "voice_lufs": -13.7,
  "music_lufs": -29.5,
- "effects_lufs": -24.6,
+ "effects_lufs": -24.7,
  "music_under_voice_db_while_speaking": 18.0,
  "loudest_400ms_lufs": {
   "voice": -10.7,
   "music": -15.9,
-  "effects": -18.5
+  "effects": -18.6
  },
- "cues": 110,
+ "cues": 114,
  "beds": 4,
- "hits": 0,
+ "hits": 2,
  "music": "roman"
 }

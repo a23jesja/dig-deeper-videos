@@ -36,6 +36,8 @@ Would you have paid the pee tax, or complained like Titus? And what should Sir D
 | `thumbnail-2.png` | WASHED WITH PEE?! | 0:10.9 (10.86 s, frame 326): the fuller pours, Sir Digsworth holds his nose |
 | `thumbnail-3.png` | DOES IT SMELL? | 0:25.7 (25.70 s, frame 771): Sir Digsworth sniffs the coin |
 
+Phone copy for sending: `rome-pee-telefon.mp4` (1080x1920, under 28 MiB, same picture and sound).
+
 Small copies: `thumbnail-1-liten.jpg`, `thumbnail-2-liten.jpg`, `thumbnail-3-liten.jpg` (270x480). In the video the same frame carries its caption instead of the thumbnail's words.
 
 ## Listen check (pronunciation)

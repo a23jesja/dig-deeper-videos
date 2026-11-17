@@ -212,7 +212,9 @@ export const CASTAWAY: Look = {
   rows: [[-120, 108, 84, 86], [-20, 104, 86, 82], [90, 98, 84, 74], [190, 106, 80, 68], [242, 110, 62, 62], [266, 54, 40, 44]],
   legs: "bare", feet: "sandals", sleeve: "short", arm: [28, 22, 16], leg: [36, 26, 17],
 };
-export const castDesign = (L: Look, name = L.id): Design => ({ id: L.id, name, ol: 4.6, faceW: L.head.a * 1.45, props: () => L.P, draw: drawCast(L), hat: (k, phi) => drawHat(k, L, phi) });
+/** a look as a design the rig can play. Every look wears the corrected beard and the corrected open mouth (cast.ts beard2, mouth2: their
+ *  sheets were approved by the reviewer on 17 Nov 2026); a look that sets either flag itself keeps its own value */
+export const castDesign = (L0: Look, name = L0.id): Design => { const L: Look = { beard2: true, mouth2: true, ...L0 }; return { id: L.id, name, ol: 4.6, faceW: L.head.a * 1.45, props: () => L.P, draw: drawCast(L), hat: (k, phi) => drawHat(k, L, phi) }; };
 export const SIR_D = castDesign(SIR, "Sir Digsworth"), BAKER_D = castDesign(BAKER), SOLDIER_D = castDesign(SOLDIER), MERCHANT_D = castDesign(MERCHANT);
 export const KNIGHT_D = castDesign(KNIGHT), TOMMY_D = castDesign(TOMMY), LADY_D = castDesign(LADY), DOCKER_D = castDesign(DOCKER), BOY_D = castDesign(BOY), GRANNY_D = castDesign(GRANNY), ROMAN_WOMAN_D = castDesign(ROMAN_WOMAN);
 export const VESPASIAN_D = castDesign(VESPASIAN), TITUS_D = castDesign(TITUS), FULLER_D = castDesign(FULLER), CITIZEN_D = castDesign(CITIZEN), COLLECTOR_D = castDesign(COLLECTOR);

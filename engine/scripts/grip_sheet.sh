@@ -10,4 +10,4 @@ node scripts/film_info.mjs "$FILM" grips
 node scripts/film_info.mjs "$FILM" grips spots > out/craft/grip_spots.json
 rm -f out/craft/pk_*.jpg
 PROPS='{"audio":false}' node scripts/stills.mjs "$COMP" out/craft/pk_ $(node scripts/film_info.mjs "$FILM" stills) 1 jpeg 2>&1 | grep -v "^\s*at " | tail -1
-python scripts/grip_sheet.py sheet out/craft/grip_spots.json out/craft/pk_ "$OUT/$NAME.jpg" "$OUT/$NAME-nara.jpg" "$TITLE"
+PHONE="$OUT/$NAME-telefon.jpg" python scripts/grip_sheet.py sheet out/craft/grip_spots.json out/craft/pk_ "$OUT/$NAME.jpg" "$OUT/$NAME-nara.jpg" "$TITLE"

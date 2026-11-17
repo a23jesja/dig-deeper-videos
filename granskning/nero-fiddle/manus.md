@@ -1,6 +1,6 @@
 # Short 4: Did Nero really fiddle while Rome burned?
 
-SKISS, VERSION 2 (vad som är ändrat sedan skiss version 1 står sist, under "Skiss version 2"; ingen skylt i bild: noten om att scenerna är dramatiserade och källorna står i beskrivningen, `leverans/nero-fiddle/text.md`; manus version 2 med granskningens ändringar; rösten är oförändrad, 32,2 s; filmen är 33,9 s och har 13 bilder; det som skiljer bilderna från tabellen står sist). Rom i brand, skrämmande med vändning, MYT. Beräknad längd 31-33 sekunder, 11 bilder, 84 ord, Kokoro bm_george. Fråga nr 23 i `granskning/fragor.md`. Tiderna nedan är uppskattade efter plankfilmens takt (83 ord på 30,3 s); de riktiga tiderna kommer ur rösten.
+FÄRDIG VIDEO, VERSION 1 (skiss version 2 GODKÄND med fem punkter; vad som är gjort för den färdiga videon står sist, under "Färdig video version 1"; vad som är ändrat sedan skiss version 1 står sist, under "Skiss version 2"; ingen skylt i bild: noten om att scenerna är dramatiserade och källorna står i beskrivningen, `leverans/nero-fiddle/text.md`; manus version 2 med granskningens ändringar; rösten är oförändrad, 32,2 s; filmen är 33,9 s och har 13 bilder; det som skiljer bilderna från tabellen står sist). Rom i brand, skrämmande med vändning, MYT. Beräknad längd 31-33 sekunder, 11 bilder, 84 ord, Kokoro bm_george. Fråga nr 23 i `granskning/fragor.md`. Tiderna nedan är uppskattade efter plankfilmens takt (83 ord på 30,3 s); de riktiga tiderna kommer ur rösten.
 
 Planerad för onsdag 18 november. Filmens id i motorn: `nero-fiddle`.
 
@@ -114,3 +114,21 @@ Rösten, texten och klippens tider är oförändrade. Skisspaketet i `granskning
 Jespers besked: ingen skylt; greppen går genom greppkoden; kvinnor och män i folkmassorna; kollisionerna i trädgårdsbilden är borta (kontrollen går igenom).
 
 Svagast enligt min egen läsning: i bild 12 rör sig fingret bara en kort bit över strängarna och armen skymmer de två vänstra; i bild 2 står paret på trottoaren delvis bakom en bänk; i bild 5 är Neros utsträckta hand nära en av de förbigående; ljudet är inte ombyggt och inte uppmätt efter ändringarna förrän skisspaketet byggs.
+
+## Färdig video version 1: skissens fem punkter, greppkoden och "The hook lab"
+Allt som hålls i filmen ligger på den gemensamma greppkoden (`engine/src/craft/stage/grips.ts`) som greppbladen 1 och 2 visade och granskningen godkände (fiol och stråke, cithara, druvklase, knyte). Skriptkontrollen `node scripts/film_info.mjs nero-fiddle grips`: 432 avläsningar, inga fel. Filmkontrollen OK (15 bilder, 33,8 s).
+
+Skissens fem punkter:
+1. **Fiolen i bild 9 låg på en öppen hand:** nu tar Sir Digsworths näve fiolen om halsen, bortom Neros hand; under en tredjedels sekund håller båda, sedan bara Sir Digsworth, som håller upp den i halsen med kroppen uppåt (bild 9 och 10; i bild 10 brinner den bort i hans näve).
+2. **Strängbilden (bild 12):** citharan hålls ut vid hans sida mot natthimlen (inte mot togan), vänster näve om dess arm, och högerhandens pekfinger går från sträng till sträng, ritat framför strängarna; sju strängar, tjockare än i verkligheten så att de kan räknas; kameran nedifrån.
+3. **Neros hand mot mannen i blått (bild 5):** banorna genom porten flyttade i skissen, oförändrat sedan dess.
+4. **Översiktsbilden (bild 6):** fem olika löpare (olika kroppar, en med knyte, en böjd under en säck, en med en flicka i handen); kameran lite lägre, så att ingen ses ovanifrån mer än 35 grader.
+5. **Stråken i bild 3:** i Neros näve vid frosch och mot strängarna; Sir Digsworths näve sluter sig om stråken bortom strängarna när han stoppar den.
+
+Också på greppkoden: Nero spelar med fiolen under hakan och vänster näve om halsen, stråken dragen längs sin egen linje över strängarna (bild 1, 3, 9); druvorna i stjälken över munnen, kastas upp när han rycker till, faller och landar (bild 4); knytena i knuten, i handen eller över axeln (bild 1, 2, 5); citharan i vänster arm på scenen (bild 8), fångad rakt in i det läge armarna håller den i (bild 11), spelad med öppen hand (bild 13).
+
+"The hook lab":
+- **Frågan:** sex ord, samma i röst och bild: "Did Nero fiddle while Rome burned?" (rösten inspelad på nytt med bm_george, övriga repliker desamma).
+- **Rösten börjar i bildruta 0** (första ordet "Did" 0,00-0,16 s). **Ljudslag på ruta ett:** stråkens skrap (scratch) vid 0,0 s.
+- **Bildbyten i sekund 0-5:** 2,60 s (det brinnande huset) och 4,06 s (närmare på Sir Digsworth när han skakar näven); bild 2 är delad i två så att ingen bild i början är längre än 2,6 s.
+- **Slutet leder tillbaka:** efter strängen som brister kommer en kod på 0,85 s på den brinnande gatan strax före första bildrutan (Nero spelar fiol, Sir Digsworth pekar); kameran glider in i första bildens läge.

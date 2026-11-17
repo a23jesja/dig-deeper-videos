@@ -79,6 +79,10 @@ const layers = (o: THREE.Object3D, d: number, flip: boolean) => o.traverse((c) =
 /** The eye of a figure on the side of the picture where `toward` lies (the eye a spyglass goes to when he looks that way) */
 export const eyeOf = (a: Staged, cam: Cam, toward: V3): V3 => {
   const v = view(cam), px = (q: V3) => q[0] * v.rx + q[2] * v.rz, A = a.mark?.("eyeA") ?? null, B = a.mark?.("eyeB") ?? null;
+  // a figure turned to one side shows us the eye on the side away from where it faces (the bigger one): that is the eye we see use the
+  // glass. Seen from the front, the eye on the side of what it looks at
+  const h = (a.heading * Math.PI) / 180, fwd = Math.sin(h) * v.rx + Math.cos(h) * v.rz;
+  if (A && B && Math.abs(fwd) >= 0.35) return (px(A) < px(B)) === fwd > 0 ? A : B;
   if (A && B) return (px(A) < px(B)) === (px(toward) < (px(A) + px(B)) / 2) ? A : B;
   return A ?? B ?? mix3(a.joint("neck"), a.joint("crown"), 0.56);
 };
@@ -99,9 +103,10 @@ export const hold = (into: THREE.Group, o: THREE.Object3D, a: Staged, side: "L" 
  *  +x) along `dir` in the picture (x to the right, y up) and its top (its own +y) kept up: a thing that points to the left is turned
  *  over, not hung upside down. `lean` breaks the tie for a thing that points straight up or down: its top then faces that side of
  *  the picture (+1 right, -1 left). The fingers and the thumb are laid over it. Returns whether it was turned over */
-export const grip = (into: THREE.Group, o: THREE.Object3D, a: Staged, side: "L" | "R", cam: Cam, dir: [number, number], opt: { d?: number; slide?: number; lean?: number; fingers?: boolean } = {}) => {
+export const grip = (into: THREE.Group, o: THREE.Object3D, a: Staged, side: "L" | "R", cam: Cam, dir: [number, number], opt: { d?: number; slide?: number; lean?: number; fingers?: boolean; /** the way away from his body (+1 right, -1 left): the thing's -y (a sabre's knuckle bow) is laid toward the knuckles, down and that way */ knuckle?: number } = {}) => {
   const v = view(cam), d = opt.d ?? 0.05, p = near(palm(a, side, opt.slide ?? 0.5), cam, d), n = Math.hypot(dir[0], dir[1]) || 1, ux = dir[0] / n, uy = dir[1] / n;
-  const over = -uy * (opt.lean ?? 0) * 0.35 + ux < 0, yx = over ? uy : -uy, yy = over ? -ux : ux;
+  let over = -uy * (opt.lean ?? 0) * 0.35 + ux < 0, yx = over ? uy : -uy, yy = over ? -ux : ux;
+  if (opt.knuckle !== undefined) { const kx = opt.knuckle * 0.7, ky = -0.7; if (-(yx * kx + yy * ky) < (yx * kx + yy * ky)) { yx = -yx; yy = -yy; } over = ux * yy - uy * yx < 0; }
   const X = new THREE.Vector3(v.rx * ux, uy, v.rz * ux), Y = new THREE.Vector3(v.rx * yx, yy, v.rz * yx), Z = new THREE.Vector3().crossVectors(X, Y);
   o.position.set(p[0], p[1], p[2]); o.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(X, Y, Z));
   layers(o, d, over); into.add(o); if (d > 0 && opt.fingers !== false) fingers(into, a, [side], cam, d + 0.12);

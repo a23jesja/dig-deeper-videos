@@ -313,7 +313,7 @@ export const drawFingers = (L: Look) => (k: Ink, sk0: Sk, sides: Side[], whole?:
   const mir = mirrored(L, sk0.yaw), sk = mir ? solve(sk0.P, swapPose(sk0.pose), -sk0.yaw) : sk0;
   if (mir) { k.g.save(); k.g.scale(-1, 1); }
   for (const s0 of sides) { const s: Side = mir ? (s0 === "L" ? "R" : "L") : s0, E = sk.j[`el${s}`], W = sk.j[`wr${s}`], T = sk.j[`tip${s}`];
-    const kind = whole?.[s0]; hand(k, W, len(sub(T, W)) > 6 ? angle(W, T) : angle(E, W), sk.P.hand, kind ?? "fist", L.skin, thumbFlip(sk, s), false, k.ol, kind ? "all" : "fingers"); }
+    const kind = whole?.[s0]; hand(k, W, len(sub(T, W)) > 6 ? angle(W, T) : angle(E, W), sk.P.hand, kind ?? "fist", L.skin, thumbFlip(sk, s), false, k.ol, "all"); }
   if (mir) k.g.restore();
 };
 export const drawCast = (L: Look) => {

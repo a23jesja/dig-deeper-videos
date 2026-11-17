@@ -280,7 +280,7 @@ const SWAP = at("creep", /^then/) - 0.12;
   const PEER = { brow: -0.5, lid: 0.2, smile: -0.3 }, SHOCK = { wide: 1, lid: 0, brow: 1, mouth: 0.4, smile: -0.8 }, GRIM = { brow: -1, lid: 0, wide: 0.6, smile: -1 };
   // the glass at his eye, his two hands on the tube, the eye at the eyepiece shut; it points at the black flag on the sloop's staff
   const TARGET: V3 = [SX - 0.05, TOP - 0.6, SZ], ST: Stand = { D: CUSTOMS_D, at: [-5.75, MD, 5.25], heading: 46, h: 1.9, cam: V.cam, pose: { head: [0, -22, 0], lean: -4 } };
-  mc.actAt(-1, { ...spyPose(ST, TARGET), head: [0, -22, 0], lean: -4 }, LOW + 1.24, { in: 0.01, out: 0.14, handR: "grip", handL: "grip", face: { ...PEER, shut: spyEye(V.cam, ST.at, TARGET) } });
+  mc.actAt(-1, { ...spyPose(ST, TARGET), head: [0, -22, 0], lean: -4 }, LOW + 1.24, { in: 0.01, out: 0.14, handR: "grip", handL: "grip", face: { ...PEER, lid: 0.7, shut: spyEye(V.cam, ST.at, TARGET, ST.heading) } });
   mc.actAt(LOW, { armR: arm(34, 8, 76, -24), head: [0, 0, 0], lean: 0 }, PASS - LOW + 0.3, { in: 0.24, out: 0.1, antic: 0, over: 1.2, handR: "grip", handL: "fist", face: SHOCK });
   mc.actAt(GULP, { head: [0, 15, 0], py: -0.03 }, 0.2, { in: 0.08, out: 0.1, antic: 0, over: 1, handR: "grip", handL: "fist", face: SHOCK });
   // the glass goes over to his left hand, which takes it down to his side

@@ -26,7 +26,7 @@ if mode == "sheet":
             "fiddle": "FIOL OCH STRÅKE", "cithara": "CITHARA", "grapes": "DRUVKLASE", "bundle": "KNYTE"}
     USE = {"look": "i bruk: vid ögat", "aim": "i bruk: siktar", "ready": "i bruk: i fästet", "hold": "i bruk: i örat", "lowered": "sänkt", "raised": "höjd", "sheathed": "i skidan, axelgehäng",
            "chop": "hugg: dragen bakåt", "struck": "hugg: genom", "carry": "buren", "haul": "halas", "fire": "mot kanonen", "hand": "i handen", "falling": "släppt, faller", "landed": "landad",
-           "play": "spelar", "shoulder": "på axeln"}
+           "play": "spelar", "shoulder": "på axeln", "draw1": "dras 1: handen sluten om fästet", "draw2": "dras 2: fästet upp längs baljan", "draw3": "dras 3: klingan nästan ute"}
     USE2 = {("bucket", "raised"): "lyft", ("linstock", "ready"): "redo", ("cithara", "hold"): "i famnen", ("grapes", "hold"): "hålls upp", ("chest", "carry"): "buren av två i handtagen"}
     VIEW = {"front": "framifrån", "side": "från sidan"}
     first = {}
@@ -53,6 +53,13 @@ if mode == "sheet":
             S.paste(im, (x, y + LAB)); d.rectangle([x, y, x + W - 1, y + LAB - 1], fill="#222"); d.text((x + 16, y + 12), lab, fill="white", font=f2)
             x, y = c * 800, TOP + r * (800 + LAB); C.paste(cut(s["frame"], s["x"], s["y"], 200, 2), (x, y + LAB)); dc.rectangle([x, y, x + 799, y + LAB - 1], fill="#222"); dc.text((x + 12, y + 16), lab[:46], fill="white", font=font(30))
     S.save(out, quality=86); C.save(sys.argv[5], quality=90); print(out, S.size, sys.argv[5], C.size, len(order), "pictures")
+    phone = os.environ.get("PHONE")
+    if phone:      # every picture as a viewer sees it: the whole frame at phone size
+        PW, PH = 360, 640; T = Image.new("RGB", (PW * 4, TOP + (PH + LAB) * len(rows)), "white"); dt = ImageDraw.Draw(T); dt.text((40, 30), title + ", I TELEFONSTORLEK (hela bildrutan, 360x640)", fill="black", font=f1)
+        for r, row in enumerate(rows):
+            for c, s in enumerate(row):
+                x, y = c * PW, TOP + r * (PH + LAB); T.paste(Image.open(frame(s["frame"])).resize((PW, PH), Image.LANCZOS), (x, y + LAB)); dt.rectangle([x, y, x + PW - 1, y + LAB - 1], fill="#222"); dt.text((x + 6, y + 20), label(s)[:30], fill="white", font=font(22))
+        T.save(phone, quality=88); print(phone, T.size)
 else:
     # each rendered frame takes the check's readings of the nearest frame it made (it reads every tenth of a second)
     rendered = sorted({int(f[-8:-4]) for f in os.listdir(os.path.dirname(pre) or ".") if f.startswith(os.path.basename(pre)) and f.endswith(".jpg")})

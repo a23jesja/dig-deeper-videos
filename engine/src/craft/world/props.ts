@@ -329,9 +329,12 @@ function layered<T extends THREE.Object3D>(g: T, parts: Record<number, "back" | 
 // ---------------- props made to be held: the grip at the origin, the working end along +x, up along +y ----------------
 /** a sabre (a pirate's cutlass, a captain's hanger) to hold: the grip, a fist long, lies across the origin; the guard and the blade
  *  stand off along +x, the pommel along -x; the knuckle bow runs under the grip from guard to pommel (it lies over the fingers) */
-export const sabre = (blade = 0.62) => layered(group([mesh(box(0.13, 0.045, 0.045), "#5a3a22", { at: [0, 0, 0], shadow: false }), mesh(box(0.035, 0.2, 0.08), C.gold, { at: [0.075, 0, 0], line: 0.6, shadow: false }),
-  mesh(arc(0.078, 0.013, Math.PI), C.gold, { at: [0, -0.014, 0], rot: [0, 0, Math.PI], scale: [1, 0.62, 1], line: 0.5, shadow: false }), mesh(ball(0.028, 8), C.gold, { at: [-0.078, 0, 0], line: 0.5, shadow: false }),
-  mesh(slab("sabre" + blade, [[0, -0.04], [blade * 0.64, -0.045], [blade, 0.07], [blade * 0.95, 0.115], [blade * 0.58, 0.058], [0, 0.046]], 0.022), "#e9eef4", { at: [0.092, 0, -0.011], line: 0.9, shadow: false })]), { 2: "front" });
+export const sabre = (blade = 0.62) => layered(group([mesh(box(0.1, 0.045, 0.045), "#5a3a22", { at: [0, 0, 0], shadow: false }), mesh(box(0.03, 0.2, 0.08), C.gold, { at: [0.06, 0, 0], line: 0.6, shadow: false }),
+  mesh(knuckleBow([[0.056, -0.034], [0.042, -0.062], [0, -0.07], [-0.04, -0.06], [-0.064, -0.02]]), C.gold, { line: 0.5, shadow: false }), mesh(ball(0.028, 8), C.gold, { at: [-0.062, 0, 0], line: 0.5, shadow: false }),
+  Object.assign(mesh(slab("sabre" + blade, [[0, -0.04], [blade * 0.64, -0.045], [blade, 0.07], [blade * 0.95, 0.115], [blade * 0.58, 0.058], [0, 0.046]], 0.022), "#e9eef4", { at: [0.074, 0, -0.011], line: 0.9, shadow: false }), { name: "blade" })]), { 2: "front" });
+/** a knuckle bow: one bent bar through the given points (x, y), from the guard round the outside of the fingers to the pommel,
+ *  fixed at both ends */
+function knuckleBow(pts: [number, number][]) { return new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts.map(([x, y]) => new THREE.Vector3(x, y, 0))), 20, 0.009, 6, false); }
 /** the flintlock pistol to hold: the butt lies in the fist at the origin; the barrel lies along +x above the hand, the muzzle its far end */
 export const pistolHeld = () => { const p = pistol(); p.position.set(0.015, 0.08, 0); return group([p]); };
 /** the mug to hold: its ear at the origin, the cup beside it along +x, upright along +y */
@@ -350,7 +353,7 @@ export const bundleHeld = (r = 0.2, col = "#d9c08a") => { const sack = group([me
  *  standing out of it along -x, a leather frog over the throat that takes the belt */
 export const scabbard = (len = 0.5) => layered(group([mesh(box(len, 0.075, 0.035), "#3a2a22", { at: [len / 2, 0, 0], line: 0.9, shadow: false }), mesh(box(0.07, 0.085, 0.045), C.gold, { at: [len - 0.03, 0, 0], line: 0.6, shadow: false }),
   mesh(box(0.09, 0.16, 0.05), "#5a3a22", { at: [0.06, 0.03, 0], line: 0.7, shadow: false }), mesh(box(0.14, 0.05, 0.05), "#5a3a22", { at: [-0.08, 0, 0], shadow: false }), mesh(box(0.04, 0.2, 0.08), C.gold, { at: [-0.01, 0, 0], line: 0.6, shadow: false }),
-  mesh(arc(0.07, 0.013, Math.PI), C.gold, { at: [-0.085, -0.02, 0], rot: [0, 0, Math.PI], scale: [1, 0.62, 1], line: 0.5, shadow: false }), mesh(ball(0.028, 8), C.gold, { at: [-0.158, 0, 0], line: 0.5, shadow: false })]), { 0: "back", 1: "back" }, [3, 4, 5, 6]);
+  mesh(knuckleBow([[-0.02, -0.034], [-0.04, -0.062], [-0.085, -0.072], [-0.13, -0.06], [-0.158, -0.02]]), C.gold, { line: 0.5, shadow: false }), mesh(ball(0.028, 8), C.gold, { at: [-0.158, 0, 0], line: 0.5, shadow: false })]), { 0: "back", 1: "back" }, [3, 4, 5, 6]);
 /** a flag as a painted cloth that hangs from its upper inner corner (the origin): w along +x, h down. kind: the black flag with a
  *  skull and crossed bones, or a plain white one */
 export const flagCloth = (kind: "black" | "white", w = 1.5, h = 1.0) => mesh(box(w, h, 0.02), "#ffffff", { at: [w / 2, -h / 2, 0], line: 0.6, shadow: false, map: paint(`flag${kind}`, 384, 256, (g) => {

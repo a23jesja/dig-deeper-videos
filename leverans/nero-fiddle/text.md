@@ -1,14 +1,14 @@
-# Did Nero really fiddle while Rome burned?
+# Did Nero fiddle while Rome burned?
 
-## Title (49 characters)
-Did Nero really fiddle while Rome burned? #Shorts
+## Title (42 characters)
+Did Nero fiddle while Rome burned? #Shorts
 
 ## Two alternative titles
 - Nero never fiddled while Rome burned #Shorts
 - The fiddle Nero could not have played #Shorts
 
 ## Description
-Did Nero really fiddle while Rome burned? Not on a fiddle: that instrument came about a thousand years later. When the fire began, says Tacitus, Nero was not even in Rome. He came back and opened his own gardens to the homeless. The fire raged for six days, and a rumour spread: while Rome burned, Nero sang of the fall of Troy. Sang, perhaps. Fiddled, never. His instrument was the cithara, a kind of lyre with seven strings.
+Did Nero fiddle while Rome burned? Not on a fiddle: that instrument came about a thousand years later. When the fire began, says Tacitus, Nero was not even in Rome. He came back and opened his own gardens to the homeless. The fire raged for six days, and a rumour spread: while Rome burned, Nero sang of the fall of Troy. Sang, perhaps. Fiddled, never. His instrument was the cithara, a kind of lyre with seven strings.
 
 The scenes are dramatised. The Roman writers disagree: Tacitus calls the singing a rumour, Suetonius and Cassius Dio state it as fact, and they do not agree on who started the fire. This video does not say who did.
 

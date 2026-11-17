@@ -45,6 +45,13 @@ We have changed style about six times in a week and published almost nothing new
 - **Videos go out.** A video that passes the checks and Jesper's yes is published; it is not held back for
   another round of polish. What the numbers show decides the next improvement.
 - **Only Jesper can unfreeze the look.**
+- **Frozen means the style, not its faults (Jesper 2026-11-17).** The character's shapes, proportions, colours
+  and line are frozen. Correcting something that looks wrong inside that style is allowed and expected, in the
+  shared code, after the reviewer's approval: a closed eye drawn as an arc without the ring, a mouth that shows
+  on top of a beard, a profile that looks unfinished. If it is unclear whether something is a fault or a change
+  of style, ask Jesper.
+- **Thumbnails:** 1080x1920 for Shorts, 1280x720 for long videos. A Short's thumbnail must also exist as a frame
+  in the video, because the app may only offer frames to choose from; name the time of that frame in text.md.
 
 ## The review mailbox (Jesper 2026-11-18): the cloud session reviews so Jesper does not have to
 The session on the computer and the cloud session talk through git, because the cloud session cannot reach the

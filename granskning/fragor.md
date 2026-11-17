@@ -87,6 +87,14 @@ Valda bort trots styrka: pestläkarens näbb (nr 15) är lika stark på punkt 1 
 - **Ton:** skrämmande, med vändning.
 - **Det filmen visar, med källor:** elden börjar vid Circus (Tacitus 38.1: "It took its rise in the part of the Circus touching the Palatine and Caelian Hills"); Nero vid havet i Antium får budet och återvänder (Tacitus 39.1; Drake); han öppnar sina trädgårdar för de hemlösa (Tacitus 39.1; Drake); ryktet om sången om Troja, med en cithara och inte en fiol (Tacitus 39.1; Drake); sex dygn, fyra av fjorton stadsdelar oskadda (Tacitus 40.1).
 
+### 24. Did gladiators really fight to the death?  (MYT; tillagd 17 november för torsdag 19 november)
+- **Svar:** Oftast inte: omkring nio gånger av tio överlevde gladiatorn, och för det mesta gick båda från arenan på egna ben.
+- **MYT, två källor lästa 17 november:** National Geographic, Amy Briggs, 21 november 2024 (https://www.nationalgeographic.com/history/article/gladiators-truth-movie-myths): "About nine out of ten times, gladiators survived their bouts to fight another day."; "“fights without reprieve” were pretty infrequent". Archaeology Magazine, Tolga İldun, november/december 2024 (https://archaeology.org/issues/november-december-2024/features/let-the-games-begin/), R. R. R. Smith, Oxford: "In gladiatorial games, most of the time, both participants left the arena on their feet."; Martin Steskal: "The last thing a school owner wanted was for his gladiator to die."
+- **Säg inte:** något om tummen upp eller ned (ingen av källorna nämner gesten); att ingen dog; andra tal än "about nine times in ten" och Galens fem år; en tid eller en plats.
+- **Första sekunden:** två gladiatorer går ihop så att sanden sprutar, läktaren står upp, Sir Digsworth kikar mellan fingrarna.
+- **Ton:** skrämmande början, lugnande vändning.
+- **Manus:** `granskning/gladiators-death/manus.md`.
+
 ## Segelfartyg
 
 ### 9. Did pirates really make you walk the plank?  ← VALD (MYT)
@@ -152,6 +160,14 @@ Valda bort trots styrka: pestläkarens näbb (nr 15) är lika stark på punkt 1 
 - **Säg inte:** ett belopp som om det gällde alla (det skiljer mellan besättningar); Exquemelins "or six slaves" får inte strykas tyst om hans lista används.
 - **Första sekunden:** en pirat med krok får en tung säck mynt i famnen medan Sir Digsworth räknar på fingrarna.
 - **Ton:** rolig, lite hemsk.
+
+### 25. Why did Blackbeard light fuses in his beard?  (SANT med förbehåll; tillagd 17 november för torsdag 19 november; planens fråga var "set his own beard on fire")
+- **Svar:** För att se ut som något ur helvetet, troligen så att besättningar gav upp utan strid; och nästan allt vi vet kommer ur en enda bok från 1724.
+- **Två källor:** Charles Johnson, A General History of the Pyrates (1724), kap. III (Gutenberg 40580, råtexten läst): "stuck lighted Matches under his Hat, which appearing on each Side of his Face ... made him altogether such a Figure, that Imagination cannot form an Idea of a Fury, from Hell, to look more frightful." Royal Museums Greenwich (https://www.rmg.co.uk/stories/topics/blackbeard-edward-teach-pirate, läst 17 november): "He even placed slow-burning, smoking fuses in the beard when attacking ships"; "His fearsome appearance was likely designed to encourage crews of victim ships to surrender"; Johnsons bok är "the source for much of what we know about Blackbeard's life and exploits".
+- **Säg inte:** att skägget brann (ingen källa säger det); att han aldrig dödade någon; att historien är påhittad; årtal eller andra namn än Blackbeard.
+- **Första sekunden:** en väldig man med flätat svart skägg kliver ur krutröken med en glödande, rykande lunta på var sida om ansiktet.
+- **Ton:** skrämmande, med avslöjande slut.
+- **Manus:** `granskning/blackbeard-fuses/manus.md`.
 
 ## Medeltida borg och stad
 

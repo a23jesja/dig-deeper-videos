@@ -1,0 +1,57 @@
+# Short 5: Did gladiators really fight to the death?
+
+MANUS, VERSION 1 (inte granskat; ingen röst inspelad, inga bilder byggda). Romersk arena, skrämmande början med lugnande vändning, MYT. Beräknad längd 33-35 sekunder, 11 bilder, 98 ord, Kokoro bm_george. Fråga nr 24 i `granskning/fragor.md`. Tiderna är uppskattade (2,8 ord per sekund); de riktiga kommer ur rösten.
+
+Planerad för torsdag 19 november. Filmens id i motorn: `gladiators-death`. Ingen skylt i bild: noten om att scenerna är dramatiserade och källorna står i beskrivningen.
+
+## Manus, med källa per påstående
+
+| Tid (s), ca | Röst | Bild | Källa |
+|---|---|---|---|
+| 0,0-2,6 | **Did gladiators really fight to the death?** | Arenan, mitt i ett hugg: en stor tung gladiator med hjälm och sköld och en smal med nät och treudd går ihop så att sanden sprutar. Läktaren bakom står upp, kvinnor och män. Sir Digsworth på första raden håller händerna för ögonen och kikar mellan fingrarna. Frågan som text. | Frågan. |
+| 2,6-5,2 | Two go in, one comes out. Right? | Nära på Sir Digsworth på läktaren: två fingrar upp, sedan ett. Kvinnan bredvid honom, med en skål oliver i knät, ser på honom och skakar på huvudet. | Sir Digsworths gissning, inget påstående. |
+| 5,2-6,2 | Not usually. | Samma två: hon stoppar en oliv i munnen och pekar ned mot sanden. | [N], [A-S] |
+| 6,2-10,6 | About nine times in ten, a gladiator lived to fight another day. | Porten ut ur arenan: tio gladiatorer på rad går ut förbi oss, olika långa och breda, en haltar, en har armen i mitella, två stöttar varandra. Den tionde bärs sist på en bår av två man. | [N]: "About nine out of ten times, gladiators survived their bouts to fight another day." |
+| 10,6-14,6 | Each one was trained, fed and doctored, and that cost a great deal. | Gladiatorskolans gård: en tränare rättar en elevs grepp om ett träsvärd; på bänken bredvid sitter den store och äter gröt ur en skål medan en läkare lindar hans underarm. | [A-St]: "coached by experienced trainers and that they were well fed and received medical care"; [N]: "Each fighter represented a sizable investment"; [A]: "was very costly" |
+| 14,6-18,0 | The last thing the school's owner wanted was a dead one. | Ägaren, rund och ringprydd, räknar mynt i en kista vid arenans port; han ser ut mot sanden, biter på naglarna och klappar sedan sin gladiator på axeln som en dyr vas. | [A-St]: "The last thing a school owner wanted was for his gladiator to die." |
+| 18,0-20,4 | There were rules, and a referee. | Sanden: en domare i vit tunika med en lång käpp kliver in mellan de två och för isär dem med käppen i båda händerna. | [A]: "the games were governed by detailed sets of rules and overseen by arbiters, or referees." |
+| 20,4-23,6 | A beaten man raised a finger to give up. | Den smale på ett knä, treudden i sanden bredvid sig: han sträcker upp pekfingret. Den stores svärd stannar i luften mot domarens käpp. | [N]: "A fresco from Pompeii reveals that wounded gladiators signaled surrender with a lifted finger." |
+| 23,6-26,4 | And most of the time, he was spared. | Spelens givare i sin loge reser sig och viftar med en duk; läktaren jublar; den store räcker den smale handen och drar upp honom. | [N]: "sponsors favored sparing gladiators' lives"; [A]: "swayed the games' patron, who indicated the gladiator's life should be spared." |
+| 26,4-29,8 | So no. Most fights ended with both men walking out. | De två går ut genom porten sida vid sida, den smale med armen över den stores axlar; blommor regnar från läktaren. | [A-S]: "In gladiatorial games, most of the time, both participants left the arena on their feet." |
+| 29,8-34,4 | One doctor wrote that in five years, not one of his gladiators died. | Läkaren vid ett bord skriver med en penna på en rulle; bakom honom står fem lindade gladiatorer på rad och spänner musklerna, alla vid liv. Sir Digsworth, kvar på läktaren, tar äntligen ned händerna och får en oliv av kvinnan. | [A]: Galen "writes that no gladiators died over a five-year period when he provided them with medical care." |
+
+## Källor
+- **[N]** National Geographic, Amy Briggs, "What Hollywood gets wrong—and right—about Roman gladiators", 21 november 2024, https://www.nationalgeographic.com/history/article/gladiators-truth-movie-myths (läst i sin helhet 17 november). Ordagrant: "Pop culture is largely responsible for the misconception that gladiators were always fighting to the death, but history is showing that “fights without reprieve” were pretty infrequent." "About nine out of ten times, gladiators survived their bouts to fight another day." "Each fighter represented a sizable investment, so sponsors favored sparing gladiators’ lives." "A fresco from Pompeii reveals that wounded gladiators signaled surrender with a lifted finger."
+- **[A]** Archaeology Magazine (Archaeological Institute of America), Tolga İldun, "Let the Games Begin", november/december 2024, https://archaeology.org/issues/november-december-2024/features/let-the-games-begin/ (läst 17 november; de sista styckena kom inte med i hämtningen). Ordagrant, berättartext: "the games were governed by detailed sets of rules and overseen by arbiters, or referees."; Galen "writes that no gladiators died over a five-year period when he provided them with medical care."; att ordna spel "was very costly"; "Recognizing impending defeat, Margarites dropped his weapons, signaling surrender." "Margarites’ dignified composure swayed the games’ patron, who indicated the gladiator’s life should be spared."
+- **[A-S]** samma artikel, arkeologen R. R. R. Smith, University of Oxford: "The most common perception of gladiatorial games is that they were violent and gruesome because someone always died," ... "This isn’t true." ... "In gladiatorial games, most of the time, both participants left the arena on their feet."
+- **[A-St]** samma artikel, Martin Steskal, Österrikiska arkeologiska institutet: "The last thing a school owner wanted was for his gladiator to die." "If a gladiator died in his first fight, it would mean all that investment was wasted." "We know that there were schools where gladiators were coached by experienced trainers and that they were well fed and received medical care,"
+- Inte läst: Live Science (sidans text kom inte med i hämtningen; inte hämtad igen). Inte använd.
+
+## Vad manuset medvetet inte säger
+- **Ingenting om tummen upp eller ned.** Ingen av de två källorna säger något om gesten, så filmen visar en duk och en uppsträckt hand, inte en tumme.
+- **Inte att ingen dog.** [N] säger att strider utan nåd var "pretty infrequent", inte att de inte fanns. Därför "Not usually", "most of the time" och "most fights".
+- **Inga andra tal än "about nine times in ten"** ([N]:s egen formulering, utan namngiven forskare) och "five years" (Galen enligt [A]). Inget om hur många strider en gladiator gick eller vad en gladiator kostade i mynt.
+- **Inte vilka som dog på arenan i övrigt** (dömda brottslingar, djurhetsningar): det står inte i det jag läst.
+- **Inte en tid eller plats.** Källorna täcker flera århundraden och hela riket; filmen säger "gladiators" i allmänhet och visar en arena utan namn.
+- **Galens namn sägs inte** (uttalsrisk och ingen vinst); "One doctor wrote" täcks av [A].
+
+## Formen
+- Frågan i bild och röst 0,0-2,6 s över det mest slående: hugget i sanden. Ingen logga, ingen hälsning.
+- Felgissningen till 5,2 s, sedan en tråd: de flesta överlevde (6,2), varför (dyra, ägaren), hur (regler, domare, fingret, nåden). **Svaret kommer 26,4-29,8 s**, följt av det sista överraskande faktumet: läkaren och de fem åren. Ingen del 2, ingen krok.
+- Rörelse i varje bild och ingen bild lik den före: strid (1), läktaren nära (2-3), port med tio i rad (4), skolgård (5), ägaren (6), domaren (7), fingret (8), logen (9), ut genom porten (10), läkaren (11).
+- Ingen undertextruta över ansikte, bröst eller händer. Ingen skylt.
+
+## Vad som är bättre än i svarta flaggan och Nero (en punkt per område)
+- **Animation:** två figurer som verkligen möts: sköld mot treudd, käppen som tas emot med svärdet, handen som drar upp den slagne (grepp hand i hand), båren som bärs av två. Allt genom motorns greppkod.
+- **Grafik:** en läktare med riktig publik, kvinnor och män, barn och gamla, i olika kläder och färger, som reser sig och sätter sig i vågor; tio gladiatorer med tio olika kroppar och rustningar.
+- **Ljus:** bländande sand och djup skugga under läktarens tak; logen i skugga med en strimma sol.
+- **Effekter:** sand som sprutar vid stegen och hugget, damm som hänger kvar, blommor som faller.
+- **Rörelse:** tyngd i striden: den store rör sig långsamt med breda steg, den smale snabbt och lätt; ingen glider.
+
+## Uttal
+- Riskord: gladiators, referee, doctored, spared. Inga namn och inga latinska ord sägs.
+
+## Det här behöver byggas (allt i motorns gemensamma kod)
+- Arenan inifrån: sand, mur, port, läktare med publik, en loge. Gladiatorskolans gård med bänk och träningspåle.
+- Looks: två gladiatorer (tung och lätt) och åtta till för raden, domare, ägare, läkare, tränare, spelens givare, publik.
+- Föremål: sköld, kort svärd, treudd, nät, träsvärd, käpp, bår, grötskål, lindor, myntkista, skrivrulle och penna, oliver, blommor.

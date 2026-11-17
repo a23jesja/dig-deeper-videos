@@ -2,9 +2,9 @@
 // The shots are cut to the narration's lines (voice/black-flag). Sources and what must not be claimed: granskning/black-flag/manus.md.
 // The flag is black with a white hourglass (no skull); the friendly flag is a made-up merchant ensign.
 import * as THREE from "three";
-import { Film, Shot, Cam, V3, Staged, Word, play, talk, smooth } from "../stage/film";
+import { Film, Shot, Cam, V3, Staged, Word, play, talk, smooth, mix3 } from "../stage/film";
 import { mover, mt, wag, arm, MM } from "../stage/acting";
-import { lens, once, noShade, put, near, hold, carry, palm, palmThen } from "../stage/staging";
+import { lens, once, noShade, put, near, hold, carry, palm, palmThen, aside, span } from "../stage/staging";
 import { flagSea, FLAGSEA, FLAGSEA_SOLIDS, SHIP, MERCHANT_DECK, merchantBrig, BRIG, dusk } from "../world/ship";
 import { mesh, box, ball, rod, cyl, paint } from "../world/kit";
 import { clothFlag, gunSmoke, bucket, mug, yardSail, chest, cutlass, pistol, spyglass, crate, barrel, bottle, FlagKind } from "../world/props";
@@ -61,7 +61,7 @@ const add = (s: Shot) => shots.push(s);
 // 1. THE HOOK: on the merchant's deck her crew back away with their hands in the air, while on the ship close alongside a black flag
 //    runs up its staff and snaps open. Sir Digsworth peeps out from behind the mast: at us, up at the flag, and in again
 {
-  const V = lens(-11.0, 1.75, 4.77, 1, 0.12, -1, 64), b0 = cut("hook", "guess"), RISE = 0.7, DROP = 0.4;
+  const V = lens(-11.0, 1.75, 4.77, 1, 0.12, -8, 64), b0 = cut("hook", "guess"), RISE = 0.7, DROP = 0.4;
   const who = (D: Design, h: number, d: number, l: number, off: number) => { const [x, z] = V.spot(d, l), m = mover(D, h, x, z, V.toward(x, z, off)); m.stand(8); return m; };
   // the cook lets his bucket go, looks down after it and up again
   const cook = who(COOK_D, 1.58, 3.9, 1.08, -6);
@@ -91,18 +91,18 @@ const add = (s: Shot) => shots.push(s);
   sir.actAt(-1, { roll: 15, lean: 4, armL: arm(34, 4, 128, -34), armR: arm(30, 10, 80, 0), head: [0, -4, 8] }, 10, { in: 0.01, handL: "open", handR: "fist", face: { wide: 1, lid: 0, brow: 1, mouth: 0.8 } });
   sir.actAt(0.85, { head: [34, -20, 8] }, 0.95, { in: 0.16, out: 0.16, antic: 0.3, over: 1.5, face: { wide: 1, lid: 0, brow: 1, mouth: 0.4, gaze: [0.6, -0.7] } });
   sir.actAt(1.9, { roll: -2, lean: 8, py: -0.08, head: [0, 8, 0], armL: arm(40, 10, 100, -20) }, 9, { in: 0.2, antic: 0.2, over: 1.3, handL: "fist", face: { wide: 0.7, lid: 0.2, brow: -0.4 } });
-  const fall = 0.3; let B0: V3 | null = null;      // where the bucket leaves the cook's hand
+  const [bx, bz] = V.spot(2.5, 0.55), fall = 0.45; let B0: V3 | null = null;      // where the bucket leaves the cook's hand
   add({ id: "hook", a: 0, b: b0, still: 0.6,
     sounds: [{ t: 0.02, k: "rope", g: 0.9, p: 0.5 }, { t: RISE, k: "flap", g: 1.2, p: 0.5 }, { t: DROP + fall, k: "thunk", g: 0.9, p: -0.1 }, { t: DROP + fall + 0.22, k: "rattle", g: 0.6, p: -0.1, dur: 0.5 }, { t: 0.3, k: "creak", g: 0.6 }, { t: 1.3, k: "flap", g: 0.7, p: 0.5 }, { t: 1.9, k: "scuff", g: 0.7, p: -0.6 }],
     cam: (_t, u) => V.push(0.2 * u), sun: { target: [-7.5, MD, 6], reach: 9 },
     cast: (t, T) => [on("old", OLDHAND_D, old, t, MD, { seed: 2 }), on("mc", CUSTOMS_D, mc, t, MD, { seed: 4 }), on("sailor", SAILOR_D, sailor, t, MD, { seed: 6 }), on("boy", SHIPBOY_D, boy, t, MD, { seed: 8, blink: false }), on("cook", COOK_D, cook, t, MD, { seed: 9, blink: false }),
       on("sir", SIR_D, sir, t, MD, { talk: talk(W, T, ["hook"]), blink: false })],
     things: (g, c, t, T, cam) => {
-      fly(g, "pirate", 5.25 + 0.75 * smooth(t / RISE), T, 0.7 + 0.3 * smooth((t - 0.2) / 0.4));
+      fly(g, "pirate", 4.5 + 0.75 * smooth(t / RISE), T, 0.7 + 0.3 * smooth((t - 0.2) / 0.4));
       // the bucket: it hangs from the cook's raised hand by its bail, then drops to the deck and tips over
       const u = t - DROP;
       if (u < 0) { const b = hold(g, BUCKET(), c.cook, "R", cam, { level: 0, d: 0.05, lift: -0.3 }); line(g, [b.position.x, b.position.y + 0.3, b.position.z], [b.position.x, b.position.y + 0.33, b.position.z], 0.02); }
-      else { B0 ??= near(palmThen(on("cook", COOK_D, cook, DROP, MD, { seed: 9, blink: false }), "R", cam), cam, 0.05); const fl = Math.sqrt(Math.max(0.01, B0[1] - 0.3 - MD) / 4.9), down = u > fl, bk = put(g, BUCKET(), [B0[0], down ? MD + 0.16 * smooth((u - fl) / 0.16) : B0[1] - 0.3 - 4.9 * u * u, B0[2]]); if (down) bk.rotation.set(0, 0.6, (Math.PI / 2) * smooth((u - fl) / 0.16)); }
+      else { B0 ??= near(palmThen(on("cook", COOK_D, cook, DROP, MD, { seed: 9, blink: false }), "R", cam), cam, 0.05); const h0 = Math.max(0.05, B0[1] - 0.3 - MD), fl = (1.2 + Math.sqrt(1.44 + 19.6 * h0)) / 9.8, w = Math.min(1, u / fl), down = u > fl, bk = put(g, BUCKET(), [B0[0] + (bx - B0[0]) * w, down ? MD + 0.16 * smooth((u - fl) / 0.16) : MD + h0 + 1.2 * u - 4.9 * u * u, B0[2] + (bz - B0[2]) * w]); bk.rotation.set(0, 0.6, down ? 0.3 + (Math.PI / 2 - 0.3) * smooth((u - fl) / 0.16) + 0.1 * Math.sin((u - fl) * 14) * Math.exp(-(u - fl) * 5) : 0.3 * w); }
     } });
 }
 // 2. TO SAY, WE WILL KILL YOU ALL? Close on Sir Digsworth, who leans out from behind the mast and says it as a question, draws a
@@ -125,17 +125,17 @@ const add = (s: Shot) => shots.push(s);
 // 3. NO. IT WAS AN OFFER: at the sloop's rail. The captain shakes his head, points up at his flag and holds out an open hand; behind
 //    him two of his men nod, each in his own time
 {
-  const a0 = cut("guess", "offer"), b0 = cut("offer", "creep"), V = lens(-4.5, 3.0, 6.3, 1, 0, -6, 60), IT = at("offer", /^It/) - a0, OFFER = at("offer", /^offer/) - a0;
+  const a0 = cut("guess", "offer"), b0 = cut("offer", "creep"), V = lens(-4.8, 3.75, 6.3, 1, 0, -24, 54), IT = at("offer", /^It/) - a0, OFFER = at("offer", /^offer/) - a0;
   const cap = mover(CAPTAIN_D, 1.86, -2.2, 6.3, 270); cap.stand(8);
   cap.actAt(-1, { armR: arm(52, 14, 150, 6), armL: arm(14, 10, 40, 0), head: [0, -2, 0] }, IT + 1, { in: 0.01, out: 0.12, handR: "point", handL: "fist", face: { brow: -0.3, smile: 0.3, lid: 0.1 } });
   wag(cap, 0.06, IT - 0.14, P({ head: [17, -2, 0], armR: arm(52, 22, 150, 16) }), P({ head: [-17, -2, 0], armR: arm(52, 6, 150, -6) }), 0.3, { handR: "point" });
   cap.actAt(IT - 0.1, { armL: arm(166, 22, 178, 14), head: [20, -16, 0] }, OFFER - IT + 0.1, { in: 0.2, out: 0.1, antic: 0.3, over: 1.5, handL: "point", face: { brow: 0.7, smile: 0.6, lid: 0, gaze: [0.6, -0.7] } });
   cap.actAt(OFFER - 0.06, { armL: arm(164, 24, 176, 16), armR: arm(84, 12, 114, 0), lean: 6, head: [0, 0, 0] }, 9, { in: 0.2, antic: 0.2, over: 1.5, handL: "point", handR: "open", face: { brow: 0.9, smile: 1, lid: 0 } });
   wag(cap, OFFER + 0.2, 2, P({ armR: arm(88, 12, 120, 0) }), P({ armR: arm(80, 12, 106, 0) }), 0.36, { handR: "open" });
-  const p1 = mover(PIRATE_D, 1.8, -1.7, 5.78, 262); p1.stand(8);
+  const p1 = mover(PIRATE_D, 1.8, -1.7, 5.88, 262); p1.stand(8);
   p1.actAt(-1, { armL: arm(36, 4, 104, -34), armR: arm(36, 4, 104, -34), head: [-14, 0, 0] }, 10, { in: 0.01, ...OPEN, face: { smile: 0.9, brow: 0.5, lid: 0.1 } });
   wag(p1, IT - 0.05, 3, P({ head: [-14, 18, 0], lean: 5 }), P({ head: [-14, -6, 0], lean: 0 }), 0.34);
-  const p2 = mover(MATE_D, 1.66, -1.7, 6.82, 280); p2.stand(8);
+  const p2 = mover(MATE_D, 1.66, -1.7, 6.72, 280); p2.stand(8);
   p2.actAt(-1, { armR: arm(60, 20, 120, 10), armL: arm(12, 8, 30, 0), head: [14, 0, 0] }, 10, { in: 0.01, handR: "open", handL: "fist", face: { smile: 0.7, brow: 0.8, lid: 0 } });
   wag(p2, IT + 0.14, 3, P({ head: [14, 16, 0], armR: arm(64, 20, 96, 10) }), P({ head: [14, -4, 0], armR: arm(60, 20, 132, 10) }), 0.42, { handR: "open" });
   add({ id: "offer", a: a0, b: b0, still: OFFER + 0.3,
@@ -220,76 +220,83 @@ const SWAP = at("creep", /^then/) - 0.12;
       const h = near(palm(c.sailor, "R"), cam, 0.05), u = t - MUGT; if (u < 0) hold(g, MUG(), c.sailor, "R", cam, { level: 0, d: 0.05, lift: -0.1 }); else { const y = Math.max(MD + 0.02, h[1] - 0.1 - 4.9 * u * u), m = put(g, MUG(), [h[0], y, h[2]]); m.rotation.z = y > MD + 0.03 ? u * 9 : Math.PI / 2; }
     } });
 }
-// 6. IT MEANT, GIVE UP NOW, AND WE SHOW MERCY: from the merchant's deck, over her captain's shoulder (the one it is said to), through a
-//    long lens. The pirate captain has got up on a chest behind the cloth and acts it out across the water: a finger up, a point at their sail and his hand pressed down twice, then both arms wide and a hand on his
-//    heart. Beside him one of his men studies his nails, then copies the hand on the heart with his eyes shut
+// 6. IT MEANT, GIVE UP NOW, AND WE SHOW MERCY: from the sloop's quarterdeck, past the two of them and across the water. The captain
+//    acts it out toward the other ship: a finger up, a point at their sail and his hand pressed down twice, then an open hand and a
+//    hand on his heart. Beside him one of his men studies his nails, then copies the hand on the heart with his eyes shut. Across the
+//    water the merchant captain stands at his rail with his arms folded, takes it in, and looks round at his men
 {
-  const a0 = cut("creep", "meant"), b0 = cut("meant", "sight"), V = lens(-8.6, 2.2, 5.9, 0.991, 0.136, 6.2, 23), UPON = 0.46;
+  const a0 = cut("creep", "meant"), b0 = cut("meant", "sight"), V = lens(-0.2, 3.3, 8.3, -0.8, -0.6, -18, 60);
   const GIVE = at("meant", /^give/) - a0, NOW = at("meant", /^now/) - a0, AND = at("meant", /^and/) - a0, MERCY = at("meant", /^mercy/) - a0;
-  const cap = mover(CAPTAIN_D, 1.86, -2.25, 6.73, 244); cap.stand(8);
-  cap.actAt(-1, { armR: arm(56, 22, 160, 10), armL: arm(14, 10, 40, 0), head: [0, -8, 0] }, GIVE + 1, { in: 0.01, out: 0.1, handR: "point", handL: "fist", face: { brow: 0.8, lid: 0, smile: 0.2 } });
-  cap.actAt(GIVE - 0.12, { armR: arm(84, 30, 96, 26), lean: 8, head: [0, -10, 0] }, NOW - GIVE + 0.1, { in: 0.14, out: 0.08, antic: 0.4, over: 1.7, handR: "point", face: { brow: -0.6, lid: 0, wide: 0.5 } });
-  wag(cap, NOW - 0.04, AND - NOW - 0.06, P({ armR: arm(44, 14, 50, 10), lean: 10, py: -0.03 }), P({ armR: arm(74, 14, 84, 10), lean: 4 }), 0.42, { handR: "open" });
-  cap.actAt(AND - 0.1, { armL: arm(22, 12, 56, 4), armR: arm(44, 16, 100, 30), lean: -4, head: [0, -8, 0] }, MERCY - AND + 0.12, { in: 0.2, out: 0.1, antic: 0.2, over: 1.5, ...OPEN, face: { brow: 1, smile: 1, lid: 0 } });
-  cap.actAt(MERCY - 0.08, { armR: arm(28, 12, 122, -48), armL: arm(22, 12, 56, 4), lean: 14, head: [0, 14, 6] }, 9, { in: 0.24, antic: 0, over: 1.3, ...OPEN, face: { brow: 1, smile: 1, lid: 0.7 } });
-  cap.actAt(MERCY + 0.55, { head: [0, -8, 6] }, 9, { in: 0.2, antic: 0, over: 1.2, face: { brow: 0.6, smile: 1, lid: 0, gaze: [0, -0.3] } });
-  const p2 = mover(MATE_D, 1.66, -1.9, 7.3, 256); p2.stand(8);
+  const cap = mover(CAPTAIN_D, 1.86, -2.2, 6.6, 15); cap.stand(8);
+  cap.actAt(-1, { armR: arm(56, 22, 160, 10), armL: arm(14, 10, 40, 0), head: [-44, -8, 0] }, GIVE + 1, { in: 0.01, out: 0.1, handR: "point", handL: "fist", face: { brow: 0.8, lid: 0, smile: 0.2 } });
+  cap.actAt(GIVE - 0.12, { armR: arm(84, 30, 96, 26), lean: 8, head: [-44, -10, 0] }, NOW - GIVE + 0.1, { in: 0.14, out: 0.08, antic: 0.4, over: 1.7, handR: "point", handL: "fist", face: { brow: -0.6, lid: 0, wide: 0.5 } });
+  wag(cap, NOW - 0.04, AND - NOW - 0.06, P({ armR: arm(44, 14, 50, 10), lean: 10, py: -0.03, head: [-44, -4, 0] }), P({ armR: arm(74, 14, 84, 10), lean: 4, head: [-44, -4, 0] }), 0.42, { handR: "open", handL: "fist", face: { brow: -0.6, lid: 0, wide: 0.5 } });
+  cap.actAt(AND - 0.1, { armL: arm(22, 12, 56, 4), armR: arm(44, 16, 100, 30), lean: -4, head: [-44, -8, 0] }, MERCY - AND + 0.12, { in: 0.2, out: 0.1, antic: 0.2, over: 1.5, ...OPEN, face: { brow: 1, smile: 1, lid: 0 } });
+  cap.actAt(MERCY - 0.08, { armR: arm(28, 12, 122, -48), armL: arm(22, 12, 56, 4), lean: 14, head: [-30, 14, 6] }, 9, { in: 0.24, antic: 0, over: 1.3, ...OPEN, face: { brow: 1, smile: 1, lid: 0.7 } });
+  cap.actAt(MERCY + 0.55, { head: [-44, -8, 6] }, 9, { in: 0.2, antic: 0, over: 1.2, ...OPEN, face: { brow: 0.6, smile: 1, lid: 0, gaze: [0, -0.3] } });
+  const p2 = mover(MATE_D, 1.66, -2.1, 6.02, 30); p2.stand(8);
   p2.actAt(-1, { armR: arm(46, 16, 132, -16), armL: arm(14, 8, 40, 0), head: [6, 20, 0] }, MERCY + 1.1, { in: 0.01, out: 0.2, handR: "open", handL: "fist", face: { lid: 0.4, brow: 0.3, gaze: [0, 0.8] } });
-  wag(p2, 0.2, AND - 0.3, P({ armR: arm(46, 16, 138, -16) }), P({ armR: arm(46, 16, 126, -10) }), 0.7, { handR: "open" });
-  p2.actAt(AND + 0.1, { head: [-30, -6, 0] }, MERCY - AND, { in: 0.2, out: 0.1, antic: 0, over: 1.2, face: { lid: 0, brow: 0.8, gaze: [-0.7, 0] } });
-  p2.actAt(MERCY + 0.14, { armR: arm(28, 12, 122, -48), head: [-8, 10, -8], lean: 6 }, 9, { in: 0.3, antic: 0.2, over: 1.3, handR: "open", face: { smile: 1, lid: 1, brow: 1 } });
-  // the merchant captain, from behind, near the lens: he listens without moving, then looks round at his men
-  const [hx, hz] = V.spot(2.6, -0.22), mcap = mover(CUSTOMS_D, 1.9, hx, hz, 82); mcap.stand(8);
-  mcap.actAt(-1, { armL: arm(20, 10, 60, 0), armR: arm(20, 10, 60, 0), head: [0, -6, 0] }, 10, { in: 0.01, handL: "fist", handR: "fist" });
-  wag(mcap, 0.2, AND, P({ roll: 1.4 }), P({ roll: -1.4 }), 1.1);
-  mcap.actAt(MERCY + 0.3, { head: [-22, -2, 6] }, 0.7, { in: 0.24, out: 0.24, antic: 0, over: 1.1 });
-  add({ id: "meant", a: a0, b: b0, still: MERCY + 0.4, hide: ["lantern"],
+  wag(p2, 0.2, AND - 0.3, P({ armR: arm(46, 16, 138, -16) }), P({ armR: arm(46, 16, 126, -10) }), 0.7, { handR: "open", handL: "fist", face: { lid: 0.4, brow: 0.3, gaze: [0, 0.8] } });
+  p2.actAt(AND + 0.1, { head: [-40, -6, 0] }, MERCY - AND, { in: 0.2, out: 0.1, antic: 0, over: 1.2, handR: "open", handL: "fist", face: { lid: 0, brow: 0.8, gaze: [-0.7, 0] } });
+  p2.actAt(MERCY + 0.14, { armR: arm(28, 12, 122, -48), head: [-8, 10, -8], lean: 6 }, 9, { in: 0.3, antic: 0.2, over: 1.3, handR: "open", handL: "fist", face: { smile: 1, lid: 1, brow: 1 } });
+  // the one it is said to: on his own deck across the water, arms folded; he leans to hear, and looks round at his men
+  const mcap = mover(CUSTOMS_D, 1.9, -5.9, 5.6, 70); mcap.stand(8);
+  const STIFF = { brow: -0.7, lid: 0.15, smile: -0.8 };
+  mcap.actAt(-1, { armL: arm(34, 26, 70, -50), armR: arm(34, 26, 70, -50), head: [0, -8, 0] }, 10, { in: 0.01, handL: "fist", handR: "fist", face: STIFF });
+  mcap.actAt(NOW, { lean: 8, head: [0, -4, 6] }, AND - NOW + 0.2, { in: 0.3, out: 0.2, antic: 0, over: 1.1, handL: "fist", handR: "fist", face: { brow: 0.6, lid: 0, wide: 0.6, smile: -0.8 } });
+  mcap.actAt(MERCY + 0.3, { head: [-56, -2, 0] }, 9, { in: 0.24, antic: 0, over: 1.1, handL: "fist", handR: "fist", face: { brow: 0.8, lid: 0, wide: 0.6, smile: -0.6, gaze: [-0.8, 0] } });
+  add({ id: "meant", a: a0, b: b0, still: MERCY + 0.4, hide: ["lantern", "wheel"],
     sounds: [{ t: GIVE - 0.1, k: "whoosh", g: 0.5 }, ...swings(NOW - 0.04, AND - NOW - 0.06, 0.42, b0 - a0).map((t) => ({ t, k: "whoosh", g: 0.35 })), { t: AND - 0.08, k: "whoosh", g: 0.5 }, { t: MERCY + 0.1, k: "tap", g: 0.7 }, { t: 0.3, k: "flap", g: 0.6, p: 0.6 }, { t: 1.7, k: "flap", g: 0.5, p: 0.6 }, { t: 1.0, k: "creak", g: 0.5 }],
-    cam: (_t, u) => V.push(0.3 * u), sun: { target: [-2.2, 2.4, 6.7], reach: 6 },
-    cast: (t) => [on("p2", MATE_D, p2, t, QD, { seed: 7 }), on("cap", CAPTAIN_D, cap, t, QD + UPON, { seed: 5 }), { ...on("mcap", CUSTOMS_D, mcap, t, MD, { seed: 4 }), noShade: true }],
-    things: (g, _c, _t, T) => { fly(g, "pirate", TOP, T, 1); put(g, CHEST_B(), [-2.25, QD, 6.73], Math.PI / 2); } });
+    cam: (_t, u) => V.push(0.14 * u), sun: { target: [-3, 2, 6.6], reach: 8 },
+    cast: (t) => [on("mcap", CUSTOMS_D, mcap, t, MD, { seed: 4 }), on("p2", MATE_D, p2, t, QD, { seed: 7 }), on("cap", CAPTAIN_D, cap, t, QD, { seed: 5 })],
+    things: (g, _c, _t, T) => { fly(g, "pirate", TOP, T, 1); } });
 }
-// 7. SOME SHIPS GAVE UP AT THE VERY SIGHT: from the water between the ships. The merchant captain has the flag in his spyglass; he
-//    lowers it, swallows, lets it fall, draws his hanger and cuts the halyard beside him. The sail comes down behind them, and the
-//    hands go up one after another, his own last
+// 7. SOME SHIPS GAVE UP AT THE VERY SIGHT: from the water between the ships. The merchant captain has the black flag in his spyglass;
+//    he lowers it, swallows, changes it to his other hand, draws his hanger and cuts the halyard that is belayed beside him: the rope
+//    flies up, the sail comes down behind them, and his men put their hands up
 {
-  const a0 = cut("meant", "sight"), b0 = cut("sight", "red"), V = lens(-3.3, 2.15, 5.1, -1, 0.06, -12, 58), LOW = 0.7, GULP = 1.0, LETGO = 1.16, SLASH = 1.52, LAND = SLASH + 0.6, RZ = 5.5;
-  const mc = mover(CUSTOMS_D, 1.9, -5.75, 5.25, 46); mc.stand(LOW + 0.1).turn(44, 0.3).stand(8);
-  mc.actAt(-1, { armR: arm(84, 20, 160, 0), armL: arm(20, 10, 60, 0), head: [0, -22, 0], lean: -4 }, LOW + 1.1, { in: 0.01, out: 0.14, handR: "grip", handL: "grip", face: { brow: -0.4, lid: 0.1 } });
-  mc.actAt(LOW, { armR: arm(56, 4, 118, -34), armL: arm(30, 14, 70, 4), head: [0, 0, 0] }, SLASH - LOW, { in: 0.24, out: 0.1, antic: 0, over: 1.2, handR: "grip", handL: "open", face: { wide: 1, lid: 0, brow: 1, mouth: 0.4, smile: -0.8 } });
-  mc.actAt(GULP, { head: [0, 15, 0], py: -0.03 }, 0.24, { in: 0.09, out: 0.12, antic: 0, over: 1 });
-  mc.actAt(LETGO, { armR: arm(40, 14, 90, -10) }, 0.2, { in: 0.08, out: 0.08, antic: 0, over: 1.3, handR: "open" });
-  // the hanger: up over his shoulder, then down through the rope on his right
-  mc.actAt(SLASH - 0.26, { armR: arm(150, 40, 200, 10), twist: -18, lean: -4, head: [-30, -6, 0] }, 0.26, { in: 0.16, out: 0.04, antic: 0, over: 1.2, handR: "grip", face: { brow: -1, lid: 0, wide: 0.6, smile: -1 } });
-  mc.actAt(SLASH - 0.02, { armR: arm(30, 14, 40, -6), twist: 10, lean: 8, head: [-30, 4, 0] }, 0.56, { in: 0.07, out: 0.2, antic: 0, over: 1.5, handR: "grip", face: { brow: -1, lid: 0, wide: 0.6, smile: -1 } });
-  mc.actAt(LAND + 0.12, { ...UP(2), lean: -3, head: [0, -6, 0] }, 9, { in: 0.3, antic: 0, over: 1.3, ...OPEN, face: { wide: 0.8, lid: 0, brow: 1, smile: -0.8 } });
+  const a0 = cut("meant", "sight"), b0 = cut("sight", "red"), V = lens(-3.3, 2.15, 5.1, -1, 0.06, -12, 58), LOW = 0.62, GULP = 0.9, PASS = 1.0, DRAW = 1.16, SLASH = 1.6, LAND = SLASH + 0.6;
+  const A: V3 = [-5.3, MD + 0.86, 5.65], B: V3 = [FLAGSEA.mx + BRIG.sail.x, FLAGSEA.yard, 6.6];      // the halyard: belayed at the rail beside him, up to the yard
+  const mc = mover(CUSTOMS_D, 1.9, -5.75, 5.25, 46); mc.stand(LOW + 0.1).turn(30, 0.3).stand(8);
+  const PEER = { brow: -0.5, lid: 0.2, smile: -0.3 }, SHOCK = { wide: 1, lid: 0, brow: 1, mouth: 0.4, smile: -0.8 }, GRIM = { brow: -1, lid: 0, wide: 0.6, smile: -1 };
+  mc.actAt(-1, { armR: arm(118, 26, 156, 30), armL: arm(20, 10, 60, 0), head: [0, -22, 0], lean: -4 }, LOW + 1.1, { in: 0.01, out: 0.14, handR: "grip", handL: "fist", face: PEER });
+  mc.actAt(LOW, { armR: arm(52, 6, 112, -30), head: [0, 0, 0], lean: 0 }, PASS - LOW + 0.3, { in: 0.24, out: 0.1, antic: 0, over: 1.2, handR: "grip", handL: "fist", face: SHOCK });
+  mc.actAt(GULP, { head: [0, 15, 0], py: -0.03 }, 0.2, { in: 0.08, out: 0.1, antic: 0, over: 1, handR: "grip", handL: "fist", face: SHOCK });
+  // the glass goes over to his left hand, which takes it down to his side
+  mc.actAt(PASS - 0.06, { armL: arm(52, 6, 112, -30) }, 0.3, { in: 0.14, out: 0.1, antic: 0, over: 1.1, handL: "grip", handR: "grip", face: SHOCK });
+  mc.actAt(PASS + 0.22, { armL: arm(18, 14, 44, 6) }, 9, { in: 0.2, antic: 0, over: 1.1, handL: "grip", handR: "grip", face: GRIM });
+  // the hanger: his right hand to the hilt at his left hip, out and up over his shoulder, then down through the rope on his right
+  mc.actAt(DRAW, { armR: arm(34, -24, 70, -70), twist: 10 }, 0.2, { in: 0.12, out: 0.06, antic: 0, over: 1.1, handR: "grip", handL: "grip", face: GRIM });
+  mc.actAt(DRAW + 0.18, { armR: arm(150, 40, 200, 10), twist: -18, lean: -4, head: [-30, -6, 0] }, SLASH - DRAW - 0.2, { in: 0.18, out: 0.04, antic: 0, over: 1.2, handR: "grip", handL: "grip", face: GRIM });
+  mc.actAt(SLASH - 0.02, { armR: arm(36, 34, 46, 40), twist: 12, lean: 8, head: [-30, 4, 0] }, 0.5, { in: 0.07, out: 0.2, antic: 0, over: 1.5, handR: "grip", handL: "grip", face: GRIM });
+  mc.actAt(SLASH + 0.42, { armR: arm(20, 16, 40, 10), head: [0, -24, 0], lean: -3 }, 9, { in: 0.24, antic: 0, over: 1.2, handR: "grip", handL: "grip", face: { wide: 0.8, lid: 0, brow: 1, smile: -0.8, gaze: [0, -1] } });
+  const WORRY = { wide: 0.8, lid: 0, brow: 0.9, smile: -0.7 };
   const sailor = mover(SAILOR_D, 1.82, -7.3, 4.37, 96); sailor.stand(8);
-  sailor.actAt(-1, { armL: arm(20, 10, 60, 0), armR: arm(20, 10, 60, 0), head: [8, -4, 0] }, 10, { in: 0.01, handL: "fist", handR: "fist", face: { wide: 0.8, lid: 0, brow: 0.9, smile: -0.7 } });
-  sailor.actAt(SLASH + 0.1, { head: [30, -28, 0] }, 0.5, { in: 0.14, out: 0.14, antic: 0, over: 1.2 });
-  sailor.actAt(LAND - 0.2, { ...UP(-3), head: [0, -4, 0] }, 9, { in: 0.26, antic: 0.2, over: 1.5, ...OPEN });
-  const cook = mover(SHIPBOY_D, 1.28, -7.6, 6.3, 84); cook.stand(8);
-  cook.actAt(-1, { armL: arm(40, 10, 110, -20), armR: arm(40, 10, 110, -20), head: [-8, -14, 0] }, 10, { in: 0.01, handL: "fist", handR: "fist", face: { wide: 0.9, lid: 0, brow: 1, mouth: 0.3, smile: -0.8 } });
-  wag(cook, 0.2, SLASH - 0.2, P({ armL: arm(40, 10, 116, -24) }), P({ armL: arm(40, 10, 104, -14) }), 0.28, { handL: "fist", handR: "fist" });
-  cook.actAt(SLASH + 0.2, { head: [-30, -28, 0] }, 0.5, { in: 0.14, out: 0.14, antic: 0, over: 1.2 });
-  cook.actAt(LAND + 0.02, { ...UP(4), head: [0, -4, 0] }, 9, { in: 0.26, antic: 0.2, over: 1.5, ...OPEN });
+  sailor.actAt(-1, { armL: arm(20, 10, 60, 0), armR: arm(20, 10, 60, 0), head: [8, -4, 0] }, 10, { in: 0.01, handL: "fist", handR: "fist", face: WORRY });
+  sailor.actAt(SLASH + 0.1, { head: [30, -28, 0] }, 0.5, { in: 0.14, out: 0.14, antic: 0, over: 1.2, handL: "fist", handR: "fist", face: WORRY });
+  sailor.actAt(LAND - 0.2, { ...UP(-3), head: [0, -4, 0] }, 9, { in: 0.26, antic: 0.2, over: 1.5, ...OPEN, face: WORRY });
+  // the ship's boy stands in front of the sailor, his fists at his mouth
+  const cook = mover(SHIPBOY_D, 1.28, -6.8, 4.73, 96); cook.stand(8);
+  cook.actAt(-1, { armL: arm(40, 10, 110, -20), armR: arm(40, 10, 110, -20), head: [8, -14, 0] }, 10, { in: 0.01, handL: "fist", handR: "fist", face: { wide: 0.9, lid: 0, brow: 1, mouth: 0.3, smile: -0.8 } });
+  cook.actAt(SLASH + 0.2, { head: [30, -28, 0] }, 0.5, { in: 0.14, out: 0.14, antic: 0, over: 1.2, handL: "fist", handR: "fist", face: { wide: 1, lid: 0, brow: 1, mouth: 0.5, smile: -0.8 } });
+  cook.actAt(LAND + 0.02, { ...UP(4), head: [0, -4, 0] }, 9, { in: 0.26, antic: 0.2, over: 1.5, ...OPEN, face: { wide: 1, lid: 0, brow: 1, mouth: 0.3, smile: -0.8 } });
   const yardY = (t: number) => { const u = (t - SLASH - 0.03) / 0.57; return u <= 0 ? FLAGSEA.yard : u < 1 ? FLAGSEA.yard - (FLAGSEA.yard - STRUCK) * u * u : STRUCK + 0.14 * Math.abs(Math.sin((u - 1) * 9)) * Math.exp(-(u - 1) * 5); };
-  // the glass falls from where his hand is when he lets go (found on the first frame that needs it)
-  let G0: V3 | null = null;
   SIGHT.hit = a0 + LAND;
   add({ id: "sight", a: a0, b: b0, still: 0.3, hide: ["msail"],
-    sounds: [{ t: GULP, k: "tap", g: 0.5 }, { t: LETGO + 0.5, k: "thunk", g: 0.7, p: 0.1 }, { t: SLASH - 0.24, k: "shing", g: 0.9 }, { t: SLASH, k: "crack", g: 0.9, p: -0.2 }, { t: SLASH + 0.05, k: "rattle", g: 1.0, dur: 0.6 }, { t: SLASH + 0.08, k: "whoosh", g: 0.9, dur: 0.5 }, { t: LAND, k: "thud", g: 1.2, big: 1.4 }, { t: LAND + 0.05, k: "sack", g: 0.9 }, { t: LAND + 0.2, k: "ting", g: 0.6, p: -0.2 }],
+    sounds: [{ t: GULP, k: "tap", g: 0.5 }, { t: DRAW + 0.1, k: "shing", g: 0.9 }, { t: SLASH, k: "crack", g: 0.9, p: -0.2 }, { t: SLASH + 0.05, k: "rattle", g: 1.0, dur: 0.6 }, { t: SLASH + 0.08, k: "whoosh", g: 0.9, dur: 0.5 }, { t: LAND, k: "thud", g: 1.2, big: 1.4 }, { t: LAND + 0.05, k: "sack", g: 0.9 }, { t: LAND + 0.2, k: "ting", g: 0.6, p: -0.2 }],
     cam: (_t, u) => V.push(0.08 * u), sun: { target: [-6.5, 1.5, 5.3], reach: 8 },
-    cast: (t) => [on("sailor", SAILOR_D, sailor, t, MD, { seed: 6 }), on("mc", CUSTOMS_D, mc, t, MD, { seed: 4, blink: false }), { ...on("cook", SHIPBOY_D, cook, t, MD, { seed: 9 }), noShade: true }],
+    cast: (t) => [on("sailor", SAILOR_D, sailor, t, MD, { seed: 6 }), { ...on("cook", SHIPBOY_D, cook, t, MD, { seed: 9 }), noShade: true }, on("mc", CUSTOMS_D, mc, t, MD, { seed: 4, blink: false })],
     things: (g, c, t, _T, cam) => {
       sailAt(g, yardY(t), (t - SLASH) / 0.55);
-      // the halyard: belayed at the rail, up to the yard; cut at shoulder height, its lower end drops and its upper end flies up
-      const A: V3 = [-5.3, MD + 0.86, RZ], B: V3 = [FLAGSEA.mx + BRIG.sail.x, FLAGSEA.yard, RZ], k = 0.115, C: V3 = [A[0] + (B[0] - A[0]) * k, A[1] + (B[1] - A[1]) * k, RZ], u = t - SLASH;
-      if (u < 0) line(g, A, B, 0.02); else { line(g, A, [A[0] - 0.1 * clamp(u / 0.2), Math.max(A[1] + 0.05, C[1] - 4 * u * u), RZ + 0.12 * clamp(u / 0.2)], 0.02); if (u < 0.3) line(g, [C[0] + (B[0] - C[0]) * u * 3, C[1] + 9 * u, RZ], [C[0] + (B[0] - C[0]) * Math.min(1, u * 3 + 0.2), C[1] + 9 * u + 1.2, RZ], 0.02); }
-      // the spyglass: at his eye, pointing at us, the flag in its glass; lowered in his hand; let fall
-      const f = t - LETGO;
-      if (f < 0) hold(g, GLASS(), c.mc, "R", cam, { level: t < LOW ? 128 : 128 + 112 * smooth((t - LOW) / 0.24), d: 0.05, slide: 0.3 }).scale.set(0.85, 0.85, 0.85);
-      else { G0 ??= near(palmThen(on("mc", CUSTOMS_D, mc, LETGO, MD, { seed: 4, blink: false }), "R", cam, 0.3), cam, 0.05); const GFALL = Math.sqrt(Math.max(0.01, G0[1] - MD - 0.05) / 4.9), air = f < GFALL, s = put(g, GLASS(), [G0[0], air ? G0[1] - 4.9 * f * f : MD + 0.05 + 0.06 * Math.abs(Math.sin((f - GFALL) * 16)) * Math.exp(-(f - GFALL) * 9), G0[2]]); s.rotation.set(0, Math.PI / 2, air ? 4.19 + 2.2 * (f / GFALL) : 0.11); s.scale.set(0.85, 0.85, 0.85); }
-      if (t > SLASH - 0.26 && t < LAND + 0.12) sword(g, 0, c.mc, cam, 0);
+      // the halyard: cut above his shoulder; its lower end drops by the rail and its upper end flies up to the yard
+      const C = mix3(A, B, 0.14), u = t - SLASH;
+      if (u < 0) line(g, A, B, 0.02); else { line(g, A, [A[0], Math.max(A[1] + 0.06, C[1] - 6 * u * u), A[2] + 0.1 * clamp(u / 0.2)], 0.02); if (u < 0.3) line(g, mix3(C, B, u * 3), mix3(C, B, Math.min(1, u * 3 + 0.22)), 0.02); }
+      // the spyglass: its eye end at his eye and the tube up toward the flag; then its middle in his fist, hanging down; it changes hands
+      const e = near(aside(mix3(c.mc.joint("neck"), c.mc.joint("crown"), 0.5), cam, -0.1), cam, 0.06), kl = smooth((t - LOW) / 0.26), kp = smooth((t - PASS) / 0.16);
+      const hand = near(mix3(palm(c.mc, "R"), palm(c.mc, "L"), kp), cam, 0.06), g0 = rad(152), ga = g0 + (rad(262) - g0) * kl;
+      const mid = mix3(aside(e, cam, 0.17 * Math.cos(g0), 0.17 * Math.sin(g0)), hand, kl), o = aside(mid, cam, -0.17 * Math.cos(ga), -0.17 * Math.sin(ga));
+      span(g, GLASS(), o, aside(o, cam, Math.cos(ga), Math.sin(ga)), cam, 0).scale.setScalar(0.85);
+      if (t > DRAW + 0.12) sword(g, 0, c.mc, cam, 0);
     } });
 }
 // 8. FIGHT BACK, AND A RED FLAG MIGHT FOLLOW, NO MERCY: on another ship, behind her captain. He shakes his fist and fires his pistol;
@@ -319,6 +326,7 @@ const RED = { a: cut("sight", "red"), b: cut("red", "answer"), up: 0 };
   cap.m.actAt(RED0 - 0.5, { armL: arm(150, 50, 180, 40), head: [40, -10, 0] }, 0.6, { in: 0.2, out: 0.14, antic: 0.3, over: 1.6, handL: "point", face: { brow: -1, lid: 0, smile: -0.4 } });
   const team: [string, Design, typeof mate][] = [["mate", MATE_D, mate], ["peeker", PIRATE2_D, peeker], ["cap", CAPTAIN_D, cap], ["pir", PIRATE_D, pir]];
   FIGHT.hit = a0 + FIRE;
+  let M0: V3 | null = null;      // where the muzzle is when the pistol goes off
   add({ id: "red", a: a0, b: b0, still: RED0 + 1.5, hide: ["merchant", "msail"],
     sounds: [{ t: FIRE, k: "blast", g: 0.8, p: 0.4, big: 0.6 }, { t: FIRE + 0.1, k: "scuff", g: 0.7, p: -0.3 }, { t: RED0 - 0.3, k: "rope", g: 0.9, p: 0.3 }, { t: RED0 + 0.1, k: "rope", g: 0.9, p: 0.3 }, { t: RED0 + 0.62, k: "flap", g: 1.3, p: 0.3 }, ...team.map(([, , q], i) => ({ t: q.t0 + 0.06, k: "shing", g: 0.9, p: -0.5 + 0.2 * i })), { t: NM - 0.1, k: "scuff", g: 0.6, p: 0.5 }, { t: NM + 0.52, k: "tap", g: 0.5, p: 0.5 }],
     cam: (_t, u) => V.push(0.12 * u), sun: { target: [-4.5, 1.5, 7], reach: 10 },
@@ -329,8 +337,8 @@ const RED = { a: cut("sight", "red"), b: cut("red", "answer"), up: 0 };
       if (t > RED0 - 0.05) fly(g, "red", 2.4 + (TOP - 2.4) * smooth((t - RED0) / 0.55), T, 0.3 + 0.7 * smooth((t - RED0 - 0.35) / 0.3));
       team.forEach(([n, , q], i) => { if (t > q.t0 + 0.05) sword(g, i, c[n], cam, 5 * Math.sin(t * 7 + i)); });
       // his pistol: held out, kicked up by the shot, then behind his back, where only we see it
-      const ps = hold(g, PISTOL(), c.stub, "L", cam, { turn: 0, d: 0.06 }), h: V3 = [ps.position.x, ps.position.y, ps.position.z];
-      gunSmoke(g, [h[0] + 0.45, h[1] + 0.12, h[2] - 0.05], 1, -0.35, t - FIRE, 0.75);
+      hold(g, PISTOL(), c.stub, "L", cam, { turn: 0, d: 0.06 }).scale.setScalar(0.66);
+      if (t >= FIRE) { M0 ??= near(aside(palmThen(on("stub", SHIPOWNER_D, stub, FIRE, MD, { seed: 8, blink: false }), "L", cam), cam, -0.3, 0.06), cam, -0.12); gunSmoke(g, M0, 1, -0.35, t - FIRE, 0.75); }
     } });
 }
 // 9. THE BLACK FLAG WAS MEANT TO WIN THE TREASURE WITHOUT A FIGHT: back on the first ship. In the middle of the picture two pirates
@@ -338,41 +346,41 @@ const RED = { a: cut("sight", "red"), b: cut("red", "answer"), up: 0 };
 //    weight, their blades still in their belts; the one behind yawns. Behind them the crew stand in a row at the rail, unhurt, with
 //    their hands up, each with his own trouble. The black flag flies over it all
 {
-  const a0 = cut("red", "answer"), b0 = cut("answer", "tarp"), len = b0 - a0, V = lens(-11.3, 1.6, 6.2, 0.995, 0.1, -4.5, 62), X = -7.1, HALF = 0.78, Z0 = 6.95, PACE = 0.19;
+  const a0 = cut("red", "answer"), b0 = cut("answer", "tarp"), len = b0 - a0, Z0 = 7.4, V = lens(-10.9, 1.25, Z0 - 0.43, 0.995, 0.1, 8, 62), X = -6.6, HALF = 0.78, PACE = 0.45;
   const who = (D: Design, h: number, d: number, l: number, off: number) => { const [x, z] = V.spot(d, l), m = mover(D, h, x, z, V.toward(x, z, off)); m.stand(8); return m; };
   // the two who carry: the one in front leans forward against the load, the one behind leans back; both with bent knees and short steps
   const lead = mover(PIRATE2_D, 1.9, X, Z0 - HALF, 180), rear = mover(MATE_D, 1.66, X, Z0 + HALF, 180);
-  for (const m of [lead, rear]) m.walk(mt(m, PACE * (len + 0.6)), { step: 0.16, tau: 0.6 });
+  lead.walk(mt(lead, PACE * (len + 0.6)), { step: 0.24, tau: 0.46 }); rear.walk(mt(rear, PACE * (len + 0.6)), { step: 0.24 * (1.9 / 1.66), tau: 0.46 });      // the same pace for the long legs and the short
   lead.actAt(-1, { lean: 12, py: -0.1, armL: arm(-24, 8, -34, 4), armR: arm(-24, 8, -34, 4), head: [0, -6, 0] }, 10, { in: 0.01, handL: "grip", handR: "grip", face: { brow: -1, lid: 0.3, mouth: 0.3, smile: -0.8 } });
   wag(lead, 0.2, 6, P({ lean: 15, py: -0.12 }), P({ lean: 9, py: -0.08 }), 1.2);
   rear.actAt(-1, { lean: -10, py: -0.12, armL: arm(34, 8, 44, 4), armR: arm(34, 8, 44, 4), head: [0, 0, 0] }, 10, { in: 0.01, handL: "grip", handR: "grip", face: { brow: -0.4, lid: 0.3, smile: -0.3 } });
   rear.actAt(1.3, { head: [0, -14, 6] }, 1.3, { in: 0.34, out: 0.3, antic: 0, over: 1.1, face: { lid: 0.95, brow: 0.7, mouth: 1 } });
   wag(rear, 0.5, 6, P({ lean: -12, py: -0.14 }), P({ lean: -8, py: -0.1 }), 1.2);
   // the crew along the rail: tired arms, a stiff chin, an itching nose, a yawn that is catching, a boy on his toes
-  const old = who(OLDHAND_D, 1.76, 5.5, -0.85, -6);
+  const old = who(OLDHAND_D, 1.76, 5.25, -1.75, -6);
   old.actAt(-1, { ...UP(0), head: [10, -2, 0] }, 10, { in: 0.01, ...OPEN, face: { lid: 0.4, brow: 0.2, smile: -0.5 } });
   old.actAt(0.5, { armL: arm(108, 40, 150, 20), armR: arm(104, 40, 146, 20), lean: 5 }, 0.95, { in: 0.7, out: 0.12, antic: 0, over: 1, ...OPEN, face: { lid: 0.7, brow: -0.2 } });
   old.actAt(2.1, { armL: arm(112, 40, 152, 20), armR: arm(108, 40, 150, 20), lean: 5 }, 0.9, { in: 0.6, out: 0.12, antic: 0, over: 1, ...OPEN, face: { lid: 0.7, brow: -0.2 } });
-  const mc = who(CUSTOMS_D, 1.9, 5.9, -0.42, -2);
+  const mc = who(CUSTOMS_D, 1.9, 5.4, -1.32, -2);
   mc.actAt(-1, { ...UP(2), head: [-30, -10, 0] }, 10, { in: 0.01, ...OPEN, face: { brow: -0.8, lid: 0.15, smile: -1, gaze: [-0.7, 0.5] } });
   mc.actAt(1.0, { head: [26, -8, 0] }, 9, { in: 1.8, antic: 0, over: 1, face: { brow: -0.8, lid: 0.15, smile: -1, gaze: [0.6, 0.5] } });
-  const cook = who(COOK_D, 1.58, 5.5, 0, 2), SCR = 1.5;
+  const cook = who(COOK_D, 1.58, 5.25, -0.9, 2), SCR = 1.5;
   cook.actAt(-1, { ...UP(4), head: [0, -4, 0] }, 10, { in: 0.01, ...OPEN, face: { brow: 0.4, lid: 0.1, smile: -0.4 } });
   cook.actAt(SCR - 0.5, { head: [0, -4, 0] }, 0.5, { in: 0.2, out: 0.1, antic: 0, over: 1, face: { brow: -0.6, lid: 0.5, smile: -0.6, gaze: [0, 0.6] } });
   cook.actAt(SCR, { armR: arm(52, 20, 158, -30), head: [0, 6, 0] }, 0.85, { in: 0.22, out: 0.1, antic: 0, over: 1.2, handR: "point", face: { lid: 0.8, brow: 0.6, smile: 0.5 } });
   wag(cook, SCR + 0.24, 0.5, P({ armR: arm(52, 20, 162, -30) }), P({ armR: arm(52, 20, 152, -26) }), 0.16, { handR: "point" });
   cook.actAt(SCR + 0.86, { armR: arm(158, 30, 186, 10), py: 0.03 }, 0.4, { in: 0.1, out: 0.2, antic: 0, over: 1.8, handR: "open", face: { wide: 1, lid: 0, brow: 1, smile: -0.8 } });
-  const sailor = who(SAILOR_D, 1.82, 5.9, 0.42, 6);
+  const sailor = who(SAILOR_D, 1.82, 5.4, -0.48, 6);
   sailor.actAt(-1, { ...UP(-3), head: [-20, 0, 0] }, 10, { in: 0.01, ...OPEN, face: { lid: 0.2, brow: 0.2, smile: -0.3, gaze: [-0.6, 0.4] } });
   sailor.actAt(2.5, { head: [-10, -14, 0], lean: -5 }, 1.1, { in: 0.34, out: 0.3, antic: 0, over: 1.1, face: { lid: 0.95, brow: 0.7, mouth: 1 } });
-  const boy = who(SHIPBOY_D, 1.28, 5.4, 0.86, 10);
+  const boy = who(SHIPBOY_D, 1.28, 5.2, -0.04, 10);
   boy.actAt(-1, { ...UP(4), head: [-30, -8, 0] }, 10, { in: 0.01, ...OPEN, face: { wide: 0.9, lid: 0, brow: 0.9, gaze: [-0.7, 0.4] } });
   wag(boy, 0.2, 5, P({ py: 0.05, head: [-30, -10, 0] }), P({ py: 0, head: [-10, -4, 0] }), 0.9);
   add({ id: "answer", a: a0, b: b0, still: 1.9, hide: ["msail"],
     sounds: [...lead.cues().filter((q) => q.k === "step" && q.t < len).map((q) => ({ t: q.t, k: "step", surface: "wood", g: 0.9, p: 0 })), ...rear.cues().filter((q) => q.k === "step" && q.t < len).map((q) => ({ t: q.t + 0.07, k: "step", surface: "wood", g: 0.8, p: 0.2 })),
       { t: 0.3, k: "coin", g: 0.6, p: 0.1 }, { t: 1.5, k: "coin", g: 0.6, p: 0 }, { t: 2.7, k: "coin", g: 0.6, p: -0.1 }, { t: 0.5, k: "creak", g: 0.6 }, { t: 2.3, k: "creak", g: 0.6 }, { t: 0.6, k: "flap", g: 0.6, p: 0.3 }, { t: 2.6, k: "flap", g: 0.6, p: 0.3 },
       ...swings(SCR + 0.24, 0.5, 0.16, len).map((t) => ({ t, k: "scratch", g: 0.5, p: 0 })), { t: SCR + 0.9, k: "whoosh", g: 0.5, p: 0 }],
-    cam: (_t, u) => V.push(0.18 * u), sun: { target: [-7.5, MD, 6.5], reach: 9 },
+    cam: (t) => lens(-10.9, 1.25, (on("lead", PIRATE2_D, lead, t, MD).at[2] + on("rear", MATE_D, rear, t, MD).at[2]) / 2 - 0.43, 0.995, 0.1, 8, 62).cam, sun: { target: [-7.5, MD, 6.5], reach: 10 },
     cast: (t) => [on("mc", CUSTOMS_D, mc, t, MD, { seed: 4 }), on("sailor", SAILOR_D, sailor, t, MD, { seed: 6 }), on("old", OLDHAND_D, old, t, MD, { seed: 2 }), on("cook", COOK_D, cook, t, MD, { seed: 9 }), on("boy", SHIPBOY_D, boy, t, MD, { seed: 8 }),
       on("rear", MATE_D, rear, t, MD, { seed: 7 }), on("lead", PIRATE2_D, lead, t, MD, { seed: 1 })],
     things: (g, c, t, T, cam) => {
@@ -386,76 +394,80 @@ const RED = { a: cut("sight", "red"), b: cut("red", "answer"), up: 0 };
       for (const [a, i] of [[c.lead, 3], [c.rear, 4]] as [Staged, number][]) { const h = a.joint("hipL"), k = put(g, CUTS[i](), near([h[0], h[1] + 0.04, h[2]], cam, 0.05)); k.rotation.set(0, rad(a.heading - 90 + 180), rad(-62)); k.scale.setScalar(0.62); }
     } });
 }
-// 10. ONE CREW HAD NO BLACK FLAG: on another sloop, alone on the sea. One of her men goes through the flag chest: a bottle, a boot,
-//     the chest itself held upside down and shaken. Nothing. He shrugs; his mate, holding the bare halyard, sees something off to the side
+// 10. ONE CREW HAD NO BLACK FLAG: on another sloop, alone on the sea. One of her men is bent over the flag chest; he lifts it by its
+//     two sides, turns it over in front of him and shakes it. Nothing. He sets it down and shrugs. His mate holds the bare halyard out
+//     at his side and sees something off to the side
 const TARP = { a: cut("answer", "tarp"), mid: at("tarp", /^so/) - 0.1, b: cut("tarp", "worked") };
 {
-  const a0 = TARP.a, b0 = TARP.mid, V = lens(-0.1, 1.3, 3.75, 0, -1, -6, 56), T1 = 0.22, T2 = 0.55, LIFT = 0.85, DOWN = 1.42, CX = -0.35, CZ = 1.0;
+  const a0 = TARP.a, b0 = TARP.mid, V = lens(-0.1, 1.3, 3.75, 0, -1, -6, 56), LIFT = 0.3, DOWN = 1.25, CX = -0.35, CZ = 1.0;
   const gun = mover(GUNNER_D, 1.9, CX - 0.02, CZ - 0.5, 4); gun.stand(8);
-  gun.actAt(-1, { lean: 40, armL: arm(50, 12, 44, 0), armR: arm(50, 12, 44, 0), head: [0, 10, 0] }, LIFT + 1, { in: 0.01, out: 0.1, handL: "open", handR: "open", face: { brow: -0.7, lid: 0.2, smile: -0.7, mouth: 0, gaze: [0, 0.9] } });
-  gun.actAt(T1 - 0.1, { armR: arm(120, 28, 160, 34), lean: 30 }, 0.3, { in: 0.1, out: 0.14, antic: 0, over: 1.6, handR: "open", face: { brow: -0.7, lid: 0.2, smile: -0.7, mouth: 0, gaze: [0, 0.9] } });
-  gun.actAt(T2 - 0.1, { armL: arm(120, 28, 160, 34), lean: 30 }, 0.3, { in: 0.1, out: 0.14, antic: 0, over: 1.6, handL: "open", face: { brow: -0.7, lid: 0.2, smile: -0.7, mouth: 0, gaze: [0, 0.9] } });
-  gun.actAt(LIFT, { lean: 4, armL: arm(84, 8, 98, -8), armR: arm(84, 8, 98, -8), head: [0, 14, 0] }, DOWN - LIFT + 0.04, { in: 0.2, out: 0.14, antic: 0.2, over: 1.3, handL: "grip", handR: "grip", face: { brow: 0.8, lid: 0, wide: 0.6, smile: -1, mouth: 0, gaze: [0, 0.9] } });
-  wag(gun, LIFT + 0.22, DOWN - LIFT - 0.26, P({ armL: arm(92, 8, 108, -8), armR: arm(76, 8, 88, -8) }), P({ armL: arm(76, 8, 88, -8), armR: arm(92, 8, 108, -8) }), 0.16, { handL: "grip", handR: "grip", face: { brow: 0.8, lid: 0, wide: 0.6, smile: -1, mouth: 0, gaze: [0, 0.9] } });
-  gun.actAt(DOWN + 0.08, { armL: arm(30, 34, 82, 46), armR: arm(30, 34, 82, 46), head: [-10, 0, 10], py: 0.02 }, 9, { in: 0.2, antic: 0.2, over: 1.6, handL: "open", handR: "open", face: { brow: -0.5, lid: 0.25, smile: -1, mouth: 0 } });
-  wag(gun, DOWN + 0.4, 2, P({ head: [14, 0, 10] }), P({ head: [-22, 0, 10] }), 0.4, { handL: "open", handR: "open", face: { brow: -0.5, lid: 0.25, smile: -1, mouth: 0 } });
+  const LOOK = { brow: -0.7, lid: 0.2, smile: -0.7, mouth: 0, gaze: [0, 0.9] as [number, number] }, SOUR = { brow: -0.5, lid: 0.25, smile: -1, mouth: 0 };
+  gun.actAt(-1, { lean: 34, armL: arm(54, 10, 46, -6), armR: arm(54, 10, 46, -6), head: [0, 12, 0] }, LIFT + 1, { in: 0.01, out: 0.1, handL: "open", handR: "open", face: LOOK });
+  gun.actAt(LIFT, { lean: 6, armL: arm(58, 8, 84, -10), armR: arm(58, 8, 84, -10), head: [0, 18, 0] }, DOWN - LIFT + 0.04, { in: 0.2, out: 0.14, antic: 0.2, over: 1.3, handL: "grip", handR: "grip", face: LOOK });
+  wag(gun, LIFT + 0.24, DOWN - LIFT - 0.3, P({ armL: arm(64, 8, 92, -10), armR: arm(52, 8, 76, -10) }), P({ armL: arm(52, 8, 76, -10), armR: arm(64, 8, 92, -10) }), 0.16, { handL: "grip", handR: "grip", face: LOOK });
+  gun.actAt(DOWN + 0.1, { armL: arm(30, 34, 82, 46), armR: arm(30, 34, 82, 46), head: [-10, 0, 10], py: 0.02 }, 9, { in: 0.2, antic: 0.2, over: 1.6, handL: "open", handR: "open", face: SOUR });
+  wag(gun, DOWN + 0.45, 2, P({ head: [14, 0, 10] }), P({ head: [-22, 0, 10] }), 0.4, { handL: "open", handR: "open", face: SOUR });
   const cor = mover(CORSAIR_D, 1.76, 0.76, -0.45, -8); cor.stand(8);
-  cor.actAt(-1, { armR: arm(70, 6, 150, -10), armL: arm(60, 6, 120, -10), head: [0, -34, 0] }, 10, { in: 0.01, handR: "grip", handL: "grip", face: { brow: 0.6, lid: 0, gaze: [0, -1] } });
-  wag(cor, 0.2, 0.9, P({ armR: arm(70, 6, 140, -10), armL: arm(60, 6, 110, -10) }), P({ armR: arm(74, 6, 158, -10), armL: arm(64, 6, 128, -10) }), 0.36, { handR: "grip", handL: "grip" });
-  cor.actAt(1.0, { head: [-20, 6, 0] }, 0.6, { in: 0.2, out: 0.14, antic: 0, over: 1.1, face: { brow: -0.4, lid: 0.2, smile: -0.5, gaze: [-0.7, 0.4] } });
-  cor.actAt(b0 - a0 - 0.5, { head: [64, 4, 0], armL: arm(84, 60, 92, 66) }, 9, { in: 0.16, antic: 0.3, over: 1.6, handL: "point", face: { brow: 1, lid: 0, wide: 0.7, smile: 0.7, gaze: [0.9, 0] } });
+  const WATCH = { brow: 0.6, lid: 0.1, smile: -0.2, gaze: [-0.6, 0.3] as [number, number] };
+  cor.actAt(-1, { armR: arm(112, 52, 162, 44), armL: arm(20, 10, 60, 0), head: [-24, -6, 0] }, 10, { in: 0.01, handR: "grip", handL: "fist", face: WATCH });
+  wag(cor, 0.2, 0.9, P({ armR: arm(112, 52, 156, 44) }), P({ armR: arm(112, 52, 168, 44) }), 0.36, { handR: "grip", handL: "fist", face: WATCH });
+  cor.actAt(b0 - a0 - 0.5, { head: [64, 4, 0], armL: arm(84, 60, 92, 66) }, 9, { in: 0.16, antic: 0.3, over: 1.6, handL: "point", handR: "grip", face: { brow: 1, lid: 0, wide: 0.7, smile: 0.7, gaze: [0.9, 0] } });
   add({ id: "empty", a: a0, b: b0, still: DOWN + 0.5, hide: ["merchant", "msail"],
-    sounds: [{ t: 0.05, k: "sack", g: 0.7 }, { t: T1, k: "whoosh", g: 0.5, p: 0.3 }, { t: T1 + 0.5, k: "ting", g: 0.6, p: 0.7 }, { t: T2, k: "whoosh", g: 0.5, p: -0.3 }, { t: T2 + 0.5, k: "thud", g: 0.6, p: -0.7 }, ...swings(LIFT + 0.22, DOWN - LIFT - 0.26, 0.16, b0 - a0).map((t) => ({ t, k: "rattle", g: 0.5, dur: 0.14 })), { t: DOWN + 0.05, k: "thunk", g: 0.9 }, { t: 0.3, k: "rope", g: 0.6, p: 0.4 }, { t: 0.2, k: "creak", g: 0.5 }],
+    sounds: [{ t: 0.05, k: "sack", g: 0.7 }, ...swings(LIFT + 0.24, DOWN - LIFT - 0.3, 0.16, b0 - a0).map((t) => ({ t, k: "rattle", g: 0.5, dur: 0.14 })), { t: DOWN + 0.05, k: "thunk", g: 0.9 }, { t: 0.3, k: "rope", g: 0.6, p: 0.4 }, { t: 0.2, k: "creak", g: 0.5 }],
     cam: (_t, u) => V.push(0.12 * u), sun: { target: [0, 0.5, 0.5], reach: 6 },
     cast: (t) => [on("cor", CORSAIR_D, cor, t, 0, { seed: 4 }), on("gun", GUNNER_D, gun, t, 0, { seed: 2 })],
     things: (g, c, t, _T, cam) => {
       put(g, CRATE(), [CX, 0, CZ]);
-      const l = c.gun.joint("tipL"), r = c.gun.joint("tipR"), k = smooth((t - LIFT) / 0.2) * (1 - smooth((t - DOWN + 0.06) / 0.12)), ch = put(g, CHEST_OPEN(), [CX + ((l[0] + r[0]) / 2 - CX) * k, 0.7 + ((l[1] + r[1]) / 2 + 0.02 - 0.7) * k, CZ + (near(l, cam, 0.1)[2] - CZ) * k], Math.PI / 2); ch.rotation.z = Math.PI * k;
-      const toss = (o: THREE.Object3D, t0: number, vx: number) => { const u = t - t0; if (u < 0 || u > 0.9) return; const q = put(g, o, [CX + 0.5 * Math.sign(vx) + vx * u, 0.95 + 3.6 * u - 4.9 * u * u, CZ + 0.2 + 0.3 * u]); q.rotation.z = u * 11 * Math.sign(vx); };
-      toss(BOTTLE(), T1, 1.9); toss(BOOT(), T2, -1.9);
-      line(g, near(c.cor.joint("tipR"), cam, 0.04), [SHIP.mast[0] + 0.1, 9.3, SHIP.mast[2]], 0.012);
+      // the chest: on the crate; lifted between his two hands and turned bottom up, so that it hangs open side down under them; set down again
+      const k = smooth((t - LIFT) / 0.22) * (1 - smooth((t - DOWN + 0.1) / 0.2)); carry(g, CHEST_OPEN(), c.gun, "R", c.gun, "L", cam, { d: 0.1 });
+      const ch = CHEST_OPEN(); ch.position.set(CX + (ch.position.x - CX) * k, 0.7 + (ch.position.y - 0.7) * k, CZ + (ch.position.z - CZ) * k); ch.rotation.set(0, ch.rotation.y * k + (Math.PI / 2) * (1 - k), (ch.rotation.z + Math.PI) * k);
+      line(g, near(palm(c.cor, "R"), cam, 0.04), [SHIP.mast[0] + 0.1, 9.3, SHIP.mast[2]], 0.012);
     } });
 }
 // 11. SO THEY HOISTED A DIRTY TARPAULIN AND FIRED A GUN: from the quarterdeck. The mate whips a filthy tarpaulin off a cask, bends it
-//     to the halyard and hauls it up the mast, dripping; forward, men in white shirts file up along the rail and try to look like a
-//     crew; the gunner puts his match to the gun
+//     to the halyard and hauls it up the mast, dripping. Men in white shirts come across the deck and fall in in a row behind the
+//     gun, facing us, each trying to look like one of a crew. In front the gunner, on one knee, puts his match to the gun; it goes
+//     off, and the row jumps to attention
 {
-  const a0 = TARP.mid, b0 = TARP.b, len = b0 - a0, V = lens(-1.4, 2.5, 5.05, -0.05, -1, -8.7, 62), OFF = 0.38, BEND = 0.75, HAUL = 0.95, UPT = 1.95, FIRE = at("tarp", /^fired/) - a0 + 0.14, MX = SHIP.mast[0], MZ = SHIP.mast[2];
+  const a0 = TARP.mid, b0 = TARP.b, len = b0 - a0, V = lens(-1.4, 2.5, 5.05, -0.05, -1, -8.7, 54), OFF = 0.38, BEND = 0.75, HAUL = 0.95, UPT = 1.95, FIRE = at("tarp", /^fired/) - a0 + 0.14, MX = SHIP.mast[0], MZ = SHIP.mast[2];
   const cor = mover(CORSAIR_D, 1.8, -0.55, -0.95, 30); cor.stand(8);
   cor.actAt(-1, { lean: 22, armL: arm(60, 30, 70, 30), armR: arm(64, 20, 76, 20), head: [-20, 8, 0] }, OFF + 1.1, { in: 0.01, out: 0.1, handL: "grip", handR: "grip", face: { brow: 1, smile: 0.8, lid: 0 } });
-  cor.actAt(OFF - 0.14, { lean: -8, armL: arm(150, 30, 180, 20), armR: arm(140, 20, 170, 10), twist: 20 }, 0.4, { in: 0.12, out: 0.2, antic: 0.3, over: 1.6, handL: "grip", handR: "grip" });
+  cor.actAt(OFF - 0.14, { lean: -8, armL: arm(150, 30, 180, 20), armR: arm(140, 20, 170, 10), twist: 20 }, 0.4, { in: 0.12, out: 0.2, antic: 0.3, over: 1.6, handL: "grip", handR: "grip", face: { brow: 1, smile: 0.8, lid: 0 } });
   cor.actAt(OFF + 0.3, { armL: arm(70, 0, 110, -20), armR: arm(70, 0, 120, -20), lean: 6, head: [10, 6, 0] }, HAUL - OFF - 0.3, { in: 0.16, out: 0.08, antic: 0, over: 1.2, handL: "grip", handR: "grip", face: { brow: -0.6, lid: 0.2, smile: 0.3 } });
   wag(cor, HAUL, UPT - HAUL, P({ armL: arm(150, 8, 176, -4), armR: arm(60, 8, 110, -4), lean: -4, head: [0, -30, 0] }), P({ armL: arm(60, 8, 110, -4), armR: arm(150, 8, 176, -4), lean: 6, head: [0, -30, 0] }), 0.34, { handL: "grip", handR: "grip", face: { brow: 0.6, lid: 0, gaze: [0, -1] } });
   cor.actAt(UPT + 0.02, { armL: arm(30, 30, 20, 50), armR: arm(30, 30, 20, 50), lean: -6, head: [0, -34, 0] }, 9, { in: 0.24, antic: 0, over: 1.3, handL: "fist", handR: "fist", face: { brow: 0.8, lid: 0, smile: 1, gaze: [0, -1] } });
   cor.actAt(FIRE + 0.02, "duck", 0.5, { in: 0.08, out: 0.26, antic: 0, over: 1.2 });
   const gun = mover(GUNNER_D, 1.9, -1.45, 1.0, 316); gun.stand(8);
-  gun.actAt(-1, { armR: arm(40, 20, 110, 0), armL: arm(20, 10, 50, 0), head: [-30, 0, 0] }, 10, { in: 0.01, handR: "grip", handL: "fist", face: { brow: 0.3, lid: 0.1, gaze: [-0.8, 0] } });
-  // he blows on his match, then looks round and up at the tarpaulin going aloft
-  gun.actAt(0.15, { armR: arm(50, 14, 138, -10), head: [-10, 10, 0] }, 0.75, { in: 0.2, out: 0.16, antic: 0, over: 1.2, handR: "grip", face: { brow: -0.4, lid: 0.4, mouth: 0.25 } });
-  gun.actAt(HAUL + 0.2, { twist: 24, head: [56, -24, 0], armL: arm(40, 30, 150, 10) }, UPT - HAUL + 0.1, { in: 0.24, out: 0.2, antic: 0.2, over: 1.3, handL: "open", face: { brow: 1, lid: 0, wide: 0.6, smile: 0.6, gaze: [0.6, -0.8] } });
-  gun.actAt(FIRE - 0.9, { head: [0, 10, 0], lean: 10 }, 0.9, { in: 0.24, out: 0.1, antic: 0, over: 1.1, face: { brow: -0.8, lid: 0.3 } });
-  wag(gun, FIRE - 0.85, 0.5, P({ armR: arm(44, 20, 128, 0) }), P({ armR: arm(44, 20, 112, 0) }), 0.2, { handR: "grip" });
-  gun.actAt(FIRE - 0.26, { armR: arm(74, 26, 60, 20), lean: 24, head: [0, 14, 0] }, 0.3, { in: 0.2, out: 0.05, antic: 0.2, over: 1.2, handR: "grip", face: { brow: -1, lid: 0.5 } });
-  gun.actAt(FIRE + 0.02, "recoil", 0.7, { in: 0.06, out: 0.3, antic: 0, over: 1.4 });
-  gun.actAt(FIRE + 0.8, { armL: arm(150, 34, 186, 10), head: [0, -8, 0] }, 9, { in: 0.2, antic: 0.2, over: 1.6, handL: "fist", face: { brow: 0.8, lid: 0, smile: 1, mouth: 0.6 } });
-  // the men in white shirts: they come aft along the port rail one behind the other and stop in a row, each trying to look fierce
+  const KEEN = { brow: -0.6, lid: 0.3, smile: 0.2 };
+  gun.actAt(-1, "kneel", 10, { in: 0.01 });
+  gun.actAt(-1, { armR: arm(40, 20, 110, 0), armL: arm(30, 10, 70, -10), head: [-30, 0, 0] }, 10, { in: 0.01, handR: "grip", handL: "fist", face: KEEN });
+  // he blows on his match, looks round and up at the tarpaulin going aloft, then puts the match to the touch hole
+  gun.actAt(0.15, { armR: arm(50, 14, 138, -10), head: [-10, 10, 0] }, 0.75, { in: 0.2, out: 0.16, antic: 0, over: 1.2, handR: "grip", handL: "fist", face: { brow: -0.4, lid: 0.4, mouth: 0.25 } });
+  gun.actAt(HAUL + 0.2, { head: [56, -24, 0] }, UPT - HAUL + 0.1, { in: 0.24, out: 0.2, antic: 0.2, over: 1.3, handR: "grip", handL: "fist", face: { brow: 1, lid: 0, wide: 0.6, smile: 0.6, gaze: [0.6, -0.8] } });
+  wag(gun, FIRE - 0.85, 0.5, P({ armR: arm(44, 20, 128, 0) }), P({ armR: arm(44, 20, 112, 0) }), 0.2, { handR: "grip", handL: "fist", face: { brow: -0.8, lid: 0.3 } });
+  gun.actAt(FIRE - 0.26, { armR: arm(74, 26, 60, 20), lean: 16, head: [0, 14, 0] }, 0.3, { in: 0.2, out: 0.05, antic: 0.2, over: 1.2, handR: "grip", handL: "fist", face: { brow: -1, lid: 0.5 } });
+  gun.actAt(FIRE + 0.02, { lean: -14, head: [0, -10, 0], armR: arm(110, 30, 150, 20) }, 0.6, { in: 0.06, out: 0.3, antic: 0, over: 1.4, handR: "grip", handL: "open", face: { wide: 1, lid: 0, brow: 1, mouth: 0.5 } });
+  gun.actAt(FIRE + 0.7, { armL: arm(150, 34, 186, 10), head: [0, -8, 0] }, 9, { in: 0.2, antic: 0.2, over: 1.6, handR: "grip", handL: "fist", face: { brow: 0.8, lid: 0, smile: 1, mouth: 0.6 } });
+  // the men in white shirts: they come across the deck one behind the other and fall in in a row behind the gun, facing us, each
+  // trying to look fierce; when the gun goes off they jump to attention
+  const FIERCE = { brow: -1, lid: 0.2, smile: -1 };
   const row = ([[SHIRT_A_D, 1.78], [SHIRT_B_D, 1.9], [SHIRT_C_D, 1.64], [SHIRT_D_D, 1.7], [SHIRT_E_D, 1.86]] as [Design, number][]).map(([D, h], i) => {
-    const z1 = -2.8 - 0.8 * i, m = mover(D, h, -1.15 + 0.28 * i, z1 - 2.0 - 0.3 * i, 0), t1 = 0.1 * i; m.stand(t1).walk(mt(m, 2.0 + 0.3 * i), { step: 0.62, tau: 0.38 }).turn(i % 2 ? -52 : -64, 0.3).stand(8);
-    const there = t1 + (2.0 + 0.3 * i) / 1.2 + 0.5;
-    if (i === 0) m.actAt(there + 0.2, { armL: arm(30, 50, -20, 60), armR: arm(30, 50, -20, 60), lean: -6 }, 9, { in: 0.3, antic: 0, over: 1.3, handL: "fist", handR: "fist", face: { brow: -1, lid: 0.2, smile: -1 } });
-    if (i === 1) { m.actAt(there + 0.1, { armR: arm(150, 30, 100, 60) }, 9, { in: 0.3, antic: 0.2, over: 1.5, handR: "fist", face: { brow: -1, lid: 0, mouth: 0.5 } }); wag(m, there + 0.4, 3, P({ armR: arm(156, 30, 110, 50) }), P({ armR: arm(144, 30, 90, 70) }), 0.4, { handR: "fist" }); }
-    if (i === 2) m.actAt(there + 0.2, { armL: arm(40, 0, 100, -60), armR: arm(40, 0, 100, -60), lean: -8, head: [0, -10, 0] }, 9, { in: 0.3, antic: 0, over: 1.2, handL: "fist", handR: "fist", face: { brow: -1, lid: 0.3, smile: -0.8 } });
-    if (i === 3) { m.actAt(there + 0.2, { armR: arm(160, 30, 190, 30) }, 0.7, { in: 0.2, out: 0.1, antic: 0, over: 1.3, handR: "open", face: { smile: 1, brow: 0.8, lid: 0 } }); wag(m, there + 0.3, 0.5, P({ armR: arm(164, 20, 196, 4) }), P({ armR: arm(156, 40, 178, 50) }), 0.3, { handR: "open" }); m.actAt(there + 0.95, { armR: arm(30, 50, -20, 60), armL: arm(30, 50, -20, 60) }, 9, { in: 0.2, antic: 0, over: 1.4, handL: "fist", handR: "fist", face: { brow: -1, lid: 0.2, smile: -1 } }); }
-    if (i === 4) m.actAt(there + 0.3, { armL: arm(150, 34, 178, 16), lean: -4 }, 9, { in: 0.3, antic: 0.2, over: 1.5, handL: "fist", face: { brow: -1, lid: 0, mouth: 0.6 } });
-    m.actAt(FIRE + 0.04 + 0.03 * i, "duck", 0.5, { in: 0.08, out: 0.26, antic: 0, over: 1.2 });
+    const x1 = -2.5 + 0.42 * i, z1 = -0.5, m = mover(D, h, x1 + 2.6, z1, 270), t1 = 0.05; m.stand(t1).walk(mt(m, 2.6), { step: 0.62 * (1.78 / h), tau: 0.38 }).turn(90, 0.3).stand(8);      // in file from the starboard side, one pace for the tall and the short
+    const there = t1 + 2.6 / 1.2 + 0.45;
+    if (i === 0) m.actAt(there, { armL: arm(30, 50, -20, 60), armR: arm(30, 50, -20, 60), lean: -6 }, FIRE - there + 0.1, { in: 0.3, out: 0.06, antic: 0, over: 1.3, handL: "fist", handR: "fist", face: FIERCE });
+    if (i === 1) m.actAt(there, { armR: arm(150, 30, 100, 60) }, FIRE - there + 0.1, { in: 0.3, out: 0.06, antic: 0.2, over: 1.5, handR: "fist", handL: "fist", face: { brow: -1, lid: 0, mouth: 0.5, smile: -0.6 } });
+    if (i === 2) m.actAt(there, { armL: arm(40, 0, 100, -60), armR: arm(40, 0, 100, -60), lean: -8, head: [0, -10, 0] }, FIRE - there + 0.1, { in: 0.3, out: 0.06, antic: 0, over: 1.2, handL: "fist", handR: "fist", face: { brow: -1, lid: 0.3, smile: -0.8 } });
+    if (i === 3) m.actAt(there, { armR: arm(30, 50, -20, 60), armL: arm(30, 50, -20, 60) }, FIRE - there + 0.1, { in: 0.2, out: 0.06, antic: 0, over: 1.4, handL: "fist", handR: "fist", face: FIERCE });
+    if (i === 4) m.actAt(there, { armL: arm(150, 34, 178, 16), lean: -4 }, FIRE - there + 0.1, { in: 0.3, out: 0.06, antic: 0.2, over: 1.5, handL: "fist", handR: "fist", face: { brow: -1, lid: 0, mouth: 0.6, smile: -0.6 } });
+    m.actAt(FIRE + 0.04 + 0.03 * i, { py: 0.04, lean: -5, armL: arm(8, 6, 10, 2), armR: arm(8, 6, 10, 2), head: [0, -8, 0] }, 9, { in: 0.07, antic: 0, over: 1.8, handL: "fist", handR: "fist", face: { wide: 1, lid: 0, brow: 1, smile: -0.6 } });
     return { D, m, name: "shirt" + i }; });
   const tarpY = (t: number) => 1.15 + 2.45 * smooth((t - HAUL) / (UPT - HAUL)), BX = -0.15, BZ = -1.15;
   GUN.hit = a0 + FIRE;
   add({ id: "hoist", a: a0, b: b0, still: UPT + 0.25, hide: ["merchant", "msail"],
     sounds: [{ t: OFF - 0.1, k: "tear", g: 0.8, p: 0.4, dur: 0.4 }, { t: OFF + 0.1, k: "flap", g: 0.8, p: 0.4 }, ...swings(HAUL, UPT - HAUL, 0.17, len).map((t) => ({ t, k: "rope", g: 0.8, p: 0.3 })), { t: UPT + 0.05, k: "flap", g: 1.1, p: 0.3 }, { t: UPT + 0.5, k: "drip", g: 0.7, p: 0.3 }, { t: UPT + 0.9, k: "drip", g: 0.7, p: 0.3 },
-      ...row[0].m.cues().filter((q) => q.k === "step" && q.t < 2.6).map((q) => ({ t: q.t, k: "step", surface: "wood", g: 0.7, p: -0.3 })), { t: FIRE, k: "blast", g: 1.3, p: -0.5, big: 1.5 }, { t: FIRE + 0.3, k: "creak", g: 0.8 }],
-    cam: (_t, u) => V.push(0.2 * u), sun: { target: [-0.5, 0.5, -1.5], reach: 10 },
-    cast: (t) => [...row.map((q, i) => on(q.name, q.D, q.m, t, 0, { seed: i + 1 })), { ...on("gun", GUNNER_D, gun, t, 0, { seed: 2, blink: false }), noShade: true }, on("cor", CORSAIR_D, cor, t, 0, { seed: 4 })],
+      ...row[0].m.cues().filter((q) => q.k === "step" && q.t < 2.6).map((q) => ({ t: q.t, k: "step", surface: "wood", g: 0.7, p: 0.2 })), { t: FIRE, k: "blast", g: 1.3, p: -0.5, big: 1.5 }, { t: FIRE + 0.08, k: "scuff", g: 0.8, p: 0.2 }, { t: FIRE + 0.3, k: "creak", g: 0.8 }],
+    cam: (_t, u) => V.push(0.2 * u), sun: { target: [-0.5, 0.5, -0.5], reach: 10 },
+    cast: (t) => [on("cor", CORSAIR_D, cor, t, 0, { seed: 4 }), ...row.map((q, i) => ({ ...on(q.name, q.D, q.m, t, 0, { seed: i + 1 }), noShade: true })), { ...on("gun", GUNNER_D, gun, t, 0, { seed: 2, blink: false }), noShade: true }],
     things: (g, c, t, T, cam) => {
       put(g, TARBARREL(), [BX, 0, BZ]);
       // the tarpaulin: over the cask, whipped off, bent to the halyard, up the mast

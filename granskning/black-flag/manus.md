@@ -1,6 +1,6 @@
 # Short 3: Why did pirates fly a black flag?
 
-FÄRDIG VIDEO, VERSION 1 (skiss version 2 är GODKÄND; de tre punkterna därifrån är rättade, se sist; manus version 2 med granskningens ändringar; rösten är oförändrad, 30,8 s; filmen är 32,2 s och har 12 bilder; vad som är ändrat sedan skiss version 1 står sist, under "Skiss version 2"). Ingen skylt i bild: noten om att scenerna är dramatiserade och källan står i beskrivningen (`leverans/black-flag/text.md`). Två skepp till havs, skrämmande med rolig vändning, SANT. Beräknad längd 32-34 sekunder, 11 bilder, 90 ord, Kokoro bm_george. Fråga nr 21 i `granskning/fragor.md`. Tiderna nedan är uppskattade efter plankfilmens takt (83 ord på 30,3 s); de riktiga tiderna kommer ur rösten.
+FÄRDIG VIDEO, VERSION 2 (version 1 fick GÖR OM med åtta punkter, rättade sist under "Färdig video version 2"; skiss version 2 är GODKÄND; de tre punkterna därifrån är rättade, se sist; manus version 2 med granskningens ändringar; rösten är oförändrad, 30,8 s; filmen är 32,2 s och har 12 bilder; vad som är ändrat sedan skiss version 1 står sist, under "Skiss version 2"). Ingen skylt i bild: noten om att scenerna är dramatiserade och källan står i beskrivningen (`leverans/black-flag/text.md`). Två skepp till havs, skrämmande med rolig vändning, SANT. Beräknad längd 32-34 sekunder, 11 bilder, 90 ord, Kokoro bm_george. Fråga nr 21 i `granskning/fragor.md`. Tiderna nedan är uppskattade efter plankfilmens takt (83 ord på 30,3 s); de riktiga tiderna kommer ur rösten.
 
 Planerad för onsdag 18 november. Filmens id i motorn: `black-flag`.
 
@@ -137,3 +137,16 @@ Min egen läsning av den första renderingen (två rutor per sekund ur den lever
 - **Bild 12:** en man i den bakre raden skymdes av de främres armar. De två främre lägger händerna på huvudet, de två bakre står ett steg högre med armarna uppe. En tunna står vid slupens sida i nederkanten.
 
 Kontrollen `short_qa` flaggar tom nederdel i bild 3, 6, 8 och 12 och vitt däck i bild 1, 3 och 7. Bild 3 och 8 är oförändrade från den godkända skissen (skyddstyget och skrovet under undertexten). I bild 6 ligger handelskaptenens hatt och axel där, i bild 12 slupens sida med tunnan.
+
+## Färdig video version 2: granskningens åtta punkter på version 1 (omgång 1 av 4, GÖR OM)
+Röst, text och klipptider är oförändrade.
+1. **Bild 7, kikaren:** kikarens ögonände ligger vid hans öga och tuben pekar snett upp mot flaggan, med handen om tuben. Han sänker den i sluten näve (tubens mitt i handen), sväljer, byter den till vänster hand, drar huggaren från höften, lyfter den och hugger av fallet som är belagt vid relingen bredvid honom: repets övre ände far upp mot rån, den nedre faller, seglet kommer ned, och besättningen sträcker upp händerna. Fallet går lodrätt bredvid honom i bild, inte tvärs över kroppen. Skeppspojken står framför sjömannen på andra sidan.
+2. **Bild 8, pistolen:** pistolen är två tredjedelar så stor, med kolven i handen. Flamman och röken sitter vid mynningen, på den plats där mynningen var när skottet gick, och följer inte med handen efteråt.
+3. **Bild 10, den tomma kistan:** han står böjd över kistan, lyfter den i sidorna framför magen, vänder och skakar den, ställer ned den och rycker på axlarna; ansiktet är fritt hela tiden. Flaskan och stöveln som kastades är borta (det var den viftningen som inte gick att förstå). Mannen med fallet håller det ut åt sidan i höjd med axeln, så att linan går bredvid huvudet.
+4. **Bild 6, "show mercy":** tagen från slupens akterdäck förbi de två och ut över vattnet. Piratkaptenen står hel i bild, öppen mot oss med huvudet och armen mot det andra skeppet; hans man står bredvid. Handelskaptenen syns som en hel liten person vid sin reling på andra sidan vattnet, med armarna i kors; han lutar sig fram och ser sig sedan om mot sina män.
+5. **Bild 3, "an offer":** kameran står högre och ser ned över tyget, så att de tre syns från midjan och fyller bilden.
+6. **Bild 9, svaret:** kameran står lågt innanför handelsskeppets reling och följer med bärarna, som går en tydlig sträcka (omkring 1,6 m) med korta tunga steg i samma takt; båda är hela i bild till klippet. Däcket är en fjärdedel av bilden nedtill.
+7. **Bild 11, kanonen:** männen i vita skjortor kommer in på rad tvärs över däcket och ställer upp sig bakom kanonen, vända mot oss, var och en med sin min; när kanonen smäller rycker de upp i givakt. Kanonjären står på ett knä framför kanonen, så att raden syns över honom. Presenningen går upp bredvid dem.
+8. **Bild 1:** kameran ser något nedåt, så att hinken hänger över frågetexten i kockens hand; den slängs ett steg framåt när händerna far upp och landar och välter nedanför texten.
+
+Smått: raden om thumbnail 2 i text.md är omskriven (pistolen sänkt vid sidan), raden om thumbnail 3 nämner raden av skjortor.

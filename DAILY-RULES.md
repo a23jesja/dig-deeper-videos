@@ -215,6 +215,30 @@ An object in a hand must look held and used the way a person would, in every fra
 - **Check by script:** for every frame where a prop is held, the grip point lies inside the hand and the working
   end points within the allowed angle for that use pose. The reviewer looks at every held object in close-up.
 
+## The hook lab (Jesper 2026-11-17): most of the polish goes into the first five seconds
+The numbers so far: half the viewers swipe away in the first second, and a third of those who stay leave in the
+first quarter of the video. Those who get past it stay to the end. So the first five seconds get most of the work.
+- **Build the opening first.** Before the rest of the Short, build seconds 0-5 in three clearly different
+  versions, for example: (a) the strangest moment already happening, (b) a shocking statement spoken over action,
+  (c) Sir Digsworth in trouble with the question on screen. Render each as a small clip. The reviewer picks the
+  strongest by the checks below; when in doubt Jesper picks. Only then is the rest built.
+- **Frame one:** something is already moving (character and camera), the strange thing is big and in the middle,
+  the voice and a sound hit start on frame one, no fade-in, no music intro, no logo. Text at most six words and the
+  same words as the voice.
+- **The first spoken words** are the claim or the question, never a year, a place or a name. "Rome taxed pee."
+  is better than "In 70 AD, Emperor Vespasian...".
+- **Seconds 1-5:** a new picture every 1.5-2.5 seconds, each adding something: the stakes, a reaction, the
+  problem. Give a reason to stay ("the answer is worse"), and keep that promise in the last third.
+- **Seconds 5-25:** a small surprise or turn about every five seconds ("but then", "except"). No stretch of more
+  than five seconds where only the voice moves the story on.
+- **The end leads back to the start** so the Short can loop, and the last word does not end on a pause.
+- **The first five seconds are reviewed at ten frames per second** and at phone size, with and without sound.
+  Any flaw there (a prop held wrong, a stiff pose, an unreadable word, a cut-off figure) fails the Short, even if
+  the same flaw would pass later in the video.
+- **Learn from every Short.** Record in GROWTH.md for each one: which opening type it used, "stayed and watched"
+  in percent, and the second where the retention curve drops most. After ten Shorts, the opening type with the best
+  numbers becomes the default and this section is updated.
+
 ## The first second of every Short (hard rule)
 - Frame one shows the most striking moment of the story: one big subject filling the picture, already moving.
 - The hook is on screen as text while the voice says it. No intro, no year, no establishing shot first.

@@ -347,19 +347,32 @@ export const fiddlePlay = (into: THREE.Group, fid: THREE.Object3D, bow: THREE.Ob
 const citharaAt = (j: (n: string) => V3, cam: Cam, heading: number, h: number, out = 0.12) => {
   const side = leftward(j, cam, heading), tilt = -side * 0.21, base = aside(mix3(j("pelvis"), j("neck"), -0.06), cam, side * out), w = h * 0.62;
   const P = (ix: number, iy: number) => aside(base, cam, ix * Math.cos(tilt) - iy * Math.sin(tilt), ix * Math.sin(tilt) + iy * Math.cos(tilt));
-  return { side, tilt, base, arm: P(side * w * 0.37, h * 0.6), strings: P(-side * w * 0.04, h * 0.56) };
+  // the left hand on the middle of the outer upright arm (props.ts cithara: the arms stand at 0.42 of the width from the middle), clear
+  // of the strings, which end at 0.26 of it
+  return { side, tilt, base, arm: P(side * w * 0.42, h * 0.6), armLow: P(side * w * 0.42, h * 0.36), armHigh: P(side * w * 0.45, h * 0.86), strings: P(-side * w * 0.04, h * 0.56) };
 };
 /** where a figure's cithara stands as he holds it: its foot, its tilt, and a point on it (ix across, iy up, in metres) */
-export const citharaPlace = (a: Staged, cam: Cam, h = 0.62, out = 0.12) => { const C = citharaAt(J(a), cam, a.heading, h, out); return { base: C.base, tilt: C.tilt, side: C.side }; };
+export const citharaPlace = (a: Staged, cam: Cam, h = 0.62, out = 0.12) => { const C = inLeft(a, cam, citharaAt(J(a), cam, a.heading, h, out)); return { base: C.base, tilt: C.tilt, side: C.side }; };
+/** a held cithara goes where the hand that holds it goes: moved so that its outer arm runs through the middle of his left fist (the
+ *  pose puts the hand there; when he sways or leans the instrument follows the hand, not his chest). It moves across the picture at
+ *  its own depth, to where the lens sees the hand. `moved` = how far it had to go */
+const inLeft = <C extends { base: V3; arm: V3; armLow: V3; armHigh: V3; strings: V3 }>(a: Staged, cam: Cam, C: C): C & { moved: number } => {
+  const p = palm(a, "L"), c = cam.pos, r = Math.hypot(C.arm[0] - c[0], C.arm[1] - c[1], C.arm[2] - c[2]) / (Math.hypot(p[0] - c[0], p[1] - c[1], p[2] - c[2]) || 1);
+  const d: V3 = [c[0] + (p[0] - c[0]) * r - C.arm[0], c[1] + (p[1] - c[1]) * r - C.arm[1], c[2] + (p[2] - c[2]) * r - C.arm[2]], m = (q: V3): V3 => [q[0] + d[0], q[1] + d[1], q[2] + d[2]];
+  return { ...C, base: m(C.base), arm: m(C.arm), armLow: m(C.armLow), armHigh: m(C.armHigh), strings: m(C.strings), moved: Math.hypot(...d) }; };
 /** the right arm of a figure whose finger is on string i (0..6) of the cithara he holds */
 export const pluckPose = (s: Stand, i: number, h = 0.62, out = 0.12): Partial<Pose> => { const C = citharaAt(bare(s), s.cam, s.heading, h, out), w = h * 0.62, x = (i - 3) * w * 0.085, y = h * 0.56;
-  return reach(s, "R", aside(C.base, s.cam, x * Math.cos(C.tilt) - y * Math.sin(C.tilt), x * Math.sin(C.tilt) + y * Math.cos(C.tilt))); };
-export const citharaPose = (s: Stand, play: boolean, h = 0.62, out = 0.12): Partial<Pose> => { const C = citharaAt(bare(s), s.cam, s.heading, h, out); return { ...reach(s, "L", C.arm), ...(play ? reach(s, "R", C.strings) : {}) } as Partial<Pose>; };
+  return reach(s, "R", seenOn(s, aside(C.base, s.cam, x * Math.cos(C.tilt) - y * Math.sin(C.tilt), x * Math.sin(C.tilt) + y * Math.cos(C.tilt)))); };
+export const citharaPose = (s: Stand, play: boolean, h = 0.62, out = 0.12): Partial<Pose> => { const C = citharaAt(bare(s), s.cam, s.heading, h, out); return { ...reach(s, "L", seenOn(s, C.arm)), ...(play ? reach(s, "R", seenOn(s, C.strings)) : {}) } as Partial<Pose>; };
+/** where the lens sees a point on the plane of a figure's card (along the ray from the lens): the cithara stands out at his side, off
+ *  his card, and a lens close below or to the side sees it well away from where it would fall straight onto the card */
+const seenOn = (s: Stand, q: V3): V3 => { const c = s.cam.pos, az = Math.atan2(c[0] - s.at[0], c[2] - s.at[2]), nx = Math.sin(az), nz = Math.cos(az), dx = q[0] - c[0], dy = q[1] - c[1], dz = q[2] - c[2], den = dx * nx + dz * nz;
+  const k = Math.abs(den) < 1e-6 ? 1 : ((s.at[0] - c[0]) * nx + (s.at[2] - c[2]) * nz) / den; return [c[0] + dx * k, c[1] + dy * k, c[2] + dz * k]; };
 export const citharaHold = (into: THREE.Group, o: THREE.Object3D, a: Staged, cam: Cam, play: boolean, h = 0.62, opt: { d?: number; /** how far out at his side it stands (metres) */ out?: number } = {}) => {
-  const C = citharaAt(J(a), cam, a.heading, h, opt.out), d = opt.d ?? 0.06; span(into, o, C.base, aside(C.base, cam, Math.cos(C.tilt), Math.sin(C.tilt)), cam, d); fingers(into, a, ["L"], cam, d + 0.09);
+  const C = inLeft(a, cam, citharaAt(J(a), cam, a.heading, h, opt.out)), d = opt.d ?? 0.06; span(into, o, C.base, aside(C.base, cam, Math.cos(C.tilt), Math.sin(C.tilt)), cam, d); fingers(into, a, ["L"], cam, d + 0.22);      // the fist round the arm, all of it in front of the frame and the strings
   if (play) fingers(into, a, ["R"], cam, d + 0.22, true);      // the playing hand lies on the strings, all of it well in front of them (a lens close below sees the planes slant)
-  if (AUDIT.on) { const P2 = pic(cam), offL = Math.hypot(...P2(C.arm, palm(a, "L"))), offR = Math.hypot(...P2(C.strings, palm(a, "R")));
-    AUDIT.rows.push({ id: o.uuid, prop: "cithara", use: play ? "play" : "hold", holder: `${a.name} L`, err: offL > fistR(a, "L", cam) + h * 0.62 * 0.05 + 0.03 ? `the left hand is ${(offL * 100).toFixed(0)} cm from the cithara's arm`      /* the fist touches the arm when it is within its own radius and half the arm's width of the arm's middle */ : play && offR > 0.16 ? `the right hand is ${(offR * 100).toFixed(0)} cm from the strings` : null, at: mix3(C.arm, C.strings, 0.5) }); }
+  if (AUDIT.on) { const P2 = pic(cam), offR = Math.hypot(...P2(C.strings, palm(a, "R")));
+    AUDIT.rows.push({ id: o.uuid, prop: "cithara", use: play ? "play" : "hold", holder: `${a.name} L`, err: C.moved > 0.06 ? `the cithara has to move ${(C.moved * 100).toFixed(0)} cm across the picture to meet his left hand (the pose does not put the hand on its arm)` : play && offR > 0.16 ? `the right hand is ${(offR * 100).toFixed(0)} cm from the strings` : null, at: mix3(C.arm, C.strings, 0.5) }); }
   return o;
 };
 /** A rope hauled hand over hand: it comes down from `top` through his upper hand and his lower hand, and its slack end falls to the

@@ -21,7 +21,9 @@ import lines from "../../../voice/nero-fiddle/lines.json";
 const W = words as Word[], L = Object.fromEntries((lines as { id: string; a: number; b: number }[]).map((l) => [l.id, l]));
 const cut = (a: string, b: string) => (L[a].b + L[b].a) / 2;       // a cut falls in the pause between two lines
 /** the last shot ends soon after the last word; a short coda then leads back into the first frame, so that the film loops */
-const END13 = L.cithara.b + 1.3, CODA = 0.85, END = END13 + CODA;
+/** the end: the string snaps right after the last word, he stares at it, and the coda leads into the first frame: from the end of the
+ *  last word to "Did" 1.44 s (a test of a short silence before the loop, GROWTH.md) */
+const LAST = W[W.length - 1].b, END13 = LAST + 0.6, CODA = 0.84, END = END13 + CODA;
 /** when a word of a line is spoken (film seconds) */
 const at = (line: string, re: RegExp) => W.find((w) => w.line === line && re.test(w.w))!.a;
 const P = (o: Partial<Pose>) => o;
@@ -224,7 +226,8 @@ const SIGN = { a: cut("notso", "away") + 0.04, b: cut("gardens", "six") };
   const lane = (D: Design, h: number, x: number, back: number, pace = 0.3, veer = -32) => { const m = mover(D, h, q.x + x, q.z - back, 0), o = { step: pace * 2, tau: 0.4 }; m.walk(mt(m, back + 1.0), { ...o, keep: true }).turn(veer, 0.3).walk(mt(m, 7), o); return m; };
   const SAD = { brow: 0.8, lid: 0.1, smile: -0.7 };
   const mother = lane(ROMAN_WOMAN_D, 1.66, -0.45, -0.4, 0.3, -26); mother.actAt(-1, { armL: arm(24, 26, 34, 30), armR: arm(44, 8, 100, -24), head: [24, 6, 0] }, 10, { in: 0.01, handL: "grip", handR: "grip", face: { ...SAD, gaze: [0.4, 0.5] } });
-  const girl = lane(GIRL_D, 1.12, 0.13, -0.4, 0.44, -26); girl.actAt(-1, { armR: arm(130, 30, 160, 20), head: [50, -14, 0] }, 10, { in: 0.01, handR: "grip", face: { wide: 1, lid: 0, brow: 1, mouth: 0.4, smile: -0.3 } });
+  // a girl of about twelve (her face well above the captions as she comes nearer; a smaller child walked with her face behind them)
+  const girl = lane(GIRL_D, 1.5, 0.13, -0.4, 0.44, -26); girl.actAt(-1, { armR: arm(50, 30, 64, 26), head: [50, -14, 0] }, 10, { in: 0.01, handR: "grip", face: { wide: 1, lid: 0, brow: 1, mouth: 0.4, smile: -0.3 } });
   const cough = lane(CITIZEN_D, 1.74, 0.0, 2.3, 0.3, -10); cough.actAt(-1, { lean: 14, armR: arm(60, 10, 150, -30), head: [0, 14, 0] }, 10, { in: 0.01, handR: "fist", face: { lid: 0.8, brow: -0.8, mouth: 0.5, smile: -0.8 } });
   wag(cough, 1.0, 6, P({ lean: 22, py: -0.03 }), P({ lean: 10 }), 0.42, { handR: "fist", face: { lid: 0.8, brow: -0.8, mouth: 0.5, smile: -0.8 } });
   const woman2 = lane(ROMAN_WOMAN2_D, 1.72, -0.6, 4.1, 0.3, -30); woman2.actAt(-1, { armL: arm(46, 6, 96, -34), armR: arm(46, 6, 96, -34), head: [30, 2, 0] }, 10, { in: 0.01, handL: "grip", handR: "grip", face: { ...SAD, gaze: [0.6, 0] } });
@@ -382,7 +385,7 @@ const LATER = at("answer", /^The/) - 0.14;
 }
 // 11. HIS INSTRUMENT WAS THE CITHARA: seen a quarter round from in front of him. He looks up with his hands out; a cithara comes down
 //     out of the night into them; his knees give under it, he hugs it to him and beams
-const LYRE = at("cithara", /^kind/) - 0.32, SEVEN = at("cithara", /^seven/), WIDE = L.cithara.b - 0.45;
+const LYRE = at("cithara", /^kind/) - 0.32, SEVEN = at("cithara", /^seven/), WIDE = at("cithara", /^strings/);
 {
   const a0 = cut("answer", "cithara"), b0 = LYRE, V = lens(NX - 1.1, 1.4, NZ - 2.2, 0.447, 0.894, -3, 48), CATCH = 0.55;
   const nero = mover(NERO_D, 1.74, NX, NZ, V.toward(NX, NZ, 32)); nero.stand(9);
@@ -430,19 +433,20 @@ const LYRE = at("cithara", /^kind/) - 0.32, SEVEN = at("cithara", /^seven/), WID
 // 13. THE END: the two of them from the side of the street, the burning house behind. Nero sings at the top of his voice and sweeps the
 //     strings; behind him Sir Digsworth puts his fingers in his ears; the seventh string snaps, and the emperor looks at it
 {
-  const a0 = WIDE, V = lens(1.99, 1.45, -0.22, -0.62, 0.78, -2, 58), SNAP = END13 - a0 - 0.75;
+  const a0 = WIDE, V = lens(1.99, 1.45, -0.22, -0.62, 0.78, -2, 58), SNAP = LAST + 0.06 - a0;
   const nero = mover(NERO_D, 1.74, NX, NZ, V.toward(NX, NZ, 22)); nero.stand(9);
   const SING = { lid: 0.9, brow: 1, mouth: 1 }, S13: Stand = { D: NERO_D, at: [NX, 0, NZ], heading: V.toward(NX, NZ, 22), h: 1.74, cam: V.cam, pose: { lean: -6 } };
   const HOLD13 = (citharaPose(S13, false) as { armL: [[number, number], [number, number]] }).armL;
   nero.actAt(-1, { armL: HOLD13, ...pluckPose(S13, 3), head: [0, -20, 6], lean: -6 }, 10, { in: 0.01, handL: "grip", handR: "open", face: SING });
   // he sweeps his open hand across the strings, from the far side to the near and back
   wag(nero, 0, SNAP - 0.05, P({ ...pluckPose(S13, 1), roll: 4, head: [8, -24, 8] }), P({ ...pluckPose(S13, 5), roll: -4, head: [-8, -16, -4] }), 0.42, { handL: "grip", handR: "open", face: SING });
-  nero.actAt(SNAP + 0.04, { py: -0.03, head: [10, 26, 0], armL: HOLD13, ...pluckPose(S13, 4), lean: 6 }, 9, { in: 0.1, antic: 0, over: 1.5, handL: "grip", handR: "open", face: { lid: 0, wide: 0.8, brow: -1, smile: -1, gaze: [0.2, 0.9] } });
+  const S13b: Stand = { ...S13, pose: { lean: 6, py: -0.03 } }, HOLD13b = (citharaPose(S13b, false) as { armL: [[number, number], [number, number]] }).armL;      // the hold solved for the way he leans back when it snaps
+  nero.actAt(SNAP + 0.04, { py: -0.03, head: [10, 26, 0], armL: HOLD13b, ...pluckPose(S13b, 4), lean: 6 }, 9, { in: 0.1, antic: 0, over: 1.5, handL: "grip", handR: "open", face: { lid: 0, wide: 0.8, brow: -1, smile: -1, gaze: [0.2, 0.9] } });
   const sir = mover(SIR_D, 1.8, SX - 0.06, SZ, V.toward(SX - 0.06, SZ, -14)); sir.stand(9);
   const PAIN = { lid: 0.9, brow: -1, smile: -1 };
   sir.actAt(-1, { armL: arm(20, 10, 50, 0), armR: arm(20, 10, 50, 0), head: [-30, 0, 0] }, 1.25, { in: 0.01, out: 0.1, handL: "relaxed", handR: "relaxed", face: { brow: 0.4, lid: 0.1, gaze: [-0.7, 0] } });
   sir.actAt(0.22, { armL: arm(70, 50, 160, 6), armR: arm(70, 50, 160, 6), head: [0, 6, 0], py: -0.03, lean: -4 }, 9, { in: 0.2, antic: 0.2, over: 1.5, handL: "point", handR: "point", face: PAIN });
-  wag(sir, 0.6, SNAP - 0.7, P({ roll: 3 }), P({ roll: -3 }), 0.42, { handL: "point", handR: "point", face: PAIN });
+  if (SNAP > 1) wag(sir, 0.6, SNAP - 0.7, P({ roll: 3 }), P({ roll: -3 }), 0.42, { handL: "point", handR: "point", face: PAIN });
   sir.actAt(SNAP + 0.25, { head: [-36, 4, 0] }, 9, { in: 0.2, antic: 0, over: 1.2, handL: "point", handR: "point", face: { lid: 0, brow: 0.8, wide: 0.5, smile: 0.3, gaze: [-0.8, 0.3] } });
   GRADES.push({ a: a0, b: END + 1, g: (T) => fireNight(T, 50, 28) });
   add({ id: "snap", a: a0, b: END13, still: 0.9,

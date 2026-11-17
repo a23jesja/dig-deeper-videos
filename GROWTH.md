@@ -51,8 +51,8 @@ that?"); the other Shorts keep that shape.
 |---|---|---|---|---|---|---|---|---|
 | Did pirates really make you walk the plank? | 30.4 s | c (built before the hook lab) | __ % | __ s | __ | __ | __ % | __ |
 | Why did Rome tax pee? | 32.7 s | a (built before the hook lab) | __ % | __ s | __ | __ | __ % | __ |
-| Why did pirates fly a black flag? | __ | a (built before the hook lab) | __ % | __ s | __ | __ | __ % | __ |
-| Did Nero fiddle while Rome burned? | __ | a (built before the hook lab) | __ % | __ s | __ | __ | __ % | __ |
+| Why did pirates fly a black flag? | 32.5 s | a (built before the hook lab) | __ % | __ s | __ | __ | __ % | __ |
+| Did Nero fiddle while Rome burned? | 32.7 s | a (built before the hook lab); **test: short silence before the loop** | __ % | __ s | __ | __ | __ % | __ |
 | Did gladiators fight to the death? | __ | __ | __ % | __ s | __ | __ | __ % | __ |
 | Blackbeard and the burning fuses | __ | __ | __ % | __ s | __ | __ | __ % | __ |
 | **TEST, 45-55 s:** Were animals really put on trial? | __ | __ | __ % | __ s | __ | __ | __ % | __ |
@@ -66,6 +66,13 @@ with the best numbers becomes the default. The types for the four Shorts built b
 session's reading of their first frame: the plank (Sir Digsworth at the end of the plank over the shark) is c;
 Rome (the jar, the gold and the held nose), the black flag (hands up under the rising flag) and Nero (the emperor
 fiddling before the burning city) are a.
+
+**Test: a short silence before the loop (Jesper 17 November 2026, "Ja testa det").** In Nero the string snaps right
+after the last word ("strings.", ends at 31.29 s), the emperor stares at it, and the coda leads into the first frame:
+**1.44 s** from the end of the last word until "Did" starts again. The black flag has **2.32 s** of no voice there
+(last word "worked." ends at 30.19 s, the video is 32.51 s). When Jesper sends the numbers, compare Nero's
+"stayed and watched", the share watched and the second where viewers leave at the end with the black flag's, to see
+whether the shorter silence keeps more of them into the loop.
 
 ## What the Emu War retention curve showed (Engagement tab, read by Jesper 17 November 2026)
 - 49.5 % stayed; 50.5 % swiped away in the first second.

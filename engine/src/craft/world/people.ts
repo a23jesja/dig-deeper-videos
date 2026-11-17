@@ -80,8 +80,9 @@ const searchArm = (cost: (q: number[]) => number): ArmPose => {
  *  on a spyglass), not on every frame */
 export const reachArm = (D: Design, pose: Pose, o: FigOpts, sp: Spot, cam: number[], side: "L" | "R", target: [number, number, number], slide = 0.5, /** where the elbow should go, if the hand can be put on the point that way (a lifted elbow) */ elbow?: [number, number, number]): ArmPose => {
   const P = D.props(o.who ?? "sir"), mpu = (sp.h ?? 1.75) / bodyH(P), [x, y, z] = sp.at, az = Math.atan2(cam[0] - x, cam[2] - z), yaw = sp.heading - az / D2R;
-  const tx = ((target[0] - x) * Math.cos(az) - (target[2] - z) * Math.sin(az)) / mpu, ty = -(target[1] - y) / mpu, key = side === "L" ? "armL" : "armR", wr = `wr${side}` as Joint, tip = `tip${side}` as Joint;
-  const el = `el${side}` as Joint, ex = elbow ? ((elbow[0] - x) * Math.cos(az) - (elbow[2] - z) * Math.sin(az)) / mpu : 0, ey = elbow ? -(elbow[1] - y) / mpu : 0;
+  const seen = (q: [number, number, number]): [number, number] => [((q[0] - x) * Math.cos(az) - (q[2] - z) * Math.sin(az)) / mpu, -(q[1] - y) / mpu];
+  const [tx, ty] = seen(target), key = side === "L" ? "armL" : "armR", wr = `wr${side}` as Joint, tip = `tip${side}` as Joint;
+  const el = `el${side}` as Joint, [ex, ey] = elbow ? seen(elbow) : [0, 0];
   return searchArm((q) => { const sk = solve(P, { ...pose, [key]: [[q[0], q[1]], [q[2], q[3]]] }, yaw), W = sk.j[wr], T = sk.j[tip], E = sk.j[el];
     return Math.hypot(W[0] + (T[0] - W[0]) * slide - tx, W[1] + (T[1] - W[1]) * slide - ty) + (elbow ? 0.02 * Math.hypot(E[0] - ex, E[1] - ey) : 0); });
 };

@@ -1,12 +1,28 @@
 // What a Short of the craft kit consists of, without rendering it: its shots with their frames, the frame that stands for each shot
 // in the sketch, and the caption chunks.
-//   usage: node scripts/film_info.mjs <film> [stills|shots|json|check|audio|caps|thumbs]
+//   usage: node scripts/film_info.mjs <film> [stills|shots|json|check|grips|audio|caps|thumbs]
+//     grips = the held things, read on every tenth of a second: the grip in the hand, the working end where its use allows, nothing
+//             leaving a hand without a fall or changing hand between frames; `grips spots` = where they are in the picture (json)
 //     stills = the sketch frames as a comma list (for scripts/stills.mjs)     shots = shots.json for scripts/short_qa.py
 import fs from "node:fs"; import path from "node:path"; import os from "node:os"; import { pathToFileURL } from "node:url"; import { build } from "esbuild";
 const name = process.argv[2], what = process.argv[3] ?? "table";
 const tmp = path.join(os.tmpdir(), `filminfo-${process.pid}.mjs`);
 await build({ entryPoints: [path.resolve("src/craft/shorts/index.ts")], bundle: true, platform: "node", format: "esm", outfile: tmp, loader: { ".json": "json" }, logLevel: "silent" });
-const { FILMS, captions } = await import(pathToFileURL(tmp).href); fs.rmSync(tmp, { force: true });
+// a stand-in for the browser's canvas, so that the figures can be drawn without a browser: nothing is painted, but the transforms
+// are kept count of, because the drawing notes where the eyes are with them
+if (what === "grips") {
+  const mul = (a, b) => [a[0] * b[0] + a[2] * b[1], a[1] * b[0] + a[3] * b[1], a[0] * b[2] + a[2] * b[3], a[1] * b[2] + a[3] * b[3], a[0] * b[4] + a[2] * b[5] + a[4], a[1] * b[4] + a[3] * b[5] + a[5]];
+  const quiet = (own) => new Proxy(own, { get: (o, k) => (k in o ? o[k] : typeof k === "string" ? (o[k] = () => {}) : undefined) });
+  const context = () => { let m = [1, 0, 0, 1, 0, 0]; const st = [];
+    return quiet({ save() { st.push(m); }, restore() { if (st.length) m = st.pop(); }, translate(x, y) { m = mul(m, [1, 0, 0, 1, x, y]); }, scale(x, y) { m = mul(m, [x, 0, 0, y, 0, 0]); },
+      rotate(r) { const c = Math.cos(r), s = Math.sin(r); m = mul(m, [c, s, -s, c, 0, 0]); }, transform(a, b, c, d, e, f) { m = mul(m, [a, b, c, d, e, f]); },
+      setTransform(a, b, c, d, e, f) { m = a === undefined ? [1, 0, 0, 1, 0, 0] : typeof a === "object" ? [a.a, a.b, a.c, a.d, a.e, a.f] : [a, b, c, d, e, f]; }, resetTransform() { m = [1, 0, 0, 1, 0, 0]; },
+      getTransform: () => ({ a: m[0], b: m[1], c: m[2], d: m[3], e: m[4], f: m[5] }), measureText: () => ({ width: 0 }), createLinearGradient: () => ({ addColorStop() {} }), createRadialGradient: () => ({ addColorStop() {} }),
+      createPattern: () => ({}), getImageData: (x, y, w, h) => ({ data: new Uint8ClampedArray(w * h * 4), width: w, height: h }), isPointInPath: () => false }); };
+  globalThis.document = { createElement: () => { const g = context(); return { width: 300, height: 150, style: {}, getContext: () => g, toDataURL: () => "", addEventListener() {} }; }, createElementNS: () => ({ style: {} }) };
+  globalThis.Path2D = class { constructor() { return quiet({}); } };
+}
+const { FILMS, captions, auditGrips } = await import(pathToFileURL(tmp).href); fs.rmSync(tmp, { force: true });
 if (!FILMS[name]) { console.error(`no film named ${name}; there are: ${Object.keys(FILMS).join(", ")}`); process.exit(1); }
 const { film, comp } = FILMS[name], f = (t) => Math.round(t * film.fps);
 const rows = film.shots.map((s) => ({ id: s.id, a: f(s.a), b: f(s.b), still: Math.min(f(s.b) - 1, f(s.a + (s.still ?? (s.b - s.a) / 2))), seconds: +(s.b - s.a).toFixed(2) }));
@@ -39,6 +55,12 @@ else if (what === "check") {
   if (film.sign && film.sign.a < 5) bad.push("the sign comes before second five");
   if (bad.length) { console.error(`FILM CHECK FAILED for ${name}:`); for (const b of bad) console.error("  " + b); process.exit(1); }
   console.log(`FILM CHECK OK for ${name}: ${film.shots.length} shots, ${film.seconds.toFixed(1)} s, no figure seen from more than 35 degrees above, none standing in another or in a solid, none jumping`);
+}
+else if (what === "grips") {
+  const { bad, held, spots } = auditGrips(film);
+  if (process.argv[4] === "spots") console.log(JSON.stringify(spots));
+  else { for (const b of bad) console.log(b); console.log(bad.length ? `GRIPS FAIL: ${bad.length} faults in ${held} held readings` : `grips ok: ${held} readings of a thing in a hand, every grip in the hand and every working end where its use allows`); }
+  process.exit(bad.length && process.argv[4] !== "spots" ? 1 : 0);
 }
 else if (what === "audio") {
   // everything the sound needs (audio/film_audio.py): each shot's sounds on their frames, the beds, the voice, the music, the impacts

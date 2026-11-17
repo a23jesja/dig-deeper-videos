@@ -316,8 +316,26 @@ export const amphitheatreSite = (R = 40, tierH = 9) => {
 };
 // ---------------- things of a pirate ship ----------------
 /** a cutlass: a short, broad, curved blade with a brass guard. It lies along +x from the grip at the origin, its flat toward +z */
-export const cutlass = () => group([mesh(box(0.2, 0.06, 0.06), "#5a3a22", { at: [0.02, 0, 0], shadow: false }), mesh(box(0.06, 0.28, 0.1), C.gold, { at: [0.15, 0, 0], line: 0.6, shadow: false }), mesh(arc(0.1, 0.02, Math.PI), C.gold, { at: [0.04, -0.03, 0], rot: [0, 0, Math.PI], line: 0.5, shadow: false }),
-  mesh(slab("cutlass2", [[0, -0.055], [0.58, -0.06], [0.9, 0.1], [0.86, 0.16], [0.52, 0.08], [0, 0.065]], 0.03), "#e9eef4", { at: [0.17, 0, -0.015], line: 0.9, shadow: false })]);
+export const cutlass = () => layered(group([mesh(box(0.2, 0.06, 0.06), "#5a3a22", { at: [0.02, 0, 0], shadow: false }), mesh(box(0.06, 0.28, 0.1), C.gold, { at: [0.15, 0, 0], line: 0.6, shadow: false }), mesh(arc(0.1, 0.02, Math.PI), C.gold, { at: [0.04, -0.03, 0], rot: [0, 0, Math.PI], line: 0.5, shadow: false }),
+  mesh(slab("cutlass2", [[0, -0.055], [0.58, -0.06], [0.9, 0.1], [0.86, 0.16], [0.52, 0.08], [0, 0.065]], 0.03), "#e9eef4", { at: [0.17, 0, -0.015], line: 0.9, shadow: false })]), { 0: "back", 2: "front" });
+/** marks the parts of a held thing (by their place in the group) that lie behind the hand ("back": a grip the fist hides) or over the
+ *  fingers ("front": a knuckle bow); stage/staging.ts `hold` puts them there. The cutlass: grip, guard, knuckle bow, blade */
+function layered<T extends THREE.Object3D>(g: T, parts: Record<number, "back" | "front">): T { for (const i in parts) g.children[+i].userData.layer = parts[i]; return g; }
+// ---------------- props made to be held: the grip at the origin, the working end along +x, up along +y ----------------
+/** a sabre (a pirate's cutlass, a captain's hanger) to hold: the grip, a fist long, lies across the origin; the guard and the blade
+ *  stand off along +x, the pommel along -x; the knuckle bow runs under the grip from guard to pommel (it lies over the fingers) */
+export const sabre = (blade = 0.62) => layered(group([mesh(box(0.13, 0.045, 0.045), "#5a3a22", { at: [0, 0, 0], shadow: false }), mesh(box(0.035, 0.2, 0.08), C.gold, { at: [0.075, 0, 0], line: 0.6, shadow: false }),
+  mesh(arc(0.078, 0.013, Math.PI), C.gold, { at: [0, -0.014, 0], rot: [0, 0, Math.PI], scale: [1, 0.62, 1], line: 0.5, shadow: false }), mesh(ball(0.028, 8), C.gold, { at: [-0.078, 0, 0], line: 0.5, shadow: false }),
+  mesh(slab("sabre" + blade, [[0, -0.04], [blade * 0.64, -0.045], [blade, 0.07], [blade * 0.95, 0.115], [blade * 0.58, 0.058], [0, 0.046]], 0.022), "#e9eef4", { at: [0.092, 0, -0.011], line: 0.9, shadow: false })]), { 2: "front" });
+/** the flintlock pistol to hold: the butt lies in the fist at the origin; the barrel lies along +x above the hand, the muzzle its far end */
+export const pistolHeld = () => { const p = pistol(); p.position.set(0.012, 0.062, 0); return group([p]); };
+/** the mug to hold: its ear at the origin, the cup beside it along +x, upright along +y */
+export const mugHeld = (h = 0.13) => { const m = mug(h); m.rotation.y = Math.PI; m.position.set(h * 0.5, -h / 2, 0); return group([m]); };
+/** a cutlass in its scabbard, to hang at a belt: the throat of the scabbard at the origin, the sheath along +x (`len` long), the hilt
+ *  standing out of it along -x, a leather frog over the throat that takes the belt */
+export const scabbard = (len = 0.5) => layered(group([mesh(box(len, 0.075, 0.035), "#3a2a22", { at: [len / 2, 0, 0], line: 0.9, shadow: false }), mesh(box(0.07, 0.085, 0.045), C.gold, { at: [len - 0.03, 0, 0], line: 0.6, shadow: false }),
+  mesh(box(0.09, 0.16, 0.05), "#5a3a22", { at: [0.06, 0.03, 0], line: 0.7, shadow: false }), mesh(box(0.14, 0.05, 0.05), "#5a3a22", { at: [-0.08, 0, 0], shadow: false }), mesh(box(0.04, 0.2, 0.08), C.gold, { at: [-0.01, 0, 0], line: 0.6, shadow: false }),
+  mesh(arc(0.07, 0.013, Math.PI), C.gold, { at: [-0.085, -0.02, 0], rot: [0, 0, Math.PI], scale: [1, 0.62, 1], line: 0.5, shadow: false }), mesh(ball(0.028, 8), C.gold, { at: [-0.158, 0, 0], line: 0.5, shadow: false })]), { 0: "back", 1: "back" });
 /** a flag as a painted cloth that hangs from its upper inner corner (the origin): w along +x, h down. kind: the black flag with a
  *  skull and crossed bones, or a plain white one */
 export const flagCloth = (kind: "black" | "white", w = 1.5, h = 1.0) => mesh(box(w, h, 0.02), "#ffffff", { at: [w / 2, -h / 2, 0], line: 0.6, shadow: false, map: paint(`flag${kind}`, 384, 256, (g) => {
@@ -372,8 +390,8 @@ export const bottle = (h = 0.3, col = "#3f8a5c") => group([mesh(lathe(`bottle${h
 /** a flintlock pistol, lying along +x */
 export const pistol = () => group([mesh(cyl(0.022, 0.026, 0.36, 8), "#3a3f48", { at: [0.3, 0.06, 0], rot: [0, 0, Math.PI / 2], shadow: false }), mesh(box(0.3, 0.07, 0.06), "#8a5a30", { at: [0.18, 0.02, 0], shadow: false }), mesh(box(0.09, 0.2, 0.06), "#8a5a30", { at: [0, -0.06, 0], rot: [0, 0, -0.45], shadow: false }),
   mesh(ball(0.035, 8), C.gold, { at: [-0.045, -0.15, 0], line: 0.5, shadow: false }), mesh(box(0.05, 0.07, 0.03), C.gold, { at: [0.12, 0.085, 0], line: 0.5, shadow: false })]);
-/** a spyglass, lying along +x from the eye end at the origin */
-export const spyglass = () => group([mesh(cyl(0.028, 0.034, 0.26, 10), C.gold, { at: [0.13, 0, 0], rot: [0, 0, Math.PI / 2], shadow: false }), mesh(cyl(0.036, 0.046, 0.22, 10), "#5a3a22", { at: [0.36, 0, 0], rot: [0, 0, Math.PI / 2], shadow: false })]);
+/** a spyglass, lying along +x from the eye end at the origin; its eye cup is wide enough to cover the eye it is put to */
+export const spyglass = () => group([mesh(cyl(0.05, 0.05, 0.03, 14), "#3a2a22", { at: [0.012, 0, 0], rot: [0, 0, Math.PI / 2], line: 0.7, shadow: false }), mesh(cyl(0.028, 0.034, 0.26, 10), C.gold, { at: [0.13, 0, 0], rot: [0, 0, Math.PI / 2], shadow: false }), mesh(cyl(0.036, 0.046, 0.22, 10), "#5a3a22", { at: [0.36, 0, 0], rot: [0, 0, Math.PI / 2], shadow: false })]);
 /** flat white clouds far away */
 export const cloud = (s = 30) => { const g = new THREE.Group(); for (const [x, y, r] of [[0, 0, 1], [0.9, 0.1, 0.72], [-0.95, 0.05, 0.66], [0.35, 0.42, 0.7], [-0.4, 0.36, 0.6]]) g.add(mesh(ball(1, 14), "#ffffff", { at: [x * s, y * s, 0], scale: [r * s, r * s * 0.6, r * s * 0.3], shadow: false, receive: false, line: 0.6 })); return g; };
 export { INK3 };

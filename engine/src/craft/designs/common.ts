@@ -5,13 +5,17 @@ import { Sk, Side, Props, Joint } from "../rig";
 
 export type Who = "sir" | "baker";
 /** what the face does: where the eyes look, how far the lids are down, eyes opened wide (0..1), brows up (+) or down (-), mouth open (0..1) */
-export type Face = { gaze?: P2; lid?: number; wide?: number; brow?: number; mouth?: number; /** corners of the mouth up (+) or down (-) */ smile?: number };
+export type Face = { gaze?: P2; lid?: number; wide?: number; brow?: number; mouth?: number; /** corners of the mouth up (+) or down (-) */ smile?: number;
+  /** one eye shut: the eye on the left (-1) or the right (1) of the picture (the eye pressed to a spyglass, a wink); it is blended
+   *  like the rest of the face, and the eye is shut once it is past half way */ shut?: number };
 /** sway = how far loose things (the hem of a coat or skirt, the cap, the chain) trail behind the way the figure faces, -1..1 */
 export type FigOpts = { who?: Who; face?: Face; handL?: HandKind; handR?: HandKind; prop?: "cane" | "loaf" | null; capLift?: number; sway?: number;
   /** the hat is not on the head (it flew off in a fall and is drawn by the scene where it lies) */
   hatOff?: boolean };
 /** faceW = half the width that must show in a close-up of the face (moustache tips included) */
 export type Design = { id: string; name: string; ol: number; faceW?: number; props: (who: Who) => Props; draw: (k: Ink, sk: Sk, o: FigOpts) => void;
+  /** the closed fingers of the named hands by themselves (the layer that lies in front of a thing held) */
+  fingers?: (k: Ink, sk: Sk, sides: ("L" | "R")[]) => void;
   /** the figure's hat by itself (lying or flying), its middle at the origin, seen from the angle phi */
   hat?: (k: Ink, phiDeg: number) => void };
 export const LIGHT: P2 = [0.8, 0.45]; // which way the shadow lies on a part (the light comes from the upper left)

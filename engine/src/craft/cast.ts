@@ -228,10 +228,12 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
     if (!tipBehind) pipe();
     const eye = (s: number) => {
       const q = at(h, s * 28, 0.8); if (q.d < 0.1 * b) return;
+      k.mark(s < 0 ? "eyeA" : "eyeB", q.x, yEye);
       const fs = clamp(Math.cos(s * 28 * R + phi), 0.42, 1) ** 0.85, r = 0.32 * a * EY, rx = r * fs, ry = r * (1 + 0.16 * (f.wide ?? 0)), ball = ellPts(q.x, yEye, rx, ry), gz = f.gaze ?? [0, 0], lid = f.lid ?? 0.16;
       // a shut eye is one arc and nothing else (no outline of the open eye is left round it, which read as spectacles): it bows upward
       // in a smile and downward otherwise
-      const shut = lid > 0.86, bow = (f.smile ?? 0) > 0.4 ? -1 : 1;
+      const cx = (x: number) => { const m = k.g.getTransform(); return m.a * x + m.c * yEye + m.e; }, one = Math.abs(f.shut ?? 0) > 0.5 && Math.sign(cx(q.x) - cx(at(h, 0, 0.8).x)) === Math.sign(f.shut ?? 0);
+      const shut = lid > 0.86 || one, bow = (f.smile ?? 0) > 0.4 && !one ? -1 : 1;
       if (shut) k.line(spline([[q.x - rx * 0.86, yEye - bow * ry * 0.14], [q.x, yEye + bow * ry * 0.34], [q.x + rx * 0.86, yEye - bow * ry * 0.14]], false, 8), 6.4 * u);
       else { k.shape(ball, "#fffdf6"); k.clip(ball, () => {
         const px = q.x + clamp(gz[0] * 0.5 + h.sin * 0.22 + ahead * 0.5, -0.56, 0.56) * rx, py = yEye + gz[1] * ry * 0.5; k.shape(ellPts(px, py, rx * 0.5, ry * 0.5), "#2a1f1a", 0); k.dot(px - rx * 0.17, py - ry * 0.2, r * 0.13, "#ffffff");
@@ -305,6 +307,15 @@ export const mirrored = (L: Look, yawDeg: number) => { const y = ((((yawDeg + 18
 /** does the monocle show at this view angle (for the checks)? */
 export const monocleShows = (L: Look, yawDeg: number) => { if (!L.monocle) return true; const y = mirrored(L, yawDeg) ? -yawDeg : yawDeg, h = headGeo(L, faceTurn(y)); return at(h, -28, 0.8).d >= 0.1 * L.head.b && h.cos >= -0.3; };
 export const swapPose = (p: Pose): Pose => ({ ...p, px: -(p.px ?? 0), roll: -(p.roll ?? 0), twist: -(p.twist ?? 0), hipTilt: -(p.hipTilt ?? 0), head: p.head ? [-p.head[0], p.head[1], -p.head[2]] : undefined, armL: p.armR, armR: p.armL, handL: p.handR, handR: p.handL, legL: p.legR, legR: p.legL });
+/** the closed fingers of the hands that hold something (`sides`), drawn where the figure's own hands are: the stage puts this layer
+ *  in front of the thing held */
+export const drawFingers = (L: Look) => (k: Ink, sk0: Sk, sides: Side[]) => {
+  const mir = mirrored(L, sk0.yaw), sk = mir ? solve(sk0.P, swapPose(sk0.pose), -sk0.yaw) : sk0;
+  if (mir) { k.g.save(); k.g.scale(-1, 1); }
+  for (const s0 of sides) { const s: Side = mir ? (s0 === "L" ? "R" : "L") : s0, E = sk.j[`el${s}`], W = sk.j[`wr${s}`], T = sk.j[`tip${s}`];
+    hand(k, W, len(sub(T, W)) > 6 ? angle(W, T) : angle(E, W), sk.P.hand, "fist", L.skin, thumbFlip(sk, s), false, k.ol, "fingers"); }
+  if (mir) k.g.restore();
+};
 export const drawCast = (L: Look) => {
   const inner = drawTrue(L);
   return (k: Ink, sk: Sk, o: FigOpts) => {

@@ -15,7 +15,9 @@ export type Actor = { name: string; D: Design; at: V3; heading: number; h: numbe
   /** true = the figure takes no shade from the others in the shot (a shadow that would lie on it as a blot) */
   noShade?: boolean };
 /** a figure placed in the world on this frame: where its joints are, so that real things can be put in its hands */
-export type Staged = Actor & { joint: (j: Joint) => V3; mesh: THREE.Mesh };
+export type Staged = Actor & { joint: (j: Joint) => V3; mesh: THREE.Mesh;
+  /** where a place the drawing noted is in the world ("eyeA", "eyeB": the eyes); how the shot sees the cards (for the fingers layer) */
+  mark?: (name: string) => V3 | null; seen?: { fov: number; toSun?: THREE.Vector3 } };
 export type Word = { w: string; a: number; b: number; line?: string };
 export type Shot = {
   id: string; a: number; b: number;

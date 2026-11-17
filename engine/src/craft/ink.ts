@@ -64,6 +64,9 @@ export const seg = (a: P2, b: P2, wa: number, wb: number, bulge = 0, at = 0.35, 
 export class Ink {
   g: CanvasRenderingContext2D; ol: number; ink = INK;
   constructor(g: CanvasRenderingContext2D, ol = 9) { this.g = g; this.ol = ol; }
+  /** places the drawing has noted while it was drawn (an eye, say), in canvas pixels: so that the stage can put a real thing there */
+  marks: Record<string, P2> = {};
+  mark(name: string, x: number, y: number) { const m = this.g.getTransform(); this.marks[name] = [m.a * x + m.c * y + m.e, m.b * x + m.d * y + m.f]; }
   trace(pts: P2[], close = true) { const g = this.g; pts.forEach(([x, y], i) => (i ? g.lineTo(x, y) : g.moveTo(x, y))); if (close) g.closePath(); }
   /** a filled shape with an ink line; fill = null draws the line only, ol = 0 the fill only */
   shape(pts: P2[], fill: string | null, ol = this.ol) {
@@ -138,12 +141,18 @@ export const eye = (k: Ink, cx: number, cy: number, rx: number, ry: number, o: E
 // ---------------- hands ----------------
 export type HandKind = "relaxed" | "open" | "fist" | "point" | "grip";
 /** a hand at the wrist, fingers along `deg`; thumbFlip puts the thumb on the other side; cut = straight-edged (woodcut, card) */
-export const hand = (k: Ink, wrist: P2, deg: number, h: number, kind: HandKind, col: string, thumbFlip: boolean, cut = false, ol = k.ol) => {
+/** layer = "fingers": only the four closed fingers of a hand that holds something, without the heel of the hand and the thumb. The
+ *  stage draws them on a card of their own in front of the thing held, so that the thing lies between the palm and the fingers */
+export const hand = (k: Ink, wrist: P2, deg: number, h: number, kind: HandKind, col: string, thumbFlip: boolean, cut = false, ol = k.ol, layer: "all" | "fingers" = "all") => {
   const S = (pts: P2[]) => pts.map(([x, y]) => [x * h, y * h] as P2), body = (pts: P2[]) => (cut ? S(pts) : spline(S(pts), true, 5));
   const fin = (x: number, y: number, a: number, l: number, w0 = 0.085, w1 = 0.07) => seg([x * h, y * h], [(x + l * Math.cos(a * R)) * h, (y + l * Math.sin(a * R)) * h], w0 * h, w1 * h, 0, 0.3, cut);
   const g = k.g; g.save(); g.translate(wrist[0], wrist[1]); g.rotate(deg * R); if (thumbFlip) g.scale(1, -1);
   const thin = ol * 0.5;
-  if (kind === "open") {
+  if (layer === "fingers") {
+    k.group([body([[0.22, -0.33], [0.42, -0.36], [0.62, -0.34], [0.76, -0.12], [0.74, 0.18], [0.52, 0.35], [0.36, 0.35], [0.22, 0.31]])], col, ol);
+    for (const y of [-0.16, 0.0, 0.16]) k.line([[0.34 * h, y * h], [0.74 * h, (y + 0.02) * h]], thin);
+    k.group([fin(0.26, 0.3, -30, 0.36, 0.105, 0.09)], col, ol * 0.6);      // the thumb, laid over the fingers on the near side
+  } else if (kind === "open") {
     const palm = body([[0, -0.22], [0.28, -0.33], [0.5, -0.33], [0.56, 0], [0.5, 0.3], [0.28, 0.32], [0, 0.22]]);
     k.group([fin(0.46, -0.25, -20, 0.44), fin(0.5, -0.09, -7, 0.52), fin(0.5, 0.08, 6, 0.48), fin(0.45, 0.23, 20, 0.38, 0.08, 0.065), fin(0.16, 0.22, 62, 0.4, 0.1, 0.085), palm], col, ol);
   } else if (kind === "relaxed") {

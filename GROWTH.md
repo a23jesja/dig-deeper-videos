@@ -14,8 +14,70 @@ Read before picking each new topic. Append one entry per video, and update earli
 - Look (from 2026-11-11): bright warm hand-drawn 'sketch' style inspired by ReachMora's viral stick-figure video (~18M views) — cream paper, ink outlines, pastel skies, big expressive head. Earlier episodes used the dark noir look.
 - Series thread: every video is Sir Digsworth investigating one mind-blowing question (space, Earth, survival what-ifs, mysteries, history, animals, the human body). He introduces himself, ends with a recap and teases the next investigation.
 
+## Baseline (read by Jesper in YouTube Studio, 17 November 2026, 19:48)
+The starting point that every later Short is compared with.
+
+| Short | Views | Average view | Share watched | Subscribers gained |
+|---|---|---|---|---|
+| Emu War | 1,262 | 0:41 | 73.4 % | +3 |
+| Pig War | 1,322 | 0:33 | 66.7 % | +4 |
+| Mona Lisa | 1,445 | 0:28 | 56.6 % | +2 |
+| Titanic part 1 | 1,234 | 0:21 | 54.7 % | +1 |
+| Dancing plague | 1,278 | 0:22 | 54.5 % | +4 |
+
+Jesper's conclusion: all five stopped at 1,200-1,450 views. The funny, absurd stories held viewers best. The
+longest video had the highest share watched.
+
+**Test (Jesper, 17 November 2026):** make one of the coming Shorts 45-55 seconds long with a whole story (problem,
+attempt, turn, end) instead of 30, and compare its numbers with this baseline. Pick a funny, absurd question for
+it. This one Short is his exception to the 25-40 second shape in DAILY-RULES ("The format: Why did they do
+that?"); the other Shorts keep that shape.
+
+**The test Short (Jesper, 17 November 2026, evening): "Were animals really put on trial?"** (no. 18 in
+`granskning/fragor.md`), Friday 20 November or later.
+- **Only the length changes.** The opening follows the same rules as every other Short: the absurd thing is
+  already happening in the first frame, the question on screen in at most six words, straight to the crime in
+  seconds 2-10. The extra room goes to the trial and the turn, not to a longer beginning.
+- **Sources checked extra carefully.** The animals were the accused, not witnesses: no pig in the witness box.
+  Many famous details, such as the sow of Falaise in 1386 said to have been dressed in human clothes, come
+  from later retellings. E. P. Evans, "The Criminal Prosecution and Capital Punishment of Animals" (1906), is
+  the standard work: every detail is checked against it, and what is found only in later retellings is said
+  with "according to" or cut.
+- **Compared with the right videos:** Shorts in the new look and the same format, not the old ones in the
+  baseline table above. Fill in their numbers here when they exist, so that the test has something fair to be
+  measured against.
+
+| Short (new look, "Why did they do that?") | Length | Views | Average view | Share watched | Subscribers gained |
+|---|---|---|---|---|---|
+| Did pirates really make you walk the plank? | 30.4 s | __ | __ | __ % | __ |
+| Why did Rome tax pee? | 32.7 s | __ | __ | __ % | __ |
+| Why did pirates fly a black flag? | __ | __ | __ | __ % | __ |
+| Did Nero really fiddle while Rome burned? | __ | __ | __ | __ % | __ |
+| Did gladiators really fight to the death? | __ | __ | __ | __ % | __ |
+| Why did Blackbeard light fuses in his beard? | __ | __ | __ | __ % | __ |
+| **TEST, 45-55 s:** Were animals really put on trial? | __ | __ | __ | __ % | __ |
+
+## What the Emu War retention curve showed (Engagement tab, read by Jesper 17 November 2026)
+- 49.5 % stayed; 50.5 % swiped away in the first second.
+- Among those who stayed, the curve fell steeply during about the first quarter (from a little over 100 % to
+  about 66 %) and then lay almost flat to the end.
+- The curve started above 100 %: people scrubbed back to the beginning.
+
+Jesper's conclusion: the story holds; the entry leaks.
+
+**Added to the review of every new Short (Jesper, 17 November 2026):**
+1. First frame: the strange thing is already happening, the question is on screen in at most six words, and the
+   voice starts in the first frame.
+2. Seconds 2-10: straight to the problem. No background about year, place or people before the viewer knows why
+   it is interesting. Fail the Short if the first ten seconds are build-up.
+3. Text at the start stays on screen at least one and a half seconds per line.
+4. The last frame ties back to the first, so that the video can loop.
+
 ## Learnings
-- (fill in as data arrives: which topics, titles and formats get the most views and watch time)
+- 2026-11-17: the entry leaks, not the story (see the retention section above): half the viewers leave in the
+  first second and a third of the rest during the first quarter; after that almost nobody leaves.
+- 2026-11-17: see "Baseline" above: funny, absurd stories held best (Emu War 73.4 %, Pig War 66.7 %); the
+  serious ones (Titanic part 1, Dancing plague) lay at about 55 %; length did not hurt the share watched.
 
 - 2026-11-12: channel renamed to **Sir Digsworth** (@SirDigsworth) — several channels were already called Dig Deeper. Switched to a 3D cel-shaded look (three.js) and simpler explanations; added mood-based background music.
 | 2026-11-12 | Australia Lost a War to Emus (1932) #Shorts | Great Emu War / strange history, NEW engine (Remotion + three.js), first video Jesper approved at reference quality | general | – | `videos/shorts/2026-11-12-great-emu-war-short.mp4`, 55 s, 2K |

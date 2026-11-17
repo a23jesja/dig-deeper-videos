@@ -150,7 +150,7 @@ Leverans: `leverans/nero-fiddle/nero-fiddle.mp4` (33,81 s, 1013 rutor, -14,02 LU
 
 ## Färdig video version 2: granskningens tre punkter och Jespers "Ja testa det" om slutet
 1. **Ingen text över ett ansikte (trädgårdarna, 12-14 s):** flickan är nu omkring tolv år (1,50 m i stället för 1,12 m). Hennes ansikte ligger hela vägen ovanför texten när hon går mot kameran, och bara kroppen är bakom "BACK AND OPENED", "HIS OWN" och "GARDENS TO". Textraden ligger på samma höjd i hela filmen.
-2. **Näven runt citharans arm (scenen 20,4-22,1 s, och 28 s):** vänster hand siktar nu på mitten av den yttre uppåtgående armen (den siktade på 0,37 av bredden, halvt på strängarna). En citharа som hålls följer näven som håller den, så armen går genom näven också när han gungar och lutar sig.
+2. **Näven runt citharans arm (scenen 20,4-22,1 s, och 28 s):** vänster hand siktar nu på mitten av den yttre uppåtgående armen (den siktade på 0,37 av bredden, halvt på strängarna). En cithara som hålls följer näven som håller den, så armen går genom näven också när han gungar och lutar sig.
 3. **Näven framför i närbilden (29,4-30,6 s):** hela näven ritas långt framför ramen och strängarna. Kamerans riktning tas med i greppet: kameran ser upp från sidan, och armen syntes 12 cm från där den föll rakt på figurens kort.
 4. **Slutet (Jesper: "Ja testa det"):** närbilden på strängarna slutar på "strings.", och strängen brister 0,06 s efter ordet. Nero stirrar på den, och koden leder in i första bilden. Från sista ordets slut (31,29 s) till "Did" är det **1,45 s** (var 2,5 s). Svarta flaggan har 2,32 s. Testet är inskrivet i GROWTH.md.
 

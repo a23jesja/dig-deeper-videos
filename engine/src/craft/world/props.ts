@@ -254,6 +254,8 @@ export const chest = (open = false, coinsIn = false, w = 0.62, h = 0.36, d = 0.4
   for (const x of [-w * 0.3, w * 0.3]) g.add(mesh(box(0.05, h + 0.02, d + 0.035), C.iron, { at: [x, h / 2, 0], line: 0 }));
   const lid = group([mesh(box(w + 0.02, 0.07, d + 0.02), "#7a4e28", { at: [0, 0.035, d / 2] }), mesh(box(0.09, 0.09, 0.03), C.gold, { at: [0, 0.02, d + 0.02], line: 0.5 })], [0, h, -d / 2]);
   lid.rotation.x = open ? -1.9 : 0; lid.userData.lid = true; g.add(lid);
+  for (const s of [-1, 1]) g.add(mesh(arc(0.05, 0.011, Math.PI, 10), C.iron, { at: [s * (w / 2 + 0.014), h * 0.68, 0], rot: [0, 0, -s * Math.PI / 2], line: 0.4, shadow: false }));
+  g.userData.grips = [[-(w / 2 + 0.06), h * 0.68, 0], [w / 2 + 0.06, h * 0.68, 0]];
   // what shows when the lid is up: a dark inside with a rim, and gold heaped over the brim if there is any
   if (open) { g.add(mesh(box(w - 0.07, 0.02, d - 0.07), coinsIn ? "#d9a520" : "#2a1c16", { at: [0, h + 0.008, 0], line: 0.4, shadow: false }));
     if (coinsIn) { g.add(mesh(ball(1, 14), C.gold, { at: [0, h - 0.01, 0], scale: [w * 0.4, 0.11, d * 0.36], line: 0.6, shadow: false }));
@@ -328,9 +330,19 @@ export const sabre = (blade = 0.62) => layered(group([mesh(box(0.13, 0.045, 0.04
   mesh(arc(0.078, 0.013, Math.PI), C.gold, { at: [0, -0.014, 0], rot: [0, 0, Math.PI], scale: [1, 0.62, 1], line: 0.5, shadow: false }), mesh(ball(0.028, 8), C.gold, { at: [-0.078, 0, 0], line: 0.5, shadow: false }),
   mesh(slab("sabre" + blade, [[0, -0.04], [blade * 0.64, -0.045], [blade, 0.07], [blade * 0.95, 0.115], [blade * 0.58, 0.058], [0, 0.046]], 0.022), "#e9eef4", { at: [0.092, 0, -0.011], line: 0.9, shadow: false })]), { 2: "front" });
 /** the flintlock pistol to hold: the butt lies in the fist at the origin; the barrel lies along +x above the hand, the muzzle its far end */
-export const pistolHeld = () => { const p = pistol(); p.position.set(0.012, 0.062, 0); return group([p]); };
+export const pistolHeld = () => { const p = pistol(); p.position.set(0.015, 0.08, 0); return group([p]); };
 /** the mug to hold: its ear at the origin, the cup beside it along +x, upright along +y */
 export const mugHeld = (h = 0.13) => { const m = mug(h); m.rotation.y = Math.PI; m.position.set(h * 0.5, -h / 2, 0); return group([m]); };
+/** the bucket to carry: its bail's top at the origin, the bucket hanging below it, upright */
+export const bucketHeld = (h = 0.3) => { const r = h * 0.6, b = group([bucket(h), mesh(arc(r, h * 0.02, Math.PI, 14), C.iron, { at: [0, h, 0], line: 0.4, shadow: false })]); b.position.y = -(h + r); return group([b]); };
+/** the gunner's linstock: a staff held near its foot (the origin), the burning match in its forked head along +x */
+export const linstock = (len = 0.9) => group([mesh(box(len, 0.024, 0.024), "#5a3a22", { at: [len / 2 - 0.25, 0, 0], line: 0.5, shadow: false }), mesh(box(0.05, 0.06, 0.028), C.iron, { at: [len - 0.27, 0, 0], line: 0.4, shadow: false }),
+  mesh(box(0.08, 0.012, 0.012), "#8a6a4a", { at: [len - 0.21, 0.02, 0], line: 0.3, shadow: false }), mesh(ball(0.03, 8), "#ff8a2a", { at: [len - 0.17, 0.02, 0], line: 0, shadow: false, glow: "#ff6a00" })]);
+/** the fiddle held by its neck: the neck at the origin, the body along +x (props.ts fiddle turned end for end) */
+export const fiddleByNeck = (len = 0.6) => { const f = fiddle(len); f.rotation.z = Math.PI; f.position.x = 0.45 * (len / 0.6); return group([f]); };
+/** the bundle to carry by its knot: the knot at the origin, the bundle hanging below it. Its parts are named: "knot" and "sack" */
+export const bundleHeld = (r = 0.2, col = "#d9c08a") => { const sack = group([mesh(ball(r, 12), col, { at: [0, 0, 0], scale: [1.15, 0.85, 1], line: 0.9 }), mesh(box(r * 0.5, r * 0.08, r * 1.3), "#8a5a36", { at: [0, r * 0.1, 0], rot: [0, 0.5, 0.2], line: 0, shadow: false })]), knot = group([mesh(ball(r * 0.3, 8), col, { at: [0, 0, 0], scale: [1.4, 0.6, 1], line: 0.7 })]);
+  sack.position.y = -r * 0.82; sack.name = "sack"; knot.name = "knot"; return group([sack, knot]); };
 /** a cutlass in its scabbard, to hang at a belt: the throat of the scabbard at the origin, the sheath along +x (`len` long), the hilt
  *  standing out of it along -x, a leather frog over the throat that takes the belt */
 export const scabbard = (len = 0.5) => layered(group([mesh(box(len, 0.075, 0.035), "#3a2a22", { at: [len / 2, 0, 0], line: 0.9, shadow: false }), mesh(box(0.07, 0.085, 0.045), C.gold, { at: [len - 0.03, 0, 0], line: 0.6, shadow: false }),
@@ -388,8 +400,12 @@ export const sharkBody = (len = 2.3, jaw = 1) => {
 /** a glass bottle with a cork */
 export const bottle = (h = 0.3, col = "#3f8a5c") => group([mesh(lathe(`bottle${h}`, [[h * 0.2, 0], [h * 0.22, h * 0.05], [h * 0.22, h * 0.55], [h * 0.08, h * 0.75], [h * 0.08, h * 0.95]], 12), col, { line: 0.7 }), mesh(cyl(h * 0.07, h * 0.07, h * 0.1, 8), "#c9a06a", { at: [0, h, 0], line: 0, shadow: false })]);
 /** a flintlock pistol, lying along +x */
-export const pistol = () => group([mesh(cyl(0.022, 0.026, 0.36, 8), "#3a3f48", { at: [0.3, 0.06, 0], rot: [0, 0, Math.PI / 2], shadow: false }), mesh(box(0.3, 0.07, 0.06), "#8a5a30", { at: [0.18, 0.02, 0], shadow: false }), mesh(box(0.09, 0.2, 0.06), "#8a5a30", { at: [0, -0.06, 0], rot: [0, 0, -0.45], shadow: false }),
-  mesh(ball(0.035, 8), C.gold, { at: [-0.045, -0.15, 0], line: 0.5, shadow: false }), mesh(box(0.05, 0.07, 0.03), C.gold, { at: [0.12, 0.085, 0], line: 0.5, shadow: false })]);
+export const pistol = () => group([
+  // the stock and the butt are one piece with one outline (two boxes laid over each other left a notch in the line)
+  mesh(slab("pistolstock2", [[0.33, -0.012], [0.33, 0.05], [0.0, 0.05], [-0.04, 0.0], [-0.07, -0.08], [-0.08, -0.15], [-0.02, -0.175], [0.025, -0.12], [0.05, -0.045], [0.1, -0.014]], 0.06), "#8a5a30", { at: [0, 0, -0.03], line: 0.9, shadow: false }),
+  mesh(cyl(0.022, 0.026, 0.36, 8), "#3a3f48", { at: [0.3, 0.068, 0], rot: [0, 0, Math.PI / 2], line: 0.7, shadow: false }),
+  mesh(ball(0.035, 8), C.gold, { at: [-0.055, -0.165, 0], line: 0.5, shadow: false }), mesh(box(0.06, 0.05, 0.066), C.gold, { at: [0.11, 0.058, 0], line: 0.5, shadow: false }),
+  mesh(arc(0.028, 0.006, Math.PI, 10), C.iron, { at: [0.075, -0.014, 0], rot: [0, 0, Math.PI], line: 0.4, shadow: false })]);
 /** a spyglass, lying along +x from the eye end at the origin; its eye cup is wide enough to cover the eye it is put to */
 export const spyglass = () => group([mesh(cyl(0.05, 0.05, 0.03, 14), "#3a2a22", { at: [0.012, 0, 0], rot: [0, 0, Math.PI / 2], line: 0.7, shadow: false }), mesh(cyl(0.028, 0.034, 0.26, 10), C.gold, { at: [0.13, 0, 0], rot: [0, 0, Math.PI / 2], shadow: false }), mesh(cyl(0.036, 0.046, 0.22, 10), "#5a3a22", { at: [0.36, 0, 0], rot: [0, 0, Math.PI / 2], shadow: false })]);
 /** flat white clouds far away */

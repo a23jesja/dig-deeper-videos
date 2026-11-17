@@ -44,10 +44,11 @@ export const figureCard = (D: Design, pose: Pose, o: FigOpts, sp: Spot, cam: num
 /** The closed fingers of a figure's hands (`sides`) on a card of their own, exactly where the figure's hands are. The stage puts it a
  *  little nearer the lens than the thing the hand holds, so that the thing lies between the palm (on the figure's card) and the
  *  fingers. null for a design that has no such layer */
-export const fingersCard = (D: Design, pose: Pose, o: FigOpts, sp: Spot, cam: number[], sides: ("L" | "R")[], seen?: Seen): THREE.Mesh | null => {
+export const fingersCard = (D: Design, pose: Pose, o: FigOpts, sp: Spot, cam: number[], sides: ("L" | "R")[], seen?: Seen, whole = false): THREE.Mesh | null => {
   if (!D.fingers) return null;
   const P = D.props(o.who ?? "sir"), T = bodyH(P), s = 1.15, cw = Math.round(T * 1.9 * s), ch = Math.round(T * 1.42 * s), mpu = (sp.h ?? 1.75) / T;
-  const pl = place(`${D.id}:fingers:${sides.join()}:${sp.at.join()}:${cam.join()}`, cw, ch, 0.93, s, mpu, sp, cam, 0, (g, yaw) => D.fingers!(new Ink(g, lineFor(D.ol, mpu, sp.at, cam, seen)), solve(P, pose, yaw), sides), seen);
+  const kinds = whole ? { L: o.handL ?? "relaxed", R: o.handR ?? "relaxed" } : undefined;
+  const pl = place(`${D.id}:fingers:${sides.join()}:${whole ? `${kinds!.L},${kinds!.R}` : ""}:${sp.at.join()}:${cam.join()}`, cw, ch, 0.93, s, mpu, sp, cam, 0, (g, yaw) => D.fingers!(new Ink(g, lineFor(D.ol, mpu, sp.at, cam, seen)), solve(P, pose, yaw), sides, kinds), seen);
   pl.mesh.castShadow = false; return pl.mesh;
 };
 /** a four-legged animal; h = height at the shoulder in metres. `collar` = where a chain meets its collar, in the world */

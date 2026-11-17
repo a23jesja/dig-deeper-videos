@@ -5,7 +5,7 @@ import { ROME_PEE } from "./romePee";
 import { PIRATE_PLANK } from "./piratePlank";
 import { BLACK_FLAG } from "./blackFlag";
 import { NERO_FIDDLE } from "./neroFiddle";
-import { GRIP_SHEET } from "./gripSheet";
+import { GRIP_SHEET, GRIP_SHEET_2 } from "./gripSheet";
 export const RomePee: React.FC = () => <Stage film={ROME_PEE} />;
 export const ROME_PEE_FRAMES = Math.round(ROME_PEE.seconds * ROME_PEE.fps);
 export const PiratePlank: React.FC = () => <Stage film={PIRATE_PLANK} />;
@@ -21,3 +21,5 @@ export const NeroFiddleThumbs: React.FC = () => <Thumbs film={NERO_FIDDLE} />;
 // the grip sheet (granskning/rattningar/grepp.jpg): one still shot per held prop, use and view
 export const GripSheet: React.FC = () => <Stage film={GRIP_SHEET} />;
 export const GRIP_SHEET_FRAMES = Math.round(GRIP_SHEET.seconds * GRIP_SHEET.fps);
+export const GripSheet2: React.FC = () => <Stage film={GRIP_SHEET_2} />;
+export const GRIP_SHEET_2_FRAMES = Math.round(GRIP_SHEET_2.seconds * GRIP_SHEET_2.fps);

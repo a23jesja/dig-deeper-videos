@@ -3,7 +3,7 @@
 // equally tall and wide, with no jump between them. A figure is a Look (sizes, colours, hat, clothes) on the shared skeleton (rig.ts):
 // Sir Digsworth and every side character are Looks of this one base, so a new figure for any era needs no new drawing code.
 // Card pieces cast a small shadow on the piece under them and are held by brass pins at the joints; the jaw is a piece that drops.
-import { Ink, P2, R, sym, spline, ellPts, seg, mid, shade, shift, clamp, lerp, hand, angle, len, sub, add, unit, chain } from "./ink";
+import { Ink, P2, R, sym, spline, ellPts, seg, mid, shade, shift, clamp, lerp, hand, angle, len, sub, add, unit, chain, HandKind } from "./ink";
 import { Sk, Side, Props, Joint, Pose, solve } from "./rig";
 import { FigOpts, Face, frame, shoePts, thumbFlip, loaf, cane } from "./designs/common";
 
@@ -309,11 +309,11 @@ export const monocleShows = (L: Look, yawDeg: number) => { if (!L.monocle) retur
 export const swapPose = (p: Pose): Pose => ({ ...p, px: -(p.px ?? 0), roll: -(p.roll ?? 0), twist: -(p.twist ?? 0), hipTilt: -(p.hipTilt ?? 0), head: p.head ? [-p.head[0], p.head[1], -p.head[2]] : undefined, armL: p.armR, armR: p.armL, handL: p.handR, handR: p.handL, legL: p.legR, legR: p.legL });
 /** the closed fingers of the hands that hold something (`sides`), drawn where the figure's own hands are: the stage puts this layer
  *  in front of the thing held */
-export const drawFingers = (L: Look) => (k: Ink, sk0: Sk, sides: Side[]) => {
+export const drawFingers = (L: Look) => (k: Ink, sk0: Sk, sides: Side[], whole?: Partial<Record<Side, HandKind>>) => {
   const mir = mirrored(L, sk0.yaw), sk = mir ? solve(sk0.P, swapPose(sk0.pose), -sk0.yaw) : sk0;
   if (mir) { k.g.save(); k.g.scale(-1, 1); }
   for (const s0 of sides) { const s: Side = mir ? (s0 === "L" ? "R" : "L") : s0, E = sk.j[`el${s}`], W = sk.j[`wr${s}`], T = sk.j[`tip${s}`];
-    hand(k, W, len(sub(T, W)) > 6 ? angle(W, T) : angle(E, W), sk.P.hand, "fist", L.skin, thumbFlip(sk, s), false, k.ol, "fingers"); }
+    const kind = whole?.[s0]; hand(k, W, len(sub(T, W)) > 6 ? angle(W, T) : angle(E, W), sk.P.hand, kind ?? "fist", L.skin, thumbFlip(sk, s), false, k.ol, kind ? "all" : "fingers"); }
   if (mir) k.g.restore();
 };
 export const drawCast = (L: Look) => {

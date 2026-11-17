@@ -1,5 +1,5 @@
 """The grip sheet and the close-ups of held things, cut out of rendered frames.
-  sheet:  python scripts/grip_sheet.py sheet <spots.json> <frames dir/prefix> <out.jpg> <out-close.jpg>
+  sheet:  python scripts/grip_sheet.py sheet <spots.json> <frames dir/prefix> <out.jpg> <out-close.jpg> [title]   (CELL_H = the height cut from each frame)
           lays the pictures of the grip-sheet film out by prop (rows) and use and view (columns), at full size, and makes a second
           picture with every hand enlarged twice
   close:  python scripts/grip_sheet.py close <spots.json> <frames dir/prefix> <out.jpg> [title]
@@ -19,28 +19,39 @@ def cut(n, x, y, r, k):
     im = Image.open(frame(n)); w, h = im.size; x0 = min(max(0, x - r), w - 2 * r); y0 = min(max(0, y - r), h - 2 * r)
     return im.crop((x0, y0, x0 + 2 * r, y0 + 2 * r)).resize((2 * r * k, 2 * r * k), Image.LANCZOS)
 if mode == "sheet":
-    PROP = {"spyglass": "KIKARE", "pistol": "PISTOL", "sabre": "SABEL", "mug": "MUGG"}
-    USE = {"look": "i bruk: vid ögat", "aim": "i bruk: siktar", "ready": "i bruk: i fästet", "hold": "i bruk: i örat", "lowered": "sänkt", "raised": "höjd", "sheathed": "i skidan vid höften"}
+    # the pictures of a grip-sheet film (shots named <prop>-<use>-<view>), one row per prop (four to a row), in the film's order
+    title = sys.argv[6] if len(sys.argv) > 6 else "GREPPBLAD"
+    PROP = {"spyglass": "KIKARE", "pistol": "PISTOL", "sabre": "SABEL", "mug": "MUGG", "bucket": "HINK", "rope": "LINA", "linstock": "LUNTSTAKE", "chest": "KISTA",
+            "fiddle": "FIOL OCH STRÅKE", "cithara": "CITHARA", "grapes": "DRUVKLASE", "bundle": "KNYTE"}
+    USE = {"look": "i bruk: vid ögat", "aim": "i bruk: siktar", "ready": "i bruk: i fästet", "hold": "i bruk: i örat", "lowered": "sänkt", "raised": "höjd", "sheathed": "i skidan, axelgehäng",
+           "chop": "hugg: dragen bakåt", "struck": "hugg: genom", "carry": "buren", "haul": "halas", "fire": "mot kanonen", "hand": "i handen", "falling": "släppt, faller", "landed": "landad",
+           "play": "spelar", "shoulder": "på axeln"}
+    USE2 = {("bucket", "raised"): "lyft", ("linstock", "ready"): "redo", ("cithara", "hold"): "i famnen", ("grapes", "hold"): "hålls upp", ("chest", "carry"): "buren av två i handtagen"}
     VIEW = {"front": "framifrån", "side": "från sidan"}
-    rows = [("spyglass", ["look", "lowered"]), ("pistol", ["aim", "lowered"]), ("sabre", ["ready", "lowered"]), ("sabre", ["raised", "sheathed"]), ("mug", ["hold", "lowered"])]
-    by = {}
+    first = {}
     for s in spots:
-        if s["frame"] in have: by.setdefault(s["shot"], s)
-    one = lambda prop, use, view: by.get(f"{prop}-{use}-{view}")
-    W, H, TOP, LAB = 1080, 1500, 150, 70; f1, f2 = font(54), font(38)
+        if s["frame"] in have: first.setdefault(s["shot"], s)
+    order = sorted(first.values(), key=lambda s: s["frame"])
+    rows, cur = [], []
+    for s in order:
+        if cur and (s["shot"].split("-")[0] != cur[0]["shot"].split("-")[0] or len(cur) == 4): rows.append(cur); cur = []
+        cur.append(s)
+    if cur: rows.append(cur)
+    def label(s):
+        prop, use, view = (s["shot"].split("-") + ["", ""])[:3]
+        v = "snett framifrån" if prop == "chest" and view == "front" else VIEW.get(view, view)
+        return f"{PROP.get(prop, prop)}, {USE2.get((prop, use), USE.get(use, use))}, {v}"
+    W, H, TOP, LAB = 1080, int(os.environ.get("CELL_H", "1500")), 150, 70; f1, f2 = font(54), font(38)
     S = Image.new("RGB", (W * 4, TOP + (H + LAB) * len(rows)), "white"); d = ImageDraw.Draw(S)
-    d.text((40, 30), "GREPPBLAD: kikare, pistol, sabel och mugg i användarpose och sänkt läge, framifrån och från sidan (ur motorn, full storlek)", fill="black", font=f1)
+    d.text((40, 30), title, fill="black", font=f1)
     C = Image.new("RGB", (800 * 4, TOP + (800 + LAB) * len(rows)), "white"); dc = ImageDraw.Draw(C)
-    dc.text((40, 30), "GREPPBLAD, NÄRBILDER: varje hand med sitt föremål, förstorad två gånger", fill="black", font=f1)
-    for r, (prop, uses) in enumerate(rows):
-        for c, (use, view) in enumerate([(u, v) for u in uses for v in ("front", "side")]):
-            s = one(prop, use, view)
-            if not s or s["frame"] not in have: continue
-            label = f"{PROP[prop]}, {USE[use]}, {VIEW[view]}"
-            im = Image.open(frame(s["frame"])).crop((0, 80, W, 80 + H)); x, y = c * W, TOP + r * (H + LAB)
-            S.paste(im, (x, y + LAB)); d.rectangle([x, y, x + W - 1, y + LAB - 1], fill="#222"); d.text((x + 16, y + 12), label, fill="white", font=f2)
-            x, y = c * 800, TOP + r * (800 + LAB); C.paste(cut(s["frame"], s["x"], s["y"], 200, 2), (x, y + LAB)); dc.rectangle([x, y, x + 799, y + LAB - 1], fill="#222"); dc.text((x + 12, y + 16), label[:44], fill="white", font=font(30))
-    S.save(out, quality=88); C.save(sys.argv[5], quality=90); print(out, S.size, sys.argv[5], C.size)
+    dc.text((40, 30), title + ", NÄRBILDER: varje hand med sitt föremål, förstorad två gånger", fill="black", font=f1)
+    for r, row in enumerate(rows):
+        for c, s in enumerate(row):
+            lab = label(s); im = Image.open(frame(s["frame"])).crop((0, 80, W, 80 + H)); x, y = c * W, TOP + r * (H + LAB)
+            S.paste(im, (x, y + LAB)); d.rectangle([x, y, x + W - 1, y + LAB - 1], fill="#222"); d.text((x + 16, y + 12), lab, fill="white", font=f2)
+            x, y = c * 800, TOP + r * (800 + LAB); C.paste(cut(s["frame"], s["x"], s["y"], 200, 2), (x, y + LAB)); dc.rectangle([x, y, x + 799, y + LAB - 1], fill="#222"); dc.text((x + 12, y + 16), lab[:46], fill="white", font=font(30))
+    S.save(out, quality=86); C.save(sys.argv[5], quality=90); print(out, S.size, sys.argv[5], C.size, len(order), "pictures")
 else:
     cells = [s for s in spots if s["frame"] in have and 0 <= s["x"] <= 1080 and 0 <= s["y"] <= 1920]
     cols = 6; R, K, LAB = 150, 2, 40; n = max(1, len(cells)); S = Image.new("RGB", (2 * R * K * cols, 60 + (2 * R * K + LAB) * ((n + cols - 1) // cols)), "white"); d = ImageDraw.Draw(S); f = font(24)

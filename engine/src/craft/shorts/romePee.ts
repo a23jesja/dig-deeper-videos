@@ -345,7 +345,7 @@ export const ROME_PEE: Film = {
   thumbs: [
     { T: cut("titus", "coin") + 2.5, cam: lens(1.55, 1.5, 3.7, -0.1, -1, -1, 32).cam, words: ["A TAX", "ON PEE?!"], side: "right", at: "middle", size: 132 },
     { T: 1.0, cam: lens(3.75, 1.45, 1.0, -0.12, 1, -9, 44).cam, words: ["ROME", "TAXED", "THIS"], side: "left", at: "middle", size: 120 },
-    { T: cut("coin", "yet") + 0.62, cam: lens(1.2, 1.5, 3.95, -0.42, -0.9, -1, 30).cam, words: ["DOES IT", "SMELL?"], side: "left", at: "middle", size: 132 },
+    { T: cut("coin", "yet") + 0.62, cam: lens(2.2, 1.35, 3.95, -0.643, -0.766, 0, 36).cam, words: ["DOES IT", "SMELL?"], side: "left", at: "middle", size: 132 },
   ],
   hits: [], beds: [{ k: "street", a: 0, b: END, g: 1 }], music: "roman", audio: "craft/rome-pee.wav",
 };

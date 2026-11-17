@@ -230,11 +230,18 @@ export const treadingStall = (liquid = "#cdb95a") => group([
   mesh(box(0.96, 0.03, 0.72), liquid, { at: [0, 0.3, 0], line: 0, shadow: false }),
 ]);
 /** a fuller's treading tub: a low round masonry tub, wide enough to stand in, the liquid near its brim */
-export const treadingTub = (r = 0.62, h = 0.36, liquid = "#d4c468") => group([
-  mesh(lathe(`tub${r}${h}`, [[r * 0.92, 0], [r, 0.04], [r, h], [r - 0.09, h], [r - 0.1, h - 0.1]], 24), "#e2d6b8"),
-  mesh(cyl(r - 0.09, r - 0.09, 0.03, 24), liquid, { at: [0, h - 0.07, 0], line: 0, shadow: false }),
-  mesh(torus(r - 0.045, 0.05, 24), "#cfc3a2", { at: [0, h, 0], rot: [Math.PI / 2, 0, 0], line: 0.6 }),
-]);
+export const treadingTub = (r = 0.62, h = 0.36, liquid = "#d4c468") => {
+  const g = group([
+    mesh(lathe(`tub${r}${h}`, [[r * 0.92, 0], [r, 0.04], [r, h], [r - 0.09, h], [r - 0.1, h - 0.1]], 24), "#e2d6b8"),
+    mesh(cyl(r - 0.09, r - 0.09, 0.03, 24), liquid, { at: [0, h - 0.07, 0], line: 0, shadow: false }),
+    mesh(torus(r - 0.045, 0.05, 24), "#cfc3a2", { at: [0, h, 0], rot: [Math.PI / 2, 0, 0], line: 0.6 }),
+  ]);
+  // it is built of two courses of stone: the joint between them, the upright joints of each course, and where the wash has run down it
+  g.add(mesh(torus(r + 0.001, 0.007, 36), "#a89c7c", { at: [0, h * 0.5, 0], rot: [Math.PI / 2, 0, 0], line: 0, shadow: false }));
+  for (let i = 0; i < 14; i++) { const a = (i / 14) * 6.283, low = i % 2 === 0; g.add(mesh(box(0.012, h * 0.44, 0.012), "#a89c7c", { at: [Math.cos(a) * (r + 0.001), low ? h * 0.26 : h * 0.74, Math.sin(a) * (r + 0.001)], rot: [0, -a, 0], line: 0, shadow: false })); }
+  for (const [a, len] of [[0.5, 0.2], [1.9, 0.26], [2.6, 0.15], [3.4, 0.24], [4.4, 0.18], [5.5, 0.27]]) g.add(mesh(box(0.014, len, 0.05), "#c7b56a", { at: [Math.cos(a) * (r + 0.002), h - 0.02 - len / 2, Math.sin(a) * (r + 0.002)], rot: [0, -a, 0], line: 0, shadow: false }));
+  return g;
+};
 /** cloths hung over a pole between two posts to dry; the pole lies along x, `len` long, `h` above the ground */
 export const dryingPole = (len = 3, h = 2.1, cloths: [number, number, number, string][] = [[-1, 0.8, 1.2, "#fbf6ea"], [0, 0.9, 1.4, "#f3e2b8"], [0.95, 0.7, 1.1, "#fbf6ea"]]) => {
   const g = group([rod([-len / 2, h, 0], [len / 2, h, 0], 0.035, C.woodD), mesh(box(0.09, h, 0.09), C.woodD, { at: [-len / 2, h / 2, 0] }), mesh(box(0.09, h, 0.09), C.woodD, { at: [len / 2, h / 2, 0] })]);

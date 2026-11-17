@@ -6,7 +6,7 @@ import { Film, Shot, Cam, V3, Staged, Word, play, talk, smooth } from "../stage/
 import { mover, mt, wag, arm } from "../stage/acting";
 import { lens, aim, once, noShade, put, between, near } from "../stage/staging";
 import { pirateShip, SHIP, SEA, farSloop } from "../world/ship";
-import { mesh, box, ball, rod } from "../world/kit";
+import { mesh, box, ball, rod, arc } from "../world/kit";
 import { coin, cutlass, storyBook, articlesSheet, moneySack, sharkFin, sharkBody, foamRing, hookHand, bottle, pistol } from "../world/props";
 import { SIR_D, CAPTAIN_D, PIRATE_D, MATE_D } from "../looks";
 import type { Pose } from "../rig";
@@ -303,6 +303,8 @@ const originMid = at("origin", /^like$/) - 0.1;
     cast: (t, T) => [play("sir", SIR_D, sir, t, [0, bob(t), 0], 1.8, { talk: Math.max(talk(W, T, ["origin"]), t < 0.5 ? 0.8 : 0), blink: false })],
     things: (g, c, t, _T, cam) => { const a = c.sir, p = near(a.joint("tipR"), cam, 0.05), k = put(g, BOOK_T(), [p[0], p[1] + 0.25, p[2]]); k.lookAt(cam.pos[0], p[1] + 0.25, cam.pos[2]);
       waterline(g, wx, wz, cam, t, 0.95);
+      // the rings he has sent out, seen as broken arcs on the lens side, widening
+      for (let i = 0; i < 4; i++) { const r = 0.42 + 0.2 * i + 0.09 * t, turn = 0.75 + 0.1 * i, k = mesh(arc(r, 0.02, turn, 14), i % 2 ? "#d6ecfb" : "#ffffff", { at: [wx, SEA + 0.012, wz], rot: [Math.PI / 2, 0, Math.PI / 2 - turn / 2 + 0.35 * (i % 2 ? 1 : -1)], line: 0, shadow: false }); k.scale.set(1, 1, 0.3); g.add(k); }
       // what he spits out, in an arc
       if (t < 0.9) { const m = near(a.joint("skull"), cam, 0.2); for (let i = 0; i < 8; i++) { const u = i / 8; g.add(mesh(ball(0.03, 6), "#bfe3fb", { at: [m[0] - 0.12 - 0.5 * u, m[1] - 0.2 + 0.5 * u - 0.9 * u * u, m[2]], line: 0, shadow: false })); } } } });
 }

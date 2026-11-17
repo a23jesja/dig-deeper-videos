@@ -1,0 +1,20 @@
+{
+ "film": "rome-pee",
+ "file": "public/craft/rome-pee.wav",
+ "seconds": 32.33,
+ "integrated_lufs": -14.02,
+ "true_peak_db": -2.55,
+ "voice_lufs": -13.8,
+ "music_lufs": -31.2,
+ "effects_lufs": -24.8,
+ "music_under_voice_db_while_speaking": 18.0,
+ "loudest_400ms_lufs": {
+  "voice": -10.9,
+  "music": -20.8,
+  "effects": -18.7
+ },
+ "cues": 99,
+ "beds": 4,
+ "hits": 0,
+ "music": "roman"
+}

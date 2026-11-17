@@ -63,3 +63,25 @@ Planerad för torsdag 19 november. Filmens id i motorn: `blackbeard-fuses`. Inge
 - Blackbeard som look (skägg till ögonen med flätor och band, hatt, rem med sex pistoler), skeppspojke, handelssjömän, en sjöman som läser högt och åhörare (sjömän, en kvinnlig passagerare).
 - Kajuta (bord, spegel, lykta, pall). Högläsningen sker på ett däck i skeppsvärlden, så ingen kaj behövs.
 - Föremål: lunta som glöder och ryker, band, bricka, sticka, pistolrem, hink, bok med bild, alla med grepp i stage/grips.ts och på ett greppblad före filmen. Rök från en liten glöd (ny del i eldkoden).
+
+## The hook lab: tre öppningsklipp (17 november, kväll)
+Sekund 0-5 byggd på tre sätt som egna klipp på 5 s (`engine/src/craft/shorts/blackbeardHooks.ts`, kompositionerna BlackbeardHookA/B/C), så att den starkaste öppningen väljs innan filmen byggs. Rösten är bm_george. Klippen: `granskning/blackbeard-fuses/hook-a.mp4`, `hook-b.mp4`, `hook-c.mp4`.
+
+| Klipp | Öppningstyp | Text i bild (ord) | Första ordet | Ljudträff | Klipp (s) |
+|---|---|---|---|---|---|
+| a | Det konstiga händer redan: han kliver fram ur krutröken med rykande luntor, kocken tappar hinken, besättningen ryggar | WHY DID BLACKBEARD'S BEARD SMOKE? (5) | ruta 0 (0,03 s) | kanonskott ruta 0, hinken landar 1,0 s | 2,24 / 4,15 |
+| b | Ett chockerande påstående över handlingen: han kliver fram med huggaren höjd, besättningen flyr åt båda håll | BLACKBEARD'S BEARD SMOKED IN BATTLE. (5) | ruta 0 (0,03 s) | kanonskott och "shing" ruta 0 | 2,39 / 3,89 |
+| c | Sir Digsworth i knipa: han hostar i röken, och bakom honom glöder två eldögon i röken och kommer närmare; "Oh. Hello." | WHY DOES BLACKBEARD'S BEARD SMOKE? (5) | ruta 0 (0,03 s) | kanonskott ruta 0 | 2,31 / 3,82 |
+
+Texten i bild är röstens ord (högst sex) och står till första klippet. Varje klipp har en eldbädd (luntornas sprak) under havet och vinden.
+
+Det som rättades före renderingen:
+- Krutröken var solida klot, och vartannat var mörklila. De såg ut som stenar, och ett nära klot mot himlen blev svart. Nu är den mjuka bankar av ljusgrå puffar (`bank` i world/fire.ts) som alltid står bakom ansiktena. En luntas glöd lyser igenom röken.
+- Klipp b:s låga kamera stod inne i handelsskeppets tunna (ett svart fält över halva bilden). Kameran är flyttad 0,7 m.
+- Närbilderna av ansiktet ligger högre i bilden: ögonen omkring en tredjedel ner och skägget ovanför textraden.
+- "Oh. Hello." vände aldrig Sir (vändningen låg efter klippets slut). Nu vänder han sig mot vänster och finner Blackbeard bredvid sig. Båda huvudena syns tre fjärdedels, aldrig i profil.
+- Efter granskningen i 10 rutor/s i telefonstorlek:
+  - klipp a:s besättning står inne i bilden;
+  - klipp b:s närbild hålls 1,5 s;
+  - klipp c:s luntor glöder stort nog att läsas på en telefon.
+

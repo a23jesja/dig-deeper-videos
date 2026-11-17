@@ -95,3 +95,17 @@ export const pointArm = (D: Design, pose: Pose, o: FigOpts, sp: Spot, cam: numbe
     const u = [E[0] - S[0], E[1] - S[1]], f = [W[0] - E[0], W[1] - E[1]], nu = Math.hypot(u[0], u[1]) || 1e-6, nf = Math.hypot(f[0], f[1]) || 1e-6, reach = Math.hypot(W[0] - S[0], W[1] - S[1]);
     return (1 - (f[0] * dx + f[1] * dy) / nf) * 6 + (1 - (u[0] * dx + u[1] * dy) / nu) * 3 * (1 - bend) - (reach / full) * 1.2; });
 };
+
+/** A spectator in a crowd: the figure drawn small (a third of a cast card) and kept, so that a crowd of many costs little. The drawing is
+ *  made once for each look, `tag` (the pose it stands in, named by the caller) and angle (in 20 degree steps) and used again on every
+ *  frame; the card is not the stage's own (nothing of it is thrown away after the frame) */
+const CROWD = new Map<string, { mat: THREE.MeshBasicMaterial; geo: THREE.PlaneGeometry }>();
+export const crowdCard = (D: Design, pose: Pose, o: FigOpts, tag: string, sp: Spot, cam: number[]) => {
+  const P = D.props(o.who ?? "sir"), T = bodyH(P), s = 0.34, cw = Math.round(T * 1.9 * s), ch = Math.round(T * 1.42 * s), mpu = (sp.h ?? 1.7) / T, feet = 0.93;
+  const [x, y, z] = sp.at, az = Math.atan2(cam[0] - x, cam[2] - z), yaw = Math.round((sp.heading - az / D2R) / 20) * 20, key = `${D.id}:${tag}:${yaw}:${(sp.h ?? 1.7).toFixed(2)}`;
+  let c = CROWD.get(key);
+  if (!c) { const cv = document.createElement("canvas"); cv.width = cw; cv.height = ch; const g = cv.getContext("2d")!; g.translate(cw / 2, ch * feet); g.scale(s, s); D.draw(new Ink(g, D.ol * 1.7), solve(P, pose, yaw), o);
+    const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; const w = (cw / s) * mpu, h = (ch / s) * mpu, geo = new THREE.PlaneGeometry(w, h); geo.translate(0, h * (feet - 0.5), 0);
+    c = { mat: new THREE.MeshBasicMaterial({ map: t, transparent: true, alphaTest: 0.5, side: THREE.DoubleSide }), geo }; CROWD.set(key, c); }
+  const m = new THREE.Mesh(c.geo, c.mat); m.position.set(x, y, z); m.rotation.y = az; return m;
+};

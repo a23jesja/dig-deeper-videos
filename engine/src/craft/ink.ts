@@ -139,7 +139,7 @@ export const eye = (k: Ink, cx: number, cy: number, rx: number, ry: number, o: E
 };
 
 // ---------------- hands ----------------
-export type HandKind = "relaxed" | "open" | "fist" | "point" | "grip";
+export type HandKind = "relaxed" | "open" | "fist" | "point" | "grip" | "two";
 /** a hand at the wrist, fingers along `deg`; thumbFlip puts the thumb on the other side; cut = straight-edged (woodcut, card) */
 /** layer = "fingers": only the four closed fingers of a hand that holds something, without the heel of the hand and the thumb. The
  *  stage draws them on a card of their own in front of the thing held, so that the thing lies between the palm and the fingers */
@@ -162,6 +162,8 @@ export const hand = (k: Ink, wrist: P2, deg: number, h: number, kind: HandKind, 
   } else {
     const fist = body([[0, -0.22], [0.3, -0.35], [0.62, -0.34], [0.76, -0.12], [0.74, 0.18], [0.52, 0.35], [0.2, 0.33], [0, 0.22]]);
     const pieces = [fist]; if (kind === "point") pieces.unshift(fin(0.58, -0.22, 0, 0.6, 0.1, 0.08));
+    // two fingers up (counting two), a little apart: the first and the middle finger
+    if (kind === "two") pieces.unshift(fin(0.58, -0.24, -8, 0.6, 0.1, 0.08), fin(0.62, -0.06, 6, 0.58, 0.1, 0.08));
     k.group(pieces, col, ol);
     k.group([fin(0.3, 0.3, -32, 0.34, 0.1, 0.09)], col, ol * 0.5);
     for (const y of [-0.12, 0.02, 0.15]) k.line([[0.6 * h, y * h], [0.74 * h, (y + 0.02) * h]], thin);

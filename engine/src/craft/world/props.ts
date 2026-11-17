@@ -513,8 +513,8 @@ export const gateLeaf = (w = 1.5, h = 3.0, col = "#7a4a26") => { const g = new T
 // ---------------- the arena: what gladiators and their referee hold ----------------
 /** the gladius, a gladiator's short sword, to hold: the grip (bone, ridged for the fingers) across the origin, a small wooden guard
  *  and the straight blade along +x, a round pommel along -x. No knuckle bow: the hilt is the grip between guard and pommel */
-export const gladius = (blade = 0.5) => layered(group([mesh(box(0.124, 0.038, 0.038), "#eadfc4", { at: [-0.024, 0, 0], shadow: false }),
-  mesh(box(0.034, 0.082, 0.07), "#8a5a30", { at: [0.054, 0, 0], line: 0.6, shadow: false }), mesh(ball(0.032, 10), "#8a5a30", { at: [-0.094, 0, 0], scale: [0.8, 1, 1], line: 0.6, shadow: false }),
+export const gladius = (blade = 0.5) => layered(group([mesh(box(0.13, 0.038, 0.038), "#eadfc4", { at: [-0.027, 0, 0], shadow: false }),
+  mesh(box(0.034, 0.082, 0.07), "#8a5a30", { at: [0.054, 0, 0], line: 0.6, shadow: false }), mesh(ball(0.032, 10), "#8a5a30", { at: [-0.1, 0, 0], scale: [0.8, 1, 1], line: 0.6, shadow: false }),
   ...[-0.056, -0.024, 0.008].map((x) => mesh(box(0.008, 0.044, 0.044), "#b8a888", { at: [x, 0, 0], line: 0, shadow: false })),
   Object.assign(mesh(slab("gladius" + blade, [[0, -0.027], [blade * 0.84, -0.027], [blade, 0], [blade * 0.84, 0.027], [0, 0.027]], 0.016), "#e9eef4", { at: [0.07, 0, -0.008], line: 0.9, shadow: false }), { name: "blade" })]), {});
 /** the scutum, the heavy gladiator's tall curved shield, to hold by the grip behind its boss (the origin): its face toward +z, bent round
@@ -540,11 +540,16 @@ export const netBunch = (r = 0.17) => { const tex = paint("netmesh", 96, 96, (g)
   const g = group([mesh(ball(r, 14), "#ffffff", { at: [0, -r * 1.35, 0], scale: [0.9, 1.45, 0.75], map: tex, line: 0.8 }), mesh(cyl(0.025, 0.045, 0.1, 10), "#cdb98a", { at: [0, -0.04, 0], line: 0.6, shadow: false })]);
   for (const [x, y] of [[-0.09, -0.52], [0.0, -0.58], [0.1, -0.5], [-0.03, -0.47]] as [number, number][]) g.add(mesh(ball(0.022, 8), "#5a5d66", { at: [x * (r / 0.17), y * (r / 0.17) + 0.05, 0.03], line: 0.4, shadow: false }));
   return g; };
-/** the net thrown open: a square of cords w across (its middle at the origin, lying in x and z), sagging `drop` metres from the middle to
- *  its rim (0 = flat in the air, more = draped over something), lead weights along its rim */
-export const netOpen = (w = 1.8, drop = 0.1, n = 8) => { const g = new THREE.Group(), half = w / 2, P = (i: number, j: number): [number, number, number] => { const x = -half + (w * i) / n, z = -half + (w * j) / n, r = Math.min(1, Math.hypot(x, z) / half); return [x, -drop * r * r, z]; };
-  for (let i = 0; i <= n; i++) for (let j = 0; j <= n; j++) { if (i < n) g.add(rod(P(i, j), P(i + 1, j), 0.008, "#cbb489", { line: 0.4, shadow: false })); if (j < n) g.add(rod(P(i, j), P(i, j + 1), 0.008, "#cbb489", { line: 0.4, shadow: false }));
-    if (i === 0 || j === 0 || i === n || j === n) g.add(mesh(ball(0.024, 8), "#5a5d66", { at: P(i, j), line: 0.4, shadow: false })); }
+/** the net thrown open: a square of thin cords w across (its middle at the origin, lying in x and z), sagging `drop` metres from the middle
+ *  to its rim when it flies. `hang` = it lies over something that wide (a head and shoulders): inside that it bows over it, outside it
+ *  the cords fall straight down round it, as a net does over a man. Lead weights along its rim */
+export const netOpen = (w = 1.8, drop = 0.1, n = 8, hang = 0) => { const g = new THREE.Group(), half = w / 2, P = (i: number, j: number): [number, number, number] => {
+    const x = -half + (w * i) / n, z = -half + (w * j) / n, d = Math.hypot(x, z);
+    if (!hang) { const r = Math.min(1, d / half); return [x, -drop * r * r, z]; }
+    if (d <= hang) return [x, -drop * (d / hang) ** 2, z];
+    const k = (hang + (d - hang) * 0.12) / d; return [x * k, -drop - (d - hang) * 1.05, z * k]; };
+  for (let i = 0; i <= n; i++) for (let j = 0; j <= n; j++) { if (i < n) g.add(rod(P(i, j), P(i + 1, j), 0.0065, "#6e5c3c", { line: 0.3, shadow: false })); if (j < n) g.add(rod(P(i, j), P(i, j + 1), 0.0065, "#6e5c3c", { line: 0.3, shadow: false }));
+    if (i === 0 || j === 0 || i === n || j === n) g.add(mesh(ball(0.018, 8), "#5a5d66", { at: P(i, j), line: 0.3, shadow: false })); }
   return g; };
 /** the referee's long stick (the rudis of the summa rudis): held near one end (the origin), the stick along +x */
 export const refStick = (len = 1.35) => group([mesh(box(len, 0.026, 0.026), "#7a5a36", { at: [len / 2 - 0.08, 0, 0], line: 0.6, shadow: false }), mesh(ball(0.022, 8), "#5a3a22", { at: [len - 0.08, 0, 0], line: 0.5, shadow: false })]);

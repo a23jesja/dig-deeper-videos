@@ -86,17 +86,17 @@ const puffMat = (o: number) => { const i = Math.max(0, Math.min(9, Math.round(o 
  *  sideways, swells and breathes. Its middle at p (on the deck), `w` metres wide across the lens's view, `h` high, puffs up to `big`
  *  metres across, `o` = how thick (0-1). It is drawn before every other soft thing (renderOrder 3), so that a glow or a wisp behind it
  *  still shines through, as a fuse does in smoke. Put it behind a face, never between the lens and a face */
-const BANKS: THREE.MeshBasicMaterial[] = [];
-/** gun smoke is greyer than a fuse's thin wisp, so that it reads against a pale sail as well as against the sky */
-const bankMat = (o: number) => { const i = Math.max(0, Math.min(9, Math.round(o * 9))); BANKS[i] ??= new THREE.MeshBasicMaterial({ transparent: true, depthWrite: false, opacity: i / 9, fog: false, color: 0xb4aea7, map: puffMat(1).map }); return BANKS[i]; };
-export const bank = (into: THREE.Object3D, p: V3, t: number, toLens: number, w = 4, h = 1.6, n = 9, big = 1.8, o = 0.6, drift = 0.12, seed = 0) => {
+const BANKS = new Map<string, THREE.MeshBasicMaterial>();
+/** gun smoke is greyer than a fuse's thin wisp, so that it reads against a pale sail as well as against the sky; `col` tints it (sand kicked up) */
+const bankMat = (o: number, col = 0xb4aea7) => { const i = Math.max(0, Math.min(9, Math.round(o * 9))), k = `${col}:${i}`; let m = BANKS.get(k); if (!m) { m = new THREE.MeshBasicMaterial({ transparent: true, depthWrite: false, opacity: i / 9, fog: false, color: col, map: puffMat(1).map }); BANKS.set(k, m); } return m; };
+export const bank = (into: THREE.Object3D, p: V3, t: number, toLens: number, w = 4, h = 1.6, n = 9, big = 1.8, o = 0.6, drift = 0.12, seed = 0, col?: number) => {
   const ax = Math.cos(toLens), az = -Math.sin(toLens), nx = Math.sin(toLens), nz = Math.cos(toLens);
   const rnd = (k: number, j: number) => { const s = Math.sin((k + 1) * 12.9898 + j * 78.233 + seed * 37.719) * 43758.5453; return s - Math.floor(s); };
   for (let k = 0; k < n; k++) {
     const a = (n > 1 ? k / (n - 1) - 0.5 : 0) * w + (rnd(k, 1) - 0.5) * (w / n) + drift * t + 0.08 * Math.sin(t * 0.6 + k * 1.7);
     const y = p[1] + rnd(k, 2) * h * 0.75 + big * 0.3 + 0.05 * t, dep = (rnd(k, 3) - 0.5) * 0.8;
     const s = big * (0.55 + 0.45 * rnd(k, 4)) * (1 + 0.04 * t), op = o * (0.6 + 0.4 * rnd(k, 5)) * (0.88 + 0.12 * Math.sin(t * 0.9 + k * 2.1));
-    if (op < 0.04) continue; const m = new THREE.Mesh(PUFFGEO, bankMat(op)); m.position.set(p[0] + ax * a + nx * dep, y, p[2] + az * a + nz * dep);
+    if (op < 0.04) continue; const m = new THREE.Mesh(PUFFGEO, bankMat(op, col)); m.position.set(p[0] + ax * a + nx * dep, y, p[2] + az * a + nz * dep);
     m.rotation.set(0, toLens, 0); m.scale.set(s * 1.3, s, 1); m.renderOrder = 3; m.castShadow = false; into.add(m); }
 };
 export const wisp = (into: THREE.Object3D, p: V3, t: number, toLens: number, n = 12, rise = 0.5, big = 0.09, drift = 0.08, seed = 0) => {

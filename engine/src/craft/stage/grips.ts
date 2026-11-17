@@ -86,7 +86,7 @@ export const GRAPES: Prop = { name: "grapes", uses: {
 export const BUNDLE: Prop = { name: "bundle", uses: { carry: { arm: A(6, 14, 12, 8), level: 0, ok: within(-8, 8, "a bundle hangs from its knot") } } };
 /** the gladius (props.ts gladius): held as the sabre is, the hand right behind the small guard and the pommel showing beyond the fist,
  *  the straight blade carrying on along the forearm. It has no knuckle bow */
-export const GLADIUS: Prop = { name: "gladius", hilt: { guard: 0.054, turn: 40, pommel: -0.094 }, uses: {
+export const GLADIUS: Prop = { name: "gladius", hilt: { guard: 0.054, turn: 40, pommel: -0.1 }, uses: {
   ready: { arm: A(66, 30, 108, 24), turn: 18, ok: within(-10, 80, "a gladius at the ready points forward and up, at the man in front of him") },
   thrust: { arm: A(86, 22, 90, 14), turn: 0, ok: within(-30, 30, "a gladius thrust points straight ahead along the arm") },
   raised: { arm: A(160, 26, 184, 10), turn: 4, ok: within(55, 120, "a raised gladius points up") },

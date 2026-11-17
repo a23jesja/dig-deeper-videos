@@ -256,7 +256,7 @@ const SWAP = at("creep", /^then/) - 0.12;
 //    flies up, the sail comes down behind them, and his men put their hands up
 {
   const a0 = cut("meant", "sight"), b0 = cut("sight", "red"), V = lens(-3.3, 2.15, 5.1, -1, 0.06, -12, 58), LOW = 0.62, GULP = 0.9, PASS = 1.0, DRAW = 1.16, SLASH = 1.6, LAND = SLASH + 0.6;
-  const A: V3 = [-5.3, MD + 0.86, 5.65], B: V3 = [FLAGSEA.mx + BRIG.sail.x, FLAGSEA.yard, 6.6];      // the halyard: belayed at the rail beside him, up to the yard
+  const A: V3 = [-5.3, MD + 0.86, 5.8], B: V3 = [FLAGSEA.mx + BRIG.sail.x, FLAGSEA.yard, 6.85];      // the halyard: belayed at the rail beside him, up to the yard
   const mc = mover(CUSTOMS_D, 1.9, -5.75, 5.25, 46); mc.stand(LOW + 0.1).turn(30, 0.3).stand(8);
   const PEER = { brow: -0.5, lid: 0.2, smile: -0.3 }, SHOCK = { wide: 1, lid: 0, brow: 1, mouth: 0.4, smile: -0.8 }, GRIM = { brow: -1, lid: 0, wide: 0.6, smile: -1 };
   mc.actAt(-1, { armR: arm(118, 26, 156, 30), armL: arm(20, 10, 60, 0), head: [0, -22, 0], lean: -4 }, LOW + 1.1, { in: 0.01, out: 0.14, handR: "grip", handL: "fist", face: PEER });
@@ -290,10 +290,12 @@ const SWAP = at("creep", /^then/) - 0.12;
       sailAt(g, yardY(t), (t - SLASH) / 0.55);
       // the halyard: cut above his shoulder; its lower end drops by the rail and its upper end flies up to the yard
       const C = mix3(A, B, 0.14), u = t - SLASH;
-      if (u < 0) line(g, A, B, 0.02); else { line(g, A, [A[0], Math.max(A[1] + 0.06, C[1] - 6 * u * u), A[2] + 0.1 * clamp(u / 0.2)], 0.02); if (u < 0.3) line(g, mix3(C, B, u * 3), mix3(C, B, Math.min(1, u * 3 + 0.22)), 0.02); }
-      // the spyglass: its eye end at his eye and the tube up toward the flag; then its middle in his fist, hanging down; it changes hands
+      if (u < 0) line(g, A, B, 0.02); else { line(g, A, [A[0], Math.max(A[1] + 0.06, C[1] - 16 * u * u), A[2] + 0.3 * clamp(u / 0.24)], 0.02); if (u < 0.3) line(g, mix3(C, B, u * 3), mix3(C, B, Math.min(1, u * 3 + 0.22)), 0.02); }
+      // the spyglass: its eye end at his eye and the tube up toward the flag, through the hand that holds it; then its middle in his fist,
+      // hanging down; it changes hands
       const e = near(aside(mix3(c.mc.joint("neck"), c.mc.joint("crown"), 0.5), cam, -0.1), cam, 0.06), kl = smooth((t - LOW) / 0.26), kp = smooth((t - PASS) / 0.16);
-      const hand = near(mix3(palm(c.mc, "R"), palm(c.mc, "L"), kp), cam, 0.06), g0 = rad(152), ga = g0 + (rad(262) - g0) * kl;
+      const hand = near(mix3(palm(c.mc, "R"), palm(c.mc, "L"), kp), cam, 0.06), fx = cam.look[0] - cam.pos[0], fz = cam.look[2] - cam.pos[2], fn = Math.hypot(fx, fz) || 1;
+      const g0 = Math.atan2(hand[1] - e[1], ((hand[0] - e[0]) * -fz + (hand[2] - e[2]) * fx) / fn), ga = g0 + (rad(262) - g0) * kl;      // at his eye the tube points at the hand that holds it
       const mid = mix3(aside(e, cam, 0.17 * Math.cos(g0), 0.17 * Math.sin(g0)), hand, kl), o = aside(mid, cam, -0.17 * Math.cos(ga), -0.17 * Math.sin(ga));
       span(g, GLASS(), o, aside(o, cam, Math.cos(ga), Math.sin(ga)), cam, 0).scale.setScalar(0.85);
       if (t > DRAW + 0.12) sword(g, 0, c.mc, cam, 0);
@@ -405,7 +407,7 @@ const TARP = { a: cut("answer", "tarp"), mid: at("tarp", /^so/) - 0.1, b: cut("t
   gun.actAt(-1, { lean: 34, armL: arm(54, 10, 46, -6), armR: arm(54, 10, 46, -6), head: [0, 12, 0] }, LIFT + 1, { in: 0.01, out: 0.1, handL: "open", handR: "open", face: LOOK });
   gun.actAt(LIFT, { lean: 6, armL: arm(58, 8, 84, -10), armR: arm(58, 8, 84, -10), head: [0, 18, 0] }, DOWN - LIFT + 0.04, { in: 0.2, out: 0.14, antic: 0.2, over: 1.3, handL: "grip", handR: "grip", face: LOOK });
   wag(gun, LIFT + 0.24, DOWN - LIFT - 0.3, P({ armL: arm(64, 8, 92, -10), armR: arm(52, 8, 76, -10) }), P({ armL: arm(52, 8, 76, -10), armR: arm(64, 8, 92, -10) }), 0.16, { handL: "grip", handR: "grip", face: LOOK });
-  gun.actAt(DOWN + 0.1, { armL: arm(30, 34, 82, 46), armR: arm(30, 34, 82, 46), head: [-10, 0, 10], py: 0.02 }, 9, { in: 0.2, antic: 0.2, over: 1.6, handL: "open", handR: "open", face: SOUR });
+  gun.actAt(DOWN + 0.1, { armL: arm(30, 18, 82, 22), armR: arm(30, 18, 82, 22), head: [-10, 0, 10], py: 0.02 }, 9, { in: 0.2, antic: 0.2, over: 1.6, handL: "open", handR: "open", face: SOUR });
   wag(gun, DOWN + 0.45, 2, P({ head: [14, 0, 10] }), P({ head: [-22, 0, 10] }), 0.4, { handL: "open", handR: "open", face: SOUR });
   const cor = mover(CORSAIR_D, 1.76, 0.76, -0.45, -8); cor.stand(8);
   const WATCH = { brow: 0.6, lid: 0.1, smile: -0.2, gaze: [-0.6, 0.3] as [number, number] };

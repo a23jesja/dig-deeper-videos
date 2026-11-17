@@ -150,3 +150,8 @@ Röst, text och klipptider är oförändrade.
 8. **Bild 1:** kameran ser något nedåt, så att hinken hänger över frågetexten i kockens hand; den slängs ett steg framåt när händerna far upp och landar och välter nedanför texten.
 
 Smått: raden om thumbnail 2 i text.md är omskriven (pistolen sänkt vid sidan), raden om thumbnail 3 nämner raden av skjortor.
+
+Min egen läsning av en första rendering av version 2 (commit a1d161f; var femte ruta i bild 7, var sjunde i bild 8, var fjärde i bild 10) hittade tre saker som är rättade i den fil som skickas:
+- **Bild 7:** kikaren låg vid ögat men handen höll i fallet bredvid, inte i kikaren. Tuben går nu från ögat genom handen som håller den, och fallet står en bit längre ut. Den avhuggna nedre repändan stod kvar som en käpp; den faller nu direkt.
+- **Bild 10:** handen i axelryckningen nådde in över mannen bredvid; armarna hålls närmare kroppen.
+- Bild 8 hade inget att rätta: pistolen sitter i handen i varje ruta, röken står kvar där mynningen var.

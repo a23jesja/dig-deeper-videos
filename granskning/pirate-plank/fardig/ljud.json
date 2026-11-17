@@ -3,7 +3,7 @@
  "file": "public/craft/pirate-plank.wav",
  "seconds": 30.33,
  "integrated_lufs": -14.02,
- "true_peak_db": -3.06,
+ "true_peak_db": -2.96,
  "voice_lufs": -13.7,
  "music_lufs": -29.9,
  "effects_lufs": -24.7,
@@ -11,7 +11,7 @@
  "loudest_400ms_lufs": {
   "voice": -10.6,
   "music": -17.1,
-  "effects": -14.4
+  "effects": -14.6
  },
  "cues": 96,
  "beds": 5,

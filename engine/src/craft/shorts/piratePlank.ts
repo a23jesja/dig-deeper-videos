@@ -187,13 +187,14 @@ function hooked(g: THREE.Group, a: Staged, cam: Cam) {
 //    snaps at the air with it, and looks round as something heavy is lifted behind him
 const limbA = cut("rules", "limb"), paidA = at("limb", /^and$/) - 0.1;
 {
-  const V = lens(-1.75, 1.42, 4.0, 1, -0.1, 0, 46), [mx, mz] = V.spot(1.95, 0.21), len = paidA - limbA;
+  const V = lens(-1.75, 1.42, 4.0, 1, -0.1, 0, 54), [mx, mz] = V.spot(1.95, 0.25), len = paidA - limbA;
   const m = mover(MATE_D, 1.8, mx, mz, V.toward(mx, mz, 30)); m.stand(8);
-  m.actAt(-1, { armL: arm(10, 12, 30, 0), armR: arm(30, 8, 70, -6), head: [0, 14, 0] }, 0.3 + 1, { in: 0.01, out: 0.15, handL: "relaxed", handR: "fist", face: { brow: 0.8, smile: -0.6, lid: 0.25, gaze: [0.3, 0.9] } });
-  m.actAt(0.12, { armR: arm(106, 36, 174, 26), lean: -3, head: [-26, -8, 0] }, 9, { in: 0.28, antic: 0.5, over: 1.8, handR: "fist", face: { brow: 0.9, smile: -0.5, lid: 0.15, gaze: [0.5, -0.8] } });
-  wag(m, 0.5, len - 1.0, P({ armR: arm(112, 38, 184, 28), head: [-30, -12, 0] }), P({ armR: arm(100, 34, 162, 22), head: [-20, -4, 0] }), 0.3, { handR: "fist" });
+  m.actAt(-1, { armL: arm(10, 12, 30, 0), armR: arm(24, 40, 44, 40), head: [0, 14, 0] }, 0.3 + 1, { in: 0.01, out: 0.15, handL: "relaxed", handR: "fist", face: { brow: 0.8, smile: -0.6, lid: 0.25, gaze: [0.3, 0.9] } });
+  m.actAt(0.06, { armR: arm(70, 60, 150, 50) }, 0.32, { in: 0.16, out: 0.16, antic: 0, over: 1, handR: "fist" });      // out sideways first, so it never crosses his face
+  m.actAt(0.2, { armR: arm(150, 34, 182, 30), lean: -3, head: [-26, -8, 0] }, 9, { in: 0.26, antic: 0, over: 1.5, handR: "fist", face: { brow: 0.9, smile: -0.5, lid: 0.15, gaze: [0.5, -0.8] } });
+  wag(m, 0.5, len - 1.0, P({ armR: arm(156, 36, 190, 32), head: [-30, -12, 0] }), P({ armR: arm(142, 32, 170, 28), head: [-20, -4, 0] }), 0.3, { handR: "fist" });
   // and he looks round at what is coming
-  m.actAt(len - 0.42, { head: [34, 0, 0], armR: arm(104, 36, 170, 26), armL: arm(30, 30, 80, 40) }, 9, { in: 0.2, antic: 0.3, over: 1.5, handR: "fist", face: { brow: 1, wide: 0.6, lid: 0, smile: 0.1, gaze: [0.9, 0] } });
+  m.actAt(len - 0.42, { head: [34, 0, 0], armR: arm(146, 34, 178, 30), armL: arm(20, 10, 60, 0) }, 9, { in: 0.2, antic: 0.3, over: 1.5, handR: "fist", face: { brow: 1, wide: 0.6, lid: 0, smile: 0.1, gaze: [0.9, 0] } });
   add({ id: "limb", a: limbA, b: paidA, still: 0.6,
     sounds: [{ t: 0.14, k: "whoosh", g: 0.4, p: -0.2 }, { t: 0.42, k: "ting", g: 0.7, p: -0.2 }, ...swings(0.5, len - 1.0, 0.3, len).map((t) => ({ t, k: "whoosh", dur: 0.2, g: 0.3, p: -0.2 })), { t: len - 0.4, k: "creak", g: 0.6, p: 0.4 }],
     cam: (_t, u) => V.push(0.1 * u), sun: { target: [1.4, 0, 3.7], reach: 6 },
@@ -201,8 +202,8 @@ const limbA = cut("rules", "limb"), paidA = at("limb", /^and$/) - 0.1;
     things: (g, c, _t, _T, cam) => { hooked(g, c.m, cam); } });
 }
 // 5b. AND THE CREW PAID YOU EIGHT HUNDRED PIECES OF EIGHT: wider. The captain, bent double, lifts a heavy sack off the deck, swings
-//     it up and into the man's arms; the man's knees give under it, coins jump out, he staggers a step, then hugs it and beams, and
-//     the captain claps him on the shoulder
+//     it up and into the man's arms; the man's knees give under it, coins jump out, he staggers a step, then has it hanging by its neck from
+//     his hook and beams, and the captain opens a hand to him and nods
 {
   const V = lens(-1.75, 1.05, 4.0, 1, -0.1, 0, 56), [mx, mz] = V.spot(2.8, -0.4), [cx, cz] = V.spot(3.4, 0.56), len = cut("limb", "maroon") - paidA;
   const LIFT = 0.25, give = at("limb", /^eight$/) - paidA - 0.05, CLAP = give + 1.0;
@@ -212,29 +213,31 @@ const limbA = cut("rules", "limb"), paidA = at("limb", /^and$/) - 0.1;
   // up with it to his chest, leaning back against its weight
   cap.actAt(LIFT, { lean: -10, py: -0.04, armL: arm(46, 8, 100, -6), armR: arm(46, 8, 100, -6), head: [8, -4, 0] }, give - LIFT - 0.18, { in: 0.34, out: 0.1, antic: 0.3, over: 1.3, handL: "grip", handR: "grip", face: { brow: -1, lid: 0.1, smile: -0.7, mouth: 0.5 } });
   // and swung across into the man's arms
-  cap.actAt(give - 0.2, { armL: arm(84, 8, 94, 0), armR: arm(88, 8, 98, 0), lean: 16, pz: 0.06 }, 0.55, { in: 0.18, out: 0.3, antic: 0.5, over: 1.6, handL: "open", handR: "open", face: { brow: 0.4, lid: 0, smile: 0.3, mouth: 0.5, gaze: [-0.8, 0] } });
+  cap.actAt(give - 0.2, { armL: arm(60, 8, 82, 0), armR: arm(64, 8, 86, 0), lean: 16, pz: 0.06 }, 0.55, { in: 0.18, out: 0.3, antic: 0.5, over: 1.6, handL: "open", handR: "open", face: { brow: 0.4, lid: 0, smile: 0.3, mouth: 0.5, gaze: [-0.8, 0] } });
   cap.actAt(give + 0.4, { armL: arm(10, 12, 30, 0), armR: arm(20, 14, 40, 0), head: [8, -2, 0] }, 9, { in: 0.25, handR: "open", face: { smile: 0.38, brow: 0.6, gaze: [-0.8, 0.2] } });
-  cap.actAt(CLAP, { armR: arm(96, 10, 110, 0), lean: 8, pz: 0.05 }, 0.5, { in: 0.14, out: 0.25, antic: 0.5, over: 1.8, handR: "open" });
+  cap.actAt(CLAP, { armL: arm(52, 40, 104, 50), lean: 4, head: [8, 10, 0] }, 9, { in: 0.2, antic: 0.4, over: 1.7, handL: "open", face: { smile: 0.38, brow: 0.9, gaze: [-0.8, 0.2] } });
+  wag(cap, CLAP + 0.25, 3, P({ head: [8, 14, 0] }), P({ head: [8, -4, 0] }), 0.36);
   const m = mover(MATE_D, 1.8, mx, mz, V.toward(mx, mz, 44)); m.stand(give + 0.12).step("L", -0.2, 0.2).stand(6);
   // his eyes follow the sack up; he holds out hook and hand for it
   m.actAt(-1, { armL: arm(10, 12, 30, 0), armR: arm(26, 6, 60, -6), head: [10, 12, 0] }, give - 0.4 + 1, { in: 0.01, out: 0.15, handL: "relaxed", handR: "fist", face: { brow: 0.9, wide: 0.4, lid: 0, smile: 0.1, gaze: [0.8, 0.6] } });
-  m.actAt(give - 0.45, { armL: arm(56, 14, 100, 0), armR: arm(56, 14, 100, 0), head: [6, 0, 0], lean: 3 }, 0.6, { in: 0.2, out: 0.1, antic: 0.3, over: 1.5, handL: "open", handR: "fist", face: { brow: 1, wide: 0.6, lid: 0, smile: 0.4, gaze: [0.8, 0] } });
+  m.actAt(give - 0.45, { armL: arm(40, 12, 80, -4), armR: arm(58, 10, 106, -6), head: [6, 4, 0], lean: 3 }, 0.6, { in: 0.2, out: 0.1, antic: 0, over: 1.5, handL: "open", handR: "fist", face: { brow: 1, wide: 0.6, lid: 0, smile: 0.4, gaze: [0.8, 0] } });
   // it lands in his arms: his knees give
-  m.actAt(give, { armL: arm(40, 10, 96, -14), armR: arm(40, 10, 96, -14), py: -0.22, lean: 9, head: [0, 14, 0] }, 0.5, { in: 0.1, out: 0.3, antic: 0, over: 2.4, handL: "grip", handR: "fist", face: { wide: 1, lid: 0, brow: 1, smile: -0.3, mouth: 0.7, gaze: [0, 0.8] } });
+  m.actAt(give, { armL: arm(30, 10, 76, -14), armR: arm(46, 8, 98, -14), py: -0.22, lean: 9, head: [0, 14, 0] }, 0.72, { in: 0.1, out: 0.3, antic: 0, over: 2.4, handL: "grip", handR: "fist", face: { wide: 1, lid: 0, brow: 1, smile: -0.3, mouth: 0.7, gaze: [0, 0.8] } });
   // then he has it, and beams over it
-  m.actAt(give + 0.5, { armL: arm(48, 10, 106, -14), armR: arm(48, 10, 106, -14), py: -0.06, lean: 2, head: [10, -4, 0] }, 9, { in: 0.3, over: 1.6, handL: "grip", handR: "fist", face: { wide: 0.5, lid: 0, brow: 1, smile: 1, mouth: 0.6, gaze: [0.7, -0.1] } });
+  m.actAt(give + 0.42, { armL: arm(36, 10, 84, -14), armR: arm(54, 8, 108, -16), py: -0.06, lean: 2, head: [10, -4, 0] }, 9, { in: 0.3, antic: 0, over: 1.6, handL: "grip", handR: "fist", face: { wide: 0.5, lid: 0, brow: 1, smile: 1, mouth: 0.6, gaze: [0.7, -0.1] } });
   wag(m, give + 0.9, 3, P({ py: -0.03, roll: 3 }), P({ py: -0.08, roll: -3 }), 0.36);
   add({ id: "paid", a: paidA, b: cut("limb", "maroon"), still: give + 0.3,
     sounds: [{ t: LIFT, k: "creak", g: 0.7, p: 0.3 }, { t: LIFT + 0.1, k: "rattle", dur: 0.5, g: 0.5, p: 0.3 }, { t: give - 0.2, k: "whoosh", g: 0.6, p: 0.2 }, { t: give + 0.03, k: "sack", p: -0.2 }, { t: give + 0.2, k: "step", surface: "wood", g: 1.1, p: -0.3 },
-      ...[0.12, 0.2, 0.28, 0.38, 0.5, 0.64, 0.8].map((d, i) => ({ t: give + d, k: "coin", g: 0.7, p: -0.4 + 0.1 * i })), { t: CLAP + 0.14, k: "tap", g: 0.9, p: 0 }],
+      ...[0.12, 0.2, 0.28, 0.38, 0.5, 0.64, 0.8].map((d, i) => ({ t: give + d, k: "coin", g: 0.7, p: -0.4 + 0.1 * i })), { t: CLAP, k: "whoosh", dur: 0.25, g: 0.3, p: 0.3 }],
     cam: (_t, u) => V.push(0.14 * u), sun: { target: [1.4, 0, 3.7], reach: 6 },
     cast: (t) => [play("cap", CAPTAIN_D, cap, t, [0, 0, 0], 1.86, { seed: 5 }), play("m", MATE_D, m, t, [0, 0, 0], 1.8, { seed: 7 })],
     things: (g, c, t, _T, cam) => { hooked(g, c.m, cam);
-      // the sack: in the captain's two hands (on the deck while he is bent over it), then across in an arc, then in the man's arms
-      const his = between(c.cap.joint("wrL"), c.cap.joint("wrR")), mine = between(c.m.joint("wrL"), c.m.joint("wrR")), u = smooth((t - give + 0.14) / 0.2), p = near(between(his, mine, u), cam, 0.14);
-      const s = put(g, SACK(), [p[0], Math.max(0.22, p[1] - 0.2 + 0.28 * Math.sin(Math.PI * u) * (u < 1 ? 1 : 0)), p[2]]); s.lookAt(cam.pos[0], s.position.y, cam.pos[2]);
+      // the sack: in the captain's two hands (on the deck while he is bent over it), then across at chest height, then hanging by its
+      // neck from the man's hook with his hand under it; it lies behind the hook, so the hook is seen in its neck
+      const his = between(c.cap.joint("wrL"), c.cap.joint("wrR")), hk = c.m.joint("wrR"), mine: V3 = [hk[0], hk[1] - 0.4, hk[2]], u = smooth((t - give + 0.14) / 0.2), q = between([his[0], his[1] - 0.2, his[2]] as V3, mine, u), p = near(q, cam, 0.04);
+      const s = put(g, SACK(), [p[0], Math.max(0.22, p[1] + 0.06 * Math.sin(Math.PI * u) * (u < 1 ? 1 : 0)), p[2]]); s.lookAt(cam.pos[0], s.position.y, cam.pos[2]);
       // the coins that jump out fly low to the sides, never across a face
-      for (let i = 0; i < 6; i++) tossed(g, i, [mine[0] - 0.12, mine[1] + 0.08, mine[2]], [-0.3, 1.3 + 0.3 * (i % 3), (i % 2 ? 1 : -1) * (0.7 + 0.25 * (i % 3))], t - give - 0.04 - i * 0.03, 0); } });
+      for (let i = 0; i < 6; i++) tossed(g, i, [mine[0] - 0.12, mine[1] + 0.3, mine[2]], [-0.3, 1.3 + 0.3 * (i % 3), (i % 2 ? 1 : -1) * (0.7 + 0.25 * (i % 3))], t - give - 0.04 - i * 0.03, 0); } });
 }
 // 6. CHEAT THE CREW: over the captain's shoulder. He holds up the coin he has found in the man's headscarf; the man claps both
 //    hands to it, caught, and more coins fall out between his fingers
@@ -406,8 +409,12 @@ const originMid = at("origin", /^like$/) - 0.1;
   sir.actAt(HAND - 0.1, { armL: arm(94, 14, 106, 8), lean: 1 }, COAT - HAND + 0.1, { in: 0.2, out: 0.14, antic: 0, over: 1.2, handL: "open", face: { smile: 1, brow: 1, lid: 0.1, gaze: [0.8, 0.5] } });
   // a hand into his coat, and out and up with Peter Pan
   sir.actAt(COAT, { armL: arm(30, -6, 128, -52), lean: 0 }, OUT - COAT + 0.02, { in: 0.16, out: 0.08, antic: 0, over: 1, handL: "grip", face: { smile: 0.7, brow: 0.6, gaze: [0.2, 0.5] } });
-  sir.actAt(OUT, { armL: arm(98, 18, 130, 10), lean: 3, head: [0, -4, 0] }, 9, { in: 0.3, antic: 0, over: 1.6, handL: "grip", face: { smile: 1, brow: 1, lid: 0.1, gaze: [0.8, -0.2] } });
-  sir.actAt(HUFF + 0.3, { head: [-30, 0, 0], armR: arm(34, 40, 90, 50) }, 9, { in: 0.25, antic: 0.2, over: 1.5, handR: "open", face: { smile: 0.4, brow: 1, wide: 0.5, lid: 0, gaze: [-0.5, 0] } });      // he turns to the lens and shrugs
+  sir.actAt(OUT, { armL: arm(96, 6, 156, -2), lean: 3, head: [0, -4, 0] }, 9, { in: 0.3, antic: 0, over: 1.6, handL: "grip", face: { smile: 1, brow: 1, lid: 0.1, gaze: [0.8, -0.2] } });
+  // he looks after the captain, a hand half lifted after him, the book still up; when the captain's back is turned he lets the book
+  // sink, turns to us and shrugs, and his shoulders go on working
+  sir.actAt(HUFF + 0.12, { armR: arm(44, 20, 104, 24), lean: 6, head: [12, 2, 0] }, 0.5, { in: 0.2, out: 0.2, antic: 0, over: 1.1, handR: "open", face: { brow: 1, wide: 0.6, lid: 0, smile: -0.2, mouth: 0.4, gaze: [0.9, 0] } });
+  sir.actAt(HUFF + 0.5, { armL: arm(42, 34, 96, 40), armR: arm(30, 14, 100, 18), py: 0.03, lean: -2, head: [-24, 0, 6] }, 9, { in: 0.26, antic: 0, over: 1.4, handL: "grip", handR: "open", face: { smile: 0.5, brow: 1, wide: 0.4, lid: 0, gaze: [-0.4, 0] } });
+  wag(sir, HUFF + 0.74, 2, P({ py: 0.07, roll: 4, head: [-44, 0, 6], armR: arm(40, 16, 116, 22) }), P({ py: -0.01, roll: -4, head: [4, 0, 6], armR: arm(24, 12, 84, 14) }), 0.36, { handR: "open" });      // and shakes his head
   const h0 = V.toward(cx, cz, -34), cap = mover(CAPTAIN_D, 1.86, cx, cz, h0); cap.stand(HUFF + 0.14).turn(146, 0.3).walk(mt(cap, 3), { step: 0.5 });
   cap.actAt(-1, { armL: arm(128, 30, 206, -24), armR: arm(10, 12, 30, 0), head: [-14, 0, 6] }, HAND - 0.1 + 1, { in: 0.01, out: 0.12, handL: "relaxed", face: { brow: 0.8, lid: 0.1, smile: -0.3, gaze: [-0.8, 0] } });
   // he takes the book in one hand, out between the two of them, and glances at it; his other fist goes to his hip
@@ -435,8 +442,8 @@ const originMid = at("origin", /^like$/) - 0.1;
       const mine = c.sir.joint("tipL"), his = c.cap.joint("tipR"), k = smooth((t - HAND) / 0.22), u = t - REL;
       if (u < 0) on(BOOK_T(), mix3(mine, his, k), 0.56);
       else if (u < 1) { const f: V3 = [c.cap.at[0] - 0.05 + 1.5 * u, 2.3 + 3.6 * u - 4.9 * u * u, c.cap.at[2] - 0.4 * u], q = mix3([his[0], his[1] + 0.3, his[2]], f, smooth(u / 0.08)), b = put(g, BOOK_T(), q); b.lookAt(cam.pos[0], q[1], cam.pos[2]); b.rotateZ(-9 * u); }
-      // Peter Pan: out of his coat on the same hand
-      if (t >= OUT) on(BOOK_P(), mine, 0.52);
+      // Peter Pan: out of his coat in the same hand, which holds it by its edge: the fingers lie over the cover's side
+      if (t >= OUT) { const fx = cam.look[0] - cam.pos[0], fz = cam.look[2] - cam.pos[2], n = Math.hypot(fx, fz) || 1, d = 0.42 / 2 - 0.07, q = near([mine[0] - (fz / n) * d, mine[1] + 0.04, mine[2] + (fx / n) * d], cam, -0.04), b = put(g, BOOK_P(), q); b.lookAt(cam.pos[0], q[1], cam.pos[2]); }
       drips(g, c.sir, t, cam, 3); g.add(mesh(ball(1, 14), "#9fd4f6", { at: [c.sir.at[0], 0.012, c.sir.at[2]], scale: [0.5, 0.01, 0.34], line: 0.5, shadow: false })); } });
 }
 

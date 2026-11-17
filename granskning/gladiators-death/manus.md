@@ -69,3 +69,22 @@ Planerad för torsdag 19 november. Filmens id i motorn: `gladiators-death`. Inge
 - Arenan inifrån: sand, mur, port, läktare med publik, en loge. Gladiatorskolans gård med bänk och träningspåle.
 - Looks: två gladiatorer (tung och lätt) och åtta till för raden, domare, ägare, läkare, tränare, spelens givare, publik.
 - Föremål: sköld, kort svärd, treudd, nät, träsvärd, käpp, bår, grötskål, lindor, myntkista, skrivrulle och penna, oliver, blommor.
+
+## The hook lab: tre öppningsklipp (18 november, natt)
+Sekund 0-5 byggd på tre sätt som egna klipp på 5,6 s (`engine/src/craft/shorts/gladiatorsHooks.ts`, kompositionerna GladiatorsHookA/B/C), så att den starkaste öppningen väljs innan filmen byggs. Rösten är bm_george. Arenan är en ny värld i den gemensamma koden (`world/arena.ts`: sand, målad mur med räcke, läktarrader, bakre mur med master, porten och spelgivarens loge) med en publik av små, sparade figurkort som jublar. Gladiatorerna och greppen kommer från greppblad 4, som väntar på svar. Ingen video renderas före svaret; klippen ritas upp som stillbilder.
+
+| Klipp | Öppningstyp | Text i bild (ord) | Första ordet | Ljudträff | Klipp (s) |
+|---|---|---|---|---|---|
+| a | Striden pågår redan: treudden mot skölden i första rutan, sanden yr, publiken står; murmillon stöter förbi treudden och nätkämpen ryggar | DID GLADIATORS FIGHT TO THE DEATH? (6) | ruta 0 | duns och klang ruta 0 | 1,50 (Sir kikar mellan fingrarna) / 2,92 (Sir och kvinnan: "Two go in, one comes out. Right?") |
+| b | Påstående över handlingen: "Most gladiators walked out alive." över nätkämpen på knä med fingret uppe och svärdet över honom; domaren kliver in med käppen tvärs | MOST GLADIATORS WALKED OUT ALIVE. (5) | ruta 0 | "shing" och duns ruta 0 | 1,40 (domaren) / 2,66 (Sir och kvinnan) |
+| c | Sir i knipa: nätet i luften mot honom i första rutan, det landar över honom vid 0,32 s; nere på sanden rycker nätkämpen på axlarna | DID GLADIATORS FIGHT TO THE DEATH? (6) | ruta 0 | sus ruta 0, nätet landar 0,32 s | 1,50 (nätkämpen ser upp) / 2,92 (Sir med nätet över sig: "Two go in...") |
+
+Källor för klipp b:s påstående: [N] "About nine out of ten times, gladiators survived their bouts to fight another day." och [A-S] "In gladiatorial games, most of the time, both participants left the arena on their feet." Det lyfta fingret: [N] "wounded gladiators signaled surrender with a lifted finger."
+
+Rättat innan klippen visas (ur min egen granskning av stillbilderna):
+- Kampen låg bakom frågetextens rader. Kameran står nu så att de två fyller bildens övre halva (cirka 20-62 % av höjden) och texten ligger under dem.
+- Domaren stod med ryggen mot oss och skymde kämparna. Han kliver nu in mellan dem med ansiktet mot oss.
+- Nätet såg ut som en bur av trä. Repen är tunna, och över Sir faller nätet rakt ned runt huvud och axlar.
+- Kameran vid räcket pekade förbi striden. Den pekar nu på nätkämpen och murmillon.
+- Sirs hand som räknar två och ett var avskuren av bildkanten. Den lyfts nu framför axeln.
+

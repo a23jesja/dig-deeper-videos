@@ -130,5 +130,20 @@ Också på greppkoden: Nero spelar med fiolen under hakan och vänster näve om 
 "The hook lab":
 - **Frågan:** sex ord, samma i röst och bild: "Did Nero fiddle while Rome burned?" (rösten inspelad på nytt med bm_george, övriga repliker desamma).
 - **Rösten börjar i bildruta 0** (första ordet "Did" 0,00-0,16 s). **Ljudslag på ruta ett:** stråkens skrap (scratch) vid 0,0 s.
-- **Bildbyten i sekund 0-5:** 2,60 s (det brinnande huset) och 4,06 s (närmare på Sir Digsworth när han skakar näven); bild 2 är delad i två så att ingen bild i början är längre än 2,6 s.
+- **Bildbyten i sekund 0-5:** 2,60 s (det brinnande huset), 4,07 s (närmare på Sir Digsworth när han skakar näven) och 5,53 s ("Not so fast"); bild 2 är delad i två så att ingen bild i början är längre än 2,6 s.
 - **Slutet leder tillbaka:** efter strängen som brister kommer en kod på 0,85 s på den brinnande gatan strax före första bildrutan (Nero spelar fiol, Sir Digsworth pekar); kameran glider in i första bildens läge.
+
+### Egen granskning före STOPP (17 november kväll)
+Ändrat efter den första renderingen, som inte skickades:
+- **Frågetexten slutar på klippet** vid 2,60 s (den låg kvar två rutor in i nästa bild, samma fel som svarta flaggans punkt 3).
+- **Vändningarna bakåt** i bild 2 och 6 vrider hela kroppen (44 grader), inte bara huvudet, och tar 0,3 s in och ut; Sir Digsworths blick mot oss i bild 1 är långsammare (svarta flaggans punkt 1).
+- **Fiolen i bild 9:** i den första renderingen gled fiolen ut till bildkanten i tre rutor (23,73-23,80 s) utan att någon hand syntes på den, eftersom Sir Digsworths hand låg utanför bild. Nu börjar bilden glida mot honom när hans hand kommer in, hans näve sluter sig om snäckan inne i bilden 0,1 s innan han drar (23,53-23,67 s), och greppet hörs när det sker.
+- **Hela näven ritas framför det den håller** (greppblad 3): fiolhalsen, stråken, citharans arm, knytena och druvorna går in i näven och ut på andra sidan. Näven blev då grå i eldljuset bakifrån (den tog skuggan av sin egen figur); nu tar den ljuset där handen sitter på figuren.
+
+Läst: hela filmen två bilder i sekunden i telefonstorlek, sekund 0-5 tio bilder i sekunden i telefonstorlek, överlämningen av fiolen ruta för ruta i full storlek, och varje sak i en hand var halv sekund ur den färdiga videon: `granskning/nero-fiddle/v1-grepp-narbilder.jpg` (116 utsnitt; de som bara visar ett ansikte eller ett stånd är löpare i bakgrunden som skyms av förgrunden). Kontroller: filmkontrollen OK, greppkontrollen 432 avläsningar utan fel, NO SHEETS OK.
+
+Bildkontrollens flaggor: EMPTY i bild 5, 9, 12 och 13 är stora släta ytor i närbilder (himlen över terrassen, fiolen, citharans låda); WHITE i bild 1 och 5 är ljus sten i eldljus och solbelyst sand, uppmätt 1,0 % och 1,3 % helt vita bildpunkter (medelfärgen i bild 5:s nedre tredjedel 221/207/175), inget som är utbränt.
+
+Slutet: sista ordet "strings." 30,87-31,29 s; sedan knäpper Nero på strängarna (bild 13 från 31,17 s), en sträng brister vid 32,15 s (ljudet "snap") och han tittar förskräckt; koden på 0,85 s leder in i första bildrutan, där rösten börjar på ruta 0.
+
+Leverans: `leverans/nero-fiddle/nero-fiddle.mp4` (33,81 s, 1013 rutor, -14,02 LUFS), `nero-fiddle-telefon.mp4` (24,8 MiB), `nero-fiddle-liten.mp4`, tre miniatyrer ur videon och `text.md`.

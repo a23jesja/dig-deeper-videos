@@ -387,6 +387,12 @@ code, acted emotions), `kmilo93sd/agent-video-editor` (pacing, cuts, captions, t
 
 ## Thumbnail (as important as the video, Jesper 2026-11-13)
 Every video and Short gets its own thumbnail, made and checked before the video is sent for approval.
+- **Painted thumbnails for long videos (Jesper 2026-11-17).** Successful channels paint their thumbnails in a
+  richer style than the video itself. For long videos, the build session writes a Flow prompt in text.md and
+  Jesper generates the picture by hand in Google Flow, with the frozen character sheet as reference image. Rules:
+  the character must be recognisably ours (same clothes, colours, monocle, cap), the scene must happen in the
+  video, one big face with one strong emotion, saturated colours, a plain background, at most three words.
+  The code-drawn variants are still made, so there is always a choice. Shorts keep frame-based thumbnails.
 - **Three variants** are rendered and sent to Jesper together with the video; he picks one. Nothing is published
   with a thumbnail he has not approved.
 - **One idea, readable in one second:** one big subject that IS the story, Sir Digsworth large with a clear reaction

@@ -11,7 +11,9 @@ export type Cam = { pos: V3; look: V3; fov: number };
 /** one figure on one frame: where its soles are, the way it faces (0 = toward +z, 90 = toward +x), its height, pose and face */
 export type Actor = { name: string; D: Design; at: V3; heading: number; h: number; pose: Pose; o: FigOpts;
   /** a figure thrown through the air: `at` is then the middle of its body and it is turned this many degrees in the picture */
-  spin?: number };
+  spin?: number;
+  /** true = the figure takes no shade from the others in the shot (a shadow that would lie on it as a blot) */
+  noShade?: boolean };
 /** a figure placed in the world on this frame: where its joints are, so that real things can be put in its hands */
 export type Staged = Actor & { joint: (j: Joint) => V3; mesh: THREE.Mesh };
 export type Word = { w: string; a: number; b: number; line?: string };
@@ -22,6 +24,8 @@ export type Shot = {
   cam: (t: number, u: number) => Cam;
   /** the middle and half the size of the area that gets sharp shadows; default: 9 m round what the camera looks at */
   sun?: { target: V3; reach: number };
+  /** named things of the world that are not there in this shot (the world lists them in userData.named) */
+  hide?: string[];
   cast: (t: number, T: number) => Actor[];
   /** real things that move in this shot (in hands, falling, rolling): add them to `into` */
   things?: (into: THREE.Group, cast: Record<string, Staged>, t: number, T: number, cam: Cam) => void;
@@ -33,7 +37,10 @@ export type Sound = { t: number; k: string; g?: number; p?: number; dur?: number
 /** a sound that lies under a stretch of the film (the sea, wind, flies) */
 export type Bed = { k: string; a: number; b: number; g?: number };
 /** a thumbnail proposal (1280 x 720): one moment of the film, a camera of its own, a few big words on one side of the picture */
-export type Thumb = { T: number; cam?: Cam; words: string[]; side: "left" | "right"; at?: "top" | "middle" | "bottom"; size?: number; tilt?: number };
+/** a thumbnail proposal of a Short (1080 x 1920): the film's own frame at the time T, so that the same picture can be chosen as a frame
+ *  in the app, with two or three huge words laid over it. y = where the top of the words lies, as a part of the height (keep clear of the
+ *  top and bottom 15 %, of faces and of signs); cam = another lens than the film's (only for a long video's thumbnail) */
+export type Thumb = { T: number; cam?: Cam; words: string[]; y?: number; side?: "left" | "right" | "center"; size?: number; tilt?: number };
 export type Caption = { a: number; b: number; text: string };
 export type Film = {
   id: string; fps: number; seconds: number; sky: string;
@@ -83,7 +90,7 @@ export const captions = (words: Word[], skip: (w: Word) => boolean = () => false
     const n = c.length, best: number[] = [0], from: number[] = [0];
     const cost = (i: number, j: number) => { const ws = c.slice(i, j), last = bare(ws[ws.length - 1].w), text = ws.map((q) => q.w).join(" ");
       let k = 0.6; if (ws.length > 1 && capWidth(text) > 9.5) k += 50; if (ws.length === 1 && n > 1) k += j < n ? 2.3 : 2;
-      if (j < n) { if (WEAK_ART.test(last)) k += 3; else if (WEAK_LINK.test(last)) k += 1.5; if (i + 0 <= j - 1 && /^[A-Z]/.test(c[j - 1].w) && /^[A-Z]/.test(c[j].w) && j - 1 > 0) k += 3; }
+      if (j < n) { if (WEAK_ART.test(last) || WEAK_LINK.test(last)) k += 3; if (i + 0 <= j - 1 && /^[A-Z]/.test(c[j - 1].w) && /^[A-Z]/.test(c[j].w) && j - 1 > 0) k += 3; }
       return k; };
     for (let j = 1; j <= n; j++) { best[j] = Infinity; for (let i = Math.max(0, j - 3); i < j; i++) { const v = best[i] + cost(i, j); if (v < best[j]) { best[j] = v; from[j] = i; } } }
     const cuts: number[] = []; for (let j = n; j > 0; j = from[j]) cuts.unshift(j);

@@ -3,6 +3,7 @@
  "speed": 1.06,
  "gap": 0.16,
  "lead": 0.05,
+ "risk": ["pirates", "limb", "crew", "eight hundred pieces of eight", "recorded", "almost", "Treasure Island", "Peter Pan"],
  "lines": [
   { "id": "hook", "text": "Did pirates really make you walk the plank?", "gap": 0.3 },
   { "id": "story", "text": "A plank, a sword, a shark. Just like the stories!", "gap": 0.25 },

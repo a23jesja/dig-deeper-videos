@@ -3,18 +3,18 @@
  "file": "public/craft/pirate-plank.wav",
  "seconds": 29.93,
  "integrated_lufs": -14.02,
- "true_peak_db": -3.01,
+ "true_peak_db": -3.14,
  "voice_lufs": -13.7,
  "music_lufs": -31.2,
  "effects_lufs": -24.7,
  "music_under_voice_db_while_speaking": 18.0,
  "loudest_400ms_lufs": {
   "voice": -10.6,
-  "music": -20.8,
-  "effects": -13.5
+  "music": -20.7,
+  "effects": -14.4
  },
- "cues": 71,
+ "cues": 79,
  "beds": 5,
- "hits": 1,
+ "hits": 2,
  "music": "shanty"
 }

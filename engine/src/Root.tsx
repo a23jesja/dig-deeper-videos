@@ -75,8 +75,8 @@ export const Root: React.FC = () => (
     <Composition id="SirMoves" component={SirMoves} durationInFrames={1} fps={30} width={MVW} height={MVH} />
     <Composition id="RomePee" component={RomePee} durationInFrames={ROME_PEE_FRAMES} fps={30} width={1080} height={1920} />
     <Composition id="PiratePlank" component={PiratePlank} durationInFrames={PIRATE_PLANK_FRAMES} fps={30} width={1080} height={1920} />
-    <Composition id="PiratePlankThumbs" component={PiratePlankThumbs} durationInFrames={3} fps={30} width={1280} height={720} />
-    <Composition id="RomePeeThumbs" component={RomePeeThumbs} durationInFrames={3} fps={30} width={1280} height={720} />
+    <Composition id="PiratePlankThumbs" component={PiratePlankThumbs} durationInFrames={3} fps={30} width={1080} height={1920} />
+    <Composition id="RomePeeThumbs" component={RomePeeThumbs} durationInFrames={3} fps={30} width={1080} height={1920} />
     <Composition id="SetViews" component={SetViews} durationInFrames={SET_VIEWS} fps={30} width={1080} height={1920} />
     <Composition id="BostonStills" component={BostonStills} durationInFrames={BOSTON_STILLS} fps={30} width={1080} height={1920} />
     <Composition id="SirChainStill" component={SirChainStill} durationInFrames={SIR_CHAIN_FRAMES} fps={30} width={1600} height={1250} />

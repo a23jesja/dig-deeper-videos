@@ -1,6 +1,6 @@
 // What a Short of the craft kit consists of, without rendering it: its shots with their frames, the frame that stands for each shot
 // in the sketch, and the caption chunks.
-//   usage: node scripts/film_info.mjs <film> [stills|shots|json|check|audio|caps]
+//   usage: node scripts/film_info.mjs <film> [stills|shots|json|check|audio|caps|thumbs]
 //     stills = the sketch frames as a comma list (for scripts/stills.mjs)     shots = shots.json for scripts/short_qa.py
 import fs from "node:fs"; import path from "node:path"; import os from "node:os"; import { pathToFileURL } from "node:url"; import { build } from "esbuild";
 const name = process.argv[2], what = process.argv[3] ?? "table";
@@ -37,5 +37,6 @@ else if (what === "audio") {
   console.log(JSON.stringify({ film: name, fps: film.fps, frames: f(film.seconds), voice: { file: `voice/${name}/voice.wav`, frame: 0 }, lines: `voice/${name}/lines.json`, music: film.music ?? null, hits: (film.hits ?? []).map((h) => ({ f: f(h.t), amp: h.amp })), shots: rows.map((r) => ({ id: r.id, a: r.a, b: r.b })), cues, beds }, null, 1));
 }
 else if (what === "caps") { for (const c of captions(film.words, (w) => w.b <= film.hook.b + 0.02)) console.log(`${String(f(c.a)).padStart(4)}-${String(f(c.b)).padStart(4)}  ${c.text}`); }
+else if (what === "thumbs") { (film.thumbs ?? []).forEach((k, i) => console.log(`${i + 1}	${k.T.toFixed(2)}	${f(k.T)}	${k.words.join(" ")}`)); }
 else if (what === "json") console.log(JSON.stringify({ comp, fps: film.fps, frames: f(film.seconds), seconds: film.seconds, shots: rows }));
 else { console.log(`${name} (${comp}): ${film.seconds.toFixed(2)} s, ${f(film.seconds)} frames, ${rows.length} shots`); for (const r of rows) console.log(`  ${r.id.padEnd(8)} ${String(r.a).padStart(4)}-${String(r.b).padStart(4)}  ${r.seconds.toFixed(2)} s  still ${r.still}`); }

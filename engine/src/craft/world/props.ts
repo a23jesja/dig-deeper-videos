@@ -221,7 +221,7 @@ export const house = (o: House) => {
 export const streetJar = (h = 0.78) => {
   const k = h / 0.78;
   return group([mesh(lathe(`sjar${h}`, [[0.12 * k, 0], [0.26 * k, 0.1 * k], [0.37 * k, 0.36 * k], [0.34 * k, 0.6 * k], [0.25 * k, 0.74 * k], [0.27 * k, 0.78 * k], [0.21 * k, 0.78 * k], [0.2 * k, 0.72 * k]]), C.terra),
-    mesh(cyl(0.2 * k, 0.2 * k, 0.02, 20), "#d9c23c", { at: [0, 0.7 * k, 0], line: 0, shadow: false }), mesh(box(0.1 * k, 0.26 * k, 0.012), "#8a4a26", { at: [0.02, 0.5 * k, 0.345 * k], rot: [0.1, 0, 0.15], line: 0, shadow: false })]);
+    mesh(cyl(0.2 * k, 0.2 * k, 0.02, 20), "#d9c23c", { at: [0, 0.7 * k, 0], line: 0, shadow: false })]);
 };
 /** a fuller's treading stall: a low masonry tub with liquid in it between two side walls to lean on. Opens toward +z */
 export const treadingStall = (liquid = "#cdb95a") => group([

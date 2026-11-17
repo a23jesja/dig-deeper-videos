@@ -8,55 +8,55 @@
  {
   "id": "need",
   "a": 2.161,
-  "b": 6.425,
+  "b": 6.354,
   "text": "Rome. The emperor Vespasian has a problem. The treasury is empty."
  },
  {
   "id": "guess",
-  "a": 6.645,
-  "b": 9.88,
+  "a": 6.574,
+  "b": 9.809,
   "text": "My guess was a fine for peeing in the street. Wrong!"
  },
  {
   "id": "wash",
-  "a": 10.08,
-  "b": 12.974,
+  "a": 10.009,
+  "b": 12.903,
   "text": "Pee was useful. Laundries washed wool with it."
  },
  {
   "id": "tax",
-  "a": 13.174,
-  "b": 15.305,
-  "text": "So Vespasian put a tax on it."
+  "a": 13.103,
+  "b": 15.12,
+  "text": "Vespasian put a tax on it."
  },
  {
   "id": "titus",
-  "a": 15.505,
-  "b": 17.514,
+  "a": 15.32,
+  "b": 17.329,
   "text": "His son Titus complained."
  },
  {
   "id": "coin",
-  "a": 17.694,
-  "b": 21.132,
+  "a": 17.509,
+  "b": 20.947,
   "text": "The emperor held a coin under his nose. Does it smell?"
  },
  {
   "id": "yet",
-  "a": 21.432,
-  "b": 23.155,
+  "a": 21.247,
+  "b": 22.97,
   "text": "No. Yet it comes from pee."
  },
  {
   "id": "point",
-  "a": 23.505,
-  "b": 26.879,
+  "a": 23.32,
+  "b": 26.694,
   "text": "That is why Rome taxed pee. The money did not smell."
  },
  {
   "id": "end",
-  "a": 27.179,
-  "b": 31.743,
+  "a": 26.994,
+  "b": 31.397,
   "text": "In Paris, street urinals were later named after him. Vespasiennes."
  }
 ]

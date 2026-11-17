@@ -25,6 +25,7 @@ const Scene: React.FC<{ film: Film; at?: number; view?: Cam; res?: number }> = (
     for (const a of shot.cast(t, T)) {
       const p = figureCard(a.D, a.pose, a.o, { at: a.at, heading: a.heading, h: a.h }, cam.pos, 0, seen);
       if (a.spin !== undefined) { const th = (a.spin * Math.PI) / 180, az = p.mesh.rotation.y, hh = a.h / 2; p.mesh.rotation.z = th; p.mesh.position.set(a.at[0] + Math.sin(th) * hh * Math.cos(az), a.at[1] - Math.cos(th) * hh, a.at[2] - Math.sin(th) * hh * Math.sin(az)); }
+      if (a.noShade) for (const k of p.mesh.children) if ((k as THREE.Mesh).receiveShadow) k.visible = false;
       p.mesh.userData.own = true; p.mesh.traverse((o) => { o.userData.own = true; }); g.add(p.mesh); staged[a.name] = { ...a, joint: p.joint, mesh: p.mesh };
     }
     shot.things?.(g, staged, t, T, cam);
@@ -33,6 +34,7 @@ const Scene: React.FC<{ film: Film; at?: number; view?: Cam; res?: number }> = (
   const c = camera as THREE.PerspectiveCamera, sk = film.hits && at === undefined ? shake(T, film.hits, 1) : [0, 0];
   c.position.set(cam.pos[0] + sk[0] * 0.012, cam.pos[1] + sk[1] * 0.012, cam.pos[2]); c.fov = cam.fov; c.near = 0.1; c.far = 3000; c.lookAt(cam.look[0] + sk[0] * 0.012, cam.look[1] + sk[1] * 0.012, cam.look[2]); c.updateProjectionMatrix();
   aimSun(rig, shot.sun?.target ?? cam.look, shot.sun?.reach ?? 9);
+  for (const o of (world.userData.named as THREE.Object3D[] | undefined) ?? []) o.visible = !shot.hide?.includes(o.name);
   (world.userData.tick as ((t: number) => void) | undefined)?.(T);   // what moves by itself in the world (the sea)
   setOutline(res ? 2.6 : 3.4, res ?? SH);
   return (<><primitive object={world} dispose={null} /><primitive object={frame} dispose={null} /></>);
@@ -65,17 +67,17 @@ export const Stage: React.FC<{ film: Film }> = ({ film }) => {
   );
 };
 /** the film's thumbnail proposals, one per frame of the composition (1280 x 720) */
-export const TW = 1280, TH = 720;
+export const TW = SW, TH = SH;
 export const Thumbs: React.FC<{ film: Film }> = ({ film }) => {
   const list = film.thumbs ?? [], k = list[Math.min(list.length - 1, useCurrentFrame())], px = k?.size ?? 124;
   if (!k) return null;
   return (
     <AbsoluteFill style={{ background: film.sky }}>
       <ThreeCanvas width={TW} height={TH} shadows="soft" flat gl={{ antialias: true }} camera={{ fov: 45, near: 0.1, far: 3000 }}>
-        <Scene film={film} at={k.T} view={k.cam} res={TH} />
+        <Scene film={film} at={k.T} view={k.cam} />
       </ThreeCanvas>
-      <AbsoluteFill style={{ justifyContent: k.at === "top" ? "flex-start" : k.at === "bottom" ? "flex-end" : "center", alignItems: k.side === "left" ? "flex-start" : "flex-end", padding: "34px 44px" }}>
-        <div style={{ ...big(px), textAlign: k.side === "left" ? "left" : "right", lineHeight: 0.98, transform: `rotate(${k.tilt ?? -3}deg)` }}>{k.words.map((l, i) => <div key={i} style={{ color: i === k.words.length - 1 ? "#ffd83a" : "#ffffff" }}>{l}</div>)}</div>
+      <AbsoluteFill>
+        <div style={{ position: "absolute", left: 40, right: 40, top: Math.round((k.y ?? 0.17) * TH), ...big(px), textAlign: k.side ?? "center", lineHeight: 0.98, transform: `rotate(${k.tilt ?? -3}deg)` }}>{k.words.map((l, i) => <div key={i} style={{ color: i === k.words.length - 1 ? "#ffd83a" : "#ffffff" }}>{l}</div>)}</div>
       </AbsoluteFill>
     </AbsoluteFill>
   );

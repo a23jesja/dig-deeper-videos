@@ -1,12 +1,19 @@
+import sys
 # Sir Digsworth's narration: Kokoro (bm_george, local, free) sentence by sentence, joined with short gaps,
 # then word timings from faster-whisper aligned to the known script.
 # usage: python voice/make_voice.py <script.json> <outdir>
 #   script.json: {"voice": "bm_george", "speed": 1.08, "gap": 0.16, "lines": [{"id": "hook", "text": "...", "gap": 0.2}, ...]}
+# pronunciation.json (next to this file) = shared word -> phonemes locks for ALL films, applied by pronunciation.py
+#   wherever the written word occurs (whole word, any case). Fix a mispronounced word once there. Captions/words.json keep the written word.
+#   A spec may also list "risk": [words or phrases] for listen_check.py (cuts each one out of the finished narration).
 # writes <outdir>/voice.wav (48 kHz mono), words.json [{w, a, b, line}], lines.json [{id, a, b, text}]
 import json, os, re, sys
 import numpy as np
 import soundfile as sf
 from kokoro_onnx import Kokoro
+import pronunciation
+try: sys.stdout.reconfigure(encoding="utf-8", errors="replace")      # the phonemes printed for locked lines are not in the Windows console code page
+except Exception: pass
 
 here = os.path.dirname(os.path.abspath(__file__))
 spec = json.load(open(sys.argv[1], encoding="utf-8"))
@@ -14,6 +21,7 @@ out = sys.argv[2]
 os.makedirs(out, exist_ok=True)
 k = Kokoro(os.path.join(here, "models", "kokoro-v1.0.onnx"), os.path.join(here, "models", "voices-v1.0.bin"))
 SR = 48000
+LOCKS = pronunciation.load()
 
 def trim(x, sr, thr=0.004, pad=0.03):
     idx = np.where(np.abs(x) > thr)[0]
@@ -34,7 +42,11 @@ parts, lines, t = [], [], 0.0
 lead = spec.get("lead", 0.05)
 parts.append(np.zeros(int(lead * SR), np.float32)); t += lead
 for ln in spec["lines"]:
-    x, sr = k.create(ln.get("say", ln["text"]), voice=spec.get("voice", "bm_george"), speed=ln.get("speed", spec.get("speed", 1.0)), lang="en-gb")
+    src = ln.get("say", ln["text"])
+    ph = pronunciation.phonemize_line(k, src, "en-gb", LOCKS)
+    if ph is not None:
+        print("  locked", ln["id"], pronunciation.locked_words_in(src, LOCKS), ph)
+    x, sr = k.create(src if ph is None else ph, voice=spec.get("voice", "bm_george"), speed=ln.get("speed", spec.get("speed", 1.0)), lang="en-gb", is_phonemes=ph is not None)
     x = resample(trim(np.asarray(x, np.float32), sr), sr, SR)
     lines.append({"id": ln["id"], "a": round(t, 3), "b": round(t + len(x) / SR, 3), "text": ln["text"]})
     parts.append(x); t += len(x) / SR

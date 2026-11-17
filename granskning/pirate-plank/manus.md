@@ -1,6 +1,6 @@
 # Short 2: Did pirates really make you walk the plank?
 
-VERSION 2 (skissens andra och sista omgång). Piratskepp till havs, skrämmande, MYT. 29,9 sekunder, 83 ord, Kokoro bm_george. Fråga nr 9 i `granskning/fragor.md`, där källorna nedan nu också står.
+FÄRDIG VIDEO, VERSION 2. Piratskepp till havs, skrämmande, MYT. 29,9 sekunder, 83 ord, Kokoro bm_george. Fråga nr 9 i `granskning/fragor.md`, där källorna nedan nu också står.
 
 ## Manus, med källa per påstående
 
@@ -9,15 +9,15 @@ VERSION 2 (skissens andra och sista omgång). Piratskepp till havs, skrämmande,
 | 0,0-2,8 | **Did pirates really make you walk the plank?** | Sagobilden alla känner: Sir Digsworth längst ut på plankan (nästa steg är ut i luften) med armarna ut, kaptenens huggare i ryggen, och en haj som kommer upp ur vattnet vid hans fötter med öppet gap. Han rycker undan foten. | Frågan. Bilden är berättelsernas bild: [T] [P]. |
 | 2,8-5,1 | A plank, a sword, a shark. | Uppifrån: han räknar upp dem med pekfingret (plankan under fötterna, klingan bakom sig, hajen som kommer upp igen). | Sir Digsworths egen förväntan, inget påstående. |
 | 5,1-6,4 | Just like the stories! | Nerifrån plankans ände: han skakar båda nävarna i luften, förtjust; kaptenen bakom sänker klingan och kliar sig i huvudet. | [T] [P] |
-| 6,4-9,5 | Not quite. Real pirates had written rules. | På däck: kaptenen viftar nej med en hoprullad pappersrulle, låter den sedan rulla upp: artiklarna. Han knackar på dem; Sir Digsworth lutar sig fram och läser genom monokeln. | [J-R] [J-P] [R1] |
+| 6,4-9,5 | Not quite. Real pirates had written rules. | På däck: kaptenen viftar nej med en hoprullad pappersrulle och låter den rulla upp i bild: artiklarna. Hans finger går nedför arket från sidan, en rad i taget, och stannar vid summan längst ned; Sir Digsworth lutar sig fram, läser genom monokeln och rycker till när han ser den. | [J-R] [J-P] [R1] |
 | 9,5-14,2 | Lose a limb in battle, and the crew paid you eight hundred pieces of eight. | En i besättningen håller upp järnkroken där handen satt; kaptenen nickar åt den och svingar en tung säck märkt 800 i famnen på honom. Han sviktar under den och mynt hoppar ur. | [J-P] artikel 8; [J-R] artikel IX; [R1]. |
 | 14,2-15,2 | Cheat the crew, | Över kaptenens axel: han håller upp myntet han hittat i mannens huvudduk; mannen slår händerna mot kinderna, påkommen, och fler mynt faller ur duken. | [J-R] artikel II; [J-P] artikel 3. |
 | 15,2-17,3 | and you were left on an empty island, | Samme man på sanden under den enda palmen, hytter med näven efter skeppet som seglar bort utan honom. Skylt 15,2-17,2 s: "Dramatised. The rules are from pirate articles printed in 1724." | [J-R] artikel II; [R1]. |
-| 17,3-19,6 | with a gun and a bottle of water. | Från sanden: pistolen och flaskan de lämnade står närmast linsen; han kommer gående mot dem (spåren syns i sanden), sjunker ihop och slår händerna för ansiktet; skeppet litet vid horisonten. | [J-R] artikel II: "with a Gun, a few Shot, a Bottle of Water, and a Bottle of Powder"; [J-P] artikel 2. |
-| 19,6-22,3 | But the plank? Almost never recorded. | Från plankan, in mot skeppet: kaptenen skakar på huvudet och viftar nej med pekfingret, sedan kommer han mot linsen med båda händerna. | [R2]: "there aren't many documented instances"; [N]: "Little to no historical evidence". |
-| 22,3-25,1 | Unwanted men simply went over the side. | Vid relingen akter om plankan (plankan är inte i bild): kaptenen bär honom över huvudet till relingen och häver; linsen följer honom när han slår runt i luften och går i med ett plask (kameran skakar). | [R1]: "They just threw them overboard"; [R2]. |
-| 25,1-26,9 | The plank comes from stories, | Vid vattenytan: han kommer upp och sprutar vatten, boken han hade i fickan högt och torrt över huvudet. Ingen haj. | [N] [R1] |
-| 26,9-29,9 | like Treasure Island and Peter Pan. | Tillbaka på däck, drypande: han sträcker den ena boken rakt upp över huvudet och räcker fram den andra; kaptenen böjer sig över omslaget, pekar på piraten på bilden och sedan på sig själv. | [T] [P] [N] [R1] |
+| 17,3-19,6 | with a gun and a bottle of water. | Från sanden: pistolen och flaskan de lämnade står närmast linsen; han kommer vacklande in från sidan, framåtböjd, faller på knä bakom dem och slår händerna för ansiktet; skeppet litet vid horisonten. | [J-R] artikel II: "with a Gun, a few Shot, a Bottle of Water, and a Bottle of Powder"; [J-P] artikel 2. |
+| 19,6-22,3 | But the plank? Almost never recorded. | Från vattnet bredvid plankan: kaptenen skakar på huvudet åt den, böjer sig, häver upp dess inre ände och skjuter ut den över relingen, förbi linsen och i sjön; han ser efter den med händerna på knäna och slår sedan dammet av händerna. Plankan finns inte kvar i resten av filmen. | [R2]: "there aren't many documented instances"; [N]: "Little to no historical evidence". |
+| 22,3-25,1 | Unwanted men simply went over the side. | Vid relingen: kaptenen har honom över huvudet, tar sats bakåt med böjda knän och häver ut honom platt; linsen håller honom mitt i bild hela vägen ned, där han tippar över i ett dyk och går i med ett plask (kameran skakar). När han är i ligger bilden kvar på skeppssidan, med kaptenen som ser ned från relingen och plasket nedanför. | [R1]: "They just threw them overboard"; [R2]. |
+| 25,1-26,9 | The plank comes from stories, | Vid vattenytan: först kommer bara handen upp, med boken torr; sedan far han upp efter den, sprutar vatten, skakar av sig och paddlar med den fria armen medan han ser upp på boken han räddat. Ingen haj. | [N] [R1] |
+| 26,9-29,9 | like Treasure Island and Peter Pan. | Tillbaka på däck, drypande: han sträcker fram Treasure Island mot kaptenen, som rycker åt sig den och stirrar på omslaget; Sir Digsworth håller upp Peter Pan över huvudet och skakar den; kaptenen ser upp, mörknar, slänger sin bok över axeln och vänder honom ryggen med armarna i kors. Sir Digsworth vänder sig mot linsen och rycker på axlarna. | [T] [P] [N] [R1] |
 
 ## Källor (alla lästa i sidans råtext)
 
@@ -47,7 +47,27 @@ VERSION 2 (skissens andra och sista omgång). Piratskepp till havs, skrämmande,
 - Varje figur har sin egen gest: armarna ut för balansen (1), pekar (2), nävarna i luften (3), pappersrullen (4), kroken och säcken (5), händerna mot kinderna (6), knuten näve mot skeppet (7), händerna på knäna (8), pekfingret (9), häver (10), boken över huvudet (11), en bok i var hand och kaptenen som pekar på sig själv (12).
 - Ingen undertextruta ligger över ansikte, bröst eller skylt; ingen slutar på skiljetecken.
 
-## Svar på granskningens fjorton punkter (version 1)
+## Uttal (DAILY-RULES "Pronunciation")
+- Riskord som kontrollerats på fonemnivå och lämnats som de var: pirates, limb (stumt b), crew, "eight hundred pieces of eight", recorded (verb, betoning på andra stavelsen), almost, Treasure Island, Peter Pan. Inga ord behövde låsas i den här filmen; "1724" och "800" finns bara i bild och läses inte.
+- Lyssningsfil: `leverans/pirate-plank/riskord.wav` med lista i `leverans/pirate-plank/riskord.md`.
+
+## Färdig video version 2: svar på granskningens fjorton punkter
+1. Svaret (19,6-22,3 s): kaptenen gör något med plankan i stället för att stå mot kameran: han häver den överbord.
+2. Slutet (26,9-29,9 s): en handling i fyra led som avslutar: boken räcks fram, rycks undan, slängs, och kaptenen vänder ryggen till.
+3. I vattnet (25,1-26,9 s): handen med boken först, sedan upp med ett ryck, sprut, huvudskakning och paddling.
+4. Reglerna (6,4-9,5 s): arket rullas upp i bild, en hand håller det i överkanten och den andra pekar rad för rad från sidan.
+5. Den strandsatte kommer in framåtböjd från sidan och faller på knä; ingen viloställning.
+6. Kastet: sats bakåt, han hävs ut platt och tippar i ett dyk; linsen följer honom från det att satsen börjar, så att han är hel i bild hela vägen.
+7. Efter plasket visar bilden skeppssidan med kaptenen vid relingen ovanför och plasket nedanför.
+8. Stängda ögon: teckningen är rättad (en båge utan ring), godkänd av granskningen som eget blad (commit df637f8).
+9. Ön: mannen står fri från palmen med himmel över huvudet; skeppet ligger längst till vänster, fritt från honom.
+10. Mynten: ur säcken flyger de lågt ut åt sidorna; ur huvudduken faller de vid tinningarna. Inget mynt korsar ett ansikte.
+11. Böckerna hålls i nederkanten och inga droppar faller från händerna; titlarna är fria.
+12. Fotspåren i sanden är borta; kvar är vindränder, snäckor och strandgräs.
+13. Thumbnails är 1080x1920 och är filmens egna bildrutor (tiderna står i text.md), med Sir Digsworth i alla tre.
+14. Undertexterna slutar inte på småord: "AND YOU / WERE LEFT / ON AN EMPTY / ISLAND".
+
+## Svar på granskningens fjorton punkter (skissen, version 1)
 
 1. Flaggan, handelsskeppet och bytet är strukna ur filmen; ersättningen för en lem är en enda bild. Mitten handlar nu bara om reglerna. Flaggan och de 800 är egna frågor, nr 21 och 22 i fragor.md.
 2. Ingen haj och ingen fena efter bild 3.

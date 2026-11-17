@@ -20,8 +20,8 @@ import os
 from PIL import Image
 film=os.environ['FILM']; out=os.environ['OUT']
 for i in range(3):
-    im=Image.open(f'out/craft/th_{film}_{i:04d}.png').convert('RGB'); assert im.size==(1280,720), im.size
-    im.save(f'{out}/thumbnail-{i+1}.png'); im.resize((320,180),Image.LANCZOS).save(f'{out}/thumbnail-{i+1}-liten.jpg',quality=90)
+    im=Image.open(f'out/craft/th_{film}_{i:04d}.png').convert('RGB'); assert im.size==(1080,1920), im.size      # a Short's thumbnail is upright
+    im.save(f'{out}/thumbnail-{i+1}.png'); im.resize((270,480),Image.LANCZOS).save(f'{out}/thumbnail-{i+1}-liten.jpg',quality=90)
 print('thumbnails written')
 PY
 fi

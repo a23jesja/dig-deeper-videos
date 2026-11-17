@@ -67,6 +67,13 @@ export const merchantSide = (len = 11) => {
   return g;
 };
 
+/** the plank as a thing by itself: its two boards with their grain, the nails of the battens underneath, a knot. It lies along x
+ *  with its middle at the origin and its top at y = 0.035 */
+export const plankBoard = () => { const p = SHIP.plank, len = p.x1 - p.x0 + 0.9, x0 = (p.x0 - 0.9 + p.x1) / 2, g = new THREE.Group();
+  g.add(mesh(box(len, 0.07, 0.52), "#e3c68c"), mesh(box(len - 0.1, 0.006, 0.014), "#a8854e", { at: [0, 0.037, 0.02], line: 0, shadow: false }));
+  for (const [x, z, l] of [[3.0, -0.15, 1.1], [4.4, -0.11, 0.8], [5.3, -0.17, 0.5], [3.5, 0.16, 0.9], [4.9, 0.13, 0.9], [2.7, 0.19, 0.4]]) g.add(mesh(box(l, 0.005, 0.008), "#c9a868", { at: [x - x0, 0.037, z], line: 0, shadow: false }));
+  for (const x of [3.3, 4.6, 5.75]) for (const z of [-0.19, -0.07, 0.09, 0.2]) g.add(mesh(ball(0.016, 6), "#5a4634", { at: [x - x0, 0.039, z], scale: [1, 0.4, 1], line: 0, shadow: false }));
+  g.add(mesh(ball(0.035, 8), "#b08a52", { at: [4.05 - x0, 0.036, -0.13], scale: [1.4, 0.1, 1], line: 0, shadow: false })); return g; };
 export const pirateShip = () => {
   const root = new THREE.Group(), W = SHIP.half, deckMap = (planks("deckplanks2", "#d8b780", "#cba86e", "#8a6a40"), paint("deckplanks2", 256, 256, () => {}, [3, 1]));
   root.add(skyDome("#2a7fdc", "#9fd6ff", "#e6f5ff"));
@@ -86,13 +93,11 @@ export const pirateShip = () => {
   wall(-W, -8.5, 8.5); wall(W, -8.5, SHIP.plank.z - 0.55); wall(W, SHIP.plank.z + 0.55, 8.5);
   for (const s of [-1, 1]) root.add(mesh(box(0.16, 0.9, 4.05), "#a8562f", { at: [s * 1.42, 0.45, -9.93], rot: [0, s * Math.PI / 4, 0] }), mesh(box(0.3, 0.09, 4.1), "#e8cf8a", { at: [s * 1.42, 0.94, -9.93], rot: [0, s * Math.PI / 4, 0], line: 0.7 }));
   root.add(mesh(box(W * 2, 0.9, 0.16), "#a8562f", { at: [0, 0.45, 8.5] }));
-  // the plank: lashed down on deck, reaching out over the water
-  { const p = SHIP.plank; root.add(mesh(box(p.x1 - p.x0 + 0.9, 0.07, 0.52), "#e3c68c", { at: [(p.x0 - 0.9 + p.x1) / 2, p.y - 0.035, p.z] })); for (const x of [1.9, 2.45]) root.add(mesh(box(0.1, 0.12, 0.6), "#5a4634", { at: [x, p.y + 0.03, p.z], line: 0.6 }));
-    // its two boards, the grain in them, the nails of the battens underneath, a knot
-    root.add(mesh(box(p.x1 - p.x0 + 0.8, 0.006, 0.014), "#a8854e", { at: [(p.x0 - 0.9 + p.x1) / 2, p.y + 0.002, p.z + 0.02], line: 0, shadow: false }));
-    for (const [x, z, l] of [[3.0, -0.15, 1.1], [4.4, -0.11, 0.8], [5.3, -0.17, 0.5], [3.5, 0.16, 0.9], [4.9, 0.13, 0.9], [2.7, 0.19, 0.4]]) root.add(mesh(box(l, 0.005, 0.008), "#c9a868", { at: [x, p.y + 0.002, p.z + z], line: 0, shadow: false }));
-    for (const x of [3.3, 4.6, 5.75]) for (const z of [-0.19, -0.07, 0.09, 0.2]) root.add(mesh(ball(0.016, 6), "#5a4634", { at: [x, p.y + 0.004, p.z + z], scale: [1, 0.4, 1], line: 0, shadow: false }));
-    root.add(mesh(ball(0.035, 8), "#b08a52", { at: [4.05, p.y + 0.001, p.z - 0.13], scale: [1.4, 0.1, 1], line: 0, shadow: false })); }
+  // the plank: lashed down on deck, reaching out over the water. It is a named thing of the world, so that a shot in which it has gone
+  // overboard can leave it out (Shot.hide) and move a board of its own (plankBoard)
+  { const p = SHIP.plank, pg = new THREE.Group(); pg.name = "plank"; const bd = plankBoard(); bd.position.set((p.x0 - 0.9 + p.x1) / 2, p.y - 0.035, p.z); pg.add(bd);
+    for (const x of [1.9, 2.45]) pg.add(mesh(box(0.1, 0.12, 0.6), "#5a4634", { at: [x, p.y + 0.03, p.z], line: 0.6 }));
+    root.add(pg); root.userData.named = [pg]; }
   // the mast with its boom and gaff, the mainsail and the jib, shrouds with ratlines on both sides
   const [mx, , mz] = SHIP.mast, top = SHIP.mastTop;
   root.add(rod([mx, 0, mz], [mx, top, mz], 0.22, "#8a6a3e"), mesh(cyl(0.34, 0.34, 0.12, 14), "#7a5a36", { at: [mx, 0.06, mz] }), mesh(cyl(0.6, 0.5, 0.14, 14), "#7a5a36", { at: [mx, 9.4, mz] }));

@@ -1,6 +1,6 @@
 # Short 4: Did Nero really fiddle while Rome burned?
 
-SKISS, VERSION 1 (manus version 2 med granskningens ändringar; rösten är inspelad, 32,2 s; filmen är 33,9 s och har 13 bilder; det som skiljer bilderna från tabellen står sist). Rom i brand, skrämmande med vändning, MYT. Beräknad längd 31-33 sekunder, 11 bilder, 84 ord, Kokoro bm_george. Fråga nr 23 i `granskning/fragor.md`. Tiderna nedan är uppskattade efter plankfilmens takt (83 ord på 30,3 s); de riktiga tiderna kommer ur rösten.
+SKISS, VERSION 2 (vad som är ändrat sedan skiss version 1 står sist, under "Skiss version 2"; ingen skylt i bild: noten om att scenerna är dramatiserade och källorna står i beskrivningen, `leverans/nero-fiddle/text.md`; manus version 2 med granskningens ändringar; rösten är oförändrad, 32,2 s; filmen är 33,9 s och har 13 bilder; det som skiljer bilderna från tabellen står sist). Rom i brand, skrämmande med vändning, MYT. Beräknad längd 31-33 sekunder, 11 bilder, 84 ord, Kokoro bm_george. Fråga nr 23 i `granskning/fragor.md`. Tiderna nedan är uppskattade efter plankfilmens takt (83 ord på 30,3 s); de riktiga tiderna kommer ur rösten.
 
 Planerad för onsdag 18 november. Filmens id i motorn: `nero-fiddle`.
 
@@ -20,7 +20,7 @@ Planerad för onsdag 18 november. Filmens id i motorn: `nero-fiddle`.
 | 23,6-26,6 | The fiddle came about a thousand years later. | Sir Digsworth blåser på fiolen och den löses upp i en gnistsky som far uppåt; han följer den med blicken och borstar av händerna. Kejsaren griper efter gnistorna. | [D]: "bowed instruments would not become popular for another 1,000 years"; [G]: "the viol class of instruments did not develop until about the eleventh century". |
 | 26,6-32,0 | His instrument was the cithara, a kind of lyre with seven strings. | En cithara landar i Neros famn. Tre tydligt olika inramningar: (a) halvfigur när citharan landar i famnen och han griper den; (b) nära på händerna: fingrarna knäpper strängarna en i taget, sju stycken, och varje sträng darrar när den ljuder; (c) ut till helfigur av båda: Nero sjunger för full hals med öppen mun, Sir Digsworth sticker fingrarna i öronen, och som filmens sista rörelse brister den sjunde strängen med ett pling. | [G]: "There can be no doubt that the instrument employed by Nero was the cithara."; [S] 20-21: "Terpnus, the greatest master of the lyre", "carrying his lyre"; [D]: "a cithara, a harp-like portable instrument with seven strings"; [Dio]. |
 
-Skylt i bild 4 och 5, i bild hela 6,4-13,8 s: "Dramatised. After the Roman historian Tacitus."
+Ingen skylt i bild (Jespers besked 17 november). Noten "The scenes are dramatised" och källorna står i beskrivningen.
 
 ## Källor
 
@@ -50,7 +50,7 @@ Suetonius och Dio är lästa i sidans råtext (sparad html). Tacitus och Drake �
 - Sir Digsworths reaktion till 5,4 s. Sedan en enda tråd: var Nero var och vad han gjorde (6,4-13,8 s), elden (13,8-15,8 s), ryktet (15,8-21,4 s). **Svaret kommer 21,4-26,6 s** ("Sang, perhaps. Fiddled, never. The fiddle caught on a thousand years later."), följt av det sista överraskande faktumet: vad han faktiskt spelade. Ingen del 2, ingen krok.
 - Ingen bild liknar den före: sagans bild i helfigur mot elden (1), nära ansikte med flyende bakom (2), nära på stråken (3), villan i dagsljus (4), grindarna med folkström (5), vid bild över taken (6), tre viskande i halvfigur (7), ryktets bild med mjuk kant (8), fiolen som tas (9), gnistskyn (10), händer på strängar och sedan ut (11).
 - Ingen står stilla mot kameran: varje bild har en handling med början och slut (stråken, hyttandet, stoppet, budbäraren och druvorna, grindarna, taket som rasar, viskningen som går vidare, sången, fiolen som tas, gnistorna, strängen som brister).
-- Ingen undertextruta över ansikte, bröst, händer eller skylt.
+- Ingen undertextruta över ansikte, bröst eller händer. Ingen skylt i bild.
 
 ## Vad som är bättre än i plank- och Romfilmen
 
@@ -75,7 +75,7 @@ Suetonius och Dio är lästa i sidans råtext (sparad html). Tacitus och Drake �
 2. Citharan: "His instrument was the cithara" står kvar, nu med antik källa för att det var hans instrument i allmänhet (Suetonius 20-21, citerad) och med Gyles.
 3. "a kind of harp" har blivit "a kind of lyre with seven strings".
 4. Villan vid havet i bild står kvar.
-5. Grindarna: ingen bugar och ingen jublar; skylten står i bild hela 6,4-13,8 s.
+5. Grindarna: ingen bugar och ingen jublar. (Skylten togs bort i skiss version 2 efter Jespers besked.)
 6. Sista bilden hålls i tre tydligt olika inramningar och strängen som brister är filmens sista rörelse.
 Dessutom från granskningen: svarta flaggan byggs först; hinner inte båda till onsdag med kvaliteten i behåll är det Nero som väntar. Varje figur i en grupp gör något eget. Telefonkopia under 28 MiB från början.
 
@@ -91,3 +91,26 @@ Rösten är manus version 2 ordagrant (84 ord, 32,2 s). Filmen är 33,9 s, 1018 
 8. **Bild 8:** ryktets bild har mörk, mjuk kant. Nero står i lång scendräkt med en hand mot bröstet och citharan i den andra; staden brinner bakom scenen.
 9. **Bild 9 och 10:** Sir Digsworth vickar på handen, tar fiolen och skakar på huvudet; i nästa bild (nerifrån) blåser han på den och den blir gnistor som stiger; kejsaren griper efter dem.
 10. **Ljuset:** natten med eld, den rökiga gryningen och kvällen i lägret görs med en toning som läggs över hela bilden, så att figurer och värld får samma ljus (nytt i motorn: `Film.grade`). Lågor, gnistor, rök och glöd ligger i `engine/src/craft/world/fire.ts`; villan, trädgården och scenen i `world/rome.ts` (`romeFire`). Amfiteatern, som påbörjades först efter Nero, är borttagen ur gatans bakgrund.
+
+## Vad som är bättre, per område (efter Jespers besked 17 november)
+- **Animation:** det som hålls sitter i handen genom motorns greppkod (`hold`, `carry`, `span`, `palmThen` i `stage/staging.ts`): fiolen ligger från hakan till handen på halsen och stråken från handen över strängarna; druvklasen hänger i handen och flyger från den; citharan fångas mellan två händer och följer dem; knytena bärs i famnen, på höften och på ryggen.
+- **Grafik:** folket är olika: kvinnor och män, en flicka, en gammal man och en gammal kvinna, olika längder, hudfärger, hår och kläder (fyra nya romerska looks i `looks.ts`).
+- **Ljus:** nattljuset ligger i himlen och längst bort i gatan; från taken och ned står allt i eldens varma sken, så att figurerna är hela från huvud till fot. Eldens sken ligger som varma fält på väggar och gata.
+- **Effekter:** ny eld i motorns gemensamma kod (`world/fire.ts`): trasiga väggar av lågor längs taken och ut ur fönstren i stället för rader av ljuslågor, lösa lågor som sliter sig, brinnande flagor i luften, rök som driver.
+- **Rörelse:** de som flyr och de som kommer in genom porten går och springer var och en i sin takt med luft emellan; kontrollen `film_info check` stoppar filmen om en figur står i en annan.
+
+## Skiss version 2: ändrat efter granskningens nio punkter och Jespers besked
+Rösten, texten och klippens tider är oförändrade. Skisspaketet i `granskning/nero-fiddle/skiss/` är nytt.
+1. **Elden** i alla eldbilder är ny (se "Effekter"): olika höga lågor från tak och fönster, sken på väggarna, rök, glöd och flagor i luften.
+2. **Bild 2:** sedd tvärs över gatan mot ett brinnande hus, med eld ur fönstren och längs taket. Sir Digsworth står till höger i tre kvarts vy, slår ut armen mot elden och hötter sedan med näven. Bakom honom flyr folk längs gatan: en kvinna med knyte och en flicka vid handen, en man som drar en gammal kvinna, en man under en säck, en kvinna med knyte på axeln.
+3. **Bild 4:** budbäraren är andfådd och rädd (ingen ler); Nero rycker till med sammanbitna tänder så att druvorna flyger, och springer.
+4. **Bild 5:** sedd rakt framifrån, lågt inne i trädgården. Porten står öppen, Nero står vid den högra dörrhalvan och vinkar in dem. De kommer en och en med luft emellan och varje ansikte syns: en mor med knyte och en flicka vid handen, en man som hostar, en kvinna med knyte i famnen, en man under en säck, en gammal man och en gammal kvinna. Fötterna står nära bildens nederkant; ovanför dem porten och röken.
+5. **Bild 9, 10 och 13 har egna inramningar:** bild 9 är nära på fiolen: Nero gnider med slutna ögon, en hand kommer in och drar fiolen ur hans grepp, bilden följer fiolen till Sir Digsworth som håller upp den och skakar på huvudet. Bild 10 är tagen nerifrån: han blåser på fiolen, den går upp i gnistor mot natthimlen och han borstar av händerna (Nero är inte med i bilden). Bild 13 är tagen snett från sidan med det brinnande huset bakom: Nero sjunger med citharan, Sir Digsworth står bakom med fingrarna i öronen.
+6. **Bild 11:** Nero står i tre kvarts vy; citharan kommer ned i bild uppifrån höger och han fångar den framför bröstet, knäna viker sig, han kramar den under hakan.
+7. **Bild 12:** instrumentet ensamt mot natthimlen: en arm kommer in och fingrarna ligger på strängarna, som står ljusa mot det mörka. Sju strängar.
+8. **Ljuset:** se "Ljus" ovan; togor och ben är hela i bild 1, 9, 10 och 13.
+9. **Bild 6** är oförändrad i upplägg; elden bär den.
+
+Jespers besked: ingen skylt; greppen går genom greppkoden; kvinnor och män i folkmassorna; kollisionerna i trädgårdsbilden är borta (kontrollen går igenom).
+
+Svagast enligt min egen läsning: i bild 12 rör sig fingret bara en kort bit över strängarna och armen skymmer de två vänstra; i bild 2 står paret på trottoaren delvis bakom en bänk; i bild 5 är Neros utsträckta hand nära en av de förbigående; ljudet är inte ombyggt och inte uppmätt efter ändringarna förrän skisspaketet byggs.

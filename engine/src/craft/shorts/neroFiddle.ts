@@ -92,7 +92,7 @@ const fiddler = (dur: number, cam: Cam) => { const s = NST(cam), n = mover(NERO_
   const sir = mover(SIR_D, 1.8, SX, SZ, 196); sir.stand(9);
   sir.actAt(-1, { armR: arm(86, 52, 98, 58), armL: arm(20, 10, 60, 0), head: [-44, 4, 0], lean: 6 }, 10, { in: 0.01, handR: "point", handL: "fist", face: { wide: 1, lid: 0, brow: 1, gaze: [-0.8, 0.2] } });
   wag(sir, 0.1, 1.2, P({ armR: arm(90, 52, 102, 58) }), P({ armR: arm(82, 52, 92, 56) }), 0.3, { handR: "point" });
-  sir.actAt(1.5, { head: [10, -2, 0], armR: arm(60, 40, 110, 50), lean: 0 }, 0.8, { in: 0.16, out: 0.16, antic: 0.2, over: 1.4, handR: "open", face: { wide: 1, lid: 0, brow: 1 } });
+  sir.actAt(1.45, { head: [10, -2, 0], armR: arm(60, 40, 110, 50), lean: 0 }, 0.85, { in: 0.26, out: 0.24, antic: 0.2, over: 1.4, handR: "open", face: { wide: 1, lid: 0, brow: 1 } });
   // two people run for it along the far pavement
   const r1 = mover(CITIZEN_D, 1.74, 3.1, 13, 180), r2 = mover(ROMAN_WOMAN_D, 1.66, -3.2, 15, 180); for (const m of [r1, r2]) m.run(mt(m, 16));
   for (const m of [r1, r2]) m.actAt(-1, { armL: arm(60, 20, 120, 0), armR: arm(60, 20, 120, 0) }, 10, { in: 0.01, handL: "grip", handR: "grip", face: { wide: 1, lid: 0, brow: 1, mouth: 0.5, smile: -1 } });
@@ -125,7 +125,7 @@ const fiddler = (dur: number, cam: Cam) => { const s = NST(cam), n = mover(NERO_
   const man = mover(FULLER_D, 1.78, -2.9, 6.6, 180), gran = mover(GRANNY_D, 1.5, -2.95, 7.5, 180);
   man.walk(mt(man, 1.7), { step: 0.62, tau: 0.4 }).stand(0.7).walk(mt(man, 4), { step: 0.62, tau: 0.4 }); gran.walk(mt(gran, 1.3), { step: 0.5, tau: 0.36 }).stand(0.2).walk(mt(gran, 4), { step: 0.5, tau: 0.36 });
   man.actAt(-1, { armL: arm(-40, 30, -60, 20), twist: -20, head: [0, 0, 0] }, 10, { in: 0.01, handL: "grip", face: { brow: -0.6, lid: 0, wide: 0.6, smile: -0.8 } });
-  man.actAt(1.3, { twist: 40, head: [80, 6, 0], armR: arm(60, 30, 110, 40) }, 0.8, { in: 0.2, out: 0.2, antic: 0, over: 1.2, handR: "open", face: { brow: 1, lid: 0, wide: 0.8, mouth: 0.6, smile: -0.8 } });
+  man.actAt(1.2, { twist: 44, head: [52, 6, 0], armR: arm(60, 30, 110, 40) }, 0.95, { in: 0.34, out: 0.3, antic: 0, over: 1.2, handR: "open", face: { brow: 1, lid: 0, wide: 0.8, mouth: 0.6, smile: -0.8 } });
   gran.actAt(-1, { lean: 16, armR: arm(70, 10, 90, 0), armL: arm(30, 10, 80, 0), head: [0, -10, 0] }, 10, { in: 0.01, handR: "open", handL: "grip", face: { brow: 0.8, lid: 0.3, mouth: 0.4, smile: -0.8 } });
   // the man bent under a sack, and the woman with a bundle on her shoulder, a moment later
   const baker = mover(BAKER_D, 1.7, -1.4, 13.6, 180); baker.stand(0.3).run(mt(baker, 14), { step: 0.95 });
@@ -255,7 +255,7 @@ const SIGN = { a: cut("notso", "away") + 0.04, b: cut("gardens", "six") };
   const FRIGHT = { wide: 1, lid: 0, brow: 1, mouth: 0.6, smile: -0.8 };
   const run = ([[CITIZEN_D, 1.74, -0.9, 10], [ROMAN_WOMAN2_D, 1.72, 0.9, 12], [BAKER_D, 1.7, 0.1, 14.5], [FULLER_D, 1.78, -1.6, 16.5], [GIRL_D, 1.14, -1.05, 16.7]] as [Design, number, number, number][]).map(([D, h, x, z], i) => { const m = mover(D, h, x, z, 180); m.run(mt(m, 14), i === 4 ? { step: 1.5, tau: 0.26 } : i === 2 ? { step: 0.95 } : undefined);
     // one looks back as he runs, one hugs her bundle, one is bent under a sack, one pulls a girl along by the hand
-    if (i === 0) { m.actAt(-1, { head: [0, -4, 0] }, 10, { in: 0.01, face: FRIGHT }); m.actAt(0.5, { twist: 34, head: [110, -6, 0] }, 0.7, { in: 0.2, out: 0.2, antic: 0, over: 1.2, face: FRIGHT }); }
+    if (i === 0) { m.actAt(-1, { head: [0, -4, 0] }, 10, { in: 0.01, face: FRIGHT }); m.actAt(0.4, { twist: 44, head: [64, -6, 0] }, 0.9, { in: 0.34, out: 0.3, antic: 0, over: 1.2, face: FRIGHT }); }
     if (i === 1) m.actAt(-1, { armL: arm(46, 6, 96, -34), armR: arm(46, 6, 96, -34), lean: 8 }, 10, { in: 0.01, handL: "grip", handR: "grip", face: FRIGHT });
     if (i === 2) m.actAt(-1, { lean: 26, armL: arm(150, 20, 200, -10), armR: arm(150, 20, 200, -10), head: [0, -16, 0] }, 10, { in: 0.01, handL: "grip", handR: "grip", face: { brow: -1, lid: 0.2, mouth: 0.5, smile: -1 } });
     if (i === 3) m.actAt(-1, { armR: arm(-30, 30, -50, 20), twist: -16 }, 10, { in: 0.01, handR: "grip", face: FRIGHT });
@@ -463,7 +463,7 @@ const LYRE = at("cithara", /^kind/) - 0.32, SEVEN = at("cithara", /^seven/), WID
 
 export const NERO_FIDDLE: Film = {
   id: "nero-fiddle", fps: 30, seconds: END, sky: "#a9dcff", world: romeFire, shots, words: W,
-  hook: { text: ["DID NERO FIDDLE", "WHILE ROME BURNED?"], a: 0, b: L.hook.b + 0.2, size: 76 },
+  hook: { text: ["DID NERO FIDDLE", "WHILE ROME BURNED?"], a: 0, b: cut("hook", "flames"), size: 76 },
   grade: (T) => GRADES.find((q) => T >= q.a && T < q.b)?.g(T) ?? null,
   // each is the film's own frame at that time (text.md names the times), with the words laid over it
   thumbs: [

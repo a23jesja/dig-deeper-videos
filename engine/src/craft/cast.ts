@@ -22,8 +22,9 @@ export type Look = {
   lash?: boolean; lips?: string;
   /** moustache: colour, how far the tips reach (in head half-widths), how far they turn up, thickness at the root */
   mous?: { col: string; span: number; curl: number; w: number }; beard?: string;
-  /** true = the mouth is drawn on top of the beard (the corrected beard, not used in a video before the reviewer has approved its sheet) */
-  beardMouth?: boolean;
+  /** true = the corrected beard (not used in a video before the reviewer has approved its sheet): it starts at the sideburns, follows
+   *  the jaw to a rounded foot with tufts, leaves the mouth open, moves down with the jaw, and has a moustache of its own over the lip */
+  beard2?: boolean;
   monocle?: boolean; pipe?: boolean;
   /** jacket = lapels over a waistcoat (plain = buttoned to the neck, as a uniform or a work jacket); tunic = one garment whose length is its rows
    *  (a short tunic, a long robe, a dress to the ground with skirt = true) */
@@ -122,11 +123,12 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
   const nose0 = at(h, 0), yEye = -0.565 * H, yM = -0.315 * H, yJaw = -0.18 * H, drop = 0.16 * H * m;
   // --- parts that lie behind the skull card ---
   const mousHalf = (s: number) => {
-    if (!L.mous) return; const M = L.mous, r = M.span * a;
+    const M = L.mous ?? (L.beard && L.beard2 ? { col: L.beard, span: 0.74, curl: -0.42 + 0.6 * (f.smile ?? 0.25), w: 15 } : undefined); if (!M) return; const r = M.span * a;
     // From the front and from behind the two halves spread to the sides. From the side the near half sweeps back across the cheek
     // to its curled tip and the far half shows as a waxed point out in front of the face, so the same moustache reads in profile.
     const G = ([[0, 0, b * 1.0], [0.3 * a, 2, b * 0.98], [0.62 * r, 7, b * 0.74], [0.86 * r, 6, b * 0.5], [0.98 * r, -8 * M.curl, b * 0.38], [0.97 * r, -30 * M.curl, b * 0.36]] as number[][]).map(([X, y, Z]) => [p3(h, s * X, Z).x, yM + y * u] as P2);
     const dirx = h.sin >= 0 ? 1 : -1, nearHalf = s * dirx < 0, k2 = M.span / 1.24;
+    if (!L.mous && !nearHalf && Math.abs(h.sin) > 0.45) return;      // a beard's moustache has no waxed point out in front of the face: from the side its far half is hidden
     const S = (nearHalf ? [[0.97, 0], [0.74, 7], [0.42, 10], [0.12, 2], [-0.02, -16 * M.curl], [0.06, -34 * M.curl]] : [[0.97, 0], [1.1, 4], [1.26, 1], [1.38, -9 * M.curl], [1.4, -24 * M.curl], [1.34, -34 * M.curl]]).map(([x, y]) => [dirx * b * (0.97 + (x - 0.97) * k2), yM + y * u] as P2);
     const q = Math.abs(h.sin) ** 2 * (h.cos > -0.3 ? 1 : 0), P = G.map((g, n) => [lerp(g[0], S[n][0], q), lerp(g[1], S[n][1], q)] as P2);
     piece(k, ribbon(P, [M.w, M.w, M.w * 0.88, M.w * 0.66, M.w * 0.42, M.w * 0.18]), M.col);
@@ -184,15 +186,21 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
     if (m > 0.04) k.clip(low, () => k.shape(shift(skull, 0, dy), null));
     if (vis) { const xl = at(h, -36, 0.72).x, xr = at(h, 36, 0.72).x, ym = yJaw + dy; k.clip(shift(skull, 0, dy), () => k.line(spline([[xl, ym - sm * 0.075 * H], [lerp(xl, xr, 0.25) + h.sin * 0.05 * a, ym + sm * 0.018 * H], [lerp(xl, xr, 0.75) + h.sin * 0.05 * a, ym + sm * 0.018 * H], [xr, ym - sm * 0.075 * H]], false, 6), 6.4 * u)); }
     if (L.lips && vis) { const q = at(h, 0, 0.72); piece(k, ellPts(q.x, yJaw - 0.025 * H + drop, 0.2 * a * Math.max(0.35, Math.abs(h.cos)), 0.032 * H), L.lips); }
-    if (L.beard) { const xs: P2[] = []; for (let az = -100; az <= 100; az += 20) { const q = at(h, az, 1.04); if (q.d > -0.1 * b) xs.push([q.x, -0.32 * H + drop * 0.5]); } if (xs.length > 1) { const lo = xs.map(([x], i) => [x * 0.92, 0.2 * H * (1 - Math.abs(i / (xs.length - 1) - 0.5) * 1.2) + drop] as P2).reverse(); piece(k, spline([...xs, ...lo], true, 4), L.beard); }
-      // the mouth lies on top of the beard, in a patch of skin of its own (the lips), so that a bearded man's mouth reads as well as
-      // a shaven one's: a line that bends with the mood when shut, the dark opening with tongue (and teeth in a laugh) when open
-      if (vis && L.beardMouth) { const xl = at(h, -36, 0.72).x, xr = at(h, 36, 0.72).x, cx = (xl + xr) / 2 + h.sin * 0.05 * a, half = Math.max(0.2 * a * 0.3, (xr - xl) / 2), cy = yJaw + drop * 0.5, open = m > 0.04;
-        // open, the mouth is wider in a laugh and rounder and taller in a fright, as on a shaven face
-        const wd = open ? 1 + 0.28 * Math.max(sm, 0) - 0.2 * Math.max(-sm, 0) : 1, ry = (0.05 * H + drop * 0.5) * (open ? 1 + 0.18 * Math.max(-sm, 0) : 1), lips = ellPts(cx, cy, half * 0.82 * wd, ry);
-        piece(k, lips, shade(skin, 0.965));
-        if (m > 0.04) k.clip(lips, () => { const hole = ellPts(cx, cy + 0.004 * H, half * 0.66 * wd, Math.max(0.018 * H, ry - 0.022 * H)); k.shape(hole, MOUTH, 0); k.clip(hole, () => { k.shape(ellPts(cx, cy + ry * 0.62, half * 0.42 * wd, ry * 0.5), "#e0707a", 0); if (sm > 0.3 && m > 0.45) k.shape([[cx - half * 1.5, cy - ry], [cx + half * 1.5, cy - ry], [cx + half * 1.5, cy - ry * 0.3], [cx - half * 1.5, cy - ry * 0.3]], "#fffdf6", k.ol * 0.6); }); });
-        else k.clip(lips, () => k.line(spline([[cx - half * 0.7, cy - sm * 0.03 * H], [cx - half * 0.3, cy + sm * 0.014 * H], [cx + half * 0.3, cy + sm * 0.014 * H], [cx + half * 0.7, cy - sm * 0.03 * H]], false, 6), 6.4 * u)); } }
+    if (L.beard && !L.beard2) { const xs: P2[] = []; for (let az = -100; az <= 100; az += 20) { const q = at(h, az, 1.04); if (q.d > -0.1 * b) xs.push([q.x, -0.32 * H + drop * 0.5]); } if (xs.length > 1) { const lo = xs.map(([x], i) => [x * 0.92, 0.2 * H * (1 - Math.abs(i / (xs.length - 1) - 0.5) * 1.2) + drop] as P2).reverse(); piece(k, spline([...xs, ...lo], true, 4), L.beard); } }
+    if (L.beard && L.beard2) {
+      // The corrected beard. Outer edge: from one sideburn down the jaw to a rounded foot under the chin and up to the other sideburn,
+      // with tufts along it. Inner edge: from the sideburn across the cheek to the corner of the mouth, under the lower lip, and back.
+      // So the mouth lies open in it, as large as on a shaven face. What lies under the jaw's hinge goes down with the jaw.
+      const A = 100, seen = (q: { d: number }) => q.d > -0.12 * b, outer: P2[] = [], inner: P2[] = [];
+      for (let az = -A; az <= A; az += 4) { const q = at(h, az, 1.05); if (!seen(q)) continue; const t = Math.abs(az) / A, low = Math.max(0, 1 - Math.abs(az) / 72);
+        const y = (t > 0.69 ? lerp(-0.02 * H, -0.5 * H, (t - 0.69) / 0.31) : lerp(0.2 * H, -0.02 * H, (t / 0.69) ** 1.6)) + (Math.abs(az) < 66 ? 0.05 * H * (1 - Math.abs(((az + 132) % 24) - 12) / 12) : 0) + drop * low;      // five tufts along the foot
+        outer.push([q.x * (t > 0.69 ? 1 : lerp(0.9, 1, t / 0.69)), y]); }
+      const cheek = (side: number, u: number): P2 | null => { const q = at(h, side * lerp(40, 96, u), 0.99); return seen(q) ? [q.x, lerp(yJaw - 0.08 * H, -0.56 * H, u ** 1.3)] : null; };
+      for (let u = 1; u >= 0; u -= 0.125) { const q = cheek(1, u); if (q) inner.push(q); }
+      for (let az = 40; az >= -40; az -= 8) { const q = at(h, az, 0.9); if (seen(q)) inner.push([q.x, lerp(yJaw + 0.105 * H, yJaw - 0.08 * H, (Math.abs(az) / 40) ** 2) + drop * (1 - 0.5 * (Math.abs(az) / 40) ** 2)]); }
+      for (let u = 0; u <= 1; u += 0.125) { const q = cheek(-1, u); if (q) inner.push(q); }
+      if (outer.length > 2 && inner.length > 2) piece(k, spline([...outer, ...inner], true, 2), L.beard);
+    }
     if (!tipBehind) pipe();
     const eye = (s: number) => {
       const q = at(h, s * 28, 0.8); if (q.d < 0.1 * b) return;

@@ -187,11 +187,11 @@ const SWAP = at("creep", /^then/) - 0.12;
     m.actAt(t0, { armR: arm(158, 30, 186, 10), armL: arm(60, 40, 110, 30), lean: -4, head: [0, -6, 0] }, 9, { in: 0.2, antic: 0.2, over: 1.7, handR: "grip", handL: "fist", face: { brow: -1, lid: 0, wide: 0.7, mouth: 1, smile: 0.4 } });
     wag(m, t0 + 0.3, 3, P({ armR: arm(164, 24, 190, 4), py: 0.02 }), P({ armR: arm(150, 36, 178, 18), py: -0.02 }), 0.3 + 0.03 * off / 10, { handR: "grip" }); return m; };
   const pir = up(PIRATE_D, 1.78, -1.75, 5.9, 0.3, -8), mate = up(MATE_D, 1.74, -2.2, 6.3, 0.46, 0), peeker = up(PIRATE2_D, 1.84, -1.75, 6.75, 0.38, 6), cap = up(CAPTAIN_D, 1.86, -2.2, 7.25, 0.54, 10);
-  const [x, z] = V.spot(2.85, -0.63), sailor = mover(SAILOR_D, 1.82, x, z, 84); sailor.stand(8);
-  sailor.actAt(-1, { armR: arm(160, 34, 190, 30), armL: arm(24, 44, 70, 60) }, 10, { in: 0.01, handR: "open", handL: "grip" });
-  wag(sailor, -0.3, 0.6, P({ armR: arm(164, 24, 196, 4) }), P({ armR: arm(156, 46, 176, 56) }), 0.5, { handR: "open" });
-  sailor.actAt(MUGT - 0.04, { armL: arm(24, 50, 60, 70), py: -0.03 }, 0.5, { in: 0.08, out: 0.2, antic: 0, over: 1.4, handL: "open" });
-  sailor.actAt(MUGT + 0.3, { armL: arm(150, 34, 180, 16), lean: -5 }, 9, { in: 0.34, antic: 0, over: 1.2, handL: "open" });
+  const [x, z] = V.spot(2.85, -0.5), sailor = mover(SAILOR_D, 1.82, x, z, 84); sailor.stand(8);
+  sailor.actAt(-1, { armL: arm(160, 34, 190, 30), armR: arm(24, 44, 70, 60) }, 10, { in: 0.01, handL: "open", handR: "grip" });
+  wag(sailor, -0.3, 0.6, P({ armL: arm(164, 24, 196, 4) }), P({ armL: arm(156, 46, 176, 56) }), 0.5, { handL: "open" });
+  sailor.actAt(MUGT - 0.04, { armR: arm(24, 50, 60, 70), py: -0.03 }, 0.5, { in: 0.08, out: 0.2, antic: 0, over: 1.4, handR: "open" });
+  sailor.actAt(MUGT + 0.3, { armR: arm(150, 34, 180, 16), lean: -5 }, 9, { in: 0.34, antic: 0, over: 1.2, handR: "open" });
   quake(sailor, 0.5, 5, 2.6);
   add({ id: "swap", a: SWAP, b: b0, still: 1.0,
     sounds: [{ t: 0.02, k: "rope", g: 0.9, p: 0.6 }, { t: 0.3, k: "rope", g: 0.9, p: 0.6 }, { t: SNAP, k: "flap", g: 1.3, p: 0.5 }, ...[0.3, 0.38, 0.46, 0.54].map((t, i) => ({ t: t + 0.1, k: "shing", g: 0.8, p: -0.2 + 0.2 * i })), { t: MUGT + 0.45, k: "ting", g: 0.9, p: -0.6 }, { t: MUGT + 0.6, k: "rattle", g: 0.5, p: -0.6, dur: 0.4 }],
@@ -202,7 +202,7 @@ const SWAP = at("creep", /^then/) - 0.12;
       fly(g, "pirate", 2.3 + 3.7 * smooth((t - 0.18) / 0.5), T, 0.3 + 0.7 * smooth((t - 0.5) / 0.3));
       ([["pir", 0.3], ["peeker", 0.38], ["mate", 0.46], ["cap", 0.54]] as [string, number][]).forEach(([n, t0], i) => { if (t > t0 + 0.04) sword(g, i, c[n], cam, 76 + 8 * Math.sin(t * 9 + i)); });
       // the mug: in his hand, then down to the deck
-      const h = near(c.sailor.joint("tipL"), cam, 0.05), u = t - MUGT; if (u < 0) put(g, MUG(), [h[0], h[1] - 0.1, h[2]]); else { const y = Math.max(MD + 0.02, h[1] - 0.1 - 4.9 * u * u), m = put(g, MUG(), [h[0], y, h[2]]); m.rotation.z = y > MD + 0.03 ? u * 9 : Math.PI / 2; }
+      const h = near(c.sailor.joint("tipR"), cam, 0.05), u = t - MUGT; if (u < 0) put(g, MUG(), [h[0], h[1] - 0.1, h[2]]); else { const y = Math.max(MD + 0.02, h[1] - 0.1 - 4.9 * u * u), m = put(g, MUG(), [h[0], y, h[2]]); m.rotation.z = y > MD + 0.03 ? u * 9 : Math.PI / 2; }
     } });
 }
 // 6. IT MEANT, GIVE UP NOW, AND WE SHOW MERCY: from above the merchant's rail. The captain acts it out across the water: a finger up,
@@ -248,11 +248,11 @@ const SWAP = at("creep", /^then/) - 0.12;
   mc.actAt(SLASH - 0.26, { armR: arm(150, 40, 200, 10), twist: -18, lean: -4, head: [-30, -6, 0] }, 0.26, { in: 0.16, out: 0.04, antic: 0, over: 1.2, handR: "grip", face: { brow: -1, lid: 0, wide: 0.6, smile: -1 } });
   mc.actAt(SLASH - 0.02, { armR: arm(46, 62, 60, 70), twist: 16, lean: 8, head: [-30, 4, 0] }, 0.56, { in: 0.07, out: 0.2, antic: 0, over: 1.5, handR: "grip", face: { brow: -1, lid: 0, wide: 0.6, smile: -1 } });
   mc.actAt(LAND + 0.12, { ...UP(2), lean: -3, head: [0, -6, 0] }, 9, { in: 0.3, antic: 0, over: 1.3, ...OPEN, face: { wide: 0.8, lid: 0, brow: 1, smile: -0.8 } });
-  const sailor = mover(SAILOR_D, 1.82, -7.9, 6.25, 84); sailor.stand(8);
+  const sailor = mover(SAILOR_D, 1.82, -7.9, 6.02, 84); sailor.stand(8);
   sailor.actAt(-1, { armL: arm(20, 10, 60, 0), armR: arm(20, 10, 60, 0), head: [8, -4, 0] }, 10, { in: 0.01, handL: "fist", handR: "fist", face: { wide: 0.8, lid: 0, brow: 0.9, smile: -0.7 } });
   sailor.actAt(SLASH + 0.1, { head: [-30, -28, 0] }, 0.5, { in: 0.14, out: 0.14, antic: 0, over: 1.2 });
   sailor.actAt(LAND - 0.2, { ...UP(-3), head: [0, -4, 0] }, 9, { in: 0.26, antic: 0.2, over: 1.5, ...OPEN });
-  const cook = mover(SHIPBOY_D, 1.28, -6.9, 4.42, 98); cook.stand(8);
+  const cook = mover(SHIPBOY_D, 1.28, -6.9, 4.56, 98); cook.stand(8);
   cook.actAt(-1, { armL: arm(40, 10, 110, -20), armR: arm(40, 10, 110, -20), head: [-8, -14, 0] }, 10, { in: 0.01, handL: "fist", handR: "fist", face: { wide: 0.9, lid: 0, brow: 1, mouth: 0.3, smile: -0.8 } });
   wag(cook, 0.2, SLASH - 0.2, P({ armL: arm(40, 10, 116, -24) }), P({ armL: arm(40, 10, 104, -14) }), 0.28, { handL: "fist", handR: "fist" });
   cook.actAt(SLASH + 0.2, { head: [30, -28, 0] }, 0.5, { in: 0.14, out: 0.14, antic: 0, over: 1.2 });
@@ -354,7 +354,7 @@ const RED = { a: cut("sight", "red"), b: cut("red", "answer"), up: 0 };
   watch.actAt(-1, { lean: 16, armR: arm(60, 10, 150, -10), armL: arm(60, 20, 80, -30), head: [0, 4, 8] }, 10, { in: 0.01, handR: "fist", handL: "open", face: { lid: 0.6, brow: -0.2, smile: -0.2 } });
   // the two with the chests: one hauls on a rope over his shoulder, bent double; one shoves from behind
   const X = -7.25, Z0 = 8.3, SPEED = 1.05, haul = mover(PIRATE2_D, 1.84, X, Z0, 180), shove = mover(MATE_D, 1.74, X, Z0 + 3.5, 180);
-  for (const m of [haul, shove]) m.walk(mt(m, SPEED * (len + 0.4)), { step: 0.3 });
+  for (const m of [haul, shove]) m.walk(mt(m, SPEED * (len + 0.4)), { step: 0.55, tau: 0.42 });
   haul.actAt(-1, { lean: 60, py: -0.26, armR: arm(150, 10, 200, -10), armL: arm(140, 14, 196, -4), head: [0, -30, 0] }, 10, { in: 0.01, handR: "grip", handL: "grip", face: { brow: -1, lid: 0.4, mouth: 0.5, smile: -0.8 } });
   shove.actAt(-1, { lean: 58, py: -0.24, armR: arm(96, 8, 100, 0), armL: arm(96, 8, 100, 0), head: [0, -34, 0] }, 10, { in: 0.01, handR: "open", handL: "open", face: { brow: -1, lid: 0.3, mouth: 0.6, smile: -0.8 } });
   shove.actAt(SCR + 0.5, { head: [-60, -30, 0] }, 0.5, { in: 0.14, out: 0.16, antic: 0, over: 1.2, face: { brow: -1, lid: 0, wide: 0.6 } });

@@ -107,7 +107,7 @@ const fiddler = (dur: number) => { const n = mover(NERO_D, 1.74, NX, NZ, 172); n
   baker.actAt(-1, { lean: 26, armL: arm(150, 20, 200, -10), armR: arm(150, 20, 200, -10), head: [0, -16, 0] }, 10, { in: 0.01, handL: "grip", handR: "grip", face: { brow: -1, lid: 0.2, mouth: 0.5, smile: -1 } });
   GRADES.push({ a: a0, b: b0, g: (T) => fireNight(T, 30, 44) });
   add({ id: "flames", a: a0, b: b0, still: PLAYS + 0.3,
-    sounds: [{ t: 0.1, k: "whoosh", g: 0.5, p: -0.4 }, { t: PLAYS - 0.1, k: "whoosh", g: 0.6, p: 0.3 }, { t: 0.5, k: "crack", g: 0.7, p: -0.6 }, { t: 1.7, k: "crack", g: 0.6, p: -0.4 },
+    sounds: [{ t: 0.1, k: "whoosh", g: 0.5, p: -0.4 }, { t: PLAYS - 0.1, k: "whoosh", g: 0.6, p: 0.3 }, { t: 0.5, k: "crack", g: 0.55, p: -0.6 }, { t: 1.7, k: "crack", g: 0.6, p: -0.4 },
       ...woman.cues().filter((q) => q.k === "step" && q.t < len).map((q) => ({ t: q.t, k: "step", run: true, g: 0.7, p: -0.3 })), ...man.cues().filter((q) => q.k === "step" && q.t < len).map((q) => ({ t: q.t, k: "step", g: 0.6, p: -0.6 }))],
     cam: (_t, u) => V.push(0.14 * u), sun: { target: [-1.5, 0, 4], reach: 9 },
     cast: (t, T) => [on("baker", BAKER_D, baker, t, WALK, { seed: 2 }), on("gran", GRANNY_D, gran, t, WALK, { seed: 3 }), on("man", FULLER_D, man, t, WALK, { seed: 4 }), on("woman", ROMAN_WOMAN_D, woman, t, 0, { seed: 5 }), on("boy", BOY_D, boy, t, 0, { seed: 6 }),
@@ -209,7 +209,7 @@ const SIGN = { a: cut("notso", "away") + 0.04, b: cut("gardens", "six") };
   GRADES.push({ a: a0, b: b0, g: (T) => { const u = (T - a0) / len, day = 0.5 - 0.5 * Math.cos(u * 12 * Math.PI), f = flicker(T), k = (a: number, b: number) => a + (b - a) * day;
     return `linear-gradient(180deg, ${hex(k(52, 196), k(52, 214), k(120, 255))} 0%, ${hex(k(150, 236), k(104, 190), k(110, 170))} 46%, ${hex(255 * f, 190 * f, 130 * f)} 100%)`; } });
   add({ id: "six", a: a0, b: b0, still: FALL + 0.25,
-    sounds: [{ t: 0.1, k: "crack", g: 0.8, p: -0.4 }, { t: 0.7, k: "crack", g: 0.8, p: 0.4 }, { t: FALL, k: "smash", g: 1.1, big: 1.4, p: -0.3 }, { t: 1.9, k: "crack", g: 0.7, p: 0.3 }],
+    sounds: [{ t: 0.1, k: "crack", g: 0.55, p: -0.4 }, { t: 0.7, k: "crack", g: 0.55, p: 0.4 }, { t: FALL, k: "smash", g: 0.75, big: 1.0, p: -0.3 }, { t: 1.9, k: "crack", g: 0.55, p: 0.3 }],
     cam: (_t, u) => V.push(1.2 * u), sun: { target: [0, 3, 6], reach: 16 },
     cast: (t) => run.map((q, i) => on(q.name, q.D, q.m, t, 0, { seed: i + 1 })),
     things: (g, _c, t, T, cam) => {
@@ -365,7 +365,7 @@ const LYRE = at("cithara", /^kind/) - 0.32, SEVEN = at("cithara", /^seven/), WID
   sir.actAt(SNAP + 0.25, { head: [-36, 4, 0] }, 9, { in: 0.2, antic: 0, over: 1.2, face: { lid: 0, brow: 0.8, wide: 0.5, smile: 0.3, gaze: [-0.8, 0.3] } });
   GRADES.push({ a: a0, b: END + 1, g: (T) => fireNight(T, 50, 40) });
   add({ id: "snap", a: a0, b: END, still: 0.9,
-    sounds: [...swings(0, SNAP - 0.05, 0.21, END - a0).map((t, i) => ({ t, k: "ting", g: 0.7, p: -0.2 + 0.1 * (i % 3) })), { t: SNAP, k: "snap", g: 1.1, p: -0.2 }, { t: SNAP + 0.05, k: "ting", g: 1.1, p: -0.2 }, { t: 0.5, k: "crack", g: 0.5, p: 0.5 }],
+    sounds: [...swings(0, SNAP - 0.05, 0.21, END - a0).map((t, i) => ({ t, k: "ting", g: 0.7, p: -0.2 + 0.1 * (i % 3) })), { t: SNAP, k: "snap", g: 0.7, p: -0.2 }, { t: SNAP + 0.05, k: "ting", g: 0.8, p: -0.2 }, { t: 0.5, k: "crack", g: 0.5, p: 0.5 }],
     cam: (_t, u) => V.push(0.16 * u), sun: { target: [0, 0, 3], reach: 9 },
     cast: (t) => [on("nero", NERO_D, nero, t, 0, { seed: 5, blink: false }), on("sir", SIR_D, sir, t, 0, { blink: false })],
     things: (g, c, t, T, cam) => { streetFire(g, T, cam);

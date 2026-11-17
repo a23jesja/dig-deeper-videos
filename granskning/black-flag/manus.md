@@ -1,6 +1,6 @@
 # Short 3: Why did pirates fly a black flag?
 
-FÄRDIG VIDEO, VERSION 2 (version 1 fick GÖR OM med åtta punkter, rättade sist under "Färdig video version 2"; skiss version 2 är GODKÄND; de tre punkterna därifrån är rättade, se sist; manus version 2 med granskningens ändringar; rösten är oförändrad, 30,8 s; filmen är 32,2 s och har 12 bilder; vad som är ändrat sedan skiss version 1 står sist, under "Skiss version 2"). Ingen skylt i bild: noten om att scenerna är dramatiserade och källan står i beskrivningen (`leverans/black-flag/text.md`). Två skepp till havs, skrämmande med rolig vändning, SANT. Beräknad längd 32-34 sekunder, 11 bilder, 90 ord, Kokoro bm_george. Fråga nr 21 i `granskning/fragor.md`. Tiderna nedan är uppskattade efter plankfilmens takt (83 ord på 30,3 s); de riktiga tiderna kommer ur rösten.
+FÄRDIG VIDEO, VERSION 3 (version 2 fick GÖR OM med en enda punkt, kikaren i bild 7, rättad sist under "Färdig video version 3"; version 1 fick GÖR OM med åtta punkter, rättade under "Färdig video version 2"; skiss version 2 är GODKÄND; de tre punkterna därifrån är rättade, se sist; manus version 2 med granskningens ändringar; rösten är oförändrad, 30,8 s; filmen är 32,2 s och har 12 bilder; vad som är ändrat sedan skiss version 1 står sist, under "Skiss version 2"). Ingen skylt i bild: noten om att scenerna är dramatiserade och källan står i beskrivningen (`leverans/black-flag/text.md`). Två skepp till havs, skrämmande med rolig vändning, SANT. Beräknad längd 32-34 sekunder, 11 bilder, 90 ord, Kokoro bm_george. Fråga nr 21 i `granskning/fragor.md`. Tiderna nedan är uppskattade efter plankfilmens takt (83 ord på 30,3 s); de riktiga tiderna kommer ur rösten.
 
 Planerad för onsdag 18 november. Filmens id i motorn: `black-flag`.
 
@@ -155,3 +155,9 @@ Min egen läsning av en första rendering av version 2 (commit a1d161f; var femt
 - **Bild 7:** kikaren låg vid ögat men handen höll i fallet bredvid, inte i kikaren. Tuben går nu från ögat genom handen som håller den, och fallet står en bit längre ut. Den avhuggna nedre repändan stod kvar som en käpp; den faller nu direkt.
 - **Bild 10:** handen i axelryckningen nådde in över mannen bredvid; armarna hålls närmare kroppen.
 - Bild 8 hade inget att rätta: pistolen sitter i handen i varje ruta, röken står kvar där mynningen var.
+
+## Färdig video version 3: granskningens enda punkt på version 2 (omgång 2 av 4, GÖR OM)
+Allt annat i version 2 är godkänt och orört. Röst, text, klipptider och thumbnails (rutorna 18, 567 och 850) är oförändrade.
+1. **Bild 7, kikaren (14,0-15,2 s):** kikaren är en lång skeppskikare (längre och grövre än förut). Okularet ligger över hans vänstra öga, så att det ögat är täckt, och tuben pekar ut mot flaggan. Handen håller om tuben på mitten. När han sänker den svänger den ned från ögat och hänger sedan i näven vid magen, under hakan, innan den byter hand.
+
+Vad som var fel i koden: ögats läge var satt vid näsroten, och den punkt i handen som tuben gick genom låg en bit utanför den slutna näven. Dessutom vreds tuben åt fel håll runt när den sänktes, om handen låg under ögats höjd.

@@ -259,11 +259,11 @@ const SWAP = at("creep", /^then/) - 0.12;
   const A: V3 = [-5.3, MD + 0.86, 5.8], B: V3 = [FLAGSEA.mx + BRIG.sail.x, FLAGSEA.yard, 6.85];      // the halyard: belayed at the rail beside him, up to the yard
   const mc = mover(CUSTOMS_D, 1.9, -5.75, 5.25, 46); mc.stand(LOW + 0.1).turn(30, 0.3).stand(8);
   const PEER = { brow: -0.5, lid: 0.2, smile: -0.3 }, SHOCK = { wide: 1, lid: 0, brow: 1, mouth: 0.4, smile: -0.8 }, GRIM = { brow: -1, lid: 0, wide: 0.6, smile: -1 };
-  mc.actAt(-1, { armR: arm(118, 26, 156, 30), armL: arm(20, 10, 60, 0), head: [0, -22, 0], lean: -4 }, LOW + 1.1, { in: 0.01, out: 0.14, handR: "grip", handL: "fist", face: PEER });
-  mc.actAt(LOW, { armR: arm(52, 6, 112, -30), head: [0, 0, 0], lean: 0 }, PASS - LOW + 0.3, { in: 0.24, out: 0.1, antic: 0, over: 1.2, handR: "grip", handL: "fist", face: SHOCK });
+  mc.actAt(-1, { armR: arm(108, 30, 164, -10), armL: arm(20, 10, 60, 0), head: [0, -22, 0], lean: -4 }, LOW + 1.1, { in: 0.01, out: 0.14, handR: "grip", handL: "fist", face: PEER });
+  mc.actAt(LOW, { armR: arm(34, 8, 76, -24), head: [0, 0, 0], lean: 0 }, PASS - LOW + 0.3, { in: 0.24, out: 0.1, antic: 0, over: 1.2, handR: "grip", handL: "fist", face: SHOCK });
   mc.actAt(GULP, { head: [0, 15, 0], py: -0.03 }, 0.2, { in: 0.08, out: 0.1, antic: 0, over: 1, handR: "grip", handL: "fist", face: SHOCK });
   // the glass goes over to his left hand, which takes it down to his side
-  mc.actAt(PASS - 0.06, { armL: arm(52, 6, 112, -30) }, 0.3, { in: 0.14, out: 0.1, antic: 0, over: 1.1, handL: "grip", handR: "grip", face: SHOCK });
+  mc.actAt(PASS - 0.06, { armL: arm(34, 8, 76, -24) }, 0.3, { in: 0.14, out: 0.1, antic: 0, over: 1.1, handL: "grip", handR: "grip", face: SHOCK });
   mc.actAt(PASS + 0.22, { armL: arm(18, 14, 44, 6) }, 9, { in: 0.2, antic: 0, over: 1.1, handL: "grip", handR: "grip", face: GRIM });
   // the hanger: his right hand to the hilt at his left hip, out and up over his shoulder, then down through the rope on his right
   mc.actAt(DRAW, { armR: arm(34, -24, 70, -70), twist: 10 }, 0.2, { in: 0.12, out: 0.06, antic: 0, over: 1.1, handR: "grip", handL: "grip", face: GRIM });
@@ -293,11 +293,13 @@ const SWAP = at("creep", /^then/) - 0.12;
       if (u < 0) line(g, A, B, 0.02); else { line(g, A, [A[0], Math.max(A[1] + 0.06, C[1] - 16 * u * u), A[2] + 0.3 * clamp(u / 0.24)], 0.02); if (u < 0.3) line(g, mix3(C, B, u * 3), mix3(C, B, Math.min(1, u * 3 + 0.22)), 0.02); }
       // the spyglass: its eye end at his eye and the tube up toward the flag, through the hand that holds it; then its middle in his fist,
       // hanging down; it changes hands
-      const e = near(aside(mix3(c.mc.joint("neck"), c.mc.joint("crown"), 0.5), cam, -0.1), cam, 0.06), kl = smooth((t - LOW) / 0.26), kp = smooth((t - PASS) / 0.16);
-      const hand = near(mix3(palm(c.mc, "R"), palm(c.mc, "L"), kp), cam, 0.06), fx = cam.look[0] - cam.pos[0], fz = cam.look[2] - cam.pos[2], fn = Math.hypot(fx, fz) || 1;
-      const g0 = Math.atan2(hand[1] - e[1], ((hand[0] - e[0]) * -fz + (hand[2] - e[2]) * fx) / fn), ga = g0 + (rad(262) - g0) * kl;      // at his eye the tube points at the hand that holds it
-      const mid = mix3(aside(e, cam, 0.17 * Math.cos(g0), 0.17 * Math.sin(g0)), hand, kl), o = aside(mid, cam, -0.17 * Math.cos(ga), -0.17 * Math.sin(ga));
-      span(g, GLASS(), o, aside(o, cam, Math.cos(ga), Math.sin(ga)), cam, 0).scale.setScalar(0.85);
+      const e = near(aside(mix3(c.mc.joint("neck"), c.mc.joint("crown"), 0.5), cam, -0.04, 0.12), cam, 0.06),      // his eye on the side he looks to
+        kl = smooth((t - LOW) / 0.26), kp = smooth((t - PASS) / 0.16);
+      const hand = near(mix3(palm(c.mc, "R", 0.15), palm(c.mc, "L", 0.15), kp), cam, 0.06),      // the middle of the fist that holds it
+        fx = cam.look[0] - cam.pos[0], fz = cam.look[2] - cam.pos[2], fn = Math.hypot(fx, fz) || 1;
+      const gr = Math.atan2(hand[1] - e[1], ((hand[0] - e[0]) * -fz + (hand[2] - e[2]) * fx) / fn), g0 = gr < 0 ? gr + 2 * Math.PI : gr, ga = g0 + (rad(262) - g0) * kl;      // at his eye the tube points at the hand that holds it
+      const grip = Math.hypot(hand[0] - e[0], hand[1] - e[1], hand[2] - e[2]) * (1 - kl) + 0.3 * kl, o = aside(hand, cam, -grip * Math.cos(ga), -grip * Math.sin(ga));      // the tube runs through the fist; at his eye its end is on the eye
+      span(g, GLASS(), o, aside(o, cam, Math.cos(ga), Math.sin(ga)), cam, 0).scale.setScalar(1.45);      // a long ship's glass: its eye end covers his eye, his hand is on the middle of the tube
       if (t > DRAW + 0.12) sword(g, 0, c.mc, cam, 0);
     } });
 }

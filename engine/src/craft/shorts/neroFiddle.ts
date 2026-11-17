@@ -339,15 +339,17 @@ const LATER = at("answer", /^The/) - 0.14;
   const DRY = { brow: 0.6, lid: 0.2, smile: 0.2 }, FIRM = { brow: -0.6, lid: 0.1, smile: -0.4 };
   sir.actAt(-1, { armL: arm(60, 30, 118, 10), armR: arm(20, 10, 50, 0), head: [-10, 0, 8] }, TAKE + 1, { in: 0.01, out: 0.12, handL: "open", handR: "relaxed", face: DRY });
   wag(sir, 0.1, TAKE - 0.3, P({ armL: arm(60, 38, 118, 26), head: [-10, 0, 14] }), P({ armL: arm(60, 22, 118, -6), head: [-10, 0, -4] }), 0.36, { handL: "open", handR: "relaxed", face: DRY });
-  // his hand to the fiddle's neck, beyond Nero's hand, as it is at the moment he takes it
-  const S9: Stand = { D: SIR_D, at: [SX, 0, SZ], heading: 196, h: 1.8, cam: VA.cam, pose: { lean: 8 } }, TAKEP = fiddleAt(neroAt(nero, TAKE, VA.cam), VA.cam).scroll;
-  sir.actAt(TAKE - 0.14, { ...reach(S9, "R", TAKEP), lean: 8, head: [-40, 4, 0] }, 0.4, { in: 0.14, out: 0.1, antic: 0.2, over: 1.4, handR: "grip", handL: "relaxed", face: DRY });
+  // the picture starts toward Sir Digsworth as his hand comes in, so that the hand is seen closing on the scroll (inside the frame)
+  // before it draws the fiddle away; his hand is solved for the camera as it is at that moment
+  const CAM9 = (t: number) => mixCam(VA.cam, VB.cam, smooth((t - TAKE + 0.45) / 0.8)), GRAB = TAKE - 0.1;
+  const S9: Stand = { D: SIR_D, at: [SX, 0, SZ], heading: 196, h: 1.8, cam: CAM9(TAKE), pose: { lean: 8 } }, TAKEP = fiddleAt(neroAt(nero, TAKE, CAM9(TAKE)), CAM9(TAKE)).scroll;
+  sir.actAt(GRAB - 0.2, { ...reach(S9, "R", TAKEP), lean: 8, head: [-40, 4, 0] }, 0.54, { in: 0.2, out: 0.1, antic: 0.2, over: 1.4, handR: "grip", handL: "relaxed", face: DRY });
   sir.actAt(TAKE + 0.24, { armR: arm(64, 56, 116, 60), armL: arm(20, 10, 50, 0), head: [0, 0, 0], lean: 0 }, 9, { in: 0.26, antic: 0, over: 1.4, handR: "grip", handL: "relaxed", face: FIRM });
   wag(sir, NEVER, 2, P({ head: [20, 0, 0] }), P({ head: [-20, 0, 0] }), 0.34, { handR: "grip", handL: "relaxed", face: FIRM });
   GRADES.push({ a: a0, b: b0, g: (T) => fireNight(T, 50, 16) });
   add({ id: "never", a: a0, b: b0, still: NEVER + 0.25,
-    sounds: [...swings(0, TAKE - 0.1, 0.28, b0 - a0).map((t) => ({ t, k: "scratch", g: 0.6, p: -0.3 })), { t: TAKE, k: "whoosh", g: 0.6 }, { t: TAKE + 0.14, k: "tap", g: 0.7 }, { t: 0.6, k: "crack", g: 0.5, p: 0.5 }],
-    cam: (t) => mixCam(VA.cam, VB.cam, smooth((t - TAKE - 0.05) / 0.5)), sun: { target: [0, 0, 3], reach: 9 },
+    sounds: [...swings(0, TAKE - 0.1, 0.28, b0 - a0).map((t) => ({ t, k: "scratch", g: 0.6, p: -0.3 })), { t: GRAB, k: "tap", g: 0.7 }, { t: TAKE, k: "whoosh", g: 0.6 }, { t: 0.6, k: "crack", g: 0.5, p: 0.5 }],
+    cam: CAM9, sun: { target: [0, 0, 3], reach: 9 },
     cast: (t, T) => [on("nero", NERO_D, nero, t, 0, { seed: 5, blink: false }), on("sir", SIR_D, sir, t, 0, { talk: talk(W, T, ["answer"]), blink: false })],
     things: (g, c, t, T, cam) => { streetFire(g, T, cam);
       // the fiddle goes from under his chin into the hand that takes it by the neck (through both their hands); the bow comes down

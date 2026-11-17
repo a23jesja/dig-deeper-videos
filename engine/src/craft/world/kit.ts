@@ -131,14 +131,16 @@ export const skyDome = (top: string, horizon: string, low = horizon) => {
 // ---------------- figures as cards ----------------
 /** the shade that falls on a card: the card keeps its drawn colours, and where an awning, a column or a wall stands between it and
  *  the sun a cool tone is laid over the drawing. The shadow is looked up a little toward the sun from the card, so that the card
- *  never shades itself. */
+ *  never shades itself. `userData.lookBack` (world metres) moves that look-up further: a hand drawn in front of what it holds looks up
+ *  its shade where the hand is on its figure, so that it is not shaded by its own figure */
 const shadeMat = (map: THREE.Texture, toSun: THREE.Vector3) => {
   const m = new THREE.ShadowMaterial({ color: "#1c2a4a", opacity: 0.36, transparent: true, depthWrite: false, side: THREE.DoubleSide });
+  m.userData.lookBack = { value: new THREE.Vector3() };
   m.polygonOffset = true; m.polygonOffsetFactor = -2; m.polygonOffsetUnits = -4;
   m.onBeforeCompile = (sh) => {
-    sh.uniforms.cardMap = { value: map }; sh.uniforms.toSun = { value: toSun };
-    sh.vertexShader = sh.vertexShader.replace("void main() {", "uniform vec3 toSun; varying vec2 vCardUv;\nvoid main() { vCardUv = uv;")
-      .replace("#include <shadowmap_vertex>", "worldPosition.xyz += toSun * 0.3;\n#include <shadowmap_vertex>");
+    sh.uniforms.cardMap = { value: map }; sh.uniforms.toSun = { value: toSun }; sh.uniforms.lookBack = m.userData.lookBack;
+    sh.vertexShader = sh.vertexShader.replace("void main() {", "uniform vec3 toSun; uniform vec3 lookBack; varying vec2 vCardUv;\nvoid main() { vCardUv = uv;")
+      .replace("#include <shadowmap_vertex>", "worldPosition.xyz += toSun * 0.3 + lookBack;\n#include <shadowmap_vertex>");
     sh.fragmentShader = sh.fragmentShader.replace("void main() {", "uniform sampler2D cardMap; varying vec2 vCardUv;\nvoid main() { if (texture2D(cardMap, vCardUv).a < 0.5) discard;");
   };
   return m;

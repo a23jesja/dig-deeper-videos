@@ -197,6 +197,24 @@ sent to Jesper, and reuse them from then on.
    on top, sent to Jesper as a contact sheet and a small clip. Build fully only after his yes. The sketch must
    already pass "Action, not portraits".
 
+## Held objects (Jesper 2026-11-17: the telescope and the pistol were held the wrong way round)
+An object in a hand must look held and used the way a person would, in every frame.
+- **Every prop has a grip and a direction in the shared code:** where the hand holds it (handle, stock, shaft),
+  which end is the working end (muzzle, blade, lens, spout, tip) and which way is up. A prop is never attached
+  to the hand by one point with a free angle.
+- **The hand closes around the grip:** fingers drawn over the object, thumb on the near side. The object never
+  floats beside, behind or in front of the fist.
+- **Use poses, one per prop, built once:** telescope with the small eyepiece at the eye, the wide end away from
+  the face, the tube pointing where the character looks, the far hand supporting it; pistol with the grip in the
+  hand and the barrel pointing away from the holder along the forearm; sword by the hilt with the blade away
+  from the body; mug by the handle, upright unless drinking; paper with the text toward the reader.
+- **Carried and lowered:** a lowered pistol points down and forward, a lowered telescope hangs from the hand at
+  its middle, a sheathed sword hangs at the hip and never passes through a leg.
+- **Put down or dropped:** an object leaves the hand only by being placed, thrown or dropped with a fall and a
+  landing. It never hangs in the air or changes hand between two frames.
+- **Check by script:** for every frame where a prop is held, the grip point lies inside the hand and the working
+  end points within the allowed angle for that use pose. The reviewer looks at every held object in close-up.
+
 ## The first second of every Short (hard rule)
 - Frame one shows the most striking moment of the story: one big subject filling the picture, already moving.
 - The hook is on screen as text while the voice says it. No intro, no year, no establishing shot first.

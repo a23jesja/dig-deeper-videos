@@ -2,7 +2,7 @@
  "voice": "bm_george",
  "speed": 1.06,
  "gap": 0.16,
- "lead": 0.05,
+ "lead": 0.0,
  "risk": [
   "Nero",
   "fiddle",
@@ -22,7 +22,7 @@
  "lines": [
   {
    "id": "hook",
-   "text": "Did Nero really fiddle while Rome burned?",
+   "text": "Did Nero fiddle while Rome burned?",
    "gap": 0.3
   },
   {

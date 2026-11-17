@@ -68,6 +68,8 @@ export const fingers = (into: THREE.Group, a: Staged, sides: ("L" | "R")[], cam:
   const m = fingersCard(a.D, a.pose, a.o, { at: a.at, heading: a.heading, h: a.h }, cam.pos, sides, a.seen, whole); if (!m) return null;
   const dist = Math.hypot(cam.pos[0] - m.position.x, cam.pos[1] - m.position.y, cam.pos[2] - m.position.z) || 1, k = 1 - d / dist;
   m.position.set(cam.pos[0] + (m.position.x - cam.pos[0]) * k, cam.pos[1] + (m.position.y - cam.pos[1]) * k, cam.pos[2] + (m.position.z - cam.pos[2]) * k); m.scale.multiplyScalar(k);
+  // the fingers take the light the way their figure does: a figure drawn without shade has fingers without shade (no grey glove)
+  if (a.noShade) m.traverse((c) => { if ((c as THREE.Mesh).receiveShadow) c.visible = false; });
   m.userData.own = true; m.traverse((c) => { c.userData.own = true; }); into.add(m); return m;
 };
 /** the parts of a held thing that lie behind the hand (`userData.layer = "back"`: a grip the fist hides) or over the fingers

@@ -285,7 +285,8 @@ const SWAP = at("creep", /^then/) - 0.12;
   mc.actAt(GULP, { head: [0, 15, 0], py: -0.03 }, 0.2, { in: 0.08, out: 0.1, antic: 0, over: 1, handR: "grip", handL: "fist", face: SHOCK });
   // the glass goes over to his left hand, which takes it down to his side
   mc.actAt(PASS - 0.22, { armL: arm(34, 8, 76, -24) }, 0.46, { in: 0.14, out: 0.1, antic: 0, over: 1.1, handL: "grip", handR: "grip", face: SHOCK });
-  mc.actAt(PASS + 0.22, { armL: arm(18, 14, 44, 6) }, 9, { in: 0.2, antic: 0, over: 1.1, handL: "grip", handR: "grip", face: GRIM });
+  mc.actAt(PASS + 0.08, { armL: arm(30, 34, 60, 24) }, 9,      // the glass held out at his side, clear of the hilt he is about to draw
+   { in: 0.2, antic: 0, over: 1.1, handL: "grip", handR: "grip", face: GRIM });
   // the hanger: his right hand to the hilt at his left hip, out and up over his shoulder, then down through the rope on his right
   // his right hand across to the hilt at his left hip (solved for where he stands, so that it closes on the hilt)
   const ST76: Stand = { D: CUSTOMS_D, at: [-5.75, MD, 5.25], heading: 76, h: 1.9, cam: V.cam, pose: { twist: 10 } };

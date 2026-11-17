@@ -1,14 +1,14 @@
-# Why did pirates fly a black flag?
+# Why did pirates fly black flags?
 
-## Title (41 characters)
-Why did pirates fly a black flag? #Shorts
+## Title (40 characters)
+Why did pirates fly black flags? #Shorts
 
 ## Two alternative titles
 - What the pirates' black flag really meant #Shorts
 - The black flag was an offer, not a threat #Shorts
 
 ## Description
-Why did pirates fly a black flag? It was an offer: give up now, and we show mercy. Pirates often crept close under a friendly flag and then ran up the black one, and some ships gave up at the very sight. Fight back, and a red flag might follow: no mercy. The black flag was meant to win the treasure without a fight. One crew had no black flag, so they hoisted a dirty tarpaulin and fired a gun. It worked.
+Why did pirates fly black flags? It was an offer: give up now, and we show mercy. Pirates often crept close under a friendly flag and then ran up the black one, and some ships gave up at the very sight. Fight back, and a red flag might follow: no mercy. The black flag was meant to win the treasure without a fight. One crew had no black flag, so they hoisted a dirty tarpaulin and fired a gun. It worked.
 
 The scenes are dramatised. The tarpaulin is from Charles Johnson's "A General History of the Pyrates" (1724), the story of Howel Davis: there it went up together with a row of prisoners in white shirts and a gunshot. Most pirates did not fly a skull and crossbones; the flag in the film carries an hourglass, one of the signs pirates used.
 

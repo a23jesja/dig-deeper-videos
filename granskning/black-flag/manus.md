@@ -1,6 +1,6 @@
 # Short 3: Why did pirates fly a black flag?
 
-FÄRDIG VIDEO, VERSION 3 (version 2 fick GÖR OM med en enda punkt, kikaren i bild 7, rättad sist under "Färdig video version 3"; version 1 fick GÖR OM med åtta punkter, rättade under "Färdig video version 2"; skiss version 2 är GODKÄND; de tre punkterna därifrån är rättade, se sist; manus version 2 med granskningens ändringar; rösten är oförändrad, 30,8 s; filmen är 32,2 s och har 12 bilder; vad som är ändrat sedan skiss version 1 står sist, under "Skiss version 2"). Ingen skylt i bild: noten om att scenerna är dramatiserade och källan står i beskrivningen (`leverans/black-flag/text.md`). Två skepp till havs, skrämmande med rolig vändning, SANT. Beräknad längd 32-34 sekunder, 11 bilder, 90 ord, Kokoro bm_george. Fråga nr 21 i `granskning/fragor.md`. Tiderna nedan är uppskattade efter plankfilmens takt (83 ord på 30,3 s); de riktiga tiderna kommer ur rösten.
+FÄRDIG VIDEO, VERSION 4, omgång 4 av 4 (version 3 GODKÄND av granskningen men underkänd av Jesper för greppen; vad som är ändrat står sist, under "Färdig video version 4". Version 2 fick GÖR OM med en enda punkt, kikaren i bild 7, rättad sist under "Färdig video version 3"; version 1 fick GÖR OM med åtta punkter, rättade under "Färdig video version 2"; skiss version 2 är GODKÄND; de tre punkterna därifrån är rättade, se sist; manus version 2 med granskningens ändringar; rösten är oförändrad, 30,8 s; filmen är 32,2 s och har 12 bilder; vad som är ändrat sedan skiss version 1 står sist, under "Skiss version 2"). Ingen skylt i bild: noten om att scenerna är dramatiserade och källan står i beskrivningen (`leverans/black-flag/text.md`). Två skepp till havs, skrämmande med rolig vändning, SANT. Beräknad längd 32-34 sekunder, 11 bilder, 90 ord, Kokoro bm_george. Fråga nr 21 i `granskning/fragor.md`. Tiderna nedan är uppskattade efter plankfilmens takt (83 ord på 30,3 s); de riktiga tiderna kommer ur rösten.
 
 Planerad för onsdag 18 november. Filmens id i motorn: `black-flag`.
 
@@ -161,3 +161,27 @@ Allt annat i version 2 är godkänt och orört. Röst, text, klipptider och thum
 1. **Bild 7, kikaren (14,0-15,2 s):** kikaren är en lång skeppskikare (längre och grövre än förut). Okularet ligger över hans vänstra öga, så att det ögat är täckt, och tuben pekar ut mot flaggan. Handen håller om tuben på mitten. När han sänker den svänger den ned från ögat och hänger sedan i näven vid magen, under hakan, innan den byter hand.
 
 Vad som var fel i koden: ögats läge var satt vid näsroten, och den punkt i handen som tuben gick genom låg en bit utanför den slutna näven. Dessutom vreds tuben åt fel håll runt när den sänktes, om handen låg under ögats höjd.
+
+## Färdig video version 4: Jespers underkännande av version 3 (greppen) och "The hook lab" (omgång 4 av 4)
+Jesper om version 3: "Kikaren sitter inte vid ögat och svärdet hålla fel, därför säger jag att det är viktigt att alla objekt hålls rätt, ser rätt ut och känns korrekt och rätt." Allt som hålls i filmen ligger nu på den gemensamma greppkoden (`engine/src/craft/stage/grips.ts`) som greppbladen 1 och 2 visade och granskningen godkände. Skriptkontrollen `node scripts/film_info.mjs black-flag grips`: 371 avläsningar, inga fel.
+
+Jespers fyra ställen:
+1. **Muggen, 9,5-10,5 s (bild 5):** sjömannen håller muggen i örat (bild 4 och 5); hans hand öppnar sig, muggen släpps där handen var, faller, vänder sig och lägger sig på sidan på däck med örat uppåt. Den hänger aldrig i luften.
+2. **Kikaren, 14-16 s (bild 7):** okularet på ögat på den sida han tittar åt och det ögat stängt, den breda änden bort, tuben mot den svarta flaggan, båda nävarna om tuben (en nära ansiktet, en längre ut). Han sänker den i höger hand, som håller den på mitten, och lämnar över den till vänster hand genom båda händerna.
+3. **Pistolen, 16,5-20 s (bild 8):** kolven i vänster hand, pipan längs underarmen bort från honom: hållen uppe, siktad mot piraterna, uppkastad av skottet; röken kommer ur pipans mynning. Vid "no mercy" sänks den och pekar nedåt och framåt vid hans sida.
+4. **Sablarna, 20,5-23,5 s (bild 9):** de två som bär har sina huggare i skidor på axelgehäng vid höften; skidan hänger på lårets utsida och lutar bakåt.
+
+Också rättat på samma kod:
+- **Huggaren i bild 7:** den sitter i skidan på hans axelgehäng tills han drar den (handen löst mot fästet där det sitter); dragen pekar den nedåt längs skidan, sedan bakåt över axeln, ned genom fallet och sänkt. Fallet är belagt 28 cm längre in så att hugget sker i bild.
+- **Piraternas klingor (bild 5 och 8):** knutna nävar om fästet, bygeln runt knogarna.
+- **Hinken (bild 1):** i hanken i kockens hand; han släpper den när armarna far upp, den faller och landar nedanför orden.
+- **Kistorna:** järnringar i gavlarna, bredare än en näve, så att ringen syns runt handen; fingrarna ritade framför. Bild 9: en bärare i var ände med handen i ringen. Bild 10: kanonjären lyfter kistan i ringarna, vänder den och skakar den, och ställer den på lådan igen med gaveln mot oss så att det öppna locket inte skymmer hans ansikte.
+- **Luntstaken (bild 11):** hållen redo, ned mot kanonen när den avfyras, upp igen.
+- **Fallen:** slutna nävar om linan (styrmannen i bild 10, den som halar i bild 11).
+
+"The hook lab" (Jespers avsnitt i DAILY-RULES.md, så som granskningen tillämpar det på en redan byggd film):
+- **Frågan:** sex ord, samma i röst och bild: "Why did pirates fly black flags?" (rösten inspelad på nytt med bm_george; övriga repliker är desamma).
+- **Rösten börjar i bildruta 0** (första ordet "Why" 0,00-0,22 s). **Ljudslag på ruta ett:** linan (rope) vid 0,02 s och knarret (creak).
+- **Bildbyten i sekund 0-5:** 2,33 s (gissningen) och 4,43 s (svaret). Bild ett är i rörelse från ruta ett: besättningen med händerna uppe, flaggan på väg upp.
+- **Slutet leder tillbaka:** efter "It worked" och droppen på Sir Digsworths mössa kommer en kod på 0,9 s på handelsskeppets däck en stund före första bildrutan; kameran glider in i exakt första bildens läge, så att sista rutan går över i första.
+- **Texten:** frågan står 2,38 s i två rader (minst 1,5 s per rad).

@@ -5,12 +5,12 @@
 import * as THREE from "three";
 import { Film, Shot, Cam, V3, Staged, play } from "../stage/film";
 import { mover, MM } from "../stage/acting";
-import { lens, once, noShade, near, palm } from "../stage/staging";
+import { lens, once, noShade, near, palm, fuseSmoke } from "../stage/staging";
 import { Stand, PISTOL, SABRE, MUG, SPYGLASS, BUCKET, LINSTOCK, FIDDLE, BOW, GRAPES, BUNDLE, wield, spy, spyEye, spyPose, aimPose, usePose, sheathed, drawSabre, drawPose, reach, liftPose, haul, haulPose, carryBy, fiddlePose, fiddlePlay, citharaPose, citharaHold, shoulderPose, onShoulder, inHand, letGo } from "../stage/grips";
 import { flagSea } from "../world/ship";
 import { group, mesh, box } from "../world/kit";
 import { spyglass, pistolHeld, sabre, mugHeld, scabbard, bucketHeld, linstock, chest, fiddle, fiddleBow, fiddleByNeck, cithara, grapes, bundleHeld } from "../world/props";
-import { CUSTOMS_D, SHIPOWNER_D, PIRATE_D, SAILOR_D, PIRATE2_D, CAPTAIN_D, COOK_D, GUNNER_D, DOCKER_D, DOCKHAND_D, NERO_D, NERO_STAGE_D, ROMAN_WOMAN2_D, CITIZEN_D } from "../looks";
+import { CUSTOMS_D, SHIPOWNER_D, PIRATE_D, SAILOR_D, PIRATE2_D, CAPTAIN_D, COOK_D, GUNNER_D, DOCKER_D, DOCKHAND_D, NERO_D, NERO_STAGE_D, ROMAN_WOMAN2_D, CITIZEN_D, BLACKBEARD_D } from "../looks";
 import type { HandKind } from "../ink";
 import type { Pose } from "../rig";
 import type { Design, Face } from "../designs/common";
@@ -125,9 +125,16 @@ both((view, turn) => card3(`sabre-ready-${view}`, [{ D: PIRATE_D, h: 1.8, turn, 
 const DRAW_VIEWS: [string, number][] = [["scab", -28]];
 for (const [k, n] of [[0, 1], [0.45, 2], [0.85, 3]] as [number, number][]) for (const [view, turn] of DRAW_VIEWS) card3(`sabre-draw${n}-${view}`, [{ D: CAPTAIN_D, h: 1.86, turn, pose: (s) => { const body = { twist: 6 + 36 * k, lean: -10 * k }; return { ...drawPose({ ...s, pose: body }, "L", k), ...body }; }, hands: LR, face: { brow: -0.8, lid: 0.1 } }], (g, [a], cam) => drawSabre(g, SAB3(), SCAB3(), a, "L", cam, k));
 both((view, turn) => card3(`sabre-raised-${view}`, [{ D: PIRATE2_D, h: 1.9, turn, pose: () => usePose(SABRE, "raised", "R"), hands: R1, face: { brow: -0.8, mouth: 0.5 } }], (g, [a], cam) => wield(g, SAB3(), SABRE, "raised", a, "R", cam)));
-both((view, turn) => card3(`sabre-lowered-${view}`, [{ D: PIRATE_D, h: 1.8, turn, pose: () => usePose(SABRE, "lowered", "R"), hands: R1 }], (g, [a], cam) => wield(g, SAB3(), SABRE, "lowered", a, "R", cam)));
+both((view, turn) => card3(`sabre-lowered-${view}`, [{ D: PIRATE_D, h: 1.8, turn, pose: () => ({ ...usePose(SABRE, "lowered", "R"), armL: [[-16, 14], [-8, 12]] }), hands: R1 }], (g, [a], cam) => wield(g, SAB3(), SABRE, "lowered", a, "R", cam)));
 both((view, turn) => card3(`sabre-sheathed-${view}`, [{ D: PIRATE2_D, h: 1.9, turn, pose: () => (turn ? {} : { armL: [[18, 30], [26, 22]] }) }], (g, [a], cam) => sheathed(g, SCAB3(), a, "L", cam)));
 // the spyglass only with his head turned to what he looks at: seen from the side, looking either way
 for (const [view, turn, way] of [["right", 58, 1], ["left", -58, -1]] as [string, number, number][]) { const seen: V3 = [X + way * 6, 1.95, Z + 1.2], dx = -way * 0.25;
   card3(`spyglass-look-${view}`, [{ D: CUSTOMS_D, h: 1.9, dx, turn, pose: (s) => spyPose(s, seen), hands: LR, face: { shut: spyEye(V.cam, [X + dx, 0, Z], seen, V.toward(X + dx, Z, turn)), lid: 0.7, brow: -0.3 } }], (g, [a], cam) => spy(g, GLASS3(), a, cam, seen)); }
 export const GRIP_SHEET_3: Film = { ...GRIP_SHEET, id: "grip-sheet-3", seconds: shots3.length * LEN, shots: shots3 };
+
+// ---------------- a look sheet: Blackbeard, his beard up to his eyes in ribboned tails, and the lit matches under his hat ----------------
+const shotsBB: Shot[] = [];
+const cardBB = (id: string, figs: Fig[], thing: (g: THREE.Group, c: Staged[], cam: Cam) => void) => { card2(id, figs, thing); const s = shotsBB.length * LEN, sh = shots2.pop()!; shotsBB.push({ ...sh, a: s, b: s + LEN }); };
+for (const [view, turn] of [["front", 0], ["slant", 28], ["side", 58], ["otherside", -50]] as [string, number][])
+  cardBB(`blackbeard-look-${view}`, [{ D: BLACKBEARD_D, h: 1.92, turn, pose: () => ({ armL: [[14, 22], [30, 18]], armR: [[14, 22], [30, 18]] }), face: { brow: -0.9, lid: 0.15, smile: 0.25 } }], (g, [a], cam) => fuseSmoke(g, a, 1.3 + turn * 0.01, cam));
+export const LOOK_BLACKBEARD: Film = { ...GRIP_SHEET, id: "look-blackbeard", seconds: shotsBB.length * LEN, shots: shotsBB };

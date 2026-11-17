@@ -124,7 +124,15 @@ const hiltWrong = (o: THREE.Object3D, H: NonNullable<Prop["hilt"]>, a: Staged, s
   const P2 = pic(cam), pm = palm(a, side), w = (x: number, y: number): V3 => { const q = new THREE.Vector3(x, y, 0).applyMatrix4(o.matrixWorld); return [q.x, q.y, q.z]; };
   o.updateMatrixWorld(true); const g = Math.hypot(...P2(pm, w(H.guard, 0))), r = fistR(a, side, cam), bow = P2(pm, w(H.bow[0], H.bow[1])), f = unit(P2(a.joint(el(side)), a.joint(wr(side))));
   const turn = (Math.acos(Math.max(-1, Math.min(1, dot(f, seen)))) * 180) / Math.PI, pom = Math.hypot(...P2(pm, w(H.pommel, 0)));
-  return g > r + 0.03 ? `the hand is ${(g * 100).toFixed(0)} cm from the guard (it belongs right behind it)` : dot(bow, [s * 0.7, -0.7]) <= 0 ? "the knuckle bow is on the palm side, not over the outside of the fingers" : turn > H.turn ? `the blade turns ${turn.toFixed(0)} degrees off the forearm (at most ${H.turn}: it carries on along the arm)` : pom < r + 0.012 ? `the pommel is inside the fist (${(pom * 100).toFixed(1)} cm from the middle of the hand, the fist reaches ${(r * 100).toFixed(1)} cm; the knuckle bow would end at the side of the fist like a loose hook)` : bladeOverLegs(o, a, cam);
+  return g > r + 0.03 ? `the hand is ${(g * 100).toFixed(0)} cm from the guard (it belongs right behind it)` : dot(bow, [s * 0.7, -0.7]) <= 0 ? "the knuckle bow is on the palm side, not over the outside of the fingers" : turn > H.turn ? `the blade turns ${turn.toFixed(0)} degrees off the forearm (at most ${H.turn}: it carries on along the arm)` : pom < r + 0.012 ? `the pommel is inside the fist (${(pom * 100).toFixed(1)} cm from the middle of the hand, the fist reaches ${(r * 100).toFixed(1)} cm; the knuckle bow would end at the side of the fist like a loose hook)` : bladeOverLegs(o, a, cam) ?? freeHandOnBlade(o, a, side, cam);
+};
+/** does the other hand (the one not on the hilt) touch the blade in the picture? A free hand is kept clear of the blade */
+const freeHandOnBlade = (o: THREE.Object3D, a: Staged, side: Side, cam: Cam): string | null => {
+  const B = o.getObjectByName("blade") as THREE.Mesh | undefined; if (!B?.geometry) return null;
+  B.geometry.computeBoundingBox(); const bb = B.geometry.boundingBox!, P2 = pic(cam), f: Side = side === "L" ? "R" : "L", hand = [palm(a, f), a.joint(tp(f))], r = fistR(a, f, cam);
+  for (let i = 1; i <= 10; i++) { const q = new THREE.Vector3(bb.min.x + (bb.max.x - bb.min.x) * (i / 10), (bb.min.y + bb.max.y) / 2, 0).applyMatrix4(B.matrixWorld);
+    for (const h of hand) if (Math.hypot(...P2(h, [q.x, q.y, q.z])) < r * 0.8) return "the free hand touches the blade in the picture (keep it clear of the blade)"; }
+  return null;
 };
 /** does the blade cross the outline of the legs in the picture (it would look as if it went through them)? */
 const bladeOverLegs = (o: THREE.Object3D, a: Staged, cam: Cam): string | null => {

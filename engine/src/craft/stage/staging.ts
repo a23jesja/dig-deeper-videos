@@ -2,6 +2,7 @@
 import * as THREE from "three";
 import { Actor, Cam, V3, Staged, mix3 } from "./film";
 import { figureCard, fingersCard } from "../world/people";
+import { glow as fxGlow, wisp as fxWisp } from "../world/fire";
 
 /** a camera at (cx, cy, cz) looking along (fx, fz) on the ground, tipped by pitch degrees. `spot(d, l)` is the place d metres ahead
  *  and l metres to the right of it; `toward(x, z, off)` is the heading that faces the lens, turned by `off` degrees */
@@ -132,4 +133,13 @@ export const carry = (into: THREE.Group, o: THREE.Object3D, a: Staged, sa: "L" |
   o.position.set(m[0], m[1] - (opt.drop ?? 0), m[2]); o.rotation.set(0, Math.atan2(-v.rz, v.rx), ang); into.add(o);
   if ((opt.d ?? 0.04) > 0 && opt.fingers !== false) { const dd = (opt.d ?? 0.04) + 0.05; if (a === b) fingers(into, a, sa === sb ? [sa] : [sa, sb], cam, dd); else { fingers(into, a, [sa], cam, dd); fingers(into, b, [sb], cam, dd); } }
   return { pa, pb, m };
+};
+
+/** The lit slow-matches a figure wears (a look with `fuses`): thin smoke curls up from each glowing tip the drawing marks, drifts a
+ *  little and thins away, and the glow on his cheek breathes. Nothing is drawn for a tip the lens cannot see. `seed` keeps two
+ *  figures' smoke apart */
+export const fuseSmoke = (into: THREE.Group, a: Staged, T: number, cam: Cam, seed = 0) => {
+  (["fuseA", "fuseB"] as const).forEach((n, j) => { const p = a.mark?.(n); if (!p) return; const q = near(p, cam, 0.06), s = seed * 3.1 + j * 1.7;
+    const toLens = Math.atan2(cam.pos[0] - p[0], cam.pos[2] - p[2]); fxWisp(into, q, T, toLens, 16, 0.7, 0.17, 0.09, s);
+    fxGlow(into, near(p, cam, 0.02), 0.09, 0.09, T, Math.atan2(cam.pos[0] - p[0], cam.pos[2] - p[2]), s); });
 };

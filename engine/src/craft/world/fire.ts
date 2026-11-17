@@ -76,3 +76,13 @@ export const glow = (into: THREE.Object3D, p: V3, w: number, h: number, t: numbe
   const m = new THREE.Mesh(GLOWGEO, GLOWMAT), k = flicker(t, seed); m.position.set(...p); m.rotation.set(flat ? -Math.PI / 2 : 0, flat ? 0 : ry, 0); if (flat) m.rotation.z = ry;
   m.scale.set(w * k, h * k, 1); m.castShadow = false; m.receiveShadow = false; m.renderOrder = 4; into.add(m); return m;
 };
+/** soft smoke: puffs drawn as round, soft-edged sprites that face the lens and fade as they rise (thin smoke from a fuse, a pipe, a
+ *  snuffed candle), not as solid balls. `n` puffs from p, as high as `rise`, as wide as `big` at the top; `drift` = metres sideways on
+ *  the way up. Their materials are shared by how far each has faded, so that nothing piles up from frame to frame */
+const PUFFGEO = new THREE.PlaneGeometry(1, 1), PUFFS: THREE.MeshBasicMaterial[] = [];
+const puffMat = (o: number) => { const i = Math.max(0, Math.min(9, Math.round(o * 9))); PUFFS[i] ??= new THREE.MeshBasicMaterial({ transparent: true, depthWrite: false, opacity: i / 9, fog: false,
+  map: paint("smokepuff", 64, 64, (g) => { const q = g.createRadialGradient(32, 32, 2, 32, 32, 31); q.addColorStop(0, "rgba(214,209,203,1)"); q.addColorStop(0.5, "rgba(204,198,191,0.78)"); q.addColorStop(1, "rgba(196,190,183,0)"); g.fillStyle = q; g.fillRect(0, 0, 64, 64); }) }); return PUFFS[i]; };
+export const wisp = (into: THREE.Object3D, p: V3, t: number, toLens: number, n = 12, rise = 0.5, big = 0.09, drift = 0.08, seed = 0) => {
+  for (let k = 0; k < n; k++) { const u = (t * 0.5 + k / n + seed * 0.13) % 1, s = (0.03 + big * u), o = (1 - u * 0.85) * Math.min(1, u * 8), sw = Math.sin(k * 2.3 + t * 1.9 + seed) * (0.015 + 0.05 * u);
+    if (o < 0.04) continue; const m = new THREE.Mesh(PUFFGEO, puffMat(o)); m.position.set(p[0] + sw + drift * u, p[1] + 0.02 + u * rise, p[2]); m.rotation.set(0, toLens, 0); m.scale.set(s, s, 1); m.renderOrder = 5; m.castShadow = false; into.add(m); }
+};

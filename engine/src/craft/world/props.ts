@@ -330,7 +330,7 @@ function layered<T extends THREE.Object3D>(g: T, parts: Record<number, "back" | 
 /** a sabre (a pirate's cutlass, a captain's hanger) to hold: the grip, a fist long, lies across the origin; the guard and the blade
  *  stand off along +x, the pommel along -x; the knuckle bow runs under the grip from guard to pommel (it lies over the fingers) */
 export const sabre = (blade = 0.62) => layered(group([mesh(box(0.155, 0.045, 0.045), "#5a3a22", { at: [-0.022, 0, 0], shadow: false }), mesh(box(0.03, 0.2, 0.08), C.gold, { at: [0.06, 0, 0], line: 0.6, shadow: false }),
-  mesh(knuckleBow([[0.056, -0.034], [0.04, -0.066], [-0.01, -0.078], [-0.066, -0.07], [-0.102, -0.028]]), C.gold, { line: 0.5, shadow: false }), mesh(ball(0.03, 8), C.gold, { at: [-0.104, 0, 0], line: 0.5, shadow: false }),
+  mesh(knuckleBow([[0.056, -0.034], [0.04, -0.066], [-0.01, -0.078], [-0.066, -0.07], [-0.098, -0.034], [-0.104, -0.008]]), C.gold, { line: 0.5, shadow: false }), mesh(ball(0.03, 8), C.gold, { at: [-0.104, 0, 0], line: 0.5, shadow: false }),
   Object.assign(mesh(slab("sabre" + blade, [[0, -0.04], [blade * 0.64, -0.045], [blade, 0.07], [blade * 0.95, 0.115], [blade * 0.58, 0.058], [0, 0.046]], 0.022), "#e9eef4", { at: [0.074, 0, -0.011], line: 0.9, shadow: false }), { name: "blade" })]), { 2: "front" });
 /** a knuckle bow: one bent bar through the given points (x, y), from the guard round the outside of the fingers to the pommel,
  *  fixed at both ends */

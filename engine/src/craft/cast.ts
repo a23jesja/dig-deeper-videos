@@ -25,6 +25,13 @@ export type Look = {
   /** true = the corrected beard (its sheet was approved on 17 Nov 2026; looks.ts castDesign switches it on for every look): it starts at the sideburns, follows
    *  the jaw to a rounded foot with tufts, leaves the mouth open, moves down with the jaw, and has a moustache of its own over the lip */
   beard2?: boolean;
+  /** a beard that grows up the cheeks almost to the eyes (Blackbeard: "as to Breadth, it came up to his Eyes") */
+  beardHigh?: boolean;
+  /** small plaited tails hanging from the beard's foot, each tied with a ribbon of the colour given (one tail per colour) */
+  tails?: string[];
+  /** a lit slow-match tucked under the hat on each side of the face, its tip glowing (the drawing marks the tips "fuseA" and "fuseB"
+   *  so that the stage can make them smoke: staging.ts fuseSmoke) */
+  fuses?: boolean;
   /** true = the corrected open mouth (its sheet was approved on 17 Nov 2026; looks.ts castDesign switches it on for every look): an open mouth is the opening
    *  alone, with no mouth line across it; the mood lies in the opening's shape (its upper edge and the lower lip bend up at the
    *  corners in a smile, down in anger and fear), and a narrow angry opening shows clenched teeth */
@@ -219,12 +226,27 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
       for (let az = -A; az <= A; az += 4) { const q = at(h, az, 1.05); if (!seen(q)) continue; const t = Math.abs(az) / A, low = Math.max(0, 1 - Math.abs(az) / 72);
         const y = (t > 0.69 ? lerp(-0.02 * H, -0.5 * H, (t - 0.69) / 0.31) : lerp(0.2 * H, -0.02 * H, (t / 0.69) ** 1.6)) + (Math.abs(az) < 66 ? 0.05 * H * (1 - Math.abs(((az + 132) % 24) - 12) / 12) : 0) + drop * low;      // five tufts along the foot
         outer.push([q.x * (t > 0.69 ? 1 : lerp(0.9, 1, t / 0.69)), y]); }
-      const cheek = (side: number, u: number): P2 | null => { const q = at(h, side * lerp(40, 96, u), 0.99); return seen(q) ? [q.x, lerp(yJaw - 0.08 * H + sour, -0.56 * H, u ** 1.3)] : null; };
+      // a high beard rises steeply from the corner of the mouth to just under the eye and stays there to the sideburn
+      const cheek = (side: number, u: number): P2 | null => { const q = at(h, side * lerp(40, 96, u), 0.99); return seen(q) ? [q.x, L.beardHigh ? lerp(yJaw - 0.08 * H + sour, -0.47 * H, Math.min(1, u * 1.6) ** 0.5) - 0.09 * H * Math.max(0, u - 0.62) / 0.38 : lerp(yJaw - 0.08 * H + sour, -0.56 * H, u ** 1.3)] : null; };
       for (let u = 1; u >= 0; u -= 0.125) { const q = cheek(1, u); if (q) inner.push(q); }
       for (let az = 40; az >= -40; az -= 8) { const q = at(h, az, 0.9); if (seen(q)) inner.push([q.x, lerp(yJaw + 0.105 * H - sour, yJaw - 0.08 * H + sour, (Math.abs(az) / 40) ** 2) + drop * (1 - 0.5 * (Math.abs(az) / 40) ** 2)]); }
       for (let u = 0; u <= 1; u += 0.125) { const q = cheek(-1, u); if (q) inner.push(q); }
       if (outer.length > 2 && inner.length > 2) piece(k, spline([...outer, ...inner], true, 2), L.beard);
+      // the plaited tails, each tied with a ribbon: they hang from the foot of the beard and go down with the jaw
+      if (L.tails?.length) { const n = L.tails.length;
+        L.tails.forEach((col, i) => { const az = n === 1 ? 0 : lerp(-52, 52, i / (n - 1)), q = at(h, az, 1.02); if (!seen(q)) return;
+          const t0 = Math.abs(az) / A, y0 = lerp(0.2 * H, -0.02 * H, (t0 / 0.69) ** 1.6) + drop * Math.max(0, 1 - Math.abs(az) / 72) - 0.02 * H, len = (0.3 + 0.05 * ((i * 7) % 3)) * H, wd = 0.05 * H * Math.max(0.45, Math.abs(Math.cos((az * Math.PI) / 180 + phi)));
+          for (let j = 0; j < 4; j++) { const yy = y0 + len * (j + 0.5) / 4.4; piece(k, ellPts(q.x + Math.sin(j * 2.1) * 0.008 * H, yy, wd * (1 - j * 0.12), len / 7.4), L.beard!); }
+          const yb = y0 + len * 0.95, bx = q.x, bw = 0.075 * H;
+          piece(k, [[bx, yb], [bx - bw, yb - bw * 0.55], [bx - bw, yb + bw * 0.55]], col); piece(k, [[bx, yb], [bx + bw, yb - bw * 0.55], [bx + bw, yb + bw * 0.55]], col); piece(k, ellPts(bx, yb, bw * 0.32, bw * 0.32), shade(col, 0.82)); }); }
     }
+    // lit slow-matches under the hat, one on each side of the face: a twisted cord from under the brim down beside the cheek, its tip
+    // glowing; the brim (drawn after) covers its top. The tips are marked for the stage, which makes them smoke and flicker
+    if (L.fuses && !away) for (const s of [-1, 1]) { const q = at(h, s * 82, 1.06); if (q.d < -0.18 * b) continue;
+      const out = Math.sign(q.x || s), x0 = q.x - out * 0.02 * H, y0 = -0.96 * H, x1 = q.x + out * 0.1 * H, y1 = -0.42 * H, cord: P2[] = [[x0, y0], [q.x + out * 0.07 * H, -0.74 * H], [x1, y1]];
+      k.line(spline(cord, false, 5), 17 * u, "#3a2414"); k.line(spline(cord, false, 5), 11 * u, "#5a3a22"); for (let j = 1; j < 8; j++) { const p = spline(cord, false, 5), c = p[Math.round((p.length - 1) * j / 8)]; k.line([[c[0] - 5 * u, c[1] - 4 * u], [c[0] + 5 * u, c[1] + 4 * u]], 2.6 * u, "#8a6440"); }
+      const gr = k.g.createRadialGradient(x1, y1, 0, x1, y1, 0.16 * H); gr.addColorStop(0, "rgba(255,140,40,0.55)"); gr.addColorStop(1, "rgba(255,110,30,0)"); k.g.fillStyle = gr; k.g.beginPath(); k.g.arc(x1, y1, 0.16 * H, 0, 7); k.g.fill();
+      piece(k, ellPts(x1, y1, 0.04 * H, 0.046 * H), "#ff6a1a"); k.shape(ellPts(x1, y1 + 0.006 * H, 0.02 * H, 0.024 * H), "#ffe08a", 0); k.mark(s < 0 ? "fuseA" : "fuseB", x1, y1); }
     if (!tipBehind) pipe();
     const eye = (s: number) => {
       const q = at(h, s * 28, 0.8); if (q.d < 0.1 * b) return;

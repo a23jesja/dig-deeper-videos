@@ -208,6 +208,12 @@ export const CAPTAIN: Look = {
   rows: [[-190, 124, 96, 100], [-60, 116, 100, 92], [50, 108, 100, 84], [170, 116, 96, 76], [244, 118, 68, 68], [272, 58, 42, 46]],
   legs: "trousers", trous: "#2b2a33", feet: "boots", sleeve: "long", arm: [32, 26, 19], leg: [40, 29, 19],
 };
+/** Blackbeard (Johnson 1724: "This Beard was black ... as to Breadth, it came up to his Eyes; he was accustomed to twist it with Ribbons,
+ *  in small Tails ... and stuck lighted Matches under his Hat"): the captain's frame, a black cocked hat, a dark coat, the beard up to
+ *  his eyes in tails tied with ribbons, and a lit slow-match on each side of his face */
+export const BLACKBEARD: Look = { ...CAPTAIN, id: "blackbeard", P: { ...CAPTAIN.P, shW: 122, hipW: 66 }, head: { a: 124, b: 120, H: 240, jaw: 1.14, round: 0.25, eye: 0.82 }, skin: "#d6a47c",
+  hatCol: "#141216", hatBand: "#141216", beard: "#141012", hair: { col: "#141012", kind: "queue" }, beardHigh: true, tails: ["#c8323a", "#e7bb48", "#2f6fb0", "#c8323a", "#e7bb48", "#2f6fb0"], fuses: true,
+  coat: "#7a2a22", accent: "#e8d2a0", cuffs: "#e7bb48" };
 /** a pirate of the crew: a red headscarf, an open green waistcoat over a shirt, wide trousers */
 export const PIRATE: Look = {
   id: "pirate", P: { ...COLONIST, shW: 110 }, head: { a: 110, b: 114, H: 232, jaw: 1.04, round: 0.3, eye: 0.86 }, skin: "#d9a070", brow: "#3a2418",
@@ -305,7 +311,7 @@ export const castDesign = (L0: Look, name = L0.id): Design => { const L: Look = 
 export const SIR_D = castDesign(SIR, "Sir Digsworth"), BAKER_D = castDesign(BAKER), SOLDIER_D = castDesign(SOLDIER), MERCHANT_D = castDesign(MERCHANT);
 export const KNIGHT_D = castDesign(KNIGHT), TOMMY_D = castDesign(TOMMY), LADY_D = castDesign(LADY), DOCKER_D = castDesign(DOCKER), BOY_D = castDesign(BOY), GRANNY_D = castDesign(GRANNY), ROMAN_WOMAN_D = castDesign(ROMAN_WOMAN);
 export const VESPASIAN_D = castDesign(VESPASIAN), TITUS_D = castDesign(TITUS), FULLER_D = castDesign(FULLER), CITIZEN_D = castDesign(CITIZEN), COLLECTOR_D = castDesign(COLLECTOR);
-export const CAPTAIN_D = castDesign(CAPTAIN), PIRATE_D = castDesign(PIRATE), MATE_D = castDesign(MATE), CASTAWAY_D = castDesign(CASTAWAY);
+export const CAPTAIN_D = castDesign(CAPTAIN), PIRATE_D = castDesign(PIRATE), MATE_D = castDesign(MATE), CASTAWAY_D = castDesign(CASTAWAY), BLACKBEARD_D = castDesign(BLACKBEARD, "Blackbeard");
 export const CUSTOMS_D = castDesign(CUSTOMS), SHIPOWNER_D = castDesign(SHIPOWNER), SAILOR_D = castDesign(SAILOR), DOCKHAND_D = castDesign(DOCKHAND), TOWNSWOMAN_D = castDesign(TOWNSWOMAN);
 export const OLDHAND_D = castDesign(OLDHAND), COOK_D = castDesign(COOK), SHIPBOY_D = castDesign(SHIPBOY), PIRATE2_D = castDesign(PIRATE2), GUNNER_D = castDesign(GUNNER), CORSAIR_D = castDesign(CORSAIR);
 export const SHIRT_A_D = castDesign(SHIRT_A), SHIRT_B_D = castDesign(SHIRT_B), SHIRT_C_D = castDesign(SHIRT_C);

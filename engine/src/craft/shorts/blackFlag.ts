@@ -297,7 +297,7 @@ const SWAP = at("creep", /^then/) - 0.12;
   // five steps of the draw, each reached as the sabre gets there (drawK below: the same clock)
   for (const k of [0, 0.25, 0.5, 0.75, 1]) mc.actAt(DRAW + k * (DRAWN - DRAW) - 0.06, { ...drawPose(SD(k), "L", k), twist: 6 + 36 * k, lean: -10 * k }, k < 1 ? 0.14 : 0.2, { in: 0.06, out: 0.04, antic: 0, over: 1, handR: "grip", handL: "grip", face: GRIM });
   // then the hanger up over his shoulder and down through the halyard on his right; the glass stays clamped under his left arm
-  mc.actAt(DRAWN - 0.04, { armR: arm(150, 40, 200, 10), armL: arm(14, 16, 26, 10), twist: -18, lean: -4, head: [-30, -6, 0] }, SLASH - DRAWN + 0.02, { in: 0.16, out: 0.04, antic: 0, over: 1.2, handR: "grip", handL: "fist", face: GRIM });
+  mc.actAt(DRAWN, { armR: arm(150, 40, 200, 10), armL: arm(14, 16, 26, 10), twist: -18, lean: -4, head: [-30, -6, 0] }, SLASH - DRAWN - 0.02, { in: 0.18, out: 0.04, antic: 0, over: 1.2, handR: "grip", handL: "fist", face: GRIM });
   mc.actAt(SLASH - 0.02, { armR: arm(36, 34, 46, 40), armL: arm(14, 16, 26, 10), twist: 12, lean: 8, head: [-30, 4, 0] }, 0.5, { in: 0.07, out: 0.2, antic: 0, over: 1.5, handR: "grip", handL: "fist", face: GRIM });
   mc.actAt(SLASH + 0.42, { armR: arm(20, 16, 40, 10), armL: arm(14, 16, 26, 10), head: [0, -24, 0], lean: -3 }, 9, { in: 0.24, antic: 0, over: 1.2, handR: "grip", handL: "fist", face: { wide: 0.8, lid: 0, brow: 1, smile: -0.8, gaze: [0, -1] } });
   const WORRY = { wide: 0.8, lid: 0, brow: 0.9, smile: -0.7 };
@@ -330,11 +330,14 @@ const SWAP = at("creep", /^then/) - 0.12;
       else under(g);
       // the hanger: in its scabbard on his baldric; drawn along the sheath with his left hand on the scabbard (grips.ts drawSabre); up
       // over his shoulder, down through the halyard, and lowered
-      const ku = (u0: number, u1: number) => smooth((t - u0) / (u1 - u0)), out = (q: THREE.Group) => drawSabre(q, CUTS[0](), SCABS[0](), c.mc, "L", cam, 1, 0.6, { noScabbard: true });
+      const ku = (u0: number, u1: number) => smooth((t - u0) / (u1 - u0)), out = (q: THREE.Group) => drawSabre(q, CUTS[0](), SCABS[0](), c.mc, "L", cam, 1, 0.6, { noScabbard: true, free: true });
       if (t <= DRAW) sheathed(g, SCABS[0](), c.mc, "L", cam);
       else if (t < DRAWN) drawSabre(g, CUTS[0](), SCABS[0](), c.mc, "L", cam, 0, 0.6, { follow: true });      // the sabre comes out as far as his hand has pulled it
       else { sheathed(g, SCABS[0](), c.mc, "L", cam, { drawn: true });
-        if (t < DRAWN + 0.16) blend(g, CUTS[0](), ku(DRAWN, DRAWN + 0.16), out, (q) => sword(q, 0, c.mc, cam, "chop"), "sabre", "mc R");
+        // clear of the sheath the point swings down and out, away from his body, and on up over his shoulder (never across his chest)
+        if (t < DRAWN + 0.07) blend(g, CUTS[0](), ku(DRAWN, DRAWN + 0.07), out, (q) => sword(q, 0, c.mc, cam, "draw"), "sabre", "mc R");
+        else if (t < DRAWN + 0.12) sword(g, 0, c.mc, cam, "draw", "R", ["swing", ku(DRAWN + 0.07, DRAWN + 0.12)]);
+        else if (t < DRAWN + 0.2) sword(g, 0, c.mc, cam, "swing", "R", ["chop", ku(DRAWN + 0.12, DRAWN + 0.2)]);
         else if (t < SLASH - 0.04) sword(g, 0, c.mc, cam, "chop");
         else if (t < SLASH + 0.08) sword(g, 0, c.mc, cam, "chop", "R", ["struck", ku(SLASH - 0.04, SLASH + 0.08)]);
         else if (t < SLASH + 0.42) sword(g, 0, c.mc, cam, "struck");

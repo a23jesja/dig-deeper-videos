@@ -45,6 +45,8 @@ export const SABRE: Prop = { name: "sabre", hilt: { guard: 0.06, bow: [-0.01, -0
   lowered: { arm: A(16, 12, 52, 8), turn: 10, ok: within(-100, -20, "a lowered sabre has its point down and forward, clear of his legs") },
   /** being drawn: the blade still down along the scabbard it comes out of (drawSabre) */
   draw: { arm: A(34, -24, 70, -70), level: -100, ok: within(-150, -55, "a sabre being drawn points down along its scabbard") },
+  /** on the way from one use to another: the blade out to the side, away from his body (so that a swing goes round outside him) */
+  swing: { arm: A(120, 40, 150, 30), level: -10, ok: within(-60, 40, "a sabre swung out from the body points out to the side") },
   /** a cut: drawn back over the shoulder, then brought down through what it cuts */
   chop: { arm: A(165, 22, 210, 8), turn: 8, ok: within(80, 200, "a sabre drawn back to cut points up and back over his shoulder") },
   struck: { arm: A(62, 16, 66, 8), turn: 10, ok: within(-70, 20, "after the cut the blade points forward and a little down") },
@@ -287,7 +289,7 @@ export const sheathed = (into: THREE.Group, o: THREE.Object3D, a: Staged, side: 
  *  the front the hilt would come up past his face (the real draw comes toward the lens), and at the far hip the blade would vanish
  *  into his body. `sab` = props.ts sabre, `scab` =
  *  props.ts scabbard (its hilt is hidden while the sabre is out of it) */
-export const drawSabre = (into: THREE.Group, sab: THREE.Object3D, scab: THREE.Object3D, a: Staged, hip: Side, cam: Cam, k: number, len = 0.6, opt: { /** the scabbard and the hand on it are put by the film itself (the sabre is inside a blend) */ noScabbard?: boolean; /** k is taken from where the drawing hand is along the sheath's line (the hand pulls the sabre), not from the clock */ follow?: boolean } = {}) => {
+export const drawSabre = (into: THREE.Group, sab: THREE.Object3D, scab: THREE.Object3D, a: Staged, hip: Side, cam: Cam, k: number, len = 0.6, opt: { /** the scabbard and the hand on it are put by the film itself (the sabre is inside a blend) */ noScabbard?: boolean; /** k is taken from where the drawing hand is along the sheath's line (the hand pulls the sabre), not from the clock */ follow?: boolean; /** drawn clear: the grip stays in his hand wherever the hand goes, the blade still along the sheath's line (the first moment after the draw) */ free?: boolean } = {}) => {
   const S = scabbardAt(a as unknown as Body, hip, cam, true), r = (S.lie * Math.PI) / 180, ax: [number, number] = [Math.cos(r), Math.sin(r)], hand: Side = hip === "L" ? "R" : "L";
   if (!opt.noScabbard) { sheathed(into, scab, a, hip, cam, { drawn: true, held: true }); fingers(into, a, [hip], cam, 0.1 + depth(cam, onCard(a.at, cam, S.along(0.08)), S.along(0.08))); }
   // the sabre's grip k of the way out along the sheath's line, its blade pointing back down the line into the throat, and only what
@@ -295,7 +297,7 @@ export const drawSabre = (into: THREE.Group, sab: THREE.Object3D, scab: THREE.Ob
   if (opt.follow) { const P0 = pic(cam), h0 = onCard(a.at, cam, S.along(-0.08)), h1 = onCard(a.at, cam, S.along(-0.08 - len)), line = P0(h0, h1), L2 = dot(line, line) || 1; k = Math.max(0, Math.min(1, dot(P0(h0, palm(a, hand)), line) / L2)); }
   const hilt = S.along(-0.08 - len * k), blade = sab.getObjectByName("blade");
   grip(into, sab, a, hand, cam, ax, { d: 0.05, knuckle: Math.sign(ax[0]) || 1, fingers: false });
-  sab.quaternion.premultiply(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(1, 0, 0).applyQuaternion(sab.quaternion), S.d3)); sab.position.set(...hilt);
+  sab.quaternion.premultiply(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(1, 0, 0).applyQuaternion(sab.quaternion), S.d3)); if (!opt.free) sab.position.set(...hilt);
   if (blade) { blade.scale.x = Math.max(0.001, Math.min(1, k)); blade.visible = k > 0.03; }
   fingers(into, a, [hand], cam, 0.12 + depth(cam, onCard(a.at, cam, hilt), hilt));
   if (AUDIT.on) { const P2 = pic(cam), seen = onCard(a.at, cam, hilt), off = Math.hypot(...P2(seen, palm(a, hand))), held = Math.hypot(...P2(onCard(a.at, cam, S.along(0.08)), palm(a, hip)));

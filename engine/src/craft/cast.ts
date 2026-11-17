@@ -25,6 +25,10 @@ export type Look = {
   /** true = the corrected beard (not used in a video before the reviewer has approved its sheet): it starts at the sideburns, follows
    *  the jaw to a rounded foot with tufts, leaves the mouth open, moves down with the jaw, and has a moustache of its own over the lip */
   beard2?: boolean;
+  /** true = the corrected open mouth (not used in a video before the reviewer has approved its sheet): an open mouth is the opening
+   *  alone, with no mouth line across it; the mood lies in the opening's shape (its upper edge and the lower lip bend up at the
+   *  corners in a smile, down in anger and fear), and a narrow angry opening shows clenched teeth */
+  mouth2?: boolean;
   monocle?: boolean; pipe?: boolean;
   /** jacket = lapels over a waistcoat (plain = buttoned to the neck, as a uniform or a work jacket); tunic = one garment whose length is its rows
    *  (a short tunic, a long robe, a dress to the ground with skirt = true) */
@@ -123,7 +127,7 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
   const nose0 = at(h, 0), yEye = -0.565 * H, yM = -0.315 * H, yJaw = -0.18 * H, drop = 0.16 * H * m;
   // --- parts that lie behind the skull card ---
   const mousHalf = (s: number) => {
-    const M = L.mous ?? (L.beard && L.beard2 ? { col: L.beard, span: 0.74, curl: -0.42 + 0.6 * (f.smile ?? 0.25), w: 15 } : undefined); if (!M) return; const r = M.span * a;
+    const M = L.mous ?? (L.beard && L.beard2 ? { col: L.beard, span: 0.74, curl: -0.42 + 0.6 * Math.max(L.mouth2 ? 0.1 : -9, f.smile ?? 0.25), w: 15 } : undefined); if (!M) return; const r = M.span * a;
     // From the front and from behind the two halves spread to the sides. From the side the near half sweeps back across the cheek
     // to its curled tip and the far half shows as a waxed point out in front of the face, so the same moustache reads in profile.
     const G = ([[0, 0, b * 1.0], [0.3 * a, 2, b * 0.98], [0.62 * r, 7, b * 0.74], [0.86 * r, 6, b * 0.5], [0.98 * r, -8 * M.curl, b * 0.38], [0.97 * r, -30 * M.curl, b * 0.36]] as number[][]).map(([X, y, Z]) => [p3(h, s * X, Z).x, yM + y * u] as P2);
@@ -176,15 +180,33 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
     // the jaw is its own card: it slides down over a dark card when he speaks. The mouth is large and lies clear of the moustache,
     // so that it reads at phone size: a line that bends with the mood when shut, a dark opening with a tongue (and teeth in a laugh) when open
     const sm = f.smile ?? 0.25, mw = (0.44 + 0.12 * Math.max(sm, 0)) * w;
-    if (vis && m > 0.04) { const c = at(h, 0, 0.5).x; k.clip(skull, () => {
+    const c0 = at(h, 0, 0.5).x, isOpen = m > 0.04, clench = !!L.mouth2 && isOpen && sm < -0.3 && m < 0.35, bend = L.mouth2 && isOpen ? (clench ? 1 : sm) : 0;
+    // the corrected mouth: the upper edge of the opening and the lower lip (the top of the jaw card) bend with the mood
+    const lipY = (x: number) => clench ? 0.055 * H * Math.min(1, Math.max(0, (1 - Math.abs(x - c0) / mw) / 0.25)) : bend * 0.05 * H * Math.max(0, 1 - ((x - c0) / mw) ** 2);      // clenched teeth: the lower lip is drawn straight down off them, so the mouth is an arch on a flat foot
+    if (vis && isOpen && L.mouth2) { k.clip(skull, () => {
+      const top = yJaw - 0.05 * H, cy = sm * 0.06 * H, up: P2[] = [-1, -0.6, -0.2, 0.2, 0.6, 1].map((x) => [c0 + x * mw, top - cy * x * x + 0.35 * cy * (1 - x * x)] as P2), hole: P2[] = [...up, [c0 + mw * 0.9, yJaw + drop + 0.14 * H], [c0 - mw * 0.9, yJaw + drop + 0.14 * H]];
+      k.shape(hole, MOUTH, 0);
+      k.clip(hole, () => {
+        if (clench) {      // a narrow angry mouth: clenched teeth
+          k.shape([[c0 - mw, top - 0.1 * H], [c0 + mw, top - 0.1 * H], [c0 + mw, yJaw + drop + 0.14 * H], [c0 - mw, yJaw + drop + 0.14 * H]], "#fffdf6", 0);
+          for (const x of [-0.6, -0.2, 0.2, 0.6]) k.line([[c0 + x * mw, top - 0.1 * H], [c0 + x * mw, yJaw + drop + 0.14 * H]], 3 * u);
+        } else {
+          k.shape(ellPts(c0, yJaw + drop + 0.03 * H + Math.max(0, sm) * 0.05 * H, mw * 0.56, 0.07 * H), "#e0707a", 0);
+          if (sm > 0.3 && m > 0.45) k.shape([[c0 - mw, top - 0.1 * H], [c0 + mw, top - 0.1 * H], [c0 + mw * 0.9, yJaw + 0.02 * H], [c0 - mw * 0.9, yJaw + 0.02 * H]], "#fffdf6", k.ol * 0.6);
+        }
+      });
+      k.line(spline(up, false, 4), 4.6 * u);
+    }); }
+    if (vis && isOpen && !L.mouth2) { const c = c0; k.clip(skull, () => {
       k.shape([[c - mw, yJaw - 0.05 * H], [c + mw, yJaw - 0.05 * H], [c + mw * 0.9, yJaw + drop + 0.06 * H], [c - mw * 0.9, yJaw + drop + 0.06 * H]], MOUTH, 0);
       k.shape(ellPts(c, yJaw + drop + 0.01 * H, mw * 0.56, 0.06 * H), "#e0707a", 0);
       if (sm > 0.3 && m > 0.45) k.shape([[c - mw * 0.82, yJaw - 0.06 * H], [c + mw * 0.82, yJaw - 0.06 * H], [c + mw * 0.78, yJaw + 0.035 * H], [c - mw * 0.78, yJaw + 0.035 * H]], "#fffdf6", k.ol * 0.6);
     }); }
-    const dy = drop, low: P2[] = [[-2 * w, yJaw + dy], [2 * w, yJaw + dy], [2 * w, 60 + dy], [-2 * w, 60 + dy]];
+    const dy = drop, lip: P2[] = bend ? [-1, -0.75, -0.5, -0.25, 0, 0.25, 0.5, 0.75, 1].map((x) => [c0 + x * mw, yJaw + dy + lipY(c0 + x * mw)] as P2) : [];
+    const low: P2[] = [[-2 * w, yJaw + dy], ...lip, [2 * w, yJaw + dy], [2 * w, 60 + dy], [-2 * w, 60 + dy]];
     k.clip(shift(skull, 0, dy), () => { k.shape(shift(low, 0, 6), "rgba(52,32,16,0.2)", 0); k.shape(low, shade(skin, 0.965)); });
     if (m > 0.04) k.clip(low, () => k.shape(shift(skull, 0, dy), null));
-    if (vis) { const xl = at(h, -36, 0.72).x, xr = at(h, 36, 0.72).x, ym = yJaw + dy; k.clip(shift(skull, 0, dy), () => k.line(spline([[xl, ym - sm * 0.075 * H], [lerp(xl, xr, 0.25) + h.sin * 0.05 * a, ym + sm * 0.018 * H], [lerp(xl, xr, 0.75) + h.sin * 0.05 * a, ym + sm * 0.018 * H], [xr, ym - sm * 0.075 * H]], false, 6), 6.4 * u)); }
+    if (vis && !(L.mouth2 && isOpen)) { const xl = at(h, -36, 0.72).x, xr = at(h, 36, 0.72).x, ym = yJaw + dy; k.clip(shift(skull, 0, dy), () => k.line(spline([[xl, ym - sm * 0.075 * H], [lerp(xl, xr, 0.25) + h.sin * 0.05 * a, ym + sm * 0.018 * H], [lerp(xl, xr, 0.75) + h.sin * 0.05 * a, ym + sm * 0.018 * H], [xr, ym - sm * 0.075 * H]], false, 6), 6.4 * u)); }
     if (L.lips && vis) { const q = at(h, 0, 0.72); piece(k, ellPts(q.x, yJaw - 0.025 * H + drop, 0.2 * a * Math.max(0.35, Math.abs(h.cos)), 0.032 * H), L.lips); }
     if (L.beard && !L.beard2) { const xs: P2[] = []; for (let az = -100; az <= 100; az += 20) { const q = at(h, az, 1.04); if (q.d > -0.1 * b) xs.push([q.x, -0.32 * H + drop * 0.5]); } if (xs.length > 1) { const lo = xs.map(([x], i) => [x * 0.92, 0.2 * H * (1 - Math.abs(i / (xs.length - 1) - 0.5) * 1.2) + drop] as P2).reverse(); piece(k, spline([...xs, ...lo], true, 4), L.beard); } }
     if (L.beard && L.beard2) {

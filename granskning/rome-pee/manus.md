@@ -1,6 +1,6 @@
 # Short 1: Why did Rome tax pee?
 
-FÄRDIG VIDEO, VERSION 2. Romersk gata, äcklig och rolig, SANT. 32,0 sekunder, 83 ord, Kokoro bm_george. Fråga nr 1 i `granskning/fragor.md`.
+FÄRDIG VIDEO, VERSION 3. Romersk gata, äcklig och rolig, SANT. 32,7 sekunder, 14 bilder, 83 ord, Kokoro bm_george. Fråga nr 1 i `granskning/fragor.md`.
 
 ## Manus, med källa per påstående
 
@@ -11,15 +11,15 @@ FÄRDIG VIDEO, VERSION 2. Romersk gata, äcklig och rolig, SANT. 32,0 sekunder, 
 | 4,8-6,5 | The treasury is empty. | Han vänder kistan upp och ned och skakar: ett enda mynt faller ut, studsar och rullar bort; Titus tittar i kistan och slår handen för pannan. | [S3] |
 | 6,5-9,9 | My guess was a fine for peeing in the street. Wrong! | Sir Digsworth marscherar fram mot en man vid krukan med vickande pekfinger; mannen blir rädd och springer; Sir Digsworth rycker till på "Wrong!". | Sir Digsworths egen felgissning, inget påstående. Mannen vid krukan: [M]. |
 | 9,9-11,3 | Pee was useful. | Inne i tvätteriet: tvättaren står bakom karet och häller en kanna i tvätten; Sir Digsworth står på golvet till höger om karet, böjer sig in över kanten och ryggar med handen för näsan. | [B] [P] [F] |
-| 11,3-13,0 | Laundries washed wool with it. | Från sidan: tvättaren trampar tyget i det murade karet, knäna lyfts i tur, det stänker. | [B] [P] |
-| 13,0-15,2 | Vespasian put a tax on it. | Kejsaren pekar på krukan; uppbördsmannen (civil, med vaxtavla) kommer in bakom sin kassakista och skriver; kejsaren vänder sig mot honom och pekar en gång till. Ingen betalar. | [S1] [S2] |
-| 15,2-17,4 | His son Titus complained. | Titus lutar sig bort från krukan med armen för näsan och hugger med pekfingret mot kistan. | [S1]: "found fault"; [S2]: "expressed his indignation". |
+| 11,3-13,0 | Laundries washed wool with it. | Från sidan: tvättaren trampar tyget i det murade karet, nu snabbare och förskjutet mot halvsekundstakten, med högt lyfta knän och pumpande armar; huvudet följer med; det stänker. | [B] [P] |
+| 13,0-15,2 | Vespasian put a tax on it. | Kejsaren pekar på krukan; uppbördsmannen (civil, med vaxtavla) är hel i bild från första bildrutan: böjd över kassakistan som han just ställt ned, och han rätar på sig och skriver på sin tavla (han går inte längre in från kanten); kejsaren vänder sig mot honom och pekar en gång till. Ingen betalar. | [S1] [S2] |
+| 15,2-17,4 | His son Titus complained. | Titus tar ett steg bakåt med handen för näsan, hugger två gånger med pekfingret mot krukan, kastar upp en hand med ett andra steg bakåt och fläktar sedan luften framför ansiktet, böjd bort. | [S1]: "found fault"; [S2]: "expressed his indignation". |
 | 17,4-21,1 | The emperor held a coin under his nose. Does it smell? | En händelse i fyra steg: kejsaren för upp myntet från bältet till Titus näsa; Titus, som stod med armarna i kors, ryggar med handen uppe; kejsaren lutar sig efter och Titus vänder bort ansiktet; till sist luktar han två gånger, hittar ingenting och slår ut med händerna. Amfiteaterbygget bakom. Skylt 17,6-19,6 s: "Dramatised. The story is from Suetonius; nobody knows who paid the tax." | [S1] |
-| 21,1-23,1 | No. Yet it comes from pee. | Kejsaren, hel i bild, skrattar med handen på magen och singlar myntet två gånger: armen går upp efter myntet, blicken följer det, han fångar det. Bakom honom skakar Titus på huvudet, slår ut med handen och går sin väg nedför gatan. | [S1]: When Titus said "No," he replied, "Yet it comes from urine." |
+| 21,1-23,1 | No. Yet it comes from pee. | Ny regi: Titus går bortåt gatan med armarna i kors och skakar på huvudet; kejsaren håller sig bredvid honom och skrattar, singlar myntet högt medan han går, fångar det och håller fram det till honom igen; Titus kastar upp en hand och vänder bort ansiktet. Linsen går baklänges framför dem. | [S1]: When Titus said "No," he replied, "Yet it comes from urine." |
 | 23,1-25,3 | That is why Rome taxed pee. | Myntet landar på guldhögen i kistan vid krukan (ett mynt som de andra i högen); uppbördsmannen, på huk bakom kistan, följer det med blicken, prickar av det med två drag på vaxtavlan och skakar sedan näven i triumf. Kistan står med gaveln mot linsen, så att locket inte skymmer honom. | Poängen i [S1]. |
-| 25,3-26,8 | The money did not smell. | Sir Digsworth, bredvid krukan och dess flugor, håller ett mynt under näsan och finner inget fel på det. | [S1] [S2] |
-| 26,8-30,2 | In Paris, street urinals were later named after him. | Sir Digsworth går med långa steg uppför trottoaren, sedd snett framifrån från gatan; linsen backar bredvid honom. Han tar fram ett hopvikt kort ur kavajen, skakar ut det och håller det framför sig medan han går; han stannar först när bilden tar slut. | [V1] [V2] |
-| 30,2-32,0 | Vespasiennes. | Han har kortet över huvudet i båda händerna, namnet tvärs över kortets överkant, och skakar det mot linsen med ett hopp; templet i gatans slut bakom honom. | [V1] [V2] |
+| 25,3-26,8 | The money did not smell. | Sir Digsworth, bredvid krukan och dess flugor, håller ett mynt under näsan och finner inget fel på det. Efter nosandet går myntet rakt upp vid huvudet, en kort bana som går att följa, fri från undertexten. | [S1] [S2] |
+| 26,8-30,2 | In Paris, street urinals were later named after him. | Sir Digsworth går med långa steg uppför trottoaren längs det gula huset och föreläser med höjt pekfinger, och slänger sedan ut armen mot något på väggen framför. Inget kort i handen längre. | [V1] [V2] |
+| 30,2-32,7 | Vespasiennes. | Skylten är nu en affisch fastsatt på husväggen (VESPASIENNE, en grön gatupissoar i Paris, PARIS). Han stannar under den, vänder sig mot oss och knackar med fingret uppåt mot namnet, och travar sedan ut ur bilden; linsen går in mot affischen tills namnet fyller bredden, och filmen slutar på affischen ensam. Filmen är 0,7 s längre för detta. | [V1] [V2] |
 
 ## Källor (alla lästa i sidans råtext)
 
@@ -54,6 +54,20 @@ FÄRDIG VIDEO, VERSION 2. Romersk gata, äcklig och rolig, SANT. 32,0 sekunder, 
 - Låsta ord i `engine/voice/pronunciation.json`: **Vespasian** (vɛspˈeɪʒən; rösten sade annars "ves-PAY-zi-an") och **Vespasiennes** (vˌɛspazjˈɛn, franskt uttal med stumt s; ersätter den tidigare omstavningen).
 - Riskord som kontrollerats på fonemnivå och lämnats som de var: Rome, Titus, treasury, wool, useful, laundries, Paris, urinals, after. Inga tal eller årtal läses upp (1724 och 800 finns bara i bild i den andra filmen).
 - Lyssningsfil: `leverans/rome-pee/riskord.wav` med lista i `leverans/rome-pee/riskord.md`.
+
+## Färdig video version 3: svar på granskningens sex punkter (omgång 2)
+1. 29,5-32,0 s, slutposen stilla, andra gången: ansatsen är ändrad; han går ut ur bilden och linsen lämnar honom för affischen.
+2. 27,0-29,5 s, skylten liten, stor och ohållen: det är nu en enda sak, en affisch fastsatt på väggen som han går fram till.
+3. 21,0-22,5 s, Vespasian i samma pose: han går bredvid Titus och singlar och fångar myntet medan linsen följer med.
+4. 15,5-17,0 s Titus och 12,0-13,0 s tvättaren, nästan likadana bildrutor: mer och varierad rörelse enligt tabellen ovan.
+5. 13,5-14,0 s, uppbördsmannen avskuren av högerkanten: han är hel i bild från första bildrutan.
+6. 25,0-26,0 s, myntets bana genom undertexten: myntet går upp vid hans huvud.
+
+Kvar som godkänt: "So" borta, första sekunden, den tomma kistan, hällbilden, myntet under näsan med Titus reaktion, svaret i sista tredjedelen, thumbnails (samma bildrutor: 1,00 s / bildruta 30, 10,86 s / 326, 25,70 s / 771).
+
+QA-flaggor i bildkontrollen: EMPTY bild 1, 2, 5 (slät gatsten eller golv under texten); WHITE bild 1, 3, 5, 9, 10 (rubriktext, vita togor och tyg, blek gatsten).
+Ljudstyrka: LOUDNESS I:         -14.0 LUFS | LRA:         0.9 LU | Peak:       -2.3 dBFS
+Ingen har lyssnat på ljudet; rösten är oförändrad sedan version 2.
 
 ## Färdig video version 2: svar på granskningens fjorton punkter
 1. "So" är struket: rösten säger "Vespasian put a tax on it." utan orsakssamband; text.md är ändrad på samma sätt.

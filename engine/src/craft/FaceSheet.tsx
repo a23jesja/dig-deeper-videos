@@ -11,7 +11,7 @@ import { AbsoluteFill, useCurrentFrame } from "remotion";
 import { Ink } from "./ink";
 import { solve, POSES, Pose, Props } from "./rig";
 import { Design, FigOpts, Face } from "./designs/common";
-import { SIR_D, CAPTAIN_D, TITUS_D, CAPTAIN, MATE, FULLER, castDesign } from "./looks";
+import { SIR, SIR_D, CAPTAIN_D, TITUS_D, CAPTAIN, MATE, FULLER, castDesign } from "./looks";
 
 export const FW = 2600, FH = 2400, FACE_SHEET_FRAMES = 5;
 const BG = "#ecdfc2", TXT = "#3b2a1a", CELL = "#e0d0aa";
@@ -28,7 +28,7 @@ const label = (g: G, t: string, x: number, y: number, px = 30, align: CanvasText
 
 const EYES: [string, Face][] = [["ÖPPET", { lid: 0.1 }], ["HALVT", { lid: 0.5 }], ["STÄNGT", { lid: 1 }], ["GLATT STÄNGT", { lid: 1, smile: 1, brow: 0.5 }]];
 // the corrected beards, as looks of their own until the sheet is approved
-const CAPTAIN2 = castDesign({ ...CAPTAIN, beard2: true }), MATE2 = castDesign({ ...MATE, beard2: true }), FULLER2 = castDesign({ ...FULLER, beard2: true });
+const CAPTAIN2 = castDesign({ ...CAPTAIN, beard2: true, mouth2: true }), MATE2 = castDesign({ ...MATE, beard2: true, mouth2: true }), FULLER2 = castDesign({ ...FULLER, beard2: true, mouth2: true }), SIR2 = castDesign({ ...SIR, mouth2: true }, "Sir Digsworth");
 const MOODS: [string, Face][] = [["NEUTRAL", {}], ["GLAD", { smile: 1, brow: 0.5, mouth: 0.5 }], ["ARG", { brow: -1, lid: 0.22, smile: -1, mouth: 0.14 }], ["FÖRSKRÄCKT", { wide: 1, lid: 0, brow: 1, mouth: 0.8, smile: -0.5 }], ["PRATAR", { mouth: 0.6, smile: 0.2 }]];
 const VIEWS: [string, number, Pose][] = [["FRAMIFRÅN", 0, POSES.stand], ["SNETT FRAMIFRÅN", 45, POSES.stand], ["I PROFIL (SIDVYN)", 90, POSES.standSide]];
 /** one figure: three views down, five faces across, large; the same at phone size underneath */
@@ -65,7 +65,7 @@ const paint = (g: G, fr: number) => {
   else if (fr === 1) moods(g, "SKÄGG, RÄTTAT: KAPTENEN", CAPTAIN2);
   else if (fr === 2) moods(g, "SKÄGG, RÄTTAT: MANNEN MED KROKEN", MATE2);
   else if (fr === 3) moods(g, "SKÄGG, RÄTTAT: TVÄTTAREN", FULLER2);
-  else moods(g, "SIR DIGSWORTH: MUSTASCHEN OFÖRÄNDRAD, MUNNEN UNDER DEN", SIR_D);
+  else moods(g, "SIR DIGSWORTH: MUSTASCHEN OFÖRÄNDRAD, MUNNEN UNDER DEN", SIR2);
   g.setTransform(1, 0, 0, 1, 0, 0);
 };
 export const FaceSheet: React.FC = () => {

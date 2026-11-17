@@ -53,6 +53,19 @@ We have changed style about six times in a week and published almost nothing new
 - **Thumbnails:** 1080x1920 for Shorts, 1280x720 for long videos. A Short's thumbnail must also exist as a frame
   in the video, because the app may only offer frames to choose from; name the time of that frame in text.md.
 
+## Plan B if the first long video fails (Jesper 2026-11-17)
+The pirate day video is the test of the history format. Judge it seven days after publishing, on the numbers
+that do not depend on the channel being small (views alone mislead on a new channel):
+- **Click-through rate** on impressions (Analytics, Reach): 4 % or more is good, under 2 % is a fail.
+- **Average percentage viewed** (Engagement): 35 % or more is good, under 20 % is a fail.
+- **Viewers left at 0:30** on the retention curve: 65 % or more is good, under 45 % is a fail.
+Good or in between on all three: keep the format and improve. A fail on two of three: Plan B.
+**Plan B:** history-inspired fiction instead of documented fact. Same idea of "you" in another age, but with
+our own characters, invented stories and twists, no source list. The look is reworked somewhat, the theme can
+change. Keep the engine, rig, motion library, held-object code and review rules; they are not the problem.
+Fiction about real, named people is avoided or clearly marked as invented, and the description says the story
+is fiction. Only Jesper starts Plan B.
+
 ## The review mailbox (Jesper 2026-11-18): the cloud session reviews so Jesper does not have to
 The session on the computer and the cloud session talk through git, because the cloud session cannot reach the
 computer.

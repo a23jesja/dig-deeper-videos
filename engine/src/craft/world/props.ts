@@ -342,7 +342,7 @@ export const bucketHeld = (h = 0.3) => { const r = h * 0.6, b = group([bucket(h)
 export const linstock = (len = 0.9) => group([mesh(box(len, 0.024, 0.024), "#5a3a22", { at: [len / 2 - 0.25, 0, 0], line: 0.5, shadow: false }), mesh(box(0.05, 0.06, 0.028), C.iron, { at: [len - 0.27, 0, 0], line: 0.4, shadow: false }),
   mesh(box(0.08, 0.012, 0.012), "#8a6a4a", { at: [len - 0.21, 0.02, 0], line: 0.3, shadow: false }), mesh(ball(0.03, 8), "#ff8a2a", { at: [len - 0.17, 0.02, 0], line: 0, shadow: false, glow: "#ff6a00" })]);
 /** the fiddle held by its neck: the neck at the origin, the body along +x (props.ts fiddle turned end for end) */
-export const fiddleByNeck = (len = 0.6) => { const f = fiddle(len); f.rotation.z = Math.PI; f.position.x = 0.45 * (len / 0.6); return group([f]); };
+export const fiddleByNeck = (len = 0.6) => { const f = fiddle(len); f.rotation.z = Math.PI; f.position.x = 0.45 * (len / 0.6); const g = group([f]); g.userData.len = len; return g; };
 /** the bundle to carry by its knot: the knot at the origin, the bundle hanging below it. Its parts are named: "knot" and "sack" */
 export const bundleHeld = (r = 0.2, col = "#d9c08a") => { const sack = group([mesh(ball(r, 12), col, { at: [0, 0, 0], scale: [1.15, 0.85, 1], line: 0.9 }), mesh(box(r * 0.5, r * 0.08, r * 1.3), "#8a5a36", { at: [0, r * 0.1, 0], rot: [0, 0.5, 0.2], line: 0, shadow: false })]), knot = group([mesh(ball(r * 0.3, 8), col, { at: [0, 0, 0], scale: [1.4, 0.6, 1], line: 0.7 })]);
   sack.position.y = -r * 0.82; sack.name = "sack"; knot.name = "knot"; return group([sack, knot]); };

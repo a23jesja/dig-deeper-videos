@@ -73,7 +73,7 @@ const both = (make: (view: string, turn: number, way: number) => void) => { for 
 const R1 = { handR: "grip" as HandKind }, L1 = { handL: "grip" as HandKind }, LR = { handL: "grip" as HandKind, handR: "grip" as HandKind };
 const SAB2 = once(() => noShade(sabre(0.6))), SCAB2 = once(() => noShade(scabbard(0.5))), PISTOL2 = once(() => { const p = noShade(pistolHeld()); p.scale.setScalar(0.7); return p; });
 const BUCKET_O = once(() => noShade(bucketHeld(0.3))), LINSTOCK_O = once(() => noShade(linstock(0.9))), CHEST_O = once(() => chest(false, false, 0.62, 0.36, 0.4)), MUG_DROP = once(() => noShade(mugHeld(0.14)));
-const FID = once(() => noShade(fiddle(0.6))), FID_NECK = once(() => noShade(fiddleByNeck(0.6))), BOW_O = once(() => noShade(fiddleBow(0.62))), CITH = once(() => noShade(cithara(0.62))), GRAPE = once(() => noShade(grapes(0.032)));
+const FID_PLAY = once(() => noShade(fiddleByNeck(0.6))), FID_NECK = once(() => noShade(fiddleByNeck(0.6))), BOW_O = once(() => noShade(fiddleBow(0.62))), CITH = once(() => noShade(cithara(0.62))), GRAPE = once(() => noShade(grapes(0.032)));
 const BUNDLE_O = once(() => noShade(bundleHeld(0.2))), BLOCK = once(() => noShade(group([mesh(box(0.12, 0.2, 0.08), "#7a5a36", { at: [0, 0, 0], line: 0.7, shadow: false })])));
 // the corrections: the pistol in one piece with his eyes on what he aims at; the scabbard held by a baldric
 both((view, turn, way) => card2(`pistol-aim-${view}`, [{ D: SHIPOWNER_D, h: 1.7, dx: -way * 0.47, turn, pose: (s) => aimPose(s, [X + way * 6, 1.5, Z + 1.2], "R"), hands: R1 }], (g, [a], cam) => wield(g, PISTOL2(), PISTOL, "aim", a, "R", cam)));
@@ -92,7 +92,7 @@ both((view, turn) => card2(`linstock-fire-${view}`, [{ D: GUNNER_D, h: 1.76, tur
 both((view, turn) => card2(`linstock-ready-${view}`, [{ D: GUNNER_D, h: 1.76, turn, pose: () => usePose(LINSTOCK, "ready", "R"), hands: R1 }], (g, [a], cam) => wield(g, LINSTOCK_O(), LINSTOCK, "ready", a, "R", cam)));
 // the chest by its two end handles, between two men walking one behind the other
 for (const [view, turn] of [["side", 90], ["front", 40]] as [string, number][]) {
-  const k = turn === 90 ? 1 : 0.8, H: V3[] = [[X - 0.37 * k, 0.86, Z], [X + 0.37 * k, 0.86, Z]];
+  const k = turn === 90 ? 1 : 0.8, H: V3[] = [[X - 0.394 * k, 0.86, Z], [X + 0.394 * k, 0.86, Z]];
   card2(`chest-carry-${view}`, [{ D: DOCKER_D, h: 1.9, dx: -0.62 * k, turn, pose: (s) => ({ ...reach(s, "R", H[0]), lean: -4 }), hands: R1, face: { brow: -0.6, mouth: 0.3 } }, { D: DOCKHAND_D, h: 1.7, dx: 0.6 * k, turn, pose: (s) => ({ ...reach(s, "R", H[1]), lean: 6 }), hands: R1, face: { brow: -0.6, mouth: 0.3 } }],
     (g, [a, b], cam) => carryBy(g, CHEST_O(), a, "R", b, "R", cam));
 }
@@ -102,7 +102,7 @@ card2("mug-hand-side", [{ D: SAILOR_D, h: 1.82, turn: 58, pose: () => usePose(MU
 for (const [id, tt] of [["mug-falling-side", 0.3], ["mug-landed-side", 1.4]] as [string, number][]) card2(id, [{ D: SAILOR_D, h: 1.82, turn: 58, pose: () => usePose(MUG, "hold", "R"), hands: { handR: "open" }, face: { wide: 1, lid: 0, brow: 1, mouth: 0.5, gaze: [0.3, 0.9] } }],
   (g, [a], cam) => { letGo(g, MUG_DROP(), MUG, near(palm(a, "R"), cam, 0.05), [0, 0, 0], tt, 0, cam, { centre: [0.07, 0], r: 0.065, spin: 0.6, rests: [0, -90] }); }, LOW);
 // the fiddle and its bow: played, and lowered (the fiddle by its neck, the bow by its frog)
-both((view, turn) => card2(`fiddle-play-${view}`, [{ D: NERO_D, h: 1.74, turn, pose: (s) => fiddlePose(s), hands: LR, face: { lid: 0.5, brow: 0.6, smile: 0.5 } }], (g, [a], cam) => fiddlePlay(g, FID(), BOW_O(), a, cam)));
+both((view, turn) => card2(`fiddle-play-${view}`, [{ D: NERO_D, h: 1.74, turn, pose: (s) => fiddlePose(s), hands: LR, face: { lid: 0.5, brow: 0.6, smile: 0.5 } }], (g, [a], cam) => fiddlePlay(g, FID_PLAY(), BOW_O(), a, cam)));
 both((view, turn) => card2(`fiddle-lowered-${view}`, [{ D: NERO_D, h: 1.74, turn, pose: () => ({ ...usePose(FIDDLE, "lowered", "L"), ...usePose(BOW, "lowered", "R") }), hands: LR }], (g, [a], cam) => { wield(g, FID_NECK(), FIDDLE, "lowered", a, "L", cam); wield(g, BOW_O(), BOW, "lowered", a, "R", cam); }));
 // the cithara: held against his side, and played
 both((view, turn) => card2(`cithara-hold-${view}`, [{ D: NERO_STAGE_D, h: 1.74, turn, pose: (s) => citharaPose(s, false), hands: L1 }], (g, [a], cam) => citharaHold(g, CITH(), a, cam, false)));

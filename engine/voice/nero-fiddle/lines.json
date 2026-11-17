@@ -1,56 +1,56 @@
 [
  {
   "id": "hook",
-  "a": 0.05,
-  "b": 2.865,
-  "text": "Did Nero really fiddle while Rome burned?"
+  "a": 0.0,
+  "b": 2.455,
+  "text": "Did Nero fiddle while Rome burned?"
  },
  {
   "id": "flames",
-  "a": 3.165,
-  "b": 5.804,
+  "a": 2.755,
+  "b": 5.394,
   "text": "Flames everywhere, and he plays a tune!"
  },
  {
   "id": "notso",
-  "a": 6.054,
-  "b": 7.222,
+  "a": 5.644,
+  "b": 6.812,
   "text": "Not so fast."
  },
  {
   "id": "away",
-  "a": 7.472,
-  "b": 11.701,
+  "a": 7.062,
+  "b": 11.291,
   "text": "When the fire began, says Tacitus, Nero was not even in Rome."
  },
  {
   "id": "gardens",
-  "a": 11.951,
-  "b": 15.509,
+  "a": 11.541,
+  "b": 15.099,
   "text": "He came back and opened his own gardens to the homeless."
  },
  {
   "id": "six",
-  "a": 15.759,
-  "b": 17.945,
+  "a": 15.349,
+  "b": 17.535,
   "text": "The fire raged for six days."
  },
  {
   "id": "rumour",
-  "a": 18.195,
-  "b": 22.493,
+  "a": 17.785,
+  "b": 22.083,
   "text": "And a rumour spread: while Rome burned, Nero sang of the fall of Troy."
  },
  {
   "id": "answer",
-  "a": 22.793,
-  "b": 27.625,
+  "a": 22.383,
+  "b": 27.215,
   "text": "Sang, perhaps. Fiddled, never. The fiddle came about a thousand years later."
  },
  {
   "id": "cithara",
-  "a": 27.925,
-  "b": 32.025,
+  "a": 27.515,
+  "b": 31.615,
   "text": "His instrument was the cithara, a kind of lyre with seven strings."
  }
 ]

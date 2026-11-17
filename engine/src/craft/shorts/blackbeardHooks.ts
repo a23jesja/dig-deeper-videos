@@ -10,7 +10,7 @@ import { mover, mt, wag, arm, MM } from "../stage/acting";
 import { lens, once, noShade, near, palm, stageAt, fuseSmoke } from "../stage/staging";
 import { wield, letGo, quiet, heldOver, usePose, BUCKET as BUCKET_P, SABRE } from "../stage/grips";
 import { flagSea, FLAGSEA_SOLIDS, MERCHANT_DECK } from "../world/ship";
-import { bank } from "../world/fire";
+import { bank, glow } from "../world/fire";
 import { bucketHeld, barrel, sabre } from "../world/props";
 import { SIR_D, BLACKBEARD_D, COOK_D, SAILOR_D, OLDHAND_D, SHIPBOY_D } from "../looks";
 import type { Pose } from "../rig";
@@ -78,7 +78,7 @@ const sirAt = (V: ReturnType<typeof lens>, d: number, l: number, off: number) =>
 // ---------------- a: the strangest thing already happening ----------------
 const A = (() => {
   const W = wa as Word[], L = byId(la), b1 = (L.hook.b + L.guess.a) / 2, b2 = L.guess.b + 0.12, UP = 0.55, shots: Shot[] = [];
-  const bb = stride(3.9, 2.7), cook = cookWithBucket(DECK, 2.3, -0.95, UP), sailor = backer(DECK, SAILOR_D, 1.82, 3.4, 1.15, 8, 0.15), boy = backer(DECK, SHIPBOY_D, 1.28, 2.5, 0.85, 14, 0.3);
+  const bb = stride(3.9, 2.7), cook = cookWithBucket(DECK, 2.2, -0.62, UP), sailor = backer(DECK, SAILOR_D, 1.82, 3.5, 0.85, 8, 0.15), boy = backer(DECK, SHIPBOY_D, 1.28, 2.6, 0.62, 14, 0.3);
   const land = DECK.spot(1.7, -0.45), memo: { p?: { p: V3; over: boolean } } = {};
   shots.push({ id: "hook", a: 0, b: b1, still: 0.9,
     sounds: [{ t: 0.0, k: "blast", g: 1.0 }, ...bb.cues().filter((q) => q.k === "step" && q.t < b1).map((q) => ({ t: q.t, k: "step", g: 0.8, p: 0.1 })), { t: UP + 0.45, k: "thunk", g: 0.9, p: -0.3 }, { t: UP + 0.66, k: "rattle", g: 0.6, p: -0.3, dur: 0.4 }],
@@ -100,7 +100,7 @@ const A = (() => {
 
 // ---------------- b: a shocking statement over the action ----------------
 const B = (() => {
-  const W = wb as Word[], L = byId(lb), b1 = (L.hook.b + L.why.a) / 2, b2 = b1 + 1.05, shots: Shot[] = [];
+  const W = wb as Word[], L = byId(lb), b1 = (L.hook.b + L.why.a) / 2, b2 = b1 + 1.5, shots: Shot[] = [];
   // he strides out of the smoke with his cutlass up, the lens low and looking up at him; the crew scatter to both sides
   const LOW = lens(-10.6, 0.95, 1.3, 1, 0.06, 9, 56), [rx, rz] = LOW.spot(3.9, 0.15), bb = mover(BLACKBEARD_D, 1.92, rx, rz, LOW.toward(rx, rz, 0)); bb.walk(mt(bb, 1.4), { step: 0.6, tau: 0.45 }).stand(9);
   bb.actAt(-1, { ...usePose(SABRE, "raised", "R"), armL: arm(20, 30, 50, 30), head: [0, 6, 0], lean: 4 }, 10, { in: 0.01, handL: "fist", handR: "grip", face: { ...MENACE, mouth: 0.5 } });
@@ -134,7 +134,8 @@ const C = (() => {
     sounds: [{ t: 0.0, k: "blast", g: 0.9 }, { t: 0.25, k: "sniff", g: 0.8 }, ...bb.cues().filter((q) => q.k === "step" && q.t < b1).map((q) => ({ t: q.t, k: "step", g: 0.5, p: 0.3 }))],
     cam: (_t, u) => V.push(0.15 * u), sun: { target: [-8, MD, 5], reach: 9 },
     cast: (t, T) => [on("sir", SIR_D, sir, t, { talk: talk(W, T, ["hook"]), blink: false }), on("bb", BLACKBEARD_D, bb, t, { seed: 3 })],
-    things: (g, c, _t, T, cam) => { powder(g, T, cam, V, [[3.3, 0.6, 3.0, 1.0, 2.6], [3.6, 0.9, 2.4, 0.8, 2.6], [5.8, 0, 6, 0.7]], 3); fuseSmoke(g, c.bb, T, cam); } });
+    things: (g, c, _t, T, cam) => { powder(g, T, cam, V, [[3.3, 0.6, 3.0, 1.0, 2.6], [3.6, 0.9, 2.4, 0.8, 2.6], [5.8, 0, 6, 0.7]], 3); fuseSmoke(g, c.bb, T, cam);
+      (["fuseA", "fuseB"] as const).forEach((n, j) => { const p = c.bb.mark?.(n); if (p) glow(g, near(p, cam, 0.06), 0.36, 0.36, T, Math.atan2(cam.pos[0] - p[0], cam.pos[2] - p[2]), 5 + j * 1.7); }); } });
   // OH. HELLO. He turns from the smoke to his left and finds the smoking face right beside his own; both heads three-quarters to us
   const V2 = lens(-10.7, 1.72, 2.2, 1, 0, -3, 50), [sx, sz] = V2.spot(2.5, -0.33), [x, z] = V2.spot(2.3, 0.33);
   const sir2 = mover(SIR_D, 1.8, sx, sz, V2.toward(sx, sz, -35)); sir2.stand(0.02).turn(85, 0.28).stand(9);

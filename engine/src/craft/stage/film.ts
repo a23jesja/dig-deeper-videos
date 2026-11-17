@@ -56,6 +56,9 @@ export type Film = {
   hits?: { t: number; amp: number; dur?: number }[];
   /** what lies under the whole film (film seconds), and the name of its music in audio/film_music.py */
   beds?: Bed[]; music?: string;
+  /** a tint laid over the whole picture at the film time T, under the words: a CSS background (a gradient) that is multiplied with
+   *  the picture, so that the world and the figures take the same light (a night with a fire in it, a red evening). null = none */
+  grade?: (T: number) => string | null;
   /** thumbnail proposals, clearly different from each other */
   thumbs?: Thumb[];
   audio?: string;

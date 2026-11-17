@@ -1,6 +1,6 @@
 # Short 4: Did Nero really fiddle while Rome burned?
 
-MANUS, VERSION 2 (granskningens ändringar av version 1 införda, se sist; inget är byggt, ingen röst är inspelad). Rom i brand, skrämmande med vändning, MYT. Beräknad längd 31-33 sekunder, 11 bilder, 84 ord, Kokoro bm_george. Fråga nr 23 i `granskning/fragor.md`. Tiderna nedan är uppskattade efter plankfilmens takt (83 ord på 30,3 s); de riktiga tiderna kommer ur rösten.
+SKISS, VERSION 1 (manus version 2 med granskningens ändringar; rösten är inspelad, 32,2 s; filmen är 33,9 s och har 13 bilder; det som skiljer bilderna från tabellen står sist). Rom i brand, skrämmande med vändning, MYT. Beräknad längd 31-33 sekunder, 11 bilder, 84 ord, Kokoro bm_george. Fråga nr 23 i `granskning/fragor.md`. Tiderna nedan är uppskattade efter plankfilmens takt (83 ord på 30,3 s); de riktiga tiderna kommer ur rösten.
 
 Planerad för onsdag 18 november. Filmens id i motorn: `nero-fiddle`.
 
@@ -78,3 +78,16 @@ Suetonius och Dio är lästa i sidans råtext (sparad html). Tacitus och Drake �
 5. Grindarna: ingen bugar och ingen jublar; skylten står i bild hela 6,4-13,8 s.
 6. Sista bilden hålls i tre tydligt olika inramningar och strängen som brister är filmens sista rörelse.
 Dessutom från granskningen: svarta flaggan byggs först; hinner inte båda till onsdag med kvaliteten i behåll är det Nero som väntar. Varje figur i en grupp gör något eget. Telefonkopia under 28 MiB från början.
+
+## Skiss version 1: så blev bilderna (det som skiljer sig från tabellen ovan)
+Rösten är manus version 2 ordagrant (84 ord, 32,2 s). Filmen är 33,9 s, 1018 bildrutor, 13 bilder. Skisspaketet ligger i `granskning/nero-fiddle/skiss/`.
+1. **Tretton bilder:** sista raden är tre bilder, som granskningen bad om (citharan landar i famnen; nära på strängarna; ut till båda, och strängen som brister är filmens sista rörelse). Ryktet är två bilder (viskningen; ryktets bild), svaret två (fiolen tas; fiolen blir gnistor).
+2. **Bild 2:** mannen bär inte den gamla kvinnan. Han drar henne med sig vid handen och stannar och väntar in henne, så som Tacitus skriver ("as they dragged the infirm along or paused to wait for them"). Dessutom springer en kvinna med ett barn och en man med ett bylte på ryggen.
+3. **Bild 3:** Sir Digsworth har tagit tag i stråken och håller upp ett finger; kejsaren öppnar ögonen (båda) och ser sig om på honom.
+4. **Bild 4:** ingen soffa. Nero står vid terrassens balustrad och släpper ned druvor i munnen; budbäraren kommer springande, står framåtböjd med händerna på knäna och pekar sedan bakåt längs kusten, där röken står; Nero rycker till så att druvorna flyger och springer ut ur bilden.
+5. **Bild 5:** sedd inifrån trädgården mot porten. Nero skjuter upp grindarna, kliver åt sidan och vinkar in folk; sju personer går förbi honom utan att se på honom (en hostar, en mor med barn, en som ser sig om mot röken, en som släpar en säck, en gammal kvinna, en med bylte). Ingen bugar och ingen jublar. Tältet reses inte i den här bilden: tälten står resta i bild 7.
+6. **Bild 6:** himlen går från natt till dag sex gånger medan elden vandrar längs taken mot oss; sol och måne går över i tur och ordning; ett tak rasar in; små figurer springer på gatan.
+7. **Bild 7:** viskningen går från mannen till kvinnan till den tredje, som pekar uppåt. Bilden ligger kvar under orden "while Rome burned", och ryktets bild kommer på "Nero sang".
+8. **Bild 8:** ryktets bild har mörk, mjuk kant. Nero står i lång scendräkt med en hand mot bröstet och citharan i den andra; staden brinner bakom scenen.
+9. **Bild 9 och 10:** Sir Digsworth vickar på handen, tar fiolen och skakar på huvudet; i nästa bild (nerifrån) blåser han på den och den blir gnistor som stiger; kejsaren griper efter dem.
+10. **Ljuset:** natten med eld, den rökiga gryningen och kvällen i lägret görs med en toning som läggs över hela bilden, så att figurer och värld får samma ljus (nytt i motorn: `Film.grade`). Lågor, gnistor, rök och glöd ligger i `engine/src/craft/world/fire.ts`; villan, trädgården och scenen i `world/rome.ts` (`romeFire`). Amfiteatern, som påbörjades först efter Nero, är borttagen ur gatans bakgrund.

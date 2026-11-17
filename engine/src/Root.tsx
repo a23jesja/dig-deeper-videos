@@ -18,7 +18,7 @@ import { CastViews, CAST_VIEW_FRAMES, CW, CH } from "./craft/CastViews";
 import { FaceSheet, FACE_SHEET_FRAMES, FW, FH } from "./craft/FaceSheet";
 import { SirTest, SirMoves, SIR_TEST_FRAMES, TW, TH, TFPS, MVW, MVH } from "./craft/SirMotion";
 import { SetViews, SET_VIEWS } from "./craft/world/SetViews";
-import { RomePee, ROME_PEE_FRAMES, PiratePlank, PIRATE_PLANK_FRAMES, PiratePlankThumbs, RomePeeThumbs, BlackFlag, BLACK_FLAG_FRAMES, BlackFlagThumbs } from "./craft/shorts/comps";
+import { RomePee, ROME_PEE_FRAMES, PiratePlank, PIRATE_PLANK_FRAMES, PiratePlankThumbs, RomePeeThumbs, BlackFlag, BLACK_FLAG_FRAMES, BlackFlagThumbs, NeroFiddle, NERO_FIDDLE_FRAMES, NeroFiddleThumbs } from "./craft/shorts/comps";
 import { PompeiiStills, POMPEII_STILLS } from "./craft/world/PompeiiStills";
 import { BostonStills, BOSTON_STILLS } from "./craft/world/BostonStills";
 import { EnvKit, ENV_PARTS } from "./videos/emu/env/EnvKit";
@@ -78,6 +78,8 @@ export const Root: React.FC = () => (
     <Composition id="PiratePlankThumbs" component={PiratePlankThumbs} durationInFrames={3} fps={30} width={1080} height={1920} />
     <Composition id="BlackFlag" component={BlackFlag} durationInFrames={BLACK_FLAG_FRAMES} fps={30} width={1080} height={1920} />
     <Composition id="BlackFlagThumbs" component={BlackFlagThumbs} durationInFrames={3} fps={30} width={1080} height={1920} />
+    <Composition id="NeroFiddle" component={NeroFiddle} durationInFrames={NERO_FIDDLE_FRAMES} fps={30} width={1080} height={1920} />
+    <Composition id="NeroFiddleThumbs" component={NeroFiddleThumbs} durationInFrames={3} fps={30} width={1080} height={1920} />
     <Composition id="RomePeeThumbs" component={RomePeeThumbs} durationInFrames={3} fps={30} width={1080} height={1920} />
     <Composition id="SetViews" component={SetViews} durationInFrames={SET_VIEWS} fps={30} width={1080} height={1920} />
     <Composition id="BostonStills" component={BostonStills} durationInFrames={BOSTON_STILLS} fps={30} width={1080} height={1920} />

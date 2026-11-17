@@ -137,6 +137,26 @@ export const COLLECTOR: Look = {
   rows: [[-200, 120, 96, 98], [-80, 122, 108, 96], [40, 120, 112, 90], [130, 114, 100, 80], [205, 112, 84, 72], [248, 114, 62, 62], [272, 56, 40, 44]],
   legs: "bare", feet: "sandals", sleeve: "short", arm: [29, 23, 16], leg: [38, 27, 17],
 };
+// ---------------- Rome, AD 64 ----------------
+/** the emperor Nero: young and plump, reddish curls under a laurel wreath, a white tunic under a purple cloak */
+export const NERO: Look = {
+  id: "nero", P: { ...ROMAN, thigh: 198, shin: 188, spine: 274, hipW: 66, shW: 112, upper: 140, fore: 128 }, head: { a: 122, b: 120, H: 238, jaw: 1.08, round: 0.6, eye: 0.98 }, skin: "#f4cba8", brow: "#a8622a",
+  hat: "band", hatCol: "#4f9a3f", hair: { col: "#c07a34", kind: "short" },
+  top: "tunic", coat: "#fbf6ea", accent: "#e2b93a", cloak: "#7a2f8a", belt: "#e2b93a",
+  rows: [[-300, 128, 104, 106], [-150, 134, 122, 106], [0, 138, 136, 104], [110, 132, 124, 94], [205, 120, 98, 78], [254, 120, 68, 68], [280, 58, 44, 48]],
+  legs: "bare", feet: "sandals", sleeve: "short", arm: [31, 25, 18], leg: [41, 29, 19],
+};
+/** Nero as the rumour had him: in the long ungirded robe of a lyre-player, sea-green with a gold hem */
+export const NERO_STAGE: Look = { ...NERO, id: "nerostage", skirt: true, coat: "#3f9a8c", accent: "#e2b93a", cloak: undefined, belt: undefined,
+  rows: [[-400, 140, 116, 128], [-280, 132, 110, 118], [-150, 134, 122, 108], [0, 138, 136, 104], [110, 132, 124, 94], [205, 120, 98, 78], [254, 120, 68, 68], [280, 58, 44, 48]], legs: "trousers", sleeve: "long", armCol: "#3f9a8c" };
+/** a messenger who has run all the way: a short brown tunic, a sweat band, lean */
+export const RUNNER: Look = {
+  id: "runner", P: { ...ROMAN, thigh: 215, shin: 205, shW: 100, hipW: 50 }, head: { a: 104, b: 110, H: 230, jaw: 0.92, round: 0.35, eye: 0.9 }, skin: "#d9a070", brow: "#2e2018",
+  hat: "band", hatCol: "#c8402f", hair: { col: "#2e2018", kind: "short" },
+  top: "tunic", coat: "#a8703c", accent: "#5a3a22", belt: "#5a3a22",
+  rows: [[-100, 104, 80, 84], [-10, 100, 82, 78], [100, 96, 82, 72], [200, 106, 78, 68], [246, 108, 60, 60], [270, 52, 38, 42]],
+  legs: "bare", feet: "sandals", sleeve: "short", arm: [27, 21, 15], leg: [35, 25, 16],
+};
 // ---------------- Boston, 1773 ----------------
 const COLONIST: Props = { thigh: 212, shin: 200, ankle: 24, foot: 126, hipW: 54, shW: 102, spine: 266, shDrop: 26, neck: 24, head: 238, upper: 146, fore: 134, hand: 84 };
 const coat = [[-150, 110, 80, 86], [-20, 96, 78, 76], [70, 82, 70, 60], [180, 96, 76, 66], [240, 106, 60, 60], [266, 52, 38, 42]];
@@ -279,3 +299,4 @@ export const CAPTAIN_D = castDesign(CAPTAIN), PIRATE_D = castDesign(PIRATE), MAT
 export const CUSTOMS_D = castDesign(CUSTOMS), SHIPOWNER_D = castDesign(SHIPOWNER), SAILOR_D = castDesign(SAILOR), DOCKHAND_D = castDesign(DOCKHAND), TOWNSWOMAN_D = castDesign(TOWNSWOMAN);
 export const OLDHAND_D = castDesign(OLDHAND), COOK_D = castDesign(COOK), SHIPBOY_D = castDesign(SHIPBOY), PIRATE2_D = castDesign(PIRATE2), GUNNER_D = castDesign(GUNNER), CORSAIR_D = castDesign(CORSAIR);
 export const SHIRT_A_D = castDesign(SHIRT_A), SHIRT_B_D = castDesign(SHIRT_B), SHIRT_C_D = castDesign(SHIRT_C);
+export const NERO_D = castDesign(NERO, "Nero"), NERO_STAGE_D = castDesign(NERO_STAGE), RUNNER_D = castDesign(RUNNER);

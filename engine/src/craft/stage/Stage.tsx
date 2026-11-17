@@ -54,6 +54,8 @@ const Words: React.FC<{ film: Film }> = ({ film }) => {
     </AbsoluteFill>
   );
 };
+/** the film's tint for the time T, multiplied over the picture */
+const Grade: React.FC<{ film: Film; at?: number }> = ({ film, at }) => { const fr = useCurrentFrame(), g = film.grade?.(at ?? fr / film.fps); return g ? <AbsoluteFill style={{ background: g, mixBlendMode: "multiply" }} /> : null; };
 export const Stage: React.FC<{ film: Film }> = ({ film }) => {
   const p = getInputProps() as { audio?: boolean; words?: boolean };
   return (
@@ -61,6 +63,7 @@ export const Stage: React.FC<{ film: Film }> = ({ film }) => {
       <ThreeCanvas width={SW} height={SH} shadows="soft" flat gl={{ antialias: true }} camera={{ fov: 55, near: 0.1, far: 3000 }}>
         <Scene film={film} />
       </ThreeCanvas>
+      <Grade film={film} />
       {p.words !== false && <Words film={film} />}
       {p.audio !== false && film.audio && <Audio src={staticFile(film.audio)} />}
     </AbsoluteFill>
@@ -76,6 +79,7 @@ export const Thumbs: React.FC<{ film: Film }> = ({ film }) => {
       <ThreeCanvas width={TW} height={TH} shadows="soft" flat gl={{ antialias: true }} camera={{ fov: 45, near: 0.1, far: 3000 }}>
         <Scene film={film} at={k.T} view={k.cam} />
       </ThreeCanvas>
+      <Grade film={film} at={k.T} />
       <AbsoluteFill>
         <div style={{ position: "absolute", left: 40, right: 40, top: Math.round((k.y ?? 0.17) * TH), ...big(px), textAlign: k.side ?? "center", lineHeight: 0.98, transform: `rotate(${k.tilt ?? -3}deg)` }}>{k.words.map((l, i) => <div key={i} style={{ color: i === k.words.length - 1 ? "#ffd83a" : "#ffffff" }}>{l}</div>)}</div>
       </AbsoluteFill>

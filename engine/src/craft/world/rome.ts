@@ -4,8 +4,8 @@
 // on the great amphitheatre being built (begun under Vespasian); toward +z a temple closes it. x < 0 is the left side.
 // Shared set: every Short on the Roman street uses it.
 import * as THREE from "three";
-import { mesh, group, box, paint, sunRig, skyDome } from "./kit";
-import { C, amphora, jar, basket, sack, cart, column, table, fountain, house, cloud, awning, House, streetJar, treadingStall, dryingPole, barCounter, bench, cypress, temple, amphitheatreSite, painted, loaf, windowAt, sunShade, wallShelf, wallLamp, treadingTub } from "./props";
+import { mesh, group, box, ball, lathe, paint, sunRig, skyDome } from "./kit";
+import { C, amphora, jar, basket, sack, cart, column, table, fountain, house, cloud, awning, House, streetJar, treadingStall, dryingPole, barCounter, bench, cypress, temple, amphitheatreSite, painted, loaf, windowAt, sunShade, wallShelf, wallLamp, treadingTub, doorway } from "./props";
 
 export const WALK = 0.28;
 /** where things stand, for the films that play here */
@@ -99,12 +99,68 @@ export const romeStreet = () => {
   { const c = cart(); c.position.set(0.5, 0, -10.5); c.rotation.y = 0.5; root.add(c); const a = amphora(0.9); a.position.set(0.4, 0.77, -10.7); a.rotation.z = 0.2; root.add(a); const s = sack(0.3); s.position.set(0.7, 0.77, -10.1); root.add(s); }
   { const a = awning(2.6, 1.3, 2.8, C.green, C.cloth); a.rotation.y = Math.PI / 2; a.position.set(-4.0, WALK, 12.0); root.add(a); const t = table(1.3, 0.6, 0.74); t.rotation.y = Math.PI / 2; t.position.set(-3.3, WALK, 12.0); root.add(t); for (const dz of [-0.4, 0, 0.4]) { const o = jar(0.4); o.position.set(-3.3, WALK + 0.78, 12 + dz); root.add(o); } }
   // far toward -z: the square, the great amphitheatre being built, tall trees, hills; toward +z: a temple closes the street
-  { const a = amphitheatreSite(40, 9); a.position.set(10, 0, -112); a.rotation.y = 0.25; root.add(a); }
+  // (a named thing: a film set before the amphitheatre was begun leaves it out)
+  { const a = amphitheatreSite(40, 9); a.position.set(10, 0, -112); a.rotation.y = 0.25; a.name = "arena"; root.add(a); root.userData.named = [a]; }
   for (const [x, zz, h] of [[-13, -34, 8], [-17, -41, 9], [15, -36, 8.5], [-24, -52, 10], [22, -47, 9]] as number[][]) { const t = cypress(h); t.position.set(x, 0, zz); root.add(t); }
   root.add(mesh(box(60, 0.12, 30), "#e9dcb6", { at: [0, -0.2, -54], line: 0, shadow: false }));
   for (const [x, zz, r, hh, col] of [[-170, -330, 150, 46, "#8fc06a"], [140, -380, 190, 60, "#7fb562"], [-20, -460, 260, 40, "#a4cc7c"]] as [number, number, number, number, string][]) root.add(mesh(new THREE.SphereGeometry(1, 20, 10, 0, Math.PI * 2, 0, Math.PI / 2), col, { at: [x, -2, zz], scale: [r, hh, r * 0.6], shadow: false, receive: false, line: 0.9 }));
   { const t = temple(9, 6.5); t.rotation.y = Math.PI; t.position.set(0, 0, 33); root.add(t); }
   for (const s of [-1, 1]) root.add(mesh(box(8, 5, 6), s < 0 ? "#f3b58c" : "#fbf3df", { at: [s * 9, 2.5, 27] }), mesh(box(8.5, 0.3, 6.5), C.terra, { at: [s * 9, 5.15, 27] }));
   for (const [x, y, zz, s] of [[-170, 150, -520, 34], [150, 190, -600, 44], [-40, 235, -640, 30], [260, 120, -500, 26], [-120, 130, 300, 36], [140, 170, 340, 40]] as number[][]) { const c = cloud(s); c.position.set(x, y, zz); root.add(c); }
+  return root;
+};
+
+// ---------------- Rome in the summer of the great fire (AD 64): the street, a villa by the sea, the emperor's gardens, a stage ----------------
+/** where things stand in the Rome of the fire (world coordinates). The street is romeStreet's own; the other places lie far from it:
+ *  the terrace of the villa at Antium (its floor at villa.y, the sea beyond its balustrade on the +x side), the gardens behind
+ *  their wall (the gate's opening is `gate.w` wide in the wall along x at z = garden.z; inside is toward +z), and the private stage
+ *  (its boards at stage.y, the house toward -z) */
+export const FIRE = {
+  villa: { x: 200, y: 2.0, z: 0, rail: 206.6 },
+  garden: { x: -200, z: 0, wallH: 3.3 }, gate: { w: 3.2, h: 3.0 },
+  stage: { x: 0, y: 0.9, z: 160, w: 4.6, d: 2.6 },
+};
+const balustrade = (len: number) => { const g = new THREE.Group(); g.add(mesh(box(0.34, 0.12, len), C.marble, { at: [0, 0.06, 0] }), mesh(box(0.4, 0.12, len), C.marble, { at: [0, 0.86, 0], line: 0.8 }));
+  for (let z = -len / 2 + 0.3; z < len / 2; z += 0.6) g.add(mesh(lathe("baluster", [[0.07, 0], [0.1, 0.12], [0.05, 0.3], [0.1, 0.52], [0.06, 0.68]], 10), C.marble, { at: [0, 0.12, z], line: 0.6 }));
+  return g; };
+/** the street of romeStreet as it stood in AD 64 (the amphitheatre is not there yet), with the three other places of the fire film */
+export const romeFire = () => {
+  const root = romeStreet(), named = root.userData.named as THREE.Object3D[]; named.find((o) => o.name === "arena")!.visible = false; root.userData.named = named.filter((o) => o.name !== "arena");
+  // the villa at Antium: a marble terrace above the sea, the house wall with a portico behind it, a table with fruit, pots, cypresses
+  { const v = FIRE.villa, g = new THREE.Group(); g.position.set(v.x, 0, v.z);
+    g.add(mesh(box(14, v.y + 0.4, 16), "#e9dcb6", { at: [0, v.y / 2 - 0.2, 0] }), mesh(box(14, 0.1, 16), "#ffffff", { at: [0, v.y - 0.05, 0], map: (slabs(), paint("slabs", 256, 256, () => {}, [9, 10])), line: 0 }));
+    const b = balustrade(16); b.position.set(v.rail - v.x, v.y, 0); g.add(b);
+    g.add(mesh(box(0.4, 5.2, 16), "#fbf3df", { at: [-6.8, v.y + 2.6, 0] }), mesh(box(0.44, 1.2, 16.02), C.red, { at: [-6.78, v.y + 0.6, 0], line: 0.6 }), mesh(box(3.4, 0.2, 16.6), C.terra, { at: [-5.4, v.y + 4.3, 0], rot: [0, 0, -0.14] }));
+    for (const z of [-6, -3, 0, 3, 6]) { const c = column(3.9, 0.24); c.position.set(-4.3, v.y, z); g.add(c); }
+    { const d = doorway(C.green, 0.3, 0.8, 0.98); d.rotation.y = Math.PI / 2; d.position.set(-6.58, v.y, 1.5); g.add(d); for (const z of [-4.5, 4.6]) { const w = windowAt(C.blue); w.rotation.y = Math.PI / 2; w.position.set(-6.58, v.y + 2.3, z); g.add(w); } }
+    { const t = table(1.0, 0.6, 0.72); t.position.set(2.2, v.y, -4.6); g.add(t); const j = jar(0.4); j.position.set(2.0, v.y + 0.76, -4.6); const bk = basket(0.2, 0.14); bk.position.set(2.45, v.y + 0.76, -4.55); g.add(j, bk); }
+    for (const [x, z] of [[5.6, -7.2], [5.6, 7.2], [-3.4, -7.4]]) { const a = amphora(1.1); a.position.set(x, v.y, z); g.add(a); }
+    root.add(g);
+    // the sea below, the coast running on, hills, cypresses; far along the coast the place where Rome's smoke will stand
+    root.add(mesh(box(1400, 0.1, 2400), "#2f8fd6", { at: [v.x + 6.9 + 700, -0.1, v.z], line: 0, shadow: false }), mesh(box(60, 0.3, 2000), "#f1dc9a", { at: [v.x - 20, -0.05, v.z - 700], line: 0, shadow: false }));
+    for (const [x, z, h] of [[-9, -14, 9], [-12, -22, 10], [-8, -31, 8], [-15, 12, 9]] as number[][]) { const t = cypress(h); t.position.set(v.x + x, 0, v.z + z); root.add(t); }
+    for (const [x, z, r, hh, col] of [[-90, -260, 150, 40, "#8fc06a"], [-200, -420, 220, 60, "#7fb562"]] as [number, number, number, number, string][]) root.add(mesh(new THREE.SphereGeometry(1, 20, 10, 0, Math.PI * 2, 0, Math.PI / 2), col, { at: [v.x + x, -2, v.z + z], scale: [r, hh, r * 0.6], shadow: false, receive: false, line: 0.9 }));
+  }
+  // the gardens: a high wall with a gateway (the film hangs the gate), lawns and paths inside, cypresses, a fountain; outside, the road
+  { const q = FIRE.garden, gw = FIRE.gate.w, H = q.wallH, g = new THREE.Group(); g.position.set(q.x, 0, q.z);
+    for (const s of [-1, 1]) g.add(mesh(box(30, H, 0.5), "#e9dcb6", { at: [s * (15 + gw / 2), H / 2, 0] }), mesh(box(30.1, 0.24, 0.7), C.terra, { at: [s * (15 + gw / 2), H + 0.12, 0], line: 0.7 }), mesh(box(30.02, 0.9, 0.54), "#c9b98a", { at: [s * (15 + gw / 2), 0.45, 0], line: 0.5 }),
+      mesh(box(0.7, H + 0.5, 0.7), C.stoneL, { at: [s * (gw / 2 + 0.35), (H + 0.5) / 2, 0] }), mesh(ball(0.3, 12), C.stoneL, { at: [s * (gw / 2 + 0.35), H + 0.8, 0] }));
+    g.add(mesh(box(gw + 1.4, 0.4, 0.74), C.stoneL, { at: [0, H + 0.2, 0], line: 0.8 }));
+    g.add(mesh(box(64, 0.2, 40), "#8fc06a", { at: [0, -0.08, 20.3], line: 0, shadow: false }), mesh(box(3.4, 0.22, 40), "#e6d9b4", { at: [0, -0.07, 20.3], line: 0, shadow: false }), mesh(box(64, 0.22, 2.6), "#e6d9b4", { at: [0, -0.07, 9], line: 0, shadow: false }));
+    for (const [x, z, h] of [[-5, 4, 7], [5.4, 5, 8], [-9, 13, 9], [9.5, 14, 8], [-14, 6, 8], [14, 7, 9], [-4.6, 20, 9], [5, 22, 10]] as number[][]) { const t = cypress(h); t.position.set(x, 0, z); g.add(t); }
+    { const f = fountain(); f.position.set(0, 0, 16); g.add(f); }
+    g.add(mesh(box(64, 0.2, 30), "#dccb9c", { at: [0, -0.1, -15.3], line: 0, shadow: false }), mesh(box(4.2, 0.22, 30), "#a3a5b4", { at: [0, -0.09, -15.3], line: 0, shadow: false }));
+    root.add(g); }
+  // the private stage: boards on trestles, two columns, a curtain drawn up in swags; behind it a wall of the house
+  { const s = FIRE.stage, g = new THREE.Group(); g.position.set(s.x, 0, s.z);
+    g.add(mesh(box(s.w, 0.12, s.d), "#c98f52", { at: [0, s.y - 0.06, 0] }), mesh(box(s.w, s.y - 0.12, 0.08), "#7a2f4a", { at: [0, (s.y - 0.12) / 2, -s.d / 2 + 0.04], line: 0.7 }));
+    for (const x of [-s.w / 2 + 0.2, s.w / 2 - 0.2]) for (const z of [-s.d / 2 + 0.2, s.d / 2 - 0.2]) g.add(mesh(box(0.14, s.y - 0.1, 0.14), "#8a5a30", { at: [x, (s.y - 0.1) / 2, z] }));
+    for (const sgn of [-1, 1]) { const c = column(3.6, 0.2); c.position.set(sgn * (s.w / 2 + 0.3), 0, s.d / 2 - 0.1); g.add(c); }
+    g.add(mesh(box(s.w + 1.4, 0.3, 0.5), C.marble, { at: [0, 3.75, s.d / 2 - 0.1] }));
+    for (let i = 0; i < 4; i++) g.add(mesh(ball(1, 14), i % 2 ? "#b3261e" : "#c8402f", { at: [-s.w / 2 + (i + 0.5) * (s.w / 4), 3.42, s.d / 2 - 0.1], scale: [s.w / 8 + 0.04, 0.34, 0.2], line: 0.8, shadow: false }));
+    g.add(mesh(box(60, 0.2, 60), "#dccb9c", { at: [0, -0.1, 0], line: 0, shadow: false }));
+    // the city behind the stage, far enough to burn in the background: dark house fronts with roofs
+    for (const [x, w, h, col] of [[-13, 6, 3.4, "#c9a784"], [-6.4, 6.6, 3.9, "#d9c9a2"], [0.6, 6, 3.0, "#c79a6e"], [7, 6.4, 3.6, "#d2b98a"], [13.6, 6, 3.3, "#c9a784"]] as [number, number, number, string][]) g.add(mesh(box(w, h, 5), col, { at: [x, h / 2, 13] }), mesh(box(w + 0.5, 0.3, 5.4), C.terra, { at: [x, h + 0.15, 13], line: 0.7 }), mesh(box(1.1, 1.3, 0.1), "#3a2a22", { at: [x - 1.2, h * 0.62, 10.48], line: 0.5, shadow: false }), mesh(box(1.1, 1.3, 0.1), "#3a2a22", { at: [x + 1.3, h * 0.62, 10.48], line: 0.5, shadow: false }));
+    root.add(g); }
   return root;
 };

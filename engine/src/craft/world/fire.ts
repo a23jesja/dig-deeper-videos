@@ -8,14 +8,15 @@ type V3 = [number, number, number];
 const TONGUE = () => lathe("flametongue", [[0.001, 0], [0.26, 0.1], [0.34, 0.3], [0.26, 0.58], [0.12, 0.84], [0.001, 1]], 10);
 const COLS = ["#e8421a", "#ff8a1c", "#ffd84a"], GLOW = ["#b02a08", "#d0600a", "#e0a020"];
 /** a fire standing on p: `n` tongues side by side over the width w (along the direction `ry`, radians about the vertical), each of
- *  three flames one inside the other, leaning and stretching in its own time. big = its height in metres */
-export const flames = (into: THREE.Object3D, p: V3, t: number, big = 1, w = 0, n = 1, ry = 0, seed = 0) => {
-  const cx = Math.cos(ry), sz = -Math.sin(ry);
+ *  three flames one inside the other, leaning and stretching in its own time. big = its height in metres; eye = where it is seen
+ *  from (the inner flames are set a little toward it) */
+export const flames = (into: THREE.Object3D, p: V3, t: number, big = 1, w = 0, n = 1, ry = 0, seed = 0, eye?: V3) => {
+  const cx = Math.cos(ry), sz = -Math.sin(ry), ex = eye ? eye[0] - p[0] : 0, ez = eye ? eye[2] - p[2] : 1, en = Math.hypot(ex, ez) || 1, ux = ex / en, uz = ez / en;
   for (let i = 0; i < n; i++) {
     const o = n > 1 ? (i / (n - 1) - 0.5) * w : 0, f = seed * 1.7 + i * 2.3, h = big * (0.72 + 0.2 * Math.sin(t * 9.3 + f) + 0.1 * Math.sin(t * 17 + f * 2) + 0.12 * ((i * 7 + seed) % 3) / 2);
     const lean = 0.16 * Math.sin(t * 5.1 + f * 1.3) + 0.07 * Math.sin(t * 12.7 + f);
     for (let k = 0; k < 3; k++) { const s = 1 - k * 0.27, hh = h * (1 - k * 0.2);
-      into.add(mesh(TONGUE(), COLS[k], { at: [p[0] + cx * o + 0.02 * k, p[1] + 0.02 * k, p[2] + sz * o + 0.03 * k], scale: [big * 0.62 * s, hh, big * 0.5 * s], rot: [0.1 * lean, ry, lean], line: k ? 0 : 0.7, shadow: false, receive: false, glow: GLOW[k] })); }
+      into.add(mesh(TONGUE(), COLS[k], { at: [p[0] + cx * o + ux * 0.16 * big * k, p[1] + 0.02 * k, p[2] + sz * o + uz * 0.16 * big * k], scale: [big * 0.62 * s, hh, big * 0.3 * s], rot: [0.1 * lean, ry, lean], line: k ? 0 : 0.7, shadow: false, receive: false, glow: GLOW[k] })); }
   }
 };
 /** sparks that rise from p, drift and go out: `n` of them over a width w, as high as `rise` */

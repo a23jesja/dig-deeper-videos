@@ -3,5 +3,6 @@ import type { Film } from "../stage/film";
 import { ROME_PEE } from "./romePee";
 import { PIRATE_PLANK } from "./piratePlank";
 import { BLACK_FLAG } from "./blackFlag";
-export const FILMS: Record<string, { film: Film; comp: string }> = { "rome-pee": { film: ROME_PEE, comp: "RomePee" }, "pirate-plank": { film: PIRATE_PLANK, comp: "PiratePlank" }, "black-flag": { film: BLACK_FLAG, comp: "BlackFlag" } };
+import { NERO_FIDDLE } from "./neroFiddle";
+export const FILMS: Record<string, { film: Film; comp: string }> = { "rome-pee": { film: ROME_PEE, comp: "RomePee" }, "pirate-plank": { film: PIRATE_PLANK, comp: "PiratePlank" }, "black-flag": { film: BLACK_FLAG, comp: "BlackFlag" }, "nero-fiddle": { film: NERO_FIDDLE, comp: "NeroFiddle" } };
 export { captions } from "../stage/film";

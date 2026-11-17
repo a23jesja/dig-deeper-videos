@@ -421,8 +421,8 @@ const TARP = { a: cut("answer", "tarp"), mid: at("tarp", /^so/) - 0.1, b: cut("t
   gun.actAt(FIRE + 0.8, { armL: arm(150, 34, 186, 10), head: [0, -8, 0] }, 9, { in: 0.2, antic: 0.2, over: 1.6, handL: "fist", face: { brow: 0.8, lid: 0, smile: 1, mouth: 0.6 } });
   // the men in white shirts: they come aft along the port rail one behind the other and stop in a row, each trying to look fierce
   const row = ([[SHIRT_A_D, 1.8], [SHIRT_B_D, 1.86], [SHIRT_C_D, 1.7], [SHIRT_A_D, 1.74], [SHIRT_B_D, 1.8]] as [Design, number][]).map(([D, h], i) => {
-    const z1 = -2.8 - 0.8 * i, m = mover(D, h, -1.5 + 0.3 * i, z1 - 3.4 - 0.4 * i, 0), t1 = 0.1 * i; m.stand(t1).walk(mt(m, 3.4 + 0.4 * i), { step: 0.3 }).turn(i % 2 ? -52 : -64, 0.3).stand(8);
-    const there = t1 + (3.4 + 0.4 * i) / 1.5;
+    const z1 = -2.8 - 0.8 * i, m = mover(D, h, -1.5 + 0.3 * i, z1 - 2.0 - 0.3 * i, 0), t1 = 0.1 * i; m.stand(t1).walk(mt(m, 2.0 + 0.3 * i), { step: 0.62, tau: 0.38 }).turn(i % 2 ? -52 : -64, 0.3).stand(8);
+    const there = t1 + (2.0 + 0.3 * i) / 1.2 + 0.5;
     if (i === 0) m.actAt(there + 0.2, { armL: arm(30, 50, -20, 60), armR: arm(30, 50, -20, 60), lean: -6 }, 9, { in: 0.3, antic: 0, over: 1.3, handL: "fist", handR: "fist", face: { brow: -1, lid: 0.2, smile: -1 } });
     if (i === 1) { m.actAt(there + 0.1, { armR: arm(150, 30, 100, 60) }, 9, { in: 0.3, antic: 0.2, over: 1.5, handR: "fist", face: { brow: -1, lid: 0, mouth: 0.5 } }); wag(m, there + 0.4, 3, P({ armR: arm(156, 30, 110, 50) }), P({ armR: arm(144, 30, 90, 70) }), 0.4, { handR: "fist" }); }
     if (i === 2) m.actAt(there + 0.2, { armL: arm(40, 0, 100, -60), armR: arm(40, 0, 100, -60), lean: -8, head: [0, -10, 0] }, 9, { in: 0.3, antic: 0, over: 1.2, handL: "fist", handR: "fist", face: { brow: -1, lid: 0.3, smile: -0.8 } });

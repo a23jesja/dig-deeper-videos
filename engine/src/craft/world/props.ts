@@ -430,3 +430,42 @@ export const yardSail = (w = 5.6, h = 4.4, drop = 0) => { const k = 1 - 0.86 * M
   for (let z = -w / 2 + 0.7; z < w / 2; z += 0.7) g.add(mesh(box(0.11 + 0.35 * (1 - k), h * k - 0.1, 0.02), "#cbb98c", { at: [0, -h * k / 2 - 0.06, z], line: 0, shadow: false }));
   if (k > 0.5) g.add(mesh(box(0.115, 0.14, w - 0.3), "#e4d6b0", { at: [0, -h * k * 0.55, 0], line: 0, shadow: false }));
   return g; };
+
+// ---------------- instruments and small things of Rome under Nero ----------------
+/** a fiddle (the thing the saying puts in Nero's hands): it lies along +x from the chin end at the origin to the scroll, its
+ *  belly toward +z */
+export const fiddle = (len = 0.6) => { const k = len / 0.6, g = new THREE.Group(), body = "#b5622a";
+  for (const [x, r] of [[0.1, 0.105], [0.27, 0.085]] as number[][]) g.add(mesh(cyl(r * k, r * k, 0.05 * k, 18), body, { at: [x * k, 0, 0], rot: [Math.PI / 2, 0, 0], line: 0.9, shadow: false }));
+  g.add(mesh(box(0.14 * k, 0.13 * k, 0.05 * k), body, { at: [0.185 * k, 0, 0], line: 0, shadow: false }), mesh(box(0.27 * k, 0.03 * k, 0.03 * k), "#3a2a22", { at: [0.47 * k, 0, 0.012 * k], line: 0.7, shadow: false }), mesh(ball(0.028 * k, 8), "#3a2a22", { at: [0.61 * k, 0, 0.012 * k], line: 0.7, shadow: false }));
+  g.add(mesh(box(0.34 * k, 0.03 * k, 0.012 * k), "#2a1c14", { at: [0.33 * k, 0, 0.034 * k], line: 0, shadow: false }), mesh(box(0.012 * k, 0.07 * k, 0.03 * k), "#e8cf8a", { at: [0.2 * k, 0, 0.04 * k], line: 0, shadow: false }));
+  for (const y of [-0.012, 0, 0.012]) g.add(mesh(box(0.44 * k, 0.003, 0.003), "#f4ecd8", { at: [0.36 * k, y * k, 0.05 * k], line: 0, shadow: false }));
+  for (const [x, y] of [[0.185, 0.045], [0.185, -0.045]]) g.add(mesh(box(0.05 * k, 0.012 * k, 0.052 * k), "#2a1c14", { at: [x * k, y * k, 0], line: 0, shadow: false }));
+  return g; };
+/** a fiddle bow, lying along +x from the hand at the origin */
+export const fiddleBow = (len = 0.62) => group([mesh(box(len, 0.014, 0.014), "#7a4a26", { at: [len / 2, 0.02, 0], line: 0.6, shadow: false }), mesh(box(len * 0.94, 0.006, 0.01), "#f4ecd8", { at: [len / 2, 0, 0], line: 0, shadow: false }), mesh(box(0.05, 0.036, 0.018), "#2a1c14", { at: [0.03, 0.008, 0], line: 0.5, shadow: false }), mesh(box(0.02, 0.03, 0.014), "#7a4a26", { at: [len - 0.01, 0.01, 0], line: 0, shadow: false })]);
+/** a cithara: a wooden sound box with two arms, a crossbar and seven strings. It stands in the xy plane with the foot of its box
+ *  at the origin, h high. `pluck(t, i)` = how far string i is out of line (a film sets it); the strings are returned so that they can
+ *  be moved: `strings[i].position.z` and `.scale` are the film's to set. broken = the index of a string that has snapped (left out) */
+export const cithara = (h = 0.62) => { const w = h * 0.62, g = new THREE.Group(), wood = "#c98f52", dark = "#8a5a30";
+  g.add(mesh(box(w * 0.86, h * 0.34, 0.07), wood, { at: [0, h * 0.17, 0], line: 0.9, shadow: false }), mesh(box(w * 0.7, h * 0.05, 0.075), dark, { at: [0, h * 0.3, 0], line: 0, shadow: false }), mesh(cyl(h * 0.06, h * 0.06, 0.076, 14), dark, { at: [0, h * 0.15, 0], rot: [Math.PI / 2, 0, 0], line: 0, shadow: false }));
+  for (const s of [-1, 1]) g.add(mesh(box(w * 0.1, h * 0.62, 0.05), wood, { at: [s * w * 0.42, h * 0.62, 0], rot: [0, 0, -s * 0.08], line: 0.9, shadow: false }), mesh(ball(h * 0.045, 8), C.gold, { at: [s * w * 0.47, h * 0.95, 0], line: 0.6, shadow: false }));
+  g.add(mesh(box(w * 1.08, h * 0.045, 0.045), dark, { at: [0, h * 0.9, 0], line: 0.8, shadow: false }), mesh(box(w * 0.5, h * 0.03, 0.03), "#e8cf8a", { at: [0, h * 0.345, 0.045], line: 0, shadow: false }));
+  const strings: THREE.Mesh[] = []; for (let i = 0; i < 7; i++) { const x = (i - 3) * w * 0.085, s = mesh(box(0.006, h * 0.55, 0.006), "#fbf6ea", { at: [x, h * 0.625, 0.045], line: 0, shadow: false }); strings.push(s); g.add(s); }
+  g.userData.strings = strings; return g; };
+/** a bunch of grapes hanging from its stalk (the origin is the top of the stalk) */
+export const grapes = (r = 0.03) => { const g = new THREE.Group(); g.add(mesh(cyl(r * 0.2, r * 0.2, r * 2, 6), "#6a8a3a", { at: [0, -r, 0], line: 0, shadow: false }));
+  let n = 0; for (let row = 0; row < 5; row++) { const m = [3, 4, 3, 2, 1][row]; for (let i = 0; i < m; i++) { g.add(mesh(ball(r, 8), n % 3 ? "#7a3f9a" : "#9a5ab8", { at: [(i - (m - 1) / 2) * r * 1.7, -r * 2.6 - row * r * 1.5, (n % 2) * r * 0.8], line: 0.6, shadow: false })); n++; } }
+  return g; };
+/** a bundle of belongings tied in a cloth, to carry on the back or in the arms */
+export const bundle = (r = 0.2, col = "#d9c08a") => group([mesh(ball(r, 12), col, { at: [0, r * 0.8, 0], scale: [1.15, 0.85, 1], line: 0.9 }), mesh(ball(r * 0.3, 8), col, { at: [0, r * 1.62, 0], scale: [1.4, 0.6, 1], line: 0.7 }), mesh(box(r * 0.5, r * 0.08, r * 1.3), "#8a5a36", { at: [0, r * 0.9, 0], rot: [0, 0.5, 0.2], line: 0, shadow: false })]);
+/** a tent of canvas over a ridge pole: w wide (along x), d deep, h high; `up` 0 = the canvas lies on the ground, 1 = pitched */
+export const tent = (w = 2.2, d = 2.4, h = 1.7, up = 1, col = "#efe2c0") => { const g = new THREE.Group(), hh = Math.max(0.12, h * up), sl = Math.hypot(w / 2, hh), a = Math.atan2(hh, w / 2);
+  for (const s of [-1, 1]) g.add(mesh(box(sl, 0.04, d), col, { at: [s * w / 4, hh / 2, 0], rot: [0, 0, -s * a], line: 0.9 }), mesh(box(sl * 0.96, 0.045, 0.12), "#c8402f", { at: [s * w / 4, hh / 2, d / 2 - 0.1], rot: [0, 0, -s * a], line: 0, shadow: false }));
+  for (const z of [-d / 2, d / 2]) g.add(rod([0, 0, z], [0, hh + 0.12, z], 0.035, "#8a6a3e")); g.add(rod([0, hh + 0.02, -d / 2 - 0.1], [0, hh + 0.02, d / 2 + 0.1], 0.03, "#8a6a3e"));
+  return g; };
+/** one leaf of a tall garden gate: w wide (from its hinge at the origin toward +x), h high, of planks with iron bands and studs */
+export const gateLeaf = (w = 1.5, h = 3.0, col = "#7a4a26") => { const g = new THREE.Group(); g.add(mesh(box(w, h, 0.1), col, { at: [w / 2, h / 2, 0] }));
+  for (let x = w / 5; x < w - 0.01; x += w / 5) for (const s of [-1, 1]) g.add(mesh(box(0.02, h - 0.1, 0.012), "#5a3a22", { at: [x, h / 2, s * 0.052], line: 0, shadow: false }));
+  for (const y of [0.45, h / 2, h - 0.45]) for (const s of [-1, 1]) { g.add(mesh(box(w - 0.06, 0.12, 0.02), C.iron, { at: [w / 2, y, s * 0.056], line: 0.5, shadow: false })); for (let x = 0.2; x < w; x += 0.32) g.add(mesh(ball(0.035, 8), "#2b2a33", { at: [x, y, s * 0.07], line: 0, shadow: false })); }
+  g.add(mesh(torus(0.11, 0.022, 14), C.gold, { at: [w - 0.22, h * 0.42, 0.075], line: 0.6, shadow: false }), mesh(torus(0.11, 0.022, 14), C.gold, { at: [w - 0.22, h * 0.42, -0.075], line: 0.6, shadow: false }));
+  return g; };

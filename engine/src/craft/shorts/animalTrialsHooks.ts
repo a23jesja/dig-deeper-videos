@@ -37,7 +37,9 @@ const FL = SJ.court.at[1];
 /** the judge on his dais (his floor), the lawyer beside the empty dock, the dock's seat, the gallery (Sir at its near end, the old man
  *  seated beside him, the woman standing up at the far end) */
 export const JUDGE: V3 = inCourt([SJ.court.judge[0], SJ.court.dais, SJ.court.judge[2]]), LAWYER: V3 = inCourt([-0.62, 0, -0.62]), DOCK: V3 = inCourt([SJ.court.dock[0], 0.5, SJ.court.dock[2]]);
-export const SIR_AT: V3 = inCourt([-3.45, 0, 2.0]), OLD_AT: V3 = inCourt([-3.45, 0, 1.3]), WOMAN_AT: V3 = inCourt([-3.0, 0, 0.8]);
+// (the seated men at the bench's front edge: a seated card's legs lie in its own plane, so that further back on the seat his shins went down
+// through its board, the body check)
+export const SIR_AT: V3 = inCourt([-3.2, 0, 2.0]), OLD_AT: V3 = inCourt([-3.1, 0, 1.3]), WOMAN_AT: V3 = inCourt([-3.0, 0, 0.8]);
 const GAVEL_O = once(() => noShade(gavel())), ROLL_O = once(() => noShade(complaintRoll()));
 const COURT_SUN = { target: inCourt([0, 0, -1]), reach: 6 };
 
@@ -51,10 +53,10 @@ const judge = (hits: number[]) => {
   return { m, up };
 };
 /** the lawyer beside the empty dock, presenting it to the court with his left hand, his head turned toward the judge */
-const lawyer = (cam: Cam) => {
-  const H = 8, m = mover(ADVOCATE_D, 1.8, LAWYER[0], LAWYER[2], H); m.stand(9);
-  const s: Stand = { D: ADVOCATE_D, at: LAWYER, heading: H, h: 1.8, cam };
-  m.actAt(-1, { ...reach(s, "L", ahead(LAWYER, H, 0.38, -0.55, 1.18)), armR: arm(16, -6, 96, -58), head: [-24, 2, 0], lean: 4 }, 10, { in: 0.01, handL: "open", handR: "relaxed", face: { brow: 0.7, lid: 0.1, mouth: 0.3, smile: 0.2 } });
+const lawyer = (cam: Cam, at: V3 = LAWYER, armR = arm(16, -6, 96, -58)) => {
+  const H = 8, m = mover(ADVOCATE_D, 1.8, at[0], at[2], H); m.stand(9);
+  const s: Stand = { D: ADVOCATE_D, at, heading: H, h: 1.8, cam };
+  m.actAt(-1, { ...reach(s, "L", ahead(at, H, 0.38, -0.55, 1.18)), armR, head: [-24, 2, 0], lean: 4 }, 10, { in: 0.01, handL: "open", handR: "relaxed", face: { brow: 0.7, lid: 0.1, mouth: 0.3, smile: 0.2 } });
   wag(m, 0.2, 9, P({ head: [-26, 2, 0] }), P({ head: [-20, 0, 0] }), 0.45, { handL: "open", handR: "relaxed", face: { brow: 0.7, lid: 0.1, mouth: 0.3, smile: 0.2 } });
   return m;
 };
@@ -69,11 +71,25 @@ export const courtShot = (id: string, a0: number, b0: number, hits: number[]): S
     things: (g, c, t, _T, cam) => { const k = J.up(t); wield(g, GAVEL_O(), GAVEL, "strike", c.judge, "R", cam, k > 0.001 ? { blend: ["raised", k] } : {}); } };
 };
 
+/** (the review's choice of opening b, change 1) the court close: the lawyer at the near end of the empty dock, presenting it with his
+ *  open hand, the judge with his gavel on the dais behind them, the three filling the picture's height and no empty floor below them */
+export const LAWYER_C: V3 = inCourt([-0.2, 0, -0.42]);
+export const CLOSE = (() => { const p = inCourt([0.85, 1.42, 2.4]), q = inCourt([-0.05, 1.25, -1.2]), d = Math.hypot(q[0] - p[0], q[2] - p[2]);
+  return lens(p[0], p[1], p[2], (q[0] - p[0]) / d, (q[2] - p[2]) / d, -6, 58); })();
+export const courtClose = (id: string, a0: number, b0: number, hits: number[]): Shot => {
+  const J = judge(hits), L = lawyer(CLOSE.cam, LAWYER_C, arm(8, -4, 128, -62));      // (his right hand on his chest: across his belly the dock's rail came over it)
+  return { id, a: a0, b: b0, still: Math.min(0.4, (b0 - a0) / 2), capsTop: 150, sounds: hits.map((t) => ({ t, k: "gavel", g: 1.0, p: -0.3 })),
+    cam: (_t, u) => CLOSE.push(0.03 * u), sun: COURT_SUN,
+    cast: (t) => [on("judge", OFFICIAL_D, J.m, t, FL + SJ.court.dais), on("lawyer", ADVOCATE_D, L, t, FL)],
+    things: (g, c, t, _T, cam) => { const k = J.up(t); wield(g, GAVEL_O(), GAVEL, "strike", c.judge, "R", cam, k > 0.001 ? { blend: ["raised", k] } : {}); } };
+};
+
 // ---------------- the gallery ----------------
 const GAL = (() => { const p = inCourt([-0.6, 1.55, 3.0]), q = inCourt([-3.4, 1.05, 1.38]), d = Math.hypot(q[0] - p[0], q[2] - p[2]);
   return lens(p[0], p[1], p[2], (q[0] - p[0]) / d, (q[2] - p[2]) / d, -9, 60); })();
-const SIRC = (() => { const p = inCourt([-1.15, 1.35, 3.0]), q = inCourt([-3.4, 0, 1.8]), d = Math.hypot(q[0] - p[0], q[2] - p[2]);
-  return lens(p[0], p[1], p[2], (q[0] - p[0]) / d, (q[2] - p[2]) / d, -8, 46); })();
+// (change 2: nearer and lower, so that Sir and the man beside him fill the picture and no empty wall stands above them)
+const SIRC = (() => { const p = inCourt([-1.8, 1.25, 2.8]), q = inCourt([-3.3, 0, 1.45]), d = Math.hypot(q[0] - p[0], q[2] - p[2]);
+  return lens(p[0], p[1], p[2], (q[0] - p[0]) / d, (q[2] - p[2]) / d, -6, 64); })();
 const seated = (D: Design, h: number, at: V3, heading: number) => { const m = mover(D, h, at[0], at[2], heading); m.stand(9); return m; };
 /** a seated figure's pose, with arms and head over it */
 const sitting = (o: Partial<Pose>) => ({ ...SIT, ...o });
@@ -104,7 +120,7 @@ export const yesShot = (id: string, a0: number, b0: number, W: Word[], words: st
   sir.actAt(ty + 0.3, sitting({ armR: arm(24, 12, 70, 10), armL: arm(20, 10, 60, 8), head: [turn, -2, 0], lean: 2 }), 10, { in: 0.2, handR: "relaxed", handL: "relaxed", face: { brow: 0.6, lid: 0.2, smile: 0.7 } });
   const old = seated(VILLAGER_OLD_D, 1.7, OLD_AT, H);
   old.actAt(-1, sitting({ armL: arm(30, 8, 70, 6), armR: arm(30, 8, 70, 6), lean: 8, head: [-10, -2, 0] }), 10, { in: 0.01, handR: "relaxed", handL: "relaxed", face: { brow: -0.4, lid: 0.2, smile: -0.2 } });
-  return { id, a: a0, b: b0, still: Math.max(0.1, ty + 0.1), sounds: [],
+  return { id, a: a0, b: b0, still: Math.max(0.1, ty + 0.1), capsTop: 150, sounds: [],
     cam: (_t, u) => SIRC.push(0.08 * u), sun: { target: SIR_AT, reach: 4 },
     cast: (t, T) => [on("old", VILLAGER_OLD_D, old, t, FL), on("sir", SIR_D, sir, t, FL, { talk: talk(W, T, words) })] };
 };
@@ -180,8 +196,9 @@ const vinesWide = (id: string, a0: number, b0: number): Shot => {
 
 // ---------------- the three clips ----------------
 const beds = (court: [number, number][], vines: [number, number][]) => [...court.map(([a, b]) => ({ k: "court", a, b, g: 0.8 })), ...vines.map(([a, b]) => ({ k: "birds", a, b, g: 0.8 })), ...vines.map(([a, b]) => ({ k: "wind", a, b, g: 0.3 }))];
-const clip = (id: string, W: Word[], shots: Shot[], text: string[], textB: number, len: number, b: ReturnType<typeof beds>): Film => ({
-  id, fps: 30, seconds: len, sky: "#b8e0ff", world: stJulienWorld, shots, words: W, hook: { text, a: 0, b: textB, size: 80 }, beds: b, audio: `craft/${id}.wav` });
+/** `top`: the hook text's top in the picture (in the sky over the vineyard for b: lower down it lay over the villager's chest and hands) */
+const clip = (id: string, W: Word[], shots: Shot[], text: string[], textB: number, len: number, b: ReturnType<typeof beds>, top?: number): Film => ({
+  id, fps: 30, seconds: len, sky: "#b8e0ff", world: stJulienWorld, shots, words: W, hook: { text, a: 0, b: textB, size: 80, ...(top ? { top } : {}) }, beds: b, audio: `craft/${id}.wav` });
 
 // a: the question over the court; the gallery; then the answer on the vines
 const A = (() => { const W = wa as Word[], c1 = 1.4, c2 = say(W, "Yes") - 0.05, c3 = say(W, "villages") - 0.06, end = say(W, "vines") + 0.55;
@@ -189,8 +206,8 @@ const A = (() => { const W = wa as Word[], c1 = 1.4, c2 = say(W, "Yes") - 0.05, 
     ["WERE ANIMALS", "REALLY PUT", "ON TRIAL?"], c2, end, beds([[0, c2]], [[c2, end]])); })();
 // b: the claim over the vineyard; the question over the court; Sir's "Yes."
 const B = (() => { const W = wb as Word[], L = byId(lb), c1 = (L.hook.b + L.question.a) / 2, c2 = say(W, "on") - 0.15, end = say(W, "Yes") + 0.48;
-  return clip("animal-hook-b", W, [complaintShot("complaint", 0, c1, W), courtShot("court", c1, c2, [0]), yesShot("yes", c2, end, W, ["question", "vines"])],
-    ["A VILLAGE SUED", "ITS WEEVILS."], c1, end, beds([[c1, end]], [[0, c1]])); })();
+  return clip("animal-hook-b", W, [complaintShot("complaint", 0, c1, W), courtClose("court", c1, c2, [0]), yesShot("yes", c2, end, W, ["question", "vines"])],
+    ["A VILLAGE SUED", "ITS WEEVILS."], c1, end, beds([[c1, end]], [[0, c1]]), 110); })();
 // c: the lawyer's bow; the question over the court; Sir's "Yes."
 const C = (() => { const W = wc as Word[], L = byId(lc), c1 = (L.hook.b + L.question.a) / 2, c2 = say(W, "on") - 0.15, end = say(W, "Yes") + 0.48;
   return clip("animal-hook-c", W, [bowShot("bow", 0, c1, 0.95), courtShot("court", c1, c2, [0]), yesShot("yes", c2, end, W, ["question", "vines"])],

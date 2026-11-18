@@ -170,7 +170,8 @@ const courtRoom = () => { const C = SJ.court, g = new THREE.Group(), z0 = -C.d /
     for (let x = -kw / 2 + 0.06; x < kw / 2; x += 0.14) k.add(mesh(cyl(0.016, 0.016, 0.45, 6), pale, { at: [x, 0.775, 0.45], line: 0.3, shadow: false }));
     g.add(k); }
   // the gallery bench along the left wall, facing across the room (+x), for the villagers and Sir Digsworth
-  const [gx, , gz] = C.gallery; g.add(mesh(box(0.45, 0.08, C.galleryLen), wood, { at: [gx, 0.46, gz] }), mesh(box(0.06, 0.5, C.galleryLen), woodD, { at: [gx - 0.22, 0.74, gz], line: 0.5 }));
+  // (its seat 0.42 m high, a chair's height: at 0.50 a seated man's thighs lay in it, or his feet hung above the floor)
+  const [gx, , gz] = C.gallery; g.add(mesh(box(0.45, 0.08, C.galleryLen), wood, { at: [gx, 0.38, gz] }), mesh(box(0.06, 0.5, C.galleryLen), woodD, { at: [gx - 0.22, 0.66, gz], line: 0.5 }));
   for (const s of [-1, 1]) g.add(mesh(box(0.4, 0.46, 0.06), woodD, { at: [gx, 0.23, gz + s * (C.galleryLen / 2 - 0.1)], line: 0.4 }));
   return g; };
 

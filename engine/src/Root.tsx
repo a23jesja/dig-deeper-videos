@@ -1,5 +1,8 @@
 import React from "react";
-import { Composition } from "remotion";
+import { Composition, getInputProps } from "remotion";
+import { STYLE } from "./craft/ink";
+// the simplified figure surface, on trial: only a render with --props='{"simple":true}' draws it
+STYLE.simple = !!(getInputProps() as { simple?: boolean }).simple;
 import { Sheet } from "./videos/emu/Sheet";
 import { SirLook } from "./videos/emu/SirLook";
 import { PuppetCompositions } from "./videos/puppet";

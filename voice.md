@@ -23,6 +23,11 @@ absurd the past was. Entertaining first, always true.
   recovers with dignity ("...Just stretching.").
 - Words written in CAPS in a script are for the captions only. The voice does not stress them; if a word must land,
   give it its own sentence.
+- **No inserted clauses (Jesper, 18 November 2026).** The voice does not pause clearly at commas, so a clause pushed
+  into the middle of a sentence ("which...", "who...", "the one that...") blurs. Split it into short sentences.
+  Example from Blackbeard: not "He twisted his beard, which grew up to his eyes, into little tails with ribbons",
+  but "His beard grew right up to his eyes. He twisted it into little tails, tied with ribbons." Read every sentence
+  aloud in your head: can it be understood the first time it is heard? If not, rewrite it.
 
 ## Reference: the Emu War Short (73 % of the video watched on average, our best so far)
 

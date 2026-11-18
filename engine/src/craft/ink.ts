@@ -2,6 +2,9 @@
 // shares (eyes with lids and shine, hands with fingers, shoes, the monocle and its chain). No design lives here.
 export type P2 = [number, number];
 export const INK = "#241726";
+/** the simplified surface, on trial (Jesper 18 Nov): flat colours with no weave, hatching or shaded edge, a thicker line, bigger eyes.
+ *  Off unless a render asks for it (input prop `simple`, Root.tsx); the films keep the frozen look */
+export const STYLE = { simple: false };
 export const R = Math.PI / 180;
 export const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 export const clamp = (x: number, a: number, b: number) => Math.max(a, Math.min(b, x));
@@ -63,7 +66,7 @@ export const seg = (a: P2, b: P2, wa: number, wb: number, bulge = 0, at = 0.35, 
 
 export class Ink {
   g: CanvasRenderingContext2D; ol: number; ink = INK;
-  constructor(g: CanvasRenderingContext2D, ol = 9) { this.g = g; this.ol = ol; }
+  constructor(g: CanvasRenderingContext2D, ol = 9) { this.g = g; this.ol = STYLE.simple ? ol * 1.8 : ol; }
   /** places the drawing has noted while it was drawn (an eye, say), in canvas pixels: so that the stage can put a real thing there */
   marks: Record<string, P2> = {};
   mark(name: string, x: number, y: number) { const m = this.g.getTransform(); this.marks[name] = [m.a * x + m.c * y + m.e, m.b * x + m.d * y + m.f]; }
@@ -87,13 +90,14 @@ export class Ink {
   clip(pts: P2[], fn: () => void) { const g = this.g; g.save(); g.beginPath(); this.trace(pts); g.clip(); fn(); g.restore(); }
   /** the second tone: the strip of a shape on the side away from the light (dx, dy = which way the shadow lies and how wide) */
   shadeEdge(pts: P2[], col: string, dx: number, dy: number) {
-    const g = this.g; g.save(); g.beginPath(); this.trace(pts); g.clip();
+    if (STYLE.simple) return; const g = this.g; g.save(); g.beginPath(); this.trace(pts); g.clip();
     g.beginPath(); g.rect(-4000, -4000, 8000, 8000); this.trace(shift(pts, -dx, -dy)); g.fillStyle = col; g.fill("evenodd"); g.restore();
   }
   /** draw in a turned and possibly mirrored frame */
   at(x: number, y: number, deg: number, flip: boolean, fn: () => void) { const g = this.g; g.save(); g.translate(x, y); g.rotate(deg * R); if (flip) g.scale(-1, 1); fn(); g.restore(); }
   /** parallel cut lines inside a shape (woodcut shadow) */
   hatch(pts: P2[], deg: number, gap: number, w: number, col = this.ink, c0?: P2) {
+    if (STYLE.simple) return;
     let x0 = 1e9, x1 = -1e9, y0 = 1e9, y1 = -1e9;
     for (const [x, y] of pts) { x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
     const c: P2 = c0 ?? [(x0 + x1) / 2, (y0 + y1) / 2], r = Math.hypot(x1 - x0, y1 - y0) / 2 + gap + (c0 ? len(sub(c0, [(x0 + x1) / 2, (y0 + y1) / 2])) : 0);
@@ -102,7 +106,7 @@ export class Ink {
   }
   /** a herringbone weave inside a shape, laid from the point o along the direction deg so that it moves with the part it sits on */
   tweed(pts: P2[], col: string, o: P2, deg = 0, gap = 15, w = 2.6) {
-    const g = this.g; let r = 0; for (const p of pts) r = Math.max(r, len(sub(p, o)));
+    if (STYLE.simple) return; const g = this.g; let r = 0; for (const p of pts) r = Math.max(r, len(sub(p, o)));
     this.clip(pts, () => {
       g.save(); g.translate(o[0], o[1]); g.rotate(deg * R); g.beginPath();
       const cw = gap * 1.25, n = Math.ceil(r / cw) + 1, m = Math.ceil(r / gap) + 1;
@@ -117,6 +121,7 @@ export class Ink {
  *  flat = a cut-paper eye (no line round the ball) */
 export type EyeO = { gaze?: P2; lid?: number; low?: number; skin: string; iris?: number; ol?: number; lash?: number; white?: string; rotDeg?: number };
 export const eye = (k: Ink, cx: number, cy: number, rx: number, ry: number, o: EyeO) => {
+  if (STYLE.simple) { rx *= 1.38; ry *= 1.38; o = { ...o, iris: (o.iris ?? 0.56) * 1.08 }; }
   const ball = ellPts(cx, cy, rx, ry, o.rotDeg ?? 0), ol = o.ol ?? k.ol * 0.55, gz = o.gaze ?? [0, 0], lid = o.lid ?? 0.1, low = o.low ?? 0;
   k.shape(ball, o.white ?? "#fffdf4", 0);
   k.clip(ball, () => {

@@ -3,7 +3,7 @@
 // equally tall and wide, with no jump between them. A figure is a Look (sizes, colours, hat, clothes) on the shared skeleton (rig.ts):
 // Sir Digsworth and every side character are Looks of this one base, so a new figure for any era needs no new drawing code.
 // Card pieces cast a small shadow on the piece under them and are held by brass pins at the joints; the jaw is a piece that drops.
-import { Ink, P2, R, sym, spline, ellPts, seg, mid, shade, shift, clamp, lerp, hand, angle, len, sub, add, unit, chain, HandKind } from "./ink";
+import { STYLE, Ink, P2, R, sym, spline, ellPts, seg, mid, shade, shift, clamp, lerp, hand, angle, len, sub, add, unit, chain, HandKind } from "./ink";
 import { Sk, Side, Props, Joint, Pose, solve } from "./rig";
 import { FigOpts, Face, frame, shoePts, thumbFlip, loaf, cane } from "./designs/common";
 
@@ -83,9 +83,9 @@ const WEAVE = "rgba(96,60,22,0.36)", MOUTH = "#4a1a22";
 
 /** a piece of card: its shadow on what lies under it, then the card with a thin line */
 const piece = (k: Ink, pts: P2[], fill: string, weave?: P2, tilt = 0) => {
-  k.shape(shift(pts, 5, 6), "rgba(52,32,16,0.24)", 0); k.shape(pts, fill, 0); if (weave) k.tweed(pts, WEAVE, weave, tilt, 14, 2.4); k.shape(pts, null);
+  if (!STYLE.simple) k.shape(shift(pts, 5, 6), "rgba(52,32,16,0.24)", 0); k.shape(pts, fill, 0); if (weave) k.tweed(pts, WEAVE, weave, tilt, 14, 2.4); k.shape(pts, null);
 };
-const pin = (k: Ink, p: P2, r = 8) => { k.dot(p[0] + 2, p[1] + 2.5, r, "rgba(52,32,16,0.28)"); k.dot(p[0], p[1], r, "#7d5f1a"); k.dot(p[0], p[1], r - 1.8, BRASS); k.dot(p[0] - r * 0.3, p[1] - r * 0.3, r * 0.28, "#fff4c4"); };
+const pin = (k: Ink, p: P2, r = 8) => { if (STYLE.simple) return; k.dot(p[0] + 2, p[1] + 2.5, r, "rgba(52,32,16,0.28)"); k.dot(p[0], p[1], r, "#7d5f1a"); k.dot(p[0], p[1], r - 1.8, BRASS); k.dot(p[0] - r * 0.3, p[1] - r * 0.3, r * 0.28, "#fff4c4"); };
 /** a tapered ribbon along a line of points (a moustache half, a crest): half-widths per point */
 export const ribbon = (pts: P2[], w: number[]): P2[] => {
   const c = spline(pts, false, 5), n = c.length, lf: P2[] = [], rt: P2[] = [];
@@ -454,7 +454,7 @@ const drawTrue = (L: Look) => (k: Ink, sk: Sk, o: FigOpts) => {
     if (o.prop === "loaf" && s === "L") loaf(k, mid(W, T, 0.9), P.hand * 0.62);
     if (o.prop === "cane" && s === "R") { const g = mid(W, T, 0.45); cane(k, g, W[1] < sk.j.pelvis[1] ? add(g, unit(sub(W, E)), P.fore * 1.4) : [g[0] + 14 * d, 0], 9); }
     if (long && !L.armCol) piece(k, seg(mid(E, W, 0.84), mid(E, W, 1.05), L.arm[2] * 0.84, L.arm[2] * 0.84, 0, 0.3, true), CREAM);
-    const cuff = () => { if (long && L.cuffs) piece(k, seg(mid(E, W, 0.6), mid(E, W, 0.9), L.arm[2] + 7, L.arm[2] + 9, 0, 0.3, true), L.cuffs); };
+    const cuff = () => { if (long && L.cuffs && !STYLE.simple) piece(k, seg(mid(E, W, 0.6), mid(E, W, 0.9), L.arm[2] + 7, L.arm[2] + 9, 0, 0.3, true), L.cuffs); };
     hs();
     const fore = seg(E, W, L.arm[1], L.arm[2], long ? 2 : 5); piece(k, fore, col, long && L.weave ? E : undefined); if (long) woven(E, W, L.arm[1], L.arm[2], fore);
     cuff();
@@ -479,11 +479,11 @@ const drawTrue = (L: Look) => (k: Ink, sk: Sk, o: FigOpts) => {
       if (L.stripes) { const bot = L.rows[0][0] - 40, w = L.stripes.check ? STRIPE.wc : STRIPE.w, wide = Math.max(...L.rows.map((r) => r[1]));
         for (let a = bot; a < top + 30; a += STRIPE.gap) k.shape([F.T(-400, a), F.T(400, a), F.T(400, a + w), F.T(-400, a + w)], L.stripes.col, 0);
         if (L.stripes.check) for (let l = -wide + STRIPE.gap / 2; l < wide; l += STRIPE.gap) k.shape([S(l - w / 2, top + 30, back), S(l + w / 2, top + 30, back), S(l + w / 2, bot, back), S(l - w / 2, bot, back)], L.stripes.col, 0); }
-      if (L.bare && front) { for (const s of [-1, 1]) k.line(spline([S(s * 52, top * 0.66), S(s * 26, top * 0.56), S(s * 4, top * 0.62)], false, 6), k.ol * 0.6); k.dot(S(0, top * 0.36)[0], S(0, top * 0.36)[1], 4, shade(L.skin, 0.7)); }
+      if (L.bare && front && !STYLE.simple) { for (const s of [-1, 1]) k.line(spline([S(s * 52, top * 0.66), S(s * 26, top * 0.56), S(s * 4, top * 0.62)], false, 6), k.ol * 0.6); k.dot(S(0, top * 0.36)[0], S(0, top * 0.36)[1], 4, shade(L.skin, 0.7)); }
       if (L.bare && back) k.line([S(0, top * 0.86, true), S(0, top * 0.36, true)], k.ol * 0.5);
       if (L.clavi && (front || back)) for (const s of [-1, 1]) k.shape([S(s * 22 - 7, top + 6, back), S(s * 22 + 7, top + 6, back), S(s * 22 + 7, L.rows[0][0] - 10, back), S(s * 22 - 7, L.rows[0][0] - 10, back)], L.clavi, 0);
       if (L.loin) { k.shape([F.T(-400, L.rows[0][0] - 20), F.T(400, L.rows[0][0] - 20), F.T(400, top * 0.14), F.T(-400, top * 0.14)], L.loin, k.ol); if (front) k.shape([S(-26, top * 0.14), S(26, top * 0.14), S(18, L.rows[0][0] + 6), S(-18, L.rows[0][0] + 6)], shade(L.loin, 0.88), k.ol * 0.7); }
-      if (L.balteus) { k.shape([F.T(-400, top * 0.12), F.T(400, top * 0.12), F.T(400, top * 0.27), F.T(-400, top * 0.27)], L.balteus, k.ol); if (front) for (const l of [-40, -14, 14, 40]) k.dot(S(l, top * 0.195)[0], S(l, top * 0.195)[1], 5, BRASS); }
+      if (L.balteus) { k.shape([F.T(-400, top * 0.12), F.T(400, top * 0.12), F.T(400, top * 0.27), F.T(-400, top * 0.27)], L.balteus, k.ol); if (front && !STYLE.simple) for (const l of [-40, -14, 14, 40]) k.dot(S(l, top * 0.195)[0], S(l, top * 0.195)[1], 5, BRASS); }
       if (jk && L.plain && front) { k.line([S(0, top), S(0, L.rows[0][0])], k.ol); for (const s of [-1, 1]) k.shape([S(s * 30, top * 0.74), S(s * 62, top * 0.74), S(s * 62, top * 0.56), S(s * 30, top * 0.56)], shade(L.coat, 1.12), k.ol); k.shape([S(-30, top + 4), S(30, top + 4), S(22, top - 26), S(0, top - 14), S(-22, top - 26)], shade(L.coat, 0.84), k.ol); }
       if (L.emblem === "cross" && front) { k.shape([S(-10, top * 0.84), S(10, top * 0.84), S(10, top * 0.2), S(-10, top * 0.2)], L.accent, 0); k.shape([S(-38, top * 0.66), S(38, top * 0.66), S(38, top * 0.52), S(-38, top * 0.52)], L.accent, 0); }
       if (jk && !L.plain && front) {
@@ -492,7 +492,7 @@ const drawTrue = (L: Look) => (k: Ink, sk: Sk, o: FigOpts) => {
         for (const s of [-1, 1]) { const lap = [S(s * 20, top + 2), S(s * 64, top * 0.84), S(s * 48, top * 0.74), S(s * 8, top * 0.46)]; k.shape(shift(lap, 4, 5), "rgba(52,32,16,0.22)", 0); k.shape(lap, shade(L.coat, 1.14)); k.line([S(s * 8, top * 0.46), S(s * 26, L.rows[0][0])], k.ol); }
       }
       if (jk && back) { k.shape([S(-30, top + 10, true), S(30, top + 10, true), S(34, top - 16, true), S(-34, top - 16, true)], L.plain ? shade(L.coat, 0.84) : CREAM, k.ol); k.line([S(0, top - 16, true), S(0, L.rows[0][0], true)], k.ol); k.shape([S(-42, top * 0.33, true), S(42, top * 0.33, true), S(42, top * 0.23, true), S(-42, top * 0.23, true)], coatD, k.ol); }
-      if (L.armour) { const y0 = top * 0.3; k.shape([F.T(-400, y0), F.T(400, y0), F.T(400, top + 40), F.T(-400, top + 40)], "#b9c3cd", k.ol); for (let a = y0 + 34; a < top; a += 34) k.line([F.T(-400, a), F.T(400, a)], k.ol * 0.8); }
+      if (L.armour) { const y0 = top * 0.3; k.shape([F.T(-400, y0), F.T(400, y0), F.T(400, top + 40), F.T(-400, top + 40)], "#b9c3cd", k.ol); if (!STYLE.simple) for (let a = y0 + 34; a < top; a += 34) k.line([F.T(-400, a), F.T(400, a)], k.ol * 0.8); }
       if (L.apron && front) k.shape([S(-L.rows[3][1] * 0.6, top * 0.78), S(L.rows[3][1] * 0.6, top * 0.78), S(L.rows[0][1] * 0.68, L.rows[0][0] + 24), S(-L.rows[0][1] * 0.68, L.rows[0][0] + 24)], L.apron, k.ol);
       if (L.apron && !front && !back) k.shadeEdge(t, L.apron, 24 * d, 0);
       if (L.cloak && front) k.shape([S(-L.rows[3][1], top + 6), S(L.rows[3][1] * 0.2, top + 6), S(L.rows[2][1] * 1.2, top * 0.3), S(L.rows[1][1] * 1.2, top * 0.1), S(-L.rows[3][1] * 1.2, top * 0.62)], L.cloak, k.ol);

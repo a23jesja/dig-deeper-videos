@@ -41,7 +41,7 @@ add(leafClose("eating", T3, T4));
 { const e2 = vineAt(2, 1), e3 = vineAt(3, 1), ma: V3 = [e2[0] + 1.25, 0, e2[2] + 0.5], wa: V3 = [e3[0] + 2.1, 0, e3[2] - 0.05];      // (beside the man in the picture, not before him)
   // (the lens from the side of the rows' ends, the villagers turned three quarters to it as they stare at the vines: from beyond them it saw
   // their backs)
-  const V = lens(ma[0] + 1.6, 1.6, (ma[2] + wa[2]) / 2 + 3.4, -0.42, -0.91, -4, 50);
+  const V = lens(ma[0] + 2.0, 1.6, (ma[2] + wa[2]) / 2 + 3.5, -0.42, -0.91, -4, 52);
   const hm = toward(ma, V.cam.pos) - 55, hw = toward(wa, V.cam.pos) - 50;
   const m1 = mover(VILLAGER_D, 1.76, ma[0], ma[2], hm), m2 = mover(VILLAGER_WOMAN_D, 1.64, wa[0], wa[2], hw); m1.stand(9); m2.stand(9);
   m1.actAt(-1, { armL: arm(14, 6, 26, 2), armR: arm(14, 6, 26, 2), lean: 4, head: [-14, 6, 0] }, 10, { in: 0.01, handL: "fist", handR: "fist", face: { brow: -1, lid: 0.1, mouth: 0.3, smile: -0.6 } });
@@ -117,12 +117,13 @@ const T11 = cut("water", "said_no");
 // away from the lens one hid the other and they stepped into the stones)
 // (their lines picked clear of the field's stones and bushes, which lie where world/stjulien.ts throws them: the near one at z 0.3, the far one
 // at z -1.8, both a third of a metre or more from every stone and bush, the spring between them)
-{ const V = lens(11.45, 1.45, 3.7, 0, -1, -3, 58), H = 90;
+// (the lens goes along with the near one, near enough that she fills most of the picture's height: from a fixed lens both were small)
+{ const LV = (t: number) => lens(10.95 + 1.2 * smooth(Math.min(1, t / 2.0)), 1.35, 2.85, 0, -1, -9, 60), V = LV(0), H = 90;
   const a0: V3 = [10.6, 0, 0.3], b0: V3 = [11.6, 0, -1.8];
   const w1 = mover(VILLAGER_WOMAN_D, 1.64, a0[0], a0[2], H), w2 = mover(VILLAGER_D, 1.76, b0[0], b0[2], H);
   for (const m of [w1, w2]) { m.walk(1.2 / m.LL, { step: 0.42 / m.LL, tau: 0.5 }).stand(9); m.actAt(-1, { ...usePose(JUG, "carry", "R"), armL: arm(14, 10, 26, 6) }, 10, { in: 0.01, handR: "grip", handL: "relaxed", face: { brow: 0.2, lid: 0.2, smile: 0.3 } }); }
   add({ id: "water", a: T10, b: T11, still: 1.0, sounds: w1.cues().filter((q) => q.k === "step").map((q) => ({ t: q.t, k: "step", g: 0.4, surface: "sand" })),
-    cam: (_t, u) => V.push(0.06 * u), sun: { target: [PX, 0, PZ], reach: 6 },
+    cam: (t) => LV(t).cam, sun: { target: [PX, 0, PZ], reach: 6 },
     cast: (t) => [on("w1", VILLAGER_WOMAN_D, w1, t), on("w2", VILLAGER_D, w2, t)],
     things: (g, c, _t, _T, cam) => { wield(g, JUGO(), JUG, "carry", c.w1, "R", cam); wield(g, JUGO2(), JUG, "carry", c.w2, "R", cam); } }); }
 
@@ -161,12 +162,13 @@ const T14 = cut("experts", "verdict");
 // (their lines clear of the stones and bushes as for the water carriers: the near one at z 1.5, the far one at z -0.6)
 // (walking slantwise toward the lens, 60 degrees: straight across the picture the rod held at the side lay in depth, on the body's line,
 // and the near arm crossed it)
-{ const V = lens(8.3, 1.5, 4.7, 0, -1, -3, 62), H = 60, e0: V3 = [7.4, 0, 1.2], e1: V3 = [9.0, 0, -1.0];      // (the far one further over: nearer together, the near one's rod passed over him)
+// (the lens goes along with the near one as he comes slantwise toward it, keeping its distance, so that he fills most of the picture)
+{ const LV = (t: number) => { const k = smooth(Math.min(1, t / 2.0)); return lens(7.7 + 1.04 * k, 1.4, 1.2 + 2.9 + 0.6 * k, 0, -1, -3, 60); }, V = LV(0), H = 60, e0: V3 = [7.4, 0, 1.2], e1: V3 = [9.0, 0, -0.9];      // (the far one well ahead on the right, clear of the near one and his rod as the lens goes along)      // (the far one further over: nearer together, the near one's rod passed over him)
   const m0 = mover(EXPERT_D, 1.78, e0[0], e0[2], H), m1 = mover(EXPERT2_D, 1.74, e1[0], e1[2], H);
   for (const [m, len] of [[m0, 1.2], [m1, 0.8]] as const) { m.walk(len / m.LL, { step: 0.42 / m.LL, tau: 0.5 }).stand(9); // (the rod in the far hand, the near arm swinging in front of it: in the near hand, at the body's depth, the far arm swung through it)
     m.actAt(-1, { ...usePose(ROD, "staff", "L"), armR: arm(14, 8, 26, 6), head: [0, 6, 0] }, 10, { in: 0.01, handL: "grip", handR: "relaxed", face: { brow: 0.4, lid: 0.3 } }); }
   add({ id: "experts", a: T13, b: T14, still: 1.2, sounds: m0.cues().filter((q) => q.k === "step").map((q) => ({ t: q.t, k: "step", g: 0.4, surface: "sand" })),
-    cam: (_t, u) => V.push(0.05 * u), sun: { target: [FX - 3, 0, FZ], reach: 6 },
+    cam: (t) => LV(t).cam, sun: { target: [FX - 3, 0, FZ], reach: 6 },
     cast: (t) => [on("e0", EXPERT_D, m0, t), on("e1", EXPERT2_D, m1, t)],
     things: (g, c, _t, _T, cam) => { wield(g, RODO(), ROD, "staff", c.e0, "L", cam); wield(g, RODO2(), ROD, "staff", c.e1, "L", cam); } }); }
 

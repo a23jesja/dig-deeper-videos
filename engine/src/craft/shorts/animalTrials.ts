@@ -5,7 +5,7 @@
 import * as THREE from "three";
 import { Film, Shot, V3, Word, talk, smooth } from "../stage/film";
 import { mover, arm, wag } from "../stage/acting";
-import { lens, once, noShade } from "../stage/staging";
+import { lens, once, noShade, palm } from "../stage/staging";
 import { COMPLAINT, JUG, ROD, GAVEL, wield, usePose, reach, Stand } from "../stage/grips";
 import { stJulienWorld, SJ, inCourt, vineAt } from "../world/stjulien";
 import { complaintRoll, jugHeld, measureRod } from "../world/props";
@@ -131,46 +131,48 @@ const T11 = cut("water", "said_no");
 // the lawyer on the field rubs a pinch of dry earth between his fingers, lets it fall and shakes his head
 const T12 = cut("said_no", "picky");
 const BARREN_AT: V3 = [FX - 2.4, 0, FZ + 0.4];
-{ const V = lens(BARREN_AT[0] - 2.5, 1.5, BARREN_AT[2] + 1.0, 0.93, -0.37, -4, 46), H = toward(BARREN_AT, V.cam.pos) + 25, m = mover(ADVOCATE_D, 1.8, BARREN_AT[0], BARREN_AT[2], H); m.stand(9);
-  const s: Stand = { D: ADVOCATE_D, at: BARREN_AT, heading: H, h: 1.8, cam: V.cam }, hand = ahead(BARREN_AT, H, 0.36, 0.18, 1.2);
-  m.actAt(-1, { ...reach(s, "R", hand), armL: arm(14, 10, 30, 8), head: [-6, 12, 0] }, 10, { in: 0.01, handR: "fist", handL: "relaxed", face: { brow: -0.4, lid: 0.3, mouth: 0.2, smile: -0.4 } });
+{ const V = lens(BARREN_AT[0] - 2.5 - 0.11, 1.5, BARREN_AT[2] + 1.0 - 0.28, 0.93, -0.37, -4, 52),      // (a little to the left, so that his hand held out is well inside the picture)
+  H = toward(BARREN_AT, V.cam.pos) + 25, m = mover(ADVOCATE_D, 1.8, BARREN_AT[0], BARREN_AT[2], H); m.stand(9);
+  const s: Stand = { D: ADVOCATE_D, at: BARREN_AT, heading: H, h: 1.8, cam: V.cam }, hand = ahead(BARREN_AT, H, 0.14, 0.56, 1.02);      // (held out to his side in the picture's plane, clear of his body, so that the earth he rubs shows: forward toward the lens the card drew it at his chest, as a hand on his heart)
+  m.actAt(-1, { ...reach(s, "R", hand), armL: arm(14, 10, 30, 8), head: [10, 16, 0] }, 10, { in: 0.01, handR: "fist", handL: "relaxed", face: { brow: -0.4, lid: 0.3, mouth: 0.2, smile: -0.4 } });
   const tNo = say(W, "no") - T11;
   wag(m, Math.max(0.1, tNo - 0.1), 1.2, P({ head: [-18, 6, 0] }), P({ head: [8, 6, 0] }), 0.22, { face: { brow: -0.6, lid: 0.2, mouth: 0.3, smile: -0.6 } });
   m.actAt(tNo + 1.3, { ...reach(s, "R", hand), armL: arm(14, 10, 30, 8), head: [-8, 4, 0] }, 10, { in: 0.2, handR: "open", handL: "relaxed", face: { brow: -0.7, lid: 0.2, mouth: 0.4, smile: -0.6 } });
   /** the dry earth falling from his fingers once he opens them: small crumbs from the hand down to the ground */
-  const crumbs = (g: THREE.Group, t: number, cam: { pos: number[] }) => { const t0 = tNo + 1.35; if (t < t0) return; const h = palmOf(m, s, t, cam); for (let i = 0; i < 9; i++) { const u = ((t - t0) * 1.6 + i * 0.11) % 1.0, y = h[1] - 0.05 - u * (h[1] - 0.05);
-      g.add(mesh(box(0.012, 0.012, 0.012), "#8a6a42", { at: [h[0] + Math.sin(i * 2.1) * 0.03, y, h[2] + Math.cos(i * 1.7) * 0.03], line: 0, shadow: false })); } };
+  const crumbs = (g: THREE.Group, t: number, cam: { pos: number[] }) => { const t0 = tNo + 1.35; if (t < t0) return; const h = palmOf(m, s, t, cam); for (let i = 0; i < 14; i++) { const u = ((t - t0) * 1.6 + i * 0.07) % 1.0, y = h[1] - 0.05 - u * (h[1] - 0.05);
+      g.add(mesh(box(0.024, 0.024, 0.024), "#8a6a42", { at: [h[0] + Math.sin(i * 2.1) * 0.03, y, h[2] + Math.cos(i * 1.7) * 0.03], line: 0, shadow: false })); } };
   add({ id: "barren", a: T11, b: T12, still: 1.0, sounds: [{ t: tNo + 1.4, k: "scuff", g: 0.3 }], cam: (_t, u) => V.push(0.08 * u), sun: { target: BARREN_AT, reach: 5 },
     cast: (t) => [on("lawyer", ADVOCATE_D, m, t)], things: (g, _c, t, _T, cam) => crumbs(g, t, cam) }); }
 /** where a figure's right palm is at time t (the hand the crumbs fall from) */
-function palmOf(_m: ReturnType<typeof mover>, s: Stand, _t: number, _cam: unknown): V3 { return ahead(s.at, s.heading, 0.36, 0.18, 1.18); }
+function palmOf(_m: ReturnType<typeof mover>, s: Stand, _t: number, _cam: unknown): V3 { return ahead(s.at, s.heading, 0.14, 0.56, 1.0); }
 
 // ---------------- "Picky eaters." Sir at the end of a row of vines, his monocle to a weevil on a leaf ----------------
 const T13 = cut("picky", "experts");
 { const end = vineAt(1, 1), at: V3 = [end[0] + 1.05, 0, end[2] + 0.35], V = lens(at[0] + 3.1, 1.35, at[2] + 0.75, -0.97, -0.25, -2, 50), H = toward(at, V.cam.pos) - 40;      // (far enough that Sir is whole: close, the picture cut him off)
   const sir = mover(SIR_D, 1.8, at[0], at[2], H); sir.stand(9);
-  sir.actAt(-1, { armL: arm(16, 10, 34, 8), armR: arm(30, 10, 120, -40), lean: 8, head: [-24, 10, 0] }, 10, { in: 0.01, handL: "relaxed", handR: "relaxed", face: { brow: 0.9, lid: 0.3, smile: 0.4 } });
-  // (the leaf with its weevil beside his monocle and a little nearer the lens, so that he looks at it and it covers nothing of his face)
-  const LA: V3 = ahead(at, H, 0.34, 0.15, 1.48);      // (on his right, the monocle's side, nearer the lens than his face)
-  const leaves: Leaf[] = [{ at: LA, R: 0.17, seed: 21, bites: 3, rot: [-0.1, 0.5, 0.1] }];
+  // (the review of v1: he holds the leaf in his own hand beside his face, his monocle turned to it, his face free; hung in the air it lay
+  // over the edge of his face and monocle)
+  const ss: Stand = { D: SIR_D, at, heading: H, h: 1.8, cam: V.cam }, HOLD = ahead(at, H, 0.3, 0.42, 1.5);
+  sir.actAt(-1, { ...reach(ss, "R", HOLD), armL: arm(16, 10, 34, 8), lean: 4, head: [22, 6, 0] }, 10, { in: 0.01, handL: "relaxed", handR: "grip", face: { brow: 0.9, lid: 0.3, smile: 0.4 } });
+  const leafAt = (c: { sir: Parameters<typeof palm>[0] }): Leaf[] => { const p = palm(c.sir, "R"); return [{ at: [p[0], p[1] + 0.12, p[2]], R: 0.15, seed: 21, bites: 3, rot: [-0.1, 0.5, 0.1] }]; };
   add({ id: "picky", a: T12, b: T13, still: 0.6, sounds: [{ t: 0.05, k: "munch", g: 0.6, dur: 0.8 }], cam: (_t, u) => V.push(0.06 * u), sun: { target: at, reach: 4 },
-    cast: (t, T) => [on("sir", SIR_D, sir, t, 0, { talk: talk(W, T, ["picky"]) })], things: (g, _c, t) => leafCluster(g, leaves, Math.PI / 2, t, 1.25) }); }
+    cast: (t, T) => [on("sir", SIR_D, sir, t, 0, { talk: talk(W, T, ["picky"]) })], things: (g, c, t) => leafCluster(g, leafAt(c as { sir: Parameters<typeof palm>[0] }), Math.PI / 2, t, 1.25) }); }
 
 // ---------------- "So the court sent experts to inspect the field." Two experts with measuring rods walk the field ----------------
 const T14 = cut("experts", "verdict");
-// (across the picture, the far one a step ahead: walking away from the lens they showed their backs)
-// (their lines clear of the stones and bushes as for the water carriers: the near one at z 1.5, the far one at z -0.6)
-// (walking slantwise toward the lens, 60 degrees: straight across the picture the rod held at the side lay in depth, on the body's line,
-// and the near arm crossed it)
-// (the lens goes along with the near one as he comes slantwise toward it, keeping its distance, so that he fills most of the picture)
-{ const LV = (t: number) => { const k = smooth(Math.min(1, t / 2.0)); return lens(7.7 + 1.04 * k, 1.4, 1.2 + 2.9 + 0.6 * k, 0, -1, -3, 60); }, V = LV(0), H = 60, e0: V3 = [7.4, 0, 1.2], e1: V3 = [9.0, 0, -0.9];      // (the far one well ahead on the right, clear of the near one and his rod as the lens goes along)      // (the far one further over: nearer together, the near one's rod passed over him)
-  const m0 = mover(EXPERT_D, 1.78, e0[0], e0[2], H), m1 = mover(EXPERT2_D, 1.74, e1[0], e1[2], H);
-  for (const [m, len] of [[m0, 1.2], [m1, 0.8]] as const) { m.walk(len / m.LL, { step: 0.42 / m.LL, tau: 0.5 }).stand(9); // (the rod in the far hand, the near arm swinging in front of it: in the near hand, at the body's depth, the far arm swung through it)
-    m.actAt(-1, { ...usePose(ROD, "staff", "L"), armR: arm(14, 8, 26, 6), head: [0, 6, 0] }, 10, { in: 0.01, handL: "grip", handR: "relaxed", face: { brow: 0.4, lid: 0.3 } }); }
-  add({ id: "experts", a: T13, b: T14, still: 1.2, sounds: m0.cues().filter((q) => q.k === "step").map((q) => ({ t: q.t, k: "step", g: 0.4, surface: "sand" })),
-    cam: (t) => LV(t).cam, sun: { target: [FX - 3, 0, FZ], reach: 6 },
+// (the review of v1: in the roped field with the hills behind, not before the village; one sets his rod down in the earth and leans on it,
+// the other watches. Their places are clear of the field's stones and bushes, by world/stjulien.ts's own throw)
+{ const V = lens(4.8, 1.5, 3.6, 0.92, -0.39, -3, 54), e0: V3 = [7.6, 0, 1.76], e1: V3 = [7.79, 0, 2.98];
+  const mid = (a: V3, b: V3): number => { const h1 = toward(a, b), h2 = toward(a, V.cam.pos); return h1 + ((((h2 - h1) % 360) + 540) % 360 - 180) * 0.6; };
+  const H0 = mid(e0, e1), H1 = mid(e1, e0), m0 = mover(EXPERT_D, 1.78, e0[0], e0[2], H0), m1 = mover(EXPERT2_D, 1.74, e1[0], e1[2], H1); m0.stand(9); m1.stand(9);
+  m0.actAt(-1, { ...usePose(ROD, "staff", "R"), armL: arm(14, 8, 26, 6), head: [0, 14, 0] }, 10, { in: 0.01, handR: "grip", handL: "relaxed", face: { brow: 0.4, lid: 0.3 } });
+  m0.actAt(0.45, { ...usePose(ROD, "staff", "R"), armL: arm(14, 8, 26, 6), lean: 12, head: [0, 22, 0] }, 0.5, { in: 0.2, out: 0.3, antic: 0.05, handR: "grip", handL: "relaxed", face: { brow: 0.6, lid: 0.3, mouth: 0.2 } });
+  m1.actAt(-1, { ...usePose(ROD, "staff", "R"), armL: arm(14, 8, 26, 6), head: [-14, 16, 0] }, 10, { in: 0.01, handR: "grip", handL: "relaxed", face: { brow: 0.7, lid: 0.2, mouth: 0.1 } });
+  wag(m1, 1.2, 1.0, P({ head: [-14, 20, 0] }), P({ head: [-14, 10, 0] }), 0.3, { face: { brow: 0.7, lid: 0.2 } });
+  add({ id: "experts", a: T13, b: T14, still: 0.9, sounds: [{ t: 0.6, k: "thud", g: 0.5 }, { t: 0.1, k: "step", g: 0.3, surface: "sand" }],
+    cam: (_t, u) => V.push(0.08 * u), sun: { target: e0, reach: 6 },
     cast: (t) => [on("e0", EXPERT_D, m0, t), on("e1", EXPERT2_D, m1, t)],
-    things: (g, c, _t, _T, cam) => { wield(g, RODO(), ROD, "staff", c.e0, "L", cam); wield(g, RODO2(), ROD, "staff", c.e1, "L", cam); } }); }
+    things: (g, c, _t, _T, cam) => { wield(g, RODO(), ROD, "staff", c.e0, "R", cam); wield(g, RODO2(), ROD, "staff", c.e1, "R", cam); } }); }
 
 // ---------------- "The verdict?" The clerk at his table, his hand on the thick record ----------------
 const T15 = cut("verdict", "lost");
@@ -186,12 +188,14 @@ const RECORD_V = lens(CX - 2.5, 1.65, CZ + 0.9, 0.94, -0.34, -14, 46);
 // ---------------- "Lost. The last page of the record is missing." Sir bends over the record beside the clerk ----------------
 const T16 = cut("lost", "who_won");
 // (Sir at the table's near end, turned three quarters to the lens as he bends over the record: from behind the table he showed his back)
-{ const sAt: V3 = [CX - 0.27, 0, CZ + 0.88], V = lens(CX - 2.1, 1.7, CZ + 1.3, 0.95, -0.3, -16, 48), h1 = toward(sAt, [CX, 0, CZ]), H = h1 + ((((toward(sAt, [CX - 2.1, 0, CZ + 1.3]) - h1) % 360) + 540) % 360 - 180) / 2;      // (half way between the record and the lens, taken round the short way)
+// (the review of v1: the record whole and big in the front of the picture, its torn last page in sight, Sir behind the table on the wall side
+// facing the lens as he peers at it: from the table's end the record lay small and cut by the edge)
+{ const sAt: V3 = [CX + 0.5, 0, CZ - 0.42], LP: V3 = [CX - 1.15, 1.5, CZ + 0.25], d0 = Math.hypot(CX - LP[0], CZ - LP[2]), V = lens(LP[0] - 0.25, LP[1] + 0.05, LP[2] + 0.05, (CX - LP[0]) / d0, (CZ - LP[2]) / d0, -15, 56), H = toward(sAt, LP) + 14;
   const sir = mover(SIR_D, 1.8, sAt[0], sAt[2], H); sir.stand(9);
   // (his hands flat on the table's near end as he leans over the record: hanging, one went into the table top)
   const ss: Stand = { D: SIR_D, at: sAt, heading: H, h: 1.8, cam: V.cam, pose: { lean: 18 } };
-  sir.actAt(-1, { ...reach(ss, "L", [CX - 0.22, 0.87, CZ + 0.5]), ...reach(ss, "R", [CX + 0.06, 0.87, CZ + 0.5]), lean: 18, head: [-10, 18, 0] }, 10, { in: 0.01, handL: "open", handR: "open", face: { brow: 1, lid: 0, wide: 0.5, mouth: 0.2 } });
-  add({ id: "lost", a: T15, b: T16, still: 1.0, capsTop: 1500, sounds: [{ t: 0.15, k: "paper", g: 0.5 }], cam: (_t, u) => V.push(0.08 * u), sun: COURT_SUN,
+  sir.actAt(-1, { ...reach(ss, "R", [CX + 0.28, 0.87, CZ - 0.42]), ...reach(ss, "L", [CX + 0.28, 0.87, CZ - 0.08]), lean: 18, head: [-6, 20, 0] }, 10, { in: 0.01, handL: "open", handR: "open", face: { brow: 1, lid: 0, wide: 0.5, mouth: 0.2 } });
+  add({ id: "lost", a: T15, b: T16, still: 1.0, capsTop: 1580, sounds: [{ t: 0.15, k: "paper", g: 0.5 }], cam: (_t, u) => V.push(0.08 * u), sun: COURT_SUN,
     cast: (t) => [on("sir", SIR_D, sir, t, FL)] }); }
 
 // ---------------- "So who won?" The woman in the gallery turns to Sir ----------------

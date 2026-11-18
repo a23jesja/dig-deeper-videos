@@ -11,7 +11,7 @@ import { GLADIUS, NET, STICK, TRIDENT, SHIELD_ARM, shieldOn, pole, polePose, Sta
 import { flagSea } from "../world/ship";
 import { group, mesh, box } from "../world/kit";
 import { gladius, scutum, trident, netBunch, refStick, spyglass, pistolHeld, sabre, mugHeld, scabbard, bucketHeld, linstock, chest, fiddle, fiddleBow, fiddleByNeck, cithara, grapes, bundleHeld, bench, ribbonBow, tray, spill, fuseCord, pistolSling, openBook, woodSword, stretcher, bowl, bowlRim, spoon, bandageRoll, coinHeld, mappa, reedPen, scrollHeld, olive } from "../world/props";
-import { MURMILLO_D, RETIARIUS_D, REFEREE_D, CUSTOMS_D, SHIPOWNER_D, PIRATE_D, SAILOR_D, PIRATE2_D, CAPTAIN_D, COOK_D, GUNNER_D, DOCKER_D, DOCKHAND_D, NERO_D, NERO_STAGE_D, ROMAN_WOMAN2_D, CITIZEN_D, BLACKBEARD_D, YOU_D, YOU_CHECK_D, SIR_D, BLACKBEARD_PREP_D, BLACKBEARD_ARMED_D, SHIPBOY_D, OLDHAND_D, MURMILLO_BARE_D, CARRIED_D, TRAINER_D, PUPIL_D, OWNER_D, DOCTOR_D, SPONSOR_D, BEARER_D, BEARER2_D } from "../looks";
+import { MURMILLO_GRILLE_D, MURMILLO_D, RETIARIUS_D, REFEREE_D, CUSTOMS_D, SHIPOWNER_D, PIRATE_D, SAILOR_D, PIRATE2_D, CAPTAIN_D, COOK_D, GUNNER_D, DOCKER_D, DOCKHAND_D, NERO_D, NERO_STAGE_D, ROMAN_WOMAN2_D, CITIZEN_D, BLACKBEARD_D, YOU_D, YOU_CHECK_D, SIR_D, BLACKBEARD_PREP_D, BLACKBEARD_ARMED_D, SHIPBOY_D, OLDHAND_D, MURMILLO_BARE_D, CARRIED_D, TRAINER_D, PUPIL_D, OWNER_D, DOCTOR_D, SPONSOR_D, BEARER_D, BEARER2_D } from "../looks";
 import type { HandKind } from "../ink";
 import type { Pose } from "../rig";
 import type { Design, Face } from "../designs/common";
@@ -187,6 +187,8 @@ export const GRIP_SHEET_4: Film = { ...GRIP_SHEET, id: "grip-sheet-4", seconds: 
 // ---------------- sheet 5: Blackbeard getting ready, the gladiators' school and the stands ----------------
 const shots5: Shot[] = [];
 const card5 = (id: string, figs: Fig[], thing: (g: THREE.Group, c: Staged[], cam: Cam) => void, W = V) => { card2(id, figs, thing, W); const s = shots2.pop()!, a = shots5.length * LEN; shots5.push({ ...s, a, b: a + LEN }); };
+// (13 cm up, 16 cm down: the drawn fist is 11 cm high, and a 17 cm fuse hardly showed out of it)
+const FUSE_UP = once(() => noShade(fuseCord(0.13))), FUSE_DOWN = once(() => noShade(fuseCord(0.16)));
 const RIB = once(() => noShade(ribbonBow("#2f6fb0", 1.3))), TRAY_O = once(() => tray()), SPILL_O = once(() => noShade(spill())), FUSE_O = once(() => noShade(fuseCord())), FUSE_LIT = once(() => noShade(fuseCord(0.17, true)));
 const SLING_O = once(() => pistolSling(0.62)), BOOK_O = once(() => openBook()), WOOD = once(() => noShade(woodSword())), STRETCH = once(() => stretcher(1.9)), SCUTUM5 = once(() => noShade(scutum()));
 const BOWL_O = once(() => noShade(bowlRim())), SPOON_O = once(() => noShade(spoon())), ROLL_O = once(() => noShade(bandageRoll())), COIN_O = once(() => noShade(coinHeld(0.04))), MAPPA_O = once(() => noShade(mappa()));
@@ -212,9 +214,10 @@ both((view, turn) => card5(`tray-carry-${view}`, [{ D: SHIPBOY_D, h: 1.28, turn,
 both((view, turn) => card5(`spill-light-${view}`, [{ D: SHIPBOY_D, h: 1.28, turn, pose: () => usePose(SPILL, "light", "R"), hands: R1, face: { wide: 0.8, brow: 1, lid: 0, mouth: 0.3 } }],
   (g, [a], cam) => { wield(g, SPILL_O(), SPILL, "light", a, "R", cam); tipGlow(g, SPILL_O(), cam); }));
 // the fuse is pushed up under the brim: the fist round its middle just below the brim at his temple, its upper half going up behind the
-// hat (behind his card, so that the hat hides its top end) and its lower half hanging by his cheek, as it then hangs in the films
-both((view, turn) => card5(`fuse-tuck-${view}`, [{ D: BLACKBEARD_PREP_D, h: 1.92, turn, pose: (s) => { const j = jointsOf(s), w = rightWay(s); return { ...reach(s, "R", aside(near(j("skull"), s.cam, 0.06), s.cam, w * 0.19, 0.02)), head: [0, 4, 0] }; }, hands: R1, face: FIERCE }],
-  (g, [a], cam) => { wield(g, FUSE_O(), FUSE, "tuck", a, "R", cam, { d: -0.05, at: 0.085 }); }));
+// hat (behind his card, so that the hat hides its top end) and its lower half hanging by his cheek in front of him, as it then hangs in
+// the films (version 2: drawn as two halves, since one cord behind his card hid the lower half too)
+both((view, turn) => card5(`fuse-tuck-${view}`, [{ D: BLACKBEARD_PREP_D, h: 1.92, turn, pose: (s) => { const j = jointsOf(s), w = rightWay(s); return { ...reach(s, "R", aside(near(j("skull"), s.cam, 0.06), s.cam, w * 0.25, 0.22)), head: [0, 4, 0] }; }, hands: R1, face: FIERCE }],
+  (g, [a], cam) => { wield(g, FUSE_UP(), FUSE, "tuck", a, "R", cam, { d: -0.05, at: 0 }); wield(g, FUSE_DOWN(), FUSE, "tuck", a, "R", cam, { d: 0.03, at: 0.16 }); }));
 both((view, turn) => card5(`sling-lift-${view}`, [{ D: BLACKBEARD_D, h: 1.92, turn, pose: (s) => ({ ...twoHands(s, 0.62, 0.32, 0.22), head: [0, 10, 0] }), hands: LR, face: FIERCE }],
   (g, [a], cam) => { carryBy(g, SLING_O(), a, "L", a, "R", cam); fuseSmoke(g, a, 1, cam); }));
 both((view, turn) => card5(`fuse-blow-${view}`, [{ D: BLACKBEARD_ARMED_D, h: 1.92, turn, pose: (s) => { const j = jointsOf(s), w = rightWay(s), m = mix3(j("neck"), j("skull"), 0.5); return reach(s, "R", aside(near(m, s.cam, 0.14), s.cam, w * 0.05, -0.16)); }, hands: R1, face: { brow: -0.4, lid: 0.3, mouth: 0, smile: -0.3 } }],
@@ -276,5 +279,9 @@ for (const [view, turn] of [["front", 0], ["slant", 30]] as [string, number][]) 
   card5("shoulder-pat-side", [{ D: MURMILLO_D, h: 1.84, dx: -0.3, turn: 25, pose: () => GUARD5, hands: LR, face: { brow: -0.3, lid: 0.3, mouth: 0 } },
     { D: OWNER_D, h: 1.7, dx: 0.42, turn: -35, pose: (s) => reach(s, "R", near(jointsOf(mur2)("shL"), s.cam, 0.08)), hands: { handR: "open" }, face: { smile: 0.7, brow: 0.6 } }],
     (_g, [m, o], cam) => { handOn(o, "R", m, "shL", cam, "shoulder"); }); }
+// the murmillo in his full helmet, the visor with its grille down (Jesper: with a grille, unless it looks too poor): from the front and
+// from the side, the gladius at the ready and the shield on his arm
+both((view, turn) => card5(`murmillo-grille-${view}`, [{ D: MURMILLO_GRILLE_D, h: 1.84, turn, pose: () => ({ ...usePose(GLADIUS, "ready", "R"), armL: SHIELD_ARM }), hands: LR, face: { brow: -0.7, lid: 0.15 } }],
+  (g, [a], cam) => { wield(g, GLAD(), GLADIUS, "ready", a, "R", cam); shieldOn(g, SCUTUM(), a, "L", cam); }));
 export const GRIP_SHEET_5: Film = { ...GRIP_SHEET, id: "grip-sheet-5", seconds: shots5.length * LEN, shots: shots5 };
 

@@ -412,6 +412,9 @@ export const SPONSOR: Look = { ...CITIZEN, id: "sponsor", head: { a: 114, b: 116
 /** the men who carry the stretcher: plain short tunics */
 export const BEARER: Look = { ...CITIZEN, id: "bearer", coat: "#a8885a", accent: "#5a3a22", belt: "#5a3a22", skin: "#a86c44", brow: "#1a120c", hair: { col: "#1a120c", kind: "short" } };
 export const BEARER2: Look = { ...CITIZEN, id: "bearer2", coat: "#7a8a6a", accent: "#4a3a2a", belt: "#4a3a2a", skin: "#e9b48a", brow: "#7a4a2a", hair: { col: "#7a4a2a", kind: "bald" } };
+/** the murmillo in his full helmet: the visor with its grille down over the face (Jesper: with a grille, unless it looks too poor) */
+export const MURMILLO_GRILLE: Look = { ...MURMILLO, id: "murmillo-grille", visor: "grille" };
+export const MURMILLO_GRILLE_D = castDesign(MURMILLO_GRILLE, "the murmillo");
 export const MURMILLO_BARE_D = castDesign(MURMILLO_BARE, "the murmillo"), THRAEX_D = castDesign(THRAEX), SECUTOR_D = castDesign(SECUTOR), HOPLOMACHUS_D = castDesign(HOPLOMACHUS), PROVOCATOR_D = castDesign(PROVOCATOR);
 export const RETIARIUS2_D = castDesign(RETIARIUS2), RETIARIUS3_D = castDesign(RETIARIUS3), MURMILLO2_D = castDesign(MURMILLO2), CARRIED_D = castDesign(CARRIED);
 export const TRAINER_D = castDesign(TRAINER), PUPIL_D = castDesign(PUPIL), OWNER_D = castDesign(OWNER), DOCTOR_D = castDesign(DOCTOR), SPONSOR_D = castDesign(SPONSOR), BEARER_D = castDesign(BEARER), BEARER2_D = castDesign(BEARER2);

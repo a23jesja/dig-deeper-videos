@@ -55,6 +55,8 @@ export type Look = {
   clavi?: string;
   /** how tall the crest of a helmet stands (a part of the head's height; a soldier's is 0.4) */
   crestH?: number;
+  /** a murmillo's visor on the helmet: a plate over the face from the brim down past the chin, with a grille of round holes over the eyes */
+  visor?: "grille";
   /** a pattern woven into a tunic and its long sleeves: stripes across it in `col`, or a check (thinner stripes both ways) */
   stripes?: { col: string; check?: boolean };
   /** a neckerchief tied at the throat, its knot and two ends in front (its colour) */
@@ -314,6 +316,20 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
     k.clip(dome, () => k.shape([[-2 * w, -0.74 * H], [2 * w, -0.74 * H], [2 * w, -0.64 * H], [-2 * w, -0.64 * H]], shade(col, 0.8), k.ol));
     for (const s of [-1, 1]) { const q = at(h, s * 72, 1.03); if (q.d > -0.25 * a) piece(k, spline([[q.x - 0.16 * a, -0.66 * H], [q.x + 0.16 * a, -0.66 * H], [q.x + 0.12 * a, -0.3 * H], [q.x, -0.22 * H], [q.x - 0.12 * a, -0.3 * H]], true, 4), col); }
     const nk = at(h, 180, 1.05); if (nk.d > -0.3 * b) piece(k, [[nk.x - 0.8 * w * Math.abs(h.cos) - 0.3 * b * Math.abs(h.sin), -0.66 * H], [nk.x + 0.8 * w * Math.abs(h.cos) + 0.3 * b * Math.abs(h.sin), -0.66 * H], [nk.x + 0.9 * w * Math.abs(h.cos) + 0.34 * b * Math.abs(h.sin), -0.5 * H], [nk.x - 0.9 * w * Math.abs(h.cos) - 0.34 * b * Math.abs(h.sin), -0.5 * H]], shade(col, 0.88));
+    if (L.visor === "grille") {
+      // the visor: a plate round the front of the face from the brim down past the chin (as wide as the face is turned to us), the
+      // grille's round holes in rows over the eyes and nose where the plate faces the lens, a raised rim round the grille; then the
+      // brim's near half again, over the plate's top edge
+      const top: P2[] = [], bot: P2[] = [], rows = [-0.6, -0.5, -0.4, -0.3];
+      for (let az = -88; az <= 88; az += 4) { const q = at(h, az, 1.07); if (q.d > -0.04 * b) { top.push([q.x, -0.69 * H]); bot.push([q.x, (0.0 + 0.07 * Math.cos(az * R)) * H]); } }
+      if (top.length > 1) { const plate = [...top, ...bot.reverse()]; piece(k, plate, shade(col, 0.95));
+        const g0 = at(h, -48, 1.08), g1 = at(h, 48, 1.08);
+        k.clip(plate, () => { if (g0.d > -0.1 * b || g1.d > -0.1 * b) { const xa = g0.d > -0.1 * b ? g0.x : Math.min(...top.map((p) => p[0])), xb = g1.d > -0.1 * b ? g1.x : Math.max(...top.map((p) => p[0]));
+            k.shape([[Math.min(xa, xb), -0.66 * H], [Math.max(xa, xb), -0.66 * H], [Math.max(xa, xb), -0.23 * H], [Math.min(xa, xb), -0.23 * H]], shade(col, 0.82), k.ol * 0.8); }
+          for (let az = -42; az <= 42; az += 12) for (const y of rows) { const q = at(h, az, 1.08), f = q.d / b; if (f > 0.12) k.dot(q.x, y * H, 0.05 * a * (0.45 + 0.55 * f), "#1c1612"); } });
+        k.shape(plate, null);
+        if (L.brim) k.clip([[-3 * w, -0.68 * H], [3 * w, -0.68 * H], [3 * w, 0.2 * H], [-3 * w, 0.2 * H]], () => piece(k, ellPts(0, -0.68 * H, 1.32 * w * L.brim!, 0.05 * H + 0.06 * H * Math.abs(h.sin)), shade(col, 0.9))); }
+    }
   } else if (HAT === "greathelm") {
     const col = L.hatCol ?? "#b9c3cd", helm = spline(sym([[0, 14], [0.86 * w, 14], [1.1 * w, -0.1 * H], [1.12 * w, -0.9 * H], [0.98 * w, -1.06 * H], [0, -1.08 * H]]), true, 5);
     piece(k, helm, col);

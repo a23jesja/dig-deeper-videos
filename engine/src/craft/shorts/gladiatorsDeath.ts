@@ -133,17 +133,24 @@ const T5a = at("nine", /^gladiator/) - 0.12;
 //    stands beside him and a little behind, on his sword side, his near hand round the pupil's wrist, setting it right. The sword points
 //    forward, away from both and out of the picture, and crosses nobody (review of grip sheet 5: it crossed the trainer). Both are seen
 //    at a slant from in front, from the trainer's side, so that his hand on the wrist is nearest the lens
-{ const { x: LX, z: LZ } = LUDUS, pa: V3 = [LX - 1.55, 0, LZ - 0.6], ta: V3 = [LX - 1.4, 0, LZ - 1.05], M: V3 = [LX - 1.5, 0, LZ - 0.83];
-  const V = lens(M[0] - 3.2 * 0.643, 1.45, M[2] - 3.2 * 0.766, 0.643, 0.766, -3, 44), ph = -90, th = -90, pup = mover(PUPIL_D, 1.76, pa[0], pa[2], ph), tr = mover(TRAINER_D, 1.8, ta[0], ta[2], th); pup.stand(9); tr.stand(9);
-  const ps: Stand = { D: PUPIL_D, at: pa, heading: ph, h: 1.76, cam: V.cam, pose: usePose(WOODSWORD, "guard", "R") }, ts: Stand = { D: TRAINER_D, at: ta, heading: th, h: 1.8, cam: V.cam, pose: { lean: 6 } };
+// (v4, the body check: with his hand round the pupil's wrist the trainer stood between the lens and the pupil, his head over the
+// pupil's and his hand over the pupil's hand; a card figure cannot reach round another without one lying over the other. Now the pupil
+// is nearest the lens, his sword side toward it and the sword out of the picture to the right, and the trainer stands a step behind him
+// on his other side, a body's width to the left in the picture, and points at the sword arm as he puts him right)
+{ const { x: LX, z: LZ } = LUDUS, pa: V3 = [LX - 1.55, 0, LZ - 0.6], D: [number, number] = [0.643, 0.766], R: [number, number] = [-D[1], D[0]];
+  const ta: V3 = [pa[0] - R[0] * 0.78 + D[0] * 0.5, 0, pa[2] - R[1] * 0.78 + D[1] * 0.5], M: V3 = [(pa[0] + ta[0]) / 2 + R[0] * 0.14, 0, (pa[2] + ta[2]) / 2 + R[1] * 0.14];
+  const V = lens(M[0] - 4.4 * D[0], 1.45, M[2] - 4.4 * D[1], D[0], D[1], -3, 44), ph = -90, th = (Math.atan2(pa[0] - ta[0], pa[2] - ta[2]) * 180) / Math.PI - 20;
+  const pup = mover(PUPIL_D, 1.76, pa[0], pa[2], ph), tr = mover(TRAINER_D, 1.8, ta[0], ta[2], th); pup.stand(9); tr.stand(9);
+  const ts: Stand = { D: TRAINER_D, at: ta, heading: th, h: 1.8, cam: V.cam, pose: { lean: 4 } };
   pup.actAt(-1, { ...usePose(WOODSWORD, "guard", "R"), head: [0, 4, 0] }, 10, { in: 0.01, handR: "grip", face: { brow: 0.6, lid: 0.1, mouth: 0.2 } });
-  const wrist = (k: number) => { const j = jointsOf(ps)("wrR"); return near([j[0], j[1] + 0.015 * k, j[2]], V.cam, 0.08); };
-  tr.actAt(-1, { ...reach(ts, "L", wrist(0)), armR: arm(20, 30, 70, 30), lean: 6, head: [-6, -8, 0] }, 10, { in: 0.01, handL: "grip", handR: "fist", face: { brow: -0.6, lid: 0.2, mouth: 0.3 } });
-  wag(tr, 0.2, 2, P({ ...reach(ts, "L", wrist(1)) }), P({ ...reach(ts, "L", wrist(-1)) }), 0.5, { handL: "grip" });
-  shots.push({ id: "trained", a: T5, b: T6, still: 0.8, sounds: [{ t: 0.3, k: "tap", g: 0.4 }],
+  /** where he points: k of the way from his shoulder toward the pupil's sword shoulder */
+  const aim = (dy: number): V3 => { const sh = jointsOf(ts)("shR"), ps: Stand = { D: PUPIL_D, at: pa, heading: ph, h: 1.76, cam: V.cam, pose: usePose(WOODSWORD, "guard", "R") }, q = jointsOf(ps)("elR"); return [sh[0] + (q[0] - sh[0]) * 0.62, sh[1] + (q[1] - sh[1]) * 0.62 + dy, sh[2] + (q[2] - sh[2]) * 0.62]; };
+  tr.actAt(-1, { ...reach(ts, "R", aim(0)), armL: arm(4, 8, 12, 6), lean: 4, head: [-6, -14, 0] }, 10, { in: 0.01, handR: "point", handL: "relaxed", face: { brow: -0.6, lid: 0.2, mouth: 0.3 } });
+  wag(tr, 0.2, 2, P({ ...reach(ts, "R", aim(0.03)) }), P({ ...reach(ts, "R", aim(-0.03)) }), 0.5, { handR: "point" });
+  shots.push({ id: "trained", a: T5, b: T6, still: 0.8, capsTop: 200, sounds: [{ t: 0.3, k: "tap", g: 0.4 }],
     cam: (_t, u) => V.push(0.08 * u), sun: { target: M, reach: 6 },
     cast: (t) => [on("pup", PUPIL_D, pup, t), on("tr", TRAINER_D, tr, t)],
-    things: (g, c, _t, _T, cam) => { wield(g, WOOD(), WOODSWORD, "guard", c.pup, "R", cam); handOn(c.tr, "L", c.pup, "wrR", cam, "wrist"); } }); }
+    things: (g, c, _t, _T, cam) => { wield(g, WOOD(), WOODSWORD, "guard", c.pup, "R", cam); } }); }
 
 // 7. ... FED AND DOCTORED, AND THAT COST A GREAT DEAL. Close on the bench: the big one holds his bowl of porridge out before his chest
 //    in his far hand and chews, and rests his near forearm out toward the doctor beside him, who winds a bandage round it, turn after

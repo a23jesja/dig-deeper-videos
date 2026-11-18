@@ -307,17 +307,22 @@ const ground: V3 = [FIGHT[0] + 1.1, 0.03, FIGHT[2] + 0.5];
     things: (g, c, _t, T, cam) => { crowd(g, FAR, T, cam, 1); wield(g, GLAD(), GLADIUS, "lowered", c.mur, "L", cam); handOn(c.ret, "L", c.mur, "shR", cam, "shoulder"); petals(g, T, [px, 0, pz]); } }); }
 
 // 15. ONE ARENA DOCTOR BOASTED THAT ... at his table in the school, pen to his scroll, pleased with himself
-{ const [tx, tz] = LUDUS_TABLE, dAt: V3 = [tx, 0, tz - 0.55], V = lens(tx - 0.3, 1.5, tz - 3.4, 0.08, 1, -4, 44), dh = V.toward(dAt[0], dAt[2], 8), doc = mover(DOCTOR_D, 1.72, dAt[0], dAt[2], dh); doc.stand(9);
-  const ds: Stand = { D: DOCTOR_D, at: dAt, heading: dh, h: 1.72, cam: V.cam, pose: usePose(SCROLL, "hold", "L") }, j = jointsOf(ds), w = rightWay(ds), top = mix3(j("wrL"), j("tipL"), 0.5), mid: V3 = [top[0], top[1] - 0.2, top[2]];
-  const WRITE = (k: number) => ({ ...usePose(SCROLL, "hold", "L"), ...reach(ds, "R", aside(near(mid, V.cam, 0.06), V.cam, -w * (0.02 + 0.03 * k), 0.1)), head: [0, 10, 0] as [number, number, number] });
-  doc.actAt(-1, WRITE(0), 10, { in: 0.01, handL: "grip", handR: "grip", face: { brow: 0.2, lid: 0.45, smile: 0.4 } });
-  wag(doc, 0.15, 1.4, P(WRITE(1)), P(WRITE(-1)), 0.32, { handL: "grip", handR: "grip" });
-  doc.actAt(1.25, { ...WRITE(0), head: [-10, -6, 0] }, 9, { in: 0.25, antic: 0, over: 1.1, handL: "grip", handR: "grip", face: { brow: 0.7, lid: 0.3, smile: 0.9 } });
+// (v4, the body check, regression row 2: holding the scroll up in one hand and writing on it with the other, his writing forearm lay
+// behind the sheet and his fist in front of it, as Tacitus's hand went through the paper. Now he stands behind the table and writes
+// on a sheet lying on it, his other hand flat on the sheet: the hands are on top of it and nothing passes through it)
+{ const [tx, tz] = LUDUS_TABLE, dAt: V3 = [tx, 0, tz + 0.44], V = lens(tx - 0.25, 1.85, tz - 2.3, 0.08, 1, -16, 44), dh = V.toward(dAt[0], dAt[2], 8), doc = mover(DOCTOR_D, 1.72, dAt[0], dAt[2], dh); doc.stand(9);
+  const ds: Stand = { D: DOCTOR_D, at: dAt, heading: dh, h: 1.72, cam: V.cam }, w = rightWay(ds), TOP = 0.797, SH: V3 = [tx, TOP, tz + 0.16];
+  const WRITE = (k: number) => ({ ...reach(ds, "R", aside([SH[0], TOP + 0.05, SH[2] + 0.02], V.cam, w * (0.07 + 0.025 * k), 0)), ...reach(ds, "L", aside([SH[0], TOP + 0.03, SH[2] + 0.05], V.cam, -w * 0.15, 0)), lean: 22, head: [-18, 6, 0] as [number, number, number] });
+  doc.actAt(-1, WRITE(0), 10, { in: 0.01, handL: "open", handR: "grip", face: { brow: 0.2, lid: 0.45, smile: 0.4 } });
+  wag(doc, 0.15, 1.4, P(WRITE(1)), P(WRITE(-1)), 0.32, { handL: "open", handR: "grip" });
+  doc.actAt(1.25, { ...WRITE(0), head: [-4, -6, 0] }, 9, { in: 0.25, antic: 0, over: 1.1, handL: "open", handR: "grip", face: { brow: 0.7, lid: 0.3, smile: 0.9 } });
+  /** the sheet on the table, with lines of writing on it */
+  const SHEET = once(() => { const g = group([mesh(box(0.42, 0.004, 0.3), "#eadcb8", { line: 0.5, shadow: false })]); for (let i = 0; i < 6; i++) g.add(mesh(box(0.3 - (i % 2) * 0.06, 0.002, 0.011), "#3a2a20", { at: [-0.02, 0.003, -0.11 + i * 0.04], shadow: false })); return g; });
   // (the captions over the awning at the top: lower down they lay over the doctor's chest)
   shots.push({ id: "doctor", capsTop: 140, a: T14, b: T15, still: 1.4, sounds: [{ t: 0.3, k: "scratch", g: 0.35 }, { t: 0.8, k: "scratch", g: 0.35 }],
     cam: (_t, u) => V.push(0.1 * u), sun: { target: dAt, reach: 6 },
     cast: (t) => [{ ...on("doc", DOCTOR_D, doc, t), noShade: true }],
-    things: (g, c, _t, _T, cam) => { const tb = TABLE(); tb.position.set(tx, 0, tz - 0.05); g.add(tb); wield(g, SCROLL_O(), SCROLL, "hold", c.doc, "L", cam); wield(g, PEN_O(), PEN, "write", c.doc, "R", cam, { d: 0.1 }); } }); }
+    things: (g, c, _t, _T, cam) => { const tb = TABLE(); tb.position.set(tx, 0, tz - 0.05); g.add(tb); const sh = SHEET(); sh.position.set(SH[0], TOP + 0.002, SH[2]); g.add(sh); wield(g, PEN_O(), PEN, "write", c.doc, "R", cam, { d: 0.1 }); } }); }
 
 // 16. ... UNDER HIS CARE, HARDLY ANY GLADIATORS DIED. Behind him in a row his patients, bandaged, show their muscles
 // (Jesper's review of v3: the men lower and bigger in the picture. Three of them, close together, the lens near and low and looking

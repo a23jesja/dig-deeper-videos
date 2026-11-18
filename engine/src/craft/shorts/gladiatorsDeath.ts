@@ -291,19 +291,20 @@ const ground: V3 = [FIGHT[0] + 1.1, 0.03, FIGHT[2] + 0.5];
 
 // 14. SO NO. MOST FIGHTS ENDED WITH BOTH MEN WALKING OUT. The two walk away from us toward the gate side by side, the net man's hand
 //     on the heavy man's shoulder, flowers falling round them from the stands (both in the picture from the first frame)
-{ const V = lens(9.4, 1.6, 4.6, 0.82, -0.57, -3, 50), H = (Math.atan2(0.82, -0.57) * 180) / Math.PI, [mx, mz] = V.spot(3.0, -0.37), [rx, rz] = V.spot(3.0, 0.37);
+{ const V = lens(9.4, 1.6, 4.6, 0.82, -0.57, -3, 50), H = (Math.atan2(0.82, -0.57) * 180) / Math.PI, [mx, mz] = V.spot(4.2, -0.4), [rx, rz] = V.spot(4.2, 0.4);
   const mur = mover(MURMILLO_GRILLE_D, 1.84, mx, mz, H), ret = mover(RETIARIUS_D, 1.86, rx, rz, H);
   for (const m of [mur, ret]) m.stand(0.1).walk(mt(m, 3.0), { step: 0.5, tau: 0.45 }).stand(9);
   const ms: Stand = { D: MURMILLO_GRILLE_D, at: [mx, 0, mz], heading: H, h: 1.84, cam: V.cam };
-  mur.actAt(-1, { ...usePose(GLADIUS, "lowered", "R"), armL: arm(16, 12, 30, 8), head: [-16, 2, 0] }, 10, { in: 0.01, handR: "grip", handL: "relaxed", face: { brow: 0.4, smile: 0.6, lid: 0.2 } });
+  // (G1, the body check: the sword in his outer hand, the left; in the right, on the net man's side, the blade lay over the net man's leg)
+  mur.actAt(-1, { ...usePose(GLADIUS, "lowered", "L"), armR: arm(16, 12, 30, 8), head: [-16, 2, 0] }, 10, { in: 0.01, handL: "grip", handR: "relaxed", face: { brow: 0.4, smile: 0.6, lid: 0.2 } });
   const rs: Stand = { D: RETIARIUS_D, at: [rx, 0, rz], heading: H, h: 1.86, cam: V.cam }, sh = jointsOf(ms)("shR");
   ret.actAt(-1, { armR: arm(16, 12, 30, 8), ...reach(rs, "L", [sh[0], sh[1] + 0.04, sh[2]]), head: [16, 2, 0] }, 10, { in: 0.01, handL: "open", handR: "relaxed", face: { brow: 0.4, smile: 0.7, lid: 0.2 } });
-  const [px, pz] = V.spot(4.3, 0);
+  const [px, pz] = V.spot(5.5, 0);
   // (the captions over the arena wall at the top: lower down they lay over the two men's hands)
   shots.push({ id: "out", capsTop: 200, a: T13, b: T14, still: 1.6, sounds: mur.cues().filter((q) => q.k === "step").map((q) => ({ t: q.t, k: "step", g: 0.5 })),
     cam: (_t, u) => V.push(0.05 * u), sun: { target: [px, 0, pz], reach: 8 },
     cast: (t) => [on("mur", MURMILLO_GRILLE_D, mur, t), on("ret", RETIARIUS_D, ret, t)],
-    things: (g, c, _t, T, cam) => { crowd(g, FAR, T, cam, 1); wield(g, GLAD(), GLADIUS, "lowered", c.mur, "R", cam); handOn(c.ret, "L", c.mur, "shR", cam, "shoulder"); petals(g, T, [px, 0, pz]); } }); }
+    things: (g, c, _t, T, cam) => { crowd(g, FAR, T, cam, 1); wield(g, GLAD(), GLADIUS, "lowered", c.mur, "L", cam); handOn(c.ret, "L", c.mur, "shR", cam, "shoulder"); petals(g, T, [px, 0, pz]); } }); }
 
 // 15. ONE ARENA DOCTOR BOASTED THAT ... at his table in the school, pen to his scroll, pleased with himself
 { const [tx, tz] = LUDUS_TABLE, dAt: V3 = [tx, 0, tz - 0.55], V = lens(tx - 0.3, 1.5, tz - 3.4, 0.08, 1, -4, 44), dh = V.toward(dAt[0], dAt[2], 8), doc = mover(DOCTOR_D, 1.72, dAt[0], dAt[2], dh); doc.stand(9);

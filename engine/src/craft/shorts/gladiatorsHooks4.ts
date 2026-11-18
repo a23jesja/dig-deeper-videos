@@ -58,7 +58,7 @@ export const attack = (id: string, a0: number, b0: number, extra: Shot["sounds"]
   const RIM0: V3 = by(MA, 62, -0.05, 0.4, 1.53);
   /** the chop: the arm swings from raised (from frame 0) to lowered (from DOWN_AT s), each act chained on the last so that the swing is one
    *  movement; CHOP = when the falling hand passes the rim's height and the blade, then level, meets the rim and the prongs on it */
-  const DOWN_AT = 0.26, CHOP = 0.42, CHOP_ARM = arm(176, 18, 84, 10), CUT = 0.85;
+  const DOWN_AT = 0.3, CHOP = 0.42, CHOP_ARM = arm(176, 18, 84, 10), CUT = 0.85;
   // The net man's arms keep one grip all through: the rear hand (his near one, the left) back at his hip, the front hand 0.55 m up the
   // shaft. The jab, the flinch and the yank are his body moving (lean, and the pelvis forward and back), and the trident is rigid in his
   // hands. (Moving the hands instead made his far arm swing out between grips, in front of the prongs.)
@@ -73,8 +73,9 @@ export const attack = (id: string, a0: number, b0: number, extra: Shot["sounds"]
   // he flinches back from the falling sword, then yanks the trident back and jabs again
   ret.actAt(0.2, { lean: 8, pz: -0.03, head: [0, -8, 0] }, 10, { in: 0.16, antic: 0, face: { brow: 1, lid: 0, wide: 0.9, mouth: 0.5 } });
   ret.actAt(CHOP + 0.12, { lean: 7, pz: -0.09, head: [0, 2, 0] }, 10, { in: 0.25, antic: 0, face: { brow: -1, lid: 0, mouth: 0.6 } });
-  ret.actAt(HIT2 - 0.16, { lean: 16, pz: 0, head: [0, 0, 0] }, 10, { in: 0.17, antic: 0, face: { brow: -1, lid: 0.05, mouth: 0.7 } });
-  mur.actAt(-1, { ...usePose(GLADIUS, "raised", "R"), armL: SHIELD_ARM, lean: 5, twist: -4, head: [0, -8, 0] }, 10, { in: 0.01, handL: "grip", handR: "grip", face: { brow: -1, lid: 0.05, mouth: 0.6 } });
+  // (the second jab a little shorter: at full reach his far upper arm touched the shield, 2 cm in)
+  ret.actAt(HIT2 - 0.16, { lean: 13, pz: 0, head: [0, 0, 0] }, 10, { in: 0.17, antic: 0, face: { brow: -1, lid: 0.05, mouth: 0.7 } });
+  mur.actAt(-1, { ...usePose(GLADIUS, "raised", "R"), armL: SHIELD_ARM, lean: 5, twist: -4, head: [0, -24, 0] }, 10, { in: 0.01, handL: "grip", handR: "grip", face: { brow: -1, lid: 0.05, mouth: 0.6 } });
   // (an overhand blow over the shield's top: it ends with his upper arm up and his forearm level, his fist beside the shield's near
   // edge and the blade lying across the shield's top onto the prongs; the arm shows all the way and never goes behind or through the
   // shield. The round-2 chop went down to his hip, behind the shield. The blade follows his forearm, so the forearm sets its angle.
@@ -82,13 +83,16 @@ export const attack = (id: string, a0: number, b0: number, extra: Shot["sounds"]
   // prongs, not hidden behind it; the fist is beside the shield, so it never shows before it)
   // (his head up and back as the blow lands, so that his visor shows over his chopping forearm: with it level, his own fist and blade
   // lay over half his visor from the chop to the end of the shot, the body check's test f)
-  mur.actAt(DOWN_AT, { armR: CHOP_ARM, armL: SHIELD_ARM, lean: 12, twist: 8, head: [0, -32, 0] }, 10, { in: 0.16, antic: 0, face: { brow: -1, lid: 0, mouth: 0.8 } });
+  mur.actAt(0.12, { head: [0, -34, 0] }, 10, { in: 0.14, glide: true });
+  mur.actAt(DOWN_AT, { armR: CHOP_ARM, armL: SHIELD_ARM, lean: 8, twist: 8, head: [0, -34, 0] }, 10, { in: 0.12, glide: true, face: { brow: -1, lid: 0, mouth: 0.8 } });
   // (after the chop he holds the blade level across the shield's top, pressing the trident down, to the end of the shot. Back to his
   // guard, his fist came before the shield while the blade rose behind its top edge, the sword through the shield (the review of
   // opening a round 3, regression row 14); raised again for the next blow, his fist passed before his own visor)
   /** which use the sword is in, and how far toward the next: in the chop, as far as his hand has fallen, and the blade a little ahead
    *  of the arm, so that when the arm is level the blade already points down at the rim, not at the net man's face */
-  const sword = (t: number): [string, [string, number] | undefined] => t < DOWN_AT ? ["raised", undefined] : ["raised", ["lowered", CUT * smooth((t - DOWN_AT) / 0.16)]];
+  // (the blade turns level faster than the arm falls, so that it is level before the fist reaches the shield's corner: turning with the
+  // arm, it still pointed down there and went behind the shield's corner, through it, the body check of 18 Nov)
+  const sword = (t: number): [string, [string, number] | undefined] => t < DOWN_AT ? ["raised", undefined] : ["raised", ["lowered", CUT * smooth((t - DOWN_AT) / 0.07)]];
   /** how far behind the rear hand the trident's butt is, so that at the jab (HIT) its prongs are on the shield's near rim: found once,
    *  by staging both at that moment */
   let B: number | undefined;

@@ -77,25 +77,32 @@ shots.push({ ...twoShot("guess", T2, T3, W, false, TWO, TWO_FANS), capsTop: 200 
 const T5a = at("nine", /^gladiator/) - 0.12;
 // (Jesper's review of v3: the parade spread out so that every head shows: the files further apart and a half row out of step, the rows
 // further apart, and the walk further off the lens's line, so that the rows lie apart in the picture instead of behind each other)
-{ const C0 = lens(12.2, 3.2, 3.1, -0.85, -0.53, -16, 56), toLensH = (Math.atan2(0.85, 0.53) * 180) / Math.PI, HW = toLensH + 28, hr = (HW * Math.PI) / 180;
+// (v4, the body check: in two files the back rows' heads and arms lay behind the front rows. Now a checkerboard laid out from the lens,
+// each man in a gap of the row before him, the rows far enough apart that each row's heads stand above the heads two rows ahead; the
+// one who leans walks beside the one he leans on, at the front)
+{ const LY = 5.0, LT = -28.5, C0 = lens(12.2, LY, 3.1, -0.85, -0.53, LT, 56), toLensH = (Math.atan2(0.85, 0.53) * 180) / Math.PI, HW = toLensH + 28, hr = (HW * Math.PI) / 180;
   const f: [number, number] = [Math.sin(hr), Math.cos(hr)], rg: [number, number] = [-Math.cos(hr), Math.sin(hr)], [ox, oz] = C0.spot(5.5, 0.6), SPEED = 0.84;
   /** a place in the parade: s metres behind the first row, q metres to the walkers' right */
-  const at = (s: number, q: number): [number, number] => [ox - f[0] * s + rg[0] * q, oz - f[1] * s + rg[1] * q];
+  const LN = Math.hypot(0.85, 0.53), LF: [number, number] = [-0.85 / LN, -0.53 / LN], LR: [number, number] = [-LF[1], LF[0]];
+  /** a place in the parade: d metres further from the lens than the front row, r metres to the right in the picture */
+  const at = (d: number, r: number): [number, number] => [ox + LF[0] * d + LR[0] * r, oz + LF[1] * d + LR[1] * r];
+  const R0 = -0.5, SLOT: [number, number][] = [[2.2, R0 - 1.5], [2.2, R0 + 1.5], [2.2, R0], [4.4, R0 - 0.85], [0, R0 + 0.38], [0, R0 - 0.38], [4.4, R0 + 0.85], [6.6, R0 - 1.9], [6.6, R0 + 1.9]];
+  void rg;
   const pace = (m: MM, i: number) => m.stand(0.04 * (i % 3)).walk(mt(m, 3.6), { step: 0.42 / m.LL, tau: 0.5 }).stand(9);
   const walkers: { D: Design; h: number; m: MM; name: string; x: number; z: number }[] = [];
   const looks: [Design, number][] = [[MURMILLO_BARE_D, 1.84], [THRAEX_D, 1.78], [SECUTOR_D, 1.72], [HOPLOMACHUS_D, 1.8], [PROVOCATOR_D, 1.76], [RETIARIUS2_D, 1.8], [RETIARIUS3_D, 1.7], [MURMILLO2_D, 1.88], [SECUTOR_D, 1.74]];
   // (the sixth walks beside the fifth, his hand on the other's shoulder: half a row behind and across the parade, as the others are spread,
   // his hand fell half a metre short of the shoulder)
-  looks.forEach(([D, h], i) => { const row = Math.floor(i / 2), [x, z] = i === 5 ? at(row * 1.9 + 0.12, 0.0) : at(row * 1.9 + (i % 2) * 0.95, i % 2 ? 0.55 : -0.62), m = mover(D, h, x, z, HW); pace(m, i);
+  looks.forEach(([D, h], i) => { const [x, z] = at(...SLOT[i]), m = mover(D, h, x, z, HW); pace(m, i);
     m.actAt(-1, { armL: arm(16, 12, 30, 8), armR: arm(16, 12, 30, 8), head: [0, i % 2 ? 4 : -2, 0] }, 10, { in: 0.01, handL: "relaxed", handR: "relaxed", face: { brow: 0.2, lid: 0.3, smile: i % 3 ? 0.1 : 0.4 } });
     walkers.push({ D, h, m, name: `g${i}`, x, z }); });
   // the sixth leans on the fifth beside him: his left hand on the other's right shoulder
   const lean = walkers[5], leanOn = walkers[4], ls: Stand = { D: lean.D, at: [lean.x, 0, lean.z], heading: HW, h: lean.h, cam: C0.cam, pose: { lean: 4 } }, os: Stand = { D: leanOn.D, at: [leanOn.x, 0, leanOn.z], heading: HW, h: leanOn.h, cam: C0.cam };
-  lean.m.actAt(-1, { ...reach(ls, "L", jointsOf(os)("shR")), armR: arm(16, 12, 30, 8), head: [0, 6, 0], lean: 4 }, 10, { in: 0.01, handL: "open", handR: "relaxed", face: { brow: 0.6, lid: 0.4, smile: -0.2 } });
+  const top = jointsOf(os)("shR"); lean.m.actAt(-1, { ...reach(ls, "L", [top[0], top[1] + 0.08, top[2]]), armR: arm(16, 12, 30, 8), head: [0, 6, 0], lean: 4 }, 10, { in: 0.01, handL: "open", handR: "relaxed", face: { brow: 0.6, lid: 0.4, smile: -0.2 } });
   // the lens goes back at the walkers' pace (their pelvis keeps 0.84 m a second from about 0.45 s on), easing in
   const back = (t: number) => SPEED * (t < 0.9 ? (t * t) / 1.8 : t - 0.45);
   shots.push({ id: "nine", a: T4, b: T5a, still: 1.2, sounds: walkers[0].m.cues().filter((q) => q.k === "step" && q.t < T5a - T4).map((q) => ({ t: q.t, k: "step", g: 0.5 })),
-    cam: (t) => lens(12.2 + f[0] * back(t), 3.2, 3.1 + f[1] * back(t), -0.85, -0.53, -16, 56).cam, sun: { target: [ox, 0, oz], reach: 12 },
+    cam: (t) => lens(12.2 + f[0] * back(t), LY, 3.1 + f[1] * back(t), -0.85, -0.53, LT, 56).cam, sun: { target: [ox, 0, oz], reach: 12 },
     cast: (t) => walkers.map((w) => on(w.name, w.D, w.m, t)),
     things: (g, c, _t, T, cam) => { crowd(g, STANDS, T, cam, 0.6); handOn(c.g5, "L", c.g4, "shR", cam, "shoulder"); } }); }
 

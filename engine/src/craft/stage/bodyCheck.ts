@@ -296,7 +296,11 @@ export const bodyCheck = (film: Film, opt: { every?: number; shots?: string[] } 
             if (worst > tol) note(`${s.id}|${a.name}|${q.P.name}|${B2.a.name}|${q2.P.name}`, { shot: s.id, who: a.name, kind: "figure", what: `${a.name}'s ${q.P.name} and ${B2.a.name}'s ${q2.P.name} are in the same space` }, F, worst); } }
         // the feet: the lower one rests on what is under it; a foot that rests does not slide
         if (a.spin === undefined) { const feet = (["L", "R"] as const).map((sd) => { const h = new THREE.Vector3(...a.joint(sd === "L" ? "heelL" : "heelR")), o2 = new THREE.Vector3(...a.joint(sd === "L" ? "toeL" : "toeR")); return h.y < o2.y ? h : o2; });
-          const low = feet[0].y < feet[1].y ? feet[0] : feet[1]; let top = -Infinity, what = "";
+          // (a foot planted on its landing spot is the one he stands on, even when its joint lies higher than the other foot's: the drawing
+          // puts it on the spot (below), and the swinging foot was taken for the lower one, so that a walker in mid-stride "floated" 7 cm,
+          // gladiators v4's parade)
+          const planted = (["L", "R"] as const).find((sd) => { const lg = (sd === "L" ? a.pose.legL : a.pose.legR) as { y?: number; th?: unknown } | undefined; return !!lg && lg.th === undefined && (lg.y ?? 0) < 1e-4 && !!a.land?.[sd]; });
+          const low = planted ? feet[planted === "L" ? 0 : 1] : feet[0].y < feet[1].y ? feet[0] : feet[1]; let top = -Infinity, what = "";
           // (a thing others carry is a surface too, for someone on it who does not hold it himself: the wounded man on the gladiators'
           // stretcher stood "on nothing")
           const carriers = held.filter((o) => !o.holder!.split(" & ").some((p) => p.split(" ")[0] === a.name) && o.geo.type !== "PlaneGeometry");

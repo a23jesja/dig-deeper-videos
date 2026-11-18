@@ -59,4 +59,4 @@ Also changed, from the reviews:
 - No hand is grey, and no hands lie over each other.
 - The crew's hands in the surrender are apart.
 - The barrel in front of Sir is gone.
-- No cut-off shape shows at the picture's edge.
+- The cut-off shape at the right edge of the opening is gone. In the surrender, the tip of Blackbeard's hat still shows at the left edge, by Jesper's choice.

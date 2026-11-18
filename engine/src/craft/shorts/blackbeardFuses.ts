@@ -286,8 +286,7 @@ const PIST_AT = inCabin([0.35, 0, 0.1]), CUT9 = 1.15;
 // 11. IT WAS PROBABLY MEANT TO MAKE CREWS GIVE UP WITHOUT A FIGHT. Across the water from behind him at his rail: the merchant's crew see
 // the smoking figure, and their hands go up one after another
 // (the lens a metre further back than he stands: he is a dark shape at the side, and the crew read)
-{ const S0 = lens(-0.75, 1.75, 1.45, -1, 0.08, -2, 42), S = lens(0.2, 1.8, 1.05, -1, 0.04, -2, 44), /* v4, round 3: so far out that only his arm at the rail is in the picture, his hat wholly
-  outside it (a little further in, only the tip of its brim and a flap of his ear showed at the edge, a shape nobody could read) */ [bx, bz] = S0.spot(1.65, -0.57), bb = mover(BLACKBEARD_ARMED_D, 1.92, bx, bz, S.toward(bx, bz, 180)); bb.stand(9);
+{ const S0 = lens(-0.75, 1.75, 1.45, -1, 0.08, -2, 42), S = lens(0.2, 1.8, 1.05, -1, 0.04, -2, 44), [bx, bz] = S0.spot(1.65, -0.44), bb = mover(BLACKBEARD_ARMED_D, 1.92, bx, bz, S.toward(bx, bz, 180)); bb.stand(9);
   bb.actAt(-1, { armL: arm(20, 30, 50, 30), armR: arm(20, 30, 50, 30), lean: -2 }, 10, { in: 0.01, handL: "fist", handR: "fist", face: MENACE });
   // (v4: their hands go up straight over their own shoulders and they stand a little further apart: the cook's hand lay over the old
   // hand's arm, and his and the sailor's hands met over their heads; the cook's right hand clear of Blackbeard's hat at the edge)
@@ -298,7 +297,7 @@ const PIST_AT = inCabin([0.35, 0, 0.1]), CUT9 = 1.15;
     return { D, m }; });
   shots.push({ id: "surrender", capsTop: 170, a: T.s10, b: T.s11, still: 2.4, sounds: [{ t: 0.4, k: "flap", g: 0.4 }],
     cam: (_t, u) => S.push(0.05 * u), sun: { target: [-5.5, MD, 1.5], reach: 9 },
-    cast: (t) => [{ ...on("bb", BLACKBEARD_ARMED_D, bb, t, 0, { seed: 3 }), noShade: true }, ...crew.map(({ D, m }, i) => on(`c${i}`, D, m, t, MD, { seed: 11 + i }))],
+    cast: (t) => [on("bb", BLACKBEARD_ARMED_D, bb, t, 0, { seed: 3 }), ...crew.map(({ D, m }, i) => on(`c${i}`, D, m, t, MD, { seed: 11 + i }))],
     // (his smoke smaller and thinner here: he stands near the lens at the picture's edge, and at full size it filled the corner)
     things: (g, c2, _t, T2, cam) => { fuseSmoke(g, c2.bb, T2, cam, 0, { scale: 0.5, alpha: 0.45 }); } }); }
 

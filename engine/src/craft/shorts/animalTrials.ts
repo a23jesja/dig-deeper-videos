@@ -146,11 +146,11 @@ function palmOf(_m: ReturnType<typeof mover>, s: Stand, _t: number, _cam: unknow
 
 // ---------------- "Picky eaters." Sir at the end of a row of vines, his monocle to a weevil on a leaf ----------------
 const T13 = cut("picky", "experts");
-{ const end = vineAt(1, 1), at: V3 = [end[0] + 1.05, 0, end[2] + 0.35], V = lens(at[0] + 1.9, 1.6, at[2] + 0.5, -0.97, -0.25, -2, 42), H = toward(at, V.cam.pos) - 40;
+{ const end = vineAt(1, 1), at: V3 = [end[0] + 1.05, 0, end[2] + 0.35], V = lens(at[0] + 3.1, 1.35, at[2] + 0.75, -0.97, -0.25, -2, 50), H = toward(at, V.cam.pos) - 40;      // (far enough that Sir is whole: close, the picture cut him off)
   const sir = mover(SIR_D, 1.8, at[0], at[2], H); sir.stand(9);
   sir.actAt(-1, { armL: arm(16, 10, 34, 8), armR: arm(30, 10, 120, -40), lean: 8, head: [-24, 10, 0] }, 10, { in: 0.01, handL: "relaxed", handR: "relaxed", face: { brow: 0.9, lid: 0.3, smile: 0.4 } });
   // (the leaf with its weevil beside his monocle and a little nearer the lens, so that he looks at it and it covers nothing of his face)
-  const LA: V3 = ahead(at, H, 0.24, -0.46, 1.55);
+  const LA: V3 = ahead(at, H, 0.34, 0.15, 1.48);      // (on his right, the monocle's side, nearer the lens than his face)
   const leaves: Leaf[] = [{ at: LA, R: 0.17, seed: 21, bites: 3, rot: [-0.1, 0.5, 0.1] }];
   add({ id: "picky", a: T12, b: T13, still: 0.6, sounds: [{ t: 0.05, k: "munch", g: 0.6, dur: 0.8 }], cam: (_t, u) => V.push(0.06 * u), sun: { target: at, reach: 4 },
     cast: (t, T) => [on("sir", SIR_D, sir, t, 0, { talk: talk(W, T, ["picky"]) })], things: (g, _c, t) => leafCluster(g, leaves, Math.PI / 2, t, 1.25) }); }
@@ -184,9 +184,11 @@ const RECORD_V = lens(CX - 2.5, 1.65, CZ + 0.9, 0.94, -0.34, -14, 46);
 // ---------------- "Lost. The last page of the record is missing." Sir bends over the record beside the clerk ----------------
 const T16 = cut("lost", "who_won");
 // (Sir at the table's near end, turned three quarters to the lens as he bends over the record: from behind the table he showed his back)
-{ const sAt: V3 = [CX - 0.15, 0, CZ + 0.85], V = lens(CX - 2.1, 1.7, CZ + 1.3, 0.95, -0.3, -16, 48), H = (toward(sAt, [CX, 0, CZ]) + toward(sAt, [CX - 2.0, 0, CZ + 1.3])) / 2;
+{ const sAt: V3 = [CX - 0.27, 0, CZ + 0.88], V = lens(CX - 2.1, 1.7, CZ + 1.3, 0.95, -0.3, -16, 48), h1 = toward(sAt, [CX, 0, CZ]), H = h1 + ((((toward(sAt, [CX - 2.1, 0, CZ + 1.3]) - h1) % 360) + 540) % 360 - 180) / 2;      // (half way between the record and the lens, taken round the short way)
   const sir = mover(SIR_D, 1.8, sAt[0], sAt[2], H); sir.stand(9);
-  sir.actAt(-1, { armL: arm(16, 10, 34, 8), armR: arm(16, 10, 34, 8), lean: 18, head: [-10, 18, 0] }, 10, { in: 0.01, handL: "relaxed", handR: "relaxed", face: { brow: 1, lid: 0, wide: 0.5, mouth: 0.2 } });
+  // (his hands flat on the table's near end as he leans over the record: hanging, one went into the table top)
+  const ss: Stand = { D: SIR_D, at: sAt, heading: H, h: 1.8, cam: V.cam, pose: { lean: 18 } };
+  sir.actAt(-1, { ...reach(ss, "L", [CX - 0.22, 0.87, CZ + 0.5]), ...reach(ss, "R", [CX + 0.06, 0.87, CZ + 0.5]), lean: 18, head: [-10, 18, 0] }, 10, { in: 0.01, handL: "open", handR: "open", face: { brow: 1, lid: 0, wide: 0.5, mouth: 0.2 } });
   add({ id: "lost", a: T15, b: T16, still: 1.0, capsTop: 1500, sounds: [{ t: 0.15, k: "paper", g: 0.5 }], cam: (_t, u) => V.push(0.08 * u), sun: COURT_SUN,
     cast: (t) => [on("sir", SIR_D, sir, t, FL)] }); }
 

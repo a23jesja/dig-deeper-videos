@@ -142,6 +142,16 @@ Gemensamt: piratskeppets däck och kvarterdäck, havet och himlen från flagg- o
 
 Omkring 70 bilder på 9 minuter: i snitt en ny bild var 7-8 sekund, med rörelse och handling inne i varje bild däremellan.
 
+### Källor till figuren "du": vad en sjöman bar omkring 1710-1725 (granskningens begäran 18 nov)
+
+Läst ordagrant, från två olika utgivare:
+- **[J-R]** Johnson 1724 (Gutenberg nr 40580, läst via archive.org:s spegel, eftersom Gutenberg hade underhåll), om Roberts besättning på *Ranger* när den togs 1722: "The rest appeared gay and brisk, most of them with white Shirts, Watches, and a deal of Silk Vests". Samma bok, Howell Davis, om fångarna han lät ställa upp på däck: "obliged all the Prisoners to come upon Deck in white Shirts, to make a Shew of Force".
+- **[RZ]** Royal Museums Greenwich, föremål ZBA8736 ("Pair of handmade trousers made of blue and white striped ticken", tidigt 1800-tal): https://www.rmg.co.uk/collections/objects/rmgc-object-1135351. Där står: "In addition to trousers like these, or at an earlier date, petticoat breeches, ratings' ensembles also included a check or striped blouse, waistcoat, neckerchief, and a single-breasted blue coat." Och om 1706: "Items mentioned in a contract made by the Commissioners of the Admiralty with a Mr Richard Harnage in 1706 include 'Strip'd Breeches'." RMG:s bibliotek har själva kontraktet från 1706 (PBE4741, https://www.rmg.co.uk/collections/library/rmgl-22686), men sidan visar bara titeln och ingen lista över plaggen.
+
+Inte räknat som källa: en blogg som skriver av 1706 års kontrakt och nämner "shirts of blue and white chequered linen". Jag har inte läst kontraktet själv, och World History Encyclopedia vägrade automatisk hämtning.
+
+**Vad källorna visar:** Johnson nämner vita skjortor, och det gäller just Roberts besättning, som den långa videon handlar om. RMG skriver "check or striped" utan något datum. Det enda randiga plagget från 1706 som RMG namnger är byxorna ("Strip'd Breeches"), inte skjortan. Halsduken finns med hos RMG ("neckerchief"). Ingen av källorna stöder en blåvit randig tröja just omkring 1720. Den stöder heller inte den rutiga skjortan bättre än den randiga: RMG nämner båda, och rutorna i 1706 års kontrakt har jag bara sett i andra hand. Det som har bäst stöd är en vit linneskjorta och röd halsduk, gärna med randiga byxor. Jesper väljer.
+
 ## Ändrat i version 2
 
 Jespers fyra ändringar:

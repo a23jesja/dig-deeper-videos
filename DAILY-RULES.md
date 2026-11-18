@@ -403,6 +403,16 @@ Jesper does not pick times. The session picks the slot and tells him which one i
 - Public studies disagree with each other (some say Sunday morning, some weekday afternoons), so treat timing as a
   small gain: never delay a finished, approved video more than three days to wait for a slot.
 
+## Publishing hygiene (Jesper 2026-11-18, after Nero was uploaded, deleted and re-uploaded and then got no views)
+- **Schedule, never publish directly.** A scheduled video can be changed or stopped before anyone sees it.
+- **Check before scheduling:** the title is the question or claim (never a date or a file name), "not made for
+  kids", altered content "No", category Education, the description and the thumbnail are the final ones.
+- **Never delete or hide a new video in its first seven days.** Views can come late; judge on "stayed and
+  watched" after a week.
+- **Never re-upload a deleted video within two weeks**, and then only as a clearly new version (new opening, new
+  title). Uploading and deleting the same video again and again can look like spam to YouTube.
+- **A fault found after publishing** is fixed in the next video, not by replacing the published one.
+
 ## Monetisation milestones
 1. 500 subscribers: turn on channel memberships.
 2. 1,000 subscribers and 4,000 watch hours in 12 months (or 10 million Shorts views in 90 days): apply to the Partner

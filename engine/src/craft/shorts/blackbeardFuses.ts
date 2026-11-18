@@ -53,7 +53,7 @@ const T = { s1: cut("hook", "why"), s2: 3.89, s3: cut("guess", "no"), s4: cut("n
     m.actAt(-1, { armL: arm(40, 24, 96, 10), armR: arm(40, 24, 96, 10), head: [0, -4, 0] }, 10, { in: 0.01, handL: "open", handR: "open", face: { wide: 0.8, lid: 0, brow: 0.8, smile: -0.6 } });
     m.actAt(t0, { armL: arm(148, 34, 178, 16), armR: arm(148, 34, 178, 16), lean: -8, py: -0.02 }, 9, { in: 0.3, antic: 0.2, over: 1.4, handL: "open", handR: "open", face: { wide: 1, lid: 0, brow: 1, mouth: 0.6, smile: -1 } });
     wag(m, 0.4, 5, P({ roll: 2.4, py: -0.01 }), P({ roll: -2.4, py: 0.01 }), 0.17); return m; };
-  const sailor = backer(SAILOR_D, 1.82, 3.3, -0.95, -24, 0.4), old = backer(OLDHAND_D, 1.74, 3.9, 1.2, 14, 0.55);
+  const sailor = backer(SAILOR_D, 1.82, 3.3, -0.74, -24, 0.4), old = backer(OLDHAND_D, 1.74, 3.9, 1.8, 14, 0.55);      // (out at the right edge: further in he stood behind the rail and the cutlass arm)
   shots.push({ id: "hook", a: 0, b: T.s1, still: 1.2,
     sounds: [{ t: 0.0, k: "blast", g: 1.0 }, { t: 0.05, k: "shing", g: 0.7, p: 0.2 }, ...bb.cues().filter((q) => q.k === "step" && q.t < T.s1).map((q) => ({ t: q.t, k: "step", g: 0.8 }))],
     cam: (_t, u) => LOW.push(0.15 * u), sun: { target: [-7.5, MD, 3], reach: 9 },
@@ -80,7 +80,7 @@ const faceShot = (id: string, a0: number, b0: number, D: Design, y: number, at: 
   sir.actAt(-1, { roll: -16, lean: 6, py: -0.1, armL: arm(30, 10, 80, 0), armR: arm(40, 20, 110, 10), head: [10, 0, -10] }, 10, { in: 0.01, handL: "fist", handR: "open", face: { wide: 0.9, lid: 0, brow: 1, mouth: 0.3 } });
   sir.actAt(0.3, { head: [-8, -6, -8] }, 9, { in: 0.3, antic: 0, over: 1.2, face: { wide: 0.6, lid: 0.1, brow: 1, mouth: 0.4, smile: -0.2 } });
   // he straightens up from behind the barrel and warms his hands at his moustache
-  sir.actAt(g0 - 0.2, { roll: 0, lean: 4, py: 0, armL: arm(60, 30, 150, 40), armR: arm(60, 30, 150, 40), head: [0, 4, 0] }, 9, { in: 0.3, antic: 0.1, over: 1.2, handL: "open", handR: "open", face: { brow: 0.8, lid: 0.3, smile: 0.4 } });
+  sir.actAt(g0 - 0.55, { roll: 0, lean: 4, py: 0, armL: arm(60, 30, 150, 40), armR: arm(60, 30, 150, 40), head: [0, 4, 0] }, 9, { in: 0.65, antic: 0.05, over: 1.05, handL: "open", handR: "open", face: { brow: 0.8, lid: 0.3, smile: 0.4 } });
   wag(sir, g0 + 0.15, 0.9, P({ armL: arm(60, 34, 150, 44), armR: arm(60, 26, 150, 36) }), P({ armL: arm(60, 26, 150, 36), armR: arm(60, 34, 150, 44) }), 0.3, { handL: "open", handR: "open", face: { brow: 0.8, lid: 0.3, smile: 0.4 } });
   sir.actAt(g0 + 1.3, { head: [0, -14, 0], lean: -6, py: 0.02 }, 0.5, { in: 0.08, out: 0.25, antic: 0.2, over: 1.5, handL: "open", handR: "open", face: { brow: 1, lid: 0.9, mouth: 0.8, smile: -0.4 } });
   shots.push({ id: "sir", a: T.s2, b: T.s3, still: 1.4, sounds: [{ t: 0.15, k: "scuff", g: 0.6 }, { t: g0 + 0.9, k: "sniff", g: 0.9 }, { t: g0 + 1.3, k: "sniff", g: 0.7, p: 0.2 }],
@@ -100,17 +100,17 @@ const BB_AT = { stool: inCabin(CABIN.stool), mirror: inCabin([-1.45, 0, -0.35]),
 
 // 4. NO. WATCH HIM GET READY FOR A FIGHT. He gets up heavily from the stool and holds out his hand; the boy hurries in with a tray of
 // ribbons
-{ const V = cabinLens(-0.2, 1.25, 2.95, -0.09, -1, -3, 46), bb = mover(BLACKBEARD_BARE_D, 1.92, BB_AT.stool[0], BB_AT.stool[2], V.toward(BB_AT.stool[0], BB_AT.stool[2], 18)); bb.stand(9);
+{ const V = cabinLens(0.0, 1.25, 2.95, -0.09, -1, -3, 50), bb = mover(BLACKBEARD_BARE_D, 1.92, BB_AT.stool[0], BB_AT.stool[2], V.toward(BB_AT.stool[0], BB_AT.stool[2], 18)); bb.stand(9);
   // the boy steps up from behind the table toward us, the tray held out in both hands
-  const ex = CX + 0.18, ez = CZ + 0.85, eh = V.toward(ex, ez, -25), boy = mover(SHIPBOY_D, 1.28, ex - Math.sin((eh * Math.PI) / 180) * 0.45, ez - Math.cos((eh * Math.PI) / 180) * 0.45, eh); boy.walk(mt(boy, 0.45), { step: 0.36, tau: 0.22 }).stand(9);
+  const ex = CX + 0.1, ez = CZ + 0.66, eh = V.toward(ex, ez, -25), boy = mover(SHIPBOY_D, 1.28, ex - Math.sin((eh * Math.PI) / 180) * 0.25, ez - Math.cos((eh * Math.PI) / 180) * 0.25, eh); boy.walk(mt(boy, 0.25), { step: 0.36, tau: 0.22 }).stand(9);
   const ys = standOf(SHIPBOY_D, [ex, FL, ez], eh, V), yj = jointsOf(ys), yc = near(mix(yj("pelvis"), yj("neck"), 0.6), V.cam, 0.2), yw = rightWay(ys);
   bb.actAt(-1, { ...SIT, armL: arm(20, 20, 60, 20), armR: arm(20, 20, 60, 20), lean: 8, head: [0, 6, 0] }, 10, { in: 0.01, handL: "fist", handR: "fist", face: GRIM });
   bb.actAt(0.25, { ...STAND, lean: 4, head: [0, 2, 0] }, 9, { in: 0.7, antic: 0.25, over: 1.1, face: GRIM });
   bb.actAt(1.1, { armR: arm(64, 26, 92, 10), head: [-22, 4, 0] }, 9, { in: 0.3, antic: 0, over: 1.2, handR: "open", face: { ...GRIM, brow: -0.6 } });
-  boy.actAt(-1, { ...reach(ys, "R", aside(yc, V.cam, yw * 0.3)), ...reach(ys, "L", aside(yc, V.cam, -yw * 0.3)), head: [-14, -6, 0] }, 10, { in: 0.01, handL: "grip", handR: "grip", face: { wide: 0.7, brow: 0.8, lid: 0, mouth: 0.2 } });
+  boy.actAt(-1, { ...reach(ys, "R", aside(yc, V.cam, yw * 0.27)), ...reach(ys, "L", aside(yc, V.cam, -yw * 0.27)), head: [-14, -6, 0] }, 10, { in: 0.01, handL: "grip", handR: "grip", face: { wide: 0.7, brow: 0.8, lid: 0, mouth: 0.2 } });
   shots.push({ id: "ready", a: T.s3, b: T.s4, still: 1.6, sounds: [{ t: 0.3, k: "creak", g: 0.8 }, ...boy.cues().filter((q) => q.k === "step").map((q) => ({ t: q.t, k: "step", g: 0.5, p: 0.3 }))],
     cam: (_t, u) => V.push(0.06 * u), sun: { target: inCabin([0, 0, 0]), reach: 4 },
-    cast: (t) => [on("bb", BLACKBEARD_BARE_D, bb, t, FL, { seed: 3 }), on("boy", SHIPBOY_D, boy, t, FL, { seed: 8 })],
+    cast: (t) => [on("bb", BLACKBEARD_BARE_D, bb, t, FL, { seed: 3 }), { ...on("boy", SHIPBOY_D, boy, t, FL, { seed: 8 }), noShade: true }],
     things: (g, c, _t, T2, cam) => { lantern(g, T2, cam); carryBy(g, TRAY_O(), c.boy, "L", c.boy, "R", cam); TRAY_O().rotateX(0.55); } }); }
 
 
@@ -121,13 +121,14 @@ const BB_AT = { stool: inCabin(CABIN.stool), mirror: inCabin([-1.45, 0, -0.35]),
   const TW = (k: number) => ({ ...reach(bs, "R", aside(c, V.cam, w * (0.02 + 0.015 * k), 0.01 * k)), ...reach(bs, "L", aside(c, V.cam, -w * (0.06 - 0.01 * k), 0.04)) });
   bb.actAt(-1, { ...TW(0), head: [0, 10, 0] }, 10, { in: 0.01, handL: "grip", handR: "grip", face: { ...GRIM, lid: 0.35, gaze: [0, 0.4] } });
   wag(bb, 0.2, 3, P(TW(1)), P(TW(-1)), 0.28, { handL: "grip", handR: "grip", face: { ...GRIM, lid: 0.35, gaze: [0, 0.4] } });
-  const [bx, bz] = V.spot(2.1, 0.55), boy = mover(SHIPBOY_D, 1.28, bx, bz, V.toward(bx, bz, -30)); boy.stand(9);
+  const [bx, bz] = V.spot(2.1, 0.22), boy = mover(SHIPBOY_D, 1.28, bx, bz, V.toward(bx, bz, -30)); boy.stand(9);
   const ys = standOf(SHIPBOY_D, [bx, FL, bz], V.toward(bx, bz, -30), V), yj = jointsOf(ys), yc = near(mix(yj("pelvis"), yj("neck"), 0.75), V.cam, 0.2), yw = rightWay(ys);
   boy.actAt(-1, { ...reach(ys, "R", aside(yc, V.cam, yw * 0.25)), ...reach(ys, "L", aside(yc, V.cam, -yw * 0.25)), head: [-20, -8, 0] }, 10, { in: 0.01, handL: "grip", handR: "grip", face: { wide: 0.5, brow: 0.6, lid: 0.1 } });
   shots.push({ id: "beard", a: T.s4, b: T.s5, still: 1.2, sounds: [{ t: 0.4, k: "rope", g: 0.4 }],
     cam: (_t, u) => V.push(0.06 * u), sun: { target: inCabin([-0.5, 0, -0.2]), reach: 4 },
-    cast: (t) => [on("bb", BLACKBEARD_HALF_D, bb, t, FL, { seed: 3 }), on("boy", SHIPBOY_D, boy, t, FL, { seed: 8 })],
-    things: (g, c2, _t, T2, cam) => { lantern(g, T2, cam); carryBy(g, TRAY_O(), c2.boy, "L", c2.boy, "R", cam); TRAY_O().rotateX(0.7); } }); }
+    // (the boy is not in the mirror shot: wherever he stood he was cut by the picture's edge or stood in the captain)
+    cast: (t) => [on("bb", BLACKBEARD_HALF_D, bb, t, FL, { seed: 3 })],
+    things: (g, _c2, _t, T2, cam) => { lantern(g, T2, cam); } }); void boy; }
 
 // 6. ... INTO LITTLE TAILS WITH RIBBONS. Close on his hands: he ties a blue ribbon round the last tail
 { const at = inCabin([-0.85, 0, -0.4]), V0 = cabinLens(-0.75, 1.42, 1.9, -0.06, -1, -2, 40), hd = V0.toward(at[0], at[2], 0), bs = standOf(BLACKBEARD_HALF_D, at, hd, V0), j = jointsOf(bs), chest = mix(j("neck"), j("pelvis"), 0.12);
@@ -138,7 +139,7 @@ const BB_AT = { stool: inCabin(CABIN.stool), mirror: inCabin([-1.45, 0, -0.35]),
   wag(bb, 0.1, 3, P(TIE(1)), P(TIE(-1)), 0.22, { handL: "grip", handR: "grip", face: { ...GRIM, lid: 0.45, gaze: [0, 0.9] } });
   shots.push({ id: "tie", a: T.s5, b: T.s6, still: 1.4, sounds: [{ t: 0.5, k: "tear", g: 0.25 }, { t: 1.6, k: "tear", g: 0.25 }],
     cam: (_t, u) => V.push(0.04 * u), sun: { target: at, reach: 4 },
-    cast: (t) => [on("bb", BLACKBEARD_HALF_D, bb, t, FL, { seed: 3 })],
+    cast: (t) => [{ ...on("bb", BLACKBEARD_HALF_D, bb, t, FL, { seed: 3 }), noShade: true }],
     things: (g, c2, _t, T2, cam) => { lantern(g, T2, cam); wield(g, RIB(), RIBBON, "tie", c2.bb, "R", cam, { d: 0.14 }); } }); }
 
 // 7. THEN HE TUCKED SLOW-BURNING FUSES UNDER HIS HAT, ... He pushes a piece of slow match under the brim on each side of his face
@@ -158,38 +159,44 @@ const TUCK_AT = inCabin([0.15, 0, 0.35]);
 
 // 8. ... SO THEY SMOKED BESIDE HIS BEARD. The boy lights them with a spill from the lantern at arm's length, and jumps back (the
 // captain turns his face to the boy, so that the fuse the boy lights is on the boy's side and the spill never crosses his face)
-{ const V = cabinLens(0.5, 1.32, 2.95, -0.15, -1, 0, 50), hd = V.toward(TUCK_AT[0], TUCK_AT[2], -40), bb = mover(BLACKBEARD_UNLIT_D, 1.92, TUCK_AT[0], TUCK_AT[2], hd); bb.stand(9);
+{ const V = cabinLens(0.76, 1.32, 2.95, -0.14, -1, 0, 55), hd = V.toward(TUCK_AT[0], TUCK_AT[2], -40), bb = mover(BLACKBEARD_UNLIT_D, 1.92, TUCK_AT[0], TUCK_AT[2], hd); bb.stand(9);
   // the big man stoops to the boy, so that the boy can reach his fuse with the spill held out before him
   const STOOP = { lean: 24, py: -0.07, head: [-14, 14, 0] as [number, number, number] }, bs = standOf(BLACKBEARD_UNLIT_D, TUCK_AT, hd, V, STOOP), w = rightWay(bs), LIT = 1.0, tip = atHead(bs, -w, 0.13, 0.15);
   bb.actAt(-1, { armL: arm(24, 24, 70, 24), armR: arm(24, 24, 70, 24), ...STOOP }, 10, { in: 0.01, handL: "fist", handR: "fist", face: MENACE });
   bb.actAt(LIT + 0.3, { lean: 2, py: 0, head: [0, 0, 0] }, 9, { in: 0.6, antic: 0, over: 1.1, face: { ...MENACE, smile: 0.5 } });
-  const bx0 = TUCK_AT[0] + 0.52, bz0 = TUCK_AT[2] + 0.12, boy = mover(SHIPBOY_D, 1.28, bx0, bz0, -100); boy.stand(LIT + 0.1).walk(mt(boy, -0.45), { step: 0.3, tau: 0.15 }).stand(9);
+  const bx0 = TUCK_AT[0] + 0.66, bz0 = TUCK_AT[2] + 0.12, BH = -62, boy = mover(SHIPBOY_D, 1.28, bx0, bz0, BH); boy.stand(9);      // (he leans back from the flame and stays where he is: stepping back took his face out of the picture)
   // the spill's tip goes to the end of the fuse nearer the boy (where the drawing marks it), the spill at about 40 degrees up to it
   const ends = quiet(() => { const st = stageAt(on("bb", BLACKBEARD_UNLIT_D, bb, LIT - 0.05, FL, { seed: 3 }), V.cam); return (["fuseA", "fuseB"] as const).map((n) => st.mark?.(n)).filter((p): p is V3 => !!p); });
   const fe = ends.sort((p, q) => Math.hypot(p[0] - bx0, p[2] - bz0) - Math.hypot(q[0] - bx0, q[2] - bz0))[0] ?? tip, rr = aside([0, 0, 0], V.cam, 1), toBoy = Math.sign((bx0 - fe[0]) * rr[0] + (bz0 - fe[2]) * rr[2]) || -w;
-  const ys = standOf(SHIPBOY_D, [bx0, FL, bz0], -100, V), hand = aside(fe, V.cam, toBoy * 0.42 * 0.77, -0.42 * 0.64);
-  boy.actAt(-1, { ...reach(ys, "L", hand), lean: 6, head: [0, -10, 0] }, 10, { in: 0.01, handL: "grip", handR: "open", face: { wide: 0.9, brow: 1, lid: 0, mouth: 0.3, gaze: [0, -0.4] } });
-  boy.actAt(LIT + 0.05, { armR: arm(140, 30, 170, 10), lean: -12, head: [0, -6, 0] }, 9, { in: 0.18, antic: 0.1, over: 1.4, handL: "grip", handR: "open", face: { wide: 1, brow: 1, lid: 0, mouth: 0.8, smile: -0.6 } });
+  // (he is turned half to us, so that his face shows from the front at a slant, and he lights it with his far (right) hand, which
+  // never crosses his face)
+  const ys = standOf(SHIPBOY_D, [bx0, FL, bz0], BH, V), hand = aside(fe, V.cam, toBoy * 0.26, -0.5);      // (below his face and to its side, toward the captain)
+  boy.actAt(-1, { ...reach(ys, "R", hand), lean: 6, head: [0, -6, 0] }, 10, { in: 0.01, handR: "grip", handL: "open", face: { wide: 0.9, brow: 1, lid: 0, mouth: 0.3, gaze: [0, -0.4] } });
+  boy.actAt(LIT + 0.05, { armL: arm(24, 62, 30, 20), armR: arm(30, 46, 56, 10), lean: -12, head: [0, -4, 0] }, 9, { in: 0.18, antic: 0.1, over: 1.4, handR: "grip", handL: "open", face: { wide: 1, brow: 1, lid: 0, mouth: 0.8, smile: -0.6 } });
   // the spill is as long as it must be to reach from his hand to the fuse when he lights it (the boy is short, and a 42 cm spill
   // ended in the beard): measured once, at the moment of lighting, and kept for the whole shot
-  const SPL = quiet(() => { const st = stageAt(on("boy", SHIPBOY_D, boy, LIT, FL, { seed: 8 }), V.cam), q = palm(st, "L"); return Math.max(0.3, Math.min(0.75, Math.hypot(q[0] - fe[0], q[1] - fe[1], q[2] - fe[2]))); });
+  const SPL = quiet(() => { const st = stageAt(on("boy", SHIPBOY_D, boy, LIT, FL, { seed: 8 }), V.cam), q = palm(st, "R"); return Math.max(0.3, Math.min(0.75, Math.hypot(q[0] - fe[0], q[1] - fe[1], q[2] - fe[2]))); });
   const look = (t: number) => (t < LIT ? BLACKBEARD_UNLIT_D : BLACKBEARD_D);
   shots.push({ id: "light", a: T.s7, b: T.s8, still: 1.6, sounds: [{ t: LIT - 0.05, k: "spray", g: 0.35 }, { t: LIT + 0.1, k: "scuff", g: 0.6 }, ...boy.cues().filter((q) => q.k === "step").map((q) => ({ t: q.t, k: "step", g: 0.5 }))],
     cam: (_t, u) => V.push(0.06 * u), sun: { target: TUCK_AT, reach: 4 },
-    cast: (t) => [on("bb", look(t), bb, t, FL, { seed: 3 }), on("boy", SHIPBOY_D, boy, t, FL, { seed: 8 })],
-    // (the spill points at the fuse, his wrist bent up to it: with his forearm it stood straight up; once it is lit and he jumps back, it
-    // points up and back his own way as he pulls it away from the captain's face)
-    things: (g, c2, t, T2, cam) => { lantern(g, T2, cam); SPILL_O().scale.x = SPL / 0.42; wield(g, SPILL_O(), SPILL, "light", c2.boy, "L", cam, { aim: t < LIT + 0.05 ? fe : aside(palm(c2.boy, "L"), cam, -toBoy * 0.25, 0.43) }); tipGlow(g, SPILL_O(), cam); if (t >= LIT) fuseSmoke(g, c2.bb, T2 - (T.s7 + LIT) + 0.2, cam); } }); }
+    cast: (t) => [on("bb", look(t), bb, t, FL, { seed: 3 }), { ...on("boy", SHIPBOY_D, boy, t, FL, { seed: 8 }), noShade: true }],
+    // (the spill points at the fuse, his wrist bent up to it: with his forearm it stood straight up; once it is lit and he jumps back, he
+    // drops his arm and the spill points down and out toward us, so that it crosses neither face)
+    things: (g, c2, t, T2, cam) => { lantern(g, T2, cam); SPILL_O().scale.x = SPL / 0.42; wield(g, SPILL_O(), SPILL, "light", c2.boy, "R", cam, { aim: t < LIT + 0.05 ? fe : ((q: V3): V3 => [q[0], q[1] - 0.08, q[2]])(aside(near(palm(c2.boy, "R"), cam, 0.5), cam, -toBoy * 0.3, 0)) }); tipGlow(g, SPILL_O(), cam); if (t >= LIT) fuseSmoke(g, c2.bb, T2 - (T.s7 + LIT) + 0.2, cam); } }); }
 
 // 9. ADD SIX PISTOLS ACROSS HIS CHEST. He lifts the sling off the table, puts it on over his head, sags at the knees under the weight,
 // straightens, and pats the butts
 { const at = inCabin([0.35, 0, 0.1]), V = cabinLens(0.2, 1.4, 2.8, 0.03, -1, -2, 42), hd = V.toward(at[0], at[2], 5), bb = mover(BLACKBEARD_D, 1.92, at[0], at[2], hd); bb.stand(9);
-  const bs = standOf(BLACKBEARD_D, at, hd, V), j = jointsOf(bs), w = rightWay(bs), lay = near([at[0], FL + 0.84, at[2] - 0.32], V.cam, 0), UPA = 0.25, OVER = 0.9, ON = 1.25;
+  const bs = standOf(BLACKBEARD_D, at, hd, V), j = jointsOf(bs), w = rightWay(bs), lay = near([at[0], FL + 0.84, at[2] - 0.32], V.cam, 0), UPA = 0.25, OVER = 0.75, DOWN = 1.05, ON = 1.4;
   const low = near(mix(j("pelvis"), j("neck"), 0.15), V.cam, 0.22), high: V3 = [j("crown")[0], j("crown")[1] + 0.12, j("crown")[2]];
   const hands = (p: V3, half: number) => ({ ...reach(bs, "R", aside(p, V.cam, w * half)), ...reach(bs, "L", aside(p, V.cam, -w * half)) });
   bb.actAt(-1, { ...hands(lay, 0.32), lean: 18, head: [0, 14, 0] }, 10, { in: 0.01, handL: "grip", handR: "grip", face: GRIM });
   bb.actAt(UPA, { ...hands(low, 0.32), lean: 2, head: [0, 4, 0] }, OVER - UPA, { in: 0.3, out: 0.01, antic: 0, over: 1, handL: "grip", handR: "grip", face: GRIM });
-  bb.actAt(OVER, { ...hands(near(high, V.cam, 0.08), 0.32), head: [0, -4, 0] }, ON - OVER + 0.05, { in: 0.25, out: 0.01, handL: "grip", handR: "grip", face: GRIM });
+  bb.actAt(OVER, { ...hands(near(high, V.cam, 0.08), 0.32), head: [0, -4, 0] }, DOWN - OVER + 0.05, { in: 0.25, out: 0.01, handL: "grip", handR: "grip", face: GRIM });
+  // down over his head onto his chest, where the sling then hangs
+  // (his right hand at his right hip and his left at his left shoulder: the sling lies across him on the line the worn one is drawn on)
+  const hi = near(j("shL"), V.cam, 0.2), lo = near(mix(j("pelvis"), j("shR"), 0.08), V.cam, 0.2);
+  bb.actAt(DOWN, { ...reach(bs, "R", [lo[0], lo[1] - 0.07, lo[2]]), ...reach(bs, "L", [hi[0], hi[1] + 0.08, hi[2]]), head: [0, 2, 0] }, ON - DOWN + 0.05, { in: 0.3, out: 0.01, handL: "grip", handR: "grip", face: GRIM });
   bb.actAt(ON, { armL: arm(24, 24, 70, 24), armR: arm(30, 20, 110, -20), py: -0.06, lean: 6 }, 0.4, { in: 0.12, out: 0.25, antic: 0, over: 1.2, handL: "fist", handR: "open", face: { ...GRIM, mouth: 0 } });
   bb.actAt(ON + 0.5, { armL: arm(24, 24, 70, 24), armR: arm(30, 20, 110, -20), py: 0, head: [0, 2, 0] }, 9, { in: 0.3, handL: "fist", handR: "open", face: MENACE });
   wag(bb, ON + 0.9, 1.2, P({ armR: arm(32, 20, 116, -22) }), P({ armR: arm(28, 18, 104, -18) }), 0.28, { handL: "fist", handR: "open", face: MENACE });
@@ -197,7 +204,7 @@ const TUCK_AT = inCabin([0.15, 0, 0.35]);
   shots.push({ id: "pistols", a: T.s8, b: T.s9, still: 1.9, sounds: [{ t: UPA + 0.1, k: "rattle", g: 0.6 }, { t: ON, k: "thud", g: 0.6 }, { t: ON + 0.95, k: "tap", g: 0.5 }, { t: ON + 1.25, k: "tap", g: 0.5 }],
     cam: (_t, u) => V.push(0.05 * u), sun: { target: at, reach: 4 },
     cast: (t) => [on("bb", look(t), bb, t, FL, { seed: 3 })],
-    things: (g, c2, t, T2, cam) => { lantern(g, T2, cam); fuseSmoke(g, c2.bb, T2, cam); if (t < UPA) setDown(g, SLING(), "sling", lay, cam, 0); else if (t < ON) carryBy(g, SLING(), c2.bb, "L", c2.bb, "R", cam); else vanish(SLING(), "sling"); } }); }
+    things: (g, c2, t, T2, cam) => { lantern(g, T2, cam); fuseSmoke(g, c2.bb, T2, cam); if (t < UPA) setDown(g, SLING(), "sling", lay, cam, 0); else if (t < ON) carryBy(g, SLING(), c2.bb, "L", c2.bb, "R", cam, 0.1, t > OVER - 0.1 ? "don" : "carry"); else vanish(SLING(), "sling"); } }); }
 
 // 10. NOW HE LOOKED LIKE SOMETHING OUT OF HELL. His face close in the lantern light, the smoke curling past his eyes, a slow smile
 { const at = inCabin([0.35, 0, 0.1]), V0 = cabinLens(0.2, 1.4, 2.8, 0.03, -1, -2, 42), V = faceLens([at[0], FL + 1.74, at[2]], [-0.08, -1], 1.6, 36, -4);
@@ -206,9 +213,9 @@ const TUCK_AT = inCabin([0.15, 0, 0.35]);
 // 11. IT WAS PROBABLY MEANT TO MAKE CREWS GIVE UP WITHOUT A FIGHT. Across the water from behind him at his rail: the merchant's crew see
 // the smoking figure, and their hands go up one after another
 // (the lens a metre further back than he stands: he is a dark shape at the side, and the crew read)
-{ const S0 = lens(-0.75, 1.75, 1.45, -1, 0.08, -2, 42), S = lens(0.2, 1.8, 1.05, -1, 0.04, -2, 44), [bx, bz] = S0.spot(1.65, -0.18), bb = mover(BLACKBEARD_ARMED_D, 1.92, bx, bz, S.toward(bx, bz, 180)); bb.stand(9);
+{ const S0 = lens(-0.75, 1.75, 1.45, -1, 0.08, -2, 42), S = lens(0.2, 1.8, 1.05, -1, 0.04, -2, 44), [bx, bz] = S0.spot(1.65, -0.3), bb = mover(BLACKBEARD_ARMED_D, 1.92, bx, bz, S.toward(bx, bz, 180)); bb.stand(9);
   bb.actAt(-1, { armL: arm(20, 30, 50, 30), armR: arm(20, 30, 50, 30), lean: -2 }, 10, { in: 0.01, handL: "fist", handR: "fist", face: MENACE });
-  const crew = ([[SAILOR_D, 1.82, 5.6, 0.55, 0.3], [COOK_D, 1.58, 5.4, -0.15, 0.8], [OLDHAND_D, 1.74, 6.0, 0.15, 1.35], [PIRATE2_D, 1.9, 6.3, -0.6, 1.9]] as [Design, number, number, number, number][]).map(([D, h, d, l, t0]) => {
+  const crew = ([[SAILOR_D, 1.82, 5.6, 1.38, 0.3], [COOK_D, 1.58, 5.3, -0.08, 0.8], [OLDHAND_D, 1.74, 5.9, 0.6, 1.35]] as [Design, number, number, number, number][]).map(([D, h, d, l, t0]) => {
     const [x, z] = S0.spot(d, l), m = mover(D, h, x, z, S.toward(x, z, 0)); m.stand(9);
     m.actAt(-1, { armL: arm(16, 14, 30, 8), armR: arm(16, 14, 30, 8), head: [0, -4, 0] }, 10, { in: 0.01, handL: "relaxed", handR: "relaxed", face: { wide: 0.8, lid: 0, brow: 0.9, smile: -0.6 } });
     m.actAt(t0, { armL: arm(150, 30, 176, 12), armR: arm(150, 30, 176, 12), lean: -4 }, 9, { in: 0.35, antic: 0.15, over: 1.3, handL: "open", handR: "open", face: { wide: 1, lid: 0, brow: 1, mouth: 0.5, smile: -0.8 } });
@@ -224,7 +231,7 @@ const TUCK_AT = inCabin([0.15, 0, 0.35]);
   const rs = standOf(OLDHAND_D, [rx, MD, rz], R.toward(rx, rz, -15), R), rj = jointsOf(rs), rc = near(mix(rj("pelvis"), rj("neck"), 0.66), R.cam, 0.24), rw = rightWay(rs);
   rd.actAt(-1, { ...reach(rs, "R", aside(rc, R.cam, rw * 0.27)), ...reach(rs, "L", aside(rc, R.cam, -rw * 0.27)), head: [0, 8, 0] }, 10, { in: 0.01, handL: "grip", handR: "grip", face: { brow: 0.8, lid: 0.1, mouth: 0.5 } });
   wag(rd, 0, 6, P({ head: [-4, 8, 0] }), P({ head: [4, 6, 0] }), 0.9, { handL: "grip", handR: "grip", face: { brow: 0.8, lid: 0.1, mouth: 0.5 } });
-  const listen = ([[SAILOR_D, 1.82, 3.5, -0.75, 40], [TOWNSWOMAN_D, 1.64, 3.2, 0.85, -40], [SHIPBOY_D, 1.28, 4.6, -0.2, 20]] as [Design, number, number, number, number][]).map(([D, h, d, l, off], i) => {
+  const listen = ([[SAILOR_D, 1.82, 3.5, -0.58, 40], [TOWNSWOMAN_D, 1.64, 3.4, 0.62, -40]] as [Design, number, number, number, number][]).map(([D, h, d, l, off], i) => {
     const [x, z] = R.spot(d, l), m = mover(D, h, x, z, R.toward(x, z, off)); m.stand(9);
     m.actAt(-1, { armL: arm(20, 12, 70, 10), armR: arm(20, 12, 70, 10), head: [0, -2, 0] }, 10, { in: 0.01, handL: "relaxed", handR: "relaxed", face: { wide: 0.9, lid: 0, brow: 1, mouth: i === 1 ? 0.5 : 0.2, smile: -0.4 } });
     if (D === SHIPBOY_D) m.actAt(1.6, { px: -0.35, armL: arm(60, -20, 120, -20), armR: arm(60, -20, 120, -20), head: [-20, 0, 0] }, 9, { in: 0.35, antic: 0.2, over: 1.2, handL: "fist", handR: "fist", face: { wide: 1, lid: 0, brow: 1, mouth: 0.5, smile: -0.8 } });
@@ -260,7 +267,7 @@ export const BLACKBEARD_FUSES: Film = {
   // each thumbnail is the film's own frame at that time, with the words laid over it
   thumbs: [
     { T: 1.7, words: ["HIS BEARD", "SMOKED"], y: 0.7, size: 140 },
-    { T: T.s7 + 0.9, words: ["WHY LIGHT", "HIS BEARD?"], y: 0.72, size: 128 },
+    { T: T.s7 + 0.9, words: ["WHY THE", "SMOKE?"], y: 0.72, size: 140 },
     { T: T.s9 + 1.0, words: ["A COSTUME", "OF FIRE"], y: 0.72, size: 128 },
   ],
   // the breath of smoke at the end fills the picture, so that the loop back to him striding out of the smoke comes out of it

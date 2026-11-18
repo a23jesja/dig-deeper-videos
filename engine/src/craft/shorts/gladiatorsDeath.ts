@@ -28,7 +28,7 @@ const P = (o: Partial<Pose>) => o;
 // the cuts: on the voice, a new picture every one to four seconds
 const T1 = 1.5, T2 = cut("hook", "guess"), T3 = cut("guess", "not"), T4 = cut("not", "nine"), T5 = cut("nine", "cost"), T6 = at("cost", /^fed/) - 0.1, T7 = cut("cost", "owner");
 const T8 = at("owner", /^wanted/) - 0.1, T9 = cut("cost_me", "rules"), T10 = cut("rules", "finger"), T11 = cut("finger", "spared"), T12 = at("spared", /^he$/) - 0.1, T13 = cut("spared", "answer");
-const T14 = cut("answer", "doctor"), T15 = at("doctor", /^under/) - 0.1, T16 = cut("doctor", "relax"), T17 = L.relax.b + 0.25, END = T17 + 0.8;
+const T14 = cut("answer", "doctor"), T15 = at("doctor", /^under/) - 0.1, T16 = cut("doctor", "relax"), T17 = L.relax.b + 0.25, END = T17 + 1.0;
 const shots: Shot[] = [];
 const WOOD = once(() => noShade(woodSword())), STRETCH = once(() => stretcher(1.9)), BOWL_O = once(() => noShade(bowlRim())), SPOON_O = once(() => noShade(spoon())), ROLL_O = once(() => noShade(bandageRoll()));
 const COIN_O = once(() => noShade(coinHeld(0.04))), MAPPA_O = once(() => noShade(mappa())), PEN_O = once(() => noShade(reedPen())), SCROLL_O = once(() => noShade(scrollHeld())), OLIVE_O = once(() => noShade(olive())), OLIVES = once(() => noShade(bowlRim(0.07, true)));
@@ -80,15 +80,15 @@ shots.push(twoShot("guess", T2, T3, W));
 //    way (one with his arm bandaged, two holding each other up), and the tenth is carried on a stretcher, sitting up and waving
 { const V = lens(13.6, 1.55, 5.6, -0.72, -0.7, -4, 56), ROW = 0.6, step = 1.05, walkers: { D: Design; h: number; m: MM; name: string }[] = [];
   const looks: [Design, number][] = [[MURMILLO_BARE_D, 1.84], [THRAEX_D, 1.78], [SECUTOR_D, 1.72], [HOPLOMACHUS_D, 1.8], [PROVOCATOR_D, 1.76], [RETIARIUS2_D, 1.8], [RETIARIUS3_D, 1.7], [MURMILLO2_D, 1.88], [RETIARIUS_D, 1.86]];
-  looks.forEach(([D, h], i) => { const x0 = 15.2 - step * i, z = ROW + (i === 5 ? 0.42 : 0), m = mover(D, h, x0, z, 90), d = Math.min(16.4 - x0, 3.9);
-    m.stand(0.05 * (i % 3)).walk(mt(m, d), { step: (i === 2 ? 0.48 : 0.62) * (1.8 / h), tau: i === 2 ? 0.55 : 0.38 }).stand(9);
+  looks.forEach(([D, h], i) => { const x0 = 15.2 - step * (i > 4 ? i - 1 : i), z = ROW + (i === 5 ? 0.6 : 0), m = mover(D, h, x0, z, 90);
+    m.stand(0.04 * (i % 3)).walk(mt(m, 3.6), { step: 0.6, tau: 0.4 }).stand(9);
     m.actAt(-1, { armL: arm(16, 12, 30, 8), armR: arm(16, 12, 30, 8), head: [0, i % 2 ? 4 : -2, 0] }, 10, { in: 0.01, handL: "relaxed", handR: "relaxed", face: { brow: 0.2, lid: 0.3, smile: i % 3 ? 0.1 : 0.4 } });
     walkers.push({ D, h, m, name: `g${i}` }); });
   // the sixth leans on the fifth: his right hand on the other's left shoulder
-  const lean = walkers[5], leanOn = walkers[4];
-  lean.m.actAt(-1, { armR: arm(70, 30, 60, 30), head: [0, 6, 0], lean: 4 }, 10, { in: 0.01, handR: "open", face: { brow: 0.6, lid: 0.4, smile: -0.2 } });
+  const lean = walkers[5], leanOn = walkers[4], x5 = 15.2 - step * 4, ls: Stand = { D: lean.D, at: [x5, 0, ROW + 0.6], heading: 90, h: lean.h, cam: V.cam }, os: Stand = { D: leanOn.D, at: [x5, 0, ROW], heading: 90, h: leanOn.h, cam: V.cam };
+  lean.m.actAt(-1, { ...reach(ls, "L", jointsOf(os)("shR")), head: [0, 6, 0], lean: 4 }, 10, { in: 0.01, handL: "open", face: { brow: 0.6, lid: 0.4, smile: -0.2 } });
   // the stretcher at the end of the line: the two bearers each hold the near pole in the near (right) hand, the tenth sits up on it
-  const hy = 0.8, sx = 15.2 - step * 9 - 0.4, bearers = [mover(BEARER_D, 1.76, sx + 0.95, ROW - 0.1, 90), mover(BEARER2_D, 1.74, sx - 0.95, ROW - 0.1, 90)], man = mover(CARRIED_D, 1.8, sx + 0.05, ROW - 0.38, 90);
+  const hy = 0.8, sx = 15.2 - step * 8 - 1.0, bearers = [mover(BEARER_D, 1.76, sx + 0.95, ROW - 0.1, 90), mover(BEARER2_D, 1.74, sx - 0.95, ROW - 0.1, 90)], man = mover(CARRIED_D, 1.8, sx + 0.05, ROW - 0.38, 90);
   for (const m of [...bearers, man]) m.stand(0.02).walk(mt(m, 3.4), { step: 0.55, tau: 0.42 }).stand(9);
   const bst = (D: Design, m: MM, x: number): Stand => ({ D, at: [x, 0, ROW - 0.1], heading: 90, h: m.h, cam: V.cam });
   bearers.forEach((m, i) => m.actAt(-1, { ...reach(bst(i ? BEARER2_D : BEARER_D, m, i ? sx - 0.95 : sx + 0.95), "R", [i ? sx - 0.89 : sx + 0.89, hy, ROW - 0.02]), armL: arm(10, 8, 20, 4) }, 10, { in: 0.01, handR: "grip", handL: "relaxed", face: { brow: 0.4, lid: 0.2 } }));
@@ -97,7 +97,7 @@ shots.push(twoShot("guess", T2, T3, W));
   shots.push({ id: "nine", a: T4, b: T5, still: 2.2, sounds: walkers[0].m.cues().filter((q) => q.k === "step").map((q) => ({ t: q.t, k: "step", g: 0.5 })),
     cam: (_t, u) => V.push(0.06 * u), sun: { target: [12, 0, ROW], reach: 9 },
     cast: (t) => [...walkers.map((w) => on(w.name, w.D, w.m, t)), on("b0", BEARER_D, bearers[0], t), on("b1", BEARER2_D, bearers[1], t), on("man", CARRIED_D, man, t, hy + 0.02)],
-    things: (g, c, _t, T, cam) => { crowd(g, FAR, T, cam, 0.5); handOn(c.g5, "R", c.g4, "shL", cam, "shoulder"); carryBy(g, STRETCH(), c.b0, "R", c.b1, "R", cam, 0.02); } }); }
+    things: (g, c, _t, T, cam) => { crowd(g, FAR, T, cam, 0.5); handOn(c.g5, "L", c.g4, "shR", cam, "shoulder"); carryBy(g, STRETCH(), c.b0, "R", c.b1, "R", cam, 0.02); } }); }
 
 // 6. EACH ONE WAS TRAINED, ... In the school's yard the trainer stands behind the pupil, his hand on the pupil's wrist, setting the
 //    practice sword right; it points away from both, at the post they practise on (review of grip sheet 5: it crossed the trainer)

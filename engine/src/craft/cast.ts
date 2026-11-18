@@ -491,9 +491,14 @@ const drawTrue = (L: Look) => (k: Ink, sk: Sk, o: FigOpts) => {
       if (L.belt) k.line([F.T(-400, top * 0.3), F.T(400, top * 0.3)], 12, L.belt, "butt");
       // the sling: from his left shoulder across his chest to his right hip (on his back the other way round), three holsters with two
       // pistol butts standing out of each on the front
-      if (L.sling) { const a0: P2 = [70, top + 10], a1: P2 = [-90, top * 0.12], on = (u: number, w: number): P2 => S(lerp(a0[0], a1[0], u) + w, lerp(a0[1], a1[1], u), back);
-        k.shape([on(0, -15), on(0, 15), on(1, 15), on(1, -15)], "#4a3020", k.ol * 0.8);
-        if (!back) for (const u of [0.25, 0.5, 0.75]) { const c = on(u, 0); k.shape([[c[0] - 15, c[1] - 6], [c[0] + 15, c[1] - 6], [c[0] + 13, c[1] + 30], [c[0] - 13, c[1] + 30]], "#2e2016", k.ol * 0.7); for (const sx of [-1, 1]) { k.shape([[c[0] + sx * 9 - 5, c[1] - 4], [c[0] + sx * 9 + 5, c[1] - 4], [c[0] + sx * 12 + 5, c[1] - 26], [c[0] + sx * 12 - 5, c[1] - 26]], "#6a4428", k.ol * 0.6); k.dot(c[0] + sx * 12, c[1] - 28, 5.5, BRASS); } } }
+      // (from his left shoulder down to his right hip, broad, so that it reads as a bandolier across the whole chest)
+      if (L.sling) { const a0: P2 = [100, top + 10], a1: P2 = [-92, -24], on = (u: number, w: number): P2 => S(lerp(a0[0], a1[0], u) + w, lerp(a0[1], a1[1], u), back);
+        k.shape([on(0, -24), on(0, 24), on(1, 24), on(1, -24)], "#4a3020", k.ol * 0.8);
+        // (the three holsters low on the strap, below the beard, so that all six pistols show)
+        // (each holster hangs down from the strap with the butts of its two pistols standing up out of it; these offsets are on the
+        // canvas, where y runs down)
+        if (!back) for (const u of [0.42, 0.66, 0.9]) { const c = on(u, 0); for (const sx of [-1, 1]) { k.shape([[c[0] + sx * 15 - 9, c[1] - 2], [c[0] + sx * 15 + 9, c[1] - 2], [c[0] + sx * 20 + 9, c[1] - 42], [c[0] + sx * 20 - 9, c[1] - 42]], "#6a4428", k.ol * 0.6); k.dot(c[0] + sx * 20, c[1] - 45, 11, BRASS); }
+          k.shape([[c[0] - 32, c[1] - 8], [c[0] + 32, c[1] - 8], [c[0] + 27, c[1] + 50], [c[0] - 27, c[1] + 50]], "#2e2016", k.ol * 0.7); } }
     });
     k.shape(t, null);
     // the neckerchief: a band round the throat, and in front its knot with two short ends hanging from it (seen from behind, its point

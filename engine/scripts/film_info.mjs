@@ -71,7 +71,7 @@ else if (what === "check") {
 else if (what === "grips") {
   const { bad, held, spots } = auditGrips(film, process.argv[4] === "tenths" ? 0.1 : undefined);
   if (process.argv[4] === "spots") console.log(JSON.stringify(spots));
-  else { for (const b of bad) console.log(b); console.log(bad.length ? `GRIPS FAIL: ${bad.length} faults in ${held} held readings` : `grips ok: ${held} readings of a thing in a hand, every grip in the hand, a hand on every held thing and every working end where its use allows`); }
+  else { for (const b of bad) console.log(b); console.log(bad.length ? `GRIPS FAIL: ${bad.length} faults in ${held} held readings` : `grips ok: ${held} readings of a thing in a hand, every grip in the hand, a hand on every held thing and every working end where its use allows; every face whole in every frame (not a quarter of it outside the picture, behind another figure's head, body or arm, or behind a held thing)`); }
   process.exit(bad.length && process.argv[4] !== "spots" ? 1 : 0);
 }
 else if (what === "audio") {

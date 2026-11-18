@@ -475,14 +475,14 @@ export const haul = (into: THREE.Group, a: Staged, cam: Cam, top: V3, floor: num
 /** A chest carried by its two end handles, by two people or by one with both hands: the handles in the hands, the chest hanging between
  *  them. `o` = props.ts chest (its handles' grips are in o.userData.grips). The figures must stand so that the hands are as far apart
  *  as the handles (the check says when they are not) */
-export const carryBy = (into: THREE.Group, o: THREE.Object3D, a: Staged, sa: Side, b: Staged, sb: Side, cam: Cam, d = 0.1) => {
+export const carryBy = (into: THREE.Group, o: THREE.Object3D, a: Staged, sa: Side, b: Staged, sb: Side, cam: Cam, d = 0.1, /** "don" = being put on over the head (it may pass the face) */ use = "carry") => {
   let pa = palm(a, sa), pb = palm(b, sb); const P2 = pic(cam); if (P2(pa, pb)[0] < 0) [pa, pb] = [pb, pa];
   const g = o.userData.grips as V3[], G = Math.abs(g[1][0] - g[0][0]), hy = g[0][1], v = P2(pa, pb), n = Math.hypot(v[0], v[1]) || 1, dir: [number, number] = [v[0] / n, v[1] / n];
   const origin = aside(mix3(pa, pb, 0.5), cam, hy * dir[1], -hy * dir[0]); span(into, o, origin, aside(origin, cam, dir[0], dir[1]), cam, d);
   const fd = d + ((o.userData.depth as number) ?? 0.1) / 2 + 0.2;      // the fingers well in front of the whole chest (its corners reach nearer the lens than its face), so that the hand in the ring shows
   if (a === b) fingers(into, a, [sa, sb], cam, fd); else { fingers(into, a, [sa], cam, fd); fingers(into, b, [sb], cam, fd); }
   if (AUDIT.on) { const err = Math.abs(n - G) > 0.1 ? `the hands are ${(Math.abs(n - G) * 100).toFixed(0)} cm too ${n > G ? "far apart" : "close together"} for the handles` : null;
-    if (a === b) AUDIT.rows.push({ id: o.uuid, prop: "chest", use: "carry", holder: `${a.name} ${sa}+${sb}`, err, at: pa, o });
+    if (a === b) AUDIT.rows.push({ id: o.uuid, prop: "chest", use, holder: `${a.name} ${sa}+${sb}`, err, at: pa, o });
     else AUDIT.rows.push({ id: `${o.uuid}:a`, prop: "chest", use: "carry", holder: `${a.name} ${sa}`, err, at: pa, o }, { id: `${o.uuid}:b`, prop: "chest", use: "carry", holder: `${b.name} ${sb}`, err, at: pb, o }); }
   return o;
 };
@@ -585,7 +585,7 @@ const RESTS = new Set(["under arm"]);
 /** `step` = seconds between readings; without it every frame the film shows is read (a fault of two frames falls between tenths) */
 export const auditGrips = (film: Film, step?: number) => {
   const bad: string[] = [], spots: { shot: string; frame: number; prop: string; use: string; holder: string; x: number; y: number }[] = []; let held = 0; AUDIT.on = true;
-  const lensOf = new THREE.PerspectiveCamera(50, 1080 / 1920, 0.1, 900), carryFlag = new Set<string>();
+  const lensOf = new THREE.PerspectiveCamera(50, 1080 / 1920, 0.1, 900), carryFlag = new Set<string>(), faceFlag = new Set<string>();
   try { for (const s of film.shots) { let prev = new Map<string, { holder: string; prop: string }>();
     const times: number[] = []; if (step) for (let t = 0; t < s.b - s.a - 1e-6; t += step) times.push(t); else for (let F = Math.ceil(s.a * film.fps - 1e-6); F < s.b * film.fps - 1e-6; F++) times.push(Math.max(0, F / film.fps - s.a));
     for (const t of times) {
@@ -619,9 +619,38 @@ export const auditGrips = (film: Film, step?: number) => {
               if (Math.hypot(sx - yh.c[0], sy - yh.c[1]) < yh.R || (sy >= t0[1] && sy <= t1[1] && Math.abs(sx - (t0[0] + t1[0]) / 2) < hw)) hit = Y.name; }
             if (hit) { cov++; by = hit; } }
           const key = `${s.id}:${X.name}`; if (cov / n > 0.24 && !carryFlag.has(key)) { carryFlag.add(key); bad.push(`${at}: ${X.name}'s head is behind ${by} (two who carry one thing each show the whole head)`); } } }
+      // every face whole (review of the Blackbeard film, 18 November): not a quarter or more outside the picture's edge (a figure wholly
+      // out of it is fine), and not a quarter or more behind another figure nearer the lens (his head, body or arms) or behind a thing
+      // anyone holds (his own too, but not a thing whose use is at the face: a spyglass at the eye, a fuse blown on, food eaten)
+      const figs = Object.values(staged), heads = new Map<string, { c: [number, number]; R: number; d: number; hc: V3; away: boolean }>();
+      // the head as drawn: round the middle of its crown and its skull joints, as wide as they are apart
+      for (const f of figs) { const cr = f.joint("crown"), sk = f.joint("skull"), hc: V3 = [(cr[0] + sk[0]) / 2, (cr[1] + sk[1]) / 2, (cr[2] + sk[2]) / 2], r3 = Math.max(0.07 * f.h, Math.hypot(cr[0] - sk[0], cr[1] - sk[1], cr[2] - sk[2]) * 0.55), c = scr(hc), e = scr(aside(hc, cam, r3, 0));
+        const hh = (f.heading * Math.PI) / 180, away = Math.sin(hh) * (cam.pos[0] - f.at[0]) + Math.cos(hh) * (cam.pos[2] - f.at[2]) < -0.35 * Math.hypot(cam.pos[0] - f.at[0], cam.pos[2] - f.at[2]);
+        heads.set(f.name, { c, R: Math.hypot(e[0] - c[0], e[1] - c[1]), d: far(hc), hc, away }); }
+      // the held things, met by a ray from the lens through each point of a face (a thin stick covers only where it is)
+      const things = AUDIT.rows.filter((r) => r.o && !AT_FACE.has(r.use)).map((r) => { r.o!.updateMatrixWorld(true); return { name: r.prop, o: r.o! }; });
+      const ray = new THREE.Raycaster(), pick = new THREE.Vector2();
+      for (const X of figs) { const H = heads.get(X.name)!, pts: [number, number][] = []; for (const [f, k] of [[0, 1], [0.5, 8], [0.95, 8]] as [number, number][]) for (let i = 0; i < k; i++) pts.push([H.c[0] + f * H.R * Math.cos((i * 2 * Math.PI) / k), H.c[1] + f * H.R * Math.sin((i * 2 * Math.PI) / k)]);
+        if (H.away) continue;      // (a figure seen from behind shows no face)
+        const outN = pts.filter(([x, y]) => x < 0 || x > 1080 || y < 0 || y > 1920).length;
+        if (outN === pts.length) continue;
+        if (outN / pts.length >= 0.25) { const key = `${s.id}:${X.name}:edge`; if (!faceFlag.has(key)) { faceFlag.add(key); bad.push(`${at}: ${X.name}'s face is ${Math.round((100 * outN) / pts.length)} % outside the picture (the whole face in it, or the whole figure out)`); } continue; }
+        let cov = 0, by = "";
+        for (const [x, y] of pts) { let hit = "";
+          for (const Y of figs) { if (Y === X) continue; const yh = heads.get(Y.name)!; if (yh.d > H.d - 0.05) continue;
+            const t0 = scr([Y.at[0], Y.at[1] + 0.82 * Y.h, Y.at[2]]), t1 = scr([Y.at[0], Y.at[1] + 0.45 * Y.h, Y.at[2]]), hw = Math.abs(scr(aside([Y.at[0], Y.at[1] + 0.62 * Y.h, Y.at[2]], cam, 0.13 * Y.h, 0))[0] - (t0[0] + t1[0]) / 2);
+            if (Math.hypot(x - yh.c[0], y - yh.c[1]) < yh.R || (y >= t0[1] && y <= t1[1] && Math.abs(x - (t0[0] + t1[0]) / 2) < hw)) { hit = `${Y.name}'s head or body`; break; }
+            for (const sd of ["L", "R"]) { const js = [`sh${sd}`, `el${sd}`, `wr${sd}`, `tip${sd}`].map((n) => scr(Y.joint(n as "neck"))), rw = Math.max(8, yh.R * 0.32);
+              for (let q = 0; q < 3 && !hit; q++) { const [a1, b1] = [js[q], js[q + 1]], vx = b1[0] - a1[0], vy = b1[1] - a1[1], L2 = vx * vx + vy * vy || 1, u = Math.max(0, Math.min(1, ((x - a1[0]) * vx + (y - a1[1]) * vy) / L2));
+                if (Math.hypot(x - (a1[0] + u * vx), y - (a1[1] + u * vy)) < rw) hit = `${Y.name}'s arm`; } if (hit) break; } if (hit) break; }
+          if (!hit && things.length) { pick.set((x / 1080) * 2 - 1, 1 - (y / 1920) * 2); ray.setFromCamera(pick, lensOf); ray.far = H.d - 0.03; for (const th of things) if (ray.intersectObject(th.o, true).length) { hit = `the ${th.name}`; break; } }
+          if (hit) { cov++; by = hit; } }
+        const key = `${s.id}:${X.name}:cover`; if (cov / pts.length > 0.25 && !faceFlag.has(key)) { faceFlag.add(key); bad.push(`${at}: ${X.name}'s face is ${Math.round((100 * cov) / pts.length)} % behind ${by}`); } }
       prev = now; } } } finally { AUDIT.on = false; }
   return { bad, held, spots };
 };
+/** the uses whose thing is meant to be at the face (the face check lets them cover it) */
+const AT_FACE = new Set(["look", "aim", "blow", "eat", "drink", "tie", "tuck", "don"]);
 
 // ---------------- long things in two hands, and a shield on the arm ----------------
 /** where the hands lie on a long thing held in two (metres along it): the rear hand this far from the butt, the front hand this much further on */

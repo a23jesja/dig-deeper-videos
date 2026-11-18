@@ -85,3 +85,10 @@ Det som rättades före renderingen:
   - klipp b:s närbild hålls 1,5 s;
   - klipp c:s luntor glöder stort nog att läsas på en telefon.
 
+
+### Valet: öppning b (granskningen 18 november), version 2
+Granskningen valde b. Jesper får valet tillsammans med mitt förslag c och kan byta. Klipp b version 2: `granskning/blackbeard-fuses/hook-b-v2.mp4`, sekund 0-5 i tio bilder i sekunden i telefonstorlek: `hook-b-v2-10fps-telefon.jpg`. Version 1 (`hook-b.mp4`) ligger kvar orörd.
+Rättat efter granskningens tre punkter:
+1. Luntorna glöder större. Röken stiger tjock ur de glödande ändarna, böjer sig ut från ansiktet och hänger ned längs skäggets sidor. Bakom huvudet ligger en dimma. Röken är mörkare grå, så att den syns mot det ljusa seglet i telefonstorlek redan i ruta 0. Detta är gemensam kod: `world/fire.ts` curl och `stage/staging.ts` fuseSmoke.
+2. "ANYONE DO THAT?" slutar nu på klippet till Sir vid 3,89 s. Det är en gemensam regel: en text som skulle hänga kvar en kort stund efter ett klipp slutar på klippet.
+3. Huggaren följer blad 3 genom hela klippet (bara höjd i b). Greppkontrollen läser nu varje bildruta och godkänner den.

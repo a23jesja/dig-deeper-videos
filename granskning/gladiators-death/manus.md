@@ -70,14 +70,16 @@ Planerad för torsdag 19 november. Filmens id i motorn: `gladiators-death`. Inge
 - Looks: två gladiatorer (tung och lätt) och åtta till för raden, domare, ägare, läkare, tränare, spelens givare, publik.
 - Föremål: sköld, kort svärd, treudd, nät, träsvärd, käpp, bår, grötskål, lindor, myntkista, skrivrulle och penna, oliver, blommor.
 
-## The hook lab: tre öppningsklipp (18 november, natt)
-Sekund 0-5 byggd på tre sätt som egna klipp på 5,6 s (`engine/src/craft/shorts/gladiatorsHooks.ts`, kompositionerna GladiatorsHookA/B/C), så att den starkaste öppningen väljs innan filmen byggs. Rösten är bm_george. Arenan är en ny värld i den gemensamma koden (`world/arena.ts`: sand, målad mur med räcke, läktarrader, bakre mur med master, porten och spelgivarens loge) med en publik av små, sparade figurkort som jublar. Gladiatorerna och greppen kommer från greppblad 4, som väntar på svar. Ingen video renderas före svaret; klippen ritas upp som stillbilder.
+## The hook lab: tre öppningsklipp (18 november, natt; renderade 18 november förmiddag)
+Sekund 0-5 byggd på tre sätt som egna klipp på 5,6 s (`engine/src/craft/shorts/gladiatorsHooks.ts`, kompositionerna GladiatorsHookA/B/C), så att den starkaste öppningen väljs innan filmen byggs. Rösten är bm_george. Arenan är en ny värld i den gemensamma koden (`world/arena.ts`: sand, målad mur med räcke, läktarrader, bakre mur med master, porten och spelgivarens loge) med en publik av små, sparade figurkort som jublar. Gladiatorerna och greppen kommer från greppblad 4 (GODKÄNT 18 november). Klippen: `granskning/gladiators-death/hook-a.mp4`, `hook-b.mp4`, `hook-c.mp4`, och sekund 0-5 i tio bilder i sekunden i telefonstorlek: `hook-a-10fps-telefon.jpg`, `hook-b-...`, `hook-c-...`.
 
-| Klipp | Öppningstyp | Text i bild (ord) | Första ordet | Ljudträff | Klipp (s) |
-|---|---|---|---|---|---|
-| a | Striden pågår redan: treudden mot skölden i första rutan, sanden yr, publiken står; murmillon stöter förbi treudden och nätkämpen ryggar | DID GLADIATORS FIGHT TO THE DEATH? (6) | ruta 0 | duns och klang ruta 0 | 1,50 (Sir kikar mellan fingrarna) / 2,92 (Sir och kvinnan: "Two go in, one comes out. Right?") |
-| b | Påstående över handlingen: "Most gladiators walked out alive." över nätkämpen på knä med fingret uppe och svärdet över honom; domaren kliver in med käppen tvärs | MOST GLADIATORS WALKED OUT ALIVE. (5) | ruta 0 | "shing" och duns ruta 0 | 1,40 (domaren) / 2,66 (Sir och kvinnan) |
-| c | Sir i knipa: nätet i luften mot honom i första rutan, det landar över honom vid 0,32 s; nere på sanden rycker nätkämpen på axlarna | DID GLADIATORS FIGHT TO THE DEATH? (6) | ruta 0 | sus ruta 0, nätet landar 0,32 s | 1,50 (nätkämpen ser upp) / 2,92 (Sir med nätet över sig: "Two go in...") |
+| Klipp | Öppningstyp | Text i bild (ord) | Första ordet | Ljudträff | Klipp (s) | Slingan |
+|---|---|---|---|---|---|---|
+| a | Striden pågår redan: treudden mot skölden i första rutan, sanden yr, publiken står; murmillon stöter förbi treudden och nätkämpen ryggar | DID GLADIATORS FIGHT TO THE DEATH? (6) | ruta 0 ("Did") | duns och klang ruta 0 | 1,50 (Sir kikar mellan fingrarna) / 3,00 (Sir och kvinnan: "Two go in, one comes out. Right?") | sista bilden: Sir vänd mot kvinnan, som skakar på huvudet; klippet är bara öppningen, slingan prövas i filmen |
+| b | Påstående över handlingen: "Most gladiators walked out alive." över nätkämpen på knä med fingret uppe och svärdet över honom; domaren kliver in med käppen tvärs och ropar | MOST GLADIATORS WALKED OUT ALIVE. (5) | ruta 0 ("Most") | "shing" och duns ruta 0 | 1,50 (domaren; "WAIT" som text när han kliver in) / 3,29 (Sir och kvinnan, klippet på "Two") | som a |
+| c | Sir i knipa: nätet i luften mot honom i första rutan, det landar över honom vid 0,32 s; nere på sanden rycker nätkämpen på axlarna | DID GLADIATORS FIGHT TO THE DEATH? (6) | ruta 0 ("Did") | sus ruta 0, nätet landar 0,32 s | 1,50 (nätkämpen och murmillon) / 3,00 (Sir med nätet över sig: "Two go in...") | som a |
+
+Klippen inom sekund 0-5: a och c 1,5 / 1,5 / 2,0 s; b 1,5 / 1,79 / 1,71 s.
 
 Källor för klipp b:s påstående: [N] "About nine out of ten times, gladiators survived their bouts to fight another day." och [A-S] "In gladiatorial games, most of the time, both participants left the arena on their feet." Det lyfta fingret: [N] "wounded gladiators signaled surrender with a lifted finger."
 
@@ -86,5 +88,13 @@ Rättat innan klippen visas (ur min egen granskning av stillbilderna):
 - Domaren stod med ryggen mot oss och skymde kämparna. Han kliver nu in mellan dem med ansiktet mot oss.
 - Nätet såg ut som en bur av trä. Repen är tunna, och över Sir faller nätet rakt ned runt huvud och axlar.
 - Kameran vid räcket pekade förbi striden. Den pekar nu på nätkämpen och murmillon.
-- Sirs hand som räknar två och ett var avskuren av bildkanten. Den lyfts nu framför axeln.
 
+Rättat efter min granskning av de renderade klippen i tio bilder i sekunden i telefonstorlek (första renderingen kasserad):
+- Sirs högra hand, som räknar två och ett, låg i bildkanten med fingrarna avskurna. Han räknar nu med vänster hand bredvid huvudet, på kvinnans sida, med underarmen upprätt: två fingrar på "Two", ett på "one", fritt från bådas ansikten.
+- Klippen var 1,40 och 1,26 s (b) och 1,42 s (a, c), alltså kortare än regelns 1,5 s. Nu klipper a och c vid 1,5 och 3,0 s, och b vid 1,5 s och på "Two".
+- Domaren i b såg ut att grina (öppen mun i skägg). Nu ropar han med nedåtböjd mun och sänkta bryn.
+- I c låg frågans tre rader över Sirs mun medan han talade. Kameran tittar nu lite nedåt, och ansiktet ligger ovanför texten.
+- I c var murmillon avskuren av bildkanten när nätkämpen ryckte på axlarna. De står nu närmare varandra, och kameran pekar mellan dem.
+- Sista textraden "RIGHT?" stod 4-9 bildrutor. Nu står en text kvar minst 0,6 s när inget följer direkt (gemensam regel i `stage/film.ts`).
+- En text som skulle hänga kvar en kort stund efter ett klipp slutar nu på klippet (gemensam regel). I b kom "WAIT" fyra rutor in i Sirs bild, så nu klipper b på "Two".
+- Greppkontrollen läser nu varje bildruta och har granskningens två regler från greppblad 4 (stöt framifrån och sköld över ansiktet). Alla tre klippen klarar den.

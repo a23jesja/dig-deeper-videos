@@ -123,9 +123,10 @@ const BB_AT = { stool: inCabin([CABIN.stool[0], 0, CABIN.stool[2] + 0.27]), mirr
   bb.actAt(-1, { ...SIT, armL: arm(12, 8, 56, 10), armR: arm(12, 8, 56, 10), lean: 8, head: [0, 6, 0] }, 10, { in: 0.01, handL: "fist", handR: "fist", face: GRIM });
   bb.actAt(0.25, { ...STAND, armL: arm(8, 10, 18, 8), armR: arm(8, 10, 18, 8), lean: 4, head: [0, 2, 0] }, 9, { in: 0.7, antic: 0.25, over: 1.1, face: GRIM });
   const bs = standOf(BLACKBEARD_BARE_D, upAt, BBH, V, { ...STAND, lean: 4 });
-  // he looks down at the tray; his hands stay at his sides (the review of v4: reaching to its near edge, his open hand came down on the
-  // boy's fist; before that his sleeve came down against the boy's nose)
-  bb.actAt(1.1, { head: [20, 8, 0] }, 9, { in: 0.3, antic: 0, over: 1.2, face: { ...GRIM, brow: -0.6 } });
+  // he looks down at the tray, his left hand on his belt before his own coat (the review of v4: reaching to the tray's near edge, his open
+  // hand came down on the boy's fist, and hanging at his side it lay on it too; before that his sleeve came down against the boy's nose)
+  const jb = jointsOf(bs), belt = aside(near(mix(jb("pelvis"), jb("neck"), 0.14), V.cam, 0.2), V.cam, -rightWay(bs) * 0.04);
+  bb.actAt(1.0, { ...reach(bs, "L", belt), head: [20, 8, 0] }, 9, { in: 0.4, glide: true, handL: "fist", face: { ...GRIM, brow: -0.6 } });
   boy.actAt(-1, { ...reach(ys, "R", aside(yc, V.cam, yw * 0.27)), ...reach(ys, "L", aside(yc, V.cam, -yw * 0.27)), head: [-14, -6, 0] }, 10, { in: 0.01, handL: "grip", handR: "grip", face: { wide: 0.7, brow: 0.8, lid: 0, mouth: 0.2 } });
   shots.push({ id: "ready", capsTop: 160, a: T.s3, b: T.s4, still: 1.6, sounds: [{ t: 0.3, k: "creak", g: 0.8 }, ...boy.cues().filter((q) => q.k === "step").map((q) => ({ t: q.t, k: "step", g: 0.5, p: 0.3 }))],
     cam: (_t, u) => V.push(0.06 * u), sun: { target: inCabin([0, 0, 0]), reach: 4 },

@@ -104,21 +104,20 @@ Rösten är den inspelade versionen 2 (öppning b): [SOURCE] är ett påstående
 | 3,9-6,3 | [OWN] | To keep his face warm? | Sir Digsworth, hans felaktiga gissning |
 | 6,3-8,8 | [OWN] | No. Watch him get ready for a fight. | Sir Digsworth, leder in i svaret |
 | 8,8-11,5 | [SOURCE] | First he twisted his beard, which grew up to his eyes, into little tails with ribbons. | [J] |
-| 12,4-13,9 | [OWN], ny | Gorgeous. | pratbubbla, Blackbeard själv framför spegeln när rosetten sitter |
+| 9,9-11,5 | [OWN], ny | Gorgeous. | pratbubbla, Blackbeard själv framför spegeln (spegelbilden; knytbilden är tagen på händerna och hans huvud kom inte med) |
 | 14,4-16,6 | [SOURCE] | Then he tucked slow-burning fuses under his hat, so they smoked beside his beard. | [J] |
-| 16,8-18,3 | [OWN], ny | Hold still, Captain! | pratbubbla, skeppspojken med stickan, på armslängds avstånd |
+| (struken) | | Hold still, Captain! | ovanför pojkens huvud täckte bubblan skägget och stickan som når luntan, alltså det bilden handlar om |
 | 19,3-21,7 | [SOURCE] | Add six pistols across his chest. | [J] |
 | 21,7-24,2 | [SOURCE] | Now he looked like something out of hell. | [J] ("a Fury, from Hell") |
 | 24,2-27,6 | [SOURCE] | It was probably meant to make crews give up without a fight. | [R] |
 | 25,2-26,7 | [OWN], ny | Nope! | pratbubbla, en sjöman på handelsskeppet, när händerna går upp |
 | 27,6-32,4 | [SOURCE] | Nearly all of this comes from one book, printed six years after he died. | [J] 1724, [R] |
-| 30,0-31,6 | [OWN], ny, valfri | Is any of it true? | pratbubbla, den kvinnliga passageraren bland åhörarna |
+| 30,0-31,6 | [OWN], ny | Is any of it true? | pratbubbla, sjömannen till vänster bland åhörarna (kvinnan stod avskuren i bildkanten) |
 | 32,4-37,0 | [SOURCE] | So the fire was a costume. | sammanfattning av [J], [R] (för syns skull) |
 
-**Egna repliker: 6**, varav 3 nya ("Gorgeous.", "Hold still, Captain!", "Nope!"), plus en valfri fjärde ("Is any of it true?"). Ingen bär ett faktum:
+**Egna repliker: 6**, varav 3 nya som pratbubblor: "Gorgeous.", "Nope!" och "Is any of it true?". "Hold still, Captain!" är struken (se tabellen). Ingen bär ett faktum:
 - "Gorgeous." är ett skämt om hans fåfänga framför spegeln; banden själva är [SOURCE].
-- Pojken ber honom stå still medan luntorna tänds, vilket bara är bildens handling.
 - "Nope!" är handelsbesättningens reaktion på det som rösten säger var meningen.
-- Den valfria frågan lägger inget till rösten; den låter en åhörare tvivla, som rösten själv gör ("Nearly all of this comes from one book").
+- Frågan lägger inget till rösten; den låter en åhörare tvivla, som rösten själv gör ("Nearly all of this comes from one book").
 
 Inget skämt om död eller offer: ingen dör i filmen.

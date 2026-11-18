@@ -75,7 +75,8 @@ const Bubbles: React.FC<{ film: Film }> = ({ film }) => {
         const x = Math.max(40 + w / 2, Math.min(SW - 40 - w / 2, H[0] + (q.dx ?? 0))), y = Math.max(40 + h, Math.min(1400, H[1] + (q.dy ?? -px * 2.6)));
         const k = Math.min(1, (T - q.a) / 0.14), out = Math.min(1, Math.max(0, (q.b - T) / 0.08)), s = (k < 1 ? 0.6 + 0.4 * backOut(k) : 1) * (0.7 + 0.3 * out);
         // the tail: from the bubble's lower edge toward the head, stopping well short of the face
-        const dx = H[0] - x, dy = H[1] - y, far = Math.hypot(dx, dy) || 1, reach = Math.min(110, far * 0.55), tip = [x + (dx / far) * reach, y + (dy / far) * reach], bx = Math.max(x - w / 2 + 50, Math.min(x + w / 2 - 50, x + dx * 0.12));
+        // (its base slides along the bubble's lower edge to above the head, so that a bubble kept inside the picture still points at him)
+        const bx = Math.max(x - w / 2 + 50, Math.min(x + w / 2 - 50, H[0])), dx = H[0] - bx, dy = H[1] - y, far = Math.hypot(dx, dy) || 1, reach = Math.min(110, far * 0.55), tip = [bx + (dx / far) * reach, y + (dy / far) * reach];
         return (
           <React.Fragment key={`b${i}`}>
             <svg width={SW} height={SH} style={{ position: "absolute", left: 0, top: 0, opacity: k * out }}><polygon points={`${bx - 26},${y - 8} ${bx + 26},${y - 8} ${tip[0]},${tip[1]}`} fill="#fffdf5" stroke={STROKE} strokeWidth={7} strokeLinejoin="round" /></svg>

@@ -603,8 +603,9 @@ export const BLACK_FLAG: Film = {
     { T: TARP.mid + 2.2, words: ["NO FLAG?", "NO PROBLEM"], y: 0.72, size: 126 },
   ],
   // our own lines (DAILY-RULES, "Our own lines"), as bubbles over the picture: the merchant's sailor as the black flag goes up behind
-  // the pirates' cloth, and the mate when the dirty tarpaulin is at the masthead
-  bubbles: [{ a: SWAP + 0.55, b: cut("creep", "meant") - 0.03, text: "...Oh no.", who: "sailor" }, { a: TARP.mid + 2.0, b: TARP.b - 0.05, text: "Close enough.", who: "cor" }],
+  // the pirates' cloth, and the man at the end of the row in white shirts when the dirty tarpaulin is at the masthead (the mate who
+  // hauled it stands behind him, out of sight)
+  bubbles: [{ a: SWAP + 0.55, b: cut("creep", "meant") - 0.03, text: "...Oh no.", who: "sailor" }, { a: TARP.mid + 2.0, b: TARP.b - 0.05, text: "Close enough.", who: "shirt4" }],
   hits: [{ t: SIGHT.hit, amp: 0.3, dur: 0.3 }, { t: FIGHT.hit, amp: 0.35, dur: 0.25 }, { t: GUN.hit, amp: 0.9, dur: 0.4 }],
   beds: [{ k: "sea", a: 0, b: END, g: 1 }, { k: "wind", a: 0, b: END, g: 0.4 }], music: "shanty", audio: "craft/black-flag.wav",
 };

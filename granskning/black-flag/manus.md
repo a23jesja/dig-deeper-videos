@@ -232,7 +232,7 @@ Alla rättas i version 6: dragningen i nio steg i stället för fem, armen håll
 
 **Nya egna repliker, som pratbubblor ovanpå bilden (rösten flyttas inte):**
 - "...Oh no.": handelsskeppets sjöman, sedd bakifrån, när den svarta flaggan går upp och hans mugg faller, omkring 9,75–10,97 s.
-- "Close enough.": styrmannen när den smutsiga presenningen har kommit upp i masten, omkring 28,1–29,5 s.
+- "Close enough.": mannen längst till höger i raden med vita skjortor när den smutsiga presenningen har kommit upp i masten, omkring 28,1–29,5 s. Styrmannen som halade upp den står dold bakom honom, så repliken är hans som syns.
 
 Ingen av dem bär ett faktum: båda är bara reaktioner på det som rösten och bilden redan visar. Inget skämt om död.
 

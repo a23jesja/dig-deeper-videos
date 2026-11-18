@@ -1,0 +1,100 @@
+[
+ {
+  "id": "hook",
+  "a": 0.0,
+  "b": 2.299,
+  "text": "Were animals really put on trial?",
+  "voice": "bm_george"
+ },
+ {
+  "id": "vines",
+  "a": 2.599,
+  "b": 6.897,
+  "text": "Yes. Weevils were eating a village's vines, so the village took them to court.",
+  "voice": "bm_george"
+ },
+ {
+  "id": "lawyer",
+  "a": 7.117,
+  "b": 9.49,
+  "text": "And the court gave the weevils a lawyer.",
+  "voice": "bm_george"
+ },
+ {
+  "id": "get_lawyer",
+  "a": 9.67,
+  "b": 10.788,
+  "text": "They get a lawyer?",
+  "voice": "bm_daniel"
+ },
+ {
+  "id": "argued",
+  "a": 11.028,
+  "b": 16.407,
+  "text": "He argued that God made the animals before man, and gave them every green herb to eat.",
+  "voice": "bm_george"
+ },
+ {
+  "id": "offered",
+  "a": 16.667,
+  "b": 21.21,
+  "text": "So the village offered the weevils a field of their own, away from the vines.",
+  "voice": "bm_george"
+ },
+ {
+  "id": "water",
+  "a": 21.41,
+  "b": 24.734,
+  "text": "The villagers could still walk through it, and use its water.",
+  "voice": "bm_george"
+ },
+ {
+  "id": "said_no",
+  "a": 24.994,
+  "b": 29.249,
+  "text": "But the weevils' lawyer said no. The land was too barren for his clients.",
+  "voice": "bm_george"
+ },
+ {
+  "id": "picky",
+  "a": 29.469,
+  "b": 30.568,
+  "text": "Picky eaters.",
+  "voice": "bm_george"
+ },
+ {
+  "id": "experts",
+  "a": 30.828,
+  "b": 33.543,
+  "text": "So the court sent experts to inspect the field.",
+  "voice": "bm_george"
+ },
+ {
+  "id": "verdict",
+  "a": 33.783,
+  "b": 34.698,
+  "text": "The verdict?",
+  "voice": "bm_george"
+ },
+ {
+  "id": "lost",
+  "a": 34.918,
+  "b": 37.627,
+  "text": "Lost. The last page of the record is missing.",
+  "voice": "bm_george"
+ },
+ {
+  "id": "who_won",
+  "a": 37.887,
+  "b": 38.975,
+  "text": "So who won?",
+  "voice": "bf_isabella"
+ },
+ {
+  "id": "nobody",
+  "a": 39.215,
+  "b": 43.283,
+  "text": "Nobody knows. But yes: animals really were put on trial.",
+  "voice": "bm_george"
+ }
+]

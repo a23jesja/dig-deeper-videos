@@ -1,0 +1,746 @@
+[
+{
+"w": "Were",
+"a": 0.0,
+"b": 0.14,
+"line": "hook"
+},
+{
+"w": "animals",
+"a": 0.14,
+"b": 0.6,
+"line": "hook"
+},
+{
+"w": "really",
+"a": 0.6,
+"b": 1.14,
+"line": "hook"
+},
+{
+"w": "put",
+"a": 1.14,
+"b": 1.5,
+"line": "hook"
+},
+{
+"w": "on",
+"a": 1.5,
+"b": 1.68,
+"line": "hook"
+},
+{
+"w": "trial?",
+"a": 1.68,
+"b": 2.0,
+"line": "hook"
+},
+{
+"w": "Yes.",
+"a": 2.599,
+"b": 2.889,
+"line": "vines"
+},
+{
+"w": "Weevils",
+"a": 3.109,
+"b": 3.389,
+"line": "vines"
+},
+{
+"w": "were",
+"a": 3.389,
+"b": 3.569,
+"line": "vines"
+},
+{
+"w": "eating",
+"a": 3.569,
+"b": 3.849,
+"line": "vines"
+},
+{
+"w": "a",
+"a": 3.849,
+"b": 4.049,
+"line": "vines"
+},
+{
+"w": "village's",
+"a": 4.049,
+"b": 4.449,
+"line": "vines"
+},
+{
+"w": "vines,",
+"a": 4.449,
+"b": 4.769,
+"line": "vines"
+},
+{
+"w": "so",
+"a": 5.149,
+"b": 5.369,
+"line": "vines"
+},
+{
+"w": "the",
+"a": 5.369,
+"b": 5.489,
+"line": "vines"
+},
+{
+"w": "village",
+"a": 5.489,
+"b": 5.709,
+"line": "vines"
+},
+{
+"w": "took",
+"a": 5.709,
+"b": 6.029,
+"line": "vines"
+},
+{
+"w": "them",
+"a": 6.029,
+"b": 6.249,
+"line": "vines"
+},
+{
+"w": "to",
+"a": 6.249,
+"b": 6.429,
+"line": "vines"
+},
+{
+"w": "court.",
+"a": 6.429,
+"b": 6.729,
+"line": "vines"
+},
+{
+"w": "And",
+"a": 7.117,
+"b": 7.227,
+"line": "lawyer"
+},
+{
+"w": "the",
+"a": 7.227,
+"b": 7.327,
+"line": "lawyer"
+},
+{
+"w": "court",
+"a": 7.327,
+"b": 7.587,
+"line": "lawyer"
+},
+{
+"w": "gave",
+"a": 7.587,
+"b": 8.027,
+"line": "lawyer"
+},
+{
+"w": "the",
+"a": 8.027,
+"b": 8.267,
+"line": "lawyer"
+},
+{
+"w": "weevils",
+"a": 8.267,
+"b": 8.687,
+"line": "lawyer"
+},
+{
+"w": "a",
+"a": 8.687,
+"b": 8.947,
+"line": "lawyer"
+},
+{
+"w": "lawyer.",
+"a": 8.947,
+"b": 9.207,
+"line": "lawyer"
+},
+{
+"w": "They",
+"a": 9.67,
+"b": 9.82,
+"line": "get_lawyer"
+},
+{
+"w": "get",
+"a": 9.82,
+"b": 10.0,
+"line": "get_lawyer"
+},
+{
+"w": "a",
+"a": 10.0,
+"b": 10.14,
+"line": "get_lawyer"
+},
+{
+"w": "lawyer?",
+"a": 10.14,
+"b": 10.42,
+"line": "get_lawyer"
+},
+{
+"w": "He",
+"a": 11.028,
+"b": 11.158,
+"line": "argued"
+},
+{
+"w": "argued",
+"a": 11.158,
+"b": 11.498,
+"line": "argued"
+},
+{
+"w": "that",
+"a": 11.498,
+"b": 11.898,
+"line": "argued"
+},
+{
+"w": "God",
+"a": 11.898,
+"b": 12.118,
+"line": "argued"
+},
+{
+"w": "made",
+"a": 12.118,
+"b": 12.398,
+"line": "argued"
+},
+{
+"w": "the",
+"a": 12.398,
+"b": 12.578,
+"line": "argued"
+},
+{
+"w": "animals",
+"a": 12.578,
+"b": 12.978,
+"line": "argued"
+},
+{
+"w": "before",
+"a": 12.978,
+"b": 13.378,
+"line": "argued"
+},
+{
+"w": "man,",
+"a": 13.378,
+"b": 13.738,
+"line": "argued"
+},
+{
+"w": "and",
+"a": 14.098,
+"b": 14.278,
+"line": "argued"
+},
+{
+"w": "gave",
+"a": 14.278,
+"b": 14.458,
+"line": "argued"
+},
+{
+"w": "them",
+"a": 14.458,
+"b": 14.678,
+"line": "argued"
+},
+{
+"w": "every",
+"a": 14.678,
+"b": 15.058,
+"line": "argued"
+},
+{
+"w": "green",
+"a": 15.058,
+"b": 15.398,
+"line": "argued"
+},
+{
+"w": "herb",
+"a": 15.398,
+"b": 15.738,
+"line": "argued"
+},
+{
+"w": "to",
+"a": 15.738,
+"b": 15.958,
+"line": "argued"
+},
+{
+"w": "eat.",
+"a": 15.958,
+"b": 16.198,
+"line": "argued"
+},
+{
+"w": "So",
+"a": 16.667,
+"b": 16.817,
+"line": "offered"
+},
+{
+"w": "the",
+"a": 16.817,
+"b": 16.937,
+"line": "offered"
+},
+{
+"w": "village",
+"a": 16.937,
+"b": 17.197,
+"line": "offered"
+},
+{
+"w": "offered",
+"a": 17.197,
+"b": 17.737,
+"line": "offered"
+},
+{
+"w": "the",
+"a": 17.737,
+"b": 17.937,
+"line": "offered"
+},
+{
+"w": "weevils",
+"a": 17.937,
+"b": 18.317,
+"line": "offered"
+},
+{
+"w": "a",
+"a": 18.317,
+"b": 18.537,
+"line": "offered"
+},
+{
+"w": "field",
+"a": 18.537,
+"b": 18.817,
+"line": "offered"
+},
+{
+"w": "of",
+"a": 18.817,
+"b": 18.977,
+"line": "offered"
+},
+{
+"w": "their",
+"a": 18.977,
+"b": 19.157,
+"line": "offered"
+},
+{
+"w": "own,",
+"a": 19.157,
+"b": 19.537,
+"line": "offered"
+},
+{
+"w": "away",
+"a": 19.877,
+"b": 20.157,
+"line": "offered"
+},
+{
+"w": "from",
+"a": 20.157,
+"b": 20.457,
+"line": "offered"
+},
+{
+"w": "the",
+"a": 20.457,
+"b": 20.577,
+"line": "offered"
+},
+{
+"w": "vines.",
+"a": 20.577,
+"b": 20.857,
+"line": "offered"
+},
+{
+"w": "The",
+"a": 21.41,
+"b": 21.52,
+"line": "water"
+},
+{
+"w": "villagers",
+"a": 21.52,
+"b": 21.8,
+"line": "water"
+},
+{
+"w": "could",
+"a": 21.8,
+"b": 22.18,
+"line": "water"
+},
+{
+"w": "still",
+"a": 22.18,
+"b": 22.48,
+"line": "water"
+},
+{
+"w": "walk",
+"a": 22.48,
+"b": 22.72,
+"line": "water"
+},
+{
+"w": "through",
+"a": 22.72,
+"b": 23.04,
+"line": "water"
+},
+{
+"w": "it,",
+"a": 23.04,
+"b": 23.34,
+"line": "water"
+},
+{
+"w": "and",
+"a": 23.56,
+"b": 23.7,
+"line": "water"
+},
+{
+"w": "use",
+"a": 23.7,
+"b": 23.88,
+"line": "water"
+},
+{
+"w": "its",
+"a": 23.88,
+"b": 24.08,
+"line": "water"
+},
+{
+"w": "water.",
+"a": 24.08,
+"b": 24.44,
+"line": "water"
+},
+{
+"w": "But",
+"a": 24.994,
+"b": 25.104,
+"line": "said_no"
+},
+{
+"w": "the",
+"a": 25.104,
+"b": 25.224,
+"line": "said_no"
+},
+{
+"w": "weevils'",
+"a": 25.224,
+"b": 25.584,
+"line": "said_no"
+},
+{
+"w": "lawyer",
+"a": 25.844,
+"b": 25.924,
+"line": "said_no"
+},
+{
+"w": "said",
+"a": 25.924,
+"b": 26.304,
+"line": "said_no"
+},
+{
+"w": "no.",
+"a": 26.304,
+"b": 26.644,
+"line": "said_no"
+},
+{
+"w": "The",
+"a": 27.044,
+"b": 27.164,
+"line": "said_no"
+},
+{
+"w": "land",
+"a": 27.164,
+"b": 27.424,
+"line": "said_no"
+},
+{
+"w": "was",
+"a": 27.424,
+"b": 27.624,
+"line": "said_no"
+},
+{
+"w": "too",
+"a": 27.624,
+"b": 27.904,
+"line": "said_no"
+},
+{
+"w": "barren",
+"a": 27.904,
+"b": 28.244,
+"line": "said_no"
+},
+{
+"w": "for",
+"a": 28.244,
+"b": 28.464,
+"line": "said_no"
+},
+{
+"w": "his",
+"a": 28.464,
+"b": 28.584,
+"line": "said_no"
+},
+{
+"w": "clients.",
+"a": 28.584,
+"b": 28.984,
+"line": "said_no"
+},
+{
+"w": "Picky",
+"a": 29.469,
+"b": 29.899,
+"line": "picky"
+},
+{
+"w": "eaters.",
+"a": 29.899,
+"b": 30.379,
+"line": "picky"
+},
+{
+"w": "So",
+"a": 30.828,
+"b": 30.958,
+"line": "experts"
+},
+{
+"w": "the",
+"a": 30.958,
+"b": 31.078,
+"line": "experts"
+},
+{
+"w": "court",
+"a": 31.078,
+"b": 31.258,
+"line": "experts"
+},
+{
+"w": "sent",
+"a": 31.258,
+"b": 31.598,
+"line": "experts"
+},
+{
+"w": "experts",
+"a": 31.598,
+"b": 32.118,
+"line": "experts"
+},
+{
+"w": "to",
+"a": 32.118,
+"b": 32.458,
+"line": "experts"
+},
+{
+"w": "inspect",
+"a": 32.458,
+"b": 32.798,
+"line": "experts"
+},
+{
+"w": "the",
+"a": 32.798,
+"b": 33.058,
+"line": "experts"
+},
+{
+"w": "field.",
+"a": 33.058,
+"b": 33.318,
+"line": "experts"
+},
+{
+"w": "The",
+"a": 33.783,
+"b": 33.933,
+"line": "verdict"
+},
+{
+"w": "verdict?",
+"a": 33.933,
+"b": 34.313,
+"line": "verdict"
+},
+{
+"w": "Lost.",
+"a": 34.918,
+"b": 35.208,
+"line": "lost"
+},
+{
+"w": "The",
+"a": 35.428,
+"b": 35.488,
+"line": "lost"
+},
+{
+"w": "last",
+"a": 35.488,
+"b": 35.708,
+"line": "lost"
+},
+{
+"w": "page",
+"a": 35.708,
+"b": 36.028,
+"line": "lost"
+},
+{
+"w": "of",
+"a": 36.028,
+"b": 36.228,
+"line": "lost"
+},
+{
+"w": "the",
+"a": 36.228,
+"b": 36.328,
+"line": "lost"
+},
+{
+"w": "record",
+"a": 36.328,
+"b": 36.688,
+"line": "lost"
+},
+{
+"w": "is",
+"a": 36.688,
+"b": 37.048,
+"line": "lost"
+},
+{
+"w": "missing.",
+"a": 37.048,
+"b": 37.308,
+"line": "lost"
+},
+{
+"w": "So",
+"a": 37.887,
+"b": 38.137,
+"line": "who_won"
+},
+{
+"w": "who",
+"a": 38.137,
+"b": 38.357,
+"line": "who_won"
+},
+{
+"w": "won?",
+"a": 38.357,
+"b": 38.617,
+"line": "who_won"
+},
+{
+"w": "Nobody",
+"a": 39.215,
+"b": 39.545,
+"line": "nobody"
+},
+{
+"w": "knows.",
+"a": 39.545,
+"b": 40.025,
+"line": "nobody"
+},
+{
+"w": "But",
+"a": 40.485,
+"b": 40.585,
+"line": "nobody"
+},
+{
+"w": "yes:",
+"a": 40.585,
+"b": 40.865,
+"line": "nobody"
+},
+{
+"w": "animals",
+"a": 41.505,
+"b": 41.605,
+"line": "nobody"
+},
+{
+"w": "really",
+"a": 41.605,
+"b": 42.005,
+"line": "nobody"
+},
+{
+"w": "were",
+"a": 42.005,
+"b": 42.305,
+"line": "nobody"
+},
+{
+"w": "put",
+"a": 42.305,
+"b": 42.465,
+"line": "nobody"
+},
+{
+"w": "on",
+"a": 42.465,
+"b": 42.665,
+"line": "nobody"
+},
+{
+"w": "trial.",
+"a": 42.665,
+"b": 43.005,
+"line": "nobody"
+}
+]

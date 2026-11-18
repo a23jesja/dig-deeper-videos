@@ -1,0 +1,91 @@
+{
+ "voice": "bm_george",
+ "speed": 1.09,
+ "gap": 0.2,
+ "lead": 0.0,
+ "risk": [
+  "weevils",
+  "weevils'",
+  "village's",
+  "verdict",
+  "barren",
+  "clients",
+  "herb",
+  "inspect"
+ ],
+ "note": "Length test 'Were animals really put on trial?' (granskning/animal-trials/manus.md, version 1, approved with three changes on 18 Nov): the weevils of Saint-Julien, 1587. Sir Digsworth bm_george; the two villagers' own lines in bm_daniel and bf_isabella (anonymous villagers, never the real lawyers or judge). Opening a (the question) is recorded here; openings b and c add their own first line when the hook lab is built.",
+ "lines": [
+  {
+   "id": "hook",
+   "text": "Were animals really put on trial?",
+   "gap": 0.3
+  },
+  {
+   "id": "vines",
+   "text": "Yes. Weevils were eating a village's vines, so the village took them to court.",
+   "gap": 0.22
+  },
+  {
+   "id": "lawyer",
+   "text": "And the court gave the weevils a lawyer.",
+   "gap": 0.18
+  },
+  {
+   "id": "get_lawyer",
+   "text": "They get a lawyer?",
+   "voice": "bm_daniel",
+   "gap": 0.24
+  },
+  {
+   "id": "argued",
+   "text": "He argued that God made the animals before man, and gave them every green herb to eat.",
+   "gap": 0.26
+  },
+  {
+   "id": "offered",
+   "text": "So the village offered the weevils a field of their own, away from the vines.",
+   "gap": 0.2
+  },
+  {
+   "id": "water",
+   "text": "The villagers could still walk through it, and use its water.",
+   "gap": 0.26
+  },
+  {
+   "id": "said_no",
+   "text": "But the weevils' lawyer said no. The land was too barren for his clients.",
+   "gap": 0.22
+  },
+  {
+   "id": "picky",
+   "text": "Picky eaters.",
+   "gap": 0.26
+  },
+  {
+   "id": "experts",
+   "text": "So the court sent experts to inspect the field.",
+   "gap": 0.24
+  },
+  {
+   "id": "verdict",
+   "text": "The verdict?",
+   "gap": 0.22
+  },
+  {
+   "id": "lost",
+   "text": "Lost. The last page of the record is missing.",
+   "gap": 0.26
+  },
+  {
+   "id": "who_won",
+   "text": "So who won?",
+   "voice": "bf_isabella",
+   "gap": 0.24
+  },
+  {
+   "id": "nobody",
+   "text": "Nobody knows. But yes: animals really were put on trial.",
+   "gap": 0.3
+  }
+ ]
+}

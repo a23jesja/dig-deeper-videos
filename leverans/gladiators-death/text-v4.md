@@ -44,7 +44,7 @@ title.py (18 November, on version 4), the title "Did gladiators really fight to 
 - ONE FINGER UP: 80/100, no word repeated from the title.
 
 ## Phone copy
-`gladiators-death-v4-telefon.mp4`: 1080x1920, H.264 High, AAC 320 kbit/s. The md5 of the file that is sent is given in the STOPP.
+`gladiators-death-v4c-telefon.mp4` (md5 e96a689c): 1080x1920, H.264 High, AAC 320 kbit/s.
 
 ## Listen check (pronunciation)
 `riskord.wav` and `riskord.md` (made with the voice on 18 November): gladiators, referee, doctored, spared. No word needed locking in this film. Nobody has listened to the file yet.

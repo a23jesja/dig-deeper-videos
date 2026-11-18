@@ -140,8 +140,9 @@ export const COMPLAINT: Prop = { name: "complaint", uses: { carry: { arm: A(10, 
   show: { arm: A(84, 8, 94, 0), level: 0, ok: within(-20, 20, "a roll held out to show lies level") } } };
 /** a clay jug carried by the loop handle over its mouth (props.ts jugHeld), hanging upright as a bucket does */
 export const JUG: Prop = { name: "jug", uses: { carry: { arm: A(6, 12, 12, 6), level: 0, ok: within(-8, 8, "a jug carried by its handle hangs upright") } } };
-/** a surveyor's measuring rod held at chest height (props.ts measureRod), standing upright with its foot on the ground */
-export const ROD: Prop = { name: "rod", uses: { staff: { arm: A(24, 14, 62, 6), level: 90, ok: within(75, 105, "a measuring rod stands upright, its foot on the ground") } } };
+/** a surveyor's measuring rod (props.ts measureRod), held at arm's length out to his side at the waist and standing upright with its
+ *  foot on the ground, its top clear of his head from the front and the side (review of grip sheet 6: held close, it stood before his face) */
+export const ROD: Prop = { name: "rod", uses: { staff: { arm: A(20, 52, 30, 40), level: 90, ok: within(75, 105, "a measuring rod stands upright, its foot on the ground") } } };
 /** the judge's gavel (props.ts gavel), its head along +x: raised to strike, or brought down on the table */
 export const GAVEL: Prop = { name: "gavel", uses: { raised: { arm: A(130, 24, 160, 10), level: 60, ok: within(25, 105, "a raised gavel's head is up") },
   strike: { arm: A(46, 16, 80, 8), level: -25, ok: within(-75, 10, "a gavel that strikes points down at the table") } } };
@@ -656,7 +657,12 @@ export const auditGrips = (film: Film, step?: number) => {
                 if (Math.hypot(x - (a1[0] + u * vx), y - (a1[1] + u * vy)) < rw) hit = `${Y.name}'s arm`; } if (hit) break; } if (hit) break; }
           if (!hit && things.length) { pick.set((x / 1080) * 2 - 1, 1 - (y / 1920) * 2); ray.setFromCamera(pick, lensOf); ray.far = H.d - 0.03; for (const th of things) if (ray.intersectObject(th.o, true).length) { hit = `the ${th.name}`; break; } }
           if (hit) { cov++; by = hit; } }
-        const key = `${s.id}:${X.name}:cover`; if (cov / pts.length > 0.25 && !faceFlag.has(key)) { faceFlag.add(key); bad.push(`${at}: ${X.name}'s face is ${Math.round((100 * cov) / pts.length)} % behind ${by}`); } }
+        const key = `${s.id}:${X.name}:cover`; if (cov / pts.length > 0.25 && !faceFlag.has(key)) { faceFlag.add(key); bad.push(`${at}: ${X.name}'s face is ${Math.round((100 * cov) / pts.length)} % behind ${by}`); }
+        // a held thing before either eye fails at once, however little of the head it hides (review of grip sheet 6: the measuring rod
+        // stood before the expert's eye and nose, about a fifth of his head, and passed)
+        if (things.length) for (const en of ["eyeA", "eyeB"]) { const e = X.mark?.(en); if (!e) continue; const c = scr(e); if (c[0] < 0 || c[0] > 1080 || c[1] < 0 || c[1] > 1920) continue;
+          pick.set((c[0] / 1080) * 2 - 1, 1 - (c[1] / 1920) * 2); ray.setFromCamera(pick, lensOf); ray.far = far(e) - 0.005;
+          const hit = things.find((th) => ray.intersectObject(th.o, true).length), ek = `${s.id}:${X.name}:eye`; if (hit && !faceFlag.has(ek)) { faceFlag.add(ek); bad.push(`${at}: the ${hit.name} is before ${X.name}'s eye`); } } }
       // the faces in the crowd in the middle ground (a head at least 14 px across in the picture): none a quarter behind a held thing
       if (things.length) for (const cr of CROWD_LOG.heads) { const hc: V3 = [cr.at[0], cr.at[1] + 0.88 * cr.h, cr.at[2]], c = scr(hc), e = scr(aside(hc, cam, 0.075 * cr.h, 0)), R = Math.hypot(e[0] - c[0], e[1] - c[1]);
         if (R < 14 || c[0] < 0 || c[0] > 1080 || c[1] < 0 || c[1] > 1920) continue;

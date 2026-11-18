@@ -632,8 +632,9 @@ export const complaintRoll = (len = 0.3) => group([mesh(cyl(0.025, 0.025, len, 1
 export const jugHeld = (h = 0.26) => { const r = h * 0.36, j = group([mesh(cyl(r * 0.8, r, h * 0.62, 14), "#b0643c", { at: [0, h * 0.31, 0], line: 0.5, shadow: false }),
   mesh(cyl(r * 0.45, r * 0.8, h * 0.22, 14), "#b0643c", { at: [0, h * 0.73, 0], line: 0.5, shadow: false }), mesh(cyl(r * 0.5, r * 0.45, h * 0.06, 14), "#9a5432", { at: [0, h * 0.87, 0], line: 0.4, shadow: false }),
   mesh(arc(r * 0.55, h * 0.03, Math.PI, 12), "#9a5432", { at: [0, h * 0.9, 0], line: 0.4, shadow: false })]); j.position.y = -(h * 0.9 + r * 0.55); return group([j]); };
-/** a surveyor's measuring rod, marked in dark bands, held at chest height (the origin): its foot along -x toward the ground, its top along +x */
-export const measureRod = (below = 1.18, above = 0.8) => { const len = below + above, g = group([mesh(box(len, 0.042, 0.042), "#c9a46a", { at: [(above - below) / 2, 0, 0], line: 0.5, shadow: false })]);
+/** a surveyor's measuring rod, marked in dark bands, held at the waist (the origin): its foot along -x toward the ground, its top along +x,
+ *  ending below his chin, so that it never rises in front of his face whichever way he is turned */
+export const measureRod = (below = 1.18, above = 0.34) => { const len = below + above, g = group([mesh(box(len, 0.042, 0.042), "#c9a46a", { at: [(above - below) / 2, 0, 0], line: 0.5, shadow: false })]);
   for (let x = -below + 0.15; x < above - 0.05; x += 0.3) g.add(mesh(box(0.15, 0.045, 0.045), "#3a2a1a", { at: [x, 0, 0], line: 0, shadow: false })); return g; };
 /** the judge's gavel: a wooden mallet held by its handle (the origin), its head across the far end along +x */
 export const gavel = () => group([mesh(box(0.24, 0.022, 0.022), "#6a4a2a", { at: [0.07, 0, 0], line: 0.5, shadow: false }), mesh(cyl(0.034, 0.034, 0.1, 12), "#7a5232", { at: [0.2, 0, 0], line: 0.5, shadow: false })]);

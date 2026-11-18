@@ -68,8 +68,11 @@ else if (what === "check") {
   if (film.sign && film.sign.a < 5) bad.push("the sign comes before second five");
   // nothing in the foreground covers a face or cuts a figure in two (Jesper, 18 November): rays from the lens through the world
   for (const o of occlusions(film)) bad.push(o);
-  // no line of text over a face, a chest or a hand (the review of gladiators v4)
-  for (const o of textOver(film)) bad.push(o);
+  // no line of text over a face, a chest or a hand (the review of gladiators v4). TEXT=faces: only over faces (the zero-tolerance rule,
+  // point 8), for a film whose captions keep the placement of a version published before that rule (Nero v3, the review of 18 Nov)
+  { const facesOnly = process.env.TEXT === "faces"; let skipped = 0;
+    for (const o of textOver(film)) { if (facesOnly && !/'s face|a face in the crowd/.test(o)) { skipped++; continue; } bad.push(o); }
+    if (facesOnly) console.log(`text check: faces only (TEXT=faces); ${skipped} lines over a chest or a hand passed over, as in the version published before`); }
   // nothing goes into anything, on every frame (Jesper, 18 November: "Impossible things: zero tolerance"); `body` runs it alone
   { const r = bodyCheck(film); for (const l of bodyLines(film, r)) bad.push(`body: ${l}`); console.log(`body check: ${r.frames} frames, ${r.figuresTried} figure-frames, ${r.pairs} pairs tried, ${r.faults.length} faults`); }
   if (bad.length) { console.error(`FILM CHECK FAILED for ${name}:`); for (const b of bad) console.error("  " + b); process.exit(1); }

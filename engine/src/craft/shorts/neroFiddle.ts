@@ -264,10 +264,10 @@ const PAPER = once(() => paint("scrollbare", 8, 8, (q) => { q.fillStyle = "#efe2
 //    smoke; the emperor looks, and starts so that the grapes fly. Also the second half of the closing line ("And he probably wasn't even
 //    there."): the same terrace, without the messenger
 const SIGNPOST = once(() => { const g = new THREE.Group(); g.add(mesh(box(0.1, 2.3, 0.1), "#7a4a26", { at: [0, 1.15, 0], line: 0.6 }));
-  const b = painted(["ANTIUM", "50 km from Rome"], 1.12, 0.48, { ink: "#3a2414", bg: "#f3e2b8", edge: "#7a4a26", pad: 0.1 }); b.position.set(0.1, 2.0, 0.07); g.add(b);
+  const b = painted(["ANTIUM", "50 km from Rome"], 1.12, 0.48, { ink: "#3a2414", bg: "#f3e2b8", edge: "#7a4a26", pad: 0.1 }); b.position.set(0.5, 2.0, 0.07); g.add(b);      // (v3: hung out to the right of the post, which stands further left, so that the whole board is in the picture)
   // the arrow above the board, toward the smoke (along +x of the post, which the film turns to face the lens: the smoke rises on the
   // horizon to the right, in the open sky above the emperor)
-  const arrow = group([mesh(box(0.7, 0.1, 0.04), "#b3261e", { at: [0.2, 0, 0], line: 0.5 }), mesh(box(0.2, 0.2, 0.04), "#b3261e", { at: [0.56, 0, 0], rot: [0, 0, Math.PI / 4], line: 0.5 })]); arrow.position.set(0.1, 2.42, 0.08); g.add(arrow);      // above the board, clear of every head
+  const arrow = group([mesh(box(0.7, 0.1, 0.04), "#b3261e", { at: [0.2, 0, 0], line: 0.5 }), mesh(box(0.2, 0.2, 0.04), "#b3261e", { at: [0.56, 0, 0], rot: [0, 0, Math.PI / 4], line: 0.5 })]); arrow.position.set(0.4, 2.42, 0.08); g.add(arrow);      // above the board, clear of every head
   return g; });
 const villaShot = (id: string, a0: number, b0: number, messenger: boolean) => {
   const len = b0 - a0, v = FIRE.villa, V = lens(v.x + 3.2, v.y + 1.45, v.z + 4.6, 0.3, -1, -4, 58);
@@ -278,12 +278,12 @@ const villaShot = (id: string, a0: number, b0: number, messenger: boolean) => {
   if (messenger) { nero.actAt(LOOK, { head: [40, -4, 0], lean: 0 }, JUMP - LOOK, { in: 0.2, out: 0.08, antic: 0, over: 1.2, face: { lid: 0, wide: 0.8, brow: 1, mouth: 0.3, smile: -0.7, gaze: [0.8, 0] } });
     nero.actAt(JUMP, "recoil", 9, { in: 0.08, antic: 0, over: 1.5 }); }
   // (v3: he stops beside the signpost, not in front of it, where it seemed to go up through his head and down between his legs)
-  const [m0x, m0z] = V.spot(1.5, -2.6), [m1x, m1z] = V.spot(3.25, -1.3), run = Math.hypot(m1x - m0x, m1z - m0z);
+  const [m0x, m0z] = V.spot(7.2, -1.5), [m1x, m1z] = V.spot(3.3, -0.42), run = Math.hypot(m1x - m0x, m1z - m0z);
   const msg = mover(RUNNER_D, 1.78, m0x, m0z, (Math.atan2(m1x - m0x, m1z - m0z) * 180) / Math.PI); msg.run(mt(msg, run)).stand(9);
   msg.actAt(HERE, { lean: 40, py: -0.12, armL: arm(44, 10, 30, 0), armR: arm(44, 10, 30, 0), head: [0, 20, 0] }, POINT - HERE + 0.05, { in: 0.16, out: 0.14, antic: 0, over: 1.3, handL: "open", handR: "open", face: { lid: 0.5, brow: 1, mouth: 0.7, smile: -1 } });
   msg.actAt(POINT, { lean: 8, twist: -30, armL: arm(100, 70, 104, 76), head: [-30, -4, 0] }, 9, { in: 0.2, antic: 0.3, over: 1.6, handL: "point", face: { wide: 1, lid: 0, brow: 1, mouth: 0.5, smile: -1 } });
   let GR0: V3 | null = null;
-  const [fx, fz] = V.spot(330, 64), [px, pz] = V.spot(3.7, -0.5);      // about 11 degrees right of the lens axis: above the emperor
+  const [fx, fz] = V.spot(330, 64), [px, pz] = V.spot(3.7, -0.88);      // about 11 degrees right of the lens axis: above the emperor
   GRADES.push({ a: a0, b: b0, g: () => null });
   add({ id, a: a0, b: b0, still: messenger ? POINT + 0.4 : len * 0.6,
     sounds: messenger ? [...msg.cues().filter((q) => q.k === "step" && q.t < HERE).map((q) => ({ t: q.t, k: "step", run: true, g: 0.9, p: -0.5 })), { t: HERE, k: "scuff", g: 0.9, p: -0.2 }, { t: POINT, k: "whoosh", g: 0.5, p: -0.3 }, { t: JUMP, k: "whoosh", g: 0.7, p: 0.3 }] : [{ t: 0.3, k: "splash", g: 0.25 }],
@@ -327,7 +327,7 @@ const SIX_B = cut("six", "rumour"), SIX_A = SIX_B - 2.0;
   const sacker = lane(BAKER_D, 1.7, -0.9, 5.8, 0.26, -12); sacker.actAt(-1, { lean: 28, armL: arm(150, 20, 200, -10), armR: arm(150, 20, 200, -10), head: [0, -20, 0] }, 10, { in: 0.01, handL: "grip", handR: "grip", face: { brow: -1, lid: 0.3, mouth: 0.5, smile: -0.8 } });
   const oldman = lane(OLDMAN_D, 1.64, -0.6, 7.4, 0.2, -20); oldman.actAt(-1, { lean: 12, armR: arm(-20, 10, -60, 10), armL: arm(26, 8, 60, 12), head: [24, 4, 0] }, 10, { in: 0.01, handR: "fist", handL: "open", face: { brow: 0.6, lid: 0.3, smile: -0.5 } });
   const gran = lane(GRANNY_D, 1.5, -0.15, 7.5, 0.2, -20); gran.actAt(-1, { lean: 18, armR: arm(60, 6, 80, 0), armL: arm(30, 10, 70, 0), head: [0, -8, 0] }, 10, { in: 0.01, handR: "grip", handL: "open", face: { brow: 0.6, lid: 0.4, smile: -0.5 } });
-  const AHEAD = 2.1, folk: [string, Design, MM][] = [["gran", GRANNY_D, gran], ["oldman", OLDMAN_D, oldman], ["sacker", BAKER_D, sacker], ["woman2", ROMAN_WOMAN2_D, woman2], ["cough", CITIZEN_D, cough], ["girl", GIRL_D, girl], ["mother", ROMAN_WOMAN_D, mother]];
+  const AHEAD = 2.7, folk: [string, Design, MM][] = [["gran", GRANNY_D, gran], ["oldman", OLDMAN_D, oldman], ["sacker", BAKER_D, sacker], ["woman2", ROMAN_WOMAN2_D, woman2], ["cough", CITIZEN_D, cough], ["girl", GIRL_D, girl], ["mother", ROMAN_WOMAN_D, mother]];
   GRADES.push({ a: a0, b: b0, g: () => "linear-gradient(180deg, #b6aecb 0%, #f2c9b4 46%, #f6e2cf 100%)" });
   add({ id: "gardens", a: a0, b: b0, still: 2.2,
     sounds: [{ t: 0.05, k: "creak", g: 0.9, dur: 0.6 }, ...cough.cues().filter((c) => c.k === "step" && c.t < len).map((c) => ({ t: c.t, k: "step", g: 0.6, p: -0.2 })), ...mother.cues().filter((c) => c.k === "step" && c.t < len).map((c) => ({ t: c.t, k: "step", g: 0.5, p: 0.2 })),
@@ -384,7 +384,7 @@ const SANG = at("rumour", /^Nero/) - 0.12;
   const a0 = cut("six", "rumour"), b0 = SANG, q = FIRE.garden, V = lens(q.x + 1.0, 1.5, q.z + 8.0, 0, 1, -3, 56), ON = 0.95, POINT = 1.85;
   const who = (D: Design, h: number, d: number, l: number, off: number) => { const [x, z] = V.spot(d, l), m = mover(D, h, x, z, V.toward(x, z, off)); m.stand(9); return m; };
   // (v3: the bearded man a little further from the woman, whose head lay in his face as she leaned in to whisper)
-  const a = who(CITIZEN_D, 1.74, 2.95, -0.42, -30), b = who(ROMAN_WOMAN_D, 1.66, 2.65, 0.08, 6), c = who(MERCHANT_D, 1.72, 2.95, 0.72, 20);
+  const a = who(CITIZEN_D, 1.74, 2.95, -0.52, -30), b = who(ROMAN_WOMAN_D, 1.66, 2.65, 0.04, 6), c = who(MERCHANT_D, 1.72, 2.95, 0.6, 20);
   a.actAt(-1, { lean: 10, roll: 8, armL: arm(60, 20, 150, -30), armR: arm(50, 0, 110, -30), head: [40, 4, 8] }, 10, { in: 0.01, handR: "open", handL: "open", face: { brow: 0.8, lid: 0.1, mouth: 0.5, gaze: [0.8, 0] } });
   wag(a, 0.1, ON - 0.1, P({ armR: arm(50, 0, 116, -40) }), P({ armR: arm(50, 0, 100, -16) }), 0.24, { handR: "open" });
   a.actAt(ON + 0.1, { lean: 0, roll: 0, head: [24, 0, 0], armL: arm(20, 10, 50, 0), armR: arm(20, 10, 50, 0) }, 9, { in: 0.3, antic: 0, over: 1.1, handL: "relaxed", handR: "relaxed", face: { brow: 0.6, lid: 0.1, smile: 0.3, gaze: [0.7, 0] } });
@@ -531,7 +531,7 @@ const LYRE = at("cithara", /^kind/) - 0.32, SEVEN = at("cithara", /^seven/), WID
 //     cithara has its seven strings in every picture)
 const AND = (at("close", /^lyre/) + 0.43 + at("close", /^And/)) / 2;
 {
-  const a0 = WIDE, b0 = AND, V = lens(1.83, 1.45, -0.35, -0.62, 0.78, -2, 58);      // (v3: 20 cm to the right, with Sir Digsworth)
+  const a0 = WIDE, b0 = AND, V = lens(1.93, 1.45, -0.27, -0.62, 0.78, -2, 62);      // (v3: 8 cm to the right and a little wider, with Sir Digsworth)
   const nero = mover(NERO_D, 1.74, NX, NZ, V.toward(NX, NZ, 22)); nero.stand(9);
   const SING = { lid: 0.9, brow: 1, mouth: 1 }, S13: Stand = { D: NERO_D, at: [NX, 0, NZ], heading: V.toward(NX, NZ, 22), h: 1.74, cam: V.cam, pose: { lean: -6 } };
   const HOLD13 = (citharaPose(S13, false) as { armL: [[number, number], [number, number]] }).armL;

@@ -38,7 +38,8 @@ const lantern = (g: THREE.Group, T: number, cam: Cam) => { const p = inCabin(CAB
 /** the glow at the lit end of a held thing */
 const tipGlow = (g: THREE.Group, o: THREE.Object3D, cam: Cam, w = 0.14) => { o.updateMatrixWorld(true); const q = new THREE.Vector3(...(o.userData.tip as V3)).applyMatrix4(o.matrixWorld); glow(g, [q.x, q.y, q.z], w, w, 0, Math.atan2(cam.pos[0] - q.x, cam.pos[2] - q.z)); };
 const rightWay = (s: Stand) => { const j = jointsOf(s), r = aside([0, 0, 0], s.cam, 1); return Math.sign((j("shR")[0] - j("shL")[0]) * r[0] + (j("shR")[2] - j("shL")[2]) * r[2]) || -1; };
-const SIT: Partial<Pose> = { py: -0.5, legL: { th: [84, 8], sh: [6, 4] }, legR: { th: [84, -8], sh: [6, -4] } };
+// (v4, the body check: sitting, his seat on the stool's top, not sunk into it)
+const SIT: Partial<Pose> = { py: -0.42, legL: { th: [84, 8], sh: [6, 4] }, legR: { th: [84, -8], sh: [6, -4] } };
 const STAND: Partial<Pose> = { py: 0, legL: { th: [0, 4], sh: [0, 3] }, legR: { th: [0, -4], sh: [0, -3] } };
 /** where the cut between two lines falls: half way through the pause */
 const cut = (a: string, b: string) => (L[a].b + L[b].a) / 2;
@@ -49,11 +50,12 @@ const T = { s1: cut("hook", "why"), s2: 3.89, s3: cut("guess", "no"), s4: cut("n
 // scatter (the hook lab's clip b, now with the sling of pistols across his chest: "In Time of Action, he wore a Sling")
 { const LOW = lens(-10.6, 0.95, 1.3, 1, 0.06, 9, 56), [rx, rz] = LOW.spot(3.9, 0.15), bb = mover(BLACKBEARD_ARMED_D, 1.92, rx, rz, LOW.toward(rx, rz, 0)); bb.walk(mt(bb, 1.4), { step: 0.6, tau: 0.45 }).stand(9);
   bb.actAt(-1, { ...usePose(SABRE, "raised", "R"), armL: arm(20, 30, 50, 30), head: [0, 6, 0], lean: 4 }, 10, { in: 0.01, handL: "fist", handR: "grip", face: { ...MENACE, mouth: 0.5 } });
-  const backer = (D: Design, h: number, d: number, l: number, off: number, t0: number) => { const [x, z] = LOW.spot(d, l), m = mover(D, h, x, z, LOW.toward(x, z, off)); m.stand(9);
+  const backer = (D: Design, h: number, d: number, l: number, off: number, t0: number, spread = 34) => { const [x, z] = LOW.spot(d, l), m = mover(D, h, x, z, LOW.toward(x, z, off)); m.stand(9);
     m.actAt(-1, { armL: arm(40, 24, 96, 10), armR: arm(40, 24, 96, 10), head: [0, -4, 0] }, 10, { in: 0.01, handL: "open", handR: "open", face: { wide: 0.8, lid: 0, brow: 0.8, smile: -0.6 } });
-    m.actAt(t0, { armL: arm(148, 34, 178, 16), armR: arm(148, 34, 178, 16), lean: -8, py: -0.02 }, 9, { in: 0.3, antic: 0.2, over: 1.4, handL: "open", handR: "open", face: { wide: 1, lid: 0, brow: 1, mouth: 0.6, smile: -1 } });
+    m.actAt(t0, { armL: arm(148, spread, 178, 16), armR: arm(148, spread, 178, 16), lean: -8, py: -0.02 }, 9, { in: 0.3, antic: 0.2, over: 1.4, handL: "open", handR: "open", face: { wide: 1, lid: 0, brow: 1, mouth: 0.6, smile: -1 } });
     wag(m, 0.4, 5, P({ roll: 2.4, py: -0.01 }), P({ roll: -2.4, py: 0.01 }), 0.17); return m; };
-  const sailor = backer(SAILOR_D, 1.82, 3.3, -0.74, -24, 0.4), old = backer(OLDHAND_D, 1.74, 3.9, 1.8, 14, 0.55);      // (out at the right edge: further in he stood behind the rail and the cutlass arm)
+  // (v4, the body check: his hands up a little less wide, clear of the cutlass's hilt, which his left hand went into for a frame)
+  const sailor = backer(SAILOR_D, 1.82, 3.6, -0.78, -24, 0.4, 20), old = backer(OLDHAND_D, 1.74, 3.9, 1.8, 14, 0.55);      // (out at the right edge: further in he stood behind the rail and the cutlass arm)
   shots.push({ id: "hook", a: 0, b: T.s1, still: 1.2,
     sounds: [{ t: 0.0, k: "blast", g: 1.0 }, { t: 0.05, k: "shing", g: 0.7, p: 0.2 }, ...bb.cues().filter((q) => q.k === "step" && q.t < T.s1).map((q) => ({ t: q.t, k: "step", g: 0.8 }))],
     cam: (_t, u) => LOW.push(0.15 * u), sun: { target: [-7.5, MD, 3], reach: 9 },
@@ -75,7 +77,7 @@ const faceShot = (id: string, a0: number, b0: number, D: Design, y: number, at: 
 
 // 3. WHY WOULD ANYONE DO THAT? TO KEEP HIS FACE WARM? Sir Digsworth leans out from behind a barrel, eyebrows up; then he holds his hands
 // to his own moustache as if to a fire, sniffs, and coughs
-{ const SV = lens(-8.0, 1.25, 5.7, -0.15, -1, 4, 42), [kx, kz] = SV.spot(1.7, -0.25), [sx, sz] = SV.spot(2.0, 0.05), sir = mover(SIR_D, 1.8, sx, sz, SV.toward(sx, sz, 10)); sir.stand(9);
+{ const SV = lens(-8.0, 1.25, 5.7, -0.15, -1, 4, 42), [kx, kz] = SV.spot(1.7, -0.25), [sx, sz] = SV.spot(2.07, 0.12), sir = mover(SIR_D, 1.8, sx, sz, SV.toward(sx, sz, 10)); sir.stand(9);
   const g0 = L.guess.a - T.s2;
   sir.actAt(-1, { roll: -16, lean: 6, py: -0.1, armL: arm(30, 10, 80, 0), armR: arm(40, 20, 110, 10), head: [10, 0, -10] }, 10, { in: 0.01, handL: "fist", handR: "open", face: { wide: 0.9, lid: 0, brow: 1, mouth: 0.3 } });
   sir.actAt(0.3, { head: [-8, -6, -8] }, 9, { in: 0.3, antic: 0, over: 1.2, face: { wide: 0.6, lid: 0.1, brow: 1, mouth: 0.4, smile: -0.2 } });
@@ -96,18 +98,23 @@ const atHead = (s: Stand, side: number, r: number, down: number): V3 => { const 
 const CX = CABIN.at[0], CZ = CABIN.at[2];
 /** a lens in the cabin: at (x, y, z) in the cabin's own terms, looking along (fx, fz) */
 const cabinLens = (x: number, y: number, z: number, fx: number, fz: number, pitch: number, fov: number) => lens(CX + x, FL + y, CZ + z, fx, fz, pitch, fov);
-const BB_AT = { stool: inCabin(CABIN.stool), mirror: inCabin([-1.45, 0, -0.35]), table: inCabin([0.05, 0, -0.05]) };
+// (v4: he sits on the front of the stool, which stands behind him, so that the stool is behind his card and not drawn through his legs)
+const BB_AT = { stool: inCabin([CABIN.stool[0], 0, CABIN.stool[2] + 0.27]), mirror: inCabin([-1.45, 0, -0.35]), table: inCabin([0.05, 0, -0.05]) };
 
 // 4. NO. WATCH HIM GET READY FOR A FIGHT. He gets up heavily from the stool and holds out his hand; the boy hurries in with a tray of
 // ribbons and stops beside him, not in front of him (Jesper's review of v3: the boy stood before the captain)
-{ const V = cabinLens(0.0, 1.25, 2.95, -0.09, -1, -3, 50), bb = mover(BLACKBEARD_BARE_D, 1.92, BB_AT.stool[0], BB_AT.stool[2], V.toward(BB_AT.stool[0], BB_AT.stool[2], 18)); bb.stand(9);
+// (The review of v3: he stood up inside the stool, his legs between its legs. Getting up he steps forward off it, as one does, and
+// stands a step before it)
+{ const V = cabinLens(0.0, 1.25, 2.95, -0.09, -1, 0, 50), BBH = V.toward(BB_AT.stool[0], BB_AT.stool[2], 18), bb = mover(BLACKBEARD_BARE_D, 1.92, BB_AT.stool[0], BB_AT.stool[2], BBH);
+  const UP = 0.35, upAt: V3 = [BB_AT.stool[0] + Math.sin((BBH * Math.PI) / 180) * UP, FL, BB_AT.stool[2] + Math.cos((BBH * Math.PI) / 180) * UP]; bb.stand(0.55).walk(mt(bb, UP), { step: 0.22, tau: 0.3 }).stand(9);
   // the boy comes in from the right to the captain's side, level with him, turned half toward him, the tray held out in both hands
-  const ex = CX + 0.15, ez = CZ + 0.32, eh = V.toward(ex, ez, -48), boy = mover(SHIPBOY_D, 1.28, ex - Math.sin((eh * Math.PI) / 180) * 0.16, ez - Math.cos((eh * Math.PI) / 180) * 0.16, eh); boy.walk(mt(boy, 0.16), { step: 0.32, tau: 0.22 }).stand(9);
+  const ex = CX + 0.2, ez = CZ + 0.5, eh = V.toward(ex, ez, -48), boy = mover(SHIPBOY_D, 1.28, ex - Math.sin((eh * Math.PI) / 180) * 0.16, ez - Math.cos((eh * Math.PI) / 180) * 0.16, eh); boy.walk(mt(boy, 0.16), { step: 0.32, tau: 0.22 }).stand(9);
   const ys = standOf(SHIPBOY_D, [ex, FL, ez], eh, V), yj = jointsOf(ys), yc = near(mix(yj("pelvis"), yj("neck"), 0.6), V.cam, 0.2), yw = rightWay(ys);
   bb.actAt(-1, { ...SIT, armL: arm(20, 20, 60, 20), armR: arm(20, 20, 60, 20), lean: 8, head: [0, 6, 0] }, 10, { in: 0.01, handL: "fist", handR: "fist", face: GRIM });
   bb.actAt(0.25, { ...STAND, lean: 4, head: [0, 2, 0] }, 9, { in: 0.7, antic: 0.25, over: 1.1, face: GRIM });
-  const bs = standOf(BLACKBEARD_BARE_D, [BB_AT.stool[0], FL, BB_AT.stool[2]], V.toward(BB_AT.stool[0], BB_AT.stool[2], 18), V, { ...STAND, lean: 4 });
-  bb.actAt(1.1, { ...reach(bs, "L", aside(yc, V.cam, 0, 0.1)), head: [20, 8, 0] }, 9, { in: 0.3, antic: 0, over: 1.2, handL: "open", face: { ...GRIM, brow: -0.6 } });
+  const bs = standOf(BLACKBEARD_BARE_D, upAt, BBH, V, { ...STAND, lean: 4 });
+  // his hand to the near edge of the tray, on his side, low past the boy's head
+  bb.actAt(1.1, { ...reach(bs, "L", aside(yc, V.cam, -0.12, 0.02)), head: [20, 8, 0] }, 9, { in: 0.3, antic: 0, over: 1.2, handL: "open", face: { ...GRIM, brow: -0.6 } });
   boy.actAt(-1, { ...reach(ys, "R", aside(yc, V.cam, yw * 0.27)), ...reach(ys, "L", aside(yc, V.cam, -yw * 0.27)), head: [-14, -6, 0] }, 10, { in: 0.01, handL: "grip", handR: "grip", face: { wide: 0.7, brow: 0.8, lid: 0, mouth: 0.2 } });
   shots.push({ id: "ready", capsTop: 160, a: T.s3, b: T.s4, still: 1.6, sounds: [{ t: 0.3, k: "creak", g: 0.8 }, ...boy.cues().filter((q) => q.k === "step").map((q) => ({ t: q.t, k: "step", g: 0.5, p: 0.3 }))],
     cam: (_t, u) => V.push(0.06 * u), sun: { target: inCabin([0, 0, 0]), reach: 4 },
@@ -199,7 +206,8 @@ const TUCK_AT = inCabin([0.15, 0, 0.35]);
   const look = (t: number) => (t < LIT ? BLACKBEARD_UNLIT_D : BLACKBEARD_D), STEP = once(() => stool());
   shots.push({ id: "light", a: T.s7, b: T.s8, still: 0.8, sounds: [{ t: LIT - 0.05, k: "spray", g: 0.35 }, { t: LIT + 0.1, k: "creak", g: 0.4 }],
     cam: (_t, u) => V.push(0.06 * u), sun: { target: TUCK_AT, reach: 4 },
-    cast: (t) => [on("bb", look(t), bb, t, FL, { seed: 3 }), { ...on("boy", SHIPBOY_D, boy, t, FL + STOOL_H, { seed: 8 }), noShade: true }],
+    // (the review of v3, B3: his hand turned grey in the shade the cabin cast on his card; his skin the same colour everywhere)
+    cast: (t) => [{ ...on("bb", look(t), bb, t, FL, { seed: 3 }), noShade: true }, { ...on("boy", SHIPBOY_D, boy, t, FL + STOOL_H, { seed: 8 }), noShade: true }],
     // (the spill points at the fuse all through, and comes away from it as the boy leans back: it never crosses a face or a body)
     things: (g, c2, t, T2, cam) => { lantern(g, T2, cam); const st = STEP(); st.position.set(bx0, FL, bz0); g.add(st); SPILL_O().scale.x = SPL / 0.42;
       wield(g, SPILL_O(), SPILL, "light", c2.boy, "L", cam, { aim: fe }); tipGlow(g, SPILL_O(), cam); if (t >= LIT) fuseSmoke(g, c2.bb, T2 - (T.s7 + LIT) + 0.2, cam); } }); }
@@ -261,12 +269,12 @@ const PIST_AT = inCabin([0.35, 0, 0.1]), CUT9 = 1.15;
 
 // 12. NEARLY ALL OF THIS COMES FROM ONE BOOK, PRINTED SIX YEARS AFTER HE DIED. On a deck years later a sailor reads it out to a few
 // listeners, who stare; the ship's boy hides behind the mast
-{ const R = lens(-7.25, 1.5, 3.9, -0.12, -1, -1, 50), [rx, rz] = R.spot(2.7, 0.1), rd = mover(OLDHAND_D, 1.74, rx, rz, R.toward(rx, rz, -15)); rd.stand(9);
+{ const R = lens(-7.25, 1.5, 3.9, -0.12, -1, -1, 50), [rx, rz] = R.spot(2.7, 0.06), rd = mover(OLDHAND_D, 1.74, rx, rz, R.toward(rx, rz, -15)); rd.stand(9);
   const rs = standOf(OLDHAND_D, [rx, MD, rz], R.toward(rx, rz, -15), R), rj = jointsOf(rs), rc = near(mix(rj("pelvis"), rj("neck"), 0.66), R.cam, 0.24), rw = rightWay(rs);
   rd.actAt(-1, { ...reach(rs, "R", aside(rc, R.cam, rw * 0.27)), ...reach(rs, "L", aside(rc, R.cam, -rw * 0.27)), head: [0, 8, 0] }, 10, { in: 0.01, handL: "grip", handR: "grip", face: { brow: 0.8, lid: 0.1, mouth: 0.5 } });
   wag(rd, 0, 6, P({ head: [-4, 8, 0] }), P({ head: [4, 6, 0] }), 0.9, { handL: "grip", handR: "grip", face: { brow: 0.8, lid: 0.1, mouth: 0.5 } });
   // (the listeners half a step in from the edges and the lens a little wider: in v3 both were cut by the picture's edges)
-  const listen = ([[SAILOR_D, 1.82, 3.5, -0.5, 40], [TOWNSWOMAN_D, 1.64, 3.4, 0.52, -40]] as [Design, number, number, number, number][]).map(([D, h, d, l, off], i) => {
+  const listen = ([[SAILOR_D, 1.82, 3.6, -0.6, 40], [TOWNSWOMAN_D, 1.64, 3.7, 0.62, -40]] as [Design, number, number, number, number][]).map(([D, h, d, l, off], i) => {
     const [x, z] = R.spot(d, l), m = mover(D, h, x, z, R.toward(x, z, off)); m.stand(9);
     m.actAt(-1, { armL: arm(20, 12, 70, 10), armR: arm(20, 12, 70, 10), head: [0, -2, 0] }, 10, { in: 0.01, handL: "relaxed", handR: "relaxed", face: { wide: 0.9, lid: 0, brow: 1, mouth: i === 1 ? 0.5 : 0.2, smile: -0.4 } });
     if (D === SHIPBOY_D) m.actAt(1.6, { px: -0.35, armL: arm(60, -20, 120, -20), armR: arm(60, -20, 120, -20), head: [-20, 0, 0] }, 9, { in: 0.35, antic: 0.2, over: 1.2, handL: "fist", handR: "fist", face: { wide: 1, lid: 0, brow: 1, mouth: 0.5, smile: -0.8 } });

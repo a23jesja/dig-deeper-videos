@@ -12,7 +12,7 @@ import type { V3 } from "../stage/film";
 export const CABIN = { w: 4.4, d: 3.4, h: 2.3, win: [-1.25, 0, 1.25], winW: 0.72, winH: 0.78, winY: 0.98,
   /** where the cabin stands in the world (its floor's middle) */ at: [42, 0.6, 0] as V3,
   /** in the cabin's own terms: the table's middle, the lantern's flame, the stool, the mirror's glass */
-  table: [0.55, 0, -0.55] as V3, flame: [0.85, 0.96, -0.7] as V3, stool: [-0.45, 0, 0.15] as V3, mirror: [-2.08, 1.52, -0.45] as V3 };
+  table: [0.6, 0, -0.95] as V3, flame: [0.9, 0.96, -1.1] as V3, stool: [-0.45, 0, -0.12] as V3, mirror: [-2.08, 1.52, -0.45] as V3 };
 /** a point given in the cabin's own terms, in the world */
 export const inCabin = (p: V3): V3 => [CABIN.at[0] + p[0], CABIN.at[1] + p[1], CABIN.at[2] + p[2]];
 

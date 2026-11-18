@@ -55,6 +55,11 @@ export type Look = {
   stripes?: { col: string; check?: boolean };
   /** a neckerchief tied at the throat, its knot and two ends in front (its colour) */
   scarf?: string;
+  /** Blackbeard's sling (Johnson 1724: "a Sling over his Shoulders, with three brace of Pistols, hanging in Holsters like Bandaliers"):
+   *  a broad strap from his left shoulder across his chest to his right hip, three holsters on it with two pistol butts out of each */
+  sling?: boolean;
+  /** a linen bandage wound round the forearm of this side; `wrapLeg` round the shin */
+  wrap?: Side; wrapLeg?: Side;
   legs: "trousers" | "bare"; trous?: string; feet: "shoes" | "sandals" | "boots"; spats?: boolean; sleeve: "long" | "short";
   /** knee breeches: the colour of the stockings below the knee; buckle = a buckle on the shoe */
   stockings?: string; buckle?: boolean; cuffs?: string;
@@ -379,6 +384,7 @@ const drawTrue = (L: Look) => (k: Ink, sk: Sk, o: FigOpts) => {
     const sp = shoePts(sk, s, 50, bare ? 0.27 : 0.34, bare ? 0.15 : 0.2);
     if (L.skirt) { piece(k, sp.pts, "#2a2220"); return; }
     piece(k, seg(K, A, L.leg[1] * (L.stockings ? 0.86 : 1), L.leg[2], bare || L.stockings ? 6 : 3), L.stockings ?? col);
+    if (L.wrapLeg === s) { piece(k, seg(mid(K, A, 0.06), mid(K, A, 0.8), L.leg[1] + 5, L.leg[2] + 5, 0, 0.3, true), "#f6f2e6"); const dv = unit(sub(A, K)), pp: P2 = [-dv[1], dv[0]]; for (const u of [0.25, 0.45, 0.65]) { const m = mid(K, A, u), w0 = L.leg[1] + 3; k.line([add(add(m, pp, -w0), dv, -4), add(add(m, pp, w0), dv, 4)], k.ol * 0.45, "#bdb5a2"); } }
     if (L.greave === s) { piece(k, seg(mid(K, A, 0.04), mid(K, A, 0.86), L.leg[1] + 6, L.leg[2] + 5, 0, 0.3, true), "#c9ced6"); k.line([mid(K, A, 0.1), mid(K, A, 0.8)], k.ol * 0.5); }
     if (L.feet === "sandals") { piece(k, sp.pts, shade(L.skin, 0.97)); for (const u of [0.3, 0.6]) k.line([add(add(sp.O, sp.ex, sp.span * u), sp.up, 2), add(add(sp.O, sp.ex, sp.span * (u + 0.05)), sp.up, P.foot * (u < 0.5 ? 0.27 : 0.18))], 6, "#7a4a2a", "butt"); k.line([sp.O, add(sp.O, sp.ex, sp.span)], 7, "#7a4a2a", "butt"); }
     else { piece(k, sp.pts, "#2a2220"); if (L.feet === "boots") piece(k, seg(mid(K, A, 0.5), add(A, [0, P.ankle * 0.3]), L.leg[2] + 5, L.leg[2] + 6, 0, 0.3, true), "#3a2a22"); if (L.spats) piece(k, seg(mid(K, A, 0.84), add(A, [0, P.ankle * 0.45]), L.leg[2] + 3, L.leg[2] + 7, 0, 0.3, true), "#f6eedb"); }
@@ -409,6 +415,7 @@ const drawTrue = (L: Look) => (k: Ink, sk: Sk, o: FigOpts) => {
     const upper = seg(Sh, E, L.arm[0], L.arm[1]); piece(k, upper, col, long && L.weave ? Sh : undefined); if (long) woven(Sh, E, L.arm[0], L.arm[1], upper);
     if (!long) piece(k, seg(Sh, mid(Sh, E, 0.5), L.arm[0] + 6, L.arm[0] + 4), L.coat);
     if (L.armour) piece(k, seg(add(Sh, [0, -6]), mid(Sh, E, 0.32), L.arm[0] + 12, L.arm[0] + 10), "#b9c3cd");
+    if (L.wrap === s) { const wc = "#f6f2e6"; piece(k, seg(mid(E, W, 0.12), mid(E, W, 0.82), L.arm[1] + 4, L.arm[2] + 4, 2), wc); const dv = unit(sub(W, E)), pp: P2 = [-dv[1], dv[0]]; for (const u of [0.25, 0.4, 0.55, 0.7]) { const m = mid(E, W, u), w0 = L.arm[1] + 3; k.line([add(add(m, pp, -w0), dv, -4), add(add(m, pp, w0), dv, 4)], k.ol * 0.45, "#bdb5a2"); } }
     if (L.manica === s) { const mc = "#efe6cf", band = (A0: P2, B0: P2, wa: number, wb: number) => { piece(k, seg(A0, B0, wa, wb, 2), mc); const dv = unit(sub(B0, A0)), pp: P2 = [-dv[1], dv[0]]; for (const u of [0.2, 0.4, 0.6, 0.8]) { const m = mid(A0, B0, u), w0 = (wa + (wb - wa) * u) * 0.95; k.line([add(m, pp, -w0), add(m, pp, w0)], k.ol * 0.55); } };
       band(mid(E, W, 0.02), mid(E, W, 0.9), L.arm[1] + 5, L.arm[2] + 5); band(Sh, E, L.arm[0] + 5, L.arm[1] + 5); }
     if (L.galerus === s) { const out = Math.sign(Sh[0] - sk.j.neck[0]) || 1, q = (x: number, y: number): P2 => [Sh[0] + out * x, Sh[1] + y]; piece(k, [q(-8, -10), q(74, -2), q(96, -112), q(40, -118)], "#c9ced6"); k.line([q(14, -40), q(84, -38)], k.ol * 0.6); }
@@ -444,6 +451,11 @@ const drawTrue = (L: Look) => (k: Ink, sk: Sk, o: FigOpts) => {
       if (L.apron && !front && !back) k.shadeEdge(t, L.apron, 24 * d, 0);
       if (L.cloak && front) k.shape([S(-L.rows[3][1], top + 6), S(L.rows[3][1] * 0.2, top + 6), S(L.rows[2][1] * 1.2, top * 0.3), S(L.rows[1][1] * 1.2, top * 0.1), S(-L.rows[3][1] * 1.2, top * 0.62)], L.cloak, k.ol);
       if (L.belt) k.line([F.T(-400, top * 0.3), F.T(400, top * 0.3)], 12, L.belt, "butt");
+      // the sling: from his left shoulder across his chest to his right hip (on his back the other way round), three holsters with two
+      // pistol butts standing out of each on the front
+      if (L.sling) { const a0: P2 = [70, top + 10], a1: P2 = [-90, top * 0.12], on = (u: number, w: number): P2 => S(lerp(a0[0], a1[0], u) + w, lerp(a0[1], a1[1], u), back);
+        k.shape([on(0, -15), on(0, 15), on(1, 15), on(1, -15)], "#4a3020", k.ol * 0.8);
+        if (!back) for (const u of [0.25, 0.5, 0.75]) { const c = on(u, 0); k.shape([[c[0] - 15, c[1] - 6], [c[0] + 15, c[1] - 6], [c[0] + 13, c[1] + 30], [c[0] - 13, c[1] + 30]], "#2e2016", k.ol * 0.7); for (const sx of [-1, 1]) { k.shape([[c[0] + sx * 9 - 5, c[1] - 4], [c[0] + sx * 9 + 5, c[1] - 4], [c[0] + sx * 12 + 5, c[1] - 26], [c[0] + sx * 12 - 5, c[1] - 26]], "#6a4428", k.ol * 0.6); k.dot(c[0] + sx * 12, c[1] - 28, 5.5, BRASS); } } }
     });
     k.shape(t, null);
     // the neckerchief: a band round the throat, and in front its knot with two short ends hanging from it (seen from behind, its point

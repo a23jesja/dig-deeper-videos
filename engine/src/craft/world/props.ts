@@ -553,3 +553,71 @@ export const netOpen = (w = 1.8, drop = 0.1, n = 8, hang = 0) => { const g = new
   return g; };
 /** the referee's long stick (the rudis of the summa rudis): held near one end (the origin), the stick along +x */
 export const refStick = (len = 1.35) => group([mesh(box(len, 0.026, 0.026), "#7a5a36", { at: [len / 2 - 0.08, 0, 0], line: 0.6, shadow: false }), mesh(ball(0.022, 8), "#5a3a22", { at: [len - 0.08, 0, 0], line: 0.5, shadow: false })]);
+
+// ---------------- Blackbeard getting ready, and the gladiators' school (grip sheet 5) ----------------
+const F0 = { line: 0.4, shadow: false } as const;
+/** a ribbon tied in a bow: the knot at the origin, a loop to each side and two short ends hanging, flat toward +z */
+export const ribbonBow = (col = "#c8323a", s = 1) => { const g = group([mesh(ball(0.017 * s, 8), col, { ...F0, scale: [1, 1, 0.5] })]);
+  for (const k of [-1, 1]) g.add(mesh(ball(1, 10), col, { ...F0, at: [k * 0.032 * s, 0.006 * s, 0], scale: [0.032 * s, 0.018 * s, 0.006] }), mesh(box(0.013 * s, 0.055 * s, 0.006), col, { ...F0, at: [k * 0.013 * s, -0.03 * s, 0], rot: [0, 0, k * 0.35] }));
+  return g; };
+/** a wooden tray with ribbons of six colours lying on it, carried flat in two hands by its ends (userData.grips), its top toward +y */
+export const tray = (w = 0.46, d = 0.3) => { const g = group([mesh(box(w, 0.025, d), C.wood, {}), ...[-1, 1].map((s) => mesh(box(w, 0.04, 0.02), C.woodD, { at: [0, 0.025, s * (d / 2 - 0.01)], ...F0 })), ...[-1, 1].map((s) => mesh(box(0.02, 0.04, d), C.woodD, { at: [s * (w / 2 - 0.01), 0.025, 0], ...F0 }))]);
+  ["#c8323a", "#e7bb48", "#2f6fb0", "#3f9a5c", "#c8323a", "#7a4a9a"].forEach((c, i) => g.add(mesh(box(w * 0.7, 0.008, 0.024), c, { at: [i % 2 ? 0.03 : -0.03, 0.02, -d / 2 + 0.05 + (i * (d - 0.1)) / 5], rot: [0, 0.12 * ((i % 3) - 1), 0], line: 0.3, shadow: false })));
+  g.userData.grips = [[-(w / 2 + 0.02), 0, 0], [w / 2 + 0.02, 0, 0]]; g.userData.depth = d; return g; };
+/** a thin stick lit at a lantern (a spill): held at its foot (the origin), the stick along +x, its end glowing (userData.tip, where the
+ *  film puts the glow) */
+export const spill = (len = 0.42) => { const g = group([mesh(box(len, 0.012, 0.012), "#c9a46a", { at: [len / 2, 0, 0], ...F0 }), mesh(ball(0.014, 8), "#ff7a2a", { at: [len, 0, 0], line: 0.3, shadow: false })]); g.userData.tip = [len, 0, 0]; return g; };
+/** a short piece of slow match: held at one end (the origin), the twisted cord along +x, the other end glowing when lit (userData.tip) */
+export const fuseCord = (len = 0.17, lit = false) => { const g = group([mesh(box(len, 0.015, 0.015), "#8a7a5a", { at: [len / 2, 0, 0], ...F0 })]);
+  for (let x = 0.02; x < len; x += 0.03) g.add(mesh(box(0.005, 0.017, 0.017), "#5a4a32", { at: [x, 0, 0], rot: [0.5, 0, 0], line: 0, shadow: false }));
+  if (lit) g.add(mesh(ball(0.013, 8), "#ff6a1a", { at: [len, 0, 0], line: 0.3, shadow: false })); g.userData.tip = [len, 0, 0]; return g; };
+/** Blackbeard's sling: three brace of pistols in holsters on a broad leather strap, lifted in two hands by the strap's ends
+ *  (userData.grips); the strap along x, the holsters hanging below it, two pistol butts standing out of each */
+export const pistolSling = (len = 0.92) => { const g = group([mesh(box(len, 0.065, 0.02), "#5a3a22", {})]);
+  for (let i = 0; i < 3; i++) { const x = (i - 1) * len * 0.3; g.add(mesh(box(0.12, 0.2, 0.05), "#3a2a1c", { at: [x, -0.12, 0.02], line: 0.6, shadow: false }));
+    for (const s of [-1, 1]) g.add(mesh(box(0.035, 0.085, 0.03), "#6a4428", { at: [x + s * 0.03, -0.005, 0.05], rot: [0, 0, s * 0.3], line: 0.5, shadow: false }), mesh(ball(0.022, 8), C.gold, { at: [x + s * 0.042, 0.035, 0.05], line: 0.4, shadow: false })); }
+  g.userData.grips = [[-len / 2 - 0.02, 0, 0], [len / 2 + 0.02, 0, 0]]; g.userData.depth = 0.08; return g; };
+/** a book held open in two hands by its outer edges (userData.grips): on the left page a woodcut of a bearded man with a fuse smoking on
+ *  each side of his face, on the right page lines of print; the pages face +z */
+export const openBook = (w = 0.52, h = 0.36) => { const map = paint("bookwoodcut", 512, 352, (g) => {
+    g.fillStyle = "#f3e6c4"; g.fillRect(0, 0, 512, 352); g.fillStyle = "#cdb98a"; g.fillRect(253, 0, 6, 352); g.strokeStyle = "#2a1a14"; g.lineWidth = 3; g.strokeRect(22, 22, 210, 308);
+    // the woodcut: hat, face, a beard of tails, a smoking fuse on each side
+    g.fillStyle = "#2a1a14"; g.beginPath(); g.ellipse(127, 112, 70, 20, 0, 0, 7); g.fill(); g.fillRect(85, 70, 84, 44);
+    g.fillStyle = "#f3e6c4"; g.beginPath(); g.ellipse(127, 150, 40, 36, 0, 0, 7); g.fill(); g.strokeStyle = "#2a1a14"; g.lineWidth = 3; g.stroke();
+    g.fillStyle = "#2a1a14"; for (const x of [112, 142]) { g.beginPath(); g.arc(x, 142, 5, 0, 7); g.fill(); }
+    g.beginPath(); g.moveTo(84, 160); g.quadraticCurveTo(127, 290, 170, 160); g.fill();
+    g.strokeStyle = "#f3e6c4"; g.lineWidth = 3; for (let x = 100; x <= 156; x += 14) { g.beginPath(); g.moveTo(x, 190); g.lineTo(x + 2, 260); g.stroke(); }
+    g.strokeStyle = "#2a1a14"; g.lineWidth = 4; for (const s of [-1, 1]) { g.beginPath(); g.moveTo(127 + s * 62, 125); g.lineTo(127 + s * 70, 100); g.stroke(); g.beginPath(); g.moveTo(127 + s * 70, 98); g.bezierCurveTo(127 + s * 90, 80, 127 + s * 55, 60, 127 + s * 80, 38); g.stroke(); }
+    g.fillStyle = "#2a1a14"; g.font = "700 22px 'Times New Roman', Georgia, serif"; g.textAlign = "center"; g.fillText("Capt. TEACH", 127, 318);
+    g.fillStyle = "#5a4a3a"; for (let y = 40; y < 330; y += 18) g.fillRect(280, y, y % 54 === 4 ? 150 : 205, 6); });
+  const g = group([mesh(box(w + 0.03, h + 0.03, 0.02), "#7a2a22", { at: [0, 0, -0.012] }), mesh(box(w, h, 0.012), "#ffffff", { map, line: 0.5, shadow: false })]);
+  g.userData.grips = [[-w / 2 - 0.01, 0, 0], [w / 2 + 0.01, 0, 0]]; g.userData.depth = 0.04; return g; };
+/** a wooden practice sword (rudis), held as a gladius is: the grip across the origin, a small guard, the blunt wooden blade along +x */
+export const woodSword = (blade = 0.48) => layered(group([mesh(box(0.13, 0.038, 0.038), "#9a6a3a", { at: [-0.027, 0, 0], shadow: false }), mesh(box(0.03, 0.07, 0.06), "#7a4a26", { at: [0.054, 0, 0], line: 0.6, shadow: false }),
+  mesh(ball(0.03, 10), "#7a4a26", { at: [-0.1, 0, 0], scale: [0.8, 1, 1], line: 0.6, shadow: false }),
+  Object.assign(mesh(slab("rudis" + blade, [[0, -0.028], [blade * 0.9, -0.028], [blade, -0.01], [blade, 0.01], [blade * 0.9, 0.028], [0, 0.028]], 0.02), "#c99a5a", { at: [0.07, 0, -0.01], line: 0.9, shadow: false }), { name: "blade" })]), {});
+/** a stretcher: two poles with canvas between them, carried by two men at the near pole's ends (userData.grips); the poles along x, the
+ *  canvas toward -z behind the near pole, its top toward +y (a man lies on it) */
+export const stretcher = (len = 2.3, w = 0.56) => { const g = group([mesh(box(len, 0.045, 0.045), C.woodD, { line: 0.6 }), mesh(box(len, 0.045, 0.045), C.woodD, { at: [0, 0, -w], line: 0.6 }), mesh(box(len * 0.72, 0.012, w), "#e9dcbc", { at: [0, 0.01, -w / 2], line: 0.5 })]);
+  g.userData.grips = [[-len / 2 + 0.06, 0, 0], [len / 2 - 0.06, 0, 0]]; g.userData.depth = w; return g; };
+/** a wooden bowl, held from below: the fingers round its foot (the origin), the bowl standing on them, upright; full of porridge, or of
+ *  olives. Its foot is `lift` above the origin, so that the hand under it does not hide it */
+export const bowl = (r = 0.075, olives = false, lift = 0.045) => { const g = group([mesh(cyl(r, r * 0.6, r * 0.7, 16), C.wood, { at: [0, lift + r * 0.35, 0], line: 0.6 }), mesh(cyl(r * 0.94, r * 0.94, 0.01, 16), olives ? "#4a4a2a" : "#efe2bc", { at: [0, lift + r * 0.66, 0], line: 0, shadow: false })]);
+  if (olives) for (let i = 0; i < 7; i++) { const a = i * 2.4, d = (i % 3) * r * 0.25; g.add(mesh(ball(r * 0.17, 8), i % 2 ? "#3a3a24" : "#5a5a2a", { at: [Math.cos(a) * d, lift + r * 0.72, Math.sin(a) * d], scale: [1, 0.8, 1], line: 0.3, shadow: false })); }
+  return g; };
+/** a wooden spoon: held at the end of its handle (the origin), its bowl along +x */
+export const spoon = (len = 0.17) => group([mesh(box(len * 0.75, 0.012, 0.01), "#b0803c", { at: [len * 0.375, 0, 0], ...F0 }), mesh(ball(1, 10), "#b0803c", { at: [len * 0.86, 0, 0], scale: [0.03, 0.02, 0.008], line: 0.4, shadow: false })]);
+/** a roll of linen bandage held in the fingers (the roll at the origin), its loose end hanging toward -y */
+export const bandageRoll = () => group([mesh(cyl(0.028, 0.028, 0.06, 12), "#f6f2e6", { rot: [Math.PI / 2, 0, 0], line: 0.5, shadow: false }), mesh(box(0.05, 0.12, 0.004), "#f6f2e6", { at: [0.01, -0.07, 0], line: 0.4, shadow: false })]);
+/** a coin held up between finger and thumb: its edge in the fingers (the origin), its face toward +z */
+export const coinHeld = (r = 0.022) => { const c = coin(r); c.rotation.x = Math.PI / 2; c.position.y = r + 0.05; return group([c]); };      // its lower edge just above the closed fingers, so that the fist does not hide it
+/** the sponsor's white cloth (mappa), held by one corner (the origin), hanging below it */
+export const mappa = (w = 0.34, h = 0.44) => group([mesh(box(w, h, 0.008), "#fbf8ee", { at: [w * 0.32, -h / 2, 0], rot: [0, 0, 0.12], line: 0.6, shadow: false }), mesh(box(w * 0.9, 0.012, 0.009), "#c8402f", { at: [w * 0.36, -h + 0.04, 0], rot: [0, 0, 0.12], line: 0, shadow: false })]);
+/** a reed pen: held near its middle (the origin), its nib along +x */
+export const reedPen = (len = 0.2) => group([mesh(box(len, 0.011, 0.011), "#d0b070", { at: [len * 0.2, 0, 0], ...F0 }), mesh(box(0.03, 0.008, 0.008), "#2a1a14", { at: [len * 0.7 - 0.015, 0, 0], line: 0, shadow: false })]);
+/** a scroll held up by its upper roller (its middle at the origin, in the fist), the written sheet hanging below toward -y over a lower
+ *  roller; the writing faces +z */
+export const scrollHeld = (w = 0.3, h = 0.38) => { const map = paint("scrollwriting", 192, 256, (g) => { g.fillStyle = "#efe2bc"; g.fillRect(0, 0, 192, 256); g.fillStyle = "#4a3a2a"; for (let y = 20; y < 240; y += 16) g.fillRect(16, y, 150 - ((y * 7) % 40), 5); });
+  return group([mesh(cyl(0.016, 0.016, w + 0.06, 10), C.woodD, { rot: [0, 0, Math.PI / 2], line: 0.5, shadow: false }), mesh(box(w, h, 0.004), "#ffffff", { at: [0, -h / 2 - 0.015, 0], map, line: 0.5, shadow: false }), mesh(cyl(0.016, 0.016, w + 0.06, 10), C.woodD, { at: [0, -h - 0.03, 0], rot: [0, 0, Math.PI / 2], line: 0.5, shadow: false })]); };
+/** one olive, held between finger and thumb (the origin) */
+export const olive = () => group([mesh(ball(0.013, 8), "#3a3a24", { scale: [1.25, 1, 1], line: 0.3, shadow: false })]);

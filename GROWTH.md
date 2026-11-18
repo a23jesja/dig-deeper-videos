@@ -53,7 +53,7 @@ that?"); the other Shorts keep that shape.
 | Why did Rome tax pee? | 32.7 s | a (built before the hook lab) | __ % | __ s | __ | __ | __ % | __ |
 | Why did pirates fly a black flag? | 32.5 s | a (built before the hook lab) | __ % | __ s | __ | __ | __ % | __ |
 | Did Nero fiddle while Rome burned? | 32.7 s | a (built before the hook lab); **test: short silence before the loop** | __ % | __ s | __ | __ | __ % | __ |
-| Did gladiators fight to the death? | __ | __ | __ % | __ s | __ | __ | __ % | __ |
+| Did gladiators fight to the death? | __ | a (chosen in the hook lab, 18 Nov 2026: the trident already on the shield in the first frame, the crowd on its feet, under "Did gladiators fight to the death?") | __ % | __ s | __ | __ | __ % | __ |
 | Blackbeard and the burning fuses | __ | b (chosen in the hook lab, 18 Nov 2026: he strides out of the smoke with his cutlass up over "Blackbeard's beard smoked in battle."; the review's choice, Jesper may switch to c) | __ % | __ s | __ | __ | __ % | __ |
 | **TEST, 45-55 s:** Were animals really put on trial? | __ | __ | __ % | __ s | __ | __ | __ % | __ |
 

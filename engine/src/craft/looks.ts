@@ -365,3 +365,43 @@ export const REFEREE: Look = {
   legs: "bare", feet: "sandals", sleeve: "short", arm: [28, 22, 16], leg: [35, 25, 17],
 };
 export const MURMILLO_D = castDesign(MURMILLO, "the murmillo"), RETIARIUS_D = castDesign(RETIARIUS, "the net fighter"), REFEREE_D = castDesign(REFEREE, "the referee");
+
+// ---------------- Blackbeard getting ready (blackbeard-fuses) ----------------
+/** Blackbeard in his cabin before the fight: the ribbons in his beard, no fuses yet, no sling */
+export const BLACKBEARD_PREP: Look = { ...BLACKBEARD, id: "blackbeardprep", fuses: false };
+/** Blackbeard ready for the fight: the fuses lit under his hat and the sling of six pistols across his chest */
+export const BLACKBEARD_ARMED: Look = { ...BLACKBEARD, id: "blackbeardarmed", sling: true };
+export const BLACKBEARD_PREP_D = castDesign(BLACKBEARD_PREP, "Blackbeard"), BLACKBEARD_ARMED_D = castDesign(BLACKBEARD_ARMED, "Blackbeard");
+
+// ---------------- the gladiators' school, the gate and the stands (gladiators-death) ----------------
+/** the heavy gladiator at school: his helmet off, short dark hair, a bandage being wound round his left forearm */
+export const MURMILLO_BARE: Look = { ...MURMILLO, id: "murmillobare", hat: "none", hair: { col: "#2a1c14", kind: "short" }, wrap: "L" };
+const glad = (id: string, o: Partial<Look>): Look => ({ ...MURMILLO, id, ...o });
+/** eight more gladiators for the line of ten at the gate, each with his own body and armour */
+export const THRAEX = glad("thraex", { P: { ...ROMAN, thigh: 220, shin: 210, hipW: 56, shW: 112, spine: 268 }, head: { a: 106, b: 112, H: 230, jaw: 1.0, round: 0.3 }, skin: "#e2b48c", brow: "#6a4424", hatCol: "#b8bec8", brim: 1.25, crestH: 0.3, accent: "#3f6fd0", mous: undefined, greave: "R", manica: "R", loin: "#e9dcc0", balteus: "#3a3a44",
+  rows: [[-72, 100, 80, 84], [-10, 96, 80, 76], [90, 98, 84, 70], [200, 114, 82, 68], [250, 116, 60, 60], [274, 52, 38, 42]], arm: [30, 24, 17], leg: [36, 27, 18] });
+export const SECUTOR = glad("secutor", { P: { ...ROMAN, thigh: 200, shin: 188, hipW: 70, shW: 130, spine: 262 }, head: { a: 118, b: 118, H: 232, jaw: 1.2, round: 0.25 }, skin: "#a86c44", brow: "#1a120c", hatCol: "#d8dce2", brim: 0.35, crestH: 0.14, mous: undefined, beard: "#1a120c", loin: "#f3ead6", balteus: "#5a3a22",
+  rows: [[-72, 120, 92, 96], [-10, 116, 96, 90], [90, 118, 100, 82], [196, 134, 96, 78], [250, 132, 70, 70], [276, 60, 42, 46]], arm: [38, 30, 21], leg: [44, 32, 21] });
+export const HOPLOMACHUS = glad("hoplomachus", { head: { a: 108, b: 114, H: 232, jaw: 1.04, round: 0.35 }, skin: "#f0c8a2", brow: "#c08a3a", hatCol: "#d9b45a", brim: 1.1, crestH: 0.46, accent: "#e2b93a", mous: undefined, legs: "trousers", trous: "#efe6cf", greave: undefined, manica: "R" });
+export const PROVOCATOR = glad("provocator", { P: { ...ROMAN, thigh: 208, shin: 198, hipW: 60, shW: 118, spine: 272 }, head: { a: 110, b: 114, H: 234, jaw: 1.06, round: 0.3 }, skin: "#8a5a3a", brow: "#120c08", hatCol: "#9aa2ae", brim: 0.6, crestH: 0.22, accent: "#c8402f", mous: undefined, armour: true, greave: "L", manica: "R" });
+export const RETIARIUS2 = { ...RETIARIUS, id: "retiarius2", P: { ...RETIARIUS.P, thigh: 212, shin: 202, hipW: 58, shW: 108 }, head: { a: 110, b: 112, H: 230, jaw: 1.04, round: 0.4, eye: 0.86 }, skin: "#d9a070", brow: "#8a8078", hair: { col: "#9a9088", kind: "bald" as const }, beard: "#9a9088" };
+export const RETIARIUS3 = { ...RETIARIUS, id: "retiarius3", head: { a: 100, b: 106, H: 224, jaw: 0.86, round: 0.6, eye: 1.0 }, skin: "#f2c9a6", brow: "#b5532a", hair: { col: "#c4662a", kind: "short" as const }, manica: "R" as const, galerus: "R" as const };
+export const MURMILLO2 = glad("murmillo2", { P: { ...MURMILLO.P, thigh: 225, shin: 210, spine: 280 }, head: { a: 114, b: 118, H: 240, jaw: 1.16, round: 0.25 }, skin: "#c98f60", brow: "#3a2418", hatCol: "#b08a3a", crestH: 0.5, accent: "#2f8a5c", mous: undefined, beard: "#3a2418" });
+/** the tenth, carried out on the stretcher: alive, his shin bandaged, his helmet off */
+export const CARRIED = { ...RETIARIUS, id: "carried", head: { a: 106, b: 110, H: 228, jaw: 0.98, round: 0.45 }, skin: "#c98f60", brow: "#3a2418", hair: { col: "#3a2418", kind: "short" as const }, wrapLeg: "R" as const };
+/** the gladiators' trainer: an old fighter, broad and bald, a grey beard, a short brown tunic and a belt */
+export const TRAINER: Look = { ...CITIZEN, id: "trainer", P: { ...ROMAN, hipW: 64, shW: 124, spine: 272, upper: 150, fore: 140 }, head: { a: 114, b: 116, H: 232, jaw: 1.14, round: 0.3, eye: 0.84 }, skin: "#c98f60", brow: "#9a9088", hair: { col: "#9a9088", kind: "bald" }, beard: "#9a9088", coat: "#8a5a36", accent: "#3a2418", belt: "#3a2418", arm: [33, 27, 19], leg: [40, 29, 19] };
+/** a young gladiator at the school, in a short tunic, learning to hold the practice sword */
+export const PUPIL: Look = { ...CITIZEN, id: "pupil", P: { ...ROMAN, thigh: 214, shin: 204, hipW: 54, shW: 106 }, head: { a: 102, b: 106, H: 222, jaw: 0.88, round: 0.6, eye: 1.0 }, skin: "#e9b48a", brow: "#3a2418", hair: { col: "#3a2418", kind: "short" }, coat: "#d9c08a", accent: "#7a4a26", belt: "#7a4a26" };
+/** the owner of the school (the lanista): round and rich, a double chin, a wine-red tunic with a gold belt */
+export const OWNER: Look = { ...COLLECTOR, id: "owner", head: { a: 124, b: 122, H: 232, jaw: 1.24, round: 0.75, eye: 0.82 }, skin: "#f0c8a2", brow: "#4a3020", hair: { col: "#4a3020", kind: "bald" }, mous: undefined, coat: "#8a2f4a", accent: "#e2b93a", cloak: undefined, belt: "#e2b93a" };
+/** the arena's doctor: thin and grey, a white tunic with a blue edge, a short grey beard */
+export const DOCTOR: Look = { ...CITIZEN, id: "doctor", P: { ...ROMAN, hipW: 52, shW: 98 }, head: { a: 104, b: 110, H: 230, jaw: 0.9, round: 0.4, eye: 0.88 }, skin: "#ecc29c", brow: "#b9b4aa", hair: { col: "#b9b4aa", kind: "short" }, beard: "#b9b4aa", coat: "#f6f1e4", accent: "#3f6fb0", belt: "#3f6fb0" };
+/** the sponsor of the games in his box: a white tunic and a purple cloak, a laurel band */
+export const SPONSOR: Look = { ...CITIZEN, id: "sponsor", head: { a: 114, b: 116, H: 234, jaw: 1.06, round: 0.45, eye: 0.86 }, skin: "#e9c3a0", brow: "#5a5a5a", hat: "band", hatCol: "#4f9a3f", hair: { col: "#6a6a6a", kind: "short" }, coat: "#fbf6ea", accent: "#e2b93a", cloak: "#7a2f8a", belt: "#e2b93a" };
+/** the men who carry the stretcher: plain short tunics */
+export const BEARER: Look = { ...CITIZEN, id: "bearer", coat: "#a8885a", accent: "#5a3a22", belt: "#5a3a22", skin: "#a86c44", brow: "#1a120c", hair: { col: "#1a120c", kind: "short" } };
+export const BEARER2: Look = { ...CITIZEN, id: "bearer2", coat: "#7a8a6a", accent: "#4a3a2a", belt: "#4a3a2a", skin: "#e9b48a", brow: "#7a4a2a", hair: { col: "#7a4a2a", kind: "bald" } };
+export const MURMILLO_BARE_D = castDesign(MURMILLO_BARE, "the murmillo"), THRAEX_D = castDesign(THRAEX), SECUTOR_D = castDesign(SECUTOR), HOPLOMACHUS_D = castDesign(HOPLOMACHUS), PROVOCATOR_D = castDesign(PROVOCATOR);
+export const RETIARIUS2_D = castDesign(RETIARIUS2), RETIARIUS3_D = castDesign(RETIARIUS3), MURMILLO2_D = castDesign(MURMILLO2), CARRIED_D = castDesign(CARRIED);
+export const TRAINER_D = castDesign(TRAINER), PUPIL_D = castDesign(PUPIL), OWNER_D = castDesign(OWNER), DOCTOR_D = castDesign(DOCTOR), SPONSOR_D = castDesign(SPONSOR), BEARER_D = castDesign(BEARER), BEARER2_D = castDesign(BEARER2);

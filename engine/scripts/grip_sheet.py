@@ -46,12 +46,18 @@ if mode == "sheet":
     title = sys.argv[6] if len(sys.argv) > 6 else "GREPPBLAD"
     PROP = {"spyglass": "KIKARE", "pistol": "PISTOL", "sabre": "SABEL", "mug": "MUGG", "bucket": "HINK", "rope": "LINA", "linstock": "LUNTSTAKE", "chest": "KISTA",
             "fiddle": "FIOL OCH STRÅKE", "cithara": "CITHARA", "grapes": "DRUVKLASE", "bundle": "KNYTE",
-            "gladius": "GLADIUS OCH SKÖLD", "trident": "TREUDD", "net": "NÄT", "stick": "DOMARKÄPP", "shield": "SKÖLD", "pole": "STÅNG"}
+            "gladius": "GLADIUS OCH SKÖLD", "trident": "TREUDD", "net": "NÄT", "stick": "DOMARKÄPP", "shield": "SKÖLD", "pole": "STÅNG",
+            "ribbon": "BAND I SKÄGGET", "tray": "BRICKA MED BAND", "spill": "TÄNDSTICKA", "fuse": "LUNTA", "sling": "PISTOLREM", "book": "BOK",
+            "woodsword": "TRÄSVÄRD", "stretcher": "BÅR", "bowl": "SKÅL OCH SKED", "bandage": "LINDA", "coin": "MYNT", "cloth": "DUK", "pen": "PENNA OCH RULLE", "olive": "OLIV OCH SKÅL",
+            "hands": "HÄNDER", "shoulder": "HAND PÅ AXEL"}
     USE = {"look": "i bruk: vid ögat", "aim": "i bruk: siktar", "ready": "i bruk: i fästet", "hold": "i bruk: i örat", "lowered": "sänkt", "raised": "höjd", "sheathed": "i skidan, axelgehäng",
            "chop": "hugg: dragen bakåt", "struck": "hugg: genom", "carry": "buren", "haul": "halas", "fire": "mot kanonen", "hand": "i handen", "falling": "släppt, faller", "landed": "landad",
            "play": "spelar", "shoulder": "på axeln", "draw1": "dras 1: handen sluten om fästet", "draw2": "dras 2: fästet upp längs baljan", "draw3": "dras 3: klingan nästan ute",
-           "thrust": "stöt", "swing": "uppdraget för kast", "across": "tvärs i båda händerna"}
-    USE2 = {("bucket", "raised"): "lyft", ("linstock", "ready"): "redo", ("cithara", "hold"): "i famnen", ("grapes", "hold"): "hålls upp", ("chest", "carry"): "buren av två i handtagen", ("trident", "ready"): "upprätt i ena handen, nätet i den andra", ("trident", "thrust"): "stöt med båda händerna", ("net", "swing"): "uppdraget för kast, treudden i andra handen", ("stick", "ready"): "upprätt i ena handen", ("gladius", "ready"): "i bruk: i fästet, skölden på armen"}
+           "thrust": "stöt", "swing": "uppdraget för kast", "across": "tvärs i båda händerna",
+           "tie": "knyts", "light": "tänder", "tuck": "sticks in under hattbrättet", "lift": "lyfts i båda händerna", "blow": "blåses på, remmen på bröstet", "read": "läses högt",
+           "eat": "vid munnen", "wrap": "lindas om armen", "show": "hålls upp", "wave": "viftas", "write": "skriver, rullen i andra handen", "pull": "drar upp den slagne",
+           "arm": "armen över axeln", "pat": "klapp på axeln"}
+    USE2 = {("bucket", "raised"): "lyft", ("linstock", "ready"): "redo", ("cithara", "hold"): "i famnen", ("grapes", "hold"): "hålls upp", ("chest", "carry"): "buren av två i handtagen", ("trident", "ready"): "upprätt i ena handen, nätet i den andra", ("trident", "thrust"): "stöt med båda händerna", ("net", "swing"): "uppdraget för kast, treudden i andra handen", ("stick", "ready"): "upprätt i ena handen", ("gladius", "ready"): "i bruk: i fästet, skölden på armen", ("woodsword", "ready"): "i fästet, tränarens hand på handleden", ("stretcher", "carry"): "buren av två, den tionde sitter upp", ("bowl", "eat"): "skålen i handen, skeden vid munnen, på bänken", ("tray", "carry"): "buren i båda händerna", ("olive", "eat"): "oliven vid munnen, skålen i andra handen", ("bandage", "wrap"): "lindas om armen"}
     VIEW = {"front": "framifrån", "side": "från sidan", "scab": "snett från baljans sida", "right": "från sidan, mot höger", "left": "från sidan, mot vänster", "otherside": "från andra sidan (svärdsidan)", "back": "bakifrån", "slant": "snett framifrån"}
     first = {}
     for s in spots:

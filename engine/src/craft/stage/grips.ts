@@ -102,6 +102,36 @@ export const NET: Prop = { name: "net", uses: {
 /** the trident held in one hand near its middle (wield with `at`), standing up beside him; in two hands with `pole` */
 export const TRIDENT: Prop = { name: "trident", uses: { ready: { arm: A(22, 16, 74, 6), level: 84, ok: within(60, 105, "a trident held ready stands up beside him, prongs up") } } };
 export const STICK: Prop = { name: "stick", uses: { ready: { arm: A(22, 16, 74, 6), level: 80, ok: within(55, 105, "a stick held ready stands up beside him") } } };
+// ---------------- grip sheet 5: Blackbeard getting ready, the gladiators' school and the stands ----------------
+const any: Ok = () => null;
+/** a ribbon pinched by its knot while it is tied round a tail of the beard (the arm is put to the beard with `reach`) */
+export const RIBBON: Prop = { name: "ribbon", uses: { tie: { arm: A(40, -10, 130, -20), level: 0, ok: any } } };
+/** the lit spill (props.ts spill), held out at arm's length toward what it lights */
+export const SPILL: Prop = { name: "spill", uses: { light: { arm: A(84, 26, 92, 20), turn: 8, ok: within(-30, 70, "a lit spill held out points forward at what it lights") } } };
+/** a piece of slow match (props.ts fuseCord): stood up at the brim of the hat as it is tucked in, or held up before the lips to blow on */
+export const FUSE: Prop = { name: "fuse", uses: {
+  tuck: { arm: A(150, 30, 200, 10), level: 84, ok: within(55, 115, "a fuse tucked under the hat stands up at its brim") },
+  blow: { arm: A(40, 10, 150, -10), level: 74, ok: within(45, 110, "a fuse held to the lips stands up before them") } } };
+/** the wooden practice sword (props.ts woodSword): held as the gladius is */
+export const WOODSWORD: Prop = { name: "wooden sword", hilt: GLADIUS.hilt, uses: { ready: GLADIUS.uses.ready } };
+/** a bowl held from below in an open hand, upright (props.ts bowl) */
+export const BOWL: Prop = { name: "bowl", uses: { hold: { arm: A(30, 10, 100, -12), level: 0, ok: within(-10, 10, "a bowl of food is held upright") } } };
+/** the spoon (props.ts spoon): its bowl in the porridge, or brought to the mouth */
+export const SPOON: Prop = { name: "spoon", uses: {
+  dip: { arm: A(30, 12, 92, -14), level: -40, ok: within(-85, -10, "a spoon in the bowl points down into it") },
+  eat: { arm: A(40, 20, 150, -10), level: 30, ok: within(0, 75, "a spoon at the mouth points into it") } } };
+/** the bandage roll, held to the arm it is wound round (the arm is put there with `reach`) */
+export const ROLL: Prop = { name: "bandage", uses: { wrap: { arm: A(40, 10, 90, -10), level: 0, ok: any } } };
+/** a coin held up between finger and thumb (props.ts coinHeld), its face to the lens */
+export const COIN: Prop = { name: "coin", uses: { show: { arm: A(64, 34, 122, 16), level: 0, ok: any } } };
+/** the sponsor's cloth (props.ts mappa), raised and hanging from the fist by its corner */
+export const MAPPA: Prop = { name: "cloth", uses: { wave: { arm: A(160, 30, 190, 10), level: 0, ok: within(-14, 14, "a waved cloth hangs from the fist by its corner") } } };
+/** the reed pen (props.ts reedPen), its nib down on the sheet it writes on */
+export const PEN: Prop = { name: "pen", uses: { write: { arm: A(40, 10, 95, -12), level: -62, ok: within(-115, -20, "a pen that writes points down at the sheet") } } };
+/** a scroll held up by its upper roller (props.ts scrollHeld), the sheet hanging below the fist */
+export const SCROLL: Prop = { name: "scroll", uses: { hold: { arm: A(40, 10, 100, -24), level: 0, ok: within(-8, 8, "a held scroll hangs from its upper roller") } } };
+/** an olive between finger and thumb, at the mouth */
+export const OLIVE: Prop = { name: "olive", uses: { eat: { arm: A(40, 10, 150, -10), level: 0, ok: any } } };
 
 /** what the script check has seen in the frame it is reading: one row per thing in a hand, falling or set down */
 export const AUDIT: { on: boolean; rows: { id: string; prop: string; use: string; holder: string; err: string | null; at?: V3; /** the thing itself: the script check sees that a hand named in `holder` is on it */ o?: THREE.Object3D }[] } = { on: false, rows: [] };
@@ -462,6 +492,18 @@ export const onShoulder = (into: THREE.Group, o: THREE.Object3D, a: Staged, side
   fingers(into, a, [side], cam, 0.1);
   if (AUDIT.on) AUDIT.rows.push({ id: o.uuid, prop: "bundle", use: "shoulder", holder: `${a.name} ${side}`, err: null, at: palm(a, side), o });
   return o;
+};
+/** Two hands that hold each other (the winner pulls the beaten man up): noted for the script check, which wants the two palms to meet in
+ *  the picture */
+export const handshake = (a: Staged, sa: Side, b: Staged, sb: Side, cam: Cam, name = "hands") => {
+  if (!AUDIT.on) return; const d = Math.hypot(...pic(cam)(palm(a, sa), palm(b, sb))), r = fistR(a, sa, cam) + fistR(b, sb, cam);
+  AUDIT.rows.push({ id: `${name}:${a.name}:${b.name}`, prop: name, use: "joined", holder: `${a.name} ${sa} & ${b.name} ${sb}`, err: d > r ? `the two hands are ${(d * 100).toFixed(0)} cm apart (they hold each other)` : null, at: mix3(palm(a, sa), palm(b, sb), 0.5) });
+};
+/** A hand laid on another figure (a shoulder patted, an arm over the shoulders): noted for the script check, which wants the palm on that
+ *  joint in the picture */
+export const handOn = (a: Staged, sa: Side, b: Staged, joint: string, cam: Cam, name = "shoulder") => {
+  if (!AUDIT.on) return; const d = Math.hypot(...pic(cam)(palm(a, sa), b.joint(joint as "neck"))), r = fistR(a, sa, cam) * 1.6 + 0.04;
+  AUDIT.rows.push({ id: `${name}:${a.name}:${b.name}`, prop: name, use: "on", holder: `${a.name} ${sa}`, err: d > r ? `the hand is ${(d * 100).toFixed(0)} cm from ${b.name}'s ${joint}` : null, at: palm(a, sa) });
 };
 /** the bundle back in its place below the knot, for carrying it in the hand with `wield` */
 export const inHand = (o: THREE.Object3D, r = 0.2) => { const sack = o.getObjectByName("sack"); if (sack) sack.position.set(0, -r * 0.82, 0); return o; };

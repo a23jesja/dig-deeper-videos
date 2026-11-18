@@ -31,7 +31,7 @@ const T1 = 1.5, T2 = Math.max(cut("hook", "guess"), T1 + 1.5), T3 = cut("guess",
 const T8 = at("owner", /^wanted/) - 0.1, T9 = cut("cost_me", "rules"), T10 = cut("rules", "finger"), T11 = cut("finger", "spared"), T12 = at("spared", /^he$/) - 0.1, T13 = cut("spared", "answer");
 const T14 = cut("answer", "doctor"), T15 = at("doctor", /^under/) - 0.1, T16 = cut("doctor", "relax"), T17 = L.relax.b + 0.25, END = T17 + 1.0;
 const shots: Shot[] = [];
-const WOOD = once(() => noShade(woodSword())), STRETCH = once(() => stretcher(1.78)), BOWL_O = once(() => noShade(bowlRim())), SPOON_O = once(() => noShade(spoon())), ROLL_O = once(() => noShade(bandageRoll()));
+const WOOD = once(() => noShade(woodSword())), STRETCH = once(() => stretcher(1.94)), BOWL_O = once(() => noShade(bowlRim())), SPOON_O = once(() => noShade(spoon())), ROLL_O = once(() => noShade(bandageRoll()));
 const PORRIDGE = once(() => noShade(bowl(0.12))), COIN_O = once(() => noShade(coinHeld(0.04))), PEN_O = once(() => noShade(reedPen())), SCROLL_O = once(() => noShade(scrollHeld())), OLIVE_O = once(() => noShade(olive())), OLIVES = once(() => noShade(bowlRim(0.07, true)));
 const BENCH = once(() => bench(0.7)), STOOL = once(() => stool()), TABLE = once(() => table(1.3, 0.7, 0.76)), COINS = once(() => chest(true, true));
 
@@ -88,7 +88,7 @@ const T5a = at("nine", /^gladiator/) - 0.12;
   const LN = Math.hypot(0.85, 0.53), LF: [number, number] = [-0.85 / LN, -0.53 / LN], LR: [number, number] = [-LF[1], LF[0]];
   /** a place in the parade: d metres further from the lens than the front row, r metres to the right in the picture */
   const at = (d: number, r: number): [number, number] => [ox + LF[0] * d + LR[0] * r, oz + LF[1] * d + LR[1] * r];
-  const R0 = -0.5, SLOT: [number, number][] = [[2.2, R0 - 1.5], [2.2, R0 + 1.5], [2.2, R0], [4.4, R0 - 0.85], [0, R0 + 0.38], [0, R0 - 0.38], [4.4, R0 + 0.85], [6.6, R0 - 1.9], [6.6, R0 + 1.9]];
+  const R0 = -0.5, SLOT: [number, number][] = [[2.2, R0 - 1.5], [2.2, R0 + 1.5], [2.2, R0], [4.4, R0 - 0.85], [0, R0 + 0.41], [0, R0 - 0.41], [4.4, R0 + 0.85], [6.6, R0 - 1.9], [6.6, R0 + 1.9]];
   void rg;
   const pace = (m: MM, i: number) => m.stand(0.04 * (i % 3)).walk(mt(m, 3.6), { step: 0.42 / m.LL, tau: 0.5 }).stand(9);
   const walkers: { D: Design; h: number; m: MM; name: string; x: number; z: number }[] = [];
@@ -100,7 +100,7 @@ const T5a = at("nine", /^gladiator/) - 0.12;
     walkers.push({ D, h, m, name: `g${i}`, x, z }); });
   // the sixth leans on the fifth beside him: his left hand on the other's right shoulder
   const lean = walkers[5], leanOn = walkers[4], ls: Stand = { D: lean.D, at: [lean.x, 0, lean.z], heading: HW, h: lean.h, cam: C0.cam, pose: { lean: 4 } }, os: Stand = { D: leanOn.D, at: [leanOn.x, 0, leanOn.z], heading: HW, h: leanOn.h, cam: C0.cam };
-  const top = jointsOf(os)("shR"); lean.m.actAt(-1, { ...reach(ls, "L", [top[0], top[1] + 0.08, top[2]]), armR: arm(16, 12, 30, 8), head: [0, 6, 0], lean: 4 }, 10, { in: 0.01, handL: "open", handR: "relaxed", face: { brow: 0.6, lid: 0.4, smile: -0.2 } });
+  const top = jointsOf(os)("shR"); lean.m.actAt(-1, { ...reach(ls, "L", [top[0], top[1] + 0.03, top[2]]), armR: arm(16, 12, 30, 8), head: [0, 6, 0], lean: 4 }, 10, { in: 0.01, handL: "open", handR: "relaxed", face: { brow: 0.6, lid: 0.4, smile: -0.2 } });
   // the lens goes back at the walkers' pace (their pelvis keeps 0.84 m a second from about 0.45 s on), easing in
   const back = (t: number) => SPEED * (t < 0.9 ? (t * t) / 1.8 : t - 0.45);
   shots.push({ id: "nine", a: T4, b: T5a, still: 1.2, sounds: walkers[0].m.cues().filter((q) => q.k === "step" && q.t < T5a - T4).map((q) => ({ t: q.t, k: "step", g: 0.5 })),
@@ -117,11 +117,13 @@ const T5a = at("nine", /^gladiator/) - 0.12;
   // through the near pole)
   // (the free arm of each bearer swings clear of the pole, the rear man's back and the front man's forward: hanging at his side it lay
   // across the pole)
-  const ms = [mover(BEARER_D, 1.76, X - 0.95, Z, 90), mover(BEARER2_D, 1.74, X + 0.95, Z, 90), mover(CARRIED_D, 1.8, X - 0.36, Z - 0.28, 90)];
+  // (the grip audit: each fist round its handle, 6 cm in from the pole's end, and the bearers a step further apart so that the poles' ends
+  // stop short of their bodies)
+  const ms = [mover(BEARER_D, 1.76, X - 1.12, Z, 90), mover(BEARER2_D, 1.74, X + 1.12, Z, 90), mover(CARRIED_D, 1.8, X - 0.36, Z - 0.28, 90)];
   for (const m of ms) m.walk(mt(m, 3.0), { step: 0.42 / m.LL, tau: 0.5 }).stand(9);
   const st = (D: Design, m: MM, x: number): Stand => ({ D, at: [x, 0, Z], heading: 90, h: m.h, cam: W2(0).cam });
-  ms[0].actAt(-1, { ...reach(st(BEARER_D, ms[0], X - 0.95), "R", [X - 0.89, hy, Z + 0.08]), armL: [[-18, 6], [-12, 4]] }, 10, { in: 0.01, handR: "grip", handL: "relaxed", face: { brow: 0.4, lid: 0.2 } });
-  ms[1].actAt(-1, { ...reach(st(BEARER2_D, ms[1], X + 0.95), "R", [X + 0.89, hy, Z + 0.08]), armL: [[20, 6], [28, 4]], head: [-45, 0, 0] }, 10, { in: 0.01, handR: "grip", handL: "relaxed", face: { brow: 0.4, lid: 0.2 } });
+  ms[0].actAt(-1, { ...reach(st(BEARER_D, ms[0], X - 1.12), "R", [X - 0.91, hy, Z + 0.08]), armL: [[-18, 6], [-12, 4]] }, 10, { in: 0.01, handR: "grip", handL: "relaxed", face: { brow: 0.4, lid: 0.2 } });
+  ms[1].actAt(-1, { ...reach(st(BEARER2_D, ms[1], X + 1.12), "R", [X + 0.91, hy, Z + 0.08]), armL: [[20, 6], [28, 4]], head: [-45, 0, 0] }, 10, { in: 0.01, handR: "grip", handL: "relaxed", face: { brow: 0.4, lid: 0.2 } });
   ms[2].actAt(-1, { py: -1, lean: -10, legL: { th: [86, 4], sh: [85, 2] }, legR: { th: [86, -2], sh: [85, 0] }, armL: [[34, 8], [52, 4]], armR: [[150, 26], [172, 10]], head: [-34, -4, 0] }, 10, { in: 0.01, handL: "open", handR: "open", face: { brow: 0.4, lid: 0.5, smile: 0.3 } });
   wag(ms[2], 0.2, 2.2, P({ armR: [[150, 26], [172, 10]] }), P({ armR: [[158, 14], [180, 0]] }), 0.55, { handR: "open" });
   shots.push({ id: "carried", a: T5a, b: T5, still: 1.0, sounds: ms[0].cues().filter((q) => q.k === "step" && q.t < T5 - T5a).map((q) => ({ t: q.t, k: "step", g: 0.45 })),
@@ -226,7 +228,8 @@ const GATE = rim(0, -2.2), OWNER_AT: V3 = [GATE[0], 0, GATE[1] + 1.2], MAN_AT: V
   man.actAt(-1, { ...usePose(GLADIUS, "lowered", "R"), armL: arm(14, 18, 40, 10) }, 10, { in: 0.01, handL: "grip", handR: "grip", face: { brow: -0.7, lid: 0.15 } });
   own.actAt(-1, { ...reach(os, "R", near(mix3(oj("neck"), oj("skull"), 0.45), V.cam, 0.12)), head: [-20, 4, 0] }, PAT + 0.2, { in: 0.01, out: 0.25, handR: "fist", face: { brow: 1, lid: 0.1, wide: 0.5, smile: -0.6 } });
   wag(own, 0.1, PAT - 0.1, P({ py: 0.01 }), P({ py: -0.01 }), 0.12);
-  own.actAt(PAT, { ...reach(os, "R", near(mj("shL"), V.cam, 0.08)), head: [24, 4, 0] }, 9, { in: 0.3, antic: 0.1, over: 1.1, handR: "open", face: { brow: 0.7, lid: 0.2, smile: 0.5 } });
+  // (on top of the shoulder: to its middle, his hand passed over the murmillo's own hand for a frame, v4's body check)
+  own.actAt(PAT, { ...reach(os, "R", near([mj("shL")[0], mj("shL")[1] + 0.06, mj("shL")[2]], V.cam, 0.08)), head: [24, 4, 0] }, 9, { in: 0.3, antic: 0.1, over: 1.1, handR: "open", face: { brow: 0.7, lid: 0.2, smile: 0.5 } });
   // (the captions over the arena wall at the top: lower down they lay over the owner's hand)
   shots.push({ id: "owner", capsTop: 200, a: T8, b: T9, still: PAT + 1.0, sounds: [{ t: PAT + 0.35, k: "tap", g: 0.5 }],
     cam: (_t, u) => V.push(0.08 * u), sun: { target: MAN_AT, reach: 6 },

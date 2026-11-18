@@ -87,9 +87,10 @@ export const courtClose = (id: string, a0: number, b0: number, hits: number[]): 
 // ---------------- the gallery ----------------
 const GAL = (() => { const p = inCourt([-0.6, 1.55, 3.0]), q = inCourt([-3.4, 1.05, 1.38]), d = Math.hypot(q[0] - p[0], q[2] - p[2]);
   return lens(p[0], p[1], p[2], (q[0] - p[0]) / d, (q[2] - p[2]) / d, -9, 60); })();
-// (change 2: nearer and lower, so that Sir and the man beside him fill the picture and no empty wall stands above them)
-const SIRC = (() => { const p = inCourt([-1.8, 1.25, 2.8]), q = inCourt([-3.3, 0, 1.45]), d = Math.hypot(q[0] - p[0], q[2] - p[2]);
-  return lens(p[0], p[1], p[2], (q[0] - p[0]) / d, (q[2] - p[2]) / d, -6, 64); })();
+// (change 2, as far as it goes: nearer than before and from above, both men whole with Sir's open palm inside the picture; the wall
+// above them holds the caption. Two seated men side by side are too wide for the upright picture to fill its height without cutting one)
+const SIRC = (() => { const p = inCourt([-1.55, 1.75, 2.9]), q = inCourt([-3.3, 0, 1.6]), d = Math.hypot(q[0] - p[0], q[2] - p[2]);
+  return lens(p[0], p[1], p[2], (q[0] - p[0]) / d, (q[2] - p[2]) / d, -18, 61); })();
 const seated = (D: Design, h: number, at: V3, heading: number) => { const m = mover(D, h, at[0], at[2], heading); m.stand(9); return m; };
 /** a seated figure's pose, with arms and head over it */
 const sitting = (o: Partial<Pose>) => ({ ...SIT, ...o });

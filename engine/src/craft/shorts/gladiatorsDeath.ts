@@ -57,7 +57,7 @@ const PEEK_FANS = spread(STANDS, FRONT.cam, [[40, 1040, 60, 440], ...EDGES], 2.2
 
 // 3. TWO GO IN, ONE COMES OUT. RIGHT? (two fingers, one, and he turns to her; she shakes her head)
 // (the captions at the top, over seats left empty, as in opening a: lower down they lay over his coat and her arms)
-shots.push({ ...twoShot("guess", T2, T3, W, false, TWO, TWO_FANS), capsTop: 200 });
+shots.push({ ...twoShot("guess", T2, T3, W, false, TWO, TWO_FANS, true), capsTop: 200 });
 
 // 4. NOT USUALLY. She puts an olive in her mouth and points down at the sand; he looks at her
 { const sir = mover(SIR_D, 1.8, SIR.at[0], SIR.at[2], SIR.heading - 8), wh = WOMAN.heading - 12, wom = mover(ROMAN_WOMAN_OLIVES_D, 1.62, WOMAN.at[0], WOMAN.at[2], wh); sir.stand(9); wom.stand(9);

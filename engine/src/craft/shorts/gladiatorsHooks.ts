@@ -79,15 +79,18 @@ export const shieldMan = (g: THREE.Group, a: Staged, cam: Cam, use: string, blen
 /** Sir Digsworth and the woman beside him in the front row: "Two go in, one comes out. Right?" Two fingers up on "Two", one on "one",
  *  and on "Right?" he turns to her; she shakes her head. `net` = the net still hangs over his head */
 /** fans = the crowd behind them (a film leaves the seats empty where its text lies: the review of opening a, round 3) */
-export const twoShot = (id: string, a0: number, b0: number, W: Word[], net = false, V: ReturnType<typeof lens> = TWO, fans: typeof STANDS = STANDS): Shot => {
+/** `chest`: he counts before his own chest and turns his head less (the film, v4b review: beside his head on her side the fingers lay at her
+ *  cheek and eye, and his pipe came close to her face when he turned to her) */
+export const twoShot = (id: string, a0: number, b0: number, W: Word[], net = false, V: ReturnType<typeof lens> = TWO, fans: typeof STANDS = STANDS, chest = false): Shot => {
   // the hand counts up beside his head on the side toward her, the elbow out and the forearm upright: clear of his face and hers, and
   // inside the picture (his right hand would be at its edge)
   const sir = mover(SIR_D, 1.8, SIR.at[0], SIR.at[2], SIR.heading - 8), wom = mover(ROMAN_WOMAN_OLIVES_D, 1.62, WOMAN.at[0], WOMAN.at[2], WOMAN.heading - 12); sir.stand(9); wom.stand(9);
-  const t2 = say(W, "Two") - a0, t1 = say(W, "one") - a0, tr = say(W, "Right") - a0, UP = { armL: arm(28, 52, 166, 6), armR: arm(14, 12, 30, 8) };
+  const t2 = say(W, "Two") - a0, t1 = say(W, "one") - a0, tr = say(W, "Right") - a0, ss: Stand = { D: SIR_D, at: SIR.at, heading: SIR.heading - 8, h: 1.8, cam: V.cam };
+  const UP = chest ? { ...reach(ss, "L", by(SIR.at, SIR.heading - 8, 0.02, 0.34, 1.08)), armR: arm(14, 12, 30, 8) } : { armL: arm(28, 52, 166, 6), armR: arm(14, 12, 30, 8) };
   sir.actAt(-1, { armL: arm(14, 12, 30, 8), armR: arm(14, 12, 30, 8), head: [0, -2, 0] }, 10, { in: 0.01, handL: "relaxed", handR: "relaxed", face: { brow: 0.6, lid: 0.1, smile: 0.3 } });
   sir.actAt(t2 - 0.3, UP, t1 - t2 + 0.25, { in: 0.22, out: 0.01, handL: "two", face: { brow: 0.9, lid: 0, smile: 0.5 } });
   sir.actAt(t1 - 0.05, UP, 9, { in: 0.01, handL: "point", face: { brow: 0.9, lid: 0, smile: 0.5 } });
-  sir.actAt(tr - 0.25, { head: [34, -2, 0] }, 9, { in: 0.25, antic: 0, over: 1.1, face: { brow: 1, lid: 0, smile: 0.7, wide: 0.3 } });
+  sir.actAt(tr - 0.25, { head: [chest ? 18 : 34, -2, 0] }, 9, { in: 0.25, antic: 0, over: 1.1, face: { brow: 1, lid: 0, smile: 0.7, wide: 0.3 } });
   wom.actAt(-1, { armL: arm(22, -6, 64, -46), armR: arm(22, -6, 64, -46), head: [-26, 0, 0] }, 10, { in: 0.01, handL: "relaxed", handR: "relaxed", face: { lid: 0.45, brow: -0.2, smile: -0.1 } });
   wag(wom, Math.max(0, tr - 0.35), 1.4, P({ head: [-40, 4, 0] }), P({ head: [-12, 4, 0] }), 0.3, { face: { lid: 0.5, brow: 0.3, smile: -0.3 } });
   return { id, a: a0, b: b0, still: (b0 - a0) * 0.6, sounds: [], cam: (_t, u) => V.push(0.08 * u), sun: { target: MID, reach: 7 },

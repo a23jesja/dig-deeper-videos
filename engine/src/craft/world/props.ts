@@ -572,11 +572,19 @@ export const fuseCord = (len = 0.17, lit = false) => { const g = group([mesh(box
   for (let x = 0.02; x < len; x += 0.03) g.add(mesh(box(0.005, 0.017, 0.017), "#5a4a32", { at: [x, 0, 0], rot: [0.5, 0, 0], line: 0, shadow: false }));
   if (lit) g.add(mesh(ball(0.013, 8), "#ff6a1a", { at: [len, 0, 0], line: 0.3, shadow: false })); g.userData.tip = [len, 0, 0]; return g; };
 /** Blackbeard's sling: three brace of pistols in holsters on a broad leather strap, lifted in two hands by the strap's ends
- *  (userData.grips); the strap along x, the holsters hanging below it, two pistol butts standing out of each */
-export const pistolSling = (len = 0.92) => { const g = group([mesh(box(len, 0.065, 0.02), "#5a3a22", {})]);
-  for (let i = 0; i < 3; i++) { const x = (i - 1) * len * 0.3; g.add(mesh(box(0.12, 0.2, 0.05), "#3a2a1c", { at: [x, -0.12, 0.02], line: 0.6, shadow: false }));
-    for (const s of [-1, 1]) g.add(mesh(box(0.035, 0.085, 0.03), "#6a4428", { at: [x + s * 0.03, -0.005, 0.05], rot: [0, 0, s * 0.3], line: 0.5, shadow: false }), mesh(ball(0.022, 8), C.gold, { at: [x + s * 0.042, 0.035, 0.05], line: 0.4, shadow: false })); }
-  g.userData.grips = [[-len / 2 - 0.02, 0, 0], [len / 2 + 0.02, 0, 0]]; g.userData.depth = 0.08; return g; };
+ *  (userData.grips); the strap along x, the holsters hanging below it, two pistol butts standing out of each. Each holster hangs from
+ *  its own point on the strap (userData.hang), so that it can be turned to hang straight down however the strap is held (hangDown) */
+export const pistolSling = (len = 0.92) => { const g = group([mesh(box(len, 0.065, 0.02), "#5a3a22", {})]), hang: THREE.Object3D[] = [];
+  for (let i = 0; i < 3; i++) { const h = group([mesh(box(0.12, 0.2, 0.05), "#3a2a1c", { at: [0, -0.12, 0.02], line: 0.6, shadow: false })], [(i - 1) * len * 0.3, 0, 0]);
+    for (const s of [-1, 1]) h.add(mesh(box(0.035, 0.085, 0.03), "#6a4428", { at: [s * 0.03, -0.005, 0.05], rot: [0, 0, s * 0.3], line: 0.5, shadow: false }), mesh(ball(0.022, 8), C.gold, { at: [s * 0.042, 0.035, 0.05], line: 0.4, shadow: false }));
+    g.add(h); hang.push(h); }
+  g.userData.grips = [[-len / 2 - 0.02, 0, 0], [len / 2 + 0.02, 0, 0]]; g.userData.depth = 0.08; g.userData.hang = hang; return g; };
+/** the parts of a held thing that hang from it (o.userData.hang, each turning about its own point of hanging) turned to hang straight
+ *  down, whichever way the thing is held: a sling's holsters held across a chest hang, they do not stand out from the strap. Call it
+ *  once the thing is placed */
+export const hangDown = (o: THREE.Object3D) => { const hs = o.userData.hang as THREE.Object3D[] | undefined; if (!hs?.length) return; o.updateMatrixWorld(true);
+  const d = new THREE.Vector3(0, -1, 0).applyQuaternion(o.getWorldQuaternion(new THREE.Quaternion()).invert()), phi = Math.atan2(d.x, -d.y);
+  for (const h of hs) h.rotation.z = phi; o.updateMatrixWorld(true); };
 /** a book held open in two hands by its outer edges (userData.grips): on the left page a woodcut of a bearded man with a fuse smoking on
  *  each side of his face, on the right page lines of print; the pages face +z */
 export const openBook = (w = 0.52, h = 0.36) => { const map = paint("bookwoodcut", 512, 352, (g) => {

@@ -213,28 +213,39 @@ const TUCK_AT = inCabin([0.15, 0, 0.35]);
       wield(g, SPILL_O(), SPILL, "light", c2.boy, "L", cam, { aim: fe }); tipGlow(g, SPILL_O(), cam); if (t >= LIT) fuseSmoke(g, c2.bb, T2 - (T.s7 + LIT) + 0.2, cam); } }); }
 
 // 9. ADD SIX PISTOLS ACROSS HIS CHEST. He has the sling in both hands at his waist (taken off the table behind him, where his body hid
-// it: picked up in the picture it came out of nowhere) and lifts it in one slow, steady, heavy move up over his head; as it starts down
-// over his hat the film cuts on the movement to a closer shot where it already hangs across his chest (three holsters, two pistols in
-// each), his hands still on the strap; he sags at the knees under the weight, straightens, and pats the butts. (Review of v2: the
-// held sling jumped where one act ended before the next began, and turned into the drawn one in a frame where both showed)
+// it: picked up in the picture it came out of nowhere) and in one slow, steady, heavy move swings its end up onto his left shoulder, his
+// right hand taking the other end to his right hip, so that the strap comes to lie across his chest; as it settles the film cuts on the
+// movement to a closer shot where it hangs there (three holsters, two pistols in each), his hands still on the strap's ends; he sags at
+// the knees under the weight, straightens, and pats the butts. (Review of v2: the held sling jumped where one act ended before the next
+// began, and turned into the drawn one in a frame where both showed. v4: lifted up over his head it hung before his face for 9 frames;
+// it never rises above his shoulder now)
 const PIST_AT = inCabin([0.35, 0, 0.1]), CUT9 = 1.15;
 { const at = PIST_AT, V = cabinLens(0.2, 1.4, 2.8, 0.03, -1, -2, 42), hd = V.toward(at[0], at[2], 5), bb = mover(BLACKBEARD_D, 1.92, at[0], at[2], hd); bb.stand(9);
   const bs = standOf(BLACKBEARD_D, at, hd, V), j = jointsOf(bs), w = rightWay(bs), ONTO = 0.98;
-  const low = near(mix(j("pelvis"), j("neck"), 0.15), V.cam, 0.22), chest = near(mix(j("pelvis"), j("neck"), 0.6), V.cam, 0.3), face = near(j("skull"), V.cam, 0.32);
-  const high: V3 = [j("crown")[0], j("crown")[1] + 0.12, j("crown")[2]], hat: V3 = [j("crown")[0], j("crown")[1] - 0.02, j("crown")[2]];
-  const hands = (p: V3, half: number) => ({ ...reach(bs, "R", aside(p, V.cam, w * half)), ...reach(bs, "L", aside(p, V.cam, -w * half)) });
+  const low = near(mix(j("pelvis"), j("neck"), 0.15), V.cam, 0.22), lowR = aside(low, V.cam, w * 0.32), lowL = aside(low, V.cam, -w * 0.32);
+  // where the strap's ends lie in the next shot (his left shoulder, his right hip), and the left hand's way there: up before his left
+  // breast and a little over the shoulder, out at his side (his fist went up before the edge of his beard), settling onto it as the
+  // weight comes on
+  const sh = near(j("shL"), V.cam, 0.2), hip = near(mix(j("pelvis"), j("shR"), 0.08), V.cam, 0.2), onL = aside([sh[0], sh[1] + 0.02, sh[2]], V.cam, -w * 0.02), onR: V3 = [hip[0], hip[1] - 0.07, hip[2]];
+  const breast = aside(near(mix(j("pelvis"), j("shL"), 0.62), V.cam, 0.3), V.cam, -w * 0.06), over = aside([sh[0], sh[1] + 0.08, sh[2]], V.cam, -w * 0.08);
+  const both = (r: V3, l: V3) => ({ ...reach(bs, "R", r), ...reach(bs, "L", l) });
   // each act holds until the next has taken over from it (an act that ends drops the arms back to the first one). The lift follows
   // the path waist, chest, face, over the head in seven short keys 0.11 s apart, each overlapping the next, so that it climbs at one
   // steady pace (each act starts fast and settles slowly: a few long ones made it lurch)
-  bb.actAt(-1, { ...hands(low, 0.32), lean: 6, head: [0, 8, 0] }, 10, { in: 0.01, handL: "grip", handR: "grip", face: GRIM });
-  const path = [low, chest, face, near(high, V.cam, 0.08)], seg = path.slice(1).map((p, i) => Math.hypot(p[0] - path[i][0], p[1] - path[i][1], p[2] - path[i][2])), all = seg.reduce((a, b) => a + b, 0);
+  bb.actAt(-1, { ...both(lowR, lowL), lean: 6, head: [0, 8, 0] }, 10, { in: 0.01, handL: "grip", handR: "grip", face: GRIM });
+  const path = [lowL, breast, over], seg = path.slice(1).map((p, i) => Math.hypot(p[0] - path[i][0], p[1] - path[i][1], p[2] - path[i][2])), all = seg.reduce((a, b) => a + b, 0);
   const along = (u: number): V3 => { let d = u * all; for (let i = 0; i < seg.length; i++) { if (d <= seg[i] || i === seg.length - 1) return mix(path[i], path[i + 1], Math.min(1, d / seg[i])); d -= seg[i]; } return path[path.length - 1]; };
-  for (let k = 1; k <= 7; k++) bb.actAt(0.08 + 0.11 * (k - 1), { ...hands(along(k / 7), 0.32), lean: 6 - (8 * k) / 7, head: [0, 8 - (12 * k) / 7, 0] }, 10, { in: 0.24, antic: 0, over: 0, handL: "grip", handR: "grip", face: k > 5 ? { ...GRIM, brow: -0.4 } : GRIM });
-  bb.actAt(ONTO, { ...hands(near(hat, V.cam, 0.08), 0.34), lean: 0, head: [0, 0, 0] }, 10, { in: 0.4, antic: 0, over: 1, handL: "grip", handR: "grip", face: GRIM });
-  shots.push({ id: "pistols", a: T.s8, b: T.s8 + CUT9, still: 0.8, sounds: [{ t: 0.15, k: "rattle", g: 0.6 }, { t: 0.65, k: "rattle", g: 0.4, p: 0.2 }],
+  // (the strap is stiff: the right hand stays a strap's length from the left one all the way, on the line toward where it is going; the
+  // two hands came 22 cm too close together half way)
+  const LEN = Math.hypot(lowR[0] - lowL[0], lowR[1] - lowL[1], lowR[2] - lowL[2]);
+  const rightOf = (l: V3, u: number): V3 => { const t = mix(lowR, onR, u), d = [t[0] - l[0], t[1] - l[1], t[2] - l[2]], n = Math.hypot(d[0], d[1], d[2]) || 1; return [l[0] + (d[0] * LEN) / n, l[1] + (d[1] * LEN) / n, l[2] + (d[2] * LEN) / n]; };
+  for (let k = 1; k <= 7; k++) bb.actAt(0.08 + 0.11 * (k - 1), { ...both(rightOf(along(k / 7), k / 7), along(k / 7)), lean: 6 - (6 * k) / 7, head: [0, 8 - (6 * k) / 7, 0] }, 10, { in: 0.24, antic: 0, over: 0, handL: "grip", handR: "grip", face: k > 5 ? { ...GRIM, brow: -0.4 } : GRIM });
+  bb.actAt(ONTO, { ...both(rightOf(onL, 1), onL), py: -0.02, lean: 0, head: [0, 2, 0] }, 10, { in: 0.4, antic: 0, over: 1, handL: "grip", handR: "grip", face: GRIM });
+  // (the words at the top, as in the next shot: his right hand takes the strap's end down to his hip, where they were)
+  shots.push({ id: "pistols", capsTop: 200, a: T.s8, b: T.s8 + CUT9, still: 0.8, sounds: [{ t: 0.15, k: "rattle", g: 0.6 }, { t: 0.65, k: "rattle", g: 0.4, p: 0.2 }],
     cam: (_t, u) => V.push(0.03 * u), sun: { target: at, reach: 4 },
     cast: (t) => [on("bb", BLACKBEARD_D, bb, t, FL, { seed: 3 })],
-    things: (g, c2, t, T2, cam) => { lantern(g, T2, cam); fuseSmoke(g, c2.bb, T2, cam); carryBy(g, SLING(), c2.bb, "L", c2.bb, "R", cam, 0.1, t > 0.35 ? "don" : "carry"); } }); }
+    things: (g, c2, t, T2, cam) => { lantern(g, T2, cam); fuseSmoke(g, c2.bb, T2, cam); carryBy(g, SLING(), c2.bb, "L", c2.bb, "R", cam, 0.1); } }); }
 { const at = PIST_AT, V = cabinLens(0.17, 1.62, 2.3, 0.02, -1, -3, 40), hd = V.toward(at[0], at[2], 5), bb = mover(BLACKBEARD_ARMED_D, 1.92, at[0], at[2], hd); bb.stand(9);
   const bs = standOf(BLACKBEARD_ARMED_D, at, hd, V), j = jointsOf(bs), hi = near(j("shL"), V.cam, 0.2), lo = near(mix(j("pelvis"), j("shR"), 0.08), V.cam, 0.2), REL = 0.12;
   // his hands where the strap's ends are (his left shoulder, his right hip), letting go of it as the weight settles

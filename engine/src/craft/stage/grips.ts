@@ -9,6 +9,7 @@ import { mix3 } from "./film";
 import { grip, palm, fingers, eyeOf, span, near, aside, UNSEEN } from "./staging";
 import { figureCard, reachArm, pointArm, bareJoints, CROWD_LOG } from "../world/people";
 import { rod, mesh, box, group } from "../world/kit";
+import { hangDown } from "../world/props";
 import type { Design } from "../designs/common";
 import type { Pose } from "../rig";
 
@@ -493,7 +494,7 @@ export const haul = (into: THREE.Group, a: Staged, cam: Cam, top: V3, floor: num
 export const carryBy = (into: THREE.Group, o: THREE.Object3D, a: Staged, sa: Side, b: Staged, sb: Side, cam: Cam, d = 0.1, /** "don" = being put on over the head (it may pass the face) */ use = "carry") => {
   let pa = palm(a, sa), pb = palm(b, sb); const P2 = pic(cam); if (P2(pa, pb)[0] < 0) [pa, pb] = [pb, pa];
   const g = o.userData.grips as V3[], G = Math.abs(g[1][0] - g[0][0]), hy = g[0][1], v = P2(pa, pb), n = Math.hypot(v[0], v[1]) || 1, dir: [number, number] = [v[0] / n, v[1] / n];
-  const origin = aside(mix3(pa, pb, 0.5), cam, hy * dir[1], -hy * dir[0]); span(into, o, origin, aside(origin, cam, dir[0], dir[1]), cam, d);
+  const origin = aside(mix3(pa, pb, 0.5), cam, hy * dir[1], -hy * dir[0]); span(into, o, origin, aside(origin, cam, dir[0], dir[1]), cam, d); hangDown(o);
   const fd = d + ((o.userData.depth as number) ?? 0.1) / 2 + 0.2;      // the fingers well in front of the whole chest (its corners reach nearer the lens than its face), so that the hand in the ring shows
   if (a === b) fingers(into, a, [sa, sb], cam, fd); else { fingers(into, a, [sa], cam, fd); fingers(into, b, [sb], cam, fd); }
   if (AUDIT.on) { const err = Math.abs(n - G) > 0.1 ? `the hands are ${(Math.abs(n - G) * 100).toFixed(0)} cm too ${n > G ? "far apart" : "close together"} for the handles` : null;

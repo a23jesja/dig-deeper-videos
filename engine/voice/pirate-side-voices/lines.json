@@ -1,0 +1,107 @@
+[
+ {
+  "id": "du1",
+  "a": 0.3,
+  "b": 2.069,
+  "text": "...Where do I sign?",
+  "voice": "bm_fable"
+ },
+ {
+  "id": "du2",
+  "a": 2.969,
+  "b": 3.989,
+  "text": "Already?",
+  "voice": "bm_fable"
+ },
+ {
+  "id": "du3",
+  "a": 4.889,
+  "b": 6.734,
+  "text": "Best pistols on board...",
+  "voice": "bm_fable"
+ },
+ {
+  "id": "du4",
+  "a": 7.634,
+  "b": 8.463,
+  "text": "Sail!",
+  "voice": "bm_fable"
+ },
+ {
+  "id": "du5",
+  "a": 9.363,
+  "b": 10.452,
+  "text": "...Mine.",
+  "voice": "bm_fable"
+ },
+ {
+  "id": "qm1",
+  "a": 11.352,
+  "b": 12.08,
+  "text": "Crew only.",
+  "voice": "am_fenrir"
+ },
+ {
+  "id": "qm2",
+  "a": 12.98,
+  "b": 13.981,
+  "text": "Still crew only.",
+  "voice": "am_fenrir"
+ },
+ {
+  "id": "qm3",
+  "a": 14.881,
+  "b": 15.597,
+  "text": "Cap. On.",
+  "voice": "am_fenrir"
+ },
+ {
+  "id": "qm4",
+  "a": 16.497,
+  "b": 17.512,
+  "text": "Yours. ...Ours.",
+  "voice": "am_fenrir"
+ },
+ {
+  "id": "cap1",
+  "a": 18.412,
+  "b": 19.752,
+  "text": "That was my pudding.",
+  "voice": "bm_lewis"
+ },
+ {
+  "id": "sailor1",
+  "a": 20.652,
+  "b": 21.913,
+  "text": "Is he unwell?",
+  "voice": "bm_daniel"
+ },
+ {
+  "id": "rib1",
+  "a": 22.813,
+  "b": 24.068,
+  "text": "Matches my eyes.",
+  "voice": "am_michael"
+ },
+ {
+  "id": "rib2",
+  "a": 24.968,
+  "b": 25.953,
+  "text": "I was winning!",
+  "voice": "am_michael"
+ },
+ {
+  "id": "bb1",
+  "a": 26.853,
+  "b": 27.724,
+  "text": "Rum all out?!",
+  "voice": "am_puck"
+ },
+ {
+  "id": "sir1",
+  "a": 28.624,
+  "b": 29.29,
+  "text": "Arr!",
+  "voice": "bm_george"
+ }
+]

@@ -10,6 +10,9 @@ export type V3 = [number, number, number];
 export type Cam = { pos: V3; look: V3; fov: number };
 /** one figure on one frame: where its soles are, the way it faces (0 = toward +z, 90 = toward +x), its height, pose and face */
 export type Actor = { name: string; D: Design; at: V3; heading: number; h: number; pose: Pose; o: FigOpts;
+  /** for each foot that is down: where the body stood (on the ground) when it was put down (people.ts plantFix keeps the foot still in
+   *  the picture from then on) */
+  land?: { L?: V3 | null; R?: V3 | null };
   /** a figure thrown through the air: `at` is then the middle of its body and it is turned this many degrees in the picture */
   spin?: number;
   /** true = the figure takes no shade from the others in the shot (a shadow that would lie on it as a blot) */
@@ -91,7 +94,8 @@ export const legM = (D: Design, h: number) => { const P = D.props("sir"); return
  *  looks along -z) is laid in the world at `origin`, turned by `turn` degrees about the vertical */
 export const play = (name: string, D: Design, m: Mover, tm: number, origin: V3, h: number, o: { turn?: number; talk?: number; extra?: FigOpts; seed?: number; /** false = the eyes do not blink in this shot (a laugh, a held look) */ blink?: boolean } = {}): Actor => {
   const s = m.sample(tm), LL = legM(D, h), a = ((o.turn ?? 0) * Math.PI) / 180, x = s.x * LL, z = s.z * LL;
-  return { name, D, h, at: [origin[0] + x * Math.cos(a) + z * Math.sin(a), origin[1] + s.y * LL, origin[2] - x * Math.sin(a) + z * Math.cos(a)], heading: s.yaw + (o.turn ?? 0), pose: s.pose,
+  const W = (q: [number, number] | null): V3 | null => (q ? [origin[0] + q[0] * LL * Math.cos(a) + q[1] * LL * Math.sin(a), origin[1] + s.y * LL, origin[2] - q[0] * LL * Math.sin(a) + q[1] * LL * Math.cos(a)] : null);
+  return { name, D, h, at: [origin[0] + x * Math.cos(a) + z * Math.sin(a), origin[1] + s.y * LL, origin[2] - x * Math.sin(a) + z * Math.cos(a)], heading: s.yaw + (o.turn ?? 0), pose: s.pose, land: { L: W(m.landedAt("L", tm)), R: W(m.landedAt("R", tm)) },
     o: { handL: s.handL, handR: s.handR, sway: s.sway, capLift: Math.min(0.45, Math.max(0, Math.abs(s.drag) - 1.6) * 0.16), ...o.extra,
       face: { ...s.face, lid: Math.max(s.face.lid ?? 0.16, o.blink === false ? 0 : blink(tm, o.seed ?? 3)), mouth: Math.max(s.face.mouth ?? 0, o.talk ?? 0), ...o.extra?.face } } };
 };

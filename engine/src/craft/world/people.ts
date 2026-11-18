@@ -11,7 +11,7 @@ import { Beast, BeastPose, drawBeast } from "../beast";
 const D2R = Math.PI / 180;
 const bodyH = (P: Props) => P.thigh + P.shin + P.ankle + P.spine + P.neck + P.head;
 /** where a figure stands: x, y, z in metres, the way it faces (0 = toward +z, 90 = toward +x), its height in metres */
-export type Spot = { at: [number, number, number]; heading: number; h?: number };
+export type Spot = { at: [number, number, number]; heading: number; h?: number; /** where the body stood when each planted foot was put down (film.ts Actor.land) */ land?: { L?: [number, number, number] | null; R?: [number, number, number] | null } };
 export type Placed = { mesh: THREE.Mesh; /** a point of the drawing (design units, x right, y down from the soles) in the world */ world: (ux: number, uy: number) => [number, number, number] };
 
 /** how a shot sees the cards: the lens (so that the ink line of a figure gets the same width on the screen as the contour of the
@@ -31,22 +31,65 @@ const place = (key: string, cw: number, ch: number, feet: number, s: number, mpu
   m.rotation.x = -tilt * Math.atan2(cam[1] - y - 0.8, Math.hypot(cam[0] - x, cam[2] - z));
   return { mesh: m, world: (ux, uy) => [x + Math.cos(az) * ux * mpu, y - uy * mpu, z - Math.sin(az) * ux * mpu] };
 };
+type V3 = [number, number, number];
+const dot3 = (a: number[], b: number[]) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+/** A planted foot that stays still in the picture (the body check of 18 November: feet slid while they carried the figure).
+ *  The card stands upright over the body and draws the skeleton flat on itself, so a foot planted in front of the card or behind it is
+ *  drawn a little off where it stands, and as the body walks on over the foot that error changes: the foot crept along the ground.
+ *  Here each planted foot is drawn, on this frame's card, where it was drawn when it was put down (through the lens: on the line from
+ *  the lens to that place), so a figure that stands still is not touched at all. Where that place would lie below the card's ground
+ *  (the body has moved on away from the lens), the whole card moves toward the lens along the lines of sight and shrinks in the same
+ *  measure, which leaves the picture of the body as it was, until the foot can be drawn standing on the ground. A foot fades out of
+ *  this as it lifts (over 3 cm). Returns the pose to draw, where the card stands and its scale */
+const plantFix = (P: Props, pose: Pose, sp: Spot, cam: number[], mpu: number): { pose: Pose; at: V3; mpu: number } => {
+  const none = { pose, at: sp.at, mpu }; if (!sp.land || (!sp.land.L && !sp.land.R)) return none;
+  const LL = P.thigh + P.shin, [x, y, z] = sp.at, az = Math.atan2(cam[0] - x, cam[2] - z), yaw = sp.heading - az / D2R, n = [Math.sin(az), 0, Math.cos(az)], u = [Math.cos(az), 0, -Math.sin(az)];
+  const h = sp.heading * D2R, left = [Math.cos(h), 0, -Math.sin(h)], fwd = [Math.sin(h), 0, Math.cos(h)];
+  const jobs: { side: "L" | "R"; w: number; Jl: V3; joint: Joint }[] = [];
+  for (const side of ["L", "R"] as const) {
+    const l = (side === "L" ? pose.legL : pose.legR) as { x?: number; y?: number; z?: number; pitch?: number; toe?: number; th?: unknown } | undefined, P0 = sp.land[side];
+    if (!l || l.th !== undefined || !P0) continue; const w = Math.max(0, Math.min(1, 1 - ((l.y ?? 0) * LL * mpu) / 0.03)); if (w <= 0) continue;
+    // the point it stands on (the toes while the heel is up, else the heel), in the world
+    const s = side === "L" ? 1 : -1, t = (l.toe ?? 14) * D2R, f0 = [s * Math.sin(t), 0, Math.cos(t)], c = [s * (P.hipW + (l.x ?? 0.03) * LL), 0, (l.z ?? 0) * LL], k = (l.pitch ?? 0) > 0 ? 0.73 : -0.27;
+    const cp = [c[0] + f0[0] * k * P.foot, c[2] + f0[2] * k * P.foot], W: V3 = [x + mpu * (cp[0] * left[0] + cp[1] * fwd[0]), y, z + mpu * (cp[0] * left[2] + cp[1] * fwd[2])];
+    // where it was drawn when it was put down: laid flat on the card that stood over the body then
+    const nx = cam[0] - P0[0], nz = cam[2] - P0[2], nn = Math.hypot(nx, nz) || 1, nl = [nx / nn, 0, nz / nn], e0 = (W[0] - P0[0]) * nl[0] + (W[2] - P0[2]) * nl[2];
+    jobs.push({ side, w, Jl: [W[0] - e0 * nl[0], W[1], W[2] - e0 * nl[2]], joint: ((l.pitch ?? 0) > 0 ? `toe${side}` : `heel${side}`) as Joint });
+  }
+  if (!jobs.length) return none;
+  const C = cam, Dh = (C[0] - x) * n[0] + (C[2] - z) * n[2]; let df = 0;
+  for (const j of jobs) df = Math.max(df, j.w * ((j.Jl[0] - x) * n[0] + (j.Jl[2] - z) * n[2]));
+  const lam = Math.max(0.5, (Dh - df) / (Dh || 1)), at2: V3 = [C[0] + lam * (x - C[0]), C[1] + lam * (y - C[1]), C[2] + lam * (z - C[2])], mpu2 = lam * mpu;
+  const legs: Record<"L" | "R", Record<string, number>> = { L: { ...(pose.legL as object) } as Record<string, number>, R: { ...(pose.legR as object) } as Record<string, number> };
+  const with_ = () => ({ ...pose, legL: legs.L as Pose["legL"], legR: legs.R as Pose["legR"] }) as Pose;
+  for (let it = 0; it < 2; it++) { const sk = solve(P, with_(), yaw);
+    for (const j of jobs) { const d = [j.Jl[0] - C[0], j.Jl[1] - C[1], j.Jl[2] - C[2]], kk = dot3([at2[0] - C[0], 0, at2[2] - C[2]], n) / (dot3(d, n) || 1e-9), Js = [C[0] + d[0] * kk, C[1] + d[1] * kk, C[2] + d[2] * kk];
+      const tx = ((Js[0] - at2[0]) * u[0] + (Js[2] - at2[2]) * u[2]) / mpu2, ty = (at2[1] - Js[1]) / mpu2, cur = sk.j[j.joint], dx = (tx - cur[0]) * j.w, dy = (ty - cur[1]) * j.w, L = legs[j.side];
+      L.y = (L.y ?? 0) - dy / LL;
+      // across the picture: the foot's own x and z, in the measure each moves it there
+      const probe = (key: "x" | "z") => { const q = { ...L, [key]: (L[key] ?? (key === "x" ? 0.03 : 0)) + 0.01 }, save = legs[j.side]; legs[j.side] = q; const v = solve(P, with_(), yaw).j[j.joint][0] - cur[0]; legs[j.side] = save; return v / 0.01; };
+      const gx = probe("x"), gz = probe("z"), g2 = gx * gx + gz * gz; if (g2 > 1e-6) { L.x = (L.x ?? 0.03) + (gx * dx) / g2; L.z = (L.z ?? 0) + (gz * dx) / g2; } } }
+  return { pose: with_(), at: at2, mpu: mpu2 };
+};
 /** a figure of the cast. tilt (0..1) leans the card back toward a camera that looks down on it */
-export const figureCard = (D: Design, pose: Pose, o: FigOpts, sp: Spot, cam: number[], tilt = 0, seen?: Seen): Placed & { /** where a joint of the skeleton is in the world (to put a real thing in a hand) */ joint: (j: Joint) => [number, number, number];
+export const figureCard = (D: Design, pose0: Pose, o: FigOpts, sp0: Spot, cam: number[], tilt = 0, seen?: Seen): Placed & { /** where a joint of the skeleton is in the world (to put a real thing in a hand) */ joint: (j: Joint) => [number, number, number];
   /** where a place the drawing noted ("eyeA", "eyeB": the two eyes) is in the world; null if it is not in this view */ mark: (name: string) => [number, number, number] | null } => {
-  const P = D.props(o.who ?? "sir"), T = bodyH(P), s = 1.15, cw = Math.round(T * 1.9 * s), ch = Math.round(T * 1.42 * s), mpu = (sp.h ?? 1.75) / T;
+  const P = D.props(o.who ?? "sir"), T = bodyH(P), s = 1.15, cw = Math.round(T * 1.9 * s), ch = Math.round(T * 1.42 * s), mpu0 = (sp0.h ?? 1.75) / T;
+  const fx = plantFix(P, pose0, sp0, cam, mpu0), pose = fx.pose, mpu = fx.mpu, sp: Spot = { ...sp0, at: fx.at };
   const sk0 = solve(P, pose, sp.heading - Math.atan2(cam[0] - sp.at[0], cam[2] - sp.at[2]) / D2R);
   let ink: Ink | null = null;
-  const pl = place(`${D.id}:${sp.at.join()}:${cam.join()}`, cw, ch, 0.93, s, mpu, sp, cam, tilt, (g, yaw) => { ink = new Ink(g, lineFor(D.ol, mpu, sp.at, cam, seen)); D.draw(ink, solve(P, pose, yaw), o); }, seen);
+  const pl = place(`${D.id}:${sp.at.join()}:${cam.join()}`, cw, ch, 0.93, s, mpu, sp, cam, tilt, (g, yaw) => { ink = new Ink(g, lineFor(D.ol, mpu0, sp0.at, cam, seen)); D.draw(ink, solve(P, pose, yaw), o); }, seen);
   const marks = (ink as Ink | null)?.marks ?? {};
   return { ...pl, joint: (j) => pl.world(sk0.j[j][0], sk0.j[j][1]), mark: (name) => { const m = marks[name]; return m ? pl.world((m[0] - cw / 2) / s, (m[1] - ch * 0.93) / s) : null; } };
 };
 /** The closed fingers of a figure's hands (`sides`) on a card of their own, exactly where the figure's hands are. The stage puts it a
  *  little nearer the lens than the thing the hand holds, so that the thing lies between the palm (on the figure's card) and the
  *  fingers. null for a design that has no such layer */
-export const fingersCard = (D: Design, pose: Pose, o: FigOpts, sp: Spot, cam: number[], sides: ("L" | "R")[], seen?: Seen, whole = false): THREE.Mesh | null => {
+export const fingersCard = (D: Design, pose0: Pose, o: FigOpts, sp0: Spot, cam: number[], sides: ("L" | "R")[], seen?: Seen, whole = false): THREE.Mesh | null => {
   if (!D.fingers) return null;
-  const P = D.props(o.who ?? "sir"), T = bodyH(P), s = 1.15, cw = Math.round(T * 1.9 * s), ch = Math.round(T * 1.42 * s), mpu = (sp.h ?? 1.75) / T;
+  const P = D.props(o.who ?? "sir"), T = bodyH(P), s = 1.15, cw = Math.round(T * 1.9 * s), ch = Math.round(T * 1.42 * s), mpu0 = (sp0.h ?? 1.75) / T;
+  // the same card as the figure's (plantFix), so that the fingers lie on its hands
+  const fx = plantFix(P, pose0, sp0, cam, mpu0), pose = fx.pose, mpu = fx.mpu, sp: Spot = { ...sp0, at: fx.at };
   const kinds = whole ? { L: o.handL ?? "relaxed", R: o.handR ?? "relaxed" } : undefined;
   const pl = place(`${D.id}:fingers:${sides.join()}:${whole ? `${kinds!.L},${kinds!.R}` : ""}:${sp.at.join()}:${cam.join()}`, cw, ch, 0.93, s, mpu, sp, cam, 0, (g, yaw) => D.fingers!(new Ink(g, lineFor(D.ol, mpu, sp.at, cam, seen)), solve(P, pose, yaw), sides, kinds), seen);
   pl.mesh.castShadow = false; return pl.mesh;

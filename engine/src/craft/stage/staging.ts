@@ -38,14 +38,14 @@ export const palm = (a: Staged, side: "L" | "R", slide = 0.5): V3 => { const w =
  *  must start its fall or its flight where the hand was at that moment, not where the hand is now. Give it the figure as the shot's
  *  cast makes it for that moment, and keep the answer: the figure is drawn once to find out */
 export const palmThen = (a: Actor, side: "L" | "R", cam: Cam, slide = 0.45): V3 => {
-  const p = figureCard(a.D, a.pose, a.o, { at: a.at, heading: a.heading, h: a.h }, cam.pos), at = palm({ ...a, joint: p.joint, mesh: p.mesh }, side, slide);
+  const p = figureCard(a.D, a.pose, a.o, { at: a.at, heading: a.heading, h: a.h, land: a.land }, cam.pos), at = palm({ ...a, joint: p.joint, mesh: p.mesh }, side, slide);
   p.mesh.traverse((o) => { const m = o as THREE.Mesh; if (!m.isMesh) return; m.geometry?.dispose(); for (const mat of (Array.isArray(m.material) ? m.material : [m.material]) as THREE.MeshBasicMaterial[]) { mat.map?.dispose(); mat.dispose(); } });
   return at;
 };
 /** A figure as it stands at another moment than the frame being drawn, with its joints (it is drawn once to find them, and let go
  *  again): for working out where a thing in its hand was at that moment (the muzzle when the pistol went off) */
 export const stageAt = (a: Actor, cam: Cam): Staged => {
-  const p = figureCard(a.D, a.pose, a.o, { at: a.at, heading: a.heading, h: a.h }, cam.pos), s = { ...a, joint: p.joint, mesh: p.mesh, mark: p.mark } as Staged;
+  const p = figureCard(a.D, a.pose, a.o, { at: a.at, heading: a.heading, h: a.h, land: a.land }, cam.pos), s = { ...a, joint: p.joint, mesh: p.mesh, mark: p.mark } as Staged;
   p.mesh.traverse((o) => { const m = o as THREE.Mesh; if (!m.isMesh) return; m.geometry?.dispose(); for (const mat of (Array.isArray(m.material) ? m.material : [m.material]) as THREE.MeshBasicMaterial[]) { mat.map?.dispose(); mat.dispose(); } });
   return s;
 };
@@ -69,7 +69,7 @@ export const UNSEEN: string[] = [];
 export const fingers = (into: THREE.Group, a: Staged, sides: ("L" | "R")[], cam: Cam, d = 0.1, whole = false) => {
   if (a.spin !== undefined) return null;
   for (const s of sides) if (a.mark?.(`hid${s}`)) UNSEEN.push(`${a.name} ${s}`);
-  const m = fingersCard(a.D, a.pose, a.o, { at: a.at, heading: a.heading, h: a.h }, cam.pos, sides, a.seen, whole); if (!m) return null;
+  const m = fingersCard(a.D, a.pose, a.o, { at: a.at, heading: a.heading, h: a.h, land: a.land }, cam.pos, sides, a.seen, whole); if (!m) return null;
   const dist = Math.hypot(cam.pos[0] - m.position.x, cam.pos[1] - m.position.y, cam.pos[2] - m.position.z) || 1, k = 1 - d / dist, p0 = m.position.clone();
   m.position.set(cam.pos[0] + (m.position.x - cam.pos[0]) * k, cam.pos[1] + (m.position.y - cam.pos[1]) * k, cam.pos[2] + (m.position.z - cam.pos[2]) * k); m.scale.multiplyScalar(k);
   // the hand's shade is looked up where the hand is on its figure, not where it is drawn (in front): else the figure shades its own fist

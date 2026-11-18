@@ -206,6 +206,12 @@ export class Mover {
   }
 
   // ---------------- sampling ----------------
+  /** where the body stood (its ground point) when the foot that is down on side s at time t was put down; null while it is in the
+   *  air. The card that draws the figure keeps a planted foot where it was drawn when it landed (people.ts plantFix) */
+  landedAt(s: Side, t: number): V2 | null {
+    const f = this.feet[s]; let i = 0; while (i < f.length - 1 && f[i + 1].t0 <= t) i++;
+    const p = f[i]; if (!(t <= p.t1 || i === f.length - 1)) return null; return this.pelAt(Math.max(this.pel[0].t, p.t0));
+  }
   private pelAt(t: number): V2 {
     const k = this.pel; if (t <= k[0].t) return [k[0].x, k[0].z]; if (t >= k[k.length - 1].t) return [k[k.length - 1].x, k[k.length - 1].z];
     let i = 0; while (k[i + 1].t <= t) i++;
@@ -228,7 +234,9 @@ export class Mover {
       const land = clamp((t - p.t0) / 0.07, 0, 1), leave = p.t1 > 1e8 ? 0 : clamp((t - (p.t1 - (p.run ? 0.07 : 0.16))) / (p.run ? 0.07 : 0.16), 0, 1);
       return { x: p.x, z: p.z, y: 0, ang: p.ang, pitch: (p.run ? -4 : -14) * (1 - land) * (i ? 1 : 0) + (p.run ? 34 : 30) * smooth(leave), down: true };
     }
-    const q = f[i + 1], u = clamp((t - p.t1) / (q.t0 - p.t1), 0, 1), e = smooth(u), far = Math.hypot(q.x - p.x, q.z - p.z);
+    // (the body check of 18 November: the foot came down while still travelling, and skidded the last centimetres along the ground.
+    // It now rises a little before it moves on, and is over its new spot before it comes down, straight down onto it)
+    const q = f[i + 1], u = clamp((t - p.t1) / (q.t0 - p.t1), 0, 1), e = smooth(clamp((u - 0.04) / 0.8, 0, 1)), far = Math.hypot(q.x - p.x, q.z - p.z);
     const up = Math.sin(Math.PI * Math.min(1, u * 1.08)) ** 0.8 * q.h * (far > 0.05 || q.h < 0.09 ? 1 : 0.6);
     return { x: lerp(p.x, q.x, e), z: lerp(p.z, q.z, e), y: up, ang: lerp(p.ang, q.ang, e), pitch: lerp(p.run ? 34 : 30, q.run ? -4 : -14, smooth(clamp(u * 1.5 - 0.1, 0, 1))) + (q.run ? 28 : 8) * Math.sin(Math.PI * u) * (u < 0.5 ? 1 : 0.3), down: false };
   }

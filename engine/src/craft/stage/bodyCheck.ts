@@ -117,7 +117,7 @@ export const bodyCheck = (film: Film, opt: { every?: number; shots?: string[] } 
       // read last, from a call whose objects are not moved since: the things of the first moment that stand in the same place in all
       const { st } = stage(probe[0]), th = things(s, probe[0], st);
       th.g.traverse((o) => { const m = o as THREE.Mesh; if (!m.isMesh || holderOf(m, th.heldBy)) return; const { g, c } = placeOf(m); if (!later.every((at) => (at.get(g) ?? []).some((q) => q.distanceTo(c) < 0.03))) return; const b = obOf(m); if (b) fixed.push(b); }); }
-    const prevFoot = new Map<string, { heel: V3; toe: V3; side: "L" | "R"; rest: boolean }>();
+    const prevFoot = new Map<string, { heel: V3; toe: V3; side: "L" | "R"; rest: boolean }>(), airborne = new Map<string, number>(), sliding = new Map<string, number>();
     const lens = new THREE.PerspectiveCamera(50, 1080 / 1920, 0.05, 3000);
     for (const t of times) { const F = Math.round((s.a + t) * film.fps), { cam, st } = stage(t), th = things(s, t, st), C = new THREE.Vector3(...cam.pos); frames++;
       lens.fov = cam.fov; lens.position.copy(C); lens.lookAt(...cam.look); lens.updateProjectionMatrix(); lens.updateMatrixWorld(true);
@@ -202,15 +202,28 @@ export const bodyCheck = (film: Film, opt: { every?: number; shots?: string[] } 
           const under = [...solids.filter((o) => o.aabb.min.x - 0.05 < low.x && o.aabb.max.x + 0.05 > low.x && o.aabb.min.z - 0.05 < low.z && o.aabb.max.z + 0.05 > low.z && o.aabb.min.y < low.y + 0.3)];
           for (const o of under) { rc.set(new THREE.Vector3(low.x, low.y + 0.3, low.z), DIRS[3]); rc.near = 0; rc.far = 1.0; const h = rc.intersectObject(o.mesh, false)[0]; if (h && h.point.y > top) { top = h.point.y; what = describe(o); } }
           if (top === -Infinity && floor <= 0.001) { top = 0; what = "the ground"; }
-          const gap = low.y - top; if (!seen(low, 0.05)) { prevFoot.delete(a.name); continue; }
+          let gap = low.y - top; if (!seen(low, 0.05)) { prevFoot.delete(a.name); continue; }
+          // a planted foot is drawn on the line from the lens to the spot it stands on (people.ts plantFix), so it is seen standing where that
+          // line meets the figure's own ground: what is under that spot decides whether he stands on it, floats over it or is sunk into it
+          const lowSide: "L" | "R" = feet[0] === low ? "L" : "R", leg = (lowSide === "L" ? a.pose.legL : a.pose.legR) as { y?: number; th?: unknown } | undefined;
+          if (leg && leg.th === undefined && (leg.y ?? 0) < 1e-4 && a.land?.[lowSide] && C.y > floor + 0.05) { const k = (C.y - floor) / (C.y - low.y || 1e-9), G = C.clone().add(low.clone().sub(C).multiplyScalar(k)); let t2 = -Infinity;
+            for (const o of solids) { if (o.aabb.min.x - 0.05 > G.x || o.aabb.max.x + 0.05 < G.x || o.aabb.min.z - 0.05 > G.z || o.aabb.max.z + 0.05 < G.z) continue; rc.set(new THREE.Vector3(G.x, G.y + 0.3, G.z), DIRS[3]); rc.near = 0; rc.far = 1.0; const h = rc.intersectObject(o.mesh, false)[0]; if (h && h.point.y > t2) { t2 = h.point.y; what = describe(o); } }
+            if (t2 === -Infinity && floor <= 0.001) { t2 = 0; what = "the ground"; } if (t2 > -Infinity) { top = t2; gap = floor - t2; } }
           if (top === -Infinity) note(`${s.id}|${a.name}|floor`, { shot: s.id, who: a.name, kind: "floor", what: `${a.name} stands on nothing (no surface under the lower foot within a metre)` }, F, 1);
-          else if (gap > 0.03) note(`${s.id}|${a.name}|float`, { shot: s.id, who: a.name, kind: "floor", what: `${a.name}'s lower foot is above ${what}: floating` }, F, gap);
+          // a runner's feet are both off the ground for a moment in every stride: floating is a figure set above what is under it, or one
+          // in the air for longer than a stride's flight (the review's limit: more than 0.2 s in the air without a jump fails)
+          else if (gap > 0.03 && (floor - top > 0.03 || (airborne.get(a.name) ?? 0) > 6)) note(`${s.id}|${a.name}|float`, { shot: s.id, who: a.name, kind: "floor", what: `${a.name}'s lower foot is above ${what}: floating` }, F, gap);
           else if (gap < -0.03) note(`${s.id}|${a.name}|sunk`, { shot: s.id, who: a.name, kind: "floor", what: `${a.name}'s lower foot is sunk into ${what}` }, F, -gap);
           // the foot that carries him (the lower, flat on what is under it, the other clearly off it) stays where it is
           //     (heel with heel and toe with toe: a foot rolling from its heel onto its toes keeps one of them where it was)
           const other = feet[0] === low ? feet[1] : feet[0], side: "L" | "R" = feet[0] === low ? "L" : "R", now = { heel: a.joint(side === "L" ? "heelL" : "heelR"), toe: a.joint(side === "L" ? "toeL" : "toeR"), side, rest: top > -Infinity && Math.abs(gap) < 0.012 && other.y - low.y > 0.02 }, was = prevFoot.get(a.name);
-          if (was && was.rest && now.rest && was.side === side && every === 1) { const d = Math.min(Math.hypot(now.heel[0] - was.heel[0], now.heel[2] - was.heel[2]), Math.hypot(now.toe[0] - was.toe[0], now.toe[2] - was.toe[2]));
-            if (d > 0.012) note(`${s.id}|${a.name}|slide${side}`, { shot: s.id, who: a.name, kind: "slide", what: `${a.name}'s ${side === "L" ? "left" : "right"} foot slides while he stands on it` }, F, d); }
+          airborne.set(a.name, gap > 0.03 ? (airborne.get(a.name) ?? 0) + every : 0);
+          //     measured in the picture: a card's foot moves along the line of sight with the card, which cannot be seen; what is seen is
+          //     the foot leaving the spot of the ground it stood on (last frame's spot, seen through this frame's lens), in metres there
+          //     (the review's limit: a foot that carries him and moves more than 1 px a frame in the picture, three frames running, fails)
+          const slid = (p0: V3, p1: V3) => { const A = scr(new THREE.Vector3(...p0)), B = scr(new THREE.Vector3(...p1)); return Math.hypot(A.x - B.x, A.y - B.y); };
+          if (was && was.rest && now.rest && was.side === side && every === 1) { const d = Math.min(slid(was.heel, now.heel), slid(was.toe, now.toe)), run = d > 1 ? (sliding.get(a.name) ?? 0) + 1 : 0; sliding.set(a.name, run);
+            if (run >= 3) note(`${s.id}|${a.name}|slide${side}`, { shot: s.id, who: a.name, kind: "slide", what: `${a.name}'s ${side === "L" ? "left" : "right"} foot slides while he stands on it, ${run} frames running` }, F, d); } else sliding.set(a.name, 0);
           prevFoot.set(a.name, now); } }
     }
   }
@@ -218,4 +231,4 @@ export const bodyCheck = (film: Film, opt: { every?: number; shots?: string[] } 
 };
 
 /** the faults as lines for the film check: shot, frames (and film seconds), who, what, how deep */
-export const bodyLines = (film: Film, r: ReturnType<typeof bodyCheck>) => r.faults.map((f) => `${f.shot} frames ${f.f0}-${f.f1} (film ${(f.f0 / film.fps).toFixed(2)}-${((f.f1 + 1) / film.fps).toFixed(2)} s): ${f.what}${f.kind === "slide" ? ` (${(f.deep * 100).toFixed(1)} cm a frame)` : `, ${(f.deep * 100).toFixed(0)} cm`}`);
+export const bodyLines = (film: Film, r: ReturnType<typeof bodyCheck>) => r.faults.map((f) => `${f.shot} frames ${f.f0}-${f.f1} (film ${(f.f0 / film.fps).toFixed(2)}-${((f.f1 + 1) / film.fps).toFixed(2)} s): ${f.what}${f.kind === "slide" ? ` (up to ${f.deep.toFixed(1)} px a frame)` : `, ${(f.deep * 100).toFixed(0)} cm`}`);

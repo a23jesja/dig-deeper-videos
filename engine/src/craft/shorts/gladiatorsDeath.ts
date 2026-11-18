@@ -95,7 +95,7 @@ const T5a = at("nine", /^gladiator/) - 0.12;
   lean.m.actAt(-1, { ...reach(ls, "L", jointsOf(os)("shR")), armR: arm(16, 12, 30, 8), head: [0, 6, 0], lean: 4 }, 10, { in: 0.01, handL: "open", handR: "relaxed", face: { brow: 0.6, lid: 0.4, smile: -0.2 } });
   // the lens goes back at the walkers' pace (their pelvis keeps 0.84 m a second from about 0.45 s on), easing in
   const back = (t: number) => SPEED * (t < 0.9 ? (t * t) / 1.8 : t - 0.45);
-  shots.push({ id: "nine", a: T4, b: T5a, still: 1.2, sounds: walkers[0].m.cues().filter((q) => q.k === "step").map((q) => ({ t: q.t, k: "step", g: 0.5 })),
+  shots.push({ id: "nine", a: T4, b: T5a, still: 1.2, sounds: walkers[0].m.cues().filter((q) => q.k === "step" && q.t < T5a - T4).map((q) => ({ t: q.t, k: "step", g: 0.5 })),
     cam: (t) => lens(12.2 + f[0] * back(t), 3.2, 3.1 + f[1] * back(t), -0.85, -0.53, -16, 56).cam, sun: { target: [ox, 0, oz], reach: 12 },
     cast: (t) => walkers.map((w) => on(w.name, w.D, w.m, t)),
     things: (g, c, _t, T, cam) => { crowd(g, STANDS, T, cam, 0.6); handOn(c.g5, "L", c.g4, "shR", cam, "shoulder"); } }); }
@@ -111,7 +111,7 @@ const T5a = at("nine", /^gladiator/) - 0.12;
   ms[1].actAt(-1, { ...reach(st(BEARER2_D, ms[1], X + 0.95), "R", [X + 0.89, hy, Z + 0.08]), armL: [[10, 8], [20, 4]] }, 10, { in: 0.01, handR: "grip", handL: "relaxed", face: { brow: 0.4, lid: 0.2 } });
   ms[2].actAt(-1, { py: -1, lean: -18, legL: { th: [88, 4], sh: [90, 2] }, legR: { th: [86, -2], sh: [88, 0] }, armL: [[-24, 18], [-14, 10]], armR: [[150, 26], [172, 10]], head: [-34, -4, 0] }, 10, { in: 0.01, handL: "open", handR: "open", face: { brow: 0.4, lid: 0.5, smile: 0.3 } });
   wag(ms[2], 0.2, 2.2, P({ armR: [[150, 26], [172, 10]] }), P({ armR: [[158, 14], [180, 0]] }), 0.55, { handR: "open" });
-  shots.push({ id: "carried", a: T5a, b: T5, still: 1.0, sounds: ms[0].cues().filter((q) => q.k === "step").map((q) => ({ t: q.t, k: "step", g: 0.45 })),
+  shots.push({ id: "carried", a: T5a, b: T5, still: 1.0, sounds: ms[0].cues().filter((q) => q.k === "step" && q.t < T5 - T5a).map((q) => ({ t: q.t, k: "step", g: 0.45 })),
     cam: (t) => W2(t).cam, sun: { target: [X + 1.2, 1, Z], reach: 6 },
     cast: (t) => [on("b0", BEARER_D, ms[0], t), on("b1", BEARER2_D, ms[1], t), on("man", CARRIED_D, ms[2], t, hy + 0.02)],
     things: (g, c, _t, T, cam) => { crowd(g, STANDS, T, cam, 0.7); carryBy(g, STRETCH(), c.b0, "R", c.b1, "R", cam, 0.02); } }); }

@@ -51,6 +51,10 @@ export type Look = {
   clavi?: string;
   /** how tall the crest of a helmet stands (a part of the head's height; a soldier's is 0.4) */
   crestH?: number;
+  /** a pattern woven into a tunic and its long sleeves: stripes across it in `col`, or a check (thinner stripes both ways) */
+  stripes?: { col: string; check?: boolean };
+  /** a neckerchief tied at the throat, its knot and two ends in front (its colour) */
+  scarf?: string;
   legs: "trousers" | "bare"; trous?: string; feet: "shoes" | "sandals" | "boots"; spats?: boolean; sleeve: "long" | "short";
   /** knee breeches: the colour of the stockings below the knee; buckle = a buckle on the shoe */
   stockings?: string; buckle?: boolean; cuffs?: string;
@@ -383,6 +387,15 @@ const drawTrue = (L: Look) => (k: Ink, sk: Sk, o: FigOpts) => {
     if (L.buckle && L.feet === "shoes") { const c = add(add(sp.O, sp.ex, sp.span * 0.55), sp.up, P.foot * 0.2); k.shape([[c[0] - 9, c[1] - 8], [c[0] + 9, c[1] - 8], [c[0] + 9, c[1] + 8], [c[0] - 9, c[1] + 8]], BRASS, k.ol * 0.7); }
     pin(k, K, 7);
   };
+  /** the woven pattern on a sleeve from A0 to B0 (half-widths wa, wb; `pts` its outline): stripes round the arm, and for a check lines
+   *  along it too; the outline is drawn again over them */
+  const STRIPE = { gap: 30, w: 12, wc: 8 };
+  const woven = (A0: P2, B0: P2, wa: number, wb: number, pts: P2[]) => {
+    const W0 = L.stripes; if (!W0) return; const v = sub(B0, A0), n = len(v), u = unit(v), p: P2 = [-u[1], u[0]], r = Math.max(wa, wb) + 8, w = W0.check ? STRIPE.wc : STRIPE.w;
+    k.clip(pts, () => { for (let s = -STRIPE.gap; s < n + STRIPE.gap; s += STRIPE.gap) { const m = add(A0, u, s); k.shape([add(m, p, -r), add(m, p, r), add(add(m, p, r), u, w), add(add(m, p, -r), u, w)], W0.col, 0); }
+      if (W0.check) for (const o of [-0.55, 0, 0.55]) k.line([add(A0, p, o * wa), add(B0, p, o * wb)], w, W0.col, "butt"); });
+    k.shape(pts, null);
+  };
   const arm = (s: Side) => {
     const Sh = J("sh", s), E = J("el", s), W = J("wr", s), T = J("tip", s), kind = (s === "L" ? o.handL : o.handR) ?? "relaxed", long = L.sleeve === "long", col = long ? L.armCol ?? L.coat : L.skin;
     const hs = () => hand(k, W, len(sub(T, W)) > 6 ? angle(W, T) : angle(E, W), P.hand, kind, L.skin, thumbFlip(sk, s), false, k.ol);
@@ -391,9 +404,9 @@ const drawTrue = (L: Look) => (k: Ink, sk: Sk, o: FigOpts) => {
     if (long && !L.armCol) piece(k, seg(mid(E, W, 0.84), mid(E, W, 1.05), L.arm[2] * 0.84, L.arm[2] * 0.84, 0, 0.3, true), CREAM);
     const cuff = () => { if (long && L.cuffs) piece(k, seg(mid(E, W, 0.6), mid(E, W, 0.9), L.arm[2] + 7, L.arm[2] + 9, 0, 0.3, true), L.cuffs); };
     hs();
-    piece(k, seg(E, W, L.arm[1], L.arm[2], long ? 2 : 5), col, long && L.weave ? E : undefined);
+    const fore = seg(E, W, L.arm[1], L.arm[2], long ? 2 : 5); piece(k, fore, col, long && L.weave ? E : undefined); if (long) woven(E, W, L.arm[1], L.arm[2], fore);
     cuff();
-    piece(k, seg(Sh, E, L.arm[0], L.arm[1]), col, long && L.weave ? Sh : undefined);
+    const upper = seg(Sh, E, L.arm[0], L.arm[1]); piece(k, upper, col, long && L.weave ? Sh : undefined); if (long) woven(Sh, E, L.arm[0], L.arm[1], upper);
     if (!long) piece(k, seg(Sh, mid(Sh, E, 0.5), L.arm[0] + 6, L.arm[0] + 4), L.coat);
     if (L.armour) piece(k, seg(add(Sh, [0, -6]), mid(Sh, E, 0.32), L.arm[0] + 12, L.arm[0] + 10), "#b9c3cd");
     if (L.manica === s) { const mc = "#efe6cf", band = (A0: P2, B0: P2, wa: number, wb: number) => { piece(k, seg(A0, B0, wa, wb, 2), mc); const dv = unit(sub(B0, A0)), pp: P2 = [-dv[1], dv[0]]; for (const u of [0.2, 0.4, 0.6, 0.8]) { const m = mid(A0, B0, u), w0 = (wa + (wb - wa) * u) * 0.95; k.line([add(m, pp, -w0), add(m, pp, w0)], k.ol * 0.55); } };
@@ -408,6 +421,11 @@ const drawTrue = (L: Look) => (k: Ink, sk: Sk, o: FigOpts) => {
     if (L.cloak && back) piece(k, spline([S(-L.rows[3][1] * 0.9, top - 10, true), S(L.rows[3][1] * 0.9, top - 10, true), S(L.rows[1][1] * 1.05, L.rows[0][0] + 40, true), S(-L.rows[1][1] * 1.05, L.rows[0][0] + 40, true)], true, 4), L.cloak);
     piece(k, t, L.bare ? L.skin : L.coat, weave, F.tilt);
     k.clip(t, () => {
+      // a striped (or checked) shirt: bands across the body, level in the figure's own frame; a check adds bands down it, on the
+      // surface of the body so that they close up toward its sides
+      if (L.stripes) { const bot = L.rows[0][0] - 40, w = L.stripes.check ? STRIPE.wc : STRIPE.w, wide = Math.max(...L.rows.map((r) => r[1]));
+        for (let a = bot; a < top + 30; a += STRIPE.gap) k.shape([F.T(-400, a), F.T(400, a), F.T(400, a + w), F.T(-400, a + w)], L.stripes.col, 0);
+        if (L.stripes.check) for (let l = -wide + STRIPE.gap / 2; l < wide; l += STRIPE.gap) k.shape([S(l - w / 2, top + 30, back), S(l + w / 2, top + 30, back), S(l + w / 2, bot, back), S(l - w / 2, bot, back)], L.stripes.col, 0); }
       if (L.bare && front) { for (const s of [-1, 1]) k.line(spline([S(s * 52, top * 0.66), S(s * 26, top * 0.56), S(s * 4, top * 0.62)], false, 6), k.ol * 0.6); k.dot(S(0, top * 0.36)[0], S(0, top * 0.36)[1], 4, shade(L.skin, 0.7)); }
       if (L.bare && back) k.line([S(0, top * 0.86, true), S(0, top * 0.36, true)], k.ol * 0.5);
       if (L.clavi && (front || back)) for (const s of [-1, 1]) k.shape([S(s * 22 - 7, top + 6, back), S(s * 22 + 7, top + 6, back), S(s * 22 + 7, L.rows[0][0] - 10, back), S(s * 22 - 7, L.rows[0][0] - 10, back)], L.clavi, 0);
@@ -428,6 +446,12 @@ const drawTrue = (L: Look) => (k: Ink, sk: Sk, o: FigOpts) => {
       if (L.belt) k.line([F.T(-400, top * 0.3), F.T(400, top * 0.3)], 12, L.belt, "butt");
     });
     k.shape(t, null);
+    // the neckerchief: a band round the throat, and in front its knot with two short ends hanging from it (seen from behind, its point
+    // hangs down his back)
+    if (L.scarf) { const nw = P.head * 0.14;
+      piece(k, [F.T(-nw * 1.35, top - 16), F.T(nw * 1.35, top - 16), F.T(nw * 1.05, top + 20), F.T(-nw * 1.05, top + 20)], L.scarf);
+      if (back) piece(k, [S(-nw * 1.4, top - 10, true), S(nw * 1.4, top - 10, true), S(0, top * 0.74, true)], L.scarf);
+      else { for (const s of [-1, 1]) piece(k, [S(s * 6, top - 24), S(s * 36, top * 0.7), S(s * 16, top * 0.73)], shade(L.scarf, 0.9)); piece(k, [S(-18, top - 6), S(18, top - 6), S(13, top - 34), S(-13, top - 34)], L.scarf); } }
     if (jk && L.plain && front) for (const a of [0.86, 0.66, 0.46, 0.14]) pin(k, S(0, top * a), 4.5);
     if (jk && !L.plain && front) {
       for (const a of [0.56, 0.4, 0.24]) pin(k, S(0, top * a), 4.5);

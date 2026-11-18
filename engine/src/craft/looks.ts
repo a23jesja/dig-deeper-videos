@@ -305,6 +305,19 @@ export const FRENCH_CAPT: Look = { ...CUSTOMS, id: "frenchcapt", P: { ...COLONIS
 export const FRENCH_MATE: Look = { ...SAILOR, id: "frenchmate", P: { ...COLONIST, thigh: 200, shin: 190, shW: 120, hipW: 64 }, head: { a: 118, b: 118, H: 232, jaw: 1.1, round: 0.4, eye: 0.88 }, skin: "#c98f60", brow: "#221812",
   hatCol: "#fbf6ea", hair: { col: "#221812", kind: "short" }, beard: "#221812", coat: "#c8402f", accent: "#fbf3df", trous: "#356fb0",
   rows: [[-30, 116, 88, 90], [20, 112, 90, 86], [100, 108, 90, 80], [190, 118, 90, 76], [242, 122, 66, 66], [268, 58, 42, 46]] };
+// ---------------- "you" (the long video "What If You Lived One Day on a Pirate Ship?") ----------------
+/** you, the new hand who becomes the lookout: young and clean-shaven, short brown hair and no hat, a loose white shirt with blue stripes
+ *  across it, a red neckerchief, wide canvas trousers. The same face in almost every shot of the long video, so it is kept plain and
+ *  friendly */
+export const YOU: Look = {
+  id: "you", P: { ...COLONIST, thigh: 206, shin: 196, shW: 100, hipW: 52 }, head: { a: 104, b: 108, H: 226, jaw: 0.88, round: 0.55, eye: 1.0 }, skin: "#e2a77c", brow: "#4a2e1c",
+  hat: "none", hair: { col: "#4a2e1c", kind: "short" },
+  top: "tunic", coat: "#fbf6ea", accent: "#2f5fa0", belt: "#8a6a44", stripes: { col: "#2f5fa0" }, scarf: "#c8402f",
+  rows: [[-56, 104, 80, 82], [20, 100, 82, 78], [100, 94, 80, 70], [190, 102, 78, 66], [242, 108, 60, 60], [266, 52, 38, 42]],
+  legs: "trousers", trous: "#d9cfb4", feet: "shoes", sleeve: "long", arm: [29, 23, 17], leg: [40, 34, 30],
+};
+/** the same in a blue-checked shirt (the choice put to Jesper with the striped one) */
+export const YOU_CHECK: Look = { ...YOU, id: "youcheck", stripes: { col: "#2f5fa0", check: true } };
 /** a look as a design the rig can play. Every look wears the corrected beard and the corrected open mouth (cast.ts beard2, mouth2: their
  *  sheets were approved by the reviewer on 17 Nov 2026); a look that sets either flag itself keeps its own value */
 export const castDesign = (L0: Look, name = L0.id): Design => { const L: Look = { beard2: true, mouth2: true, ...L0 }; return { id: L.id, name, ol: 4.6, faceW: L.head.a * 1.45, props: () => L.P, draw: drawCast(L), fingers: drawFingers(L), hat: (k, phi) => drawHat(k, L, phi) }; };
@@ -317,6 +330,7 @@ export const OLDHAND_D = castDesign(OLDHAND), COOK_D = castDesign(COOK), SHIPBOY
 export const SHIRT_A_D = castDesign(SHIRT_A), SHIRT_B_D = castDesign(SHIRT_B), SHIRT_C_D = castDesign(SHIRT_C);
 export const NERO_D = castDesign(NERO, "Nero"), NERO_STAGE_D = castDesign(NERO_STAGE), RUNNER_D = castDesign(RUNNER);
 export const SHIRT_D_D = castDesign(SHIRT_D), SHIRT_E_D = castDesign(SHIRT_E), FRENCH_CAPT_D = castDesign(FRENCH_CAPT), FRENCH_MATE_D = castDesign(FRENCH_MATE);
+export const YOU_D = castDesign(YOU, "you"), YOU_CHECK_D = castDesign(YOU_CHECK, "you");
 /** more people of Rome, so that a crowd has women and men of different age, colour and face (their heights are set where they are cast) */
 export const ROMAN_WOMAN2: Look = { ...ROMAN_WOMAN, id: "romanwoman2", head: { a: 108, b: 112, H: 232, jaw: 0.92, round: 0.45, eye: 0.96 }, skin: "#b9825a", brow: "#1c1410", hair: { col: "#1c1410", kind: "back" }, coat: "#b0483c", accent: "#f0e2c0", cloak: "#f0e2c0", belt: "#e9b83a" };
 export const ROMAN_WOMAN3: Look = { ...ROMAN_WOMAN, id: "romanwoman3", head: { a: 100, b: 108, H: 220, jaw: 0.8, round: 0.75, eye: 1.16 }, skin: "#f6d3b4", brow: "#a8662a", hair: { col: "#c08a3a", kind: "bun" }, coat: "#7a6ab0", accent: "#fbf3df", cloak: "#c9d6e8", belt: "#fbf3df" };

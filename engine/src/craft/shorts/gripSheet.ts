@@ -10,7 +10,7 @@ import { GLADIUS, NET, STICK, TRIDENT, SHIELD_ARM, shieldOn, pole, polePose, Sta
 import { flagSea } from "../world/ship";
 import { group, mesh, box } from "../world/kit";
 import { gladius, scutum, trident, netBunch, refStick, spyglass, pistolHeld, sabre, mugHeld, scabbard, bucketHeld, linstock, chest, fiddle, fiddleBow, fiddleByNeck, cithara, grapes, bundleHeld } from "../world/props";
-import { MURMILLO_D, RETIARIUS_D, REFEREE_D, CUSTOMS_D, SHIPOWNER_D, PIRATE_D, SAILOR_D, PIRATE2_D, CAPTAIN_D, COOK_D, GUNNER_D, DOCKER_D, DOCKHAND_D, NERO_D, NERO_STAGE_D, ROMAN_WOMAN2_D, CITIZEN_D, BLACKBEARD_D } from "../looks";
+import { MURMILLO_D, RETIARIUS_D, REFEREE_D, CUSTOMS_D, SHIPOWNER_D, PIRATE_D, SAILOR_D, PIRATE2_D, CAPTAIN_D, COOK_D, GUNNER_D, DOCKER_D, DOCKHAND_D, NERO_D, NERO_STAGE_D, ROMAN_WOMAN2_D, CITIZEN_D, BLACKBEARD_D, YOU_D, YOU_CHECK_D, SIR_D } from "../looks";
 import type { HandKind } from "../ink";
 import type { Pose } from "../rig";
 import type { Design, Face } from "../designs/common";
@@ -138,6 +138,16 @@ const cardBB = (id: string, figs: Fig[], thing: (g: THREE.Group, c: Staged[], ca
 for (const [view, turn] of [["front", 0], ["slant", 28], ["side", 58], ["otherside", -50]] as [string, number][])
   cardBB(`blackbeard-look-${view}`, [{ D: BLACKBEARD_D, h: 1.92, turn, pose: () => ({ armL: [[14, 22], [30, 18]], armR: [[14, 22], [30, 18]] }), face: { brow: -0.9, lid: 0.15, smile: 0.25 } }], (g, [a], cam) => fuseSmoke(g, a, 1.3 + turn * 0.01, cam));
 export const LOOK_BLACKBEARD: Film = { ...GRIP_SHEET, id: "look-blackbeard", seconds: shotsBB.length * LEN, shots: shotsBB };
+
+// ---------------- a look sheet: "you", the lookout of the long video, from four sides, beside Sir Digsworth, and in a checked shirt ----------------
+const shotsYou: Shot[] = [];
+const cardYou = (id: string, figs: Fig[]) => { card2(id, figs, () => {}); const s = shotsYou.length * LEN, sh = shots2.pop()!; shotsYou.push({ ...sh, a: s, b: s + LEN }); };
+const YOU_REST = { armL: [[12, 16], [22, 12]] as [[number, number], [number, number]], armR: [[12, 16], [22, 12]] as [[number, number], [number, number]] }, YOU_FACE: Face = { brow: 0.3, lid: 0.1, smile: 0.35 };
+for (const [view, turn] of [["front", 0], ["slant", 28], ["side", 58], ["back", 180]] as [string, number][]) cardYou(`you-look-${view}`, [{ D: YOU_D, h: 1.76, turn, pose: () => YOU_REST, face: YOU_FACE }]);
+const CLOSE = { armL: [[8, 7], [14, 5]] as [[number, number], [number, number]], armR: [[8, 7], [14, 5]] as [[number, number], [number, number]] };
+cardYou("you-with-sir", [{ D: YOU_D, h: 1.76, dx: -0.42, turn: 24, pose: () => CLOSE, face: YOU_FACE }, { D: SIR_D, h: 1.8, dx: 0.42, turn: -24, pose: () => CLOSE, face: { brow: 0.4, smile: 0.4 } }]);
+for (const [view, turn] of [["front", 0], ["slant", 28]] as [string, number][]) cardYou(`you-check-${view}`, [{ D: YOU_CHECK_D, h: 1.76, turn, pose: () => YOU_REST, face: YOU_FACE }]);
+export const LOOK_YOU: Film = { ...GRIP_SHEET, id: "look-you", seconds: shotsYou.length * LEN, shots: shotsYou };
 
 // ---------------- sheet 4: the arena: the gladius and the shield, the trident and the net, the referee's stick ----------------
 const shots4: Shot[] = [];

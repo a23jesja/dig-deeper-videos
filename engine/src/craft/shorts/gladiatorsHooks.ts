@@ -78,7 +78,8 @@ export const shieldMan = (g: THREE.Group, a: Staged, cam: Cam, use: string, blen
 
 /** Sir Digsworth and the woman beside him in the front row: "Two go in, one comes out. Right?" Two fingers up on "Two", one on "one",
  *  and on "Right?" he turns to her; she shakes her head. `net` = the net still hangs over his head */
-export const twoShot = (id: string, a0: number, b0: number, W: Word[], net = false, V: ReturnType<typeof lens> = TWO): Shot => {
+/** fans = the crowd behind them (a film leaves the seats empty where its text lies: the review of opening a, round 3) */
+export const twoShot = (id: string, a0: number, b0: number, W: Word[], net = false, V: ReturnType<typeof lens> = TWO, fans: typeof STANDS = STANDS): Shot => {
   // the hand counts up beside his head on the side toward her, the elbow out and the forearm upright: clear of his face and hers, and
   // inside the picture (his right hand would be at its edge)
   const sir = mover(SIR_D, 1.8, SIR.at[0], SIR.at[2], SIR.heading - 8), wom = mover(ROMAN_WOMAN_OLIVES_D, 1.62, WOMAN.at[0], WOMAN.at[2], WOMAN.heading - 12); sir.stand(9); wom.stand(9);
@@ -91,7 +92,7 @@ export const twoShot = (id: string, a0: number, b0: number, W: Word[], net = fal
   wag(wom, Math.max(0, tr - 0.35), 1.4, P({ head: [-40, 4, 0] }), P({ head: [-12, 4, 0] }), 0.3, { face: { lid: 0.5, brow: 0.3, smile: -0.3 } });
   return { id, a: a0, b: b0, still: (b0 - a0) * 0.6, sounds: [], cam: (_t, u) => V.push(0.08 * u), sun: { target: MID, reach: 7 },
     cast: (t, T) => [on("sir", SIR_D, sir, t, ARENA.wall, { talk: talk(W, T, ["guess"]) }), on("wom", ROMAN_WOMAN_OLIVES_D, wom, t, ARENA.wall)],
-    things: (g, c, _t, T, cam) => { crowd(g, STANDS, T, cam, 0.55); if (net) draped(g, c.sir.joint("crown"), cam, 0.16); } };
+    things: (g, c, _t, T, cam) => { crowd(g, fans, T, cam, 0.55); if (net) draped(g, c.sir.joint("crown"), cam, 0.16); } };
 };
 /** the net spread `drop` metres over a head (its middle a hand above the crown) */
 export const draped = (g: THREE.Group, crown: V3, cam: Cam, drop: number, tilt = 0, hang = 0.3) => { const n = netOpen(1.5, drop, 7, hang); n.position.set(crown[0], crown[1] + 0.06, crown[2]); n.rotation.set(tilt, toLens(cam, crown), 0); g.add(n); };

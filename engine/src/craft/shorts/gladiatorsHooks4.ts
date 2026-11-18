@@ -36,8 +36,16 @@ export const GAP = 1.15;
 export const CLOSE = lens(FIGHT[0] - 0.02, 0.75, FIGHT[2] + 3.75, 0, -1, 12, 48);
 /** the crowd for the attack, without the few spectators whose faces the raised blade stands in front of from frame 0 until the chop
  *  (the screen box x0, x1, y0, y1 measured through the attack, 24 px to spare); the rest of the stands stays full */
-const without = (fans: typeof STANDS, cam: Cam, boxes: number[][], m = 24) => { const pc = new THREE.PerspectiveCamera(cam.fov, 1080 / 1920, 0.05, 500); pc.position.set(...cam.pos); pc.lookAt(...cam.look); pc.updateMatrixWorld(true); pc.updateProjectionMatrix();
+export const without = (fans: typeof STANDS, cam: Cam, boxes: number[][], m = 24) => { const pc = new THREE.PerspectiveCamera(cam.fov, 1080 / 1920, 0.05, 500); pc.position.set(...cam.pos); pc.lookAt(...cam.look); pc.updateMatrixWorld(true); pc.updateProjectionMatrix();
   return fans.filter((f) => { const v = new THREE.Vector3(f.at[0], f.at[1] + 0.88 * f.h, f.at[2]).project(pc), x = (v.x + 1) * 540, y = (1 - v.y) * 960; return !boxes.some(([x0, x1, y0, y1]) => x > x0 - m && x < x1 + m && y > y0 - m && y < y1 + m); }); };
+/** a crowd spread out for a close lens: nearest first, each fan kept only if his face is at least `k` face widths from every face kept
+ *  before him, and none in the boxes (as `without`): every head shows whole and apart, and every raised hand is clearly its own man's
+ *  (Jesper's review of v3: every head in a crowd visible; the review of v4: the heads behind Sir stacked on each other) */
+export const spread = (fans: typeof STANDS, cam: Cam, boxes: number[][], k = 2.2, m = 24) => { const pc = new THREE.PerspectiveCamera(cam.fov, 1080 / 1920, 0.05, 500); pc.position.set(...cam.pos); pc.lookAt(...cam.look); pc.updateMatrixWorld(true); pc.updateProjectionMatrix();
+  const right = new THREE.Vector3().setFromMatrixColumn(pc.matrixWorld, 0), kept: { x: number; y: number; r: number }[] = [];
+  const placed = without(fans, cam, boxes, m).map((f) => { const c = new THREE.Vector3(f.at[0], f.at[1] + 0.88 * f.h, f.at[2]), v = c.clone().project(pc), e = c.clone().addScaledVector(right, 0.12 * f.h).project(pc);
+    return { f, x: (v.x + 1) * 540, y: (1 - v.y) * 960, r: Math.abs(e.x - v.x) * 540, d: c.distanceTo(pc.position) }; }).sort((a, b) => a.d - b.d);
+  return placed.filter((p) => { if (kept.some((q) => Math.hypot(p.x - q.x, p.y - q.y) < k * Math.max(p.r, q.r))) return false; kept.push(p); return true; }).map((p) => p.f); };
 const ATTACK_STANDS = without(STANDS, CLOSE.cam, [[-40, 190, 360, 800]]);
 /** the trident's whole length from its butt to the tips of its prongs (props.ts trident(1.6): a 1.6 m shaft and 0.27 m prongs) */
 const TRI_LEN = 1.87;

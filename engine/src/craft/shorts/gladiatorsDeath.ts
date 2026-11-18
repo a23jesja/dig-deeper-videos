@@ -19,6 +19,7 @@ import type { Design } from "../designs/common";
 import type { Pose } from "../rig";
 import { on, SIR, WOMAN, STANDS, FAR, FIGHT, GLAD, SCUTUM, TRI, STICK_O, say, by, sandKick, LOWA, FRONT, TWO, pair, GUARD, shieldMan, twoShot } from "./gladiatorsHooks";
 import { rightWay, nearHand, eating, SIT } from "./gripSheet";
+import { attack, without, spread } from "./gladiatorsHooks4";
 import words from "../../../voice/gladiators-death/words.json";
 import lines from "../../../voice/gladiators-death/lines.json";
 
@@ -34,25 +35,16 @@ const WOOD = once(() => noShade(woodSword())), STRETCH = once(() => stretcher(1.
 const PORRIDGE = once(() => noShade(bowl(0.12))), COIN_O = once(() => noShade(coinHeld(0.04))), PEN_O = once(() => noShade(reedPen())), SCROLL_O = once(() => noShade(scrollHeld())), OLIVE_O = once(() => noShade(olive())), OLIVES = once(() => noShade(bowlRim(0.07, true)));
 const BENCH = once(() => bench(0.7)), STOOL = once(() => stool()), TABLE = once(() => table(1.3, 0.7, 0.76)), COINS = once(() => chest(true, true));
 
-// 1. DID GLADIATORS ... the fight already happening: the trident on the shield in the first frame, sand flying
-const HOOK = (() => {
-  const { mur, ret } = pair(1.9), TH = 0.55; mur.stand(9); ret.stand(9);
-  const stand = (at3: V3, heading: number, D: Design, h: number): Stand => ({ D, at: at3, heading, h, cam: LOWA.cam });
-  const aim: V3 = by([FIGHT[0] - 0.95, 0, FIGHT[2]], 62, -0.05, 0.42, 1.0);
-  mur.actAt(-1, { ...GUARD, lean: 10, py: -0.03 }, 10, { in: 0.01, handL: "grip", handR: "grip", face: { brow: -1, lid: 0.15, mouth: 0.3 } });
-  mur.actAt(TH, { ...usePose(GLADIUS, "thrust", "R"), armL: SHIELD_ARM, lean: 16, twist: 10 }, 0.55, { in: 0.12, out: 0.3, antic: 0.15, face: { brow: -1, lid: 0, mouth: 0.7 } });
-  ret.actAt(-1, { ...polePose(stand([FIGHT[0] + 0.95, 0, FIGHT[2]], -62, RETIARIUS_D, 1.86), "R", by([FIGHT[0] + 0.95, 0, FIGHT[2]], -62, 0.12, 0.2, 1.0), aim, 0.45), lean: 12 }, 10, { in: 0.01, handL: "grip", handR: "grip", face: { brow: -0.9, lid: 0.1, mouth: 0.5 } });
-  ret.actAt(TH + 0.05, { lean: -6, twist: -4, py: 0.02 }, 0.7, { in: 0.14, out: 0.3, face: { brow: 1, lid: 0, wide: 0.8, mouth: 0.6 } });
-  const s: Shot = { id: "hook", a: 0, b: T1, still: 0.25,
-    sounds: [{ t: 0.0, k: "thud", g: 1.0 }, { t: 0.02, k: "ting", g: 0.7 }, { t: TH + 0.05, k: "whoosh", g: 0.8 }, { t: TH + 0.1, k: "scuff", g: 0.6 }, { t: 1.1, k: "step", g: 0.6 }],
-    cam: (_t, u) => LOWA.push(0.18 * u), sun: { target: FIGHT, reach: 10 },
-    cast: (t) => [on("mur", MURMILLO_GRILLE_D, mur, t), on("ret", RETIARIUS_D, ret, t)],
-    things: (g, c, t, T, cam) => { crowd(g, STANDS, T, cam, 0.95); const k = smooth((t - TH) / 0.12) * (1 - smooth((t - TH - 0.45) / 0.3)); shieldMan(g, c.mur, cam, "ready", ["thrust", k]);
-      pole(g, TRI(), c.ret, cam, "R", palm(c.ret, "L"), { len: 1.9, name: "trident", use: "thrust" }); sandKick(g, T, cam, [FIGHT[0], 0, FIGHT[2] + 0.2], 1 - smooth(t / 0.9), 1); } };
-  shots.push(s); return s;
-})();
+// 1. DID GLADIATORS ... opening a of the hook lab (gladiatorsHooks4's attack, as the review passed it in round 3): the trident on the
+//    shield in the first frame, the sword chopping down onto its prongs at the rim and held there to the cut (back to his guard, the
+//    blade rose behind the shield's top edge: regression row 14)
+const HOOK = (() => { const s = attack("hook", 0, T1); shots.push(s); return s; })();
 
 // 2. ... FIGHT TO THE DEATH? Sir Digsworth in the front row peeking between his fingers, the crowd on its feet round him
+// (and no one whose face would be above the picture or cut by its sides: their bodies hung in at the top without heads, and big faces
+// were cut by the edges)
+const EDGES = [[-400, 1480, -900, 0], [-400, 70, -900, 2000], [1010, 1480, -900, 2000]];
+const PEEK_FANS = spread(STANDS, FRONT.cam, [[40, 1040, 60, 440], ...EDGES], 2.2, 60);
 { const sir = mover(SIR_D, 1.8, SIR.at[0], SIR.at[2], SIR.heading - 6); sir.stand(9);
   const ss: Stand = { D: SIR_D, at: SIR.at, heading: SIR.heading - 6, h: 1.8, cam: FRONT.cam };
   sir.actAt(-1, { ...reach(ss, "L", by(SIR.at, SIR.heading - 6, -0.07, 0.17, 1.56)), ...reach(ss, "R", by(SIR.at, SIR.heading - 6, 0.07, 0.17, 1.56)), head: [0, 4, 0] }, 10, { in: 0.01, handL: "open", handR: "open", face: { brow: 1, lid: 0, wide: 1, mouth: 0.4 } });
@@ -60,10 +52,12 @@ const HOOK = (() => {
   shots.push({ id: "peek", a: T1, b: T2, still: 0.7, sounds: [{ t: 0.05, k: "thud", g: 0.5, p: 0.4 }],
     cam: (_t, u) => FRONT.push(0.1 * u), sun: { target: SIR.at, reach: 6 },
     cast: (t, T) => [on("sir", SIR_D, sir, t, ARENA.wall, { talk: talk(W, T, ["hook", "guess"]) })],
-    things: (g, _c, _t, T, cam) => crowd(g, STANDS, T, cam, 0.9) }); }
+    // (the seats behind him where the question lies are empty: the review of opening a, round 3)
+    things: (g, _c, _t, T, cam) => crowd(g, PEEK_FANS, T, cam, 0.9) }); }
 
 // 3. TWO GO IN, ONE COMES OUT. RIGHT? (two fingers, one, and he turns to her; she shakes her head)
-shots.push(twoShot("guess", T2, T3, W));
+// (the captions at the top, over seats left empty, as in opening a: lower down they lay over his coat and her arms)
+shots.push({ ...twoShot("guess", T2, T3, W, false, TWO, spread(STANDS, TWO.cam, [[40, 1040, -900, 330], ...EDGES], 2.2, 60)), capsTop: 200 });
 
 // 4. NOT USUALLY. She puts an olive in her mouth and points down at the sand; he looks at her
 { const sir = mover(SIR_D, 1.8, SIR.at[0], SIR.at[2], SIR.heading - 8), wh = WOMAN.heading - 12, wom = mover(ROMAN_WOMAN_OLIVES_D, 1.62, WOMAN.at[0], WOMAN.at[2], wh); sir.stand(9); wom.stand(9);
@@ -342,7 +336,9 @@ function petals(g: THREE.Group, T: number, p: V3) { for (let i = 0; i < 14; i++)
 
 export const GLADIATORS_DEATH: Film = {
   id: "gladiators-death", fps: 30, seconds: END, sky: "#9fd6ff", world: arenaWorld, shots, words: W,
-  hook: { text: ["DID GLADIATORS", "FIGHT TO", "THE DEATH?"], a: 0, b: T2, size: 80 },
+  // (the question in the top fifth, over the sky and the top of the stands, as in opening a: in the middle it lay over the shield and both
+  // men's chests; the review of round 2, for every line of text in v4)
+  hook: { text: ["DID GLADIATORS", "FIGHT TO", "THE DEATH?"], a: 0, b: T2, size: 76, top: 110 },
   beds: [{ k: "crowd", a: 0, b: T5, g: 0.8 }, { k: "wind", a: 0, b: END, g: 0.25 }, { k: "crowd", a: T9, b: T14, g: 0.9 }, { k: "crowd", a: T16, b: END, g: 0.8 }], audio: "craft/gladiators-death.wav",
   thumbs: [
     { T: 0.3, words: ["WHO WALKS", "OUT?"], y: 0.7, size: 150 },

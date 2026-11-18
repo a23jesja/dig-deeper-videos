@@ -26,7 +26,7 @@ const W = words as Word[], L = Object.fromEntries((lines as { id: string; a: num
 const cut = (a: string, b: string) => (L[a].b + L[b].a) / 2, at = (line: string, re: RegExp) => (W.find((w) => w.line === line && re.test(w.w)) ?? W[0]).a;
 const P = (o: Partial<Pose>) => o;
 // the cuts: on the voice, a new picture every one to four seconds
-const T1 = 1.5, T2 = cut("hook", "guess"), T3 = cut("guess", "not"), T4 = cut("not", "nine"), T5 = cut("nine", "cost"), T6 = at("cost", /^fed/) - 0.1, T7 = cut("cost", "owner");
+const T1 = 1.5, T2 = Math.max(cut("hook", "guess"), T1 + 1.5), T3 = cut("guess", "not"), T4 = cut("not", "nine"), T5 = cut("nine", "cost"), T6 = at("cost", /^fed/) - 0.1, T7 = cut("cost", "owner");
 const T8 = at("owner", /^wanted/) - 0.1, T9 = cut("cost_me", "rules"), T10 = cut("rules", "finger"), T11 = cut("finger", "spared"), T12 = at("spared", /^he$/) - 0.1, T13 = cut("spared", "answer");
 const T14 = cut("answer", "doctor"), T15 = at("doctor", /^under/) - 0.1, T16 = cut("doctor", "relax"), T17 = L.relax.b + 0.25, END = T17 + 1.0;
 const shots: Shot[] = [];
@@ -59,7 +59,7 @@ const HOOK = (() => {
   wag(sir, 0, 2, P({ lean: 2, roll: 1.5 }), P({ lean: -1, roll: -1.5 }), 0.11);
   shots.push({ id: "peek", a: T1, b: T2, still: 0.7, sounds: [{ t: 0.05, k: "thud", g: 0.5, p: 0.4 }],
     cam: (_t, u) => FRONT.push(0.1 * u), sun: { target: SIR.at, reach: 6 },
-    cast: (t, T) => [on("sir", SIR_D, sir, t, ARENA.wall, { talk: talk(W, T, ["hook"]) })],
+    cast: (t, T) => [on("sir", SIR_D, sir, t, ARENA.wall, { talk: talk(W, T, ["hook", "guess"]) })],
     things: (g, _c, _t, T, cam) => crowd(g, STANDS, T, cam, 0.9) }); }
 
 // 3. TWO GO IN, ONE COMES OUT. RIGHT? (two fingers, one, and he turns to her; she shakes her head)

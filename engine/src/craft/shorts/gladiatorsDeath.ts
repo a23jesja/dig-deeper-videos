@@ -61,7 +61,9 @@ shots.push({ ...twoShot("guess", T2, T3, W, false, TWO, TWO_FANS), capsTop: 200 
 
 // 4. NOT USUALLY. She puts an olive in her mouth and points down at the sand; he looks at her
 { const sir = mover(SIR_D, 1.8, SIR.at[0], SIR.at[2], SIR.heading - 8), wh = WOMAN.heading - 12, wom = mover(ROMAN_WOMAN_OLIVES_D, 1.62, WOMAN.at[0], WOMAN.at[2], wh); sir.stand(9); wom.stand(9);
-  sir.actAt(-1, { armL: arm(14, 12, 30, 8), armR: arm(14, 12, 30, 8), head: [34, -2, 0] }, 10, { in: 0.01, handL: "relaxed", handR: "relaxed", face: { brow: 1, lid: 0, smile: 0.2, wide: 0.3 } });
+  // (his hands together at his waist, above the parapet: hanging, the parapet cut them off, v4's body check)
+  const ss: Stand = { D: SIR_D, at: SIR.at, heading: SIR.heading - 8, h: 1.8, cam: TWO.cam };
+  sir.actAt(-1, { ...reach(ss, "L", by(SIR.at, SIR.heading - 8, -0.08, 0.2, 1.04)), ...reach(ss, "R", by(SIR.at, SIR.heading - 8, 0.08, 0.2, 1.04)), head: [34, -2, 0] }, 10, { in: 0.01, handL: "relaxed", handR: "relaxed", face: { brow: 1, lid: 0, smile: 0.2, wide: 0.3 } });
   const ws: Stand = { D: ROMAN_WOMAN_OLIVES_D, at: WOMAN.at, heading: wh, h: 1.62, cam: TWO.cam }, bh = nearHand(wh, TWO.cam), eh: "L" | "R" = bh === "L" ? "R" : "L", POINT = 0.5;
   wom.actAt(-1, { ...eating(ws), head: [-10, 2, 0] }, 10, { in: 0.01, handL: "grip", handR: "grip", face: { lid: 0.45, mouth: 0.3, smile: 0.2 } });
   wom.actAt(POINT, { ...reach(ws, eh, by(WOMAN.at, wh, 0.1, 0.75, 0.75)), head: [-24, 12, 0] }, 9, { in: 0.25, antic: 0, over: 1.2, handL: eh === "L" ? "point" : "grip", handR: eh === "R" ? "point" : "grip", face: { lid: 0.3, brow: 0.4, smile: 0.35, mouth: 0.15 } });
@@ -337,8 +339,10 @@ const ground: V3 = [FIGHT[0] + 1.1, 0.03, FIGHT[2] + 0.5];
   // his hand on her side reaches toward the bowl (it stops short of it: the clash comes first)
   const toHer = Math.sign((WOMAN.at[0] - SIR.at[0]) * aside([0, 0, 0], TWO.cam, 1)[0] + (WOMAN.at[2] - SIR.at[2]) * aside([0, 0, 0], TWO.cam, 1)[2]) || 1, sj = jointsOf(ss);
   const herSide: "L" | "R" = Math.sign((sj("shR")[0] - sj("shL")[0]) * aside([0, 0, 0], TWO.cam, 1)[0] + (sj("shR")[2] - sj("shL")[2]) * aside([0, 0, 0], TWO.cam, 1)[2]) === toHer ? "R" : "L";
-  sir.actAt(-1, { armL: arm(14, 12, 30, 8), armR: arm(14, 12, 30, 8), head: [30, -2, 0] }, 10, { in: 0.01, handL: "relaxed", handR: "relaxed", face: { brow: 0.6, lid: 0.1, smile: 0.3, wide: 0.2 } });
-  sir.actAt(0.45, { ...reach(ss, herSide, aside([bowlAt[0], bowlAt[1] + 0.1, bowlAt[2]], TWO.cam, -toHer * 0.14, 0)), head: [30, 4, 0] }, 10, { in: 0.35, antic: 0, over: 1.1, ...(herSide === "L" ? { handL: "open" as const } : { handR: "open" as const }), face: { brow: 0.6, lid: 0.1, smile: 0.5 } });
+  // (his hands at his waist, above the parapet: hanging, the parapet cut them off; his reach stops short of her arm and a little nearer
+  // the lens, at the height of the bowl's rim: to the bowl itself his hand went into her arm and over her hand, v4's body check)
+  sir.actAt(-1, { ...reach(ss, "L", by(SIR.at, SIR.heading - 8, -0.08, 0.2, 1.04)), ...reach(ss, "R", by(SIR.at, SIR.heading - 8, 0.08, 0.2, 1.04)), head: [30, -2, 0] }, 10, { in: 0.01, handL: "relaxed", handR: "relaxed", face: { brow: 0.6, lid: 0.1, smile: 0.3, wide: 0.2 } });
+  sir.actAt(0.45, { ...reach(ss, herSide, near(aside([bowlAt[0], bowlAt[1] + 0.12, bowlAt[2]], TWO.cam, -toHer * 0.42, 0), TWO.cam, 0.16)), head: [30, 4, 0] }, 10, { in: 0.35, antic: 0, over: 1.1, ...(herSide === "L" ? { handL: "open" as const } : { handR: "open" as const }), face: { brow: 0.6, lid: 0.1, smile: 0.5 } });
   sir.actAt(CLASH, { ...reach(ss, "L", by(SIR.at, SIR.heading - 8, -0.07, 0.17, 1.56)), ...reach(ss, "R", by(SIR.at, SIR.heading - 8, 0.07, 0.17, 1.56)), head: [0, 4, 0] }, 10, { in: 0.14, antic: 0.1, over: 1.3, handL: "open", handR: "open", face: { brow: 1, lid: 0, wide: 1, mouth: 0.4 } });
   wag(sir, CLASH + 0.15, 1.5, P({ lean: 2, roll: 1.5 }), P({ lean: -1, roll: -1.5 }), 0.13);
   wom.actAt(-1, { ...EAT, head: [-30, 2, 0] }, 10, { in: 0.01, handL: "grip", handR: "grip", face: { lid: 0.4, brow: 0.3, smile: 0.5 } });

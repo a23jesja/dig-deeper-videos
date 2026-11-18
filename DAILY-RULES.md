@@ -420,6 +420,25 @@ Kokoro), `buildwithhanif/claude-animation-skill` and `JohnHeibel/ClaudeAnimation
 code, acted emotions), `kmilo93sd/agent-video-editor` (pacing, cuts, captions, thumbnails),
 `ZLHad/OpenVideoHarness` (the agent checks its own frames).
 
+## The youtube-agent skills (Jesper 2026-11-18; Jake Schincariol, MIT, read 2026-11-18)
+Eleven skills from github.com/Jakeschincariol/youtube-agent-skill. Plain Python, no network, no API key, they
+never publish. Install them in the project's `.claude/skills/` with their LICENSE. Use them as tools inside our
+own process; where a skill says "show the user two options" or "ask", the session decides by these rules instead.
+- **yt-retention** (most useful): Jesper exports the audience-retention CSV from Studio on the computer
+  (video, Analytics, Engagement, the download icon on the retention chart) two days after publishing. The
+  session runs `retention.py` with the script's transcript, names the biggest leak and writes it in GROWTH.md.
+- **yt-script / hookscore.py:** score the opening lines of the three hook-lab versions as one more check. It is a
+  heuristic made for talking-head creators: it never overrides the reviewer or the numbers.
+- **yt-package / title.py:** every title and thumbnail text goes through it: at most 60 characters (40 for the
+  mobile feed), thumbnail words never repeat the title, at most three words on the thumbnail.
+- **yt-shorts:** pick the three Short clips from each long video; each gets a new first line and a loop.
+- **yt-chapters:** chapters for every long video, checked against YouTube's rules.
+- **yt-viral:** once a month, rank history videos by how far they beat their own channel's median (public
+  listings only, never logged in) and use the top ones when picking topics. Never copy a video.
+- **voice.md:** written once as Sir Digsworth's character sheet: how he talks, his kind of jokes and asides,
+  words he never uses, what he never claims. All scripts and own lines follow it.
+- Not used: yt-edit (talking-head dead air), yt-plan, yt-comment, yt-seo beyond the description.
+
 ## Save usage (Jesper 2026-11-13: the weekly limit runs out too fast)
 - **Right model for the job (changed by Jesper 2026-11-18: quality first).** The most capable model writes the
   script, plans every shot, and writes the staging, camera and animation code (story, cast, world, run and fall

@@ -160,3 +160,29 @@ Kontroller: filmkontrollen OK (15 bilder, 32,7 s). Greppkontrollen har 422 avlä
 
 Leverans: `leverans/nero-fiddle/nero-fiddle.mp4` (982 rutor, 32,73 s bild, -14,02 LUFS; behållaren anger 32,79 s eftersom sista ljudpaketet avrundas uppåt), `nero-fiddle-telefon.mp4` (23,9 MiB), `nero-fiddle-liten.mp4` och tre miniatyrer ur videon.
 
+
+## Version 2 (Jespers sju punkter, 18 november): rösten märkt, och egna repliker
+
+Jespers regel 18 november ("Our own lines, not only sources") gäller den här filmen också. Varje rad i rösten är märkt [SOURCE] (påstående med källa) eller [OWN] (påhittat, bär inget faktum). De egna replikerna i pratbubblor ligger ovanpå bilden utan att flytta rösten, så Jespers sju punkter och tiderna står kvar.
+
+| Tid (s), ca | Märkning | Rad | Vem |
+|---|---|---|---|
+| 0,0-2,6 | [OWN] | Did Nero fiddle while Rome burned? | berättaren (frågan, inget påstående) |
+| 2,6-5,5 | [OWN] | Flames everywhere, and he plays a tune! | Sir Digsworth, upprörd över sagans bild; rättas genast |
+| 5,5-6,9 | [OWN] | Not so fast. | Sir Digsworth |
+| 6,9-11,4 | [SOURCE] | When the fire began, says Tacitus, Nero was not even in Rome. | berättaren ([T] 39.1, [D]) |
+| 11,4-15,7 | [SOURCE] | He came back and opened his own gardens to the homeless. | berättaren ([T] 39.1, [D]) |
+| 15,7-17,7 | [SOURCE] | The fire raged for six days. | berättaren ([T] 40.1, [S]) |
+| 17,7-18,6 | [OWN] | Psst! | pratbubbla, mannen som viskar ryktet |
+| 18,6-20,2 | [OWN] | Did you hear? | pratbubbla, kvinnan som viskar det vidare |
+| 17,7-22,2 | [SOURCE] | And a rumour spread: while Rome burned, Nero sang of the fall of Troy. | berättaren ([T] 39, [S], [Dio]) |
+| 22,2-27,4 | [SOURCE] | Sang, perhaps. Fiddled, never. The fiddle came about a thousand years later. | berättaren ([T], [S], [Dio], [D], [G]) |
+| 27,4-30,9 | [SOURCE] | His instrument was the cithara, a kind of lyre with seven strings. | berättaren ([G], [S], [D]) |
+| 31,3-34,0 | [OWN] | Sing along! | pratbubbla, Nero vid citharan medan Sir håller för öronen |
+| 30,9-36,3 | [SOURCE] | So no fiddle. Maybe a lyre. And he probably wasn't even there. | berättaren (sammanfattning av [T], [G], [D]) |
+
+**Egna repliker: 5**, varav 3 nya pratbubblor ("Psst!", "Did you hear?", "Sing along!"), plus frågan i början. Ingen av dem bär ett faktum: ryktet själv och citharan är [SOURCE] i rösten; bubblorna visar bara hur ryktet går från mun till mun och hur Nero spelar för Sir, som håller för öronen. Inget skämt rör brandens offer: bubblorna ligger i trädgårdslägret (skvaller) och vid citharan.
+
+Granskningens förslag "My grapes!" och "Wrong millennium, old chap." kom inte med. Druvorna flyger 0,45 s före klippet, så en bubbla skulle stå för kort för att läsas utan att rösten flyttas. Och Sir är berättaren: en bubbla från honom medan hans egen röst säger något annat blir otydlig.
+
+Motorn har fått pratbubblor i den gemensamma koden: film.bubbles {a, b, text, who} ritas av Stage ovanför talarens huvud, med svansen mot huvudet, poppar upp på 0,14 s med ett litet "tap" och hålls inom bilden och ovanför textraden.

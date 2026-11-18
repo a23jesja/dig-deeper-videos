@@ -98,3 +98,29 @@ Rättat efter min granskning av de renderade klippen i tio bilder i sekunden i t
 - Sista textraden "RIGHT?" stod 4-9 bildrutor. Nu står en text kvar minst 0,6 s när inget följer direkt (gemensam regel i `stage/film.ts`).
 - En text som skulle hänga kvar en kort stund efter ett klipp slutar nu på klippet (gemensam regel). I b kom "WAIT" fyra rutor in i Sirs bild, så nu klipper b på "Two".
 - Greppkontrollen läser nu varje bildruta och har granskningens två regler från greppblad 4 (stöt framifrån och sköld över ansiktet). Alla tre klippen klarar den.
+
+## Rösten märkt, och egna repliker (Jespers regel 18 november, "Our own lines, not only sources")
+
+[SOURCE] är ett påstående med källa, [OWN] är påhittat och bär inget faktum. Filmens bilder efter öppningen är inte byggda än, så de två nya replikerna blir talade, i egna gratisröster från Kokoro (samma fil som bm_george). De spelas in när du har godkänt dem, före bygget. Rösten blir då omkring 2,5 s längre, alltså omkring 37 s.
+
+| Tid (s), ca | Märkning | Rad | Vem (röst) |
+|---|---|---|---|
+| 0,0-2,6 | [OWN] | Did gladiators really fight to the death? | berättaren, frågan |
+| 2,6-5,2 | [OWN] | Two go in, one comes out. Right? | Sir Digsworth, hans felaktiga gissning (bm_george) |
+| 5,2-6,2 | [SOURCE] | Not usually. | [N], [A-S] |
+| 6,2-10,6 | [SOURCE] | About nine times in ten, a gladiator lived to fight another day. | [N] |
+| 10,6-14,6 | [SOURCE] | Each one was trained, fed and doctored, and that cost a great deal. | [A-St], [N] |
+| 14,6-18,0 | [SOURCE] | The last thing the school's owner wanted was a dead one. | [A-St] |
+| 18,0-19,4 | [OWN], ny | Do you know what you cost me? | ägaren till sin gladiator, medan han klappar honom på axeln (bm_lewis) |
+| 19,4-21,8 | [SOURCE] | There were rules, and a referee. | [A] |
+| 21,8-25,0 | [SOURCE] | A beaten man raised a finger to give up. | [N] |
+| 25,0-27,8 | [SOURCE] | And most of the time, he was spared. | [N], [A] |
+| 27,8-31,2 | [SOURCE] | So no. Most fights ended with both men walking out. | [A-S] |
+| 31,2-33,8 | [SOURCE] | One arena doctor boasted that under his care, hardly any gladiators died. | [A] (Galenos enligt artikeln) |
+| 34,4-35,6 | [OWN], ny | Relax. They'll be fine. | kvinnan med olivskålen, till Sir, som håller för ögonen när nästa par går ihop (bf_emma) |
+
+**Egna repliker: 4**, varav 2 nya. Ingen bär ett faktum:
+- Ägarens fråga har ingen siffra; att det kostade mycket säger [SOURCE]-raden före.
+- Kvinnans "Relax. They'll be fine." är hennes tröst till Sir. Den upprepar bara det rösten redan har sagt (de flesta överlevde) och lägger inget till. Den knyter ihop början, där hon skakade på huvudet åt hans gissning, med slutet, där hon ger honom en oliv.
+
+Respekt: inget skämt om någon som dör. Läkarens skryt får ingen kommentar.

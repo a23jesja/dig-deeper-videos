@@ -92,3 +92,33 @@ Rättat efter granskningens tre punkter:
 1. Luntorna glöder större. Röken stiger tjock ur de glödande ändarna, böjer sig ut från ansiktet och hänger ned längs skäggets sidor. Bakom huvudet ligger en dimma. Röken är mörkare grå, så att den syns mot det ljusa seglet i telefonstorlek redan i ruta 0. Detta är gemensam kod: `world/fire.ts` curl och `stage/staging.ts` fuseSmoke.
 2. "ANYONE DO THAT?" slutar nu på klippet till Sir vid 3,89 s. Det är en gemensam regel: en text som skulle hänga kvar en kort stund efter ett klipp slutar på klippet.
 3. Huggaren följer blad 3 genom hela klippet (bara höjd i b). Greppkontrollen läser nu varje bildruta och godkänner den.
+
+## Rösten märkt, och egna repliker (Jespers regel 18 november, "Our own lines, not only sources")
+
+Rösten är den inspelade versionen 2 (öppning b): [SOURCE] är ett påstående med källa, [OWN] är påhittat och bär inget faktum. De nya egna replikerna är pratbubblor ovanpå bilden (film.bubbles i motorn). Rösten och bildernas tider flyttas inte, så det finns inget nytt att spela in.
+
+| Tid (s) | Märkning | Rad | Vem |
+|---|---|---|---|
+| 0,0-2,4 | [SOURCE] | Blackbeard's beard smoked in battle. | berättaren ([J]: luntorna under hatten "in time of action") |
+| 2,4-3,9 | [OWN] | Why would anyone do that? | berättaren, frågan |
+| 3,9-6,3 | [OWN] | To keep his face warm? | Sir Digsworth, hans felaktiga gissning |
+| 6,3-8,8 | [OWN] | No. Watch him get ready for a fight. | Sir Digsworth, leder in i svaret |
+| 8,8-11,5 | [SOURCE] | First he twisted his beard, which grew up to his eyes, into little tails with ribbons. | [J] |
+| 12,4-13,9 | [OWN], ny | Gorgeous. | pratbubbla, Blackbeard själv framför spegeln när rosetten sitter |
+| 14,4-16,6 | [SOURCE] | Then he tucked slow-burning fuses under his hat, so they smoked beside his beard. | [J] |
+| 16,8-18,3 | [OWN], ny | Hold still, Captain! | pratbubbla, skeppspojken med stickan, på armslängds avstånd |
+| 19,3-21,7 | [SOURCE] | Add six pistols across his chest. | [J] |
+| 21,7-24,2 | [SOURCE] | Now he looked like something out of hell. | [J] ("a Fury, from Hell") |
+| 24,2-27,6 | [SOURCE] | It was probably meant to make crews give up without a fight. | [R] |
+| 25,2-26,7 | [OWN], ny | Nope! | pratbubbla, en sjöman på handelsskeppet, när händerna går upp |
+| 27,6-32,4 | [SOURCE] | Nearly all of this comes from one book, printed six years after he died. | [J] 1724, [R] |
+| 30,0-31,6 | [OWN], ny, valfri | Is any of it true? | pratbubbla, den kvinnliga passageraren bland åhörarna |
+| 32,4-37,0 | [SOURCE] | So the fire was a costume. | sammanfattning av [J], [R] (för syns skull) |
+
+**Egna repliker: 6**, varav 3 nya ("Gorgeous.", "Hold still, Captain!", "Nope!"), plus en valfri fjärde ("Is any of it true?"). Ingen bär ett faktum:
+- "Gorgeous." är ett skämt om hans fåfänga framför spegeln; banden själva är [SOURCE].
+- Pojken ber honom stå still medan luntorna tänds, vilket bara är bildens handling.
+- "Nope!" är handelsbesättningens reaktion på det som rösten säger var meningen.
+- Den valfria frågan lägger inget till rösten; den låter en åhörare tvivla, som rösten själv gör ("Nearly all of this comes from one book").
+
+Inget skämt om död eller offer: ingen dör i filmen.

@@ -1,0 +1,88 @@
+{
+ "voice": "bm_george",
+ "speed": 1.0,
+ "gap": 0.9,
+ "lead": 0.3,
+ "risk": [
+  "Arr",
+  "Ours",
+  "civilised"
+ ],
+ "lines": [
+  {
+   "id": "du1",
+   "text": "...Where do I sign?",
+   "voice": "bm_fable"
+  },
+  {
+   "id": "du2",
+   "text": "Already?",
+   "voice": "bm_fable"
+  },
+  {
+   "id": "du3",
+   "text": "Best pistols on board...",
+   "voice": "bm_fable"
+  },
+  {
+   "id": "du4",
+   "text": "Sail!",
+   "voice": "bm_fable"
+  },
+  {
+   "id": "du5",
+   "text": "...Mine.",
+   "voice": "bm_fable"
+  },
+  {
+   "id": "qm1",
+   "text": "Crew only.",
+   "voice": "am_fenrir"
+  },
+  {
+   "id": "qm2",
+   "text": "Still crew only.",
+   "voice": "am_fenrir"
+  },
+  {
+   "id": "qm3",
+   "text": "Cap. On.",
+   "voice": "am_fenrir"
+  },
+  {
+   "id": "qm4",
+   "text": "Yours. ...Ours.",
+   "voice": "am_fenrir"
+  },
+  {
+   "id": "cap1",
+   "text": "That was my pudding.",
+   "voice": "bm_lewis"
+  },
+  {
+   "id": "sailor1",
+   "text": "Is he unwell?",
+   "voice": "bm_daniel"
+  },
+  {
+   "id": "rib1",
+   "text": "Matches my eyes.",
+   "voice": "am_michael"
+  },
+  {
+   "id": "rib2",
+   "text": "I was winning!",
+   "voice": "am_michael"
+  },
+  {
+   "id": "bb1",
+   "text": "Rum all out?!",
+   "voice": "am_puck"
+  },
+  {
+   "id": "sir1",
+   "text": "Arr!",
+   "voice": "bm_george"
+  }
+ ]
+}

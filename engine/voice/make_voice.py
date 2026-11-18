@@ -3,6 +3,7 @@ import sys
 # then word timings from faster-whisper aligned to the known script.
 # usage: python voice/make_voice.py <script.json> <outdir>
 #   script.json: {"voice": "bm_george", "speed": 1.08, "gap": 0.16, "lines": [{"id": "hook", "text": "...", "gap": 0.2}, ...]}
+#   a line may have its own "voice" (a side character's own line in another free Kokoro voice; Sir Digsworth keeps bm_george)
 # pronunciation.json (next to this file) = shared word -> phonemes locks for ALL films, applied by pronunciation.py
 #   wherever the written word occurs (whole word, any case). Fix a mispronounced word once there. Captions/words.json keep the written word.
 #   A spec may also list "risk": [words or phrases] for listen_check.py (cuts each one out of the finished narration).
@@ -46,9 +47,9 @@ for ln in spec["lines"]:
     ph = pronunciation.phonemize_line(k, src, "en-gb", LOCKS)
     if ph is not None:
         print("  locked", ln["id"], pronunciation.locked_words_in(src, LOCKS), ph)
-    x, sr = k.create(src if ph is None else ph, voice=spec.get("voice", "bm_george"), speed=ln.get("speed", spec.get("speed", 1.0)), lang="en-gb", is_phonemes=ph is not None)
+    x, sr = k.create(src if ph is None else ph, voice=ln.get("voice", spec.get("voice", "bm_george")), speed=ln.get("speed", spec.get("speed", 1.0)), lang="en-gb", is_phonemes=ph is not None)
     x = resample(trim(np.asarray(x, np.float32), sr), sr, SR)
-    lines.append({"id": ln["id"], "a": round(t, 3), "b": round(t + len(x) / SR, 3), "text": ln["text"]})
+    lines.append({"id": ln["id"], "a": round(t, 3), "b": round(t + len(x) / SR, 3), "text": ln["text"], "voice": ln.get("voice", spec.get("voice", "bm_george"))})
     parts.append(x); t += len(x) / SR
     gap = ln.get("gap", spec.get("gap", 0.15))
     parts.append(np.zeros(int(gap * SR), np.float32)); t += gap

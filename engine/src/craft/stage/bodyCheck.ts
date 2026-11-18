@@ -136,6 +136,7 @@ export const bodyCheck = (film: Film, opt: { every?: number; shots?: string[] } 
         if (m.geometry.type === "PlaneGeometry" || m.geometry.type === "ShapeGeometry" || m.geometry.type === "BufferGeometry") return;
         const b = obOf(m); if (b && Math.max(...b.aabb.getSize(new THREE.Vector3()).toArray()) >= 0.4) moving.push(b); });
       const solids = [...base, ...fixed, ...moving].filter((o) => !o.aabb.containsPoint(C));
+      const carriedNow: Ob[] = []; th.g.traverse((o) => { const m = o as THREE.Mesh; if (!m.isMesh || !carried.has(m.uuid)) return; const b = obOf(m); if (b) carriedNow.push(b); });
       const bodies = Object.values(st).map((a) => { const sc = a.h / 1.8, J = (j: Joint | [Joint, Joint, number]) => { if (typeof j === "string") return new THREE.Vector3(...a.joint(j)); const [x, y, k] = j; return new THREE.Vector3(...a.joint(x)).lerp(new THREE.Vector3(...a.joint(y)), k); };
         const headL = new THREE.Vector3(...a.joint("crown")).distanceTo(new THREE.Vector3(...a.joint("skull")));
         const parts = PARTS.map((P) => { const A = J(P.a), B = J(P.b), r = P.r < 0 ? -P.r * headL : P.r * sc, n = Math.max(2, Math.ceil(A.distanceTo(B) / 0.035)), pts: THREE.Vector3[] = []; for (let i = 0; i <= n; i++) pts.push(A.clone().lerp(B, i / n)); return { P, r, pts, tol: P.tol * Math.max(1, sc) }; });
@@ -155,6 +156,9 @@ export const bodyCheck = (film: Film, opt: { every?: number; shots?: string[] } 
       const capHit = (c: { A: { x: number; y: number; d: number }; Z: { x: number; y: number; d: number }; rA: number; rZ: number }, x: number, y: number) => { const dx = c.Z.x - c.A.x, dy = c.Z.y - c.A.y, L = dx * dx + dy * dy, k = L ? Math.max(0, Math.min(1, ((x - c.A.x) * dx + (y - c.A.y) * dy) / L)) : 0;
         return Math.hypot(x - c.A.x - dx * k, y - c.A.y - dy * k) < c.rA + (c.rZ - c.rA) * k ? c.A.d + (c.Z.d - c.A.d) * k : 0; };
       const CORE = new Set(["head", "chest", "belly", "left thigh", "right thigh", "left shin", "right shin"]);
+      // a held thing may not be drawn over the arms of someone else either (the review: "inget föremål ... får gå över någon annans kropp";
+      // the bow's tip on Sir's sleeve)
+      const BODY_ARMS = new Set([...CORE, "left upper arm", "right upper arm", "left forearm", "right forearm"]);
       /** the nearest piece of a body drawn over this point of the picture, if any: its name and how far it is from the lens */
       const bodyAt = (f: (typeof flat)[number], x: number, y: number, only?: Set<string>) => { let best: { name: string; d: number } | null = null; for (const c of f.caps) { if (only && !only.has(c.q.P.name)) continue; const d = capHit(c, x, y); if (d && (!best || d < best.d)) best = { name: c.q.P.name, d }; } return best; };
       const inFrame = (p: { x: number; y: number }) => p.x >= 0 && p.x <= 1080 && p.y >= 0 && p.y <= 1920;
@@ -182,12 +186,26 @@ export const bodyCheck = (film: Film, opt: { every?: number; shots?: string[] } 
             const gh = g.caps.find((c) => c.q.P.name === "head")!, ov = hd.rA + gh.rA - Math.hypot(gh.A.x - hc.x, gh.A.y - hc.y);
             if (ov > 0.08 * hd.rA && gh.A.d < hc.d + 0.06) note(`${s.id}|${a.name}|heads|${g.B.a.name}`, { shot: s.id, who: a.name, kind: "figure", what: `${g.B.a.name}'s head lies over ${a.name}'s head in the picture (${Math.round(ov)} px into it, ${gh.A.d < hc.d - 0.06 ? "nearer the lens" : "at the same depth: drawn into each other"})` }, F, ov / hd.rA); for (const [u, v] of samples) { const hb = bodyAt(g, hc.x + u * R, hc.y + v * R); if (hb && hb.d < hc.d + 0.06) { n++; by = hb.name; } }
             if (n / samples.length > 0.2) note(`${s.id}|${a.name}|face|${g.B.a.name}`, { shot: s.id, who: a.name, kind: "figure", what: `${a.name}'s face is covered by ${g.B.a.name}'s ${by} (${Math.round((100 * n) / samples.length)} % of it)` }, F, n / samples.length); } }
+        // (f) a thing held or carried (his own too: the sack carried before his face in Nero's gardens) over more than a fifth of his face
+        if (inFrame(hc) && R > 7) { const things2 = [...held, ...carriedNow]; if (things2.length) { let n = 0, by = "", tot = 0;
+          for (const [u, v] of [[0, 0], ...[0.45, 0.85].flatMap((k) => Array.from({ length: 8 }, (_, i) => [k * Math.cos((i * Math.PI) / 4), k * Math.sin((i * Math.PI) / 4)]))] as [number, number][]) { tot++;
+            const x = hc.x + u * R, y = hc.y + v * R, ndc = new THREE.Vector3((x / 540) - 1, 1 - y / 960, 0.5).unproject(lens).sub(C).normalize(); rc.set(C, ndc); rc.near = 0.05; rc.far = hc.d - 0.02;
+            for (const o of things2) { if (o.geo.type === "PlaneGeometry") continue; const h = rc.intersectObject(o.mesh, false)[0]; if (h) { n++; by = nameOf(o.root ?? o.mesh) || describe(o); break; } } }
+          if (n / tot > 0.2) note(`${s.id}|${a.name}|thingface`, { shot: s.id, who: a.name, kind: "held", what: `${a.name}'s face is covered by a thing held or carried (${by}), ${Math.round((100 * n) / tot)} % of it` }, F, n / tot); } }
         // (c) a thing in someone else's hand drawn over his head, chest or legs
         //     (up to 3 m behind it: a match near the lens drawn across the men hauling behind is as wrong as a blade across the man beside
         //     him; a fiddle bow in front of people running 15 m down the street is only in front of them, as it would be)
         for (const o of held) { if (o.holder!.split(" & ").some((part) => part.split(" ")[0] === a.name)) continue;
           const c0 = o.bb.getCenter(new THREE.Vector3()), z = o.bb.getSize(new THREE.Vector3()), sz = [z.x * o.s[0], z.y * o.s[1], z.z * o.s[2]], ax = sz.indexOf(Math.max(...sz)), e = new THREE.Vector3(); e.setComponent(ax, z.getComponent(ax) / 2);
+                    // (an arm reaching for the thing, its hand at it, lies under it as a matter of course: not that arm)
+          const reaching = new Set<string>(); for (const sd of ["L", "R"] as const) { const w = new THREE.Vector3(...a.joint(sd === "L" ? "tipL" : "tipR")); if (o.aabb.distanceToPoint(w) < 0.2) { reaching.add(sd === "L" ? "left upper arm" : "right upper arm"); reaching.add(sd === "L" ? "left forearm" : "right forearm"); } }
+          const parts3 = new Set([...BODY_ARMS].filter((q) => !reaching.has(q)));
           let n = 0, part = ""; for (let i = 0; i <= 12; i++) { const p = c0.clone().sub(e).lerp(c0.clone().add(e), i / 12).applyMatrix4(o.M), s2 = scr(p); if (!inFrame(s2)) continue; const hb = bodyAt(f, s2.x, s2.y, CORE); if (hb && s2.d < hb.d && hb.d - s2.d < 3) { n++; part = hb.name; } }
+          // (e) and on his arms, where it lies at nearly his arm's depth: in front of it or into it cannot be told (the review of Nero v3:
+          //     the bow's tip on Sir's upper arm as he took the fiddle)
+          { let m2 = 0, arm2 = ""; const ARMS = new Set(["left upper arm", "right upper arm", "left forearm", "right forearm"]);
+            for (let i = 0; i <= 12; i++) { const p = c0.clone().sub(e).lerp(c0.clone().add(e), i / 12).applyMatrix4(o.M), s2 = scr(p); if (!inFrame(s2)) continue; const hb = bodyAt(f, s2.x, s2.y, new Set([...ARMS].filter((q) => !reaching.has(q)))); if (hb && Math.abs(s2.d - hb.d) < 0.12) { m2++; arm2 = hb.name; } }
+            if (m2 >= 1) note(`${s.id}|${a.name}|onarm|${o.mesh.uuid}`, { shot: s.id, who: a.name, kind: "held", what: `the thing in ${o.holder}'s hand, ${describe(o)}, lies on ${a.name}'s ${arm2} at the same depth: in front of it or into it cannot be told` }, F, m2 / 13); }
           if (n >= 2) note(`${s.id}|${a.name}|over|${o.mesh.uuid}|${part}`, { shot: s.id, who: a.name, kind: "held", what: `the thing in ${o.holder}'s hand, ${describe(o)}, is drawn over ${a.name}'s ${part}` }, F, n / 13); }
         // (d) a hand or a forearm that does not hold a thing goes through it: in the picture part of the hand lies in front of the thing
         //     and part behind it (Tacitus's writing hand: the top of the fist behind the scroll's roller, the bottom before the sheet)

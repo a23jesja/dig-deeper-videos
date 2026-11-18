@@ -69,6 +69,10 @@ const fireNight = (T: number, _cx = 50, cy = 46, dark = 1) => { const f = flicke
 
 const shots: Shot[] = [];
 const add = (s: Shot) => shots.push(s);
+/** a sack carried on the back: its shape lies off its origin, so it is put by where it is seen: its middle behind the shoulders, its top
+ *  over the head, wholly behind him (v3b, the review: in the gardens the sack lay before the man's face through the whole shot) */
+const onBack = (g: THREE.Group, o: THREE.Object3D, a: Staged, cam: Cam, scale: number) => { const s = a.joint("neck"), sk = put(g, o, [s[0], s[1], s[2]]); sk.scale.setScalar(scale); sk.updateMatrixWorld(true);
+  const now = new THREE.Box3().setFromObject(sk).getCenter(new THREE.Vector3()), want = new THREE.Vector3(...near([s[0], s[1] + 0.05, s[2]], cam, -0.42)); sk.position.add(want.sub(now)); sk.updateMatrixWorld(true); return sk; };
 /** the first shot, kept for the coda that leads back into it */
 let HOOK: Shot;
 /** which light lies over each stretch of the film (film seconds): set by the shots */
@@ -152,7 +156,7 @@ const fiddler = (dur: number, cam: Cam) => { const s = NST(cam), n = mover(NERO_
       on("sir", SIR_D, sir, t, 0, { talk: talk(W, T, ["flames"]), blink: false })],
     things: (g, c, _t, T, cam) => { streetFire(g, T, cam, 1.15);
       wield(g, inHand(HELD[2]()), BUNDLE, "carry", c.woman, "R", cam); onShoulder(g, HELD[3](), c.w3, "L", cam, 0.19);
-      const b = c.baker.joint("neck"); put(g, BUNDLES[2](), near([b[0], b[1] - 0.12, b[2]], cam, -0.1)).scale.setScalar(1.7); } };
+      onBack(g, BUNDLES[2](), c.baker, cam, 1.7); } };
   add({ ...flamesShot, b: a0 + MID, still: Math.min(PLAYS + 0.3, MID - 0.1), sounds: flamesShot.sounds?.filter((q) => q.t < MID) });
   add({ ...flamesShot, id: "flames2", a: a0 + MID, still: Math.max(0.2, PLAYS + 0.3 - MID), sounds: flamesShot.sounds?.filter((q) => q.t >= MID).map((q) => ({ ...q, t: q.t - MID })),
     cam: (t) => V2.push(0.08 * (MID + t) / (b0 - a0)),
@@ -346,7 +350,10 @@ const SIX_B = cut("six", "rumour"), SIX_A = SIX_B - 2.0;
       const o = 1.2 + 0.55 * smooth(t / 0.6); put(g, LEAF_L(), [q.x - gw / 2, 0, q.z], -o); put(g, LEAF_R(), [q.x + gw / 2, 0, q.z], Math.PI + 1.75);
       smoke(g, [q.x - 10, 5, q.z - 40], T * 0.6, 8, 40, 9, 16, 0, "#6a6672", 1); smoke(g, [q.x + 14, 5, q.z - 52], T * 0.6, 8, 44, 10, 14, 0, "#6a6672", 2);
       wield(g, inHand(HELD[1]()), BUNDLE, "carry", c.mother, "R", cam); carry(g, BUNDLES[0](), c.woman2, "R", c.woman2, "L", cam, { d: 0.08, drop: 0.2 });
-      const s = c.sacker.joint("neck"); put(g, BUNDLES[2](), near([s[0], s[1] - 0.12, s[2]], cam, -0.1)).scale.setScalar(1.6);
+      // (v3b, the review: the sack lay before his face through the whole shot, so that he looked headless. The sack's own shape lies
+      // off its origin; it is put where it is seen to be wanted: on his back, its middle behind his shoulders and its top over his head,
+      // wholly behind him)
+      onBack(g, BUNDLES[2](), c.sacker, cam, 1.6);
     } });
 }
 
@@ -371,7 +378,7 @@ const SIX_B = cut("six", "rumour"), SIX_A = SIX_B - 2.0;
     cam: (_t, u) => V.push(0.8 * u), sun: { target: [0, 3, 6], reach: 16 },
     cast: (t) => run.map((q, i) => on(q.name, q.D, q.m, t, 0, { seed: i + 1 })),
     things: (g, c, t, T, cam) => {
-      carry(g, BUNDLES[0](), c.run1, "R", c.run1, "L", cam, { d: 0.08, drop: 0.2 }); { const s = c.run2.joint("neck"); put(g, BUNDLES[2](), near([s[0], s[1] - 0.12, s[2]], cam, -0.1)).scale.setScalar(1.6); }
+      carry(g, BUNDLES[0](), c.run1, "R", c.run1, "L", cam, { d: 0.08, drop: 0.2 }); onBack(g, BUNDLES[2](), c.run2, cam, 1.6);
       const q = Math.PI / 2, e = cam.pos, zf = front(t);
       for (let z = 17; z > -6; z -= 2.6) if (z > zf) { const age = Math.min(1, (z - zf) / 5), s = Math.round(z * 3);
         flames(g, [-4.6, WALK + 5.3, z], T, 1.4 + 2.0 * age, 1.6, 2, q, s, e); flames(g, [4.6, WALK + 5.1, z - 1.2], T, 1.4 + 2.0 * age, 1.6, 2, q, s + 3, e); }
@@ -437,14 +444,15 @@ const LATER = at("answer", /^The/) - 0.14;
   const VA = lens(0.42, 1.42, -0.2, 0.06, 1, 0, 46), VB = lens(0.02, 1.45, -0.25, -0.06, 1, 0, 46);
   const nero = fiddler(TAKE + 0.1, VA.cam);
   nero.actAt(TAKE + 0.02, { armL: arm(34, 26, 74, 24), armR: arm(30, 14, 60, 0), head: [20, 14, 0], lean: 4 }, 9, { in: 0.16, antic: 0, over: 1.3, handL: "open", handR: "grip", face: { lid: 0, wide: 0.8, brow: 1, smile: -0.6, gaze: [0.6, 0.6] } });
-  const sir = mover(SIR_D, 1.8, SX, SZ, 196); sir.stand(9);
+  // (v3b, the review: the bow's tip lay on his upper arm as he came in to take the fiddle; he stands a little further off)
+  const SX9 = SX - 0.14, sir = mover(SIR_D, 1.8, SX9, SZ, 196); sir.stand(9);
   const DRY = { brow: 0.6, lid: 0.2, smile: 0.2 }, FIRM = { brow: -0.6, lid: 0.1, smile: -0.4 };
   sir.actAt(-1, { armL: arm(60, 30, 118, 10), armR: arm(20, 10, 50, 0), head: [-10, 0, 8] }, TAKE + 1, { in: 0.01, out: 0.12, handL: "open", handR: "relaxed", face: DRY });
   wag(sir, 0.1, TAKE - 0.3, P({ armL: arm(60, 38, 118, 26), head: [-10, 0, 14] }), P({ armL: arm(60, 22, 118, -6), head: [-10, 0, -4] }), 0.36, { handL: "open", handR: "relaxed", face: DRY });
   // the picture starts toward Sir Digsworth as his hand comes in, so that the hand is seen closing on the scroll (inside the frame)
   // before it draws the fiddle away; his hand is solved for the camera as it is at that moment
   const CAM9 = (t: number) => mixCam(VA.cam, VB.cam, smooth((t - TAKE + 0.45) / 0.8)), GRAB = TAKE - 0.1;
-  const S9: Stand = { D: SIR_D, at: [SX, 0, SZ], heading: 196, h: 1.8, cam: CAM9(TAKE), pose: { lean: 8 } }, TAKEP = fiddleAt(neroAt(nero, TAKE, CAM9(TAKE)), CAM9(TAKE)).scroll;
+  const S9: Stand = { D: SIR_D, at: [SX9, 0, SZ], heading: 196, h: 1.8, cam: CAM9(TAKE), pose: { lean: 8 } }, TAKEP = fiddleAt(neroAt(nero, TAKE, CAM9(TAKE)), CAM9(TAKE)).scroll;
   sir.actAt(GRAB - 0.2, { ...reach(S9, "R", TAKEP), lean: 8, head: [-40, 4, 0] }, 0.54, { in: 0.2, out: 0.1, antic: 0.2, over: 1.4, handR: "grip", handL: "relaxed", face: DRY });
   sir.actAt(TAKE + 0.24, { armR: arm(64, 56, 116, 60), armL: arm(20, 10, 50, 0), head: [0, 0, 0], lean: 0 }, 9, { in: 0.26, antic: 0, over: 1.4, handR: "grip", handL: "relaxed", face: FIRM });
   wag(sir, NEVER, 2, P({ head: [20, 0, 0] }), P({ head: [-20, 0, 0] }), 0.34, { handR: "grip", handL: "relaxed", face: FIRM });

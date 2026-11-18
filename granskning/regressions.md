@@ -29,3 +29,4 @@ Enligt "Impossible things: zero tolerance" i DAILY-RULES.md (Jesper 18 november 
 Kontrollen körd på de levererade filernas kod (9eeae2b; öppning a omgång 2 på 5f36d8a). Utskriften rad för rad finns i `granskning/body-check/`, med en tabell i README.md där.
 - Hittas av koden: rad 1, 2, 3, 4, 5, 6, 7 (huvudet i ansiktet; genomskinligheten har ännu ingen kodkontroll), 8, 9, 10, 11 och 12.
 - Har ingen kodkontroll: rad 13 (duken som lösa remsor), som är ett fel i hur saken ser ut i handen och inte ett kroppsfel.
+- Kroppskontrollens nya tester (18 november kväll): (g) två händer från olika figurer över varandra i bilden; (h) huvud eller arm under en annan figur närmare linsen; (i) en sak i miljön framför en figur som skär den (över huvud, bröst eller armar, eller över ena benet medan det andra syns). Mot Blackbeard v4:s kod i 8b70f500 (c247eb3) hittar de rad 17 (g), 19 (i) och 20 (g, h). Rad 18 hittas inte: hattbrättet är inte med i kroppens form, bara huvudet.

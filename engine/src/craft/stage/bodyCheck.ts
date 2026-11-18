@@ -204,6 +204,44 @@ export const bodyCheck = (film: Film, opt: { every?: number; shots?: string[] } 
             const gh = g.caps.find((c) => c.q.P.name === "head")!, ov = hd.rA + gh.rA - Math.hypot(gh.A.x - hc.x, gh.A.y - hc.y);
             if (ov > 0.08 * hd.rA && gh.A.d < hc.d + 0.06) note(`${s.id}|${a.name}|heads|${g.B.a.name}`, { shot: s.id, who: a.name, kind: "figure", what: `${g.B.a.name}'s head lies over ${a.name}'s head in the picture (${Math.round(ov)} px into it, ${gh.A.d < hc.d - 0.06 ? "nearer the lens" : "at the same depth: drawn into each other"})` }, F, ov / hd.rA); for (const [u, v] of samples) { const hb = bodyAt(g, hc.x + u * R, hc.y + v * R); if (hb && hb.d < hc.d + 0.06) { n++; by = hb.name; } }
             if (n / samples.length > 0.2) note(`${s.id}|${a.name}|face|${g.B.a.name}`, { shot: s.id, who: a.name, kind: "figure", what: `${a.name}'s face is covered by ${g.B.a.name}'s ${by} (${Math.round((100 * n) / samples.length)} % of it)` }, F, n / samples.length); } }
+        // (g) his hand and someone else's hand drawn over each other in the picture: which is in front cannot be told, and two hands on one
+        //     place cannot be followed (the review of Blackbeard v4: the captain's hand on the boy's fist at the tray's corner, rising and
+        //     reaching). Two hands on one held thing are left out (a thing handed over)
+        for (const g of flat) { if (g === f || g.B.a.name < a.name) continue; const b = g.B.a.name;
+          if (th.rows.some((r) => r.holder && r.holder.split(" & ").some((p) => p.split(" ")[0] === a.name) && r.holder.split(" & ").some((p) => p.split(" ")[0] === b))) continue;
+          for (const hf of f.caps) { if (!hf.q.P.name.endsWith("hand") || (!inFrame(hf.A) && !inFrame(hf.Z))) continue;
+            for (const hg of g.caps) { if (!hg.q.P.name.endsWith("hand")) continue; let gap = Infinity;
+              for (const u of [0, 0.5, 1]) for (const v of [0, 0.5, 1]) { const px = hf.A.x + (hf.Z.x - hf.A.x) * u, py = hf.A.y + (hf.Z.y - hf.A.y) * u, qx = hg.A.x + (hg.Z.x - hg.A.x) * v, qy = hg.A.y + (hg.Z.y - hg.A.y) * v;
+                gap = Math.min(gap, Math.hypot(px - qx, py - qy) - (hf.rA + (hf.rZ - hf.rA) * u) - (hg.rA + (hg.rZ - hg.rA) * v)); }
+              if (gap < 0) note(`${s.id}|${a.name}|hands|${b}|${hf.q.P.name}|${hg.q.P.name}`, { shot: s.id, who: a.name, kind: "figure", what: `${a.name}'s ${hf.q.P.name} and ${b}'s ${hg.q.P.name} lie over each other in the picture (${Math.round(-gap)} px into each other)` }, F, -gap / 100); } } }
+        // (h) his head or an arm drawn under another figure nearer the lens: a figure in front of another counts (Jesper, 18 Nov: the boy
+        //     before the captain's coat; the review of Blackbeard v4: a figure at the edge over the cook's raised arm). His head covered by
+        //     more than a tenth, or an arm at two of its points or more
+        { const ARMS2 = new Set(["left upper arm", "right upper arm", "left forearm", "right forearm", "left hand", "right hand"]);
+          const rounds: [number, number][] = [[0, 0], ...[0.45, 0.85].flatMap((k) => Array.from({ length: 8 }, (_, i) => [k * Math.cos((i * Math.PI) / 4), k * Math.sin((i * Math.PI) / 4)] as [number, number]))];
+          for (const g of flat) { if (g === f) continue; let nh = 0, tot = 0, byH = ""; const armHit = new Map<string, number>();
+            if (inFrame(hc) && R > 7) for (const [u, v] of rounds) { tot++; const hb = bodyAt(g, hc.x + u * R, hc.y + v * R); if (hb && hb.d < hc.d - 0.15) { nh++; byH = hb.name; } }
+            for (const c of f.caps) { if (!ARMS2.has(c.q.P.name)) continue; for (const k of [0, 0.5, 1]) { const x = c.A.x + (c.Z.x - c.A.x) * k, y = c.A.y + (c.Z.y - c.A.y) * k, d = c.A.d + (c.Z.d - c.A.d) * k; if (!inFrame({ x, y })) continue;
+              const hb = bodyAt(g, x, y); if (hb && hb.d < d - 0.15) armHit.set(c.q.P.name, (armHit.get(c.q.P.name) ?? 0) + 1); } }
+            if (tot && nh / tot > 0.1) note(`${s.id}|${a.name}|underhead|${g.B.a.name}`, { shot: s.id, who: a.name, kind: "figure", what: `${a.name}'s head lies under ${g.B.a.name}'s ${byH}, who is nearer the lens (${Math.round((100 * nh) / tot)} % of it)` }, F, nh / tot);
+            for (const [part, n] of armHit) if (n >= 2) note(`${s.id}|${a.name}|underarm|${g.B.a.name}|${part}`, { shot: s.id, who: a.name, kind: "figure", what: `${a.name}'s ${part} lies under ${g.B.a.name}, who is nearer the lens` }, F, n / 3); } }
+        // (i) a thing of the set standing before him and cutting him (things in a hand are test c's): on his head, chest or arms, or on one
+        //     leg while the other is in sight (the review of Blackbeard v4: the barrel before Sir's leg and half his coat all through the
+        //     shot, in the first five seconds; Jesper's rule 1 of 18 Nov). Both legs behind a rail or a table is standing at it, as people
+        //     do. Rays from the lens to points of his drawn body, against the solids whose box lies before him in the picture
+        { const pts = f.caps.flatMap((c) => [0, 0.5, 1].map((k) => ({ part: c.q.P.name, x: c.A.x + (c.Z.x - c.A.x) * k, y: c.A.y + (c.Z.y - c.A.y) * k, d: c.A.d + (c.Z.d - c.A.d) * k }))).filter(inFrame);
+          if (pts.length >= 6) { const x0 = Math.min(...pts.map((p) => p.x)), x1 = Math.max(...pts.map((p) => p.x)), y0 = Math.min(...pts.map((p) => p.y)), y1 = Math.max(...pts.map((p) => p.y)), dMax = Math.max(...pts.map((p) => p.d));
+            const cand = solids.filter((o) => { if (o.geo.type === "PlaneGeometry" || o.geo.type === "ShapeGeometry") return false;
+              const b = o.aabb; let ax0 = Infinity, ax1 = -Infinity, ay0 = Infinity, ay1 = -Infinity, dn = Infinity;
+              for (const cx of [b.min.x, b.max.x]) for (const cy of [b.min.y, b.max.y]) for (const cz of [b.min.z, b.max.z]) { const q = scr(new THREE.Vector3(cx, cy, cz)); ax0 = Math.min(ax0, q.x); ax1 = Math.max(ax1, q.x); ay0 = Math.min(ay0, q.y); ay1 = Math.max(ay1, q.y); dn = Math.min(dn, q.d); }
+              return ax1 > x0 && ax0 < x1 && ay1 > y0 && ay0 < y1 && dn < dMax - 0.3; });
+            if (cand.length) { const cov = new Map<string, number>(); let by = "";
+              for (const p of pts) { const dir = new THREE.Vector3(p.x / 540 - 1, 1 - p.y / 960, 0.5).unproject(lens).sub(C).normalize(); rc.set(C, dir); rc.near = 0.05; rc.far = p.d - 0.3;
+                for (const o of cand) if (rc.intersectObject(o.mesh, false)[0]) { cov.set(p.part, (cov.get(p.part) ?? 0) + 1); by = describe(o); break; } }
+              const up = ["head", "chest", "left upper arm", "right upper arm", "left forearm", "right forearm", "left hand", "right hand"].reduce((n, q) => n + (cov.get(q) ?? 0), 0);
+              const L = (cov.get("left thigh") ?? 0) + (cov.get("left shin") ?? 0), Rg = (cov.get("right thigh") ?? 0) + (cov.get("right shin") ?? 0);
+              if (up >= 2) note(`${s.id}|${a.name}|cut|up`, { shot: s.id, who: a.name, kind: "solid", what: `${by} stands before ${a.name} and covers his head, chest or arms (${up} points): a thing in the foreground cutting a figure` }, F, up / 10);
+              else if ((L >= 2 && Rg === 0) || (Rg >= 2 && L === 0)) note(`${s.id}|${a.name}|cut|leg`, { shot: s.id, who: a.name, kind: "solid", what: `${by} stands before ${a.name} and covers his ${L ? "left" : "right"} leg while the other is in sight: a thing in the foreground cutting a figure` }, F, Math.max(L, Rg) / 6); } } }
         // (f) a thing held or carried (his own too: the sack carried before his face in Nero's gardens) over more than a fifth of his face
         if (inFrame(hc) && R > 7) { const things2 = [...held, ...carriedNow]; if (things2.length) { let n = 0, by = "", tot = 0;
           for (const [u, v] of [[0, 0], ...[0.45, 0.85].flatMap((k) => Array.from({ length: 8 }, (_, i) => [k * Math.cos((i * Math.PI) / 4), k * Math.sin((i * Math.PI) / 4)]))] as [number, number][]) { tot++;

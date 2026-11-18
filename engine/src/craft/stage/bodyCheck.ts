@@ -88,6 +88,24 @@ const dist = (o: Ob, p: THREE.Vector3, r: number): number => {
   return best;
 };
 
+/** what lies at a pixel of a frame (x, y in the 1080 x 1920 picture): every mesh of the set and of the shot's things the ray from the lens
+ *  meets, nearest first, with its colour, its size and where it is, and the names of the groups it is in (to find a shape nobody can name
+ *  in the picture: Blackbeard v4, a dark shape at the hook's edge). The figures are drawn cards and are not in it */
+export const pickAt = (film: Film, frame: number, x: number, y: number) => {
+  const T = frame / film.fps, s = film.shots.find((q) => T >= q.a - 1e-6 && T < q.b) ?? film.shots[film.shots.length - 1], t = Math.max(0, T - s.a), cam = s.cam(t, t / (s.b - s.a));
+  const st: Record<string, Staged> = {}; for (const a of s.cast(t, s.a + t)) st[a.name] = stageAt(a, cam);
+  const world = film.world(), g = new THREE.Group(); AUDIT.rows = []; AUDIT.on = true; CROWD_LOG.on = false;
+  try { s.things?.(g, st, t, s.a + t, cam); } finally { AUDIT.on = false; }
+  const root = new THREE.Group(); root.add(world, g); root.updateMatrixWorld(true);
+  const hide = new Set(s.hide ?? []); root.traverse((o) => { const m = o as THREE.Mesh; if (m.isMesh && m.material) (Array.isArray(m.material) ? m.material : [m.material]).forEach((q) => (q.side = THREE.DoubleSide)); });
+  const lens = new THREE.PerspectiveCamera(cam.fov, 1080 / 1920, 0.05, 3000); lens.position.set(...cam.pos); lens.lookAt(...cam.look); lens.updateProjectionMatrix(); lens.updateMatrixWorld(true);
+  const rc = new THREE.Raycaster(); rc.setFromCamera(new THREE.Vector2((x / 1080) * 2 - 1, 1 - (y / 1920) * 2), lens);
+  return { shot: s.id, t, hits: rc.intersectObject(root, true).filter((h) => !hiddenBy(h.object, hide) && h.object.visible).slice(0, 6).map((h) => { const m = h.object as THREE.Mesh, b = new THREE.Box3().setFromObject(m), z = b.getSize(new THREE.Vector3()), c = b.getCenter(new THREE.Vector3());
+    const names: string[] = []; for (let p: THREE.Object3D | null = m; p; p = p.parent) if (p.name) names.push(p.name);
+    const mat = (Array.isArray(m.material) ? m.material[0] : m.material) as THREE.MeshBasicMaterial;
+    return { d: +h.distance.toFixed(2), colour: mat?.color ? `#${mat.color.getHexString()}` : "?", geo: m.geometry?.type, size: [z.x, z.y, z.z].map((v) => +v.toFixed(2)), at: [c.x, c.y, c.z].map((v) => +v.toFixed(2)), names, inThings: (() => { for (let p: THREE.Object3D | null = m; p; p = p.parent) if (p === g) return true; return false; })() }; }) };
+};
+
 export type BodyFault = { shot: string; who: string; what: string; f0: number; f1: number; deep: number; kind: "solid" | "held" | "figure" | "floor" | "slide" };
 
 /** the faults of a film (all of them, every frame unless `every` > 1), and how much was tried */

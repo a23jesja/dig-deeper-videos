@@ -185,7 +185,9 @@ export const merchantBrig = (strake = "#3f77b4", len = 15) => {
   // on deck: a hatch with its grating, casks and crates out of the way of the crew, the pin rail on the starboard side with its coils,
   // a lantern aft (she is steered with a tiller, out of the way)
   g.add(mesh(box(1.7, 0.22, 1.5), "#8a5e2c", { at: [-1.2, d + 0.11, 1.4] })); for (let i = 0; i < 4; i++) g.add(mesh(box(1.5, 0.03, 0.12), "#2b1d1a", { at: [-1.2, d + 0.235, 0.9 + i * 0.33], line: 0, shadow: false }));
-  { const b1 = barrel(0.95, 0.34); b1.position.set(-2.3, d, 0.2); const b2 = barrel(0.8, 0.3, "#c98a4a"); b2.position.set(-2.35, d, 6.6); const c1 = crate(0.7); c1.position.set(-2.2, d, 5.8); const r1 = ropeCoil(0.36, 3); r1.position.set(-1.6, d, -0.6); g.add(b1, b2, c1, r1); }
+  // (the cask by the port rail is a named thing: a lens low at that rail stands right beside it, and its iron hoop fills the edge of the
+  // picture as a dark shape nobody can read; such a shot leaves it out, Shot.hide "brigcask", and the coil beside it, "brigcoil")
+  { const b1 = barrel(0.95, 0.34); b1.position.set(-2.3, d, 0.2); b1.name = "brigcask"; const b2 = barrel(0.8, 0.3, "#c98a4a"); b2.position.set(-2.35, d, 6.6); const c1 = crate(0.7); c1.position.set(-2.2, d, 5.8); const r1 = ropeCoil(0.36, 3); r1.position.set(-1.6, d, -0.6); r1.name = "brigcoil"; g.add(b1, b2, c1, r1); }
   { const [px, pz] = BRIG.pins; g.add(mesh(box(0.12, 0.06, 1.3), "#7a5a36", { at: [px, d + 0.62, pz], line: 0.6 }));
     for (const z of [-0.5, -0.17, 0.17, 0.5]) g.add(mesh(cyl(0.022, 0.022, 0.24, 6), "#5a3a22", { at: [px, d + 0.68, pz + z], line: 0.5, shadow: false }));
     for (const z of [-0.5, 0.17]) g.add(mesh(torus(0.12, 0.034, 14), "#dcc38a", { at: [px - 0.07, d + 0.44, pz + z], rot: [0, Math.PI / 2, 0], scale: [1, 1.5, 1], line: 0.6, shadow: false })); }
@@ -211,7 +213,7 @@ export const flagSea = (duskAt: Dusk = () => 0) => {
   { const [sx, , sz] = SHIP.staff.at; root.add(rod([sx, SHIP.staff.at[1] + SHIP.staff.h, sz], [sx, FLAGSEA.staffTop, sz], 0.04, "#8a6a3e"), mesh(ball(0.07, 10), C.gold, { at: [sx, FLAGSEA.staffTop + 0.05, sz] })); }
   const brig = merchantBrig(); brig.name = "merchant"; brig.position.set(FLAGSEA.mx, 0, FLAGSEA.mz);
   const sail = yardSail(BRIG.sail.w, BRIG.sail.h); sail.name = "msail"; sail.position.set(FLAGSEA.mx + BRIG.sail.x, MERCHANT_DECK + BRIG.sail.top, FLAGSEA.mz + BRIG.sail.z);
-  root.add(brig, sail); root.userData.named = [...old.filter((o) => o.name !== "plank"), brig, sail];
+  root.add(brig, sail); root.userData.named = [...old.filter((o) => o.name !== "plank"), brig, sail, brig.getObjectByName("brigcask")!, brig.getObjectByName("brigcoil")!];
   // the evening: a red veil inside the sky, and the sun and the sky light turn warm
   const veilTex = paint("duskveil", 16, 512, (g) => { const gr = g.createLinearGradient(0, 0, 0, 512); gr.addColorStop(0, "#7a2440"); gr.addColorStop(0.42, "#e8503a"); gr.addColorStop(0.56, "#ffb060"); gr.addColorStop(1, "#ffb060"); g.fillStyle = gr; g.fillRect(0, 0, 16, 512); });
   const veil = new THREE.Mesh(new THREE.SphereGeometry(880, 24, 16), new THREE.MeshBasicMaterial({ map: veilTex, side: THREE.BackSide, fog: false, depthWrite: false, transparent: true, opacity: 0 })); veil.renderOrder = -9; root.add(veil);

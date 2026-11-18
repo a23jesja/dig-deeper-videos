@@ -59,7 +59,9 @@ const T = { s1: cut("hook", "why"), s2: 3.89, s3: cut("guess", "no"), s4: cut("n
   // the picture and clear of the cutlass; raised from his sides, the arm swung out past the edge on the way up and the other hand
   // crossed his mouth)
   const sailor = backer(SAILOR_D, 1.82, 4.6, -0.88, -24, 0.4, 0, arm(150, 0, 178, 14)), old = backer(OLDHAND_D, 1.74, 3.9, 1.8, 14, 0.55);      // (out at the right edge: further in he stood behind the rail and the cutlass arm)
-  shots.push({ id: "hook", a: 0, b: T.s1, still: 1.2,
+  // (the cask beside the lens is left out: its iron hoop was a dark shape cut by the right edge in the first 0.8 s, review of v4; and the
+  // rope coil at the lower left corner, a sliver cut by the edge)
+  shots.push({ id: "hook", a: 0, b: T.s1, still: 1.2, hide: ["brigcask", "brigcoil"],
     sounds: [{ t: 0.0, k: "blast", g: 1.0 }, { t: 0.05, k: "shing", g: 0.7, p: 0.2 }, ...bb.cues().filter((q) => q.k === "step" && q.t < T.s1).map((q) => ({ t: q.t, k: "step", g: 0.8 }))],
     cam: (_t, u) => LOW.push(0.15 * u), sun: { target: [-7.5, MD, 3], reach: 9 },
     cast: (t) => [on("bb", BLACKBEARD_ARMED_D, bb, t, MD, { seed: 3 }), on("sailor", SAILOR_D, sailor, t, MD, { seed: 6 }), on("old", OLDHAND_D, old, t, MD, { seed: 2 })],

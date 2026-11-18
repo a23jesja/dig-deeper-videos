@@ -80,9 +80,10 @@ const faceShot = (id: string, a0: number, b0: number, D: Design, y: number, at: 
 { const [x, z] = DECK.spot(3.4, 0.1), V = faceLens([x, MD + 1.74, z], [DECK.cam.pos[0] < x ? 1 : -1, 0.12], 1.75, 38, -4);
   shots.push({ ...faceShot("face", T.s1, T.s2, BLACKBEARD_ARMED_D, MD, [x, z], V, (g, T2, cam) => powder(g, T2, cam, V, MD, [[3.6, -0.2, 3.4, 0.6], [4.6, 0.9, 3.0, 0.5]], 7)), capsTop: 160 }); }
 
-// 3. WHY WOULD ANYONE DO THAT? TO KEEP HIS FACE WARM? Sir Digsworth leans out from behind a barrel, eyebrows up; then he holds his hands
-// to his own moustache as if to a fire, sniffs, and coughs
-{ const SV = lens(-8.0, 1.25, 5.7, -0.15, -1, 4, 42), [kx, kz] = SV.spot(1.7, -0.25), [sx, sz] = SV.spot(2.07, 0.12), sir = mover(SIR_D, 1.8, sx, sz, SV.toward(sx, sz, 10)); sir.stand(9);
+// 3. WHY WOULD ANYONE DO THAT? TO KEEP HIS FACE WARM? Sir Digsworth leans into the picture, eyebrows up; then he holds his hands to his own
+// moustache as if to a fire, sniffs, and coughs. (The review of v4: the barrel he leaned out from stood before his leg and half his coat
+// all through, a thing in the foreground cutting a figure; the picture has no room for it beside him, so it is gone)
+{ const SV = lens(-8.0, 1.25, 5.7, -0.15, -1, 4, 42), [sx, sz] = SV.spot(2.07, 0.12), sir = mover(SIR_D, 1.8, sx, sz, SV.toward(sx, sz, 10)); sir.stand(9);
   const g0 = L.guess.a - T.s2;
   sir.actAt(-1, { roll: -16, lean: 6, py: -0.1, armL: arm(30, 10, 80, 0), armR: arm(40, 20, 110, 10), head: [10, 0, -10] }, 10, { in: 0.01, handL: "fist", handR: "open", face: { wide: 0.9, lid: 0, brow: 1, mouth: 0.3 } });
   sir.actAt(0.3, { head: [-8, -6, -8] }, 9, { in: 0.3, antic: 0, over: 1.2, face: { wide: 0.6, lid: 0.1, brow: 1, mouth: 0.4, smile: -0.2 } });
@@ -90,10 +91,11 @@ const faceShot = (id: string, a0: number, b0: number, D: Design, y: number, at: 
   sir.actAt(g0 - 0.55, { roll: 0, lean: 4, py: 0, armL: arm(60, 30, 150, 40), armR: arm(60, 30, 150, 40), head: [0, 4, 0] }, 9, { in: 0.65, antic: 0.05, over: 1.05, handL: "open", handR: "open", face: { brow: 0.8, lid: 0.3, smile: 0.4 } });
   wag(sir, g0 + 0.15, 0.9, P({ armL: arm(60, 34, 150, 44), armR: arm(60, 26, 150, 36) }), P({ armL: arm(60, 26, 150, 36), armR: arm(60, 34, 150, 44) }), 0.3, { handL: "open", handR: "open", face: { brow: 0.8, lid: 0.3, smile: 0.4 } });
   sir.actAt(g0 + 1.3, { head: [0, -14, 0], lean: -6, py: 0.02 }, 0.5, { in: 0.08, out: 0.25, antic: 0.2, over: 1.5, handL: "open", handR: "open", face: { brow: 1, lid: 0.9, mouth: 0.8, smile: -0.4 } });
-  shots.push({ id: "sir", a: T.s2, b: T.s3, still: 1.4, sounds: [{ t: 0.15, k: "scuff", g: 0.6 }, { t: g0 + 0.9, k: "sniff", g: 0.9 }, { t: g0 + 1.3, k: "sniff", g: 0.7, p: 0.2 }],
+  // (without the barrel, the rope coil behind it showed cut by the left edge: left out, as in the hook)
+  shots.push({ id: "sir", a: T.s2, b: T.s3, still: 1.4, hide: ["brigcoil"], sounds: [{ t: 0.15, k: "scuff", g: 0.6 }, { t: g0 + 0.9, k: "sniff", g: 0.9 }, { t: g0 + 1.3, k: "sniff", g: 0.7, p: 0.2 }],
     cam: (_t, u) => SV.push(0.1 * u), sun: { target: [-8.0, MD, 4], reach: 6 },
     cast: (t, T2) => [on("sir", SIR_D, sir, t, MD, { talk: talk(W, T2, ["why", "guess"]), blink: false })],
-    things: (g, _c, _t, T2, cam) => { g.add(BARREL()); BARREL().position.set(kx, MD, kz); powder(g, T2, cam, SV, MD, [[3.8, 0.6, 3.0, 0.55]], 6); } }); }
+    things: (g, _c, _t, T2, cam) => { powder(g, T2, cam, SV, MD, [[3.8, 0.6, 3.0, 0.55]], 6); } }); }
 
 // ---------------- in the great cabin ----------------
 /** a Stand for solving a pose of a figure that will stand at `at` (world) facing `heading`, seen through V */
@@ -121,9 +123,9 @@ const BB_AT = { stool: inCabin([CABIN.stool[0], 0, CABIN.stool[2] + 0.27]), mirr
   bb.actAt(-1, { ...SIT, armL: arm(12, 8, 56, 10), armR: arm(12, 8, 56, 10), lean: 8, head: [0, 6, 0] }, 10, { in: 0.01, handL: "fist", handR: "fist", face: GRIM });
   bb.actAt(0.25, { ...STAND, armL: arm(8, 10, 18, 8), armR: arm(8, 10, 18, 8), lean: 4, head: [0, 2, 0] }, 9, { in: 0.7, antic: 0.25, over: 1.1, face: GRIM });
   const bs = standOf(BLACKBEARD_BARE_D, upAt, BBH, V, { ...STAND, lean: 4 });
-  // his hand to the near edge of the tray, on his side, low past the boy's head (v4: lower and nearer its edge: his sleeve came down
-  // against the boy's nose)
-  bb.actAt(1.1, { ...reach(bs, "L", aside(yc, V.cam, -0.2, -0.05)), head: [20, 8, 0] }, 9, { in: 0.3, antic: 0, over: 1.2, handL: "open", face: { ...GRIM, brow: -0.6 } });
+  // he looks down at the tray; his hands stay at his sides (the review of v4: reaching to its near edge, his open hand came down on the
+  // boy's fist; before that his sleeve came down against the boy's nose)
+  bb.actAt(1.1, { head: [20, 8, 0] }, 9, { in: 0.3, antic: 0, over: 1.2, face: { ...GRIM, brow: -0.6 } });
   boy.actAt(-1, { ...reach(ys, "R", aside(yc, V.cam, yw * 0.27)), ...reach(ys, "L", aside(yc, V.cam, -yw * 0.27)), head: [-14, -6, 0] }, 10, { in: 0.01, handL: "grip", handR: "grip", face: { wide: 0.7, brow: 0.8, lid: 0, mouth: 0.2 } });
   shots.push({ id: "ready", capsTop: 160, a: T.s3, b: T.s4, still: 1.6, sounds: [{ t: 0.3, k: "creak", g: 0.8 }, ...boy.cues().filter((q) => q.k === "step").map((q) => ({ t: q.t, k: "step", g: 0.5, p: 0.3 }))],
     cam: (_t, u) => V.push(0.06 * u), sun: { target: inCabin([0, 0, 0]), reach: 4 },
@@ -281,7 +283,7 @@ const PIST_AT = inCabin([0.35, 0, 0.1]), CUT9 = 1.15;
 // 11. IT WAS PROBABLY MEANT TO MAKE CREWS GIVE UP WITHOUT A FIGHT. Across the water from behind him at his rail: the merchant's crew see
 // the smoking figure, and their hands go up one after another
 // (the lens a metre further back than he stands: he is a dark shape at the side, and the crew read)
-{ const S0 = lens(-0.75, 1.75, 1.45, -1, 0.08, -2, 42), S = lens(0.2, 1.8, 1.05, -1, 0.04, -2, 44), [bx, bz] = S0.spot(1.65, -0.3), bb = mover(BLACKBEARD_ARMED_D, 1.92, bx, bz, S.toward(bx, bz, 180)); bb.stand(9);
+{ const S0 = lens(-0.75, 1.75, 1.45, -1, 0.08, -2, 42), S = lens(0.2, 1.8, 1.05, -1, 0.04, -2, 44), [bx, bz] = S0.spot(1.65, -0.44), bb = mover(BLACKBEARD_ARMED_D, 1.92, bx, bz, S.toward(bx, bz, 180)); bb.stand(9);
   bb.actAt(-1, { armL: arm(20, 30, 50, 30), armR: arm(20, 30, 50, 30), lean: -2 }, 10, { in: 0.01, handL: "fist", handR: "fist", face: MENACE });
   // (v4: their hands go up straight over their own shoulders and they stand a little further apart: the cook's hand lay over the old
   // hand's arm, and his and the sailor's hands met over their heads; the cook's right hand clear of Blackbeard's hat at the edge)

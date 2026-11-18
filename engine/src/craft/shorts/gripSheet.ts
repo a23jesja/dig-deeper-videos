@@ -54,7 +54,7 @@ for (const [view, turn] of VIEWS) {
   card(`mug-lowered-${view}`, SAILOR_D, 1.82, turn, () => usePose(MUG, "lowered", "R"), { handR: "grip" }, (g, a, cam) => wield(g, MUG_O(), MUG, "lowered", a, "R", cam));
 }
 export const GRIP_SHEET: Film = {
-  id: "grip-sheet", fps: 30, seconds: shots.length * LEN, sky: "#a9dcff", world: flagSea, shots, words: [],
+  id: "grip-sheet", fps: 30, seconds: shots.length * LEN, sky: "#a9dcff", world: () => flagSea(), shots, words: [],
   hook: { text: [""], a: -1, b: -0.5 },
 };
 

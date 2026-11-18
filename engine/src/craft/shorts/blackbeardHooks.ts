@@ -152,7 +152,7 @@ const C = (() => {
 })();
 
 const clip = (id: string, s: { W: Word[]; shots: Shot[] }, text: string[], audio: string): Film => ({
-  id, fps: 30, seconds: LEN, sky: "#9fd6ff", world: flagSea, shots: s.shots, words: s.W, solids: FLAGSEA_SOLIDS,
+  id, fps: 30, seconds: LEN, sky: "#9fd6ff", world: () => flagSea(), shots: s.shots, words: s.W, solids: FLAGSEA_SOLIDS,
   hook: { text, a: 0, b: s.shots[0].b, size: 80 }, beds: [{ k: "sea", a: 0, b: LEN, g: 0.8 }, { k: "wind", a: 0, b: LEN, g: 0.4 }, { k: "fire", a: 0, b: LEN, g: 0.3 }], audio,
   grade: () => "linear-gradient(180deg, rgba(255,226,196,0.0) 0%, rgba(214,190,170,0.18) 100%)",
 });

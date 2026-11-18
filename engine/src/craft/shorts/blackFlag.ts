@@ -6,7 +6,7 @@ import { Film, Shot, Cam, V3, Staged, Word, play, talk, smooth, mix3 } from "../
 import { mover, mt, wag, arm, MM } from "../stage/acting";
 import { lens, once, noShade, put, near, palm, palmThen, aside, stageAt, fingers } from "../stage/staging";
 import { wield, spy, spyEye, spyPose, sheathed, hiltFor, letGo, carryBy, blend, quiet, heldOver, reach, setDown, jointsOf, underArm, drawSabre, drawPose, Stand, SABRE, SPYGLASS, LINSTOCK, MUG as MUG_P, PISTOL as PISTOL_P, BUCKET as BUCKET_P } from "../stage/grips";
-import { flagSea, FLAGSEA, FLAGSEA_SOLIDS, SHIP, MERCHANT_DECK, merchantBrig, BRIG, dusk } from "../world/ship";
+import { flagSea, FLAGSEA, FLAGSEA_SOLIDS, SHIP, MERCHANT_DECK, merchantBrig, BRIG } from "../world/ship";
 import { mesh, box, ball, rod, cyl, paint } from "../world/kit";
 import { clothFlag, gunSmoke, yardSail, chest, sabre, scabbard, pistolHeld, mugHeld, bucketHeld, linstock, spyglass, crate, barrel, bottle, FlagKind } from "../world/props";
 import { SIR_D, CAPTAIN_D, PIRATE_D, MATE_D, PIRATE2_D, CUSTOMS_D, SAILOR_D, OLDHAND_D, COOK_D, SHIPBOY_D, SHIPOWNER_D, GUNNER_D, CORSAIR_D, SHIRT_A_D, SHIRT_B_D, SHIRT_C_D, SHIRT_D_D, SHIRT_E_D, DOCKHAND_D, DOCKER_D, FRENCH_CAPT_D, FRENCH_MATE_D } from "../looks";
@@ -591,9 +591,10 @@ const TARP = { a: cut("answer", "tarp"), mid: at("tarp", /^so/) - 0.1, b: cut("t
     cast: (t, T) => H.cast(t - CODA, T - END), things: (g, c, t, T, cam) => H.things?.(g, c, t - CODA, T - END, cam) });
 }
 
-dusk.at = (T: number) => (T >= RED.a && T < RED.b ? smooth((T - RED.up) / 0.9) : 0);
+// the red evening, in this film only
+const DUSK = (T: number) => (T >= RED.a && T < RED.b ? smooth((T - RED.up) / 0.9) : 0);
 export const BLACK_FLAG: Film = {
-  id: "black-flag", fps: 30, seconds: END, sky: "#9fd6ff", world: flagSea, shots, words: W,
+  id: "black-flag", fps: 30, seconds: END, sky: "#9fd6ff", world: () => flagSea(DUSK), shots, words: W,
   hook: { text: ["WHY DID PIRATES", "FLY BLACK FLAGS?"], a: 0, b: cut("hook", "guess"), size: 84 },
   solids: FLAGSEA_SOLIDS,
   // each is the film's own frame at that time (text.md names the times), with the words laid over it

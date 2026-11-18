@@ -196,12 +196,13 @@ export const merchantBrig = (strake = "#3f77b4", len = 15) => {
 export const FLAGSEA = { mx: -8.2, mz: 1.5, cloth: SHIP.aft + 1.15, staff: [SHIP.staff.at[0], SHIP.staff.at[2]] as [number, number], staffTop: 6.0, rail: -8.2 + BRIG.half, deck: MERCHANT_DECK,
   /** the merchant's after mast, the plane of its sail and the height of its yard, her pin rail (world) */
   mast: [-8.2 + BRIG.mast[0], 1.5 + BRIG.mast[1]] as [number, number], yard: MERCHANT_DECK + BRIG.sail.top, pins: [-8.2 + BRIG.pins[0], 1.5 + BRIG.pins[1]] as [number, number] };
-/** how far the evening has come at the film time T (0 = clear day, 1 = a red evening): the film sets it, the world's light follows */
-export const dusk = { at: (_T: number) => 0 };
+/** how far the evening has come at the film time T (0 = clear day, 1 = a red evening). Each film passes its own to flagSea: it was
+ *  one shared setting, and the black flag film's red evening (17.6-20.2 s) showed in the windows of the Blackbeard film's cabin */
+export type Dusk = (T: number) => number;
 /** the pirate sloop with a merchant ship lying close on her port side. The sloop's plank is gone; along her quarterdeck's port rail a
  *  waist cloth is lashed up, breast high, behind which a crew can hide. Named things (Shot.hide): "merchant" (the whole merchant
- *  ship), "msail" (the sail on her after mast) and the sloop's "wheel". The light turns to a red evening by `dusk.at` */
-export const flagSea = () => {
+ *  ship), "msail" (the sail on her after mast) and the sloop's "wheel". The light turns to a red evening by `duskAt` (none if not given) */
+export const flagSea = (duskAt: Dusk = () => 0) => {
   const root = pirateShip(), W = SHIP.half, q = SHIP.quarter, x = -(W - 0.12) - 0.11, z0 = q.z + 0.12, z1 = 7.72, top = FLAGSEA.cloth;
   const old = root.userData.named as THREE.Object3D[]; old.find((o) => o.name === "plank")!.visible = false;
   root.add(mesh(box(0.05, top - SHIP.aft, z1 - z0), "#e2cf9e", { at: [x, (top + SHIP.aft) / 2, (z0 + z1) / 2], line: 0.8 }), mesh(box(0.06, 0.15, z1 - z0), "#b3261e", { at: [x, top - 0.22, (z0 + z1) / 2], line: 0, shadow: false }));
@@ -216,7 +217,7 @@ export const flagSea = () => {
   const veil = new THREE.Mesh(new THREE.SphereGeometry(880, 24, 16), new THREE.MeshBasicMaterial({ map: veilTex, side: THREE.BackSide, fog: false, depthWrite: false, transparent: true, opacity: 0 })); veil.renderOrder = -9; root.add(veil);
   const rig = root.userData.rig as THREE.Object3D, sun = rig.userData.sun as THREE.DirectionalLight, hemi = rig.children.find((o) => (o as THREE.HemisphereLight).isHemisphereLight) as THREE.HemisphereLight;
   const day = sun.color.clone(), skyDay = hemi.color.clone(), red = new THREE.Color("#ff8a5a"), skyRed = new THREE.Color("#ff9a8a"), base = root.userData.tick as (t: number) => void;
-  root.userData.tick = (T: number) => { base(T); const k = Math.max(0, Math.min(1, dusk.at(T))); (veil.material as THREE.MeshBasicMaterial).opacity = k; veil.visible = k > 0.001; sun.color.copy(day).lerp(red, k); hemi.color.copy(skyDay).lerp(skyRed, k); };
+  root.userData.tick = (T: number) => { base(T); const k = Math.max(0, Math.min(1, duskAt(T))); (veil.material as THREE.MeshBasicMaterial).opacity = k; veil.visible = k > 0.001; sun.color.copy(day).lerp(red, k); hemi.color.copy(skyDay).lerp(skyRed, k); };
   return root;
 };
 /** what a figure may not stand in or walk through in flagSea (Film.solids): rails, masts, the waist cloth, the water between the

@@ -36,7 +36,19 @@ add(yesShot("yes", T2, T3, W, ["question", "vines"]));
 // ---------------- "Weevils were eating a village's vines, so the village took them to court." ----------------
 const T4 = say(W, "villages", L.vines.a) - 0.06, T5 = cut("vines", "lawyer");
 add(leafClose("eating", T3, T4));
-add(vinesWide("vines", T4, T5));
+// (the two villagers at the open end of the rows, the vines behind them, staring at them: in the narrow aisle between two rows their arms
+// went into the vines)
+{ const e2 = vineAt(2, 1), e3 = vineAt(3, 1), ma: V3 = [e2[0] + 1.25, 0, e2[2] + 0.5], wa: V3 = [e3[0] + 2.1, 0, e3[2] - 0.05];      // (beside the man in the picture, not before him)
+  // (the lens from the side of the rows' ends, the villagers turned three quarters to it as they stare at the vines: from beyond them it saw
+  // their backs)
+  const V = lens(ma[0] + 1.6, 1.6, (ma[2] + wa[2]) / 2 + 3.4, -0.42, -0.91, -4, 50);
+  const hm = toward(ma, V.cam.pos) - 55, hw = toward(wa, V.cam.pos) - 50;
+  const m1 = mover(VILLAGER_D, 1.76, ma[0], ma[2], hm), m2 = mover(VILLAGER_WOMAN_D, 1.64, wa[0], wa[2], hw); m1.stand(9); m2.stand(9);
+  m1.actAt(-1, { armL: arm(14, 6, 26, 2), armR: arm(14, 6, 26, 2), lean: 4, head: [-14, 6, 0] }, 10, { in: 0.01, handL: "fist", handR: "fist", face: { brow: -1, lid: 0.1, mouth: 0.3, smile: -0.6 } });
+  const s2: Stand = { D: VILLAGER_WOMAN_D, at: wa, heading: hw, h: 1.64, cam: V.cam };
+  m2.actAt(-1, { ...reach(s2, "L", ahead(wa, hw, 0.42, -0.1, 1.2)), armR: arm(14, 6, 26, 2), head: [-12, 4, 0] }, 10, { in: 0.01, handL: "point", handR: "relaxed", face: { brow: 1, lid: 0, wide: 0.6, mouth: 0.5, smile: -0.4 } });
+  add({ id: "vines", a: T4, b: T5, still: 0.5, sounds: [{ t: 0.05, k: "step", g: 0.4, surface: "sand" }], cam: (_t, u) => V.push(0.12 * u), sun: { target: ma, reach: 6 },
+    cast: (t) => [on("man", VILLAGER_D, m1, t), on("wom", VILLAGER_WOMAN_D, m2, t)] }); }
 
 // ---------------- "And the court gave the weevils a lawyer." The lawyer bows to the empty dock ----------------
 const T6 = cut("lawyer", "get_lawyer");
@@ -72,18 +84,26 @@ const T8 = cut("argued", "offered");
   m.actAt(tUp, { ...reach(s, "R", ahead(LA, H, 0.12, 0.36, 2.0)), ...WAIST, head: [-10, -14, 0] }, tSweep - tUp, { in: 0.3, out: 0.3, antic: 0.1, over: 1.1, handR: "point", handL: "relaxed", face: { brow: 1, lid: 0, mouth: 0.4 } });
   m.actAt(tSweep, { ...reach(s, "L", ahead(LA, H, 0.4, -0.62, 1.22)), armR: arm(8, -4, 128, -62), head: [-24, 4, 0] }, 10, { in: 0.45, antic: 0, over: 1.05, handL: "open", handR: "relaxed", face: { brow: 0.7, lid: 0.1, mouth: 0.3, smile: 0.3 } });
   const J = judge([]);
-  add({ id: "argued", a: T7, b: T8, still: 2.0, sounds: [], cam: (_t, u) => PL.push(0.03 * u), sun: COURT_SUN,
+  // (two shots, cut as he turns from pointing up to sweeping his hand: one was 6 s, longer than a shot may be; the second nearer, with the
+  // window and its vines beside him)
+  const TS = T7 + tSweep - 0.05, PL2 = (() => { const p = inCourt([-0.55, 1.45, 1.75]), q = inCourt([-0.6, 1.3, -1.6]), d = Math.hypot(q[0] - p[0], q[2] - p[2]); return lens(p[0], p[1], p[2], (q[0] - p[0]) / d, (q[2] - p[2]) / d, -3, 56); })();
+  add({ id: "argued", a: T7, b: TS, still: 1.2, sounds: [], cam: (_t, u) => PL.push(0.03 * u), sun: COURT_SUN,
     cast: (t) => [on("judge", OFFICIAL_D, J.m, t, FL + SJ.court.dais), on("lawyer", ADVOCATE_D, m, t, FL)],
+    things: (g, c, _t, _T, cam) => { wield(g, GAVEL_O(), GAVEL, "strike", c.judge, "R", cam); } });
+  add({ id: "herb", a: TS, b: T8, still: 1.0, sounds: [], cam: (_t, u) => PL2.push(0.03 * u), sun: COURT_SUN,
+    cast: (t) => [on("judge", OFFICIAL_D, J.m, t + (TS - T7), FL + SJ.court.dais), on("lawyer", ADVOCATE_D, m, t + (TS - T7), FL)],
     things: (g, c, _t, _T, cam) => { wield(g, GAVEL_O(), GAVEL, "strike", c.judge, "R", cam); } }); }
 
 // ---------------- "So the village offered the weevils a field of their own, away from the vines." ----------------
 // the square: four villagers vote with their hands up; then the empty field beyond the vines, roped off
 const T9 = say(W, "field") - 0.1, T10 = cut("offered", "water");
-{ const [sx, , sz] = SJ.square.at, C = lens(sx, 1.5, sz + 5.0, 0, -1, -2, 52), row: [Design, number, number, number][] = [[VILLAGER_D, 1.76, -1.25, 0.3], [VILLAGER_WOMAN_D, 1.64, -0.4, 0.0], [VILLAGER_OLD_D, 1.7, 0.45, 0.35], [VILLAGER_WOMAN2_D, 1.6, 1.25, 0.05]];
-  const men = row.map(([D, h, dx, dz], i) => { const at: V3 = [sx + dx, 0, sz + dz], hd = toward(at, C.cam.pos) + (i - 1.5) * 6, m = mover(D, h, at[0], at[2], hd); m.stand(9);
+// (three villagers, two in front and one behind between them, near enough to fill the picture: four in a row were small and cut by its edges)
+{ const [sx, , sz] = SJ.square.at, C = lens(sx, 1.55, sz + 3.6, 0, -1, -3, 56), row: [Design, number, number, number][] = [[VILLAGER_D, 1.76, -0.52, 0.35], [VILLAGER_WOMAN_D, 1.64, 0.52, 0.4], [VILLAGER_OLD_D, 1.7, -0.04, -0.55]];
+  const men = row.map(([D, h, dx, dz], i) => { const at: V3 = [sx + dx, 0, sz + dz], hd = toward(at, C.cam.pos) + (i - 1) * 6, m = mover(D, h, at[0], at[2], hd); m.stand(9);
     const st: Stand = { D, at, heading: hd, h, cam: C.cam };
-    m.actAt(-1, { armL: arm(16, 10, 30, 8), armR: arm(16, 10, 30, 8), head: [0, 0, 0] }, 10, { in: 0.01, handL: "relaxed", handR: "relaxed", face: { brow: 0.3, lid: 0.2, smile: 0.2 } });
-    m.actAt(0.15 + 0.12 * i, { ...reach(st, "R", ahead(at, hd, 0.12, 0.2, h * 1.15)), armL: arm(16, 10, 30, 8), head: [0, -6, 0] }, 10, { in: 0.25, antic: 0.05, over: 1.1, handR: "open", handL: "relaxed", face: { brow: 0.6, lid: 0.1, smile: 0.5 } });
+    // (the free arm close at the side: further out the back one's arm lay behind the woman in front of him)
+    m.actAt(-1, { armL: arm(8, 4, 16, 2), armR: arm(8, 4, 16, 2), head: [0, 0, 0] }, 10, { in: 0.01, handL: "relaxed", handR: "relaxed", face: { brow: 0.3, lid: 0.2, smile: 0.2 } });
+    m.actAt(0.15 + 0.12 * i, { ...reach(st, "R", ahead(at, hd, 0.1, 0.16, h * 1.12)), armL: arm(8, 4, 16, 2), head: [0, -6, 0] }, 10, { in: 0.25, antic: 0.05, over: 1.1, handR: "open", handL: "relaxed", face: { brow: 0.6, lid: 0.1, smile: 0.5 } });
     return { D, m, name: `v${i}` }; });
   add({ id: "vote", a: T8, b: T9, still: 1.0, sounds: [{ t: 0.2, k: "scuff", g: 0.4 }], cam: (_t, u) => C.push(0.1 * u), sun: { target: [sx, 0, sz], reach: 6 },
     cast: (t) => men.map((q) => on(q.name, q.D, q.m, t)) }); }
@@ -93,10 +113,14 @@ add({ id: "field", a: T9, b: T10, still: 0.8, sounds: [], cam: (_t, u) => FIELD.
 
 // ---------------- "The villagers could still walk through it, and use its water." Two villagers cross it with jugs from the spring ----
 const T11 = cut("water", "said_no");
-{ const V = lens(PX - 3.6, 1.45, PZ + 3.4, 0.73, -0.68, -3, 54), H = 90;
-  const a0: V3 = [PX - 1.5, 0, PZ + 0.9], b0: V3 = [PX - 2.6, 0, PZ + 1.7];
+// (across the picture, the far one a step ahead so that neither's head or jug lies over the other, clear of the spring's stones: walking
+// away from the lens one hid the other and they stepped into the stones)
+// (their lines picked clear of the field's stones and bushes, which lie where world/stjulien.ts throws them: the near one at z 0.3, the far one
+// at z -1.8, both a third of a metre or more from every stone and bush, the spring between them)
+{ const V = lens(11.45, 1.45, 3.7, 0, -1, -3, 58), H = 90;
+  const a0: V3 = [10.6, 0, 0.3], b0: V3 = [11.6, 0, -1.8];
   const w1 = mover(VILLAGER_WOMAN_D, 1.64, a0[0], a0[2], H), w2 = mover(VILLAGER_D, 1.76, b0[0], b0[2], H);
-  for (const m of [w1, w2]) { m.walk(1.9 / m.LL, { step: 0.42 / m.LL, tau: 0.5 }).stand(9); m.actAt(-1, { ...usePose(JUG, "carry", "R"), armL: arm(14, 10, 26, 6) }, 10, { in: 0.01, handR: "grip", handL: "relaxed", face: { brow: 0.2, lid: 0.2, smile: 0.3 } }); }
+  for (const m of [w1, w2]) { m.walk(1.2 / m.LL, { step: 0.42 / m.LL, tau: 0.5 }).stand(9); m.actAt(-1, { ...usePose(JUG, "carry", "R"), armL: arm(14, 10, 26, 6) }, 10, { in: 0.01, handR: "grip", handL: "relaxed", face: { brow: 0.2, lid: 0.2, smile: 0.3 } }); }
   add({ id: "water", a: T10, b: T11, still: 1.0, sounds: w1.cues().filter((q) => q.k === "step").map((q) => ({ t: q.t, k: "step", g: 0.4, surface: "sand" })),
     cam: (_t, u) => V.push(0.06 * u), sun: { target: [PX, 0, PZ], reach: 6 },
     cast: (t) => [on("w1", VILLAGER_WOMAN_D, w1, t), on("w2", VILLAGER_D, w2, t)],
@@ -125,20 +149,26 @@ const T13 = cut("picky", "experts");
 { const end = vineAt(1, 1), at: V3 = [end[0] + 1.05, 0, end[2] + 0.35], V = lens(at[0] + 1.9, 1.6, at[2] + 0.5, -0.97, -0.25, -2, 42), H = toward(at, V.cam.pos) - 40;
   const sir = mover(SIR_D, 1.8, at[0], at[2], H); sir.stand(9);
   sir.actAt(-1, { armL: arm(16, 10, 34, 8), armR: arm(30, 10, 120, -40), lean: 8, head: [-24, 10, 0] }, 10, { in: 0.01, handL: "relaxed", handR: "relaxed", face: { brow: 0.9, lid: 0.3, smile: 0.4 } });
-  const LA: V3 = [end[0] + 0.55, 1.38, end[2] + 0.42];
+  // (the leaf with its weevil beside his monocle and a little nearer the lens, so that he looks at it and it covers nothing of his face)
+  const LA: V3 = ahead(at, H, 0.24, -0.46, 1.55);
   const leaves: Leaf[] = [{ at: LA, R: 0.17, seed: 21, bites: 3, rot: [-0.1, 0.5, 0.1] }];
   add({ id: "picky", a: T12, b: T13, still: 0.6, sounds: [{ t: 0.05, k: "munch", g: 0.6, dur: 0.8 }], cam: (_t, u) => V.push(0.06 * u), sun: { target: at, reach: 4 },
     cast: (t, T) => [on("sir", SIR_D, sir, t, 0, { talk: talk(W, T, ["picky"]) })], things: (g, _c, t) => leafCluster(g, leaves, Math.PI / 2, t, 1.25) }); }
 
 // ---------------- "So the court sent experts to inspect the field." Two experts with measuring rods walk the field ----------------
 const T14 = cut("experts", "verdict");
-{ const V = lens(FX - 5.5, 1.5, FZ + 1.4, 0.97, -0.25, -3, 52), H = 72, e0: V3 = [FX - 3.3, 0, FZ + 0.1], e1: V3 = [FX - 2.7, 0, FZ - 1.1];
+// (across the picture, the far one a step ahead: walking away from the lens they showed their backs)
+// (their lines clear of the stones and bushes as for the water carriers: the near one at z 1.5, the far one at z -0.6)
+// (walking slantwise toward the lens, 60 degrees: straight across the picture the rod held at the side lay in depth, on the body's line,
+// and the near arm crossed it)
+{ const V = lens(8.3, 1.5, 4.7, 0, -1, -3, 62), H = 60, e0: V3 = [7.4, 0, 1.2], e1: V3 = [9.0, 0, -1.0];      // (the far one further over: nearer together, the near one's rod passed over him)
   const m0 = mover(EXPERT_D, 1.78, e0[0], e0[2], H), m1 = mover(EXPERT2_D, 1.74, e1[0], e1[2], H);
-  for (const m of [m0, m1]) { m.walk(1.6 / m.LL, { step: 0.42 / m.LL, tau: 0.5 }).stand(9); m.actAt(-1, { ...usePose(ROD, "staff", "R"), armL: arm(14, 10, 30, 8), head: [0, 6, 0] }, 10, { in: 0.01, handR: "grip", handL: "relaxed", face: { brow: 0.4, lid: 0.3 } }); }
+  for (const [m, len] of [[m0, 1.2], [m1, 0.8]] as const) { m.walk(len / m.LL, { step: 0.42 / m.LL, tau: 0.5 }).stand(9); // (the rod in the far hand, the near arm swinging in front of it: in the near hand, at the body's depth, the far arm swung through it)
+    m.actAt(-1, { ...usePose(ROD, "staff", "L"), armR: arm(14, 8, 26, 6), head: [0, 6, 0] }, 10, { in: 0.01, handL: "grip", handR: "relaxed", face: { brow: 0.4, lid: 0.3 } }); }
   add({ id: "experts", a: T13, b: T14, still: 1.2, sounds: m0.cues().filter((q) => q.k === "step").map((q) => ({ t: q.t, k: "step", g: 0.4, surface: "sand" })),
     cam: (_t, u) => V.push(0.05 * u), sun: { target: [FX - 3, 0, FZ], reach: 6 },
     cast: (t) => [on("e0", EXPERT_D, m0, t), on("e1", EXPERT2_D, m1, t)],
-    things: (g, c, _t, _T, cam) => { wield(g, RODO(), ROD, "staff", c.e0, "R", cam); wield(g, RODO2(), ROD, "staff", c.e1, "R", cam); } }); }
+    things: (g, c, _t, _T, cam) => { wield(g, RODO(), ROD, "staff", c.e0, "L", cam); wield(g, RODO2(), ROD, "staff", c.e1, "L", cam); } }); }
 
 // ---------------- "The verdict?" The clerk at his table, his hand on the thick record ----------------
 const T15 = cut("verdict", "lost");
@@ -154,17 +184,17 @@ const RECORD_V = lens(CX - 2.5, 1.65, CZ + 0.9, 0.94, -0.34, -14, 46);
 // ---------------- "Lost. The last page of the record is missing." Sir bends over the record beside the clerk ----------------
 const T16 = cut("lost", "who_won");
 // (Sir at the table's near end, turned three quarters to the lens as he bends over the record: from behind the table he showed his back)
-{ const sAt: V3 = [CX - 0.15, 0, CZ + 0.85], V = lens(CX - 2.0, 1.7, CZ + 1.3, 0.9, -0.43, -16, 44), H = (toward(sAt, [CX, 0, CZ]) + toward(sAt, [CX - 2.0, 0, CZ + 1.3])) / 2;
+{ const sAt: V3 = [CX - 0.15, 0, CZ + 0.85], V = lens(CX - 2.1, 1.7, CZ + 1.3, 0.95, -0.3, -16, 48), H = (toward(sAt, [CX, 0, CZ]) + toward(sAt, [CX - 2.0, 0, CZ + 1.3])) / 2;
   const sir = mover(SIR_D, 1.8, sAt[0], sAt[2], H); sir.stand(9);
   sir.actAt(-1, { armL: arm(16, 10, 34, 8), armR: arm(16, 10, 34, 8), lean: 18, head: [-10, 18, 0] }, 10, { in: 0.01, handL: "relaxed", handR: "relaxed", face: { brow: 1, lid: 0, wide: 0.5, mouth: 0.2 } });
-  add({ id: "lost", a: T15, b: T16, still: 1.0, sounds: [{ t: 0.15, k: "paper", g: 0.5 }], cam: (_t, u) => V.push(0.08 * u), sun: COURT_SUN,
+  add({ id: "lost", a: T15, b: T16, still: 1.0, capsTop: 1500, sounds: [{ t: 0.15, k: "paper", g: 0.5 }], cam: (_t, u) => V.push(0.08 * u), sun: COURT_SUN,
     cast: (t) => [on("sir", SIR_D, sir, t, FL)] }); }
 
 // ---------------- "So who won?" The woman in the gallery turns to Sir ----------------
 const T17 = cut("who_won", "nobody");
 // (the woman standing at the bench's near end, beside Sir, turned to him, the lens on the two of them: behind the old man she was small
 // and her hands lay behind him)
-{ const H = 90, WA: V3 = inCourt([-3.05, 0, 2.75]), WHO = (() => { const p = inCourt([-1.2, 1.4, 2.95]), q = inCourt([-3.2, 1.0, 2.25]), d = Math.hypot(q[0] - p[0], q[2] - p[2]); return lens(p[0], p[1], p[2], (q[0] - p[0]) / d, (q[2] - p[2]) / d, -6, 52); })();
+{ const H = 90, WA: V3 = inCourt([-3.05, 0, 2.75]), WHO = (() => { const p = inCourt([-1.0, 1.4, 3.0]), q = inCourt([-3.15, 1.0, 2.35]), d = Math.hypot(q[0] - p[0], q[2] - p[2]); return lens(p[0], p[1], p[2], (q[0] - p[0]) / d, (q[2] - p[2]) / d, -6, 60); })();
   const wom = mover(VILLAGER_WOMAN2_D, 1.6, WA[0], WA[2], toward(WA, SIR_AT) - 25); wom.stand(9);
   wom.actAt(-1, { armL: arm(16, 10, 30, 8), armR: arm(24, 20, 70, 10), head: [16, -2, 0] }, 10, { in: 0.01, handL: "relaxed", handR: "open", face: { brow: 0.8, lid: 0.1, mouth: 0.3, smile: 0.1 } });
   const sir = seated(SIR_D, 1.8, SIR_AT, H), toW = deg(Math.atan2(WA[0] - SIR_AT[0], WA[2] - SIR_AT[2])) - H;
@@ -188,7 +218,7 @@ const END = Math.min(W[W.length - 1].b + 0.35, 48.2);
 void smooth; void DOCK; void judge; void lawyer; void yesShot; void ROLL;
 
 export const ANIMAL_TRIALS: Film = {
-  id: "animal-trials", fps: 30, seconds: END, sky: "#b8e0ff", world: stJulienWorld, shots, words: W,
+  id: "animal-trials", fps: 30, seconds: END, range: [45, 55], sky: "#b8e0ff", world: stJulienWorld, shots, words: W,
   hook: { text: ["A VILLAGE SUED", "ITS WEEVILS."], a: 0, b: T1, size: 80, top: 110 },
   beds: [{ k: "birds", a: 0, b: T1, g: 0.8 }, { k: "wind", a: 0, b: T1, g: 0.3 }, { k: "court", a: T1, b: T3, g: 0.8 }, { k: "birds", a: T3, b: T5, g: 0.8 }, { k: "court", a: T5, b: T8, g: 0.8 },
     { k: "birds", a: T8, b: T14, g: 0.8 }, { k: "wind", a: T9, b: T14, g: 0.3 }, { k: "court", a: T14, b: T17, g: 0.8 }, { k: "birds", a: T17, b: END, g: 0.8 }, { k: "wind", a: T17, b: END, g: 0.3 }],

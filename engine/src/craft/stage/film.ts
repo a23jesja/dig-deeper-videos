@@ -53,6 +53,8 @@ export type Caption = { a: number; b: number; text: string };
 export type Solid = { name: string; x: [number, number]; z: [number, number]; top: number; named?: string };
 export type Film = {
   id: string; fps: number; seconds: number; sky: string;
+  /** the length the film must have, when it is not a Short's 25-40 s (the animal trials: a length test of 45-55 s, Jesper 17 Nov) */
+  range?: [number, number];
   /** the world, built once; its sun rig is in userData.rig (kit.sunRig) */
   world: () => THREE.Group;
   shots: Shot[];

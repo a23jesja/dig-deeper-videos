@@ -57,7 +57,8 @@ else if (what === "check") {
   // a hook-lab clip (DAILY-RULES, "The hook lab"; "-hook-a", or "-hook4-a" for a later round) is seconds 0-5 of a Short on its own;
   // every other film is a Short of 25 to 40 s
   const hookClip = /-hook\d*-[a-z]$/.test(film.id);
-  if (hookClip ? film.seconds < 4 || film.seconds > 6 : film.seconds < 25 || film.seconds > 40) bad.push(`the film is ${film.seconds.toFixed(1)} s (${hookClip ? "a hook-lab clip: 4 to 6" : "25 to 40"})`);
+  const [lo, hi] = hookClip ? [4, 6] : film.range ?? [25, 40];
+  if (film.seconds < lo || film.seconds > hi) bad.push(`the film is ${film.seconds.toFixed(1)} s (${hookClip ? "a hook-lab clip: " : ""}${lo} to ${hi})`);
   if (film.hook.a > 0.01) bad.push("the question is not on screen from the first frame");
   // the speech bubbles: each up long enough to read at phone size, inside one shot, said by someone in it, and no quotation marks
   for (const q of film.bubbles ?? []) { const s = film.shots.find((x) => q.a >= x.a - 0.001 && q.a < x.b), tag = `bubble "${q.text}" at ${q.a.toFixed(2)} s`;

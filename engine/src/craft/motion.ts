@@ -33,7 +33,7 @@ class Track {
 type Plant = { t0: number; t1: number; x: number; z: number; ang: number; h: number; run: boolean; out?: number };
 type PKey = { t: number; x: number; z: number };
 export type Face = { gaze?: V2; lid?: number; wide?: number; brow?: number; mouth?: number; smile?: number; /** one eye shut: the eye on the left (-1) or the right (1) of the picture (designs/common.ts) */ shut?: number };
-export type Layer = { t0: number; t1: number; in: number; out: number; pose: Partial<Pose>; handL?: HandKind; handR?: HandKind; face?: Face; antic: number; over: number };
+export type Layer = { t0: number; t1: number; in: number; out: number; pose: Partial<Pose>; handL?: HandKind; handR?: HandKind; face?: Face; antic: number; over: number; glide?: boolean };
 export type Sample = {
   pose: Pose;
   /** where the figure stands (the ground under its pelvis), in leg lengths: x = screen-right, z = toward the lens; yaw = the view angle for solve() */
@@ -149,14 +149,17 @@ export class Mover {
     return this;
   }
   /** lay an acting pose over the body for `dur` seconds. wait = false starts it without moving the clock (so it plays over the next move) */
-  act(name: keyof typeof ACTS | Partial<Pose>, dur: number, o: { in?: number; out?: number; wait?: boolean; antic?: number; over?: number; face?: Face; handL?: HandKind; handR?: HandKind } = {}) {
+  /** glide = the act starts and ends at rest, at an even pace between (a long move: lifting an arm to the head, lowering it); the
+   *  default starts at full speed and settles slowly, which is right for a quick gesture but makes a long move jump, most of it in two
+   *  frames (the review of Blackbeard v4: the arm from the hip to the hat brim in two frames) */
+  act(name: keyof typeof ACTS | Partial<Pose>, dur: number, o: { in?: number; out?: number; wait?: boolean; antic?: number; over?: number; glide?: boolean; face?: Face; handL?: HandKind; handR?: HandKind } = {}) {
     const a = typeof name === "string" ? ACTS[name] : (name as Partial<Pose> & { shapeL?: HandKind; shapeR?: HandKind; face?: Face }), { shapeL: handL, shapeR: handR, face, ...pose } = a;
-    this.layers.push({ t0: this.t, t1: this.t + dur, in: o.in ?? 0.28, out: o.out ?? 0.3, pose, handL: o.handL ?? handL, handR: o.handR ?? handR, face: o.face ?? face, antic: o.antic ?? 0.16, over: o.over ?? 1.6 });
+    this.layers.push({ t0: this.t, t1: this.t + dur, in: o.in ?? 0.28, out: o.out ?? 0.3, pose, handL: o.handL ?? handL, handR: o.handR ?? handR, face: o.face ?? face, antic: o.glide ? 0 : o.antic ?? 0.16, over: o.over ?? 1.6, glide: o.glide });
     if (o.wait !== false) this.stand(dur);
     return this;
   }
   /** the same, at a set time (for gestures on spoken words, or a face that stays through several moves); never moves the clock */
-  actAt(t0: number, name: keyof typeof ACTS | Partial<Pose>, dur: number, o: { in?: number; out?: number; antic?: number; over?: number; face?: Face; handL?: HandKind; handR?: HandKind } = {}) {
+  actAt(t0: number, name: keyof typeof ACTS | Partial<Pose>, dur: number, o: { in?: number; out?: number; antic?: number; over?: number; glide?: boolean; face?: Face; handL?: HandKind; handR?: HandKind } = {}) {
     const t = this.t; this.t = t0; this.act(name, dur, { ...o, wait: false }); this.t = t; return this;
   }
   /** the toe catches: short stuttering steps with the body pitched forward and the hands thrown out. It grows out of a run that was
@@ -244,7 +247,8 @@ export class Mover {
     if (t <= l.t0 || t >= l.t1) return 0;
     const u = (t - l.t0) / l.in, v = (l.t1 - t) / l.out;
     let w = 1;
-    if (u < 1) { const a = 0.2; if (u < a && l.antic) w = -l.antic * Math.sin((Math.PI * u) / a); else { const q = (u - (l.antic ? a : 0)) / (1 - (l.antic ? a : 0)) - 1; w = 1 + (l.over + 1) * q * q * q + l.over * q * q; } }
+    if (u < 1 && l.glide) w = smooth(u);
+    else if (u < 1) { const a = 0.2; if (u < a && l.antic) w = -l.antic * Math.sin((Math.PI * u) / a); else { const q = (u - (l.antic ? a : 0)) / (1 - (l.antic ? a : 0)) - 1; w = 1 + (l.over + 1) * q * q * q + l.over * q * q; } }
     return v < 1 ? Math.min(w, smooth(v)) : w;
   }
   sample(t: number): Sample {

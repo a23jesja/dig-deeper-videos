@@ -391,7 +391,7 @@ const SANG = at("rumour", /^Nero/) - 0.12;
   wag(a, ON + 0.5, 3, P({ head: [24, 12, 0] }), P({ head: [24, -4, 0] }), 0.4);
   b.actAt(-1, { head: [-30, 0, -6], armL: arm(20, 10, 60, 0), armR: arm(20, 10, 60, 0) }, 10, { in: 0.01, handL: "relaxed", handR: "relaxed", face: { brow: 0.4, lid: 0.1, gaze: [-0.6, 0] } });
   b.actAt(0.5, { armR: arm(50, 16, 156, -30), head: [-20, -4, 0] }, ON - 0.5 + 0.1, { in: 0.14, out: 0.1, antic: 0.2, over: 1.5, handR: "open", face: { wide: 1, lid: 0, brow: 1, mouth: 0.7 } });
-  b.actAt(ON, { lean: 8, roll: 8, armL: arm(60, 20, 150, -30), head: [44, 4, 8] }, 9, { in: 0.2, antic: 0.2, over: 1.4, handL: "open", face: { brow: 0.8, lid: 0, mouth: 0.5, gaze: [0.8, 0] } });
+  b.actAt(ON, { lean: 0, roll: 0, armL: arm(60, 20, 150, -30), head: [30, 4, 2] }, 9, { in: 0.2, antic: 0.2, over: 1.4, handL: "open", face: { brow: 0.8, lid: 0, mouth: 0.5, gaze: [0.8, 0] } });
   c.actAt(-1, { armL: arm(20, 10, 60, 0), armR: arm(20, 10, 60, 0), head: [-20, 0, 0] }, 10, { in: 0.01, handL: "relaxed", handR: "relaxed", face: { brow: 0.2, lid: 0.2 } });
   c.actAt(ON + 0.2, { head: [-34, 0, 0] }, POINT - ON - 0.1, { in: 0.16, out: 0.1, antic: 0, over: 1.2, face: { wide: 0.8, lid: 0, brow: 1, mouth: 0.4, gaze: [-0.7, 0] } });
   c.actAt(POINT, { armL: arm(168, 14, 178, 6), head: [10, -22, 0], lean: -4 }, 9, { in: 0.2, antic: 0.3, over: 1.6, handL: "point", face: { wide: 1, lid: 0, brow: 1, mouth: 0.6, gaze: [0.5, -0.8] } });

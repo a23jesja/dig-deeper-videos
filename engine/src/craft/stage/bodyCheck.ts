@@ -145,7 +145,12 @@ export const bodyCheck = (film: Film, opt: { every?: number; shots?: string[] } 
       const foc = 960 / Math.tan((cam.fov * Math.PI) / 360), scr = (p: THREE.Vector3) => { const q = p.clone().project(lens); return { x: (q.x + 1) * 540, y: (1 - q.y) * 960, d: p.distanceTo(C) }; };
       /** a body as it is drawn: its pieces as flat capsules in the picture, as wide as the drawing (wider than the body is deep) */
       //     (the head as a round as wide as it is tall: the drawn heads are square-ish, and wider than the body's head is deep)
-      const flat = bodies.map((B) => ({ B, caps: B.parts.map((q) => { if (q.P.name === "head") { const cr = new THREE.Vector3(...B.a.joint("crown")), sk = new THREE.Vector3(...B.a.joint("skull")), M = scr(cr.clone().lerp(sk, 0.5)), r = (0.5 * cr.distanceTo(sk) * foc) / M.d; return { q, A: M, Z: M, rA: r, rZ: r }; }
+      //     A head turned is drawn with its face to one side of the line from the crown to the chin: the round is put halfway from that line
+      //     to the drawn eyes (the review of Nero v3: the woman leaning in to whisper had her head in the bearded man's face, between the
+      //     rounds put on the line)
+      const flat = bodies.map((B) => ({ B, caps: B.parts.map((q) => { if (q.P.name === "head") { const cr = new THREE.Vector3(...B.a.joint("crown")), sk = new THREE.Vector3(...B.a.joint("skull")), M = scr(cr.clone().lerp(sk, 0.5)), r = (0.52 * cr.distanceTo(sk) * foc) / M.d;
+          const eA = B.a.mark?.("eyeA"), eB = B.a.mark?.("eyeB"); if (eA && eB) { const e = scr(new THREE.Vector3(...eA).lerp(new THREE.Vector3(...eB), 0.5)); M.x += (e.x - M.x) * 0.5; }
+          return { q, A: M, Z: M, rA: r, rZ: r }; }
         const A = scr(q.pts[0]), Z = scr(q.pts[q.pts.length - 1]), w = (WIDE[q.P.name] ?? 1.3) * q.r; return { q, A, Z, rA: (w * foc) / A.d, rZ: (w * foc) / Z.d }; }) }));
       const capHit = (c: { A: { x: number; y: number; d: number }; Z: { x: number; y: number; d: number }; rA: number; rZ: number }, x: number, y: number) => { const dx = c.Z.x - c.A.x, dy = c.Z.y - c.A.y, L = dx * dx + dy * dy, k = L ? Math.max(0, Math.min(1, ((x - c.A.x) * dx + (y - c.A.y) * dy) / L)) : 0;
         return Math.hypot(x - c.A.x - dx * k, y - c.A.y - dy * k) < c.rA + (c.rZ - c.rA) * k ? c.A.d + (c.Z.d - c.A.d) * k : 0; };

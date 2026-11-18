@@ -2,98 +2,98 @@
  {
   "id": "hook",
   "a": 0.0,
-  "b": 2.299,
+  "b": 2.465,
   "text": "Were animals really put on trial?",
   "voice": "bm_george"
  },
  {
   "id": "vines",
-  "a": 2.599,
-  "b": 6.897,
+  "a": 2.805,
+  "b": 7.291,
   "text": "Yes. Weevils were eating a village's vines, so the village took them to court.",
   "voice": "bm_george"
  },
  {
   "id": "lawyer",
-  "a": 7.117,
-  "b": 9.49,
+  "a": 7.551,
+  "b": 10.069,
   "text": "And the court gave the weevils a lawyer.",
   "voice": "bm_george"
  },
  {
   "id": "get_lawyer",
-  "a": 9.67,
-  "b": 10.788,
+  "a": 10.289,
+  "b": 11.479,
   "text": "They get a lawyer?",
   "voice": "bm_daniel"
  },
  {
   "id": "argued",
-  "a": 11.028,
-  "b": 16.407,
+  "a": 11.759,
+  "b": 17.427,
   "text": "He argued that God made the animals before man, and gave them every green herb to eat.",
   "voice": "bm_george"
  },
  {
   "id": "offered",
-  "a": 16.667,
-  "b": 21.21,
+  "a": 17.727,
+  "b": 22.359,
   "text": "So the village offered the weevils a field of their own, away from the vines.",
   "voice": "bm_george"
  },
  {
   "id": "water",
-  "a": 21.41,
-  "b": 24.734,
+  "a": 22.599,
+  "b": 26.083,
   "text": "The villagers could still walk through it, and use its water.",
   "voice": "bm_george"
  },
  {
   "id": "said_no",
-  "a": 24.994,
-  "b": 29.249,
+  "a": 26.383,
+  "b": 30.731,
   "text": "But the weevils' lawyer said no. The land was too barren for his clients.",
   "voice": "bm_george"
  },
  {
   "id": "picky",
-  "a": 29.469,
-  "b": 30.568,
+  "a": 30.991,
+  "b": 32.215,
   "text": "Picky eaters.",
   "voice": "bm_george"
  },
  {
   "id": "experts",
-  "a": 30.828,
-  "b": 33.543,
+  "a": 32.515,
+  "b": 35.363,
   "text": "So the court sent experts to inspect the field.",
   "voice": "bm_george"
  },
  {
   "id": "verdict",
-  "a": 33.783,
-  "b": 34.698,
+  "a": 35.643,
+  "b": 36.562,
   "text": "The verdict?",
   "voice": "bm_george"
  },
  {
   "id": "lost",
-  "a": 34.918,
-  "b": 37.627,
+  "a": 36.822,
+  "b": 39.782,
   "text": "Lost. The last page of the record is missing.",
   "voice": "bm_george"
  },
  {
   "id": "who_won",
-  "a": 37.887,
-  "b": 38.975,
+  "a": 40.082,
+  "b": 41.193,
   "text": "So who won?",
   "voice": "bf_isabella"
  },
  {
   "id": "nobody",
-  "a": 39.215,
-  "b": 43.283,
+  "a": 41.473,
+  "b": 45.685,
   "text": "Nobody knows. But yes: animals really were put on trial.",
   "voice": "bm_george"
  }

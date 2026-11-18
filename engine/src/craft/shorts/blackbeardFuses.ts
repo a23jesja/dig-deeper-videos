@@ -266,7 +266,8 @@ const PIST_AT = inCabin([0.35, 0, 0.1]), CUT9 = 1.15;
   bb.actAt(-1, { ...reach(bs, "R", [lo[0], lo[1] - 0.07, lo[2]]), ...reach(bs, "L", [hi[0], hi[1] + 0.08, hi[2]]), py: -0.02, head: [0, 2, 0] }, 10, { in: 0.01, handL: "grip", handR: "grip", face: GRIM });
   // (the review of v4: his right hand went from his hip to his chest in two frames; now in 0.35 s)
   bb.actAt(REL, { armL: arm(24, 24, 70, 24), armR: arm(30, 20, 110, -20), py: -0.07, lean: 6 }, 10, { in: 0.35, glide: true, handL: "fist", handR: "open", face: { ...GRIM, mouth: 0 } });
-  bb.actAt(REL + 0.42, { armL: arm(24, 24, 70, 24), armR: arm(30, 20, 110, -20), py: 0, lean: 0, head: [0, 2, 0] }, 10, { in: 0.3, handL: "fist", handR: "open", face: MENACE });
+  // (he straightens at an even pace: the quality check's frame differences showed his head jump up 7 cm in two frames at 21.07 s)
+  bb.actAt(REL + 0.42, { armL: arm(24, 24, 70, 24), armR: arm(30, 20, 110, -20), py: 0, lean: 0, head: [0, 2, 0] }, 10, { in: 0.35, glide: true, handL: "fist", handR: "open", face: MENACE });
   wag(bb, REL + 0.62, 0.6, P({ armR: arm(32, 20, 116, -22) }), P({ armR: arm(28, 18, 104, -18) }), 0.28, { handL: "fist", handR: "open", face: MENACE });
   shots.push({ id: "armed", capsTop: 200, a: T.s8 + CUT9, b: T.s9, still: 0.9, sounds: [{ t: 0.03, k: "thud", g: 0.7 }, { t: REL + 0.75, k: "tap", g: 0.5 }, { t: REL + 1.03, k: "tap", g: 0.5 }],
     cam: (_t, u) => V.push(0.05 * u), sun: { target: at, reach: 4 },

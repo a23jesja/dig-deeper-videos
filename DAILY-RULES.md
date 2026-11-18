@@ -228,6 +228,26 @@ An object in a hand must look held and used the way a person would, in every fra
 - **Check by script:** for every frame where a prop is held, the grip point lies inside the hand and the working
   end points within the allowed angle for that use pose. The reviewer looks at every held object in close-up.
 
+## Our own lines, not only sources (Jesper 2026-11-18) - every video, Shorts and long
+The story follows the sources, but the characters are allowed to be characters. Invented lines, jokes, asides
+and reactions make the viewer feel they are watching a show, not a list of facts.
+- **How much:** in a Short at least two or three invented lines; in a long video about one every 20-30 seconds.
+  The story still carries the video; the lines season it.
+- **Kinds:** Sir Digsworth's asides and wrong guesses ("I'll have the tea, thank you."), side characters
+  reacting or answering back ("Rum all out?!"), small banter between two characters, a running gag, a callback
+  to an earlier moment. Ordinary lines are fine too: "Over here!", "Is that a weevil?".
+- **Who speaks:** Sir Digsworth keeps bm_george. Side characters may speak short lines with other free Kokoro
+  voices (read the voice list first, never a paid voice), or in a speech bubble. The pronunciation rules apply.
+- **The line between fact and invention:** an invented line never carries a fact. No invented numbers, dates,
+  names or events, and nothing invented is presented as what really happened. Never put an invented line in
+  quotation marks as a historical quote, on a document, on a sign or after "he wrote" or "says". Real quotes
+  keep their source. The description says the scenes are dramatised.
+- **Respect:** jokes are about the situation, the habits and Sir Digsworth himself, never about real victims'
+  suffering or deaths.
+- **In the script:** every invented line is marked [OWN] and every claim [SOURCE], so the reviewer can check
+  that no [OWN] line carries a fact. The reviewer also asks: is it funny or alive enough, or does it read like a
+  list?
+
 ## The hook lab (Jesper 2026-11-17): most of the polish goes into the first five seconds
 The numbers so far: half the viewers swipe away in the first second, and a third of those who stay leave in the
 first quarter of the video. Those who get past it stay to the end. So the first five seconds get most of the work.

@@ -281,7 +281,7 @@ const ground: V3 = [FIGHT[0] + 1.1, 0.03, FIGHT[2] + 0.5];
   const lensV = new THREE.PerspectiveCamera(V.cam.fov, 1080 / 1920, 0.1, 900); lensV.position.set(...V.cam.pos); lensV.lookAt(...V.cam.look); lensV.updateMatrixWorld(true);
   // (and nobody cut by the edges of the picture: the review of v4 found a man halved by the right edge; a figure is in or out, so
   // anyone whose head lies in the band either side of an edge goes, the lens's push-in counted)
-  const FAR_SP2 = FAR_SP.filter((f) => { const q = new THREE.Vector3(f.at[0], f.at[1] + 1.5, f.at[2]).project(lensV); return !(q.x < -0.72 && Math.hypot(f.at[0] - bx, f.at[2] - bz) < 6) && !(Math.abs(q.x) > 0.8 && Math.abs(q.x) < 1.4); });
+  const FAR_SP2 = FAR_SP.filter((f) => { const q = new THREE.Vector3(f.at[0], f.at[1] + 1.5, f.at[2]).project(lensV); return !(q.x < -0.72 && Math.hypot(f.at[0] - bx, f.at[2] - bz) < 6) && !(Math.abs(q.x) > 0.58 && Math.abs(q.x) < 1.4); });      // (from 0.58: a cheering arm reaches a third of a picture's half-width)
   // (the captions over the awning: lower down they lay over his hand with the cloth)
   shots.push({ id: "sponsor", capsTop: 260, a: T11, b: T12, still: 0.7, sounds: [{ t: 0.1, k: "flap", g: 0.7 }, { t: 0.42, k: "flap", g: 0.6 }],
     cam: (_t, u) => V.push(0.06 * u), sun: { target: sAt, reach: 6 },

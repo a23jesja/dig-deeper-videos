@@ -76,8 +76,20 @@ export const arenaWorld = () => {
     for (const dx of [-1.9, 1.9]) for (const dz of [-0.75, 0.75]) box_.add(mesh(cyl(0.1, 0.12, 2.7, 10), "#f3eee2", { at: [dx, A.wall + 2.0, dz], line: 0.6 }));
     for (let k = 0; k < 9; k++) box_.add(mesh(box(0.5, 0.36, 0.06), k % 2 ? "#f6c52e" : "#c8402f", { at: [-2.05 + k * 0.51, A.wall + 3.06, -1.1], line: 0.4 }));
     box_.position.set(x, 0, z); box_.rotation.y = Math.PI; root.add(box_); }
+  // the gladiators' school (the ludus) out beyond the arena: a sand yard with a colonnade round three sides, the arched wall behind
+  // it, a wooden post to practise on, a stone bench and the doctor's table under an awning
+  { const { x, z } = LUDUS, yard = mesh(box(13, 0.06, 10), "#e2c48e", { at: [x, 0.0, z], line: 0 }); root.add(yard);
+    root.add(mesh(box(13, 3.2, 0.4), "#ffffff", { at: [x, 1.6, z + 5], map: backT, line: 0.6 }));
+    for (const sx of [-1, 1]) root.add(mesh(box(0.4, 3.2, 10), "#ffffff", { at: [x + sx * 6.5, 1.6, z], map: backT, line: 0.6 }));
+    for (let i = 0; i < 7; i++) root.add(mesh(cyl(0.13, 0.15, 2.6, 10), "#efe8d8", { at: [x - 5.4 + i * 1.8, 1.3, z + 3.9], line: 0.6 }));
+    root.add(mesh(box(13, 0.3, 1.6), "#cfc2a6", { at: [x, 2.7, z + 4.2], line: 0.6 }));
+    const [px, pz] = LUDUS_POST; root.add(mesh(cyl(0.11, 0.13, 1.8, 10), "#8a6a44", { at: [px, 0.9, pz], line: 0.6 }));
+    const [tx, tz] = LUDUS_TABLE; root.add(mesh(box(4.6, 0.1, 2.2), "#d8342c", { at: [tx, 2.55, tz + 0.4], line: 0.6 }));
+    for (const dx of [-2.1, 2.1]) root.add(mesh(cyl(0.06, 0.07, 2.5, 8), "#7a5a36", { at: [tx + dx, 1.25, tz - 0.6], line: 0.5 })); }
   return root;
 };
+/** the ludus beside the arena (its yard's middle), the practice post and where the doctor's table stands under its awning */
+export const LUDUS = { x: 0, z: 48 }, LUDUS_POST: [number, number] = [LUDUS.x - 3.2, LUDUS.z - 0.6], LUDUS_TABLE: [number, number] = [LUDUS.x + 3.6, LUDUS.z + 2.2];
 
 // ---------------- the crowd ----------------
 export type Fan = { D: Design; at: V3; heading: number; h: number; seed: number };

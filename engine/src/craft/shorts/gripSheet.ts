@@ -194,15 +194,15 @@ const SLING_O = once(() => pistolSling(0.62)), BOOK_O = once(() => openBook()), 
 const BOWL_O = once(() => noShade(bowlRim())), SPOON_O = once(() => noShade(spoon())), ROLL_O = once(() => noShade(bandageRoll())), COIN_O = once(() => noShade(coinHeld(0.04))), MAPPA_O = once(() => noShade(mappa()));
 const PEN_O = once(() => noShade(reedPen())), SCROLL_O = once(() => noShade(scrollHeld())), OLIVE_O = once(() => noShade(olive())), OLIVES = once(() => noShade(bowlRim(0.07, true))), BENCH = once(() => bench(1.6));
 /** which way (+1 right, -1 left in the picture) a figure's right shoulder lies from his left */
-const rightWay = (s: Stand) => { const j = jointsOf(s), r = aside([0, 0, 0], s.cam, 1); return Math.sign((j("shR")[0] - j("shL")[0]) * r[0] + (j("shR")[2] - j("shL")[2]) * r[2]) || -1; };
+export const rightWay = (s: Stand) => { const j = jointsOf(s), r = aside([0, 0, 0], s.cam, 1); return Math.sign((j("shR")[0] - j("shL")[0]) * r[0] + (j("shR")[2] - j("shL")[2]) * r[2]) || -1; };
 /** the glow at the lit end of a held thing (a prop with userData.tip) */
 const tipGlow = (g: THREE.Group, o: THREE.Object3D, cam: Cam, w = 0.12) => { o.updateMatrixWorld(true); const q = new THREE.Vector3(...(o.userData.tip as V3)).applyMatrix4(o.matrixWorld); glow(g, [q.x, q.y, q.z], w, w, 0, Math.atan2(cam.pos[0] - q.x, cam.pos[2] - q.z)); };
 /** the two hands of a figure on a thing carried before his chest, `half` metres to each side of its middle, `up` of the way from his
  *  pelvis to his neck and `fwd` metres in front of him */
-const twoHands = (s: Stand, up = 0.45, half = 0.25, fwd = 0.18): Partial<Pose> => { const j = jointsOf(s), c = near(mix3(j("pelvis"), j("neck"), up), s.cam, fwd), w = rightWay(s); return { ...reach(s, "R", aside(c, s.cam, w * half)), ...reach(s, "L", aside(c, s.cam, -w * half)) }; };
+export const twoHands = (s: Stand, up = 0.45, half = 0.25, fwd = 0.18): Partial<Pose> => { const j = jointsOf(s), c = near(mix3(j("pelvis"), j("neck"), up), s.cam, fwd), w = rightWay(s); return { ...reach(s, "R", aside(c, s.cam, w * half)), ...reach(s, "L", aside(c, s.cam, -w * half)) }; };
 const GUARD5 = {};
 const FIERCE: Face = { brow: -0.9, lid: 0.15, smile: -0.3, mouth: 0 };
-const SIT: Partial<Pose> = { py: -0.5, legL: { th: [86, 6], sh: [4, 4] }, legR: { th: [86, -6], sh: [4, -4] } };
+export const SIT: Partial<Pose> = { py: -0.5, legL: { th: [86, 6], sh: [4, 4] }, legR: { th: [86, -6], sh: [4, -4] } };
 const standAt = (D: Design, dx: number, turn: number, h: number, pose: Partial<Pose>, W = V): Stand => { const x = X + dx; return { D, at: [x, 0, Z], heading: W.toward(x, Z, turn), h, cam: W.cam, pose: { armL: REST, armR: REST, ...pose } }; };
 
 // Blackbeard: a ribbon tied round a tail of his beard, the boy's tray of ribbons, the spill lit at the lantern, a fuse tucked under the
@@ -246,10 +246,10 @@ for (const [view, tp, tt] of [["front", 40, -40], ["side", 62, -62]] as [string,
     things: (g, c, _t, _T, cam) => { carryBy(g, STRETCH(), c.b0, "R", c.b1, "R", cam, 0.02); } }); }
 /** which of a figure's hands is the nearer to the lens (the one that shows when he is seen from the side): facing to the right of the
  *  picture his right hand is toward us, facing to the left his left; seen from the front, the left */
-const nearHand = (heading: number, cam: Cam): "L" | "R" => { const h = (heading * Math.PI) / 180, r = aside([0, 0, 0], cam, 1), f = Math.sin(h) * r[0] + Math.cos(h) * r[2]; return f > 0.3 ? "R" : "L"; };
+export const nearHand = (heading: number, cam: Cam): "L" | "R" => { const h = (heading * Math.PI) / 180, r = aside([0, 0, 0], cam, 1), f = Math.sin(h) * r[0] + Math.cos(h) * r[2]; return f > 0.3 ? "R" : "L"; };
 /** the hands of a figure eating: the nearer hand by the rim of a bowl at his upper chest (the bowl inward of it, below the other
  *  hand, which is at his mouth) */
-const eating = (s: Stand, base: Partial<Pose> = {}): Partial<Pose> => { const sp = { ...s, pose: base }, j = jointsOf(sp), b = nearHand(s.heading, s.cam), e = b === "L" ? "R" : "L", wb = b === "R" ? rightWay(s) : -rightWay(s), chest = mix3(j("neck"), j("pelvis"), 0.26), mouth = mix3(j("neck"), j("skull"), 0.45);
+export const eating = (s: Stand, base: Partial<Pose> = {}): Partial<Pose> => { const sp = { ...s, pose: base }, j = jointsOf(sp), b = nearHand(s.heading, s.cam), e = b === "L" ? "R" : "L", wb = b === "R" ? rightWay(s) : -rightWay(s), chest = mix3(j("neck"), j("pelvis"), 0.26), mouth = mix3(j("neck"), j("skull"), 0.45);
   return { ...base, ...reach(sp, b, aside(near(chest, s.cam, 0.2), s.cam, wb * 0.13, 0)), ...reach(sp, e, aside(near(mouth, s.cam, 0.14), s.cam, -wb * 0.05, -0.07)) }; };
 for (const [view, turn] of [["front", 0], ["slant", 30]] as [string, number][]) (() => card5(`bowl-eat-${view}`, [{ D: MURMILLO_BARE_D, h: 1.84, turn, pose: (s) => eating(s, SIT), hands: LR, face: { brow: 0.3, lid: 0.3, mouth: 0.4, smile: 0.2 } }],
   (g, [a], cam) => { const b = BENCH(); b.position.set(X, 0, Z - 0.32); g.add(b); const h = nearHand(a.heading, cam); wield(g, BOWL_O(), BOWL, "rim", a, h, cam); wield(g, SPOON_O(), SPOON, "eat", a, h === "L" ? "R" : "L", cam); }))();

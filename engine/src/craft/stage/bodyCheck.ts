@@ -297,7 +297,10 @@ export const bodyCheck = (film: Film, opt: { every?: number; shots?: string[] } 
         // the feet: the lower one rests on what is under it; a foot that rests does not slide
         if (a.spin === undefined) { const feet = (["L", "R"] as const).map((sd) => { const h = new THREE.Vector3(...a.joint(sd === "L" ? "heelL" : "heelR")), o2 = new THREE.Vector3(...a.joint(sd === "L" ? "toeL" : "toeR")); return h.y < o2.y ? h : o2; });
           const low = feet[0].y < feet[1].y ? feet[0] : feet[1]; let top = -Infinity, what = "";
-          const under = [...solids.filter((o) => o.aabb.min.x - 0.05 < low.x && o.aabb.max.x + 0.05 > low.x && o.aabb.min.z - 0.05 < low.z && o.aabb.max.z + 0.05 > low.z && o.aabb.min.y < low.y + 0.3)];
+          // (a thing others carry is a surface too, for someone on it who does not hold it himself: the wounded man on the gladiators'
+          // stretcher stood "on nothing")
+          const carriers = held.filter((o) => !o.holder!.split(" & ").some((p) => p.split(" ")[0] === a.name) && o.geo.type !== "PlaneGeometry");
+          const under = [...solids, ...carriers].filter((o) => o.aabb.min.x - 0.05 < low.x && o.aabb.max.x + 0.05 > low.x && o.aabb.min.z - 0.05 < low.z && o.aabb.max.z + 0.05 > low.z && o.aabb.min.y < low.y + 0.3);
           for (const o of under) { rc.set(new THREE.Vector3(low.x, low.y + 0.3, low.z), DIRS[3]); rc.near = 0; rc.far = 1.0; const h = rc.intersectObject(o.mesh, false)[0]; if (h && h.point.y > top) { top = h.point.y; what = describe(o); } }
           if (top === -Infinity && floor <= 0.001) { top = 0; what = "the ground"; }
           let gap = low.y - top; if (!seen(low, 0.05)) { prevFoot.delete(a.name); continue; }

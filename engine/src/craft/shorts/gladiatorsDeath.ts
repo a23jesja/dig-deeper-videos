@@ -12,7 +12,7 @@ import { mover, MM, arm, wag, mt } from "../stage/acting";
 import { lens, once, noShade, palm, near, aside, span, stageAt } from "../stage/staging";
 import { GLADIUS, TRIDENT, SHIELD_ARM, WOODSWORD, BOWL, SPOON, ROLL, COIN, MAPPA, PEN, SCROLL, OLIVE, shieldOn, wield, usePose, pole, polePose, reach, jointsOf, setDown, carryBy, handOn, handshake, vanish, Stand } from "../stage/grips";
 import { arenaWorld, crowd, ARENA, LUDUS, LUDUS_POST, LUDUS_TABLE, rim } from "../world/arena";
-import { woodSword, stretcher, bowl, bowlRim, spoon, bandageRoll, coinHeld, reedPen, scrollHeld, olive, bench, table, chest, stool } from "../world/props";
+import { woodSword, stretcher, bowl, bowlRim, spoon, bandageRoll, coinHeld, reedPen, scrollHeld, olive, bench, table, chest, stool, refStick } from "../world/props";
 import { mesh, box, group } from "../world/kit";
 import { SIR_D, MURMILLO_EATER_D, MURMILLO_GRILLE_D, RETIARIUS_D, REFEREE_D, ROMAN_WOMAN_OLIVES_D, MURMILLO_BARE_D, THRAEX_D, SECUTOR_D, HOPLOMACHUS_D, PROVOCATOR_D, RETIARIUS2_D, RETIARIUS3_D, MURMILLO2_D, CARRIED_D, TRAINER_D, PUPIL_D, OWNER_D, DOCTOR_D, SPONSOR_D, BEARER_D, BEARER2_D } from "../looks";
 import type { Design } from "../designs/common";
@@ -233,17 +233,20 @@ const GATE = rim(0, -2.2), OWNER_AT: V3 = [GATE[0], 0, GATE[1] + 1.2], MAN_AT: V
 
 // 10. THERE WERE RULES, AND A REFEREE. He strides in between the two with his stick across them, and the sword comes down
 const ground: V3 = [FIGHT[0] + 1.1, 0.03, FIGHT[2] + 0.5];
-{ const WIDE2 = lens(FIGHT[0], 1.35, FIGHT[2] + 5.4, 0, -1, -6, 54), m2 = pair(1.45), RAT: V3 = [FIGHT[0] + 0.05, 0, FIGHT[2] + 0.25], ref = mover(REFEREE_D, 1.74, RAT[0], RAT[2], 20); m2.mur.stand(9); m2.ret.stand(9); ref.walk(mt(ref, 0.3), { step: 0.5, tau: 0.3 }).stand(9);
+// (Jesper's point 4 and the body check: the two further apart and the stick held by its middle, so that its ends stop well short of
+// both; reaching from his hand a metre to one side it lay over the net man's chest)
+{ const WIDE2 = lens(FIGHT[0], 1.35, FIGHT[2] + 6.3, 0, -1, -6, 54), m2 = pair(2.6), STICK_R = once(() => noShade(refStick(1.1))), RAT: V3 = [FIGHT[0] + 0.08, 0, FIGHT[2] + 0.25], ref = mover(REFEREE_D, 1.74, RAT[0], RAT[2], 20); m2.mur.stand(9); m2.ret.stand(9); ref.walk(mt(ref, 0.3), { step: 0.5, tau: 0.3 }).stand(9);
   m2.mur.actAt(-1, { ...usePose(GLADIUS, "raised", "R"), armL: SHIELD_ARM, lean: 6 }, 10, { in: 0.01, handL: "grip", handR: "grip", face: { brow: -1, lid: 0.1, mouth: 0.4 } });
   m2.mur.actAt(0.6, { ...usePose(GLADIUS, "lowered", "R"), armL: SHIELD_ARM, lean: -2, head: [-20, 0, 0] }, 9, { in: 0.4, antic: 0, over: 1.1, face: { brow: 0.6, lid: 0.2, mouth: 0.2 } });
-  m2.ret.actAt(-1, { lean: -4, armL: arm(30, 30, 70, 20), armR: arm(30, 30, 70, 20), head: [0, -4, 0] }, 10, { in: 0.01, handL: "open", handR: "open", face: { brow: 0.9, lid: 0, wide: 0.6, mouth: 0.3 } });
+  m2.ret.actAt(-1, { lean: -4, armL: arm(14, 16, 44, 10), armR: arm(14, 16, 44, 10), head: [0, -4, 0] }, 10, { in: 0.01, handL: "open", handR: "open", face: { brow: 0.9, lid: 0, wide: 0.6, mouth: 0.3 } });
   const rs: Stand = { D: REFEREE_D, at: RAT, heading: 20, h: 1.74, cam: WIDE2.cam };
   ref.actAt(-1, polePose(rs, "L", by(rs.at, 20, -0.24, 0.3, 1.12), by(rs.at, 20, 3, 0.3, 1.12), 0.48), 10, { in: 0.01, handL: "grip", handR: "grip", face: { brow: -0.9, lid: 0, mouth: 0.6, smile: -0.8 } });
   shots.push({ id: "rules", a: T9, b: T10, still: 1.0, sounds: [{ t: 0.1, k: "step", g: 0.7 }, { t: 0.4, k: "step", g: 0.7 }, { t: 0.45, k: "tap", g: 0.8 }],
     cam: (_t, u) => WIDE2.push(0.12 * u), sun: { target: FIGHT, reach: 10 },
     cast: (t) => [on("mur", MURMILLO_GRILLE_D, m2.mur, t), on("ret", RETIARIUS_D, m2.ret, t), on("ref", REFEREE_D, ref, t)],
     things: (g, c, t, T, cam) => { crowd(g, STANDS, T, cam, 0.8); shieldMan(g, c.mur, cam, "raised", ["lowered", smooth((t - 0.6) / 0.4)], true); setDown(g, TRI(), "trident", ground, cam, -4);
-      pole(g, STICK_O(), c.ref, cam, "L", by(c.ref.at, c.ref.heading, 3, 0.3, 1.12), { back: 0.36, len: 1.35, name: "stick" }); } }); }
+      // (the stick, 1.1 m, held by its middle: its butt so far behind the rear hand that the hands are at its centre)
+      pole(g, STICK_R(), c.ref, cam, "L", by(c.ref.at, c.ref.heading, 3, 0.3, 1.12), { back: 0.23, len: 1.1, name: "stick" }); } }); }
 
 // 11. A BEATEN MAN RAISED A FINGER TO GIVE UP. The net man down on one knee, his trident on the sand, raises one finger; the sword
 //     above him stops

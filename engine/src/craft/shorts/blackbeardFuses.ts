@@ -104,21 +104,25 @@ const BB_AT = { stool: inCabin([CABIN.stool[0], 0, CABIN.stool[2] + 0.27]), mirr
 // 4. NO. WATCH HIM GET READY FOR A FIGHT. He gets up heavily from the stool and holds out his hand; the boy hurries in with a tray of
 // ribbons and stops beside him, not in front of him (Jesper's review of v3: the boy stood before the captain)
 // (The review of v3: he stood up inside the stool, his legs between its legs. Getting up he steps forward off it, as one does, and
-// stands a step before it)
-{ const V = cabinLens(0.0, 1.25, 2.95, -0.09, -1, 0, 50), BBH = V.toward(BB_AT.stool[0], BB_AT.stool[2], 18), bb = mover(BLACKBEARD_BARE_D, 1.92, BB_AT.stool[0], BB_AT.stool[2], BBH);
+// stands a step before it. v4: the lens a little wider and turned a little to the right, so that the boy and his tray are whole in the
+// picture to the end of the push in (the right edge cut his cheek, his ear and his hand), and the captain unshaded, as in the light shot: his hand in the shadow went grey)
+{ const V = cabinLens(0.0, 1.25, 3.15, -0.035, -1, 0, 54), BBH = V.toward(BB_AT.stool[0], BB_AT.stool[2], 18), bb = mover(BLACKBEARD_BARE_D, 1.92, BB_AT.stool[0], BB_AT.stool[2], BBH);
   const UP = 0.35, upAt: V3 = [BB_AT.stool[0] + Math.sin((BBH * Math.PI) / 180) * UP, FL, BB_AT.stool[2] + Math.cos((BBH * Math.PI) / 180) * UP]; bb.stand(0.55).walk(mt(bb, UP), { step: 0.22, tau: 0.3 }).stand(9);
   // the boy comes in from the right to the captain's side, level with him, turned half toward him, the tray held out in both hands
-  const ex = CX + 0.2, ez = CZ + 0.5, eh = V.toward(ex, ez, -48), boy = mover(SHIPBOY_D, 1.28, ex - Math.sin((eh * Math.PI) / 180) * 0.16, ez - Math.cos((eh * Math.PI) / 180) * 0.16, eh); boy.walk(mt(boy, 0.16), { step: 0.32, tau: 0.22 }).stand(9);
+  // (v4: 12 cm further from him, so that the captain's hanging hand is clear of the boy's face and his fist of the tray)
+  const ex = CX + 0.32, ez = CZ + 0.5, eh = V.toward(ex, ez, -48), boy = mover(SHIPBOY_D, 1.28, ex - Math.sin((eh * Math.PI) / 180) * 0.16, ez - Math.cos((eh * Math.PI) / 180) * 0.16, eh); boy.walk(mt(boy, 0.16), { step: 0.32, tau: 0.22 }).stand(9);
   const ys = standOf(SHIPBOY_D, [ex, FL, ez], eh, V), yj = jointsOf(ys), yc = near(mix(yj("pelvis"), yj("neck"), 0.6), V.cam, 0.2), yw = rightWay(ys);
-  bb.actAt(-1, { ...SIT, armL: arm(20, 20, 60, 20), armR: arm(20, 20, 60, 20), lean: 8, head: [0, 6, 0] }, 10, { in: 0.01, handL: "fist", handR: "fist", face: GRIM });
-  bb.actAt(0.25, { ...STAND, lean: 4, head: [0, 2, 0] }, 9, { in: 0.7, antic: 0.25, over: 1.1, face: GRIM });
+  // (his fists on his thighs as he sits, and his arms hang as he gets up: kept bent, his hand rose to the boy's face before he reached)
+  bb.actAt(-1, { ...SIT, armL: arm(12, 8, 56, 10), armR: arm(12, 8, 56, 10), lean: 8, head: [0, 6, 0] }, 10, { in: 0.01, handL: "fist", handR: "fist", face: GRIM });
+  bb.actAt(0.25, { ...STAND, armL: arm(8, 10, 18, 8), armR: arm(8, 10, 18, 8), lean: 4, head: [0, 2, 0] }, 9, { in: 0.7, antic: 0.25, over: 1.1, face: GRIM });
   const bs = standOf(BLACKBEARD_BARE_D, upAt, BBH, V, { ...STAND, lean: 4 });
-  // his hand to the near edge of the tray, on his side, low past the boy's head
-  bb.actAt(1.1, { ...reach(bs, "L", aside(yc, V.cam, -0.12, 0.02)), head: [20, 8, 0] }, 9, { in: 0.3, antic: 0, over: 1.2, handL: "open", face: { ...GRIM, brow: -0.6 } });
+  // his hand to the near edge of the tray, on his side, low past the boy's head (v4: lower and nearer its edge: his sleeve came down
+  // against the boy's nose)
+  bb.actAt(1.1, { ...reach(bs, "L", aside(yc, V.cam, -0.2, -0.05)), head: [20, 8, 0] }, 9, { in: 0.3, antic: 0, over: 1.2, handL: "open", face: { ...GRIM, brow: -0.6 } });
   boy.actAt(-1, { ...reach(ys, "R", aside(yc, V.cam, yw * 0.27)), ...reach(ys, "L", aside(yc, V.cam, -yw * 0.27)), head: [-14, -6, 0] }, 10, { in: 0.01, handL: "grip", handR: "grip", face: { wide: 0.7, brow: 0.8, lid: 0, mouth: 0.2 } });
   shots.push({ id: "ready", capsTop: 160, a: T.s3, b: T.s4, still: 1.6, sounds: [{ t: 0.3, k: "creak", g: 0.8 }, ...boy.cues().filter((q) => q.k === "step").map((q) => ({ t: q.t, k: "step", g: 0.5, p: 0.3 }))],
     cam: (_t, u) => V.push(0.06 * u), sun: { target: inCabin([0, 0, 0]), reach: 4 },
-    cast: (t) => [on("bb", BLACKBEARD_BARE_D, bb, t, FL, { seed: 3 }), { ...on("boy", SHIPBOY_D, boy, t, FL, { seed: 8 }), noShade: true }],
+    cast: (t) => [{ ...on("bb", BLACKBEARD_BARE_D, bb, t, FL, { seed: 3 }), noShade: true }, { ...on("boy", SHIPBOY_D, boy, t, FL, { seed: 8 }), noShade: true }],
     things: (g, c, _t, T2, cam) => { lantern(g, T2, cam); carryBy(g, TRAY_O(), c.boy, "L", c.boy, "R", cam); TRAY_O().rotateX(0.55); } }); }
 
 
@@ -147,7 +151,8 @@ const plaitLook = (t: number) => BLACKBEARD_PLAIT_D[Math.floor(t / 0.1) % 4];
   void hand;
   shots.push({ id: "beard", a: T.s4, b: T.s5, still: 1.2, sounds: [{ t: 0.3, k: "rope", g: 0.4 }, { t: 1.2, k: "rope", g: 0.35 }], capsTop: 150,
     cam: (_t, u) => PLAIT_V.push(0.05 * u), sun: { target: PLAIT_AT, reach: 3 },
-    cast: (t) => [on("bb", plaitLook(t), bb, t, FL, { seed: 3 })],
+    // (unshaded, as in the shots round it: the hand at the braid's end went grey in the shadow of a beam, v4)
+    cast: (t) => [{ ...on("bb", plaitLook(t), bb, t, FL, { seed: 3 }), noShade: true }],
     things: (g, _c2, _t, T2, cam) => { lantern(g, T2, cam); } }); }
 { const bb = mover(BLACKBEARD_PLAIT_D[0], 1.92, PLAIT_AT[0], PLAIT_AT[2], PLAIT_H); bb.stand(9);
   const bs = standOf(BLACKBEARD_PLAIT_D[0], PLAIT_AT, PLAIT_H, PLAIT_V), { top, end, twist, hold, rr } = PLAIT, TIED = (W.find((w) => w.line === "beard" && /^ribbons/.test(w.w))?.a ?? 13.62) - T.s5 + 0.1;
@@ -182,14 +187,16 @@ const TUCK_AT = inCabin([0.15, 0, 0.35]);
 // and leans back from the flame; the captain stands at his full height, his head turned a little to the boy. (Jesper's review of v3:
 // who held the spill was not clear, and the captain stooped crookedly to the boy. On the stool the boy's hand is right by the fuse, the
 // spill short, and the captain needs no stoop.)
-{ const V = cabinLens(0.76, 1.32, 2.95, -0.14, -1, 0, 55), hd = V.toward(TUCK_AT[0], TUCK_AT[2], 10), bb = mover(BLACKBEARD_UNLIT_D, 1.92, TUCK_AT[0], TUCK_AT[2], hd); bb.stand(9);
+{ const V = cabinLens(0.82, 1.32, 2.95, -0.115, -1, 0, 60), hd = V.toward(TUCK_AT[0], TUCK_AT[2], 10), bb = mover(BLACKBEARD_UNLIT_D, 1.92, TUCK_AT[0], TUCK_AT[2], hd); bb.stand(9);
   // (his head turned a little away from the boy: turned to him, it hid the fuse on the boy's side, and the spill went to the far one
   // across the beard)
   const UPR = { ...STAND, lean: 2, head: [-14, 6, 0] as [number, number, number] }, bs = standOf(BLACKBEARD_UNLIT_D, TUCK_AT, hd, V, UPR), w = rightWay(bs), LIT = 1.0, tip = atHead(bs, -w, 0.13, 0.15);
-  bb.actAt(-1, { armL: arm(20, 18, 50, 16), armR: arm(20, 18, 50, 16), ...UPR }, 10, { in: 0.01, handL: "fist", handR: "fist", face: MENACE });
+  // (v4: his left arm closer in, its fist before his own coat: out at his side it went behind the boy's smock)
+  bb.actAt(-1, { armL: arm(8, 8, 26, 8), armR: arm(20, 18, 50, 16), ...UPR }, 10, { in: 0.01, handL: "fist", handR: "fist", face: MENACE });
   bb.actAt(LIT + 0.3, { head: [4, 0, 0] }, 9, { in: 0.5, antic: 0, over: 1.1, face: { ...MENACE, smile: 0.5 } });
   // the boy on the stool (its seat 0.47 m up), half turned to the captain
-  const STOOL_H = 0.47, bx0 = TUCK_AT[0] + 0.6, bz0 = TUCK_AT[2] + 0.1, BH = -62, boy = mover(SHIPBOY_D, 1.28, bx0, bz0, BH); boy.stand(9);
+  // (v4: 15 cm further from the captain: his free hand hung open over the captain's fist)
+  const STOOL_H = 0.47, bx0 = TUCK_AT[0] + 0.75, bz0 = TUCK_AT[2] + 0.1, BH = -62, boy = mover(SHIPBOY_D, 1.28, bx0, bz0, BH); boy.stand(9);
   // the spill's tip goes to the end of the fuse on the boy's side of the picture (where the drawing marks it; picked by the world
   // distance, the card's turn made it the far one, and the spill crossed the beard)
   const ends = quiet(() => { const st = stageAt(on("bb", BLACKBEARD_UNLIT_D, bb, LIT - 0.05, FL, { seed: 3 }), V.cam); return (["fuseA", "fuseB"] as const).map((n) => st.mark?.(n)).filter((p): p is V3 => !!p); });
@@ -267,10 +274,12 @@ const PIST_AT = inCabin([0.35, 0, 0.1]), CUT9 = 1.15;
 // (the lens a metre further back than he stands: he is a dark shape at the side, and the crew read)
 { const S0 = lens(-0.75, 1.75, 1.45, -1, 0.08, -2, 42), S = lens(0.2, 1.8, 1.05, -1, 0.04, -2, 44), [bx, bz] = S0.spot(1.65, -0.3), bb = mover(BLACKBEARD_ARMED_D, 1.92, bx, bz, S.toward(bx, bz, 180)); bb.stand(9);
   bb.actAt(-1, { armL: arm(20, 30, 50, 30), armR: arm(20, 30, 50, 30), lean: -2 }, 10, { in: 0.01, handL: "fist", handR: "fist", face: MENACE });
-  const crew = ([[SAILOR_D, 1.82, 5.6, 1.38, 0.3], [COOK_D, 1.58, 5.3, -0.08, 0.8], [OLDHAND_D, 1.74, 5.9, 0.6, 1.35]] as [Design, number, number, number, number][]).map(([D, h, d, l, t0]) => {
+  // (v4: their hands go up straight over their own shoulders and they stand a little further apart: the cook's hand lay over the old
+  // hand's arm, and his and the sailor's hands met over their heads; the cook's right hand clear of Blackbeard's hat at the edge)
+  const crew = ([[SAILOR_D, 1.82, 5.6, 1.55, 0.3], [COOK_D, 1.58, 5.3, -0.04, 0.8], [OLDHAND_D, 1.74, 5.9, 0.74, 1.35]] as [Design, number, number, number, number][]).map(([D, h, d, l, t0]) => {
     const [x, z] = S0.spot(d, l), m = mover(D, h, x, z, S.toward(x, z, 0)); m.stand(9);
     m.actAt(-1, { armL: arm(16, 14, 30, 8), armR: arm(16, 14, 30, 8), head: [0, -4, 0] }, 10, { in: 0.01, handL: "relaxed", handR: "relaxed", face: { wide: 0.8, lid: 0, brow: 0.9, smile: -0.6 } });
-    m.actAt(t0, { armL: arm(150, 30, 176, 12), armR: arm(150, 30, 176, 12), lean: -4 }, 9, { in: 0.35, antic: 0.15, over: 1.3, handL: "open", handR: "open", face: { wide: 1, lid: 0, brow: 1, mouth: 0.5, smile: -0.8 } });
+    m.actAt(t0, { armL: arm(166, 14, 178, 6), armR: arm(166, 14, 178, 6), lean: -4 }, 9, { in: 0.35, antic: 0.15, over: 1.3, handL: "open", handR: "open", face: { wide: 1, lid: 0, brow: 1, mouth: 0.5, smile: -0.8 } });
     return { D, m }; });
   shots.push({ id: "surrender", capsTop: 170, a: T.s10, b: T.s11, still: 2.4, sounds: [{ t: 0.4, k: "flap", g: 0.4 }],
     cam: (_t, u) => S.push(0.05 * u), sun: { target: [-5.5, MD, 1.5], reach: 9 },

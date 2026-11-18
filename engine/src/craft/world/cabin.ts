@@ -1,8 +1,9 @@
 // The great cabin of a pirate ship (Blackbeard's, in the Short about his fuses): a low room of dark planks under heavy beams, three
 // stern windows with the sea behind them, a table with a lantern and a chart, a stool, a sea chest, and a mirror on the side wall.
 // Built round its own origin: the floor at y = 0, the windows in the back wall at z = -d/2, the room open toward +z where the lens
-// stands. There is no ceiling, only the beams, so that the daylight of the world falls in from above. `cabinSea` puts it beside the two
-// ships of flagSea, far enough off that neither ship shows through its windows.
+// stands. The deck overhead lies on the walls and the beams hang under it; it casts no shadow, so that the daylight of the world still
+// falls in from above. (Blackbeard v4: without it, the sky and a sail showed over the back wall wherever the lens looked a little up.)
+// `cabinSea` puts it beside the two ships of flagSea, far enough off that neither ship shows through its windows.
 import * as THREE from "three";
 import { mesh, group, box, cyl, ball } from "./kit";
 import { C, table, stool, chest } from "./props";
@@ -35,6 +36,9 @@ export const cabin = () => {
   // the side walls, panelled, and the beams overhead
   for (const s of [-1, 1]) { g.add(mesh(box(t, h, d), wood, { at: [(s * w) / 2, h / 2, 0] })); for (let z = -d / 2 + 0.55; z < d / 2; z += 0.8) g.add(mesh(box(0.02, h - 0.3, 0.05), woodD, { at: [s * (w / 2 - 0.07), h / 2, z], line: 0.3, shadow: false })); }
   for (let z = -d / 2 + 0.35; z < d / 2; z += 0.78) g.add(mesh(box(w, 0.17, 0.2), woodD, { at: [0, h, z], line: 0.5 }));
+  // the deck overhead, its underside level with the tops of the walls, a little wider and deeper than the room so that no seam shows
+  g.add(mesh(box(w + t, 0.08, d + t), "#5a3a22", { at: [0, h + 0.04, -t / 2], line: 0.4, shadow: false }));
+  for (let x = -w / 2 + 0.3; x < w / 2; x += 0.3) g.add(mesh(box(0.012, 0.004, d), woodD, { at: [x, h - 0.002, 0], line: 0, shadow: false, receive: false }));
   // the mirror on the left wall, its glass toward +x
   g.add(group([mesh(box(0.06, 0.66, 0.5), C.gold, { line: 0.6 }), mesh(box(0.066, 0.56, 0.4), "#cfe3ee", { line: 0.3, shadow: false }), mesh(box(0.068, 0.5, 0.06), "#eef6fa", { at: [0, 0.04, -0.08], rot: [0.5, 0, 0], line: 0, shadow: false })], [CABIN.mirror[0] + 0.02, CABIN.mirror[1], CABIN.mirror[2]]));
   // the table with a chart, a bottle and the lantern

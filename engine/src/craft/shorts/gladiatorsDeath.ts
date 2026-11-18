@@ -319,8 +319,8 @@ export const GLADIATORS_DEATH: Film = {
   hook: { text: ["DID GLADIATORS", "FIGHT TO", "THE DEATH?"], a: 0, b: T2, size: 80 },
   beds: [{ k: "crowd", a: 0, b: T5, g: 0.8 }, { k: "wind", a: 0, b: END, g: 0.25 }, { k: "crowd", a: T9, b: T14, g: 0.9 }, { k: "crowd", a: T16, b: END, g: 0.8 }], audio: "craft/gladiators-death.wav",
   thumbs: [
-    { T: 0.3, words: ["TO THE", "DEATH?"], y: 0.7, size: 150 },
-    { T: (T4 + T5a) / 2, words: ["NINE IN TEN", "LIVED"], y: 0.72, size: 130 },
-    { T: T10 + 1.8, words: ["HE RAISED", "ONE FINGER"], y: 0.72, size: 120 },
+    { T: 0.3, words: ["WHO WALKS", "OUT?"], y: 0.7, size: 150 },
+    { T: (T4 + T5a) / 2, words: ["9/10", "SURVIVED"], y: 0.72, size: 130 },
+    { T: T10 + 1.8, words: ["ONE FINGER", "UP"], y: 0.72, size: 120 },
   ],
 };

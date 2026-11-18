@@ -233,10 +233,13 @@ const ground: V3 = [FIGHT[0] + 1.1, 0.03, FIGHT[2] + 0.5];
   // the seats seen right behind the waved cloth are left empty (the back of his box): a face there was hidden by it (review of v1)
   const clothAt: V3 = [bx + 0.15, BOXY + 2.05, bz], cp = V.cam.pos, toCl = [clothAt[0] - cp[0], clothAt[1] - cp[1], clothAt[2] - cp[2]], cl = Math.hypot(toCl[0], toCl[1], toCl[2]);
   const FAR_SP = FAR.filter((f) => { const v = [f.at[0] - cp[0], f.at[1] + 1.5 - cp[1], f.at[2] - cp[2]], n = Math.hypot(v[0], v[1], v[2]); return (v[0] * toCl[0] + v[1] * toCl[1] + v[2] * toCl[2]) / (n * cl) < Math.cos((9 * Math.PI) / 180); });
+  // and the man at the left edge whose face was always behind a cheering hand: nobody in the left eighth of the picture near the box
+  const lensV = new THREE.PerspectiveCamera(V.cam.fov, 1080 / 1920, 0.1, 900); lensV.position.set(...V.cam.pos); lensV.lookAt(...V.cam.look); lensV.updateMatrixWorld(true);
+  const FAR_SP2 = FAR_SP.filter((f) => { const q = new THREE.Vector3(f.at[0], f.at[1] + 1.5, f.at[2]).project(lensV); return !(q.x < -0.72 && Math.hypot(f.at[0] - bx, f.at[2] - bz) < 6); });
   shots.push({ id: "sponsor", a: T11, b: T12, still: 0.7, sounds: [{ t: 0.1, k: "flap", g: 0.7 }, { t: 0.42, k: "flap", g: 0.6 }],
     cam: (_t, u) => V.push(0.06 * u), sun: { target: sAt, reach: 6 },
     cast: (t) => [{ ...on("sp", SPONSOR_D, sp, t, BOXY), noShade: true }],
-    things: (g, c, _t, T, cam) => { crowd(g, FAR_SP, T, cam, 1); wield(g, CLOTH(), MAPPA, "wave", c.sp, "R", cam); flutter(CLOTH(), T); } }); }
+    things: (g, c, _t, T, cam) => { crowd(g, FAR_SP2, T, cam, 1); wield(g, CLOTH(), MAPPA, "wave", c.sp, "R", cam); flutter(CLOTH(), T); } }); }
 
 // 13. ... HE WAS SPARED. The heavy man gives the net man his hand and pulls him up off his knee
 { const V = lens(FIGHT[0] + 0.1, 1.3, FIGHT[2] + 4.2, 0, -1, -4, 52), mur = mover(MURMILLO_GRILLE_D, 1.84, FIGHT[0] - 0.42, FIGHT[2], 55), ret = mover(RETIARIUS_D, 1.86, FIGHT[0] + 0.48, FIGHT[2] + 0.1, -55); mur.stand(9); ret.stand(9);
@@ -308,8 +311,26 @@ const ground: V3 = [FIGHT[0] + 1.1, 0.03, FIGHT[2] + 0.5];
     cam: (t) => HOOK.cam(t + CODA, (t + CODA) / (HOOK.b - HOOK.a)), sun: HOOK.sun, cast: (t, T) => HOOK.cast(t + CODA, T), things: (g, c, t, T, cam) => HOOK.things?.(g, c, t + CODA, T, cam) }); }
 
 /** the sponsor's cloth: six slices of white linen hanging from the corner in his fist, rippling as it is waved, with a red hem */
-const CLOTH = once(() => noShade(group(Array.from({ length: 6 }, (_, i) => { const sl = group([mesh(box(0.075, 0.5, 0.006), "#ffffff", { at: [0, -0.25, 0], line: 0.5, shadow: false, receive: false, glow: "#bdbdbd" }), mesh(box(0.075, 0.018, 0.007), "#c8402f", { at: [0, -0.48, 0], line: 0.3, shadow: false, receive: false, glow: "#3a1010" })]); sl.position.x = 0.01 + i * 0.072; return sl; }))));
-const flutter = (o: THREE.Object3D, T: number) => o.children.forEach((sl, i) => { const k = i / 5, w = Math.sin(T * 11 - i * 0.9); sl.position.y = 0.06 * k * w; sl.rotation.z = 0.28 * k * Math.sin(T * 11 - i * 0.9 + 0.8); sl.position.z = 0.02 * k * w; });
+/** the sponsor's cloth: one piece of white linen with a red hem, its top corner in his fist (the group's origin), hanging down and out
+ *  to the side (local x out, y down). A wave runs out from the corner as he waves it, so the cloth billows from his hand; its folds
+ *  show as lighter and darker bands, and a dark rim behind it is its outline (the geometry changes every frame, so the kit's outline
+ *  hull, made once, could not follow it). Review of v2: six strips hung beside the fist like slips of paper */
+const CW = 0.42, CH = 0.52, NU = 9, VS = [0, 0.11, 0.22, 0.33, 0.44, 0.55, 0.66, 0.77, 0.88, 0.925, 0.93, 1];
+const clothGeo = () => { const g = new THREE.BufferGeometry(), pos: number[] = [], col: number[] = [], idx: number[] = [];
+  VS.forEach((v) => { for (let i = 0; i <= NU; i++) { pos.push((i / NU) * CW, -v * CH, 0); col.push(1, 1, 1); } });
+  for (let r = 0; r < VS.length - 1; r++) for (let i = 0; i < NU; i++) { const a = r * (NU + 1) + i, b = a + 1, c = a + NU + 1, d = c + 1; idx.push(a, c, b, b, c, d); }
+  g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute("color", new THREE.Float32BufferAttribute(col, 3)); g.setIndex(idx); return g; };
+const CLOTH = once(() => { const o = new THREE.Group(), face = new THREE.Mesh(clothGeo(), new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.DoubleSide })), rim = new THREE.Mesh(clothGeo(), new THREE.MeshBasicMaterial({ color: "#2a1c14", side: THREE.DoubleSide, depthWrite: false }));
+  // (the rim is drawn first and writes no depth, so the face always lies over it, whichever side of the cloth is toward us)
+  face.name = "cloth"; rim.name = "cloth-rim"; rim.renderOrder = 1; face.renderOrder = 2; o.add(rim, face); return o; });
+/** the cloth's shape at time T: each point's distance from the corner sets how far the wave has carried it; the hem stays red */
+const flutter = (o: THREE.Object3D, T: number) => { const [rim, face] = o.children as THREE.Mesh[];
+  for (const [m, grow] of [[face, 0], [rim, 0.012]] as [THREE.Mesh, number][]) { const p = m.geometry.getAttribute("position") as THREE.BufferAttribute, c = m.geometry.getAttribute("color") as THREE.BufferAttribute;
+    VS.forEach((v, r) => { for (let i = 0; i <= NU; i++) { const u = i / NU, k = r * (NU + 1) + i, d = Math.hypot(u, v) / Math.SQRT2, ph = T * 9 - d * 5.5;
+      // (held by a corner it droops away from the hand; the wave lifts and drops the free edges, and its folds shade the linen)
+      const x = u * CW + grow * (u - 0.5) * 2 + 0.03 * d * Math.sin(ph * 0.7 + 2), y = -v * CH - grow * (v - 0.5) * 2 - 0.15 * u * (1 - 0.3 * v) + 0.065 * d * Math.sin(ph + 0.6), z = 0.09 * d * Math.sin(ph);
+      p.setXYZ(k, x, y, z); if (m === face) { const hem = v >= 0.93, shade = 0.78 + 0.22 * Math.cos(ph); c.setXYZ(k, hem ? 0.72 * shade : shade, hem ? 0.1 * shade : shade, hem ? 0.1 * shade : shade); } } });
+    p.needsUpdate = true; if (m === face) c.needsUpdate = true; m.geometry.computeBoundingSphere(); m.geometry.computeBoundingBox(); } };
 /** a few flowers thrown from the stands, falling round a point and turning as they fall */
 function petals(g: THREE.Group, T: number, p: V3) { for (let i = 0; i < 14; i++) { const u = (T * 0.45 + i * 0.137) % 1, x = p[0] + Math.sin(i * 2.3) * 1.6, z = p[2] + Math.cos(i * 1.7) * 1.2, y = 3.4 - 3.3 * u;
     const f = mesh(box(0.07, 0.012, 0.07), ["#e8475a", "#f6c52e", "#ffffff", "#c04a9a"][i % 4], { at: [x + 0.2 * Math.sin(T * 3 + i), y, z], rot: [T * 3 + i, T * 2 + i * 0.7, 0], line: 0.3, shadow: false }); g.add(f); } }

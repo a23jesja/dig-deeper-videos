@@ -196,7 +196,7 @@ Valda bort trots styrka: pestläkarens näbb (nr 15) är lika stark på punkt 1 
 - **Svar:** Ja: medeltida domstolar ställde grisar inför rätta med samma ordning som för människor, även om det var ovanligt.
 - **SANT.** JSTOR Daily (https://daily.jstor.org/when-societies-put-animals-on-trial), citerar Esther Cohen i Past & Present. Leiden Medievalists Blog, Leiden University (https://leidenmedievalistsblog.nl/articles/homicidal-hogs).
 - **Säg inte:** detaljerna om grisen i Falaise (skiljer sig mellan källorna); "196 fall" som totalsiffra.
-- **Första sekunden:** en gris står i vittnesbåset inför en domare, Sir Digsworth sitter i publiken.
+- **Första sekunden:** (rättat 18 november: djuren var de anklagade, aldrig vittnen, så ingen gris i vittnesbåset) rättssalen mitt i förhandlingen mot vivlarna i Saint-Julien, advokaten vid de anklagades bänk, Sir Digsworth i åhörarbänken. Se `granskning/animal-trials/manus.md`.
 - **Ton:** rolig, lite mörk.
 
 ### 19. Do castle stairs really turn to stop attackers?  (MYT)

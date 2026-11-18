@@ -7,7 +7,7 @@ import * as THREE from "three";
 import type { Film, Cam, V3, Staged } from "./film";
 import { mix3 } from "./film";
 import { grip, palm, fingers, eyeOf, span, near, aside, UNSEEN } from "./staging";
-import { figureCard, reachArm, pointArm, bareJoints } from "../world/people";
+import { figureCard, reachArm, pointArm, bareJoints, CROWD_LOG } from "../world/people";
 import { rod, mesh, box, group } from "../world/kit";
 import type { Design } from "../designs/common";
 import type { Pose } from "../rig";
@@ -589,7 +589,7 @@ export const auditGrips = (film: Film, step?: number) => {
   try { for (const s of film.shots) { let prev = new Map<string, { holder: string; prop: string }>();
     const times: number[] = []; if (step) for (let t = 0; t < s.b - s.a - 1e-6; t += step) times.push(t); else for (let F = Math.ceil(s.a * film.fps - 1e-6); F < s.b * film.fps - 1e-6; F++) times.push(Math.max(0, F / film.fps - s.a));
     for (const t of times) {
-      AUDIT.rows = []; UNSEEN.length = 0; const cam = s.cam(t, t / (s.b - s.a)), g = new THREE.Group(), staged: Record<string, Staged> = {};
+      AUDIT.rows = []; UNSEEN.length = 0; CROWD_LOG.on = true; CROWD_LOG.heads.length = 0; const cam = s.cam(t, t / (s.b - s.a)), g = new THREE.Group(), staged: Record<string, Staged> = {};
       for (const a of s.cast(t, s.a + t)) { const p = figureCard(a.D, a.pose, a.o, { at: a.at, heading: a.heading, h: a.h }, cam.pos); staged[a.name] = { ...a, joint: p.joint, mesh: p.mesh, mark: p.mark }; }
       s.things?.(g, staged, t, s.a + t, cam); const now = new Map<string, { holder: string; prop: string }>(), at = `${s.id} at ${t.toFixed(2)} s (film ${(s.a + t).toFixed(2)} s, frame ${Math.round((s.a + t) * film.fps)})`;
       for (const u of new Set(UNSEEN)) bad.push(`${at}: ${u}: the hand holds something but its forearm is hidden behind his head or body (the fist would float)`);
@@ -646,7 +646,13 @@ export const auditGrips = (film: Film, step?: number) => {
           if (!hit && things.length) { pick.set((x / 1080) * 2 - 1, 1 - (y / 1920) * 2); ray.setFromCamera(pick, lensOf); ray.far = H.d - 0.03; for (const th of things) if (ray.intersectObject(th.o, true).length) { hit = `the ${th.name}`; break; } }
           if (hit) { cov++; by = hit; } }
         const key = `${s.id}:${X.name}:cover`; if (cov / pts.length > 0.25 && !faceFlag.has(key)) { faceFlag.add(key); bad.push(`${at}: ${X.name}'s face is ${Math.round((100 * cov) / pts.length)} % behind ${by}`); } }
-      prev = now; } } } finally { AUDIT.on = false; }
+      // the faces in the crowd in the middle ground (a head at least 14 px across in the picture): none a quarter behind a held thing
+      if (things.length) for (const cr of CROWD_LOG.heads) { const hc: V3 = [cr.at[0], cr.at[1] + 0.88 * cr.h, cr.at[2]], c = scr(hc), e = scr(aside(hc, cam, 0.075 * cr.h, 0)), R = Math.hypot(e[0] - c[0], e[1] - c[1]);
+        if (R < 14 || c[0] < 0 || c[0] > 1080 || c[1] < 0 || c[1] > 1920) continue;
+        let cov = 0, by = ""; for (const [f, k] of [[0, 1], [0.5, 8], [0.95, 8]] as [number, number][]) for (let i = 0; i < k; i++) { const x = c[0] + f * R * Math.cos((i * 2 * Math.PI) / k), y = c[1] + f * R * Math.sin((i * 2 * Math.PI) / k);
+          pick.set((x / 1080) * 2 - 1, 1 - (y / 1920) * 2); ray.setFromCamera(pick, lensOf); ray.far = far(hc) - 0.03; for (const th of things) if (ray.intersectObject(th.o, true).length) { cov++; by = th.name; break; } }
+        const key = `${s.id}:crowd:${by}`; if (cov / 17 > 0.25 && !faceFlag.has(key)) { faceFlag.add(key); bad.push(`${at}: a face in the crowd is ${Math.round((100 * cov) / 17)} % behind the ${by}`); } }
+      prev = now; } } } finally { AUDIT.on = false; CROWD_LOG.on = false; }
   return { bad, held, spots };
 };
 /** the uses whose thing is meant to be at the face (the face check lets them cover it) */

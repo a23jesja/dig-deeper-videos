@@ -9,7 +9,7 @@ import { GLADIUS, TRIDENT, SHIELD_ARM, shieldOn, wield, usePose, pole, polePose,
 import { arenaWorld, fans, crowd, seat, facingTo, ARENA, Fan } from "../world/arena";
 import { bank } from "../world/fire";
 import { gladius, scutum, trident, refStick, netOpen } from "../world/props";
-import { SIR_D, MURMILLO_GRILLE_D, RETIARIUS_D, REFEREE_D, ROMAN_WOMAN2_D, BAKER_D, MERCHANT_D, ROMAN_WOMAN_D, ROMAN_WOMAN3_D, CITIZEN_D, COLLECTOR_D, FULLER_D, OLDMAN_D, GIRL_D } from "../looks";
+import { SIR_D, MURMILLO_GRILLE_D, RETIARIUS_D, REFEREE_D, ROMAN_WOMAN_OLIVES_D, BAKER_D, MERCHANT_D, ROMAN_WOMAN_D, ROMAN_WOMAN3_D, CITIZEN_D, COLLECTOR_D, FULLER_D, OLDMAN_D, GIRL_D } from "../looks";
 import type { Design } from "../designs/common";
 import type { Pose } from "../rig";
 import wa from "../../../voice/gladiators-hook-a/words.json";
@@ -21,7 +21,7 @@ import lc from "../../../voice/gladiators-hook-c/lines.json";
 
 /** a figure standing at `at` (its own floor height) */
 export const on = (name: string, D: Design, m: MM, t: number, y = 0, o: Parameters<typeof play>[6] = {}) => play(name, D, m, t, [0, y, 0], m.h, { blink: false, ...o });
-export const LOOKS: Design[] = [BAKER_D, MERCHANT_D, ROMAN_WOMAN_D, ROMAN_WOMAN2_D, ROMAN_WOMAN3_D, CITIZEN_D, COLLECTOR_D, FULLER_D, OLDMAN_D, GIRL_D];
+export const LOOKS: Design[] = [BAKER_D, MERCHANT_D, ROMAN_WOMAN_D, ROMAN_WOMAN_OLIVES_D, ROMAN_WOMAN3_D, CITIZEN_D, COLLECTOR_D, FULLER_D, OLDMAN_D, GIRL_D];
 /** where the fight is (on the sand near the -z wall) and where Sir Digsworth stands in the front row above it */
 export const FIGHT: V3 = [1.0, 0, -6.2];
 const SIR_TH = -Math.PI / 2 - 0.1;
@@ -34,14 +34,14 @@ export const GLAD = once(() => noShade(gladius(0.5))), SCUTUM = once(() => noSha
 // ---------------- the set: four still views ----------------
 const shots: Shot[] = [];
 const view = (id: string, L: ReturnType<typeof lens>) => {
-  const mur = mover(MURMILLO_GRILLE_D, 1.84, FIGHT[0] - 0.85, FIGHT[2], 90 - 25), ret = mover(RETIARIUS_D, 1.86, FIGHT[0] + 0.85, FIGHT[2], -90 + 25), sir = mover(SIR_D, 1.8, SIR.at[0], SIR.at[2], SIR.heading), wom = mover(ROMAN_WOMAN2_D, 1.62, WOMAN.at[0], WOMAN.at[2], WOMAN.heading);
+  const mur = mover(MURMILLO_GRILLE_D, 1.84, FIGHT[0] - 0.85, FIGHT[2], 90 - 25), ret = mover(RETIARIUS_D, 1.86, FIGHT[0] + 0.85, FIGHT[2], -90 + 25), sir = mover(SIR_D, 1.8, SIR.at[0], SIR.at[2], SIR.heading), wom = mover(ROMAN_WOMAN_OLIVES_D, 1.62, WOMAN.at[0], WOMAN.at[2], WOMAN.heading);
   for (const m of [mur, ret, sir, wom]) m.stand(9);
   mur.actAt(-1, { ...usePose(GLADIUS, "ready", "R"), armL: SHIELD_ARM, lean: 6 }, 10, { in: 0.01, handL: "grip", handR: "grip", face: { brow: -0.8, lid: 0.1 } });
   ret.actAt(-1, { armL: arm(40, 20, 96, 10), armR: arm(20, 20, 40, 10), lean: 4 }, 10, { in: 0.01, handL: "fist", handR: "fist", face: { brow: -0.6 } });
   sir.actAt(-1, { armL: arm(150, 10, 200, -20), armR: arm(150, 10, 200, -20) }, 10, { in: 0.01, handL: "open", handR: "open", face: { brow: 1, lid: 0.4, mouth: 0.5 } });
   const a = shots.length * 0.4;
   shots.push({ id, a, b: a + 0.4, still: 0.2, cam: () => L.cam, sun: { target: FIGHT, reach: 14 },
-    cast: (t) => [on("mur", MURMILLO_GRILLE_D, mur, t), on("ret", RETIARIUS_D, ret, t), on("sir", SIR_D, sir, t, ARENA.wall), on("wom", ROMAN_WOMAN2_D, wom, t, ARENA.wall)],
+    cast: (t) => [on("mur", MURMILLO_GRILLE_D, mur, t), on("ret", RETIARIUS_D, ret, t), on("sir", SIR_D, sir, t, ARENA.wall), on("wom", ROMAN_WOMAN_OLIVES_D, wom, t, ARENA.wall)],
     things: (g, c, _t, T, cam) => { crowd(g, STANDS, T, cam, 0.8); wield(g, GLAD(), GLADIUS, "ready", c.mur, "R", cam); shieldOn(g, SCUTUM(), c.mur, "L", cam); } });
 };
 view("sand-low", lens(FIGHT[0], 1.0, FIGHT[2] + 5.2, 0, -1, 7, 52));
@@ -81,7 +81,7 @@ export const shieldMan = (g: THREE.Group, a: Staged, cam: Cam, use: string, blen
 export const twoShot = (id: string, a0: number, b0: number, W: Word[], net = false): Shot => {
   // the hand counts up beside his head on the side toward her, the elbow out and the forearm upright: clear of his face and hers, and
   // inside the picture (his right hand would be at its edge)
-  const sir = mover(SIR_D, 1.8, SIR.at[0], SIR.at[2], SIR.heading - 8), wom = mover(ROMAN_WOMAN2_D, 1.62, WOMAN.at[0], WOMAN.at[2], WOMAN.heading - 12); sir.stand(9); wom.stand(9);
+  const sir = mover(SIR_D, 1.8, SIR.at[0], SIR.at[2], SIR.heading - 8), wom = mover(ROMAN_WOMAN_OLIVES_D, 1.62, WOMAN.at[0], WOMAN.at[2], WOMAN.heading - 12); sir.stand(9); wom.stand(9);
   const t2 = say(W, "Two") - a0, t1 = say(W, "one") - a0, tr = say(W, "Right") - a0, UP = { armL: arm(28, 52, 166, 6), armR: arm(14, 12, 30, 8) };
   sir.actAt(-1, { armL: arm(14, 12, 30, 8), armR: arm(14, 12, 30, 8), head: [0, -2, 0] }, 10, { in: 0.01, handL: "relaxed", handR: "relaxed", face: { brow: 0.6, lid: 0.1, smile: 0.3 } });
   sir.actAt(t2 - 0.3, UP, t1 - t2 + 0.25, { in: 0.22, out: 0.01, handL: "two", face: { brow: 0.9, lid: 0, smile: 0.5 } });
@@ -90,7 +90,7 @@ export const twoShot = (id: string, a0: number, b0: number, W: Word[], net = fal
   wom.actAt(-1, { armL: arm(22, -6, 64, -46), armR: arm(22, -6, 64, -46), head: [-26, 0, 0] }, 10, { in: 0.01, handL: "relaxed", handR: "relaxed", face: { lid: 0.45, brow: -0.2, smile: -0.1 } });
   wag(wom, Math.max(0, tr - 0.35), 1.4, P({ head: [-40, 4, 0] }), P({ head: [-12, 4, 0] }), 0.3, { face: { lid: 0.5, brow: 0.3, smile: -0.3 } });
   return { id, a: a0, b: b0, still: (b0 - a0) * 0.6, sounds: [], cam: (_t, u) => TWO.push(0.08 * u), sun: { target: MID, reach: 7 },
-    cast: (t, T) => [on("sir", SIR_D, sir, t, ARENA.wall, { talk: talk(W, T, ["guess"]) }), on("wom", ROMAN_WOMAN2_D, wom, t, ARENA.wall)],
+    cast: (t, T) => [on("sir", SIR_D, sir, t, ARENA.wall, { talk: talk(W, T, ["guess"]) }), on("wom", ROMAN_WOMAN_OLIVES_D, wom, t, ARENA.wall)],
     things: (g, c, _t, T, cam) => { crowd(g, STANDS, T, cam, 0.55); if (net) draped(g, c.sir.joint("crown"), cam, 0.16); } };
 };
 /** the net spread `drop` metres over a head (its middle a hand above the crown) */

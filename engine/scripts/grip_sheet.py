@@ -63,9 +63,11 @@ if mode == "sheet":
     for s in spots:
         if s["frame"] in have: first.setdefault(s["shot"], s)
     order = sorted(first.values(), key=lambda s: s["frame"])
+    grouped = all("-" in s["shot"] for s in order)
     rows, cur = [], []
     for s in order:
-        if cur and (s["shot"].split("-")[0] != cur[0]["shot"].split("-")[0] or len(cur) == 4): rows.append(cur); cur = []
+        # (a grip-sheet film's shots are named prop-use-view and get a row per prop; a finished film's are not, so they fill rows of four)
+        if cur and ((grouped and s["shot"].split("-")[0] != cur[0]["shot"].split("-")[0]) or len(cur) == 4): rows.append(cur); cur = []
         cur.append(s)
     if cur: rows.append(cur)
     def label(s):

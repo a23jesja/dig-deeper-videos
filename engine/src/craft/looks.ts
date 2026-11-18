@@ -337,6 +337,10 @@ export const ROMAN_WOMAN2: Look = { ...ROMAN_WOMAN, id: "romanwoman2", head: { a
 export const ROMAN_WOMAN3: Look = { ...ROMAN_WOMAN, id: "romanwoman3", head: { a: 100, b: 108, H: 220, jaw: 0.8, round: 0.75, eye: 1.16 }, skin: "#f6d3b4", brow: "#a8662a", hair: { col: "#c08a3a", kind: "bun" }, coat: "#7a6ab0", accent: "#fbf3df", cloak: "#c9d6e8", belt: "#fbf3df" };
 export const GIRL: Look = { ...BOY, id: "girl", skin: "#e8b88a", brow: "#3a2418", hair: { col: "#3a2418", kind: "bun" }, lash: true, coat: "#e9b83a", accent: "#fbf3df", belt: "#c8402f" };
 export const OLDMAN: Look = { ...CITIZEN, id: "oldman", head: { a: 108, b: 112, H: 226, jaw: 0.86, round: 0.4, eye: 0.8 }, skin: "#d9a882", brow: "#e8e4dc", hair: { col: "#e8e4dc", kind: "bald" }, beard: "#e8e4dc", coat: "#9a7a4a", accent: "#6b4a2e", belt: "#6b4a2e" };
+/** the woman with the olives in the gladiators Short: ROMAN_WOMAN2 with her dark hair up in a bun (with the hair drawn back she read as
+ *  a bald man at phone size; ROMAN_WOMAN2 itself stays as it is, for the published Nero film) */
+export const ROMAN_WOMAN_OLIVES: Look = { ...ROMAN_WOMAN2, id: "romanwomanolives", hair: { col: "#1c1410", kind: "bun" } };
+export const ROMAN_WOMAN_OLIVES_D = castDesign(ROMAN_WOMAN_OLIVES);
 export const ROMAN_WOMAN2_D = castDesign(ROMAN_WOMAN2), ROMAN_WOMAN3_D = castDesign(ROMAN_WOMAN3), GIRL_D = castDesign(GIRL), OLDMAN_D = castDesign(OLDMAN);
 
 // ---------------- the arena (gladiators-death) ----------------

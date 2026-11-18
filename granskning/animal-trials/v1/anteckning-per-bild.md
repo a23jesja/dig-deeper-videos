@@ -1,6 +1,6 @@
 # Animal trials v1: note per shot (build session, 19 November)
 
-The code is commit e6f6415. The film is 47.9 s and has 19 shots. Every shot follows the approved script's picture column (granskning/animal-trials/manus.md); deviations are marked **Deviation**.
+The code is commit c01af5e. The film is 47.9 s and has 19 shots. Every shot follows the approved script's picture column (granskning/animal-trials/manus.md); deviations are marked **Deviation**.
 
 Tests on the whole film:
 - body check: 0 faults on all 1439 frames, tests (g), (h) and (i) included;
@@ -20,10 +20,10 @@ Tests on the whole film:
 | 9 | 17.43-19.77 | and gave them every green herb to eat. | Nearer: he sweeps his open hand toward the dock and the vines in the window behind it. | Cut in two at the sweep, because one shot of 6 s was too long. |
 | 10 | 19.77-21.73 | So the village offered the weevils | The village square: three villagers raise their right hands in a vote. | Three instead of four, two in front and one behind between them, so that they are bigger and nobody is cut by the edges. |
 | 11 | 21.73-24.70 | a field of their own, away from the vines. | The empty field, dry and stony, roped off on short posts, with the spring in its ring of stones. Nobody is on it. | There are no weevils on it: they never moved there. |
-| 12 | 24.70-28.43 | The villagers could still walk through it, and use its water. | Two villagers carry jugs across the field. The spring is between them. | Their walking lines are picked clear of the field's stones and bushes. They are a third of a metre or more from each. |
+| 12 | 24.70-28.43 | The villagers could still walk through it, and use its water. | Two villagers carry jugs across the field. The spring is between them. | Their walking lines are picked clear of the field's stones and bushes. They are a third of a metre or more from each. The lens goes along with the near one, so that she fills most of the picture. |
 | 13 | 28.43-33.07 | But the weevils' lawyer said no. The land was too barren for his clients. | The lawyer on the field rubs a pinch of dry earth, shakes his head on "no", and lets the crumbs fall from his open hand. | |
 | 14 | 33.07-34.57 | Picky eaters. | Sir among the vines, his monocle at a vine leaf with its weevils beside his face. He is whole in the picture. | [OWN] line. |
-| 15 | 34.57-37.70 | So the court sent experts to inspect the field. | Two experts with measuring rods walk slantwise across the field, toward the lens. | **Deviation:** the script has one expert bending at a bush and the other writing. Here they only walk with their rods (the rod grip is from grip sheet 6). The rod is in the far hand. In the near hand, at the body's depth, the arm swung through it. |
+| 15 | 34.57-37.70 | So the court sent experts to inspect the field. | Two experts with measuring rods walk slantwise across the field, toward the lens. | **Deviation:** the script has one expert bending at a bush and the other writing. Here they only walk with their rods (the rod grip is from grip sheet 6). The rod is in the far hand. In the near hand, at the body's depth, the arm swung through it. The lens goes along with the near one. |
 | 16 | 37.70-38.90 | The verdict? | The clerk at his table by the wall, facing the room, with both hands on the thick record. | **Deviation:** the script has the clerk leafing through the record. Here his hands lie flat on it, as on grip sheet 6. |
 | 17 | 38.90-42.13 | Lost. The last page of the record is missing. | Sir leans over the record at the table's end, three quarters to the lens. The record's last page is torn out, with only a ragged edge left. | The caption is low, over his legs: higher, it lay over his face. |
 | 18 | 42.13-43.53 | So who won? (bf_isabella) | The woman stands at the gallery bench beside Sir and turns to him, and he looks up at her. | [OWN] line. |

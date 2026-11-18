@@ -1,0 +1,65 @@
+[
+ {
+  "id": "bart",
+  "a": 0.3,
+  "b": 3.384,
+  "text": "What did you just sign? Bartholomew Roberts' rules.",
+  "voice": "bm_george"
+ },
+ {
+  "id": "qm",
+  "a": 3.984,
+  "b": 9.485,
+  "text": "The man giving orders isn't the captain. It's the quartermaster, chosen by the crew.",
+  "voice": "bm_george"
+ },
+ {
+  "id": "book",
+  "a": 10.085,
+  "b": 16.946,
+  "text": "A book printed in 1724 says any man could walk in and help himself to the captain's dinner.",
+  "voice": "bm_george"
+ },
+ {
+  "id": "arr",
+  "a": 17.546,
+  "b": 21.306,
+  "text": "That accent comes from films made in the 1950s.",
+  "voice": "bm_george"
+ },
+ {
+  "id": "davis",
+  "a": 21.906,
+  "b": 28.648,
+  "text": "On Howell Davis's ship, where Roberts learned the trade, the rules promised the best pair of pistols on board.",
+  "voice": "bm_george"
+ },
+ {
+  "id": "bb",
+  "a": 29.248,
+  "b": 32.177,
+  "text": "The same book quotes Blackbeard's own journal.",
+  "voice": "bm_george"
+ },
+ {
+  "id": "moses",
+  "a": 32.777,
+  "b": 38.424,
+  "text": "Strike another man on board, and the same ship gave you what they called Moses's Law.",
+  "voice": "bm_george"
+ },
+ {
+  "id": "close",
+  "a": 39.024,
+  "b": 44.904,
+  "text": "Pirates often flew false colours, a friendly flag, so their target would let them come close.",
+  "voice": "bm_george"
+ },
+ {
+  "id": "end",
+  "a": 45.504,
+  "b": 49.86,
+  "text": "That's exactly how it ended for Roberts' crew, in 1722.",
+  "voice": "bm_george"
+ }
+]

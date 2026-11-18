@@ -1,6 +1,6 @@
 # Risk words: nero-fiddle
 
-Listen to `riskord.wav` (27.8 s). Each clip = the word with 0.5 s around it, 0.3 s silence between.
+Listen to `riskord.wav` (36.3 s). Each clip = the word with 0.5 s around it, 0.3 s silence between.
 
 | word | in narration (s) | in riskord.wav (s) |
 |---|---|---|
@@ -9,15 +9,20 @@ Listen to `riskord.wav` (27.8 s). Each clip = the word with 0.5 s around it, 0.3
 | Nero | 20.39-20.50 | 2.70-3.80 |
 | fiddle | 0.50-1.00 | 4.10-5.60 |
 | fiddle | 24.93-25.21 | 5.90-7.18 |
-| Flames | 2.75-3.17 | 7.48-8.89 |
-| Tacitus | 8.49-9.11 | 9.19-10.81 |
-| gardens | 13.39-13.83 | 11.11-12.55 |
-| homeless | 14.45-14.83 | 12.85-14.23 |
-| rumour | 18.00-18.36 | 14.53-15.89 |
-| Troy | 21.55-21.84 | 16.19-17.47 |
-| perhaps | 22.93-23.23 | 17.77-19.07 |
-| Fiddled | 23.77-23.97 | 19.37-20.57 |
-| thousand | 25.87-26.25 | 20.87-22.25 |
-| cithara | 28.64-29.12 | 22.55-24.03 |
-| lyre | 29.89-30.30 | 24.33-25.75 |
-| seven strings | 30.52-31.29 | 26.05-27.81 |
+| fiddle | 32.34-32.80 | 7.48-8.94 |
+| Flames | 2.75-3.17 | 9.24-10.65 |
+| Tacitus | 8.49-9.11 | 10.95-12.57 |
+| gardens | 13.39-13.83 | 12.87-14.31 |
+| homeless | 14.45-14.83 | 14.61-15.99 |
+| rumour | 18.00-18.36 | 16.29-17.65 |
+| Troy | 21.55-21.84 | 17.95-19.23 |
+| perhaps | 22.93-23.23 | 19.53-20.83 |
+| Fiddled | 23.77-23.97 | 21.13-22.33 |
+| thousand | 25.87-26.25 | 22.63-24.01 |
+| cithara | 28.64-29.12 | 24.31-25.79 |
+| lyre | 29.89-30.30 | 26.09-27.51 |
+| lyre | 33.45-33.88 | 27.81-29.23 |
+| seven strings | 30.52-31.29 | 29.53-31.29 |
+| lyre | 29.89-30.30 | 31.59-33.01 |
+| lyre | 33.45-33.88 | 33.31-34.73 |
+| probably | 34.35-34.59 | 35.03-36.27 |

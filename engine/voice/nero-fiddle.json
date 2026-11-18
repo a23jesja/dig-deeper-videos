@@ -17,7 +17,9 @@
   "thousand",
   "cithara",
   "lyre",
-  "seven strings"
+  "seven strings",
+  "lyre",
+  "probably"
  ],
  "lines": [
   {
@@ -63,6 +65,11 @@
   {
    "id": "cithara",
    "text": "His instrument was the cithara, a kind of lyre with seven strings.",
+   "gap": 0.35
+  },
+  {
+   "id": "close",
+   "text": "So no fiddle. Maybe a lyre. And he probably wasn't even there.",
    "gap": 0.2
   }
  ]

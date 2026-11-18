@@ -1,0 +1,32 @@
+{
+ "voice": "bm_george",
+ "speed": 1.06,
+ "gap": 0.16,
+ "lead": 0.0,
+ "risk": [
+  "Nero",
+  "fiddle",
+  "Flames",
+  "Tacitus",
+  "gardens",
+  "homeless",
+  "rumour",
+  "Troy",
+  "perhaps",
+  "Fiddled",
+  "thousand",
+  "cithara",
+  "lyre",
+  "seven strings",
+  "lyre",
+  "probably"
+ ],
+ "note": "Reserve closing line for the Nero Short (the review's suggestion, for Jesper to choose; the film uses his own line until he says otherwise).",
+ "lines": [
+  {
+   "id": "close",
+   "text": "So no fiddle. Maybe a lyre. And when it started, he wasn't even in Rome.",
+   "gap": 0.2
+  }
+ ]
+}

@@ -227,8 +227,11 @@ const PAPER = once(() => paint("scrollbare", 8, 8, (q) => { q.fillStyle = "#efe2
   const guess = (P: V3) => aside(near(P, V.cam, 0.06), V.cam, -wr * 0.02, 0.1);
   const tipFor = (T: V3) => quiet(() => { const m = mover(TACITUS_D, 1.76, tx, tz, hd); m.stand(9); m.actAt(-1, { ...HOLD, ...reach(S4, "R", T) }, 10, { in: 0.01, handL: "grip", handR: "grip" });
     const st = stageAt(on("tac", TACITUS_D, m, 0.5, 0, { seed: 7 }), V.cam); wield(new THREE.Group(), QUILL(), PEN, "write", st, "R", V.cam, { d: 0.1 }); QUILL().updateMatrixWorld(true); return QUILL().localToWorld(PEN_TIP.clone()); });
-  const hand = (x: number, i: number) => { const P = onSheet(x, LY(i)); let T = guess(P);
-    for (let n = 0; n < 2; n++) { const tp = tipFor(T); T = [T[0] + P[0] - tp.x, T[1] + P[1] - tp.y, T[2] + P[2] - tp.z]; } return reach(S4, "R", T); };
+  // (v3: the sheet lies behind his card and the pen before it, so the tip is corrected where it is seen: on the line from the lens
+  // through it, at the depth of the point on the sheet; three times)
+  const C0 = new THREE.Vector3(...V.cam.pos);
+  const hand = (x: number, i: number) => { const P = onSheet(x, LY(i)); let T = guess(P); const pv = new THREE.Vector3(...P);
+    for (let n = 0; n < 3; n++) { const tp = tipFor(T), k = pv.distanceTo(C0) / tp.distanceTo(C0), tq = C0.clone().add(tp.clone().sub(C0).multiplyScalar(k)); T = [T[0] + P[0] - tq.x, T[1] + P[1] - tq.y, T[2] + P[2] - tq.z]; } return reach(S4, "R", T); };
   const LINES: [number, number, number][] = [[5, 0.2, 0.95], [6, 1.1, 1.62]];
   // from the first frame his pen is at the start of the line; every step holds until the next has taken over (an arm that let go fell
   // back to his side for a moment)
@@ -247,7 +250,9 @@ const PAPER = once(() => paint("scrollbare", 8, 8, (q) => { q.fillStyle = "#efe2
     // scroll is now held behind his card, so that the whole writing hand is before the sheet, the pen's tip on it in the picture)
     things: (g, c, t, T, cam) => { g.add(STUDY_ROOM()); const S = wield(g, SCROLL_O(), SCROLL, "side", c.tac, "L", cam, { d: SHEET_D }); wield(g, QUILL(), PEN, "write", c.tac, "R", cam, { d: 0.1 });
       // the lines still to come are bare sheet; the line he is on fills in as far as the pen's tip has gone
-      S.updateMatrixWorld(true); QUILL().updateMatrixWorld(true); const tip = S.worldToLocal(QUILL().localToWorld(PEN_TIP.clone())), xf = face * tip.x;
+      // where the pen's tip is seen on the sheet: the line from the lens through the tip, met with the sheet's plane
+      S.updateMatrixWorld(true); QUILL().updateMatrixWorld(true); const tw = QUILL().localToWorld(PEN_TIP.clone()), Cw = new THREE.Vector3(...cam.pos), sn = new THREE.Vector3(0, 0, 1).transformDirection(S.matrixWorld), so = new THREE.Vector3().setFromMatrixPosition(S.matrixWorld);
+      const rd = tw.clone().sub(Cw), kk = so.clone().sub(Cw).dot(sn) / (rd.dot(sn) || 1e-9), tip = S.worldToLocal(Cw.clone().add(rd.multiplyScalar(kk))), xf = face * tip.x;
       const onS = (m: THREE.Mesh) => { m.applyMatrix4(S.matrixWorld); g.add(m); };
       const top = -0.015 - (0.38 * 98) / 256, bot = -0.015 - (0.38 * 252) / 256;
       onS(mesh(box(0.28, top - bot, 0.008), "#ffffff", { at: [0, (top + bot) / 2, 0], map: PAPER(), line: 0, shadow: false }));

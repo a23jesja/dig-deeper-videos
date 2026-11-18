@@ -6,8 +6,8 @@
 import * as THREE from "three";
 import { Film, Shot, Cam, V3, Word, play, talk, smooth, mix3 as mix } from "../stage/film";
 import { mover, mt, wag, arm, MM } from "../stage/acting";
-import { lens, once, noShade, near, fuseSmoke, aside } from "../stage/staging";
-import { wield, usePose, reach, jointsOf, carryBy, vanish, setDown, Stand, SABRE, RIBBON, SPILL, FUSE } from "../stage/grips";
+import { lens, once, noShade, near, fuseSmoke, aside, stageAt, palm } from "../stage/staging";
+import { wield, usePose, reach, jointsOf, carryBy, vanish, setDown, quiet, Stand, SABRE, RIBBON, SPILL, FUSE } from "../stage/grips";
 import { FLAGSEA_SOLIDS, MERCHANT_DECK } from "../world/ship";
 import { CABIN, inCabin, cabinSea } from "../world/cabin";
 import { bank, glow } from "../world/fire";
@@ -153,21 +153,30 @@ const TUCK_AT = inCabin([0.15, 0, 0.35]);
     cast: (t) => [on("bb", look(t), bb, t, FL, { seed: 3 })],
     things: (g, c2, t, T2, cam) => { lantern(g, T2, cam); if (t < IN) { wield(g, FUSE_R(), FUSE, "tuck", c2.bb, "R", cam); wield(g, FUSE_L(), FUSE, "tuck", c2.bb, "L", cam); } else { vanish(FUSE_R(), FUSE); vanish(FUSE_L(), FUSE); } } }); }
 
-// 8. ... SO THEY SMOKED BESIDE HIS BEARD. The boy lights them with a spill from the lantern at arm's length, and jumps back
-{ const V = cabinLens(0.55, 1.45, 2.5, -0.1, -1, 0, 42), hd = V.toward(TUCK_AT[0], TUCK_AT[2], 40), bb = mover(BLACKBEARD_UNLIT_D, 1.92, TUCK_AT[0], TUCK_AT[2], hd); bb.stand(9);
+// 8. ... SO THEY SMOKED BESIDE HIS BEARD. The boy lights them with a spill from the lantern at arm's length, and jumps back (the
+// captain turns his face to the boy, so that the fuse the boy lights is on the boy's side and the spill never crosses his face)
+{ const V = cabinLens(0.5, 1.32, 2.95, -0.15, -1, 0, 50), hd = V.toward(TUCK_AT[0], TUCK_AT[2], -40), bb = mover(BLACKBEARD_UNLIT_D, 1.92, TUCK_AT[0], TUCK_AT[2], hd); bb.stand(9);
   // the big man stoops to the boy, so that the boy can reach his fuse with the spill held out before him
   const STOOP = { lean: 24, py: -0.07, head: [-14, 14, 0] as [number, number, number] }, bs = standOf(BLACKBEARD_UNLIT_D, TUCK_AT, hd, V, STOOP), w = rightWay(bs), LIT = 1.0, tip = atHead(bs, -w, 0.13, 0.15);
   bb.actAt(-1, { armL: arm(24, 24, 70, 24), armR: arm(24, 24, 70, 24), ...STOOP }, 10, { in: 0.01, handL: "fist", handR: "fist", face: MENACE });
   bb.actAt(LIT + 0.3, { lean: 2, py: 0, head: [0, 0, 0] }, 9, { in: 0.6, antic: 0, over: 1.1, face: { ...MENACE, smile: 0.5 } });
-  const bx0 = TUCK_AT[0] + 0.62, bz0 = TUCK_AT[2] + 0.12, boy = mover(SHIPBOY_D, 1.28, bx0, bz0, -100); boy.stand(LIT + 0.1).walk(mt(boy, -0.45), { step: 0.3, tau: 0.15 }).stand(9);
-  const ys = standOf(SHIPBOY_D, [bx0, FL, bz0], -100, V), hand = aside(tip, V.cam, -w * 0.3, -0.24);
+  const bx0 = TUCK_AT[0] + 0.52, bz0 = TUCK_AT[2] + 0.12, boy = mover(SHIPBOY_D, 1.28, bx0, bz0, -100); boy.stand(LIT + 0.1).walk(mt(boy, -0.45), { step: 0.3, tau: 0.15 }).stand(9);
+  // the spill's tip goes to the end of the fuse nearer the boy (where the drawing marks it), the spill at about 40 degrees up to it
+  const ends = quiet(() => { const st = stageAt(on("bb", BLACKBEARD_UNLIT_D, bb, LIT - 0.05, FL, { seed: 3 }), V.cam); return (["fuseA", "fuseB"] as const).map((n) => st.mark?.(n)).filter((p): p is V3 => !!p); });
+  const fe = ends.sort((p, q) => Math.hypot(p[0] - bx0, p[2] - bz0) - Math.hypot(q[0] - bx0, q[2] - bz0))[0] ?? tip, rr = aside([0, 0, 0], V.cam, 1), toBoy = Math.sign((bx0 - fe[0]) * rr[0] + (bz0 - fe[2]) * rr[2]) || -w;
+  const ys = standOf(SHIPBOY_D, [bx0, FL, bz0], -100, V), hand = aside(fe, V.cam, toBoy * 0.42 * 0.77, -0.42 * 0.64);
   boy.actAt(-1, { ...reach(ys, "L", hand), lean: 6, head: [0, -10, 0] }, 10, { in: 0.01, handL: "grip", handR: "open", face: { wide: 0.9, brow: 1, lid: 0, mouth: 0.3, gaze: [0, -0.4] } });
   boy.actAt(LIT + 0.05, { armR: arm(140, 30, 170, 10), lean: -12, head: [0, -6, 0] }, 9, { in: 0.18, antic: 0.1, over: 1.4, handL: "grip", handR: "open", face: { wide: 1, brow: 1, lid: 0, mouth: 0.8, smile: -0.6 } });
+  // the spill is as long as it must be to reach from his hand to the fuse when he lights it (the boy is short, and a 42 cm spill
+  // ended in the beard): measured once, at the moment of lighting, and kept for the whole shot
+  const SPL = quiet(() => { const st = stageAt(on("boy", SHIPBOY_D, boy, LIT, FL, { seed: 8 }), V.cam), q = palm(st, "L"); return Math.max(0.3, Math.min(0.75, Math.hypot(q[0] - fe[0], q[1] - fe[1], q[2] - fe[2]))); });
   const look = (t: number) => (t < LIT ? BLACKBEARD_UNLIT_D : BLACKBEARD_D);
   shots.push({ id: "light", a: T.s7, b: T.s8, still: 1.6, sounds: [{ t: LIT - 0.05, k: "spray", g: 0.35 }, { t: LIT + 0.1, k: "scuff", g: 0.6 }, ...boy.cues().filter((q) => q.k === "step").map((q) => ({ t: q.t, k: "step", g: 0.5 }))],
     cam: (_t, u) => V.push(0.06 * u), sun: { target: TUCK_AT, reach: 4 },
     cast: (t) => [on("bb", look(t), bb, t, FL, { seed: 3 }), on("boy", SHIPBOY_D, boy, t, FL, { seed: 8 })],
-    things: (g, c2, t, T2, cam) => { lantern(g, T2, cam); wield(g, SPILL_O(), SPILL, "light", c2.boy, "L", cam); tipGlow(g, SPILL_O(), cam); if (t >= LIT) fuseSmoke(g, c2.bb, T2 - (T.s7 + LIT) + 0.2, cam); } }); }
+    // (the spill points at the fuse, his wrist bent up to it: with his forearm it stood straight up; once it is lit and he jumps back, it
+    // points up and back his own way as he pulls it away from the captain's face)
+    things: (g, c2, t, T2, cam) => { lantern(g, T2, cam); SPILL_O().scale.x = SPL / 0.42; wield(g, SPILL_O(), SPILL, "light", c2.boy, "L", cam, { aim: t < LIT + 0.05 ? fe : aside(palm(c2.boy, "L"), cam, -toBoy * 0.25, 0.43) }); tipGlow(g, SPILL_O(), cam); if (t >= LIT) fuseSmoke(g, c2.bb, T2 - (T.s7 + LIT) + 0.2, cam); } }); }
 
 // 9. ADD SIX PISTOLS ACROSS HIS CHEST. He lifts the sling off the table, puts it on over his head, sags at the knees under the weight,
 // straightens, and pats the butts
@@ -242,5 +251,9 @@ const TUCK_AT = inCabin([0.15, 0, 0.35]);
 export const BLACKBEARD_FUSES: Film = {
   id: "blackbeard-fuses", fps: 30, seconds: T.end, sky: "#a9dcff", world: cabinSea, shots, words: W, solids: FLAGSEA_SOLIDS,
   hook: { text: ["BLACKBEARD'S", "BEARD SMOKED", "IN BATTLE."], a: 0, b: T.s1, size: 80 },
+  // our own lines (DAILY-RULES, "Our own lines"), as bubbles over the picture: he admires himself in the mirror, a merchant sailor as
+  // his crew gives up, and a listener when the book is named as nearly the only source (the boy's "Hold still, Captain!" is left out:
+  // above the boy's head it covered the beard and the spill reaching the fuse, which is what that shot is about)
+  bubbles: [{ a: T.s4 + 1.1, b: T.s5 - 0.05, text: "Gorgeous.", who: "bb" }, { a: T.s10 + 1.0, b: T.s10 + 2.5, text: "Nope!", who: "c0" }, { a: T.s11 + 2.35, b: T.s11 + 3.95, text: "Is any of it true?", who: "l0" }],
   beds: [{ k: "sea", a: 0, b: T.end, g: 0.6 }, { k: "wind", a: 0, b: T.end, g: 0.3 }, { k: "fire", a: 0, b: T.end, g: 0.25 }], audio: "craft/blackbeard-fuses.wav",
 };

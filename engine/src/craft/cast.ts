@@ -268,7 +268,7 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
     if (L.fuses && !away) for (const s of [-1, 1]) { const q = at(h, s * 82, 1.06); if (q.d < -0.18 * b || (L.fuseSide && s !== L.fuseSide)) continue;
       const out = Math.sign(q.x || s), x0 = q.x - out * 0.02 * H, y0 = -0.96 * H, x1 = q.x + out * 0.1 * H, y1 = -0.42 * H, cord: P2[] = [[x0, y0], [q.x + out * 0.07 * H, -0.74 * H], [x1, y1]];
       k.line(spline(cord, false, 5), 17 * u, "#3a2414"); k.line(spline(cord, false, 5), 11 * u, "#5a3a22"); for (let j = 1; j < 8; j++) { const p = spline(cord, false, 5), c = p[Math.round((p.length - 1) * j / 8)]; k.line([[c[0] - 5 * u, c[1] - 4 * u], [c[0] + 5 * u, c[1] + 4 * u]], 2.6 * u, "#8a6440"); }
-      if (L.fusesUnlit) { piece(k, ellPts(x1, y1, 0.032 * H, 0.036 * H), "#3a2a1c"); continue; }
+      if (L.fusesUnlit) { piece(k, ellPts(x1, y1, 0.032 * H, 0.036 * H), "#3a2a1c"); k.mark(s < 0 ? "fuseA" : "fuseB", x1, y1); continue; }      // (marked too: a spill is put to it)
       const gr = k.g.createRadialGradient(x1, y1, 0, x1, y1, 0.16 * H); gr.addColorStop(0, "rgba(255,140,40,0.55)"); gr.addColorStop(1, "rgba(255,110,30,0)"); k.g.fillStyle = gr; k.g.beginPath(); k.g.arc(x1, y1, 0.16 * H, 0, 7); k.g.fill();
       piece(k, ellPts(x1, y1, 0.04 * H, 0.046 * H), "#ff6a1a"); k.shape(ellPts(x1, y1 + 0.006 * H, 0.02 * H, 0.024 * H), "#ffe08a", 0); k.mark(s < 0 ? "fuseA" : "fuseB", x1, y1); }
     if (!tipBehind) pipe();

@@ -155,10 +155,12 @@ export const usePose = (P: Prop, use: string, side: Side): Partial<Pose> => (sid
 /** Puts a prop in a figure's hand for one of its uses: the grip in the closed fingers, the working end where the use says, the top
  *  up, the fingers and the thumb laid over it. `o` = the prop's model (grip at the origin, working end along +x, top along +y).
  *  `blend` = [another use, 0..1] turns it part of the way toward that use (a pistol coming down, a mug going to the mouth) */
-export const wield = (into: THREE.Group, o: THREE.Object3D, P: Prop, use: string, a: Staged, side: Side, cam: Cam, opt: { d?: number; blend?: [string, number]; /** the grip lies this far along the thing's own x from its origin (a spyglass held by its middle) */ at?: number } = {}) => {
+export const wield = (into: THREE.Group, o: THREE.Object3D, P: Prop, use: string, a: Staged, side: Side, cam: Cam, opt: { d?: number; blend?: [string, number]; /** the grip lies this far along the thing's own x from its origin (a spyglass held by its middle) */ at?: number;
+  /** points it at this place (a lit spill at the fuse it lights), whichever way the forearm goes: the wrist takes the difference */ aim?: V3 } = {}) => {
   const P2 = pic(cam), s = outward(a, side, cam), f = unit(P2(a.joint(el(side)), a.joint(wr(side))));
   const local = (U: Use): number => (U.level !== undefined ? U.level : ang([f[0] * s, f[1]]) + (U.turn ?? 0));
-  let deg = local(P.uses[use]); if (opt.blend) { let to = local(P.uses[opt.blend[0]]); while (to - deg > 180) to -= 360; while (to - deg < -180) to += 360; deg += (to - deg) * opt.blend[1]; }
+  let deg = local(P.uses[use]); if (opt.aim) { const v = unit(P2(palm(a, side), opt.aim)); deg = ang([v[0] * s, v[1]]); }
+  if (opt.blend) { let to = local(P.uses[opt.blend[0]]); while (to - deg > 180) to -= 360; while (to - deg < -180) to += 360; deg += (to - deg) * opt.blend[1]; }
   const r = (deg * Math.PI) / 180, mine: [number, number] = [Math.cos(r), Math.sin(r)];
   const blade = o.getObjectByName("blade"); if (blade) blade.scale.x = 1;      // a blade shortened by a draw is whole again in the hand
   grip(into, o, a, side, cam, [mine[0] * s, mine[1]], { d: opt.d, lean: s, knuckle: P.hilt ? s : undefined });

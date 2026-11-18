@@ -135,27 +135,32 @@ const T5a = at("nine", /^gladiator/) - 0.12;
 //    in his far hand and chews, and rests his near forearm out toward the doctor beside him, who winds a bandage round it, turn after
 //    turn, the white band growing. (Jesper's review of v3: the bandage was wound round the arm that held the bowl; it goes round the
 //    other arm, and each hand does one thing that can be followed: the spoon is gone.)
-{ const { x: LX, z: LZ } = LUDUS, E: V3 = [LX + 1.0, 0, LZ + 0.4], eh = 110, fw: [number, number] = [Math.sin((eh * Math.PI) / 180), Math.cos((eh * Math.PI) / 180)], rt: [number, number] = [-Math.cos((eh * Math.PI) / 180), Math.sin((eh * Math.PI) / 180)];
-  const V = lens(E[0] + 0.42, 1.15, E[2] - 2.7, 0, 1, -2, 50);
+// (v4: he faces us, the bowl before his chest on his right, his left forearm held out to his left, where the doctor sits and winds the
+// bandage: the bowl and the bandage at the two sides of the picture, each pair of hands at its own work. Turned to the doctor, his bowl
+// hand and the doctor's hands met between them, and the doctor's head lay over his face)
+{ const { x: LX, z: LZ } = LUDUS, E: V3 = [LX + 1.0, 0, LZ + 0.4], V = lens(E[0] - 0.66, 1.0, E[2] - 4.0, 0, 1, 7, 56), eh = V.toward(E[0], E[2], -18), fw: [number, number] = [Math.sin((eh * Math.PI) / 180), Math.cos((eh * Math.PI) / 180)], rt: [number, number] = [-Math.cos((eh * Math.PI) / 180), Math.sin((eh * Math.PI) / 180)];
   const eat = mover(MURMILLO_EATER_D, 1.84, E[0], E[2], eh); eat.stand(9);
   // the bowl in his far hand, held out in front of him past his chest, where it shows; his near (left) forearm, drawn in front of him,
   // resting out toward the doctor at waist height, where the bandage on it shows
   const bh: "L" | "R" = "R", es0: Stand = { D: MURMILLO_EATER_D, at: E, heading: eh, h: 1.84, cam: V.cam, pose: SIT }, j0 = jointsOf(es0), shB = j0("shR"), shN = j0("shL");
-  void rt; const hand: V3 = [shB[0] + fw[0] * 0.44, shB[1] - 0.2, shB[2] + fw[1] * 0.44], BA = reach(es0, bh, hand);
-  const rest: V3 = [shN[0] + fw[0] * 0.56, shN[1] - 0.4, shN[2] + fw[1] * 0.56], NA = reach({ ...es0, pose: { ...SIT, ...BA } }, "L", rest), es1: Stand = { ...es0, pose: { ...SIT, ...BA, ...NA } }, j1 = jointsOf(es1);
+  // (v4: the bowl up before his chest, close to him, where he eats from it: held out, the doctor's hand passed under it)
+  const hand: V3 = [shB[0] + fw[0] * 0.28 - rt[0] * 0.06, shB[1] - 0.08, shB[2] + fw[1] * 0.28 - rt[1] * 0.06], BA = reach(es0, bh, hand);
+  const rest: V3 = [shN[0] - rt[0] * 0.5 + fw[0] * 0.14, shN[1] - 0.32, shN[2] - rt[1] * 0.5 + fw[1] * 0.14], NA = reach({ ...es0, pose: { ...SIT, ...BA } }, "L", rest), es1: Stand = { ...es0, pose: { ...SIT, ...BA, ...NA } }, j1 = jointsOf(es1);
   const elB = j1("elL"), wrB = j1("wrL"), mid = mix3(elB, wrB, 0.5);
   // the doctor sits on a stool facing the forearm, beyond its wrist and a little nearer the lens, his hands at its height (standing, he
   // could not reach down to it without his hands stopping short of it, behind the seated man's body)
-  const DOC_OUT = 0.4, DOC_NEAR = 0.1, dAt: V3 = [mid[0] + fw[0] * DOC_OUT, 0, mid[2] + fw[1] * DOC_OUT - DOC_NEAR];
+  // (v4: further out along the arm, level with it, and leaning in less: closer, his head lay over the eater's face and his body hid the
+  // bowl; the body check)
+  const DOC_OUT = 0.6, dAt: V3 = [mid[0] - rt[0] * DOC_OUT + fw[0] * 0.1, 0, mid[2] - rt[1] * DOC_OUT + fw[1] * 0.1];
   const toArm = [mid[0] - dAt[0], mid[2] - dAt[2]], toCam = [V.cam.pos[0] - dAt[0], V.cam.pos[2] - dAt[2]], ta = Math.hypot(toArm[0], toArm[1]) || 1, tc = Math.hypot(toCam[0], toCam[1]) || 1;
   // he faces the forearm, turned a little toward us, so that his near hand is the one toward the arm (facing us, it was the other)
   const dh = (Math.atan2(toArm[0] / ta + (0.45 * toCam[0]) / tc, toArm[1] / ta + (0.45 * toCam[1]) / tc) * 180) / Math.PI, doc = mover(DOCTOR_D, 1.72, dAt[0], dAt[2], dh); doc.stand(9);
-  const DSIT: Partial<Pose> = { ...SIT, py: -0.46, lean: 16 }, dst: Stand = { D: DOCTOR_D, at: dAt, heading: dh, h: 1.72, cam: V.cam, pose: DSIT }, rh = nearHand(dh, V.cam), oh: "L" | "R" = rh === "L" ? "R" : "L";
+  const DSIT: Partial<Pose> = { ...SIT, py: -0.36, lean: 6 }, dst: Stand = { D: DOCTOR_D, at: dAt, heading: dh, h: 1.72, cam: V.cam, pose: DSIT }, rh = nearHand(dh, V.cam), oh: "L" | "R" = rh === "L" ? "R" : "L";
   eat.actAt(-1, { ...SIT, ...BA, ...NA, head: [35, 6, 0] }, 10, { in: 0.01, handL: "relaxed", handR: "grip", face: { brow: 0.3, lid: 0.35, mouth: 0.15, smile: 0.3 } });
   // he chews, his mouth working
   for (let i = 0; i * 0.26 < 2.9; i++) eat.actAt(0.1 + i * 0.26, { head: [35, 6 + (i % 2) * 3, 0] }, 10, { in: 0.12, antic: 0, handL: "relaxed", handR: "grip", face: { brow: 0.3, lid: 0.3, mouth: i % 2 ? 0.05 : 0.45, smile: 0.3 } });
   // the bandage: a turn every 0.38 s from 0.3 s, from near the elbow toward the wrist; the doctor's roll goes over and under the arm
-  const TURN = 0.38, turns = (t: number) => Math.max(0, Math.min(6, 1 + Math.floor((t - 0.3) / TURN))), along = (n: number) => 0.18 + 0.1 * Math.max(0, n - 1);
+  const TURN = 0.38, turns = (t: number) => Math.max(0, Math.min(6, 1 + Math.floor((t - 0.3) / TURN))), along = (n: number) => 0.22 + 0.045 * Math.max(0, n - 1);      // (v4: clear of his elbow and his hand)
   const rollAt = (t: number, up: number): V3 => { const p = mix3(elB, wrB, along(turns(t) + 1)); return near([p[0], p[1] + 0.06 * up, p[2]], V.cam, -0.04); };
   doc.actAt(-1, { ...reach(dst, rh, rollAt(0, 1)), ...(oh === "L" ? { armL: arm(16, 12, 30, 8) } : { armR: arm(16, 12, 30, 8) }), head: [0, 12, 0], ...DSIT }, 10, { in: 0.01, handL: rh === "L" ? "grip" : "relaxed", handR: rh === "R" ? "grip" : "relaxed", face: { brow: 0.4, lid: 0.4, smile: 0.2 } });
   for (let i = 1; i * (TURN / 2) < 2.9; i++) { const t0 = 0.12 + i * (TURN / 2); doc.actAt(t0, { ...reach(dst, rh, rollAt(t0 + 0.1, i % 2 ? -1 : 1)) }, 10, { in: TURN / 2 - 0.02, antic: 0, over: 0, ...(rh === "L" ? { handL: "grip" as const } : { handR: "grip" as const }) }); }
@@ -165,7 +170,8 @@ const T5a = at("nine", /^gladiator/) - 0.12;
     cam: (_t, u) => V.push(0.06 * u), sun: { target: [E[0] + 0.4, 0, E[2]], reach: 6 },
     cast: (t) => [{ ...on("eat", MURMILLO_EATER_D, eat, t), noShade: true }, { ...on("doc", DOCTOR_D, doc, t), noShade: true }],
     things: (g, c, t, _T, cam) => { const b = BENCH(); b.position.set(E[0] - fw[0] * 0.32, 0, E[2] - fw[1] * 0.32); b.rotation.y = ((eh - 180) * Math.PI) / 180; g.add(b);
-      const sd = STOOL(); sd.position.set(dAt[0] - Math.sin((dh * Math.PI) / 180) * 0.3, 0, dAt[2] - Math.cos((dh * Math.PI) / 180) * 0.3); g.add(sd);
+      // (the stool under his seat, where his pelvis is: put by his feet it stood beside him, v4)
+      const sd = STOOL(), pv = jointsOf(dst)("pelvis"), dr = (dh * Math.PI) / 180; sd.position.set(pv[0] - Math.sin(dr) * 0.15, 0, pv[2] - Math.cos(dr) * 0.15); sd.scale.y = 0.86; g.add(sd);
       wield(g, PORRIDGE(), BOWL, "hold", c.eat, bh, cam);
       wield(g, ROLL_O(), ROLL, "wrap", c.doc, rh, cam);
       // the turns already wound, as white bands across the forearm (a little slanted, as a spiral), and the strip from the roll to the last

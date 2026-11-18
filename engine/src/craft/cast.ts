@@ -205,13 +205,14 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
       if (all.length) k.group(all, L.hair!.col, k.ol * 0.7);
     });
     if (L.hair.kind === "messy") {
-      // tousled: tufts stand out along the top of the head's outline (each pointing away from the middle of the head), and a few
-      // strands fall over the brow when the face is turned to us
-      const top = skull.filter((p) => p[1] < -0.72 * H).sort((p, q) => p[0] - q[0]), n = top.length, c: P2 = [0, -0.62 * H];
-      for (let i = 1; i < 8; i++) { const p = top[Math.round(((n - 1) * i) / 8)]; if (!p) continue; const d = unit(sub(p, c)), t: P2 = [-d[1], d[0]], len = (0.13 + 0.05 * Math.sin(i * 2.3)) * H, bend = 0.05 * H * Math.sin(i * 1.7);
-        piece(k, [add(p, t, -0.07 * H), add(add(p, d, len), t, bend), add(p, t, 0.07 * H), add(p, d, -0.05 * H)], L.hair.col); }
-      if (!away && h.cos > 0.2) for (const az of [-26, -6, 14]) { const q = at(h, az, 1.02); if (q.d < 0.3 * b) continue; const x = q.x, y = -0.86 * H;
-        piece(k, [[x - 0.06 * w, y - 0.1 * H], [x + 0.08 * w, y - 0.1 * H], [x + 0.03 * w + Math.sin(az) * 0.05 * w, y + 0.12 * H]], L.hair.col); }
+      // tousled: five soft locks stand out along the top of the head's outline, leaning one way and the other, of uneven length; and a
+      // lock is swept across the brow from one side, above the eyebrows, when the face is turned to us
+      const top = skull.filter((p) => p[1] < -0.72 * H).sort((p, q) => p[0] - q[0]), n = top.length, c: P2 = [0, -0.6 * H];
+      for (let i = 1; i < 6; i++) { const p = top[Math.round(((n - 1) * i) / 6)]; if (!p) continue;
+        const d = unit(sub(p, c)), t: P2 = [-d[1], d[0]], side = i % 2 ? 1 : -1, len = (0.09 + 0.035 * ((i * 7) % 3)) * H, lean = side * (0.05 + 0.025 * (i % 3)) * H, tip = add(add(p, d, len), t, lean);
+        piece(k, spline([add(p, t, -0.1 * H), add(add(p, d, len * 0.55), t, lean * 0.35 - 0.035 * H), tip, add(add(p, d, len * 0.45), t, lean * 0.45 + 0.04 * H), add(p, t, 0.1 * H), add(p, d, -0.07 * H)], true, 5), L.hair.col); }
+      if (!away && h.cos > 0.2) { const a1 = at(h, -64, 1.03), a2 = at(h, 22, 1.03);
+        if (a1.d > -0.1 * b && a2.d > -0.1 * b) piece(k, spline([[a1.x, -0.99 * H], [(a1.x + a2.x) / 2, -0.97 * H], [a2.x + 0.04 * w, -0.86 * H], [a2.x - 0.06 * w, -0.85 * H], [(a1.x + a2.x) / 2, -0.88 * H], [a1.x, -0.84 * H]], true, 5), L.hair.col); }
     }
   }
   if (L.hair?.kind === "queue" && h.cos <= -0.3) queue();

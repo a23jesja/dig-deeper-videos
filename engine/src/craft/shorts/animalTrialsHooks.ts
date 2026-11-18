@@ -70,7 +70,7 @@ export const courtShot = (id: string, a0: number, b0: number, hits: number[]): S
 };
 
 // ---------------- the gallery ----------------
-const GAL = (() => { const p = inCourt([-0.6, 1.55, 3.0]), q = inCourt([-3.4, 1.05, 1.45]), d = Math.hypot(q[0] - p[0], q[2] - p[2]);
+const GAL = (() => { const p = inCourt([-0.6, 1.55, 3.0]), q = inCourt([-3.4, 1.05, 1.38]), d = Math.hypot(q[0] - p[0], q[2] - p[2]);
   return lens(p[0], p[1], p[2], (q[0] - p[0]) / d, (q[2] - p[2]) / d, -9, 60); })();
 const SIRC = (() => { const p = inCourt([-1.15, 1.35, 3.0]), q = inCourt([-3.4, 0, 1.8]), d = Math.hypot(q[0] - p[0], q[2] - p[2]);
   return lens(p[0], p[1], p[2], (q[0] - p[0]) / d, (q[2] - p[2]) / d, -8, 46); })();
@@ -89,7 +89,7 @@ export const galleryShot = (id: string, a0: number, b0: number, W: Word[], words
   const sir = seated(SIR_D, 1.8, SIR_AT, H), ss: Stand = { D: SIR_D, at: SIR_AT, heading: H, h: 1.8, cam: GAL.cam, pose: SIT };
   const tq = say(W, "really") - a0, turn = deg(Math.atan2(GAL.cam.pos[0] - SIR_AT[0], GAL.cam.pos[2] - SIR_AT[2])) - H;
   sir.actAt(-1, sitting({ armR: arm(20, 10, 60, 8), armL: arm(20, 10, 60, 8), head: [4, -2, 0], lean: 6 }), 10, { in: 0.01, handR: "relaxed", handL: "relaxed", face: { brow: 0.6, lid: 0.2, mouth: 0.2 } });
-  sir.actAt(Math.max(0.05, tq - 0.25), sitting({ ...reach(ss, "R", ahead(SIR_AT, H, 0.16, 0.42, 0.95)), armL: arm(20, 10, 60, 8), head: [turn, -4, 0], lean: 2 }), 10, { in: 0.3, antic: 0, over: 1.1, handR: "open", handL: "relaxed", face: { brow: 1, lid: 0, wide: 0.3, smile: 0.3 } });
+  sir.actAt(Math.max(0.05, tq - 0.25), sitting({ ...reach(ss, "R", ahead(SIR_AT, H, 0.28, 0.34, 0.84)), armL: arm(20, 10, 60, 8), head: [turn, -4, 0], lean: 2 }), 10, { in: 0.3, antic: 0, over: 1.1, handR: "open", handL: "relaxed", face: { brow: 1, lid: 0, wide: 0.3, smile: 0.3 } });
   return { id, a: a0, b: b0, still: (b0 - a0) * 0.6, sounds: [{ t: 0.1, k: "scuff", g: 0.4 }],
     cam: (_t, u) => GAL.push(0.1 * u), sun: { target: OLD_AT, reach: 5 },
     cast: (t, T) => [on("wom", VILLAGER_WOMAN2_D, wom, t, FL), on("old", VILLAGER_OLD_D, old, t, FL), on("sir", SIR_D, sir, t, FL, { talk: talk(W, T, words) })] };
@@ -98,7 +98,7 @@ export const galleryShot = (id: string, a0: number, b0: number, W: Word[], words
 export const yesShot = (id: string, a0: number, b0: number, W: Word[], words: string[]): Shot => {
   const H = 90, turn = deg(Math.atan2(SIRC.cam.pos[0] - SIR_AT[0], SIRC.cam.pos[2] - SIR_AT[2])) - H, ty = say(W, "Yes") - a0;
   const sir = seated(SIR_D, 1.8, SIR_AT, H), ss: Stand = { D: SIR_D, at: SIR_AT, heading: H, h: 1.8, cam: SIRC.cam, pose: SIT };
-  const PALM = sitting({ ...reach(ss, "R", ahead(SIR_AT, H, 0.16, 0.42, 0.95)), armL: arm(20, 10, 60, 8), head: [turn, -4, 0], lean: 2 });
+  const PALM = sitting({ ...reach(ss, "R", ahead(SIR_AT, H, 0.28, 0.34, 0.84)), armL: arm(20, 10, 60, 8), head: [turn, -4, 0], lean: 2 });
   sir.actAt(-1, PALM, 10, { in: 0.01, handR: "open", handL: "relaxed", face: { brow: 1, lid: 0, wide: 0.3, smile: 0.3 } });
   sir.actAt(ty - 0.12, sitting({ armR: arm(24, 12, 70, 10), armL: arm(20, 10, 60, 8), head: [turn, 14, 0], lean: 6 }), 0.16, { in: 0.1, out: 0.16, antic: 0, handR: "relaxed", handL: "relaxed", face: { brow: 0.4, lid: 0.3, smile: 0.8 } });
   sir.actAt(ty + 0.3, sitting({ armR: arm(24, 12, 70, 10), armL: arm(20, 10, 60, 8), head: [turn, -2, 0], lean: 2 }), 10, { in: 0.2, handR: "relaxed", handL: "relaxed", face: { brow: 0.6, lid: 0.2, smile: 0.7 } });
@@ -127,38 +127,44 @@ const bowShot = (id: string, a0: number, b0: number, rise: number): Shot => {
 // ---------------- the vineyard ----------------
 /** the aisle between rows i and i+1 of the vineyard at position u along it */
 const aisle = (i: number, u: number): V3 => { const p = vineAt(i, u); return [p[0], 0, p[2] + SJ.vine.gap / 2]; };
-/** b: the villager in the aisle, holding the village's complaint out toward the lens, the vines either side crawling with weevils */
+/** b: the villager in the aisle serving the village's complaint on the weevils: he holds the roll out at a vine beside him, whose big
+ *  leaves crawl with chewing weevils, and jabs it at them on "sued" */
 const complaintShot = (id: string, a0: number, b0: number, W: Word[]): Shot => {
-  const at = aisle(1, 0.62), V = lens(at[0] + 2.2, 1.6, at[2] + 0.1, -1, -0.05, -5, 46), H = toward(at, V.cam.pos);
+  const at = aisle(1, 0.62), V = lens(at[0] + 2.6, 1.6, at[2] + 0.22, -1, -0.02, -5, 46), H = toward(at, V.cam.pos);
   const m = mover(VILLAGER_D, 1.76, at[0], at[2], H); m.stand(9);
   const ts = say(W, "sued");
-  m.actAt(-1, { ...usePose(COMPLAINT, "show", "R"), armL: arm(14, 12, 36, 8), lean: 6, head: [0, -2, 0] }, 10, { in: 0.01, handR: "grip", handL: "fist", face: { brow: -1, lid: 0, mouth: 0.5, smile: -0.6 } });
-  wag(m, Math.max(0, ts - 0.2), 0.7, P({ lean: 9 }), P({ lean: 4 }), 0.18, { handR: "grip", handL: "fist", face: { brow: -1, lid: 0, mouth: 0.6, smile: -0.6 } });
-  return { id, a: a0, b: b0, still: 0.4, sounds: [{ t: 0.0, k: "gavel", g: 1.0 }, { t: 0.02, k: "paper", g: 0.8 }, { t: Math.max(0.1, ts - 0.1), k: "paper", g: 0.5 }],
-    cam: (_t, u) => V.push(0.25 * u), sun: { target: at, reach: 5 },
+  m.actAt(-1, { ...usePose(COMPLAINT, "show", "R"), armL: arm(24, 46, 20, -40), lean: 5, head: [-14, 2, 0] }, 10, { in: 0.01, handR: "grip", handL: "fist", face: { brow: -1, lid: 0, mouth: 0.5, smile: -0.6 } });
+  wag(m, Math.max(0, ts - 0.15), 0.75, P({ lean: 11, head: [-16, 4, 0] }), P({ lean: 4, head: [-12, 0, 0] }), 0.19, { handR: "grip", handL: "fist", face: { brow: -1, lid: 0, mouth: 0.6, smile: -0.6 } });
+  const LA: V3 = [at[0] + 0.3, 1.27, at[2] + 0.5];
+  const leaves: Leaf[] = [{ at: LA, R: 0.17, seed: 11, bites: 3, rot: [-0.1, -0.25, 0.1] }, { at: [LA[0] - 0.12, LA[1] - 0.22, LA[2] + 0.1], R: 0.14, seed: 13, bites: 2, rot: [-0.25, -0.1, -0.3] }];
+  return { id, a: a0, b: b0, still: 0.4, sounds: [{ t: 0.0, k: "gavel", g: 1.0 }, { t: 0.02, k: "paper", g: 0.8 }, { t: Math.max(0.1, ts - 0.1), k: "paper", g: 0.6 }, { t: 0.3, k: "munch", g: 0.7, dur: 1.4, p: 0.5 }],
+    cam: (_t, u) => V.push(0.2 * u), sun: { target: at, reach: 5 },
     cast: (t) => [on("v", VILLAGER_D, m, t)],
-    things: (g, c, _t, _T, cam) => { wield(g, ROLL_O(), COMPLAINT, "show", c.v, "R", cam); } };
+    things: (g, c, t, _T, cam) => { wield(g, ROLL_O(), COMPLAINT, "show", c.v, "R", cam); leafCluster(g, leaves, Math.PI / 2, t, 1.25); } };
 };
-/** a: weevils eating a vine's leaves, close: three big leaves on a vine at the aisle's edge, two weevils chewing at the holes they ate,
- *  one walking across the middle leaf */
+/** big vine leaves with weevils on them, added to `g` at time t: each leaf at `at`, turned `rot` (its face toward +z before `yaw`); on
+ *  the first leaf two weevils chew at the holes they ate (snouts toward the holes' middles, heads dipping in turn) and one walks across;
+ *  on the second, one more chews */
+type Leaf = { at: V3; R: number; seed: number; bites: number; rot: [number, number, number] };
+const leafCluster = (g: THREE.Group, leaves: Leaf[], yaw: number, t: number, s = 1.3) => { for (const [i, L] of leaves.entries()) {
+  const o = new THREE.Group(); o.position.set(...L.at); o.rotation.set(L.rot[0], L.rot[1] + yaw, L.rot[2]); o.add(vineLeaf(L.R, L.seed, L.bites, i ? "#4f8f3a" : "#5fa246")); g.add(o);
+  const up = new THREE.Vector3(0, 0, 1), bites = LEAF_BITES(L.R, L.seed, L.bites);
+  const chew = (b: number, ph: number) => { const [x, y, h] = bites[b], a = 2.3 + ph, p: V3 = [x + Math.cos(a) * h * 1.25, y + Math.sin(a) * h, 0.002];
+    o.add(weevilOn(p, up, Math.atan2(y - p[1], x - p[0]), s, 0.35 * (0.5 + 0.5 * Math.sin(t * 20 + ph * 7)))); };
+  if (i === 0) { chew(0, 0); chew(Math.min(2, L.bites - 1), 1.4); const u = Math.min(1, t / 1.6), p: V3 = [-0.09 + 0.13 * u, -0.06 + 0.07 * u, 0.002]; o.add(weevilOn(p, up, Math.atan2(0.07, 0.13) + 0.15 * Math.sin(t * 9), s)); }
+  if (i === 1) chew(1, 0.7); } };
+/** a: weevils eating a vine's leaves, close: three big leaves at the end of a row, the lens out in the open beyond it */
 const LEAF_AT = (() => { const p = vineAt(1, 1); return [p[0] + 0.78, 0.98, p[2] + 0.02] as V3; })();
 const leafClose = (id: string, a0: number, b0: number): Shot => {
   const V = lens(LEAF_AT[0] + 1.3, LEAF_AT[1] + 0.06, LEAF_AT[2] + 0.06, -1, -0.04, -3, 40);
-  const leaves: { at: V3; R: number; seed: number; bites: number; rot: [number, number, number] }[] = [
+  const leaves: Leaf[] = [
     { at: [LEAF_AT[0], LEAF_AT[1], LEAF_AT[2]], R: 0.19, seed: 3, bites: 3, rot: [-0.15, 0.1, 0.12] },
     { at: [LEAF_AT[0] - 0.08, LEAF_AT[1] + 0.2, LEAF_AT[2] + 0.25], R: 0.15, seed: 5, bites: 2, rot: [-0.3, 0.35, -0.3] },
     { at: [LEAF_AT[0] - 0.05, LEAF_AT[1] - 0.17, LEAF_AT[2] - 0.27], R: 0.16, seed: 8, bites: 2, rot: [-0.05, -0.4, 0.4] }];
   return { id, a: a0, b: b0, still: 0.5, sounds: [{ t: 0.05, k: "munch", g: 1.0, dur: 0.7 }, { t: 0.85, k: "munch", g: 0.9, dur: 0.6, p: 0.3 }],
     cam: (_t, u) => V.push(0.05 * u), sun: { target: LEAF_AT, reach: 2 },
     cast: () => [],
-    things: (g, _c, t) => { for (const [i, L] of leaves.entries()) {
-      const o = new THREE.Group(); o.position.set(...L.at); o.rotation.set(L.rot[0], L.rot[1] + Math.PI / 2, L.rot[2]); o.add(vineLeaf(L.R, L.seed, L.bites, i ? "#4f8f3a" : "#5fa246")); g.add(o);
-      const up = new THREE.Vector3(0, 0, 1), bites = LEAF_BITES(L.R, L.seed, L.bites);
-      // chewing at a hole's edge, the snout toward its middle, the head dipping in turn
-      const chew = (b: number, ph: number) => { const [x, y, h] = bites[b], a = 2.3 + ph, p: V3 = [x + Math.cos(a) * h * 1.25, y + Math.sin(a) * h, 0.002];
-        o.add(weevilOn(p, up, Math.atan2(y - p[1], x - p[0]), 1.3, 0.35 * (0.5 + 0.5 * Math.sin(t * 20 + ph * 7)))); };
-      if (i === 0) { chew(0, 0); chew(2, 1.4); const u = Math.min(1, t / 1.6), p: V3 = [-0.09 + 0.13 * u, -0.06 + 0.07 * u, 0.002]; o.add(weevilOn(p, up, Math.atan2(0.07, 0.13) + 0.15 * Math.sin(t * 9), 1.3)); }
-      if (i === 1) chew(1, 0.7); } } };
+    things: (g, _c, t) => leafCluster(g, leaves, Math.PI / 2, t) };
 };
 /** a: the village's vines, wide: a man and a woman stopped in the aisle, staring at the weevils on the vines beside them */
 const vinesWide = (id: string, a0: number, b0: number): Shot => {

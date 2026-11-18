@@ -46,6 +46,24 @@ Ungefär 125 ord och 47-49 sekunder med den sista halva sekunden in i slingan. *
 
 I b och c kommer frågan "Were animals really put on trial?" som andra replik (cirka 2 s), så filmen blir 2 s längre. Klipp i sekund 0-5 var 1,5-2,5 s. hookscore ger alla svagast på STAKES. Fyra varianter med vinet först gav 30-32. Det är en tumregel för pratande-huvud-kanaler och bara för kännedom.
 
+### De tre klippen (byggda 18 november)
+Filer: `hook-a.mp4`, `hook-b.mp4`, `hook-c.mp4` och deras `hook-x-10fps-telefon.jpg` (sekund 0-5, 10 bilder/s, telefonstorlek). Rösterna: a är filmens egen röst; b och c är inspelade med samma röst, hastighet och pauser (`engine/voice/animal-hook-b.json`, `-c.json`). Varje klipp slutar vid en naturlig paus: a efter "vines,", b och c efter "Yes.".
+
+| | a. Frågan | b. Påståendet | c. Advokaten |
+|---|---|---|---|
+| Första rutan | Rättssalen: domaren slår klubban i blocket, advokaten visar fram den tomma bänken, vivlarna i fönstret | Vingården: bymannen håller fram klagoskriften mot vinrankan bredvid sig, där vivlarna äter av bladen | Advokaten bugar djupt mot den tomma bänken, sedd från sidan, med ansiktet vänt mot linsen; vivlarna i fönstret |
+| Första ordet | ruta 0 ("Were") | ruta 0 ("A") | ruta 0 ("These") |
+| Ljudträff i ruta 0 | klubban (i bild), igen vid 0,72 s | klubban, prasslet från rullen, vivlarnas knaprande | klubban (domaren utanför bild) |
+| Text och hur länge | WERE ANIMALS / REALLY PUT / ON TRIAL? 0-2,76 s | A VILLAGE SUED / ITS WEEVILS. 0-2,06 s | THESE WEEVILS / HAD A LAWYER. 0-2,18 s |
+| Klipp (s) | 0 · 1,40 · 2,77 · 4,27 · slut 5,33 | 0 · 2,07 · 3,63 · slut 5,50 | 0 · 2,17 · 3,77 · slut 5,60 |
+| Bilderna | rättssalen · åhörarbänken pekar, Sir frågar · vivlar äter vinblad ("Yes. Weevils were eating") · bybor stannar i vingården ("a village's vines") | vingården · rättssalen, klubban (frågan) · Sir nickar "Yes." | bugningen; han reser sig och visar fram bänken · rättssalen, klubban (frågan) · Sir nickar "Yes." |
+| hookscore.py | 31 WEAK (The Question) | 28 WEAK för påståendet ensamt; 36 med frågan | 28 WEAK för påståendet ensamt; 36 med frågan |
+| Slingan i filmen | slutet tillbaka i rättssalens bild, samma som ruta 0 | slutet i rättssalen, inte samma som ruta 0 (vingården) | slutet kan gå tillbaka till advokaten vid den tomma bänken, samma bild som ruta 0 |
+
+Två klipp är kortare än 1,5 s: a:s första (1,40 s) och åhörarbänken (1,37 s). Det beror på att frågan är 2,1 s och svaret "Yes." kommer vid 2,81 s. Sista bilden i a (1,06 s) fortsätter i filmen till "court." (cirka 7,3 s).
+
+**Ändrat i rättssalen för den stående bilden:** de anklagades bänk står vänd mot åhörarnas sida (inte mot domaren), med räcke och spjälor, så att det syns att den är tom. Domaren står på en hög estrad med klubbans block på ett litet bord vid sin högra hand, där klubbslaget på greppblad 6 landar.
+
 ## Titel och thumbnails (title.py)
 - Titel: **Were animals really put on trial? #Shorts** (41 tecken). 80/100 med var och en av thumbnailorden nedan. Anmärkningarna: i mobilflödet syns hela frågan, och titeln har inget tal.
 - Alternativ titel: The village that sued its weevils #Shorts (41 tecken). Thumbnailord med "weevils" upprepar den titeln (title.py: 62).

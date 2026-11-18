@@ -163,10 +163,11 @@ const courtRoom = () => { const C = SJ.court, g = new THREE.Group(), z0 = -C.d /
   g.add(mesh(cyl(0.2, 0.2, 0.06, 12), woodD, { at: [cx + 0.6, 0.5, cz], line: 0.5 }), mesh(cyl(0.03, 0.03, 0.48, 6), woodD, { at: [cx + 0.6, 0.24, cz], line: 0.3 }));
   // the dock: an empty bench facing the gallery's end, turned `dockYaw` toward the lawyer's side, so that its empty seat shows behind the
   // rail before it
-  { const [dx, , dz] = C.dock, kw = C.dockW, k = new THREE.Group(); k.position.set(dx, 0, dz); k.rotation.y = C.dockYaw;
-    k.add(mesh(box(kw, 0.08, 0.45), wood, { at: [0, 0.46, 0] }), mesh(box(kw, 0.42, 0.06), woodD, { at: [0, 0.21, 0.2], line: 0.5 }), mesh(box(kw, 0.5, 0.06), woodD, { at: [0, 0.74, -0.22], line: 0.5 }));
+  { const [dx, , dz] = C.dock, kw = C.dockW, k = new THREE.Group(), pale = "#a8794a"; k.position.set(dx, 0, dz); k.rotation.y = C.dockYaw;
+    k.add(mesh(box(kw, 0.08, 0.45), pale, { at: [0, 0.46, 0] }), mesh(box(kw, 0.42, 0.06), woodD, { at: [0, 0.21, 0.2], line: 0.5 }), mesh(box(kw, 0.5, 0.06), woodD, { at: [0, 0.74, -0.22], line: 0.5 }));
     for (const s of [-1, 1]) k.add(mesh(box(0.08, 1.0, 0.08), woodD, { at: [s * (kw / 2 + 0.05), 0.5, 0.45], line: 0.5 }), mesh(box(0.06, 0.46, 0.4), woodD, { at: [s * (kw / 2 - 0.03), 0.23, 0], line: 0.4 }));
     k.add(mesh(box(kw + 0.2, 0.08, 0.08), woodD, { at: [0, 1.0, 0.45], line: 0.5 }), mesh(box(kw + 0.2, 0.06, 0.06), woodD, { at: [0, 0.55, 0.45], line: 0.4 }));
+    for (let x = -kw / 2 + 0.06; x < kw / 2; x += 0.14) k.add(mesh(cyl(0.016, 0.016, 0.45, 6), pale, { at: [x, 0.775, 0.45], line: 0.3, shadow: false }));
     g.add(k); }
   // the gallery bench along the left wall, facing across the room (+x), for the villagers and Sir Digsworth
   const [gx, , gz] = C.gallery; g.add(mesh(box(0.45, 0.08, C.galleryLen), wood, { at: [gx, 0.46, gz] }), mesh(box(0.06, 0.5, C.galleryLen), woodD, { at: [gx - 0.22, 0.74, gz], line: 0.5 }));

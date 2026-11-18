@@ -12,9 +12,9 @@ import { mover, MM, arm, wag, mt } from "../stage/acting";
 import { lens, once, noShade, palm, near, aside, span } from "../stage/staging";
 import { GLADIUS, TRIDENT, SHIELD_ARM, WOODSWORD, BOWL, SPOON, ROLL, COIN, MAPPA, PEN, SCROLL, OLIVE, shieldOn, wield, usePose, pole, polePose, reach, jointsOf, setDown, carryBy, handOn, handshake, vanish, Stand } from "../stage/grips";
 import { arenaWorld, crowd, ARENA, LUDUS, LUDUS_POST, LUDUS_TABLE, rim } from "../world/arena";
-import { woodSword, stretcher, bowl, bowlRim, spoon, bandageRoll, coinHeld, reedPen, scrollHeld, olive, bench, table, chest } from "../world/props";
+import { woodSword, stretcher, bowl, bowlRim, spoon, bandageRoll, coinHeld, reedPen, scrollHeld, olive, bench, table, chest, stool } from "../world/props";
 import { mesh, box, group } from "../world/kit";
-import { SIR_D, MURMILLO_GRILLE_D, RETIARIUS_D, REFEREE_D, ROMAN_WOMAN_OLIVES_D, MURMILLO_BARE_D, THRAEX_D, SECUTOR_D, HOPLOMACHUS_D, PROVOCATOR_D, RETIARIUS2_D, RETIARIUS3_D, MURMILLO2_D, CARRIED_D, TRAINER_D, PUPIL_D, OWNER_D, DOCTOR_D, SPONSOR_D, BEARER_D, BEARER2_D } from "../looks";
+import { SIR_D, MURMILLO_EATER_D, MURMILLO_GRILLE_D, RETIARIUS_D, REFEREE_D, ROMAN_WOMAN_OLIVES_D, MURMILLO_BARE_D, THRAEX_D, SECUTOR_D, HOPLOMACHUS_D, PROVOCATOR_D, RETIARIUS2_D, RETIARIUS3_D, MURMILLO2_D, CARRIED_D, TRAINER_D, PUPIL_D, OWNER_D, DOCTOR_D, SPONSOR_D, BEARER_D, BEARER2_D } from "../looks";
 import type { Design } from "../designs/common";
 import type { Pose } from "../rig";
 import { on, SIR, WOMAN, STANDS, FAR, FIGHT, GLAD, SCUTUM, TRI, STICK_O, say, by, sandKick, LOWA, FRONT, TWO, pair, GUARD, shieldMan, twoShot } from "./gladiatorsHooks";
@@ -32,7 +32,7 @@ const T14 = cut("answer", "doctor"), T15 = at("doctor", /^under/) - 0.1, T16 = c
 const shots: Shot[] = [];
 const WOOD = once(() => noShade(woodSword())), STRETCH = once(() => stretcher(1.9)), BOWL_O = once(() => noShade(bowlRim())), SPOON_O = once(() => noShade(spoon())), ROLL_O = once(() => noShade(bandageRoll()));
 const PORRIDGE = once(() => noShade(bowl(0.12))), COIN_O = once(() => noShade(coinHeld(0.04))), PEN_O = once(() => noShade(reedPen())), SCROLL_O = once(() => noShade(scrollHeld())), OLIVE_O = once(() => noShade(olive())), OLIVES = once(() => noShade(bowlRim(0.07, true)));
-const BENCH = once(() => bench(0.7)), TABLE = once(() => table(1.3, 0.7, 0.76)), COINS = once(() => chest(true, true));
+const BENCH = once(() => bench(0.7)), STOOL = once(() => stool()), TABLE = once(() => table(1.3, 0.7, 0.76)), COINS = once(() => chest(true, true));
 
 // 1. DID GLADIATORS ... the fight already happening: the trident on the shield in the first frame, sand flying
 const HOOK = (() => {
@@ -80,14 +80,16 @@ shots.push(twoShot("guess", T2, T3, W));
 //    on the man beside him). The lens is high and goes back toward the gate at their own pace, so that every face stays whole in the
 //    picture and none is behind another (the files walk 15 degrees off the lens's line)
 const T5a = at("nine", /^gladiator/) - 0.12;
-{ const C0 = lens(12.2, 3.2, 3.1, -0.85, -0.53, -16, 56), toLensH = (Math.atan2(0.85, 0.53) * 180) / Math.PI, HW = toLensH + 15, hr = (HW * Math.PI) / 180;
+// (Jesper's review of v3: the parade spread out so that every head shows: the files further apart and a half row out of step, the rows
+// further apart, and the walk further off the lens's line, so that the rows lie apart in the picture instead of behind each other)
+{ const C0 = lens(12.2, 3.2, 3.1, -0.85, -0.53, -16, 56), toLensH = (Math.atan2(0.85, 0.53) * 180) / Math.PI, HW = toLensH + 28, hr = (HW * Math.PI) / 180;
   const f: [number, number] = [Math.sin(hr), Math.cos(hr)], rg: [number, number] = [-Math.cos(hr), Math.sin(hr)], [ox, oz] = C0.spot(5.5, 0.6), SPEED = 0.84;
   /** a place in the parade: s metres behind the first row, q metres to the walkers' right */
   const at = (s: number, q: number): [number, number] => [ox - f[0] * s + rg[0] * q, oz - f[1] * s + rg[1] * q];
   const pace = (m: MM, i: number) => m.stand(0.04 * (i % 3)).walk(mt(m, 3.6), { step: 0.42 / m.LL, tau: 0.5 }).stand(9);
   const walkers: { D: Design; h: number; m: MM; name: string; x: number; z: number }[] = [];
   const looks: [Design, number][] = [[MURMILLO_BARE_D, 1.84], [THRAEX_D, 1.78], [SECUTOR_D, 1.72], [HOPLOMACHUS_D, 1.8], [PROVOCATOR_D, 1.76], [RETIARIUS2_D, 1.8], [RETIARIUS3_D, 1.7], [MURMILLO2_D, 1.88], [SECUTOR_D, 1.74]];
-  looks.forEach(([D, h], i) => { const row = Math.floor(i / 2), [x, z] = at(row * 1.5, i === 8 ? -0.45 : i % 2 ? 0.45 : -0.45), m = mover(D, h, x, z, HW); pace(m, i);
+  looks.forEach(([D, h], i) => { const row = Math.floor(i / 2), [x, z] = at(row * 1.9 + (i % 2) * 0.95, i % 2 ? 0.55 : -0.62), m = mover(D, h, x, z, HW); pace(m, i);
     m.actAt(-1, { armL: arm(16, 12, 30, 8), armR: arm(16, 12, 30, 8), head: [0, i % 2 ? 4 : -2, 0] }, 10, { in: 0.01, handL: "relaxed", handR: "relaxed", face: { brow: 0.2, lid: 0.3, smile: i % 3 ? 0.1 : 0.4 } });
     walkers.push({ D, h, m, name: `g${i}`, x, z }); });
   // the sixth leans on the fifth beside him: his left hand on the other's right shoulder
@@ -132,43 +134,44 @@ const T5a = at("nine", /^gladiator/) - 0.12;
     cast: (t) => [on("pup", PUPIL_D, pup, t), on("tr", TRAINER_D, tr, t)],
     things: (g, c, _t, _T, cam) => { wield(g, WOOD(), WOODSWORD, "guard", c.pup, "R", cam); handOn(c.tr, "L", c.pup, "wrR", cam, "wrist"); } }); }
 
-// 7. ... FED AND DOCTORED, AND THAT COST A GREAT DEAL. (Review of v1: at phone size neither read.) Close on the bench: the big one,
-//    turned a little from us, holds his porridge out on the palm of his near hand, that forearm running across the picture, and brings
-//    spoonfuls to his mouth with his other hand; the doctor beside him winds a bandage round the near forearm, turn after turn, the white
-//    band growing. Everything held is in front: the doctor stands a little behind the arm he winds
+// 7. ... FED AND DOCTORED, AND THAT COST A GREAT DEAL. Close on the bench: the big one holds his bowl of porridge out before his chest
+//    in his far hand and chews, and rests his near forearm out toward the doctor beside him, who winds a bandage round it, turn after
+//    turn, the white band growing. (Jesper's review of v3: the bandage was wound round the arm that held the bowl; it goes round the
+//    other arm, and each hand does one thing that can be followed: the spoon is gone.)
 { const { x: LX, z: LZ } = LUDUS, E: V3 = [LX + 1.0, 0, LZ + 0.4], eh = 110, fw: [number, number] = [Math.sin((eh * Math.PI) / 180), Math.cos((eh * Math.PI) / 180)], rt: [number, number] = [-Math.cos((eh * Math.PI) / 180), Math.sin((eh * Math.PI) / 180)];
-  const dAt: V3 = [E[0] + 0.82, 0, E[2] + 0.2], V = lens(E[0] + 0.42, 1.15, E[2] - 2.7, 0, 1, -2, 50);
-  const eat = mover(MURMILLO_BARE_D, 1.84, E[0], E[2], eh); eat.stand(9);
-  // the spoon in his near (left) hand, which is drawn in front of him, so that it shows all the way to his mouth (the far arm is drawn
-  // behind his body: a spoon in it floated); the bowl in his far hand, held out in front of him past his chest, where it and the
-  // bandaged forearm show
-  const bh: "L" | "R" = "R", sh: "L" | "R" = "L", es0: Stand = { D: MURMILLO_BARE_D, at: E, heading: eh, h: 1.84, cam: V.cam, pose: SIT }, j0 = jointsOf(es0), shB = j0("shR");
-  void rt; const hand: V3 = [shB[0] + fw[0] * 0.44, shB[1] - 0.2, shB[2] + fw[1] * 0.44], BA = reach(es0, bh, hand), es1: Stand = { ...es0, pose: { ...SIT, ...BA } }, j1 = jointsOf(es1);
-  const bowlTop: V3 = near([hand[0], hand[1] + 0.14, hand[2]], V.cam, 0.12), mouth = near(mix3(j1("neck"), j1("skull"), 0.42), V.cam, 0.2), spoonAt = (k: number) => reach(es1, sh, mix3(bowlTop, mouth, k));
-  const elB = j1("elR"), wrB = j1("wrR"), mid = mix3(elB, wrB, 0.5);
+  const V = lens(E[0] + 0.42, 1.15, E[2] - 2.7, 0, 1, -2, 50);
+  const eat = mover(MURMILLO_EATER_D, 1.84, E[0], E[2], eh); eat.stand(9);
+  // the bowl in his far hand, held out in front of him past his chest, where it shows; his near (left) forearm, drawn in front of him,
+  // resting out toward the doctor at waist height, where the bandage on it shows
+  const bh: "L" | "R" = "R", es0: Stand = { D: MURMILLO_EATER_D, at: E, heading: eh, h: 1.84, cam: V.cam, pose: SIT }, j0 = jointsOf(es0), shB = j0("shR"), shN = j0("shL");
+  void rt; const hand: V3 = [shB[0] + fw[0] * 0.44, shB[1] - 0.2, shB[2] + fw[1] * 0.44], BA = reach(es0, bh, hand);
+  const rest: V3 = [shN[0] + fw[0] * 0.56, shN[1] - 0.4, shN[2] + fw[1] * 0.56], NA = reach({ ...es0, pose: { ...SIT, ...BA } }, "L", rest), es1: Stand = { ...es0, pose: { ...SIT, ...BA, ...NA } }, j1 = jointsOf(es1);
+  const elB = j1("elL"), wrB = j1("wrL"), mid = mix3(elB, wrB, 0.5);
+  // the doctor sits on a stool facing the forearm, beyond its wrist and a little nearer the lens, his hands at its height (standing, he
+  // could not reach down to it without his hands stopping short of it, behind the seated man's body)
+  const DOC_OUT = 0.4, DOC_NEAR = 0.1, dAt: V3 = [mid[0] + fw[0] * DOC_OUT, 0, mid[2] + fw[1] * DOC_OUT - DOC_NEAR];
   const toArm = [mid[0] - dAt[0], mid[2] - dAt[2]], toCam = [V.cam.pos[0] - dAt[0], V.cam.pos[2] - dAt[2]], ta = Math.hypot(toArm[0], toArm[1]) || 1, tc = Math.hypot(toCam[0], toCam[1]) || 1;
-  const dh = (Math.atan2(toArm[0] / ta + toCam[0] / tc, toArm[1] / ta + toCam[1] / tc) * 180) / Math.PI, doc = mover(DOCTOR_D, 1.72, dAt[0], dAt[2], dh); doc.stand(9);
-  const dst: Stand = { D: DOCTOR_D, at: dAt, heading: dh, h: 1.72, cam: V.cam }, rh = nearHand(dh, V.cam), oh: "L" | "R" = rh === "L" ? "R" : "L";
-  eat.actAt(-1, { ...SIT, ...BA, ...spoonAt(0), head: [35, 6, 0] }, 10, { in: 0.01, handL: "grip", handR: "grip", face: { brow: 0.3, lid: 0.35, mouth: 0.15, smile: 0.3 } });
-  // the spoon: to the mouth, back to the bowl, three times (each act holds until the next takes over)
-  const SPOON_T: [number, number][] = [[0.1, 1], [0.7, 0], [1.2, 1], [1.8, 0], [2.3, 1]];
-  for (const [t0, k] of SPOON_T) eat.actAt(t0, { ...spoonAt(k) }, 10, { in: 0.32, antic: 0, over: 0.2, handL: "grip", handR: "grip", face: k ? { brow: 0.4, lid: 0.2, mouth: 0.6, smile: 0.2 } : { brow: 0.3, lid: 0.35, mouth: 0.1, smile: 0.4 } });
+  // he faces the forearm, turned a little toward us, so that his near hand is the one toward the arm (facing us, it was the other)
+  const dh = (Math.atan2(toArm[0] / ta + (0.45 * toCam[0]) / tc, toArm[1] / ta + (0.45 * toCam[1]) / tc) * 180) / Math.PI, doc = mover(DOCTOR_D, 1.72, dAt[0], dAt[2], dh); doc.stand(9);
+  const DSIT: Partial<Pose> = { ...SIT, py: -0.46, lean: 16 }, dst: Stand = { D: DOCTOR_D, at: dAt, heading: dh, h: 1.72, cam: V.cam, pose: DSIT }, rh = nearHand(dh, V.cam), oh: "L" | "R" = rh === "L" ? "R" : "L";
+  eat.actAt(-1, { ...SIT, ...BA, ...NA, head: [35, 6, 0] }, 10, { in: 0.01, handL: "relaxed", handR: "grip", face: { brow: 0.3, lid: 0.35, mouth: 0.15, smile: 0.3 } });
+  // he chews, his mouth working
+  for (let i = 0; i * 0.26 < 2.9; i++) eat.actAt(0.1 + i * 0.26, { head: [35, 6 + (i % 2) * 3, 0] }, 10, { in: 0.12, antic: 0, handL: "relaxed", handR: "grip", face: { brow: 0.3, lid: 0.3, mouth: i % 2 ? 0.05 : 0.45, smile: 0.3 } });
   // the bandage: a turn every 0.38 s from 0.3 s, from near the elbow toward the wrist; the doctor's roll goes over and under the arm
   const TURN = 0.38, turns = (t: number) => Math.max(0, Math.min(6, 1 + Math.floor((t - 0.3) / TURN))), along = (n: number) => 0.18 + 0.1 * Math.max(0, n - 1);
   const rollAt = (t: number, up: number): V3 => { const p = mix3(elB, wrB, along(turns(t) + 1)); return near([p[0], p[1] + 0.06 * up, p[2]], V.cam, -0.04); };
-  doc.actAt(-1, { ...reach(dst, rh, rollAt(0, 1)), ...(oh === "L" ? { armL: arm(16, 12, 30, 8) } : { armR: arm(16, 12, 30, 8) }), head: [0, 12, 0] }, 10, { in: 0.01, handL: rh === "L" ? "grip" : "relaxed", handR: rh === "R" ? "grip" : "relaxed", face: { brow: 0.4, lid: 0.4, smile: 0.2 } });
+  doc.actAt(-1, { ...reach(dst, rh, rollAt(0, 1)), ...(oh === "L" ? { armL: arm(16, 12, 30, 8) } : { armR: arm(16, 12, 30, 8) }), head: [0, 12, 0], ...DSIT }, 10, { in: 0.01, handL: rh === "L" ? "grip" : "relaxed", handR: rh === "R" ? "grip" : "relaxed", face: { brow: 0.4, lid: 0.4, smile: 0.2 } });
   for (let i = 1; i * (TURN / 2) < 2.9; i++) { const t0 = 0.12 + i * (TURN / 2); doc.actAt(t0, { ...reach(dst, rh, rollAt(t0 + 0.1, i % 2 ? -1 : 1)) }, 10, { in: TURN / 2 - 0.02, antic: 0, over: 0, ...(rh === "L" ? { handL: "grip" as const } : { handR: "grip" as const }) }); }
   const RING = once(() => Array.from({ length: 6 }, () => group([mesh(box(1, 0.034, 0.004), "#fbf8f0", { at: [0.5, 0, 0], line: 0.6, shadow: false, receive: false, glow: "#9a968c" })])));
   shots.push({ id: "fed", a: T6, b: T7, still: 1.25, sounds: [{ t: 0.4, k: "tap", g: 0.3 }, { t: 1.5, k: "tap", g: 0.3 }, { t: 0.9, k: "paper", g: 0.3 }, { t: 1.9, k: "paper", g: 0.3 }],
     cam: (_t, u) => V.push(0.06 * u), sun: { target: [E[0] + 0.4, 0, E[2]], reach: 6 },
-    cast: (t) => [{ ...on("eat", MURMILLO_BARE_D, eat, t), noShade: true }, { ...on("doc", DOCTOR_D, doc, t), noShade: true }],
+    cast: (t) => [{ ...on("eat", MURMILLO_EATER_D, eat, t), noShade: true }, { ...on("doc", DOCTOR_D, doc, t), noShade: true }],
     things: (g, c, t, _T, cam) => { const b = BENCH(); b.position.set(E[0] - fw[0] * 0.32, 0, E[2] - fw[1] * 0.32); b.rotation.y = ((eh - 180) * Math.PI) / 180; g.add(b);
+      const sd = STOOL(); sd.position.set(dAt[0] - Math.sin((dh * Math.PI) / 180) * 0.3, 0, dAt[2] - Math.cos((dh * Math.PI) / 180) * 0.3); g.add(sd);
       wield(g, PORRIDGE(), BOWL, "hold", c.eat, bh, cam);
-      // the spoon turns from dipping to pointing into the mouth as the hand rises (read from where the hand is, so it never lags)
-      const sp = palm(c.eat, sh), k = Math.max(0, Math.min(1, (sp[1] - bowlTop[1]) / (mouth[1] - bowlTop[1] || 1))); wield(g, SPOON_O(), SPOON, "dip", c.eat, sh, cam, { blend: ["eat", k] });
       wield(g, ROLL_O(), ROLL, "wrap", c.doc, rh, cam);
       // the turns already wound, as white bands across the forearm (a little slanted, as a spiral), and the strip from the roll to the last
-      const el = c.eat.joint("elR"), wr = c.eat.joint("wrR"), n = turns(t), dir = new THREE.Vector3(wr[0] - el[0], wr[1] - el[1], wr[2] - el[2]).normalize();
+      const el = c.eat.joint("elL"), wr = c.eat.joint("wrL"), n = turns(t), dir = new THREE.Vector3(wr[0] - el[0], wr[1] - el[1], wr[2] - el[2]).normalize();
       const view = new THREE.Vector3(cam.look[0] - cam.pos[0], cam.look[1] - cam.pos[1], cam.look[2] - cam.pos[2]).normalize(), perp = new THREE.Vector3().crossVectors(view, dir).normalize().addScaledVector(dir, 0.3).normalize();
       RING().forEach((r, i) => { if (i >= n) return; const p = mix3(el, wr, along(i + 1)), a: V3 = [p[0] - perp.x * 0.066, p[1] - perp.y * 0.066, p[2] - perp.z * 0.066], b2: V3 = [p[0] + perp.x * 0.066, p[1] + perp.y * 0.066, p[2] + perp.z * 0.066];
         span(g, r, near(a, cam, 0.05), near(b2, cam, 0.05), cam, 0); r.scale.x = 0.132; });
@@ -279,13 +282,15 @@ const ground: V3 = [FIGHT[0] + 1.1, 0.03, FIGHT[2] + 0.5];
     things: (g, c, _t, _T, cam) => { const tb = TABLE(); tb.position.set(tx, 0, tz - 0.05); g.add(tb); wield(g, SCROLL_O(), SCROLL, "hold", c.doc, "L", cam); wield(g, PEN_O(), PEN, "write", c.doc, "R", cam, { d: 0.1 }); } }); }
 
 // 16. ... UNDER HIS CARE, HARDLY ANY GLADIATORS DIED. Behind him in a row his patients, bandaged, show their muscles
-{ const { x: LX, z: LZ } = LUDUS, V = lens(LX - 1.43, 1.5, LZ - 4.5, 0, 1, -3, 52), row: [Design, number][] = [[MURMILLO_BARE_D, 1.84], [SECUTOR_D, 1.72], [THRAEX_D, 1.78], [PROVOCATOR_D, 1.76]];
-  const men = row.map(([D, h], i) => { const x = LX - 2.7 + i * 0.85, z = LZ + 1.4 + (i % 2) * 0.15, m = mover(D, h, x, z, V.toward(x, z, (i - 2) * 6)); m.stand(9);
+// (Jesper's review of v3: the men lower and bigger in the picture. Three of them, close together, the lens near and low and looking
+// up a little, so that they fill half its height from the feet up and the lower half is not empty sand)
+{ const { x: LX, z: LZ } = LUDUS, CXp = LX - 1.43, V = lens(CXp, 0.95, LZ + 1.4 - 4.3, 0, 1, 9, 50), row: [Design, number][] = [[MURMILLO_BARE_D, 1.84], [SECUTOR_D, 1.72], [THRAEX_D, 1.78]];
+  const men = row.map(([D, h], i) => { const x = CXp + (i - 1) * 0.62, z = LZ + 1.4 + (i % 2) * 0.12, m = mover(D, h, x, z, V.toward(x, z, (i - 1) * 8)); m.stand(9);
     m.actAt(-1, { armL: arm(16, 12, 30, 8), armR: arm(16, 12, 30, 8) }, 10, { in: 0.01, handL: "fist", handR: "fist", face: { brow: 0.2, lid: 0.2, smile: 0.5 } });
     m.actAt(0.25 + 0.18 * i, { armR: arm(80, 40, 168, 10), lean: -3 }, 9, { in: 0.3, antic: 0.15, over: 1.3, handL: "fist", handR: "fist", face: { brow: 0.5, lid: 0.1, smile: 0.9, mouth: 0.3 } });
     return { D, m, name: `p${i}` }; });
   shots.push({ id: "patients", a: T15, b: T16, still: 2.0, sounds: men.map((_, i) => ({ t: 0.3 + 0.18 * i, k: "scuff", g: 0.3 })),
-    cam: (_t, u) => V.push(0.08 * u), sun: { target: [LX - 1.43, 0, LZ + 1.5], reach: 7 },
+    cam: (_t, u) => V.push(0.08 * u), sun: { target: [CXp, 0, LZ + 1.5], reach: 5 },
     cast: (t) => men.map((q) => ({ ...on(q.name, q.D, q.m, t), noShade: true })) }); }
 
 // 17. "RELAX. THEY'LL PROBABLY BE FINE." At last Sir Digsworth has his hands down; she says it and he reaches for her olives. Then down

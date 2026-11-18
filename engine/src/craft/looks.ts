@@ -415,6 +415,9 @@ export const BLACKBEARD_BARE_D = castDesign(BLACKBEARD_BARE, "Blackbeard"), BLAC
 // ---------------- the gladiators' school, the gate and the stands (gladiators-death) ----------------
 /** the heavy gladiator at school: his helmet off, short dark hair, a bandage being wound round his left forearm */
 export const MURMILLO_BARE: Look = { ...MURMILLO, id: "murmillobare", hat: "none", hair: { col: "#2a1c14", kind: "short" }, wrap: "L" };
+/** the same man eating while the doctor bandages him: no arm guard and no bandage drawn on him (the doctor's winding is the only one,
+ *  and the arm with the bowl is bare: Jesper's review of v3) */
+export const MURMILLO_EATER: Look = { ...MURMILLO_BARE, id: "murmilloeater", wrap: undefined, manica: undefined };
 const glad = (id: string, o: Partial<Look>): Look => ({ ...MURMILLO, id, ...o });
 /** eight more gladiators for the line of ten at the gate, each with his own body and armour */
 export const THRAEX = glad("thraex", { P: { ...ROMAN, thigh: 220, shin: 210, hipW: 56, shW: 112, spine: 268 }, head: { a: 106, b: 112, H: 230, jaw: 1.0, round: 0.3 }, skin: "#e2b48c", brow: "#6a4424", hatCol: "#b8bec8", brim: 1.25, crestH: 0.3, accent: "#3f6fd0", mous: undefined, greave: "R", manica: "R", loin: "#e9dcc0", balteus: "#3a3a44",
@@ -444,6 +447,7 @@ export const BEARER2: Look = { ...CITIZEN, id: "bearer2", coat: "#7a8a6a", accen
 /** the murmillo in his full helmet: the visor with its grille down over the face (Jesper: with a grille, unless it looks too poor) */
 export const MURMILLO_GRILLE: Look = { ...MURMILLO, id: "murmillo-grille", visor: "grille" };
 export const MURMILLO_GRILLE_D = castDesign(MURMILLO_GRILLE, "the murmillo");
+export const MURMILLO_EATER_D = castDesign(MURMILLO_EATER, "the murmillo");
 export const MURMILLO_BARE_D = castDesign(MURMILLO_BARE, "the murmillo"), THRAEX_D = castDesign(THRAEX), SECUTOR_D = castDesign(SECUTOR), HOPLOMACHUS_D = castDesign(HOPLOMACHUS), PROVOCATOR_D = castDesign(PROVOCATOR);
 export const RETIARIUS2_D = castDesign(RETIARIUS2), RETIARIUS3_D = castDesign(RETIARIUS3), MURMILLO2_D = castDesign(MURMILLO2), CARRIED_D = castDesign(CARRIED);
 export const TRAINER_D = castDesign(TRAINER), PUPIL_D = castDesign(PUPIL), OWNER_D = castDesign(OWNER), DOCTOR_D = castDesign(DOCTOR), SPONSOR_D = castDesign(SPONSOR), BEARER_D = castDesign(BEARER), BEARER2_D = castDesign(BEARER2);

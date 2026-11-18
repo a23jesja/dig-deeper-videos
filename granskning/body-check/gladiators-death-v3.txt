@@ -1,0 +1,102 @@
+hook frames 0-44 (film 0.00-1.50 s): the thing in ret R+L's hand, a box (0.26 x 0.11 x 0.02 m at 0.32, 1.49, -6.21), is drawn over mur's head, 69 cm
+hook frames 0-44 (film 0.00-1.50 s): the thing in ret R+L's hand, a box (0.05 x 0.03 x 0.01 m at 0.23, 1.54, -6.21), is drawn over mur's head, 100 cm
+hook frames 0-44 (film 0.00-1.50 s): the thing in ret R+L's hand, a box (0.21 x 0.10 x 0.02 m at 0.32, 1.40, -6.21), is drawn over mur's head, 46 cm
+hook frames 0-44 (film 0.00-1.50 s): the thing in ret R+L's hand, a box (0.21 x 0.10 x 0.02 m at 0.38, 1.56, -6.21), is drawn over mur's head, 62 cm
+hook frames 0-44 (film 0.00-1.50 s): the thing in ret R+L's hand, a box (0.05 x 0.03 x 0.01 m at 0.31, 1.60, -6.21), is drawn over mur's head, 100 cm
+hook frames 0-44 (film 0.00-1.50 s): mur's head is inside the thing in ret R+L's hand, a box (0.26 x 0.11 x 0.02 m at 0.32, 1.49, -6.21), 12 cm
+hook frames 0-44 (film 0.00-1.50 s): mur's head is inside the thing in ret R+L's hand, a box (0.05 x 0.03 x 0.01 m at 0.23, 1.54, -6.21), 11 cm
+hook frames 0-44 (film 0.00-1.50 s): mur's head is inside the thing in ret R+L's hand, a box (0.21 x 0.10 x 0.02 m at 0.32, 1.40, -6.21), 9 cm
+hook frames 18-19 (film 0.60-0.67 s): mur's head is inside the thing in ret R+L's hand, a box (0.21 x 0.10 x 0.02 m at 0.39, 1.56, -6.21), 5 cm
+hook frames 18-19 (film 0.60-0.67 s): mur's head is inside the thing in ret R+L's hand, a box (0.05 x 0.03 x 0.01 m at 0.32, 1.60, -6.21), 4 cm
+hook frames 38-44 (film 1.27-1.50 s): the thing in ret R+L's hand, a box (0.03 x 0.05 x 0.01 m at 0.24, 1.57, -6.22), is drawn over mur's head, 100 cm
+hook frames 38-44 (film 1.27-1.50 s): the thing in ret R+L's hand, a box (0.03 x 0.05 x 0.01 m at 0.25, 1.47, -6.22), is drawn over mur's head, 100 cm
+hook frames 38-44 (film 1.27-1.50 s): mur's head is inside the thing in ret R+L's hand, a box (0.03 x 0.05 x 0.01 m at 0.24, 1.57, -6.22), 4 cm
+hook frames 38-44 (film 1.27-1.50 s): mur's head is inside the thing in ret R+L's hand, a box (0.03 x 0.05 x 0.01 m at 0.25, 1.47, -6.22), 2 cm
+nine frames 205-261 (film 6.83-8.73 s): g5's head lies over g7's head in the picture (3 px into it, nearer the lens), 16 cm
+nine frames 212-252 (film 7.07-8.43 s): g0's right foot slides while he stands on it (2.5 cm a frame)
+nine frames 212-252 (film 7.07-8.43 s): g3's right foot slides while he stands on it (2.7 cm a frame)
+nine frames 212-252 (film 7.07-8.43 s): g6's right foot slides while he stands on it (2.7 cm a frame)
+nine frames 214-253 (film 7.13-8.47 s): g1's right foot slides while he stands on it (2.7 cm a frame)
+nine frames 214-253 (film 7.13-8.47 s): g4's right foot slides while he stands on it (2.7 cm a frame)
+nine frames 214-253 (film 7.13-8.47 s): g7's right foot slides while he stands on it (2.8 cm a frame)
+nine frames 215-254 (film 7.17-8.50 s): g2's right foot slides while he stands on it (2.7 cm a frame)
+nine frames 215-254 (film 7.17-8.50 s): g5's right foot slides while he stands on it (2.8 cm a frame)
+nine frames 215-254 (film 7.17-8.50 s): g8's right foot slides while he stands on it (2.8 cm a frame)
+nine frames 227-261 (film 7.57-8.73 s): g0's left foot slides while he stands on it (2.9 cm a frame)
+nine frames 227-261 (film 7.57-8.73 s): g3's left foot slides while he stands on it (3.1 cm a frame)
+nine frames 227-261 (film 7.57-8.73 s): g6's left foot slides while he stands on it (3.1 cm a frame)
+nine frames 229-261 (film 7.63-8.73 s): g1's left foot slides while he stands on it (3.0 cm a frame)
+nine frames 229-261 (film 7.63-8.73 s): g4's left foot slides while he stands on it (3.0 cm a frame)
+nine frames 229-261 (film 7.63-8.73 s): g7's left foot slides while he stands on it (3.1 cm a frame)
+nine frames 230-261 (film 7.67-8.73 s): g2's left foot slides while he stands on it (3.0 cm a frame)
+nine frames 230-261 (film 7.67-8.73 s): g5's left foot slides while he stands on it (3.1 cm a frame)
+nine frames 230-261 (film 7.67-8.73 s): g8's left foot slides while he stands on it (3.1 cm a frame)
+carried frames 262-327 (film 8.73-10.93 s): b0's left forearm goes through the thing in b0 R & b1 R's hand (a box (1.90 x 0.05 x 0.05 m at 2.01, 0.80, -2.39)): part of it before the thing, part behind it, 22 cm
+carried frames 262-327 (film 8.73-10.93 s): the thing in b0 R & b1 R's hand, a box (1.37 x 0.01 x 0.56 m at 2.01, 0.81, -2.67), is drawn over man's left shin, 62 cm
+carried frames 262-327 (film 8.73-10.93 s): man's left forearm goes through the thing in b0 R & b1 R's hand (a box (1.90 x 0.05 x 0.05 m at 2.01, 0.80, -2.39)): part of it before the thing, part behind it, 13 cm
+carried frames 262-327 (film 8.73-10.93 s): man's left hand goes through the thing in b0 R & b1 R's hand (a box (1.90 x 0.05 x 0.05 m at 2.01, 0.80, -2.39)): part of it before the thing, part behind it, 33 cm
+carried frames 262-327 (film 8.73-10.93 s): man's belly is inside the thing in b0 R & b1 R's hand, a box (1.37 x 0.01 x 0.56 m at 2.01, 0.81, -2.67), 4 cm
+carried frames 262-327 (film 8.73-10.93 s): man's left forearm is inside the thing in b0 R & b1 R's hand, a box (1.37 x 0.01 x 0.56 m at 2.01, 0.81, -2.67), 5 cm
+carried frames 262-327 (film 8.73-10.93 s): man's left hand is inside the thing in b0 R & b1 R's hand, a box (1.37 x 0.01 x 0.56 m at 2.01, 0.81, -2.67), 5 cm
+carried frames 262-265 (film 8.73-8.87 s): man's left thigh is inside the thing in b0 R & b1 R's hand, a box (1.37 x 0.01 x 0.56 m at 2.01, 0.81, -2.67), 3 cm
+carried frames 262-327 (film 8.73-10.93 s): man's right thigh is inside the thing in b0 R & b1 R's hand, a box (1.37 x 0.01 x 0.56 m at 2.01, 0.81, -2.67), 4 cm
+carried frames 262-265 (film 8.73-8.87 s): man's left shin is inside the thing in b0 R & b1 R's hand, a box (1.37 x 0.01 x 0.56 m at 2.01, 0.81, -2.67), 2 cm
+carried frames 262-327 (film 8.73-10.93 s): man's right shin is inside the thing in b0 R & b1 R's hand, a box (1.37 x 0.01 x 0.56 m at 2.01, 0.81, -2.67), 4 cm
+carried frames 262-327 (film 8.73-10.93 s): man stands on nothing (no surface under the lower foot within a metre), 100 cm
+carried frames 284-324 (film 9.47-10.83 s): b1's left forearm goes through the thing in b0 R & b1 R's hand (a box (1.90 x 0.05 x 0.05 m at 2.28, 0.78, -2.39)): part of it before the thing, part behind it, 25 cm
+carried frames 284-325 (film 9.47-10.87 s): b1's left forearm is inside the thing in b0 R & b1 R's hand, a box (1.90 x 0.05 x 0.05 m at 2.28, 0.78, -2.39), 5 cm
+carried frames 285-324 (film 9.50-10.83 s): the thing in b0 R & b1 R's hand, a box (1.37 x 0.01 x 0.56 m at 2.30, 0.79, -2.67), is drawn over man's right shin, 54 cm
+carried frames 303-306 (film 10.10-10.23 s): the thing in b0 R & b1 R's hand, a box (1.37 x 0.01 x 0.56 m at 2.75, 0.77, -2.67), is drawn over man's right thigh, 15 cm
+trained frames 328-364 (film 10.93-12.17 s): tr's head lies over pup's head in the picture (64 px into it, nearer the lens), 42 cm
+fed frames 365-433 (film 12.17-14.47 s): eat's left forearm goes through the thing in eat R's hand (a cylinder (0.24 x 0.08 x 0.24 m at 1.48, 0.80, 48.43)): part of it before the thing, part behind it, 11 cm
+fed frames 365-433 (film 12.17-14.47 s): eat's left hand goes through the thing in eat R's hand (a cylinder (0.24 x 0.08 x 0.24 m at 1.48, 0.80, 48.43)): part of it before the thing, part behind it, 50 cm
+fed frames 365-367 (film 12.17-12.27 s): eat's right hand goes through the thing in eat L's hand (a box (0.11 x 0.09 x 0.01 m at 1.51, 0.80, 48.42)): part of it before the thing, part behind it, 17 cm
+fed frames 365-448 (film 12.17-14.97 s): eat's left thigh is inside a box (0.71 x 0.06 x 0.88 m at 0.70, 0.45, 48.51), 5 cm
+fed frames 365-433 (film 12.17-14.47 s): eat's left forearm is inside the thing in eat R's hand, a cylinder (0.24 x 0.08 x 0.24 m at 1.48, 0.80, 48.43), 5 cm
+fed frames 365-433 (film 12.17-14.47 s): eat's left hand is inside the thing in eat R's hand, a cylinder (0.24 x 0.08 x 0.24 m at 1.48, 0.80, 48.43), 6 cm
+fed frames 365-433 (film 12.17-14.47 s): eat's left forearm is inside the thing in eat R's hand, a cylinder (0.23 x 0.01 x 0.23 m at 1.48, 0.84, 48.43), 4 cm
+fed frames 365-433 (film 12.17-14.47 s): eat's left hand is inside the thing in eat R's hand, a cylinder (0.23 x 0.01 x 0.23 m at 1.48, 0.84, 48.43), 5 cm
+fed frames 365-448 (film 12.17-14.97 s): eat's lower foot is sunk into a box (13.00 x 0.06 x 10.00 m at 0.00, 0.00, 48.00), 5 cm
+fed frames 399-448 (film 13.30-14.97 s): doc's left forearm goes through the thing in doc R's hand (a cylinder (0.06 x 0.06 x 0.06 m at 1.51, 0.83, 48.59)): part of it before the thing, part behind it, 25 cm
+coins frames 449-495 (film 14.97-16.53 s): own's left thigh is inside a box (0.73 x 0.36 x 0.72 m at 15.16, 0.18, 1.50), 4 cm
+coins frames 449-495 (film 14.97-16.53 s): own's left shin is inside a box (0.73 x 0.36 x 0.72 m at 15.16, 0.18, 1.50), 7 cm
+coins frames 449-495 (film 14.97-16.53 s): own's left foot is inside a box (0.73 x 0.36 x 0.72 m at 15.16, 0.18, 1.50), 3 cm
+coins frames 449-495 (film 14.97-16.53 s): own's left shin is inside a box (0.77 x 0.05 x 0.76 m at 15.16, 0.04, 1.50), 7 cm
+coins frames 449-495 (film 14.97-16.53 s): own's left shin is inside a box (0.77 x 0.05 x 0.76 m at 15.16, 0.32, 1.50), 7 cm
+coins frames 449-495 (film 14.97-16.53 s): own's left foot is inside a box (0.33 x 0.38 x 0.35 m at 15.02, 0.18, 1.37), 4 cm
+coins frames 449-484 (film 14.97-16.17 s): own's left thigh is inside a box (0.63 x 0.02 x 0.62 m at 15.16, 0.37, 1.50), 5 cm
+coins frames 449-484 (film 14.97-16.17 s): own's left shin is inside a box (0.63 x 0.02 x 0.62 m at 15.16, 0.37, 1.50), 4 cm
+coins frames 449-481 (film 14.97-16.07 s): own's left thigh is inside a cylinder (0.12 x 0.06 x 0.11 m at 14.94, 0.40, 1.38), 5 cm
+coins frames 454-473 (film 15.13-15.80 s): own's left shin is inside a sphere (0.55 x 0.22 x 0.54 m at 15.16, 0.35, 1.50), 2 cm
+rules frames 611-678 (film 20.37-22.63 s): the thing in ref L+R's hand, a box (1.35 x 0.03 x 0.03 m at 1.15, 1.12, -5.90), is drawn over ret's chest, 23 cm
+rules frames 623-626 (film 20.77-20.90 s): ref's right foot slides while he stands on it (2.6 cm a frame)
+rules frames 631-631 (film 21.03-21.07 s): ref's left foot slides while he stands on it (1.4 cm a frame)
+rules frames 632-632 (film 21.07-21.10 s): mur's left forearm goes through the thing in mur R's hand (a box (0.14 x 0.07 x 0.04 m at 0.47, 1.02, -6.18)): part of it before the thing, part behind it, 20 cm
+out frames 840-911 (film 28.00-30.40 s): the thing in mur R's hand, blade (0.19 x 0.46 x 0.26 m at 11.95, 0.54, 3.03), is drawn over ret's left thigh, 46 cm
+out frames 840-879 (film 28.00-29.33 s): ret's left thigh is inside the thing in mur R's hand, blade (0.19 x 0.46 x 0.26 m at 11.95, 0.54, 3.03), 4 cm
+out frames 840-877 (film 28.00-29.27 s): ret's left shin is inside the thing in mur R's hand, blade (0.19 x 0.46 x 0.26 m at 11.95, 0.54, 3.03), 2 cm
+out frames 849-946 (film 28.30-31.57 s): the thing in mur R's hand, blade (0.19 x 0.46 x 0.26 m at 11.98, 0.53, 3.02), is drawn over ret's left shin, 54 cm
+out frames 857-946 (film 28.57-31.57 s): mur's right foot slides while he stands on it (3.9 cm a frame)
+out frames 857-946 (film 28.57-31.57 s): ret's right foot slides while he stands on it (3.9 cm a frame)
+out frames 871-933 (film 29.03-31.13 s): mur's left foot slides while he stands on it (3.3 cm a frame)
+out frames 871-933 (film 29.03-31.13 s): ret's left foot slides while he stands on it (3.3 cm a frame)
+doctor frames 947-1009 (film 31.57-33.67 s): doc's right hand goes through the thing in doc L's hand (a cylinder (0.36 x 0.03 x 0.06 m at 3.43, 1.05, 49.62)): part of it before the thing, part behind it, 100 cm
+relax frames 1121-1137 (film 37.37-37.93 s): sir's left hand and wom's chest are in the same space, 10 cm
+relax frames 1121-1122 (film 37.37-37.43 s): sir's left hand and wom's right upper arm are in the same space, 6 cm
+relax frames 1122-1137 (film 37.40-37.93 s): sir's left forearm and wom's right upper arm are in the same space, 7 cm
+relax frames 1124-1137 (film 37.47-37.93 s): sir's left forearm and wom's chest are in the same space, 6 cm
+loop frames 1169-1198 (film 38.97-39.97 s): the thing in ret R+L's hand, a box (0.26 x 0.11 x 0.02 m at 0.33, 1.49, -6.21), is drawn over mur's head, 77 cm
+loop frames 1169-1198 (film 38.97-39.97 s): the thing in ret R+L's hand, a box (0.05 x 0.03 x 0.01 m at 0.24, 1.54, -6.21), is drawn over mur's head, 100 cm
+loop frames 1169-1198 (film 38.97-39.97 s): the thing in ret R+L's hand, a box (0.21 x 0.10 x 0.02 m at 0.32, 1.40, -6.21), is drawn over mur's head, 62 cm
+loop frames 1169-1198 (film 38.97-39.97 s): the thing in ret R+L's hand, a box (0.21 x 0.10 x 0.02 m at 0.38, 1.56, -6.21), is drawn over mur's head, 69 cm
+loop frames 1169-1198 (film 38.97-39.97 s): the thing in ret R+L's hand, a box (0.05 x 0.03 x 0.01 m at 0.31, 1.60, -6.21), is drawn over mur's head, 100 cm
+loop frames 1169-1198 (film 38.97-39.97 s): mur's head is inside the thing in ret R+L's hand, a box (0.26 x 0.11 x 0.02 m at 0.33, 1.49, -6.21), 13 cm
+loop frames 1169-1198 (film 38.97-39.97 s): mur's head is inside the thing in ret R+L's hand, a box (0.05 x 0.03 x 0.01 m at 0.24, 1.54, -6.21), 12 cm
+loop frames 1169-1198 (film 38.97-39.97 s): mur's head is inside the thing in ret R+L's hand, a box (0.21 x 0.10 x 0.02 m at 0.32, 1.40, -6.21), 12 cm
+loop frames 1171-1172 (film 39.03-39.10 s): mur's head is inside the thing in ret R+L's hand, a box (0.21 x 0.10 x 0.02 m at 0.39, 1.56, -6.21), 7 cm
+loop frames 1171-1172 (film 39.03-39.10 s): mur's head is inside the thing in ret R+L's hand, a box (0.05 x 0.03 x 0.01 m at 0.32, 1.60, -6.21), 6 cm
+loop frames 1192-1198 (film 39.73-39.97 s): the thing in ret R+L's hand, a box (0.03 x 0.05 x 0.01 m at 0.24, 1.58, -6.22), is drawn over mur's head, 100 cm
+loop frames 1192-1198 (film 39.73-39.97 s): the thing in ret R+L's hand, a box (0.03 x 0.05 x 0.01 m at 0.25, 1.48, -6.22), is drawn over mur's head, 100 cm
+loop frames 1192-1198 (film 39.73-39.97 s): mur's head is inside the thing in ret R+L's hand, a box (0.03 x 0.05 x 0.01 m at 0.24, 1.58, -6.22), 4 cm
+loop frames 1192-1198 (film 39.73-39.97 s): mur's head is inside the thing in ret R+L's hand, a box (0.03 x 0.05 x 0.01 m at 0.25, 1.48, -6.22), 2 cm
+BODY CHECK FAILED for gladiators-death: 1199 frames of 1199, 2991 figure-frames, 16869 pairs tried, 101 faults (3 s)

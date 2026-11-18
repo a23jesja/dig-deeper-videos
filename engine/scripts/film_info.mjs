@@ -4,6 +4,8 @@
 //     grips = the held things, read on every frame: the grip in the hand, the working end where its use allows, a hand on every
 //             held thing, nothing leaving a hand without a fall or changing hand between frames; `grips spots` = where they are in
 //             the picture (json); `grips tenths` = read every tenth of a second only (quicker, misses faults of one or two frames)
+//     body = nothing goes into anything, on every frame (src/craft/stage/bodyCheck.ts): every figure against every solid of the set,
+//            every held thing, every other figure, and its feet against the ground; `body <n>` = every n-th frame (a quick look only)
 //     stills = the sketch frames as a comma list (for scripts/stills.mjs)     shots = shots.json for scripts/short_qa.py
 import fs from "node:fs"; import path from "node:path"; import os from "node:os"; import { pathToFileURL } from "node:url"; import { build } from "esbuild";
 const name = process.argv[2], what = process.argv[3] ?? "table";
@@ -24,7 +26,7 @@ if (typeof globalThis.document === "undefined") {
   globalThis.document = { createElement: () => { const g = context(); return { width: 300, height: 150, style: {}, getContext: () => g, toDataURL: () => "", addEventListener() {} }; }, createElementNS: () => ({ style: {} }) };
   globalThis.Path2D = class { constructor() { return quiet({}); } };
 }
-const { FILMS, captions, auditGrips, occlusions, textOver } = await import(pathToFileURL(tmp).href); fs.rmSync(tmp, { force: true });
+const { FILMS, captions, auditGrips, occlusions, textOver, bodyCheck, bodyLines } = await import(pathToFileURL(tmp).href); fs.rmSync(tmp, { force: true });
 if (!FILMS[name]) { console.error(`no film named ${name}; there are: ${Object.keys(FILMS).join(", ")}`); process.exit(1); }
 const { film, comp } = FILMS[name], f = (t) => Math.round(t * film.fps);
 const rows = film.shots.map((s) => ({ id: s.id, a: f(s.a), b: f(s.b), still: Math.min(f(s.b) - 1, f(s.a + (s.still ?? (s.b - s.a) / 2))), seconds: +(s.b - s.a).toFixed(2) }));
@@ -68,8 +70,16 @@ else if (what === "check") {
   for (const o of occlusions(film)) bad.push(o);
   // no line of text over a face, a chest or a hand (the review of gladiators v4)
   for (const o of textOver(film)) bad.push(o);
+  // nothing goes into anything, on every frame (Jesper, 18 November: "Impossible things: zero tolerance"); `body` runs it alone
+  { const r = bodyCheck(film); for (const l of bodyLines(film, r)) bad.push(`body: ${l}`); console.log(`body check: ${r.frames} frames, ${r.figuresTried} figure-frames, ${r.pairs} pairs tried, ${r.faults.length} faults`); }
   if (bad.length) { console.error(`FILM CHECK FAILED for ${name}:`); for (const b of bad) console.error("  " + b); process.exit(1); }
   console.log(`FILM CHECK OK for ${name}: ${film.shots.length} shots, ${film.seconds.toFixed(1)} s, no figure seen from more than 35 degrees above, none standing in another or in a solid, none jumping, no face covered and no figure cut by a thing in the foreground`);
+}
+else if (what === "body") {
+  const t0 = Date.now(), r = bodyCheck(film, { every: Number(process.argv[4] ?? 1) || 1 }), lines = bodyLines(film, r);
+  for (const l of lines) console.log(l);
+  console.log(`${lines.length ? "BODY CHECK FAILED" : "BODY CHECK OK"} for ${name}: ${r.frames} frames of ${f(film.seconds)}, ${r.figuresTried} figure-frames, ${r.pairs} pairs tried (a figure against a solid, a held thing or another figure), ${lines.length} faults (${((Date.now() - t0) / 1000).toFixed(0)} s)`);
+  process.exit(lines.length ? 1 : 0);
 }
 else if (what === "grips") {
   const { bad, held, spots } = auditGrips(film, process.argv[4] === "tenths" ? 0.1 : undefined);

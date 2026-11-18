@@ -1,0 +1,427 @@
+hook frames 0-0 (film 0.00-0.03 s): the thing in cook R's hand, a torus (0.40 x 0.02 x 0.40 m at -7.19, 0.66, 6.02), is drawn over old's left shin, 15 cm
+hook frames 0-11 (film 0.00-0.40 s): the thing in cook R's hand, a torus (0.06 x 0.19 x 0.37 m at -7.19, 0.82, 6.02), is drawn over old's right shin, 46 cm
+hook frames 0-69 (film 0.00-2.33 s): merchant (0.12 x 0.06 x 1.30 m at -5.34, 0.97, 5.80) stands 0.51 m behind mc, hidden by his body and showing on both sides of it: it seems to go through him, 16 cm
+hook frames 0-69 (film 0.00-2.33 s): merchant (0.12 x 0.06 x 1.30 m at -5.34, 0.97, 5.80) stands 0.53 m behind sailor, hidden by his body and showing on both sides of it: it seems to go through him, 14 cm
+hook frames 0-69 (film 0.00-2.33 s): mc's head and old's right forearm are in the same space, 9 cm
+hook frames 0-69 (film 0.00-2.33 s): mc's head and old's right hand are in the same space, 10 cm
+hook frames 0-69 (film 0.00-2.33 s): mc's right upper arm and sailor's left upper arm are in the same space, 7 cm
+hook frames 2-6 (film 0.07-0.23 s): mc's right forearm and sailor's left upper arm are in the same space, 6 cm
+hook frames 3-29 (film 0.10-1.00 s): mc's chest and old's right upper arm are in the same space, 3 cm
+hook frames 3-43 (film 0.10-1.47 s): mc's left upper arm and old's right upper arm are in the same space, 3 cm
+hook frames 3-20 (film 0.10-0.70 s): mc's left hand and old's chest are in the same space, 9 cm
+hook frames 4-6 (film 0.13-0.23 s): mc's right forearm and sailor's left forearm are in the same space, 6 cm
+hook frames 6-7 (film 0.20-0.27 s): mc's right upper arm and sailor's left forearm are in the same space, 6 cm
+hook frames 8-69 (film 0.27-2.33 s): mc's face is covered by sailor's left hand (24 % of it), 35 cm
+hook frames 8-69 (film 0.27-2.33 s): mc's head and sailor's left forearm are in the same space, 9 cm
+hook frames 8-69 (film 0.27-2.33 s): mc's head and sailor's left hand are in the same space, 12 cm
+hook frames 14-69 (film 0.47-2.33 s): old's face is covered by cook's right hand (29 % of it), 41 cm
+hook frames 20-20 (film 0.67-0.70 s): mc's left forearm and old's chest are in the same space, 6 cm
+hook frames 21-69 (film 0.70-2.33 s): old's face is covered by mc's left forearm (29 % of it), 47 cm
+hook frames 21-69 (film 0.70-2.33 s): mc's left forearm and old's head are in the same space, 12 cm
+hook frames 21-22 (film 0.70-0.77 s): mc's left hand and old's head are in the same space, 10 cm
+hook frames 22-69 (film 0.73-2.33 s): mc's left upper arm and old's head are in the same space, 10 cm
+hook frames 22-28 (film 0.73-0.97 s): mc's right hand and sailor's head are in the same space, 6 cm
+hook frames 23-69 (film 0.77-2.33 s): mc's right forearm and sailor's head are in the same space, 7 cm
+offer frames 133-183 (film 4.43-6.13 s): cap's head lies over p1's head in the picture (25 px into it, nearer the lens), 24 cm
+offer frames 133-183 (film 4.43-6.13 s): cap's head lies over p2's head in the picture (36 px into it, nearer the lens), 32 cm
+offer frames 151-183 (film 5.03-6.13 s): p2's face is covered by cap's left hand (53 % of it), 65 cm
+creep frames 184-276 (film 6.13-9.23 s): mate's face is covered by sailor's left hand (53 % of it), 94 cm
+creep frames 184-276 (film 6.13-9.23 s): pir's right upper arm is inside a box (5.30 x 0.09 x 0.16 m at 0.00, 2.02, 5.00), 7 cm
+creep frames 184-276 (film 6.13-9.23 s): pir's right forearm is inside a box (5.30 x 0.09 x 0.16 m at 0.00, 2.02, 5.00), 7 cm
+creep frames 195-257 (film 6.50-8.60 s): pir's left upper arm and tall's right upper arm are in the same space, 6 cm
+creep frames 195-256 (film 6.50-8.57 s): pir's left upper arm and tall's right forearm are in the same space, 6 cm
+creep frames 195-256 (film 6.50-8.57 s): pir's left forearm and tall's right upper arm are in the same space, 6 cm
+creep frames 195-256 (film 6.50-8.57 s): pir's left thigh and tall's right thigh are in the same space, 6 cm
+creep frames 196-196 (film 6.53-6.57 s): pir's left forearm and tall's right forearm are in the same space, 5 cm
+creep frames 196-216 (film 6.53-7.23 s): pir's left hand and tall's right upper arm are in the same space, 6 cm
+creep frames 196-208 (film 6.53-6.97 s): cap's right upper arm and tall's left upper arm are in the same space, 2 cm
+creep frames 224-245 (film 7.47-8.20 s): pir's right hand is inside a box (5.30 x 0.09 x 0.16 m at 0.00, 2.02, 5.00), 5 cm
+creep frames 234-236 (film 7.80-7.90 s): cap's head and tall's left upper arm are in the same space, 3 cm
+creep frames 237-242 (film 7.90-8.10 s): cap's right upper arm and tall's chest are in the same space, 4 cm
+creep frames 237-242 (film 7.90-8.10 s): cap's right forearm and tall's chest are in the same space, 6 cm
+creep frames 243-247 (film 8.10-8.27 s): cap's right upper arm and tall's head are in the same space, 5 cm
+creep frames 243-248 (film 8.10-8.30 s): cap's right forearm and tall's head are in the same space, 7 cm
+creep frames 246-256 (film 8.20-8.57 s): pir's left thigh and tall's right shin are in the same space, 5 cm
+creep frames 246-256 (film 8.20-8.57 s): pir's left shin and tall's right thigh are in the same space, 5 cm
+creep frames 246-256 (film 8.20-8.57 s): pir's left shin and tall's right shin are in the same space, 3 cm
+creep frames 248-248 (film 8.27-8.30 s): cap's right hand and tall's head are in the same space, 7 cm
+creep frames 269-269 (film 8.97-9.00 s): a box (5.30 x 0.06 x 0.08 m at 0.00, 1.62, 8.42) stands 0.23 m behind mate, hidden by his body and showing on both sides of it: it seems to go through him, 3 cm
+creep frames 270-272 (film 9.00-9.10 s): tall's face is covered by sailor's left hand (24 % of it), 24 cm
+swap frames 277-329 (film 9.23-11.00 s): pir's face is covered by sailor's right upper arm (82 % of it), 94 cm
+swap frames 277-285 (film 9.23-9.53 s): the thing in peeker R's hand, blade (0.02 x 0.56 x 0.51 m at -1.78, 2.10, 6.09), is drawn over pir's head, 38 cm
+swap frames 277-292 (film 9.23-9.77 s): the thing in mate R's hand, a box (0.05 x 0.14 x 0.14 m at -2.25, 1.71, 5.81), is drawn over pir's chest, 100 cm
+swap frames 277-285 (film 9.23-9.53 s): the thing in mate R's hand, a box (0.08 x 0.16 x 0.16 m at -2.25, 1.77, 5.75), is drawn over pir's chest, 54 cm
+swap frames 277-285 (film 9.23-9.53 s): the thing in mate R's hand, a tube (0.02 x 0.18 x 0.18 m at -2.35, 1.68, 5.78), is drawn over pir's chest, 62 cm
+swap frames 277-277 (film 9.23-9.27 s): the thing in mate R's hand, a sphere (0.06 x 0.08 x 0.08 m at -2.25, 1.65, 5.86), is drawn over pir's belly, 100 cm
+swap frames 277-288 (film 9.23-9.63 s): the thing in cap R's hand, a box (0.05 x 0.15 x 0.12 m at -2.20, 1.78, 6.92), is drawn over peeker's chest, 69 cm
+swap frames 277-288 (film 9.23-9.63 s): the thing in cap R's hand, a box (0.08 x 0.13 x 0.18 m at -2.20, 1.85, 6.88), is drawn over peeker's chest, 85 cm
+swap frames 277-288 (film 9.23-9.63 s): the thing in cap R's hand, a tube (0.02 x 0.19 x 0.16 m at -2.30, 1.75, 6.88), is drawn over peeker's chest, 85 cm
+swap frames 277-288 (film 9.23-9.63 s): the thing in cap R's hand, blade (0.02 x 0.59 x 0.46 m at -2.21, 2.13, 6.73), is drawn over peeker's head, 77 cm
+swap frames 277-287 (film 9.23-9.60 s): the thing in sailor R's hand, a cylinder (0.10 x 0.14 x 0.10 m at -5.68, 1.39, 6.57), is drawn over peeker's head, 100 cm
+swap frames 277-287 (film 9.23-9.60 s): the thing in sailor R's hand, a torus (0.02 x 0.09 x 0.04 m at -5.68, 1.39, 6.49), is drawn over peeker's chest, 100 cm
+swap frames 277-306 (film 9.23-10.23 s): mate's face is covered by sailor's right forearm (35 % of it), 82 cm
+swap frames 277-329 (film 9.23-11.00 s): merchant (0.12 x 0.06 x 1.30 m at -5.34, 0.97, 5.80) stands 0.30 m behind sailor, hidden by his body and showing on both sides of it: it seems to go through him, 12 cm
+swap frames 278-292 (film 9.27-9.77 s): the thing in mate R's hand, a sphere (0.06 x 0.08 x 0.08 m at -2.25, 1.65, 5.87), is drawn over pir's chest, 100 cm
+swap frames 286-287 (film 9.53-9.60 s): the thing in peeker R's hand, blade (0.02 x 0.56 x 0.51 m at -1.78, 2.10, 6.10), is drawn over pir's belly, 46 cm
+swap frames 286-290 (film 9.53-9.70 s): the thing in mate R's hand, a box (0.05 x 0.14 x 0.14 m at -2.25, 1.71, 5.81), is drawn over pir's right thigh, 100 cm
+swap frames 286-290 (film 9.53-9.70 s): the thing in mate R's hand, a box (0.08 x 0.16 x 0.16 m at -2.25, 1.77, 5.76), is drawn over pir's right thigh, 54 cm
+swap frames 286-290 (film 9.53-9.70 s): the thing in mate R's hand, a tube (0.02 x 0.18 x 0.18 m at -2.35, 1.68, 5.78), is drawn over pir's right thigh, 77 cm
+swap frames 286-290 (film 9.53-9.70 s): the thing in mate R's hand, a sphere (0.06 x 0.08 x 0.08 m at -2.25, 1.65, 5.87), is drawn over pir's right thigh, 69 cm
+swap frames 286-287 (film 9.53-9.60 s): pir's chest is inside the thing in peeker R's hand, blade (0.02 x 0.56 x 0.51 m at -1.78, 2.10, 6.10), 9 cm
+swap frames 287-287 (film 9.57-9.60 s): pir's belly is inside the thing in peeker R's hand, blade (0.02 x 0.55 x 0.52 m at -1.78, 2.09, 6.09), 4 cm
+swap frames 288-288 (film 9.60-9.63 s): the thing in peeker R's hand, blade (0.02 x 0.17 x 0.60 m at -1.78, 1.71, 5.94), is drawn over pir's right thigh, 54 cm
+swap frames 288-288 (film 9.60-9.63 s): the thing in sailor R's hand, a cylinder (0.10 x 0.14 x 0.10 m at -5.68, 1.38, 6.56), is drawn over peeker's chest, 100 cm
+swap frames 288-294 (film 9.60-9.83 s): the thing in sailor R's hand, a torus (0.02 x 0.09 x 0.04 m at -5.68, 1.38, 6.49), is drawn over peeker's belly, 100 cm
+swap frames 288-288 (film 9.60-9.63 s): pir's left thigh is inside the thing in peeker R's hand, blade (0.02 x 0.17 x 0.60 m at -1.78, 1.71, 5.94), 4 cm
+swap frames 288-288 (film 9.60-9.63 s): pir's right thigh is inside the thing in peeker R's hand, blade (0.02 x 0.17 x 0.60 m at -1.78, 1.71, 5.94), 5 cm
+swap frames 289-293 (film 9.63-9.80 s): the thing in cap R's hand, a box (0.05 x 0.15 x 0.12 m at -2.20, 1.78, 6.93), is drawn over peeker's left thigh, 77 cm
+swap frames 289-293 (film 9.63-9.80 s): the thing in cap R's hand, a box (0.08 x 0.13 x 0.18 m at -2.20, 1.85, 6.89), is drawn over peeker's left thigh, 77 cm
+swap frames 289-293 (film 9.63-9.80 s): the thing in cap R's hand, a tube (0.02 x 0.19 x 0.16 m at -2.30, 1.75, 6.89), is drawn over peeker's left thigh, 100 cm
+swap frames 289-292 (film 9.63-9.77 s): the thing in cap R's hand, blade (0.02 x 0.59 x 0.46 m at -2.21, 2.13, 6.74), is drawn over peeker's chest, 100 cm
+swap frames 289-294 (film 9.63-9.83 s): the thing in sailor R's hand, a cylinder (0.10 x 0.14 x 0.10 m at -5.68, 1.39, 6.55), is drawn over peeker's left thigh, 100 cm
+swap frames 289-293 (film 9.63-9.80 s): the thing in sailor R's hand, a torus (0.02 x 0.09 x 0.04 m at -5.68, 1.39, 6.48), is drawn over peeker's right thigh, 100 cm
+swap frames 291-329 (film 9.70-11.00 s): mate's head lies over pir's head in the picture (13 px into it, nearer the lens), 25 cm
+swap frames 291-291 (film 9.70-9.73 s): the thing in mate R's hand, a box (0.05 x 0.16 x 0.12 m at -2.25, 1.82, 6.11), is drawn over pir's left thigh, 62 cm
+swap frames 291-291 (film 9.70-9.73 s): the thing in mate R's hand, a box (0.08 x 0.12 x 0.19 m at -2.25, 1.75, 6.07), is drawn over pir's left thigh, 85 cm
+swap frames 291-291 (film 9.70-9.73 s): the thing in mate R's hand, a tube (0.02 x 0.19 x 0.16 m at -2.35, 1.85, 6.07), is drawn over pir's left thigh, 100 cm
+swap frames 291-291 (film 9.70-9.73 s): the thing in mate R's hand, blade (0.02 x 0.60 x 0.43 m at -2.24, 1.46, 5.94), is drawn over pir's right shin, 38 cm
+swap frames 292-292 (film 9.73-9.77 s): the thing in mate R's hand, a box (0.08 x 0.03 x 0.20 m at -2.25, 2.54, 6.01), is drawn over pir's head, 100 cm
+swap frames 292-329 (film 9.73-11.00 s): the thing in mate R's hand, a tube (0.02 x 0.18 x 0.08 m at -2.35, 2.46, 5.96), is drawn over pir's head, 100 cm
+swap frames 292-292 (film 9.73-9.77 s): the thing in mate R's hand, blade (0.02 x 0.60 x 0.16 m at -2.26, 2.86, 6.05), is drawn over pir's head, 46 cm
+swap frames 292-292 (film 9.73-9.77 s): mate's left forearm goes through the thing in cap R's hand (a box (0.05 x 0.15 x 0.13 m at -2.20, 1.78, 6.93)): part of it before the thing, part behind it, 100 cm
+swap frames 292-292 (film 9.73-9.77 s): mate's left hand goes through the thing in cap R's hand (a box (0.05 x 0.15 x 0.13 m at -2.20, 1.78, 6.93)): part of it before the thing, part behind it, 100 cm
+swap frames 292-292 (film 9.73-9.77 s): mate's left upper arm is inside the thing in cap R's hand, blade (0.02 x 0.58 x 0.48 m at -2.21, 2.12, 6.73), 4 cm
+swap frames 292-292 (film 9.73-9.77 s): mate's left forearm is inside the thing in cap R's hand, blade (0.02 x 0.58 x 0.48 m at -2.21, 2.12, 6.73), 4 cm
+swap frames 292-292 (film 9.73-9.77 s): mate's left hand is inside the thing in cap R's hand, blade (0.02 x 0.58 x 0.48 m at -2.21, 2.12, 6.73), 4 cm
+swap frames 293-329 (film 9.77-11.00 s): pir's face is covered by mate's right forearm (41 % of it), 47 cm
+swap frames 293-329 (film 9.77-11.00 s): the thing in mate R's hand, a box (0.05 x 0.16 x 0.06 m at -2.25, 2.83, 5.96), is drawn over pir's head, 85 cm
+swap frames 293-329 (film 9.77-11.00 s): the thing in mate R's hand, a sphere (0.06 x 0.07 x 0.07 m at -2.25, 2.75, 5.95), is drawn over pir's head, 100 cm
+swap frames 293-293 (film 9.77-9.80 s): the thing in cap R's hand, blade (0.02 x 0.56 x 0.52 m at -2.19, 1.63, 6.71), is drawn over peeker's right shin, 69 cm
+swap frames 296-329 (film 9.87-11.00 s): the thing in cap R's hand, a sphere (0.06 x 0.06 x 0.06 m at -2.19, 2.93, 6.83), is drawn over peeker's head, 92 cm
+swap frames 308-328 (film 10.27-10.97 s): the thing in cap R's hand, a box (0.05 x 0.16 x 0.08 m at -2.19, 2.98, 6.82), is drawn over peeker's head, 15 cm
+swap frames 308-329 (film 10.27-11.00 s): the thing in cap R's hand, a tube (0.02 x 0.19 x 0.12 m at -2.29, 2.97, 6.78), is drawn over peeker's head, 23 cm
+meant frames 330-419 (film 11.00-14.00 s): a box (0.16 x 0.09 x 3.66 m at -2.68, 2.02, 6.70) stands 0.00 m behind cap, hidden by his body and showing on both sides of it: it seems to go through him, 7 cm
+meant frames 330-419 (film 11.00-14.00 s): a box (0.08 x 0.06 x 3.60 m at -2.68, 1.62, 6.70) stands 0.05 m behind cap, hidden by his body and showing on both sides of it: it seems to go through him, 8 cm
+meant frames 330-419 (film 11.00-14.00 s): a box (0.06 x 0.15 x 2.70 m at -2.79, 2.13, 6.37) stands 0.00 m behind cap, hidden by his body and showing on both sides of it: it seems to go through him, 10 cm
+meant frames 341-419 (film 11.37-14.00 s): a box (0.08 x 0.06 x 3.60 m at -2.68, 1.62, 6.70) stands 0.00 m behind p2, hidden by his body and showing on both sides of it: it seems to go through him, 8 cm
+meant frames 358-376 (film 11.93-12.57 s): cap's right hand is inside a box (0.16 x 0.09 x 3.66 m at -2.68, 2.02, 6.70), 6 cm
+meant frames 368-396 (film 12.27-13.23 s): a box (0.10 x 0.80 x 0.10 m at -2.68, 1.60, 5.00) stands 1.01 m behind p2, hidden by his body and showing on both sides of it: it seems to go through him, 12 cm
+sight frames 420-497 (film 14.00-16.60 s): mc's belly is inside a box (0.06 x 0.17 x 0.18 m at -5.72, 1.24, 5.11), 5 cm
+sight frames 420-497 (film 14.00-16.60 s): mc's left thigh is inside a box (0.06 x 0.17 x 0.18 m at -5.72, 1.24, 5.11), 5 cm
+sight frames 420-497 (film 14.00-16.60 s): mc's chest is inside a box (0.06 x 0.14 x 0.13 m at -5.71, 1.33, 5.22), 9 cm
+sight frames 420-497 (film 14.00-16.60 s): mc's belly is inside a box (0.06 x 0.14 x 0.13 m at -5.71, 1.33, 5.22), 7 cm
+sight frames 420-497 (film 14.00-16.60 s): mc's belly is inside a box (0.09 x 0.15 x 0.19 m at -5.71, 1.27, 5.18), 9 cm
+sight frames 420-497 (film 14.00-16.60 s): mc's belly is inside a tube (0.03 x 0.16 x 0.14 m at -5.71, 1.31, 5.26), 6 cm
+sight frames 420-497 (film 14.00-16.60 s): mc's chest is inside a sphere (0.06 x 0.08 x 0.08 m at -5.71, 1.39, 5.27), 9 cm
+sight frames 420-497 (film 14.00-16.60 s): mc's belly is inside a sphere (0.06 x 0.08 x 0.08 m at -5.71, 1.39, 5.27), 8 cm
+sight frames 439-445 (film 14.63-14.87 s): mc's left forearm goes through the thing in mc R's hand (a cylinder (0.16 x 0.16 x 0.07 m at -5.77, 1.41, 5.24)): part of it before the thing, part behind it, 50 cm
+sight frames 439-439 (film 14.63-14.67 s): mc's left forearm is inside a box (0.06 x 0.14 x 0.13 m at -5.71, 1.33, 5.22), 3 cm
+sight frames 439-439 (film 14.63-14.67 s): mc's left forearm is inside a sphere (0.06 x 0.08 x 0.08 m at -5.71, 1.39, 5.27), 3 cm
+sight frames 439-439 (film 14.63-14.67 s): mc's left forearm is inside the thing in mc R's hand, a cylinder (0.16 x 0.16 x 0.07 m at -5.77, 1.41, 5.24), 5 cm
+sight frames 439-439 (film 14.63-14.67 s): mc's left forearm is inside the thing in mc R's hand, a cylinder (0.17 x 0.16 x 0.33 m at -5.74, 1.44, 5.38), 5 cm
+sight frames 440-492 (film 14.67-16.43 s): mc's left forearm is inside a box (0.06 x 0.17 x 0.18 m at -5.72, 1.24, 5.11), 3 cm
+sight frames 440-468 (film 14.67-15.63 s): mc's left forearm is inside a box (0.09 x 0.15 x 0.19 m at -5.71, 1.27, 5.18), 4 cm
+sight frames 445-445 (film 14.83-14.87 s): mc's left forearm is inside the thing in mc R's hand, a cylinder (0.13 x 0.20 x 0.29 m at -5.72, 1.50, 4.90), 3 cm
+sight frames 452-452 (film 15.07-15.10 s): mc's right hand is inside a box (0.09 x 0.15 x 0.19 m at -5.71, 1.27, 5.18), 4 cm
+sight frames 453-453 (film 15.10-15.13 s): mc's left forearm goes through the thing in mc R's hand (a box (0.05 x 0.12 x 0.16 m at -5.71, 1.36, 5.31)): part of it before the thing, part behind it, 17 cm
+red frames 498-605 (film 16.60-20.20 s): a box (0.10 x 0.80 x 0.10 m at -1.30, 1.60, 5.00) stands 0.92 m behind mate, hidden by his body and showing on both sides of it: it seems to go through him, 37 cm
+red frames 498-605 (film 16.60-20.20 s): a box (5.30 x 0.09 x 0.16 m at 0.00, 2.02, 5.00) stands 0.00 m behind mate, hidden by his body and showing on both sides of it: it seems to go through him, 8 cm
+red frames 498-605 (film 16.60-20.20 s): cap's head lies over peeker's head in the picture (15 px into it, nearer the lens), 49 cm
+red frames 498-563 (film 16.60-18.80 s): the thing in stub L's hand, a buffer (0.10 x 0.27 x 0.33 m at -5.72, 1.61, 7.19), is drawn over peeker's head, 54 cm
+red frames 498-563 (film 16.60-18.80 s): the thing in stub L's hand, a sphere (0.06 x 0.07 x 0.07 m at -5.69, 1.49, 7.26), is drawn over peeker's chest, 100 cm
+red frames 498-562 (film 16.60-18.77 s): the thing in stub L's hand, a torus (0.02 x 0.04 x 0.05 m at -5.69, 1.61, 7.23), is drawn over peeker's head, 100 cm
+red frames 498-544 (film 16.60-18.17 s): pir's face is covered by stub's left upper arm (24 % of it), 100 cm
+red frames 507-562 (film 16.90-18.77 s): peeker's face is covered by stub's left hand (41 % of it), 88 cm
+red frames 508-519 (film 16.93-17.33 s): pir's face is covered by cap's left forearm (29 % of it), 47 cm
+red frames 512-523 (film 17.07-17.47 s): the thing in stub L's hand, a sphere (0.06 x 0.07 x 0.08 m at -5.69, 1.63, 7.22), is drawn over peeker's head, 100 cm
+red frames 513-522 (film 17.10-17.43 s): cap's face is covered by stub's left upper arm (94 % of it), 94 cm
+red frames 514-605 (film 17.13-20.20 s): peeker's face is covered by cap's right upper arm (29 % of it), 59 cm
+red frames 544-544 (film 18.13-18.17 s): the thing in cap R's hand, a box (0.06 x 0.16 x 0.07 m at -2.37, 2.62, 6.11), is drawn over peeker's head, 100 cm
+red frames 544-544 (film 18.13-18.17 s): the thing in cap R's hand, a box (0.12 x 0.06 x 0.21 m at -2.37, 2.70, 6.09), is drawn over peeker's head, 77 cm
+red frames 544-544 (film 18.13-18.17 s): the thing in cap R's hand, a sphere (0.07 x 0.07 x 0.08 m at -2.37, 2.53, 6.12), is drawn over peeker's head, 100 cm
+red frames 544-544 (film 18.13-18.17 s): the thing in cap R's hand, blade (0.07 x 0.62 x 0.24 m at -2.38, 3.01, 6.09), is drawn over peeker's head, 23 cm
+red frames 549-560 (film 18.30-18.70 s): the thing in stub L's hand, a box (0.06 x 0.05 x 0.06 m at -5.69, 1.68, 7.27), is drawn over peeker's head, 100 cm
+red frames 563-563 (film 18.77-18.80 s): the thing in stub L's hand, a buffer (0.10 x 0.24 x 0.32 m at -5.72, 1.60, 7.14), is drawn over mate's head, 31 cm
+red frames 564-564 (film 18.80-18.83 s): the thing in stub L's hand, a buffer (0.10 x 0.16 x 0.29 m at -5.72, 1.46, 7.12), is drawn over mate's chest, 38 cm
+red frames 564-564 (film 18.80-18.83 s): the thing in stub L's hand, a cylinder (0.08 x 0.04 x 0.25 m at -5.72, 1.55, 7.00), is drawn over mate's head, 38 cm
+red frames 564-564 (film 18.80-18.83 s): the thing in stub L's hand, a box (0.05 x 0.04 x 0.05 m at -5.70, 1.55, 7.13), is drawn over mate's head, 100 cm
+red frames 564-564 (film 18.80-18.83 s): the thing in stub L's hand, a sphere (0.06 x 0.05 x 0.06 m at -5.68, 1.39, 7.24), is drawn over peeker's belly, 31 cm
+red frames 565-565 (film 18.83-18.87 s): the thing in stub L's hand, a buffer (0.10 x 0.25 x 0.33 m at -5.72, 1.28, 7.15), is drawn over mate's right thigh, 31 cm
+red frames 565-565 (film 18.83-18.87 s): the thing in stub L's hand, a cylinder (0.08 x 0.13 x 0.25 m at -5.73, 1.32, 7.00), is drawn over mate's belly, 31 cm
+red frames 565-565 (film 18.83-18.87 s): the thing in stub L's hand, a box (0.06 x 0.05 x 0.06 m at -5.70, 1.36, 7.13), is drawn over mate's belly, 100 cm
+red frames 565-565 (film 18.83-18.87 s): the thing in stub L's hand, a buffer (0.10 x 0.25 x 0.33 m at -5.72, 1.28, 7.15), is drawn over peeker's right thigh, 15 cm
+red frames 565-565 (film 18.83-18.87 s): the thing in stub L's hand, a sphere (0.06 x 0.06 x 0.07 m at -5.67, 1.26, 7.29), is drawn over peeker's right thigh, 46 cm
+red frames 566-566 (film 18.87-18.90 s): the thing in stub L's hand, a buffer (0.10 x 0.30 x 0.33 m at -5.72, 1.14, 7.22), is drawn over mate's left shin, 15 cm
+red frames 566-566 (film 18.87-18.90 s): the thing in stub L's hand, a cylinder (0.08 x 0.18 x 0.23 m at -5.73, 1.14, 7.07), is drawn over mate's left shin, 31 cm
+red frames 566-566 (film 18.87-18.90 s): the thing in stub L's hand, a buffer (0.10 x 0.30 x 0.33 m at -5.72, 1.14, 7.22), is drawn over peeker's right shin, 23 cm
+red frames 566-566 (film 18.87-18.90 s): the thing in stub L's hand, a sphere (0.06 x 0.07 x 0.08 m at -5.67, 1.16, 7.36), is drawn over peeker's left shin, 77 cm
+red frames 566-566 (film 18.87-18.90 s): the thing in stub L's hand, a torus (0.02 x 0.05 x 0.05 m at -5.69, 1.18, 7.24), is drawn over peeker's right shin, 54 cm
+red frames 566-566 (film 18.87-18.90 s): the thing in stub L's hand, a sphere (0.06 x 0.07 x 0.08 m at -5.67, 1.16, 7.36), is drawn over cap's right shin, 92 cm
+red frames 567-567 (film 18.90-18.93 s): the thing in stub L's hand, a buffer (0.10 x 0.32 x 0.31 m at -5.72, 1.04, 7.32), is drawn over peeker's left shin, 15 cm
+red frames 567-567 (film 18.90-18.93 s): the thing in stub L's hand, a box (0.06 x 0.05 x 0.06 m at -5.71, 1.11, 7.26), is drawn over peeker's right shin, 100 cm
+red frames 567-567 (film 18.90-18.93 s): the thing in stub L's hand, a buffer (0.10 x 0.32 x 0.31 m at -5.72, 1.04, 7.32), is drawn over cap's right shin, 23 cm
+answer frames 606-722 (film 20.20-24.10 s): merchant (0.12 x 0.06 x 1.30 m at -5.34, 0.97, 5.80) stands 0.00 m behind mc, hidden by his body and showing on both sides of it: it seems to go through him, 11 cm
+answer frames 606-722 (film 20.20-24.10 s): mc's face is covered by old's left hand (35 % of it), 41 cm
+answer frames 606-676 (film 20.20-22.57 s): lead's head lies over mc's head in the picture (67 px into it, nearer the lens), 176 cm
+answer frames 606-661 (film 20.20-22.07 s): mc's face is covered by lead's head (53 % of it), 100 cm
+answer frames 606-722 (film 20.20-24.10 s): sailor's face is covered by cook's left forearm (35 % of it), 35 cm
+answer frames 606-683 (film 20.20-22.80 s): the thing in lead L & rear L's hand, a box (0.62 x 0.58 x 0.93 m at -6.67, 0.93, 7.37), is drawn over sailor's left thigh, 31 cm
+answer frames 606-680 (film 20.20-22.70 s): the thing in lead L & rear L's hand, a box (0.65 x 0.12 x 0.92 m at -6.66, 0.71, 7.35), is drawn over sailor's left shin, 31 cm
+answer frames 606-682 (film 20.20-22.77 s): the thing in lead L & rear L's hand, a box (0.65 x 0.12 x 0.92 m at -6.67, 1.15, 7.38), is drawn over sailor's left thigh, 38 cm
+answer frames 606-619 (film 20.20-20.67 s): the thing in lead L & rear L's hand, a box (0.58 x 0.54 x 0.15 m at -6.64, 0.95, 7.12), is drawn over sailor's left thigh, 100 cm
+answer frames 606-696 (film 20.20-23.23 s): the thing in lead L & rear L's hand, a box (0.64 x 0.14 x 0.91 m at -6.67, 1.22, 7.39), is drawn over sailor's belly, 31 cm
+answer frames 606-615 (film 20.20-20.53 s): the thing in lead L & rear L's hand, a torus (0.04 x 0.19 x 0.11 m at -6.62, 1.06, 6.90), is drawn over sailor's right thigh, 100 cm
+answer frames 606-722 (film 20.20-24.10 s): merchant (0.12 x 0.06 x 1.30 m at -5.34, 0.97, 5.80) stands 0.00 m behind old, hidden by his body and showing on both sides of it: it seems to go through him, 10 cm
+answer frames 606-630 (film 20.20-21.03 s): old's face is covered by mc's right forearm (35 % of it), 35 cm
+answer frames 606-630 (film 20.20-21.03 s): lead's head lies over cook's head in the picture (29 px into it, nearer the lens), 48 cm
+answer frames 606-637 (film 20.20-21.27 s): cook's face is covered by lead's chest (100 % of it), 100 cm
+answer frames 606-660 (film 20.20-22.03 s): the thing in lead L & rear L's hand, a box (0.62 x 0.58 x 0.93 m at -6.67, 0.93, 7.37), is drawn over boy's belly, 23 cm
+answer frames 606-649 (film 20.20-21.67 s): the thing in lead L & rear L's hand, a box (0.65 x 0.12 x 0.92 m at -6.66, 0.71, 7.35), is drawn over boy's left thigh, 23 cm
+answer frames 606-662 (film 20.20-22.10 s): the thing in lead L & rear L's hand, a box (0.65 x 0.12 x 0.92 m at -6.67, 1.15, 7.38), is drawn over boy's chest, 23 cm
+answer frames 606-608 (film 20.20-20.30 s): the thing in lead L & rear L's hand, a box (0.64 x 0.14 x 0.91 m at -6.67, 1.22, 7.39), is drawn over boy's head, 23 cm
+answer frames 606-635 (film 20.20-21.20 s): the thing in lead L & rear L's hand, a box (0.04 x 0.10 x 0.10 m at -6.96, 1.21, 7.36), is drawn over boy's chest, 100 cm
+answer frames 606-722 (film 20.20-24.10 s): rear's right forearm goes through the thing in lead L & rear L's hand (a box (0.62 x 0.58 x 0.93 m at -6.67, 0.93, 7.37)): part of it before the thing, part behind it, 50 cm
+answer frames 606-722 (film 20.20-24.10 s): rear's right hand goes through the thing in lead L & rear L's hand (a box (0.62 x 0.58 x 0.93 m at -6.67, 0.93, 7.37)): part of it before the thing, part behind it, 100 cm
+answer frames 606-722 (film 20.20-24.10 s): lead's right hand goes through the thing in lead L & rear L's hand (a box (0.62 x 0.58 x 0.93 m at -6.67, 0.93, 7.37)): part of it before the thing, part behind it, 83 cm
+answer frames 606-722 (film 20.20-24.10 s): mc's belly is inside merchant (0.30 x 0.09 x 15.06 m at -5.20, 1.20, 1.50), 5 cm
+answer frames 606-643 (film 20.20-21.47 s): mc's left thigh is inside merchant (0.30 x 0.09 x 15.06 m at -5.20, 1.20, 1.50), 4 cm
+answer frames 606-722 (film 20.20-24.10 s): mc's left thigh is inside merchant (0.12 x 0.06 x 1.30 m at -5.34, 0.97, 5.80), 9 cm
+answer frames 606-722 (film 20.20-24.10 s): mc's right thigh is inside merchant (0.12 x 0.06 x 1.30 m at -5.34, 0.97, 5.80), 9 cm
+answer frames 606-682 (film 20.20-22.77 s): mc's left thigh is inside merchant (0.04 x 0.24 x 0.04 m at -5.34, 1.03, 6.30), 5 cm
+answer frames 606-722 (film 20.20-24.10 s): mc's right thigh is inside merchant (0.06 x 0.45 x 0.31 m at -5.41, 0.79, 5.97), 7 cm
+answer frames 606-722 (film 20.20-24.10 s): mc's right shin is inside merchant (0.06 x 0.45 x 0.31 m at -5.41, 0.79, 5.97), 5 cm
+answer frames 606-722 (film 20.20-24.10 s): mc's head and old's left forearm are in the same space, 14 cm
+answer frames 606-721 (film 20.20-24.07 s): mc's head and old's left hand are in the same space, 17 cm
+answer frames 606-706 (film 20.20-23.57 s): mc's chest and old's left upper arm are in the same space, 6 cm
+answer frames 606-693 (film 20.20-23.13 s): mc's right upper arm and old's head are in the same space, 8 cm
+answer frames 606-656 (film 20.20-21.90 s): mc's right upper arm and old's left upper arm are in the same space, 6 cm
+answer frames 606-681 (film 20.20-22.73 s): mc's right forearm and old's head are in the same space, 11 cm
+answer frames 606-649 (film 20.20-21.67 s): mc's right shin and old's left shin are in the same space, 3 cm
+answer frames 606-629 (film 20.20-21.00 s): mc's right foot and old's left shin are in the same space, 3 cm
+answer frames 606-639 (film 20.20-21.33 s): mc's right foot and old's left foot are in the same space, 4 cm
+answer frames 606-707 (film 20.20-23.60 s): mc's lower foot is sunk into merchant (0.06 x 0.45 x 0.31 m at -5.41, 0.79, 5.97), 30 cm
+answer frames 606-631 (film 20.20-21.07 s): old's left thigh is inside merchant (0.06 x 0.45 x 0.31 m at -5.41, 0.79, 5.97), 3 cm
+answer frames 606-644 (film 20.20-21.50 s): old's left shin is inside merchant (0.06 x 0.45 x 0.31 m at -5.41, 0.79, 5.97), 3 cm
+answer frames 606-630 (film 20.20-21.03 s): cook's head and sailor's right upper arm are in the same space, 3 cm
+answer frames 606-642 (film 20.20-21.43 s): cook's left upper arm and sailor's chest are in the same space, 3 cm
+answer frames 606-658 (film 20.20-21.97 s): cook's left forearm and sailor's head are in the same space, 9 cm
+answer frames 606-649 (film 20.20-21.67 s): cook's left hand and sailor's head are in the same space, 9 cm
+answer frames 606-722 (film 20.20-24.10 s): rear's right forearm is inside the thing in lead L & rear L's hand, a box (0.62 x 0.58 x 0.93 m at -6.67, 0.93, 7.37), 9 cm
+answer frames 606-722 (film 20.20-24.10 s): rear's right hand is inside the thing in lead L & rear L's hand, a box (0.62 x 0.58 x 0.93 m at -6.67, 0.93, 7.37), 12 cm
+answer frames 606-722 (film 20.20-24.10 s): lead's right hand is inside the thing in lead L & rear L's hand, a box (0.62 x 0.58 x 0.93 m at -6.67, 0.93, 7.37), 10 cm
+answer frames 609-662 (film 20.30-22.10 s): the thing in lead L & rear L's hand, a box (0.64 x 0.13 x 0.91 m at -6.67, 1.22, 7.38), is drawn over boy's chest, 23 cm
+answer frames 611-681 (film 20.37-22.73 s): the thing in lead L & rear L's hand, a box (0.64 x 0.11 x 0.91 m at -6.67, 1.21, 7.36), is drawn over sailor's left thigh, 31 cm
+answer frames 613-696 (film 20.43-23.23 s): the thing in lead L & rear L's hand, a box (0.65 x 0.09 x 0.92 m at -6.67, 1.14, 7.35), is drawn over sailor's belly, 31 cm
+answer frames 614-647 (film 20.47-21.60 s): the thing in lead L & rear L's hand, a box (0.62 x 0.56 x 0.91 m at -6.67, 0.92, 7.33), is drawn over boy's left thigh, 31 cm
+answer frames 617-631 (film 20.57-21.07 s): the thing in lead L & rear L's hand, a torus (0.04 x 0.19 x 0.10 m at -6.62, 1.03, 6.84), is drawn over cook's left thigh, 77 cm
+answer frames 620-639 (film 20.67-21.33 s): the thing in lead L & rear L's hand, a box (0.65 x 0.11 x 0.92 m at -6.67, 0.69, 7.29), is drawn over boy's left shin, 15 cm
+answer frames 624-693 (film 20.80-23.13 s): mc's chest and old's left forearm are in the same space, 9 cm
+answer frames 630-719 (film 21.00-24.00 s): rear's right forearm is inside the thing in lead L & rear L's hand, a box (0.65 x 0.12 x 0.92 m at -6.67, 1.13, 7.24), 4 cm
+answer frames 632-709 (film 21.07-23.67 s): the thing in lead L & rear L's hand, a box (0.65 x 0.15 x 0.92 m at -6.67, 0.71, 7.18), is drawn over cook's left shin, 31 cm
+answer frames 632-646 (film 21.07-21.57 s): the thing in lead L & rear L's hand, a torus (0.04 x 0.20 x 0.12 m at -6.62, 1.07, 6.74), is drawn over cook's chest, 100 cm
+answer frames 632-636 (film 21.07-21.23 s): the thing in lead L & rear L's hand, a box (0.04 x 0.10 x 0.10 m at -6.96, 1.21, 7.21), is drawn over boy's head, 62 cm
+answer frames 633-642 (film 21.10-21.43 s): the thing in lead L & rear L's hand, a box (0.58 x 0.54 x 0.17 m at -6.64, 0.96, 6.94), is drawn over sailor's right thigh, 100 cm
+answer frames 633-633 (film 21.10-21.13 s): the thing in lead L & rear L's hand, a box (0.65 x 0.15 x 0.92 m at -6.67, 0.71, 7.17), is drawn over cook's left thigh, 15 cm
+answer frames 633-637 (film 21.10-21.27 s): the thing in lead L & rear L's hand, a box (0.58 x 0.54 x 0.17 m at -6.69, 0.90, 7.44), is drawn over boy's left thigh, 100 cm
+answer frames 635-709 (film 21.17-23.67 s): mc's face is covered by cook's right forearm (24 % of it), 24 cm
+answer frames 637-713 (film 21.23-23.80 s): the thing in lead L & rear L's hand, a box (0.63 x 0.62 x 0.95 m at -6.67, 0.93, 7.12), is drawn over cook's left thigh, 31 cm
+answer frames 638-647 (film 21.27-21.60 s): the thing in lead L & rear L's hand, a box (0.58 x 0.54 x 0.17 m at -6.69, 0.90, 7.35), is drawn over boy's belly, 100 cm
+answer frames 639-644 (film 21.30-21.50 s): the thing in lead L & rear L's hand, a box (0.04 x 0.10 x 0.10 m at -6.96, 1.21, 7.09), is drawn over sailor's left thigh, 100 cm
+answer frames 639-705 (film 21.30-23.53 s): merchant (0.12 x 0.06 x 1.30 m at -5.34, 0.97, 5.80) stands 1.20 m behind lead, hidden by his body and showing on both sides of it: it seems to go through him, 13 cm
+answer frames 639-722 (film 21.30-24.10 s): lead's right forearm goes through the thing in lead L & rear L's hand (a box (0.63 x 0.61 x 0.94 m at -6.67, 0.94, 7.09)): part of it before the thing, part behind it, 11 cm
+answer frames 640-721 (film 21.33-24.07 s): the thing in lead L & rear L's hand, a box (0.65 x 0.14 x 0.92 m at -6.67, 1.16, 7.09), is drawn over cook's chest, 31 cm
+answer frames 641-722 (film 21.37-24.10 s): the thing in lead L & rear L's hand, a box (0.64 x 0.15 x 0.91 m at -6.67, 1.24, 7.07), is drawn over cook's chest, 31 cm
+answer frames 642-669 (film 21.40-22.33 s): the thing in lead L & rear L's hand, a box (0.04 x 0.10 x 0.10 m at -6.95, 1.23, 7.02), is drawn over sailor's belly, 100 cm
+answer frames 642-653 (film 21.40-21.80 s): the thing in lead L & rear L's hand, a box (0.58 x 0.54 x 0.15 m at -6.64, 0.97, 6.78), is drawn over cook's left thigh, 100 cm
+answer frames 643-689 (film 21.43-23.00 s): the thing in lead L & rear L's hand, a box (0.64 x 0.14 x 0.91 m at -6.66, 1.24, 7.03), is drawn over cook's belly, 31 cm
+answer frames 645-697 (film 21.50-23.27 s): lead's head lies over old's head in the picture (6 px into it, nearer the lens), 138 cm
+answer frames 647-650 (film 21.57-21.70 s): the thing in lead L & rear L's hand, a torus (0.04 x 0.19 x 0.11 m at -6.62, 1.06, 6.47), is drawn over cook's right thigh, 69 cm
+answer frames 648-661 (film 21.60-22.07 s): the thing in lead L & rear L's hand, a torus (0.04 x 0.19 x 0.10 m at -6.62, 1.05, 6.45), is drawn over mc's left thigh, 100 cm
+answer frames 648-649 (film 21.60-21.67 s): the thing in lead L & rear L's hand, a box (0.58 x 0.54 x 0.13 m at -6.69, 0.92, 7.18), is drawn over boy's right thigh, 69 cm
+answer frames 649-668 (film 21.63-22.30 s): mc's head and old's left upper arm are in the same space, 3 cm
+answer frames 650-687 (film 21.67-22.93 s): old's face is covered by lead's head (29 % of it), 100 cm
+answer frames 651-653 (film 21.70-21.80 s): the thing in lead L & rear L's hand, a torus (0.04 x 0.19 x 0.10 m at -6.71, 1.00, 7.37), is drawn over boy's left thigh, 85 cm
+answer frames 654-668 (film 21.80-22.30 s): the thing in lead L & rear L's hand, a torus (0.04 x 0.19 x 0.10 m at -6.71, 1.00, 7.34), is drawn over boy's belly, 100 cm
+answer frames 657-669 (film 21.90-22.33 s): the thing in lead L & rear L's hand, a box (0.58 x 0.54 x 0.14 m at -6.69, 0.90, 7.08), is drawn over sailor's left thigh, 100 cm
+answer frames 659-722 (film 21.97-24.10 s): the thing in lead L & rear L's hand, a box (0.65 x 0.11 x 0.92 m at -6.67, 0.69, 6.79), is drawn over mc's left shin, 31 cm
+answer frames 662-677 (film 22.07-22.60 s): the thing in lead L & rear L's hand, a torus (0.04 x 0.19 x 0.11 m at -6.62, 1.04, 6.29), is drawn over mc's belly, 100 cm
+answer frames 663-722 (film 22.10-24.10 s): the thing in lead L & rear L's hand, a box (0.62 x 0.58 x 0.93 m at -6.67, 0.91, 6.74), is drawn over mc's left thigh, 31 cm
+answer frames 663-674 (film 22.10-22.50 s): the thing in lead L & rear L's hand, a box (0.58 x 0.54 x 0.15 m at -6.64, 0.93, 6.49), is drawn over cook's right thigh, 100 cm
+answer frames 664-670 (film 22.13-22.37 s): the thing in lead L & rear L's hand, a box (0.04 x 0.10 x 0.10 m at -6.96, 1.19, 6.72), is drawn over sailor's right thigh, 92 cm
+answer frames 665-721 (film 22.17-24.07 s): the thing in lead L & rear L's hand, a box (0.65 x 0.11 x 0.92 m at -6.67, 1.13, 6.73), is drawn over mc's left thigh, 38 cm
+answer frames 668-705 (film 22.27-23.53 s): boy's face is covered by rear's chest (24 % of it), 100 cm
+answer frames 669-671 (film 22.30-22.40 s): the thing in lead L & rear L's hand, a torus (0.04 x 0.20 x 0.11 m at -6.71, 0.97, 7.15), is drawn over boy's right thigh, 100 cm
+answer frames 670-683 (film 22.33-22.80 s): the thing in lead L & rear L's hand, a box (0.58 x 0.54 x 0.17 m at -6.64, 0.96, 6.40), is drawn over mc's left thigh, 100 cm
+answer frames 670-694 (film 22.33-23.17 s): the thing in lead L & rear L's hand, a box (0.04 x 0.10 x 0.10 m at -6.96, 1.21, 6.65), is drawn over cook's chest, 100 cm
+answer frames 671-722 (film 22.37-24.10 s): the thing in lead L & rear L's hand, a box (0.65 x 0.15 x 0.92 m at -6.67, 1.15, 6.66), is drawn over mc's belly, 31 cm
+answer frames 672-720 (film 22.40-24.03 s): the thing in lead L & rear L's hand, a box (0.64 x 0.17 x 0.91 m at -6.67, 1.23, 6.65), is drawn over mc's left thigh, 31 cm
+answer frames 672-672 (film 22.40-22.43 s): the thing in lead L & rear L's hand, a torus (0.04 x 0.20 x 0.12 m at -6.71, 0.97, 7.10), is drawn over boy's chest, 23 cm
+answer frames 673-704 (film 22.43-23.50 s): rear's head lies over boy's head in the picture (6 px into it, nearer the lens), 30 cm
+answer frames 673-700 (film 22.43-23.37 s): mc's left forearm and sailor's right forearm are in the same space, 6 cm
+answer frames 673-699 (film 22.43-23.33 s): mc's left forearm and sailor's right hand are in the same space, 8 cm
+answer frames 675-695 (film 22.50-23.20 s): mc's left hand and sailor's right hand are in the same space, 7 cm
+answer frames 676-689 (film 22.53-23.00 s): the thing in lead L & rear L's hand, a box (0.58 x 0.54 x 0.16 m at -6.69, 0.92, 6.81), is drawn over sailor's right thigh, 100 cm
+answer frames 678-682 (film 22.60-22.77 s): the thing in lead L & rear L's hand, a torus (0.04 x 0.19 x 0.11 m at -6.62, 1.08, 6.06), is drawn over mc's right thigh, 100 cm
+answer frames 678-691 (film 22.60-23.07 s): the thing in lead L & rear L's hand, a torus (0.04 x 0.19 x 0.11 m at -6.71, 1.00, 7.01), is drawn over sailor's left thigh, 100 cm
+answer frames 678-682 (film 22.60-22.77 s): the thing in lead L & rear L's hand, a box (0.04 x 0.10 x 0.10 m at -6.95, 1.23, 6.52), is drawn over cook's belly, 100 cm
+answer frames 679-722 (film 22.63-24.10 s): the thing in lead L & rear L's hand, a box (0.64 x 0.14 x 0.91 m at -6.67, 1.24, 6.54), is drawn over mc's belly, 31 cm
+answer frames 684-696 (film 22.80-23.23 s): the thing in lead L & rear L's hand, a box (0.62 x 0.57 x 0.92 m at -6.67, 0.93, 6.45), is drawn over sailor's right thigh, 15 cm
+answer frames 684-697 (film 22.80-23.27 s): the thing in lead L & rear L's hand, a box (0.65 x 0.10 x 0.92 m at -6.66, 0.72, 6.44), is drawn over sailor's right shin, 15 cm
+answer frames 684-688 (film 22.80-22.97 s): the thing in lead L & rear L's hand, a torus (0.04 x 0.19 x 0.11 m at -6.62, 1.06, 5.98), is drawn over old's left thigh, 100 cm
+answer frames 685-715 (film 22.83-23.87 s): the thing in lead L & rear L's hand, a box (0.65 x 0.09 x 0.92 m at -6.67, 1.15, 6.44), is drawn over cook's belly, 23 cm
+answer frames 687-696 (film 22.90-23.23 s): the thing in lead L & rear L's hand, a box (0.58 x 0.54 x 0.13 m at -6.69, 0.92, 6.65), is drawn over cook's left thigh, 100 cm
+answer frames 688-722 (film 22.93-24.10 s): rear's head lies over sailor's head in the picture (6 px into it, nearer the lens), 181 cm
+answer frames 689-711 (film 22.97-23.73 s): the thing in lead L & rear L's hand, a torus (0.04 x 0.19 x 0.10 m at -6.62, 1.04, 5.90), is drawn over old's belly, 100 cm
+answer frames 690-704 (film 23.00-23.50 s): the thing in lead L & rear L's hand, a box (0.58 x 0.54 x 0.13 m at -6.64, 0.94, 6.11), is drawn over mc's right thigh, 100 cm
+answer frames 691-722 (film 23.03-24.10 s): the thing in lead L & rear L's hand, a box (0.65 x 0.09 x 0.92 m at -6.67, 0.70, 6.34), is drawn over old's left shin, 23 cm
+answer frames 694-707 (film 23.13-23.60 s): the thing in lead L & rear L's hand, a box (0.04 x 0.10 x 0.10 m at -6.96, 1.19, 6.29), is drawn over mc's left thigh, 100 cm
+answer frames 694-722 (film 23.13-24.10 s): the thing in lead L & rear L's hand, a box (0.62 x 0.57 x 0.92 m at -6.67, 0.91, 6.30), is drawn over old's left thigh, 31 cm
+answer frames 696-722 (film 23.20-24.10 s): the thing in lead L & rear L's hand, a box (0.65 x 0.11 x 0.92 m at -6.67, 1.13, 6.28), is drawn over old's left thigh, 31 cm
+answer frames 697-711 (film 23.23-23.73 s): the thing in lead L & rear L's hand, a torus (0.04 x 0.19 x 0.11 m at -6.72, 0.97, 6.74), is drawn over sailor's right thigh, 100 cm
+answer frames 698-721 (film 23.27-24.07 s): the thing in lead L & rear L's hand, a box (0.65 x 0.10 x 0.92 m at -6.67, 1.13, 6.25), is drawn over old's belly, 31 cm
+answer frames 699-716 (film 23.30-23.90 s): the thing in lead L & rear L's hand, a box (0.58 x 0.54 x 0.14 m at -6.64, 0.93, 5.97), is drawn over old's left thigh, 100 cm
+answer frames 699-720 (film 23.30-24.03 s): the thing in lead L & rear L's hand, a box (0.64 x 0.12 x 0.91 m at -6.67, 1.21, 6.24), is drawn over old's belly, 23 cm
+answer frames 700-722 (film 23.33-24.10 s): the thing in lead L & rear L's hand, a box (0.64 x 0.12 x 0.91 m at -6.67, 1.21, 6.22), is drawn over old's chest, 31 cm
+answer frames 702-722 (film 23.40-24.10 s): sailor's face is covered by rear's head (24 % of it), 100 cm
+answer frames 705-722 (film 23.50-24.10 s): the thing in lead L & rear L's hand, a box (0.04 x 0.10 x 0.10 m at -6.96, 1.21, 6.16), is drawn over mc's belly, 100 cm
+answer frames 708-719 (film 23.60-24.00 s): the thing in lead L & rear L's hand, a box (0.58 x 0.54 x 0.17 m at -6.69, 0.90, 6.38), is drawn over cook's right thigh, 100 cm
+answer frames 708-722 (film 23.60-24.10 s): mc's right thigh is inside merchant (0.30 x 0.09 x 15.06 m at -5.20, 1.20, 1.50), 4 cm
+answer frames 709-719 (film 23.63-24.00 s): the thing in lead L & rear L's hand, a torus (0.04 x 0.20 x 0.12 m at -6.72, 0.97, 6.60), is drawn over cook's left thigh, 100 cm
+answer frames 712-713 (film 23.73-23.80 s): the thing in lead L & rear L's hand, a torus (0.04 x 0.19 x 0.11 m at -6.62, 1.08, 5.61), is drawn over old's right thigh, 100 cm
+answer frames 712-718 (film 23.73-23.97 s): rear's right hand is inside the thing in lead L & rear L's hand, a box (0.58 x 0.54 x 0.16 m at -6.69, 0.92, 6.33), 5 cm
+answer frames 714-722 (film 23.80-24.10 s): the thing in lead L & rear L's hand, a box (0.63 x 0.60 x 0.93 m at -6.66, 0.95, 6.05), is drawn over cook's right thigh, 15 cm
+answer frames 714-722 (film 23.80-24.10 s): cook's right hand and mc's head are in the same space, 6 cm
+answer frames 715-715 (film 23.83-23.87 s): the thing in lead L & rear L's hand, a box (0.65 x 0.13 x 0.92 m at -6.66, 0.73, 6.01), is drawn over cook's right shin, 15 cm
+answer frames 717-722 (film 23.90-24.10 s): the thing in lead L & rear L's hand, a box (0.58 x 0.54 x 0.15 m at -6.69, 0.93, 6.25), is drawn over mc's left thigh, 100 cm
+answer frames 719-722 (film 23.97-24.10 s): rear's head lies over cook's head in the picture (6 px into it, nearer the lens), 26 cm
+answer frames 720-722 (film 24.00-24.10 s): the thing in lead L & rear L's hand, a torus (0.04 x 0.19 x 0.10 m at -6.71, 1.00, 6.42), is drawn over cook's belly, 69 cm
+answer frames 721-722 (film 24.03-24.10 s): the thing in lead L & rear L's hand, a box (0.58 x 0.54 x 0.13 m at -6.64, 0.94, 5.67), is drawn over old's right thigh, 85 cm
+hoist frames 783-885 (film 26.10-29.53 s): cor's left thigh is inside a lathe (0.64 x 0.90 x 0.64 m at -0.15, 0.45, -1.15), 12 cm
+hoist frames 783-885 (film 26.10-29.53 s): cor's left shin is inside a lathe (0.64 x 0.90 x 0.64 m at -0.15, 0.45, -1.15), 10 cm
+hoist frames 783-821 (film 26.10-27.40 s): cor's left foot is inside a lathe (0.64 x 0.90 x 0.64 m at -0.15, 0.45, -1.15), 2 cm
+hoist frames 783-885 (film 26.10-29.53 s): cor's left shin is inside a torus (0.68 x 0.04 x 0.68 m at -0.15, 0.32, -1.15), 5 cm
+hoist frames 783-885 (film 26.10-29.53 s): cor's left thigh is inside a torus (0.68 x 0.04 x 0.68 m at -0.15, 0.58, -1.15), 6 cm
+hoist frames 800-844 (film 26.67-28.17 s): cor's left forearm is inside a lathe (0.64 x 0.90 x 0.64 m at -0.15, 0.45, -1.15), 7 cm
+hoist frames 800-843 (film 26.67-28.13 s): cor's left hand is inside a lathe (0.64 x 0.90 x 0.64 m at -0.15, 0.45, -1.15), 9 cm
+hoist frames 800-803 (film 26.67-26.80 s): cor's left forearm is inside a torus (0.62 x 0.04 x 0.62 m at -0.15, 0.81, -1.15), 4 cm
+hoist frames 802-818 (film 26.73-27.30 s): shirt0's head lies over cor's head in the picture (14 px into it, nearer the lens), 164 cm
+hoist frames 805-816 (film 26.83-27.23 s): cor's face is covered by shirt0's head (35 % of it), 94 cm
+hoist frames 812-829 (film 27.07-27.67 s): shirt1's head lies over cor's head in the picture (15 px into it, nearer the lens), 210 cm
+hoist frames 814-885 (film 27.13-29.53 s): shirt0's left shin and shirt1's right shin are in the same space, 8 cm
+hoist frames 815-826 (film 27.17-27.57 s): cor's face is covered by shirt1's head (35 % of it), 100 cm
+hoist frames 817-842 (film 27.23-28.10 s): shirt0's left foot and shirt1's right shin are in the same space, 7 cm
+hoist frames 819-885 (film 27.30-29.53 s): shirt1's left shin and shirt2's right shin are in the same space, 8 cm
+hoist frames 820-868 (film 27.33-28.97 s): shirt3's right foot slides while he stands on it (1.7 cm a frame)
+hoist frames 824-837 (film 27.47-27.93 s): shirt2's head lies over cor's head in the picture (6 px into it, nearer the lens), 90 cm
+hoist frames 825-848 (film 27.50-28.30 s): shirt0's right shin and shirt1's left foot are in the same space, 6 cm
+hoist frames 826-855 (film 27.53-28.53 s): shirt0's right shin and shirt1's left shin are in the same space, 7 cm
+hoist frames 826-852 (film 27.53-28.43 s): shirt0's right foot and shirt1's left shin are in the same space, 7 cm
+hoist frames 826-850 (film 27.53-28.37 s): shirt0's right foot and shirt1's left foot are in the same space, 4 cm
+hoist frames 828-829 (film 27.60-27.67 s): shirt0's belly and shirt1's right hand are in the same space, 6 cm
+hoist frames 828-830 (film 27.60-27.70 s): shirt0's left forearm and shirt1's right forearm are in the same space, 5 cm
+hoist frames 828-855 (film 27.60-28.53 s): shirt1's right shin and shirt2's left shin are in the same space, 8 cm
+hoist frames 828-856 (film 27.60-28.57 s): shirt1's right foot and shirt2's left shin are in the same space, 6 cm
+hoist frames 830-835 (film 27.67-27.87 s): cor's face is covered by shirt2's head (24 % of it), 35 cm
+hoist frames 831-831 (film 27.70-27.73 s): shirt0's left forearm and shirt1's right hand are in the same space, 6 cm
+hoist frames 831-831 (film 27.70-27.73 s): shirt0's left hand and shirt1's right hand are in the same space, 6 cm
+hoist frames 834-849 (film 27.80-28.33 s): shirt3's head lies over cor's head in the picture (17 px into it, nearer the lens), 111 cm
+hoist frames 836-838 (film 27.87-27.97 s): shirt0's left shin and shirt1's right foot are in the same space, 7 cm
+hoist frames 836-885 (film 27.87-29.53 s): shirt1's left shin and shirt2's right foot are in the same space, 5 cm
+hoist frames 837-846 (film 27.90-28.23 s): cor's face is covered by shirt3's head (29 % of it), 53 cm
+hoist frames 837-842 (film 27.90-28.10 s): shirt0's right forearm and shirt1's left hand are in the same space, 7 cm
+hoist frames 837-837 (film 27.90-27.93 s): shirt0's right hand and shirt1's left hand are in the same space, 7 cm
+hoist frames 837-840 (film 27.90-28.03 s): shirt0's right hand and shirt1's right thigh are in the same space, 7 cm
+hoist frames 837-841 (film 27.90-28.07 s): shirt0's left foot and shirt1's right foot are in the same space, 7 cm
+hoist frames 837-885 (film 27.90-29.53 s): shirt1's left foot and shirt2's right foot are in the same space, 4 cm
+hoist frames 837-885 (film 27.90-29.53 s): shirt2's left shin and shirt3's right shin are in the same space, 5 cm
+hoist frames 838-841 (film 27.93-28.07 s): shirt0's right forearm and shirt1's left forearm are in the same space, 7 cm
+hoist frames 838-885 (film 27.93-29.53 s): shirt1's left foot and shirt2's right shin are in the same space, 7 cm
+hoist frames 840-843 (film 28.00-28.13 s): shirt2's left foot and shirt3's right shin are in the same space, 4 cm
+hoist frames 841-885 (film 28.03-29.53 s): shirt3's left shin and shirt4's right shin are in the same space, 5 cm
+hoist frames 842-843 (film 28.07-28.13 s): cor's left hand is inside a torus (0.62 x 0.04 x 0.62 m at -0.15, 0.81, -1.15), 4 cm
+hoist frames 843-885 (film 28.10-29.53 s): shirt4's head lies over cor's head in the picture (16 px into it, nearer the lens), 177 cm
+hoist frames 846-885 (film 28.20-29.53 s): cor's face is covered by shirt4's head (35 % of it), 100 cm
+hoist frames 847-849 (film 28.23-28.33 s): shirt1's right shin and shirt2's left foot are in the same space, 7 cm
+hoist frames 848-854 (film 28.27-28.50 s): shirt1's right foot and shirt2's left foot are in the same space, 5 cm
+hoist frames 848-849 (film 28.27-28.33 s): shirt2's right shin and shirt3's left foot are in the same space, 5 cm
+hoist frames 849-851 (film 28.30-28.40 s): shirt1's left hand and shirt2's right hand are in the same space, 7 cm
+hoist frames 849-885 (film 28.30-29.53 s): shirt2's left forearm and shirt3's right forearm are in the same space, 7 cm
+hoist frames 849-855 (film 28.30-28.53 s): shirt2's right shin and shirt3's left shin are in the same space, 9 cm
+hoist frames 849-855 (film 28.30-28.53 s): shirt2's right foot and shirt3's left shin are in the same space, 7 cm
+hoist frames 849-857 (film 28.30-28.60 s): shirt2's right foot and shirt3's left foot are in the same space, 5 cm
+hoist frames 849-849 (film 28.30-28.33 s): shirt3's right shin and shirt4's left foot are in the same space, 2 cm
+hoist frames 849-855 (film 28.30-28.53 s): shirt3's right foot and shirt4's left shin are in the same space, 6 cm
+hoist frames 850-859 (film 28.33-28.67 s): the thing in gun R's hand, a box (0.18 x 0.89 x 0.03 m at -2.26, 0.98, 1.06), is drawn over shirt0's left shin, 23 cm
+hoist frames 850-851 (film 28.33-28.40 s): shirt1's left hand and shirt2's right forearm are in the same space, 6 cm
+hoist frames 850-854 (film 28.33-28.50 s): shirt2's right thigh and shirt3's right hand are in the same space, 8 cm
+hoist frames 850-853 (film 28.33-28.47 s): shirt3's belly and shirt4's right hand are in the same space, 7 cm
+hoist frames 850-854 (film 28.33-28.50 s): shirt3's right shin and shirt4's left shin are in the same space, 6 cm
+hoist frames 851-860 (film 28.37-28.70 s): the thing in gun R's hand, a box (0.18 x 0.89 x 0.03 m at -2.27, 0.97, 1.06), is drawn over shirt0's left thigh, 38 cm
+hoist frames 851-857 (film 28.37-28.60 s): shirt3's right foot and shirt4's left foot are in the same space, 3 cm
+hoist frames 852-853 (film 28.40-28.47 s): shirt1's right thigh and shirt2's right hand are in the same space, 7 cm
+hoist frames 853-885 (film 28.43-29.53 s): shirt0's right hand is inside a box (0.16 x 0.90 x 17.00 m at -2.80, 0.45, 0.00), 5 cm
+hoist frames 854-885 (film 28.47-29.53 s): shirt2's left forearm and shirt3's right hand are in the same space, 6 cm
+hoist frames 855-885 (film 28.50-29.53 s): shirt2's left hand and shirt3's right hand are in the same space, 7 cm
+hoist frames 860-869 (film 28.67-29.00 s): the thing in gun R's hand, a box (0.76 x 0.52 x 0.06 m at -2.26, 1.08, 1.06), is drawn over shirt1's belly, 46 cm
+hoist frames 860-873 (film 28.67-29.13 s): cor's left shin is inside a torus (0.62 x 0.04 x 0.62 m at -0.15, 0.09, -1.15), 4 cm
+hoist frames 860-869 (film 28.67-29.00 s): cor's left thigh is inside a torus (0.68 x 0.04 x 0.68 m at -0.15, 0.32, -1.15), 4 cm
+hoist frames 861-885 (film 28.70-29.53 s): shirt1's head lies over shirt0's head in the picture (14 px into it, nearer the lens), 19 cm
+hoist frames 861-862 (film 28.70-28.77 s): the thing in gun R's hand, a box (0.84 x 0.38 x 0.07 m at -2.14, 1.23, 1.06), is drawn over shirt0's belly, 23 cm
+hoist frames 861-868 (film 28.70-28.97 s): cor's chest is inside a lathe (0.64 x 0.90 x 0.64 m at -0.15, 0.45, -1.15), 4 cm
+hoist frames 861-868 (film 28.70-28.97 s): cor's left upper arm is inside a lathe (0.64 x 0.90 x 0.64 m at -0.15, 0.45, -1.15), 4 cm
+hoist frames 861-869 (film 28.70-29.00 s): cor's chest is inside a torus (0.62 x 0.04 x 0.62 m at -0.15, 0.81, -1.15), 6 cm
+hoist frames 863-875 (film 28.77-29.20 s): the thing in gun R's hand, a box (0.89 x 0.19 x 0.07 m at -2.16, 1.34, 1.06), is drawn over shirt0's chest, 46 cm
+hoist frames 863-863 (film 28.77-28.80 s): shirt3's head lies over shirt2's head in the picture (10 px into it, at the same depth: drawn into each other), 14 cm
+hoist frames 863-863 (film 28.77-28.80 s): shirt2's head lies over shirt3's head in the picture (10 px into it, at the same depth: drawn into each other), 13 cm
+hoist frames 864-866 (film 28.80-28.90 s): shirt0's left thigh is inside a box (0.16 x 0.90 x 17.00 m at -2.80, 0.45, 0.00), 6 cm
+hoist frames 864-866 (film 28.80-28.90 s): shirt0's left shin is inside a box (0.16 x 0.90 x 17.00 m at -2.80, 0.45, 0.00), 4 cm
+hoist frames 866-873 (film 28.87-29.13 s): the thing in gun R's hand, a box (0.41 x 0.82 x 0.04 m at -2.05, 1.48, 1.06), is drawn over shirt0's head, 100 cm
+hoist frames 866-873 (film 28.87-29.13 s): the thing in gun R's hand, a box (0.08 x 0.07 x 0.03 m at -2.23, 1.87, 1.07), is drawn over shirt0's head, 100 cm
+hoist frames 866-873 (film 28.87-29.13 s): the thing in gun R's hand, a box (0.05 x 0.08 x 0.01 m at -2.24, 1.93, 1.07), is drawn over shirt0's head, 100 cm
+hoist frames 866-873 (film 28.87-29.13 s): the thing in gun R's hand, a sphere (0.08 x 0.08 x 0.06 m at -2.26, 1.97, 1.07), is drawn over shirt0's head, 100 cm
+hoist frames 867-868 (film 28.90-28.97 s): shirt0's right foot slides while he stands on it (2.1 cm a frame)
+hoist frames 867-868 (film 28.90-28.97 s): shirt1's right foot slides while he stands on it (2.2 cm a frame)
+hoist frames 867-868 (film 28.90-28.97 s): shirt2's right foot slides while he stands on it (2.2 cm a frame)
+hoist frames 867-868 (film 28.90-28.97 s): shirt4's right foot slides while he stands on it (2.5 cm a frame)
+hoist frames 869-885 (film 28.97-29.53 s): shirt3's left foot and shirt4's right foot are in the same space, 4 cm
+hoist frames 870-872 (film 29.00-29.10 s): the thing in gun R's hand, a box (0.18 x 0.89 x 0.03 m at -2.02, 1.48, 1.06), is drawn over shirt1's right thigh, 31 cm
+hoist frames 870-871 (film 29.00-29.07 s): shirt0's right thigh is inside a box (0.16 x 0.90 x 17.00 m at -2.80, 0.45, 0.00), 8 cm
+hoist frames 870-871 (film 29.00-29.07 s): shirt0's right shin is inside a box (0.16 x 0.90 x 17.00 m at -2.80, 0.45, 0.00), 6 cm
+hoist frames 870-885 (film 29.00-29.53 s): shirt0's right foot is inside a box (0.16 x 0.90 x 17.00 m at -2.80, 0.45, 0.00), 8 cm
+hoist frames 870-885 (film 29.00-29.53 s): shirt0's right upper arm is inside a box (0.30 x 0.09 x 17.06 m at -2.80, 0.94, 0.00), 6 cm
+hoist frames 870-885 (film 29.00-29.53 s): shirt0's right forearm is inside a box (0.30 x 0.09 x 17.06 m at -2.80, 0.94, 0.00), 8 cm
+hoist frames 870-870 (film 29.00-29.03 s): shirt0's left thigh and shirt1's right thigh are in the same space, 4 cm
+hoist frames 870-870 (film 29.00-29.03 s): shirt1's left thigh and shirt2's right thigh are in the same space, 3 cm
+hoist frames 870-870 (film 29.00-29.03 s): shirt1's left shin and shirt2's right thigh are in the same space, 3 cm
+hoist frames 870-885 (film 29.00-29.53 s): shirt2's left shin and shirt3's right foot are in the same space, 8 cm
+hoist frames 870-885 (film 29.00-29.53 s): shirt2's left foot and shirt3's right foot are in the same space, 5 cm
+hoist frames 870-885 (film 29.00-29.53 s): shirt3's left upper arm and shirt4's right upper arm are in the same space, 6 cm
+hoist frames 870-871 (film 29.00-29.07 s): shirt3's left upper arm and shirt4's right forearm are in the same space, 5 cm
+hoist frames 870-885 (film 29.00-29.53 s): shirt3's left hand and shirt4's right thigh are in the same space, 7 cm
+hoist frames 870-871 (film 29.00-29.07 s): shirt3's left thigh and shirt4's right thigh are in the same space, 5 cm
+hoist frames 870-870 (film 29.00-29.03 s): shirt3's left thigh and shirt4's right shin are in the same space, 4 cm
+hoist frames 870-885 (film 29.00-29.53 s): shirt3's left shin and shirt4's right foot are in the same space, 5 cm
+hoist frames 871-871 (film 29.03-29.07 s): shirt0's left foot slides while he stands on it (1.6 cm a frame)
+hoist frames 871-885 (film 29.03-29.53 s): shirt1's left upper arm and shirt2's right upper arm are in the same space, 5 cm
+hoist frames 871-871 (film 29.03-29.07 s): shirt1's left foot slides while he stands on it (1.5 cm a frame)
+hoist frames 871-885 (film 29.03-29.53 s): shirt2's left upper arm and shirt3's right upper arm are in the same space, 7 cm
+hoist frames 871-885 (film 29.03-29.53 s): shirt2's left upper arm and shirt3's right forearm are in the same space, 7 cm
+hoist frames 871-871 (film 29.03-29.07 s): shirt2's left foot slides while he stands on it (1.4 cm a frame)
+hoist frames 872-885 (film 29.07-29.53 s): shirt0's left upper arm and shirt1's right upper arm are in the same space, 2 cm
+hoist frames 872-885 (film 29.07-29.53 s): shirt2's left forearm and shirt3's right upper arm are in the same space, 5 cm
+hoist frames 874-875 (film 29.13-29.20 s): the thing in gun R's hand, a box (0.07 x 0.06 x 0.03 m at -2.28, 1.63, 1.06), is drawn over shirt0's chest, 54 cm
+hoist frames 875-885 (film 29.17-29.53 s): shirt3's left foot and shirt4's right shin are in the same space, 3 cm
+hoist frames 876-885 (film 29.20-29.53 s): the thing in gun R's hand, a box (0.18 x 0.89 x 0.03 m at -2.24, 1.03, 1.06), is drawn over shirt0's right thigh, 31 cm
+hoist frames 885-885 (film 29.50-29.53 s): shirt0's right forearm is inside a box (0.16 x 0.90 x 17.00 m at -2.80, 0.45, 0.00), 3 cm
+hoist frames 885-885 (film 29.50-29.53 s): shirt1's left thigh and shirt2's right hand are in the same space, 6 cm
+worked frames 886-947 (film 29.53-31.60 s): fr0's lower foot is above a box (6.00 x 0.16 x 15.00 m at -7.20, 0.27, -8.50): floating, 30 cm
+worked frames 886-947 (film 29.53-31.60 s): fr2's lower foot is above a box (6.00 x 0.16 x 15.00 m at -7.20, 0.27, -8.50): floating, 30 cm
+loop frames 948-974 (film 31.60-32.50 s): the thing in cook R's hand, a torus (0.40 x 0.02 x 0.40 m at -7.18, 0.65, 5.99), is drawn over old's left shin, 15 cm
+loop frames 948-974 (film 31.60-32.50 s): the thing in cook R's hand, a torus (0.06 x 0.19 x 0.37 m at -7.18, 0.80, 5.99), is drawn over old's right shin, 46 cm
+loop frames 948-974 (film 31.60-32.50 s): merchant (0.12 x 0.06 x 1.30 m at -5.34, 0.97, 5.80) stands 0.51 m behind mc, hidden by his body and showing on both sides of it: it seems to go through him, 16 cm
+loop frames 948-974 (film 31.60-32.50 s): merchant (0.12 x 0.06 x 1.30 m at -5.34, 0.97, 5.80) stands 0.53 m behind sailor, hidden by his body and showing on both sides of it: it seems to go through him, 14 cm
+loop frames 948-974 (film 31.60-32.50 s): mc's head and old's right forearm are in the same space, 7 cm
+loop frames 948-974 (film 31.60-32.50 s): mc's head and old's right hand are in the same space, 9 cm
+loop frames 948-974 (film 31.60-32.50 s): mc's right upper arm and sailor's left upper arm are in the same space, 7 cm
+loop frames 971-971 (film 32.37-32.40 s): mc's left upper arm and old's right upper arm are in the same space, 2 cm
+BODY CHECK FAILED for black-flag: 975 frames of 974, 4542 figure-frames, 14029 pairs tried, 426 faults (5 s)

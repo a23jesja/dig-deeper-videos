@@ -210,6 +210,37 @@ sent to Jesper, and reuse them from then on.
    on top, sent to Jesper as a contact sheet and a small clip. Build fully only after his yes. The sketch must
    already pass "Action, not portraits".
 
+## Impossible things: zero tolerance (Jesper 2026-11-18, after people walked through a stone block in Nero)
+Anything that cannot happen in the real world fails the video, wherever it is in the picture, however small,
+however short, in the background as much as in front. "It is only in the background" is never a reason to pass.
+**The list (grows with every error Jesper finds; never shrinks):**
+1. A body, limb, prop or animal inside or passing through anything solid: blocks, walls, benches, tables,
+   barrels, rails, masts, doors, carts, other bodies.
+2. Feet that do not touch what they stand on, or slide while standing; anyone floating.
+3. Something that appears, disappears, jumps or changes (clothes, hat, colour, size, which hand) inside one shot.
+4. A held object held wrongly (see "Held objects"), or one that leaves a hand without being put down, thrown or
+   dropped.
+5. Two figures in the same space, or a crowd where bodies merge.
+6. A figure cut by the frame edge in a way that is not a deliberate close-up; a face covered by a prop.
+7. Light, shadow or smoke that does something impossible: a shadow on the wrong side, a fire that lights
+   nothing, smoke that cuts off in a straight line.
+8. Words on screen that disagree with the voice, or a caption covering a face.
+**How it is caught, in this order:**
+- **By code, every frame.** The scene code tests every moving figure, background people included, and every
+  prop against every solid in the set, and every foot against the ground, on every frame, before rendering. Any
+  hit stops the render and names the shot, the frame, the figure and the object. Passing this check is required
+  before a video goes to the reviewer.
+- **By the reviewer, three passes per shot.** Pass 1 foreground, pass 2 every background figure one by one
+  (follow each from the first to the last frame of the shot), pass 3 props, light and edges. Look at crops: each
+  frame is split into four quarters and the quarters are viewed at full size, not only the whole frame at phone
+  size. The review note lists, per shot, the figures it followed and the solids it checked them against. A note
+  that does not list them is not a review.
+- **The regression list.** Every error Jesper or the cloud session finds after a review is written in
+  `granskning/regressions.md` with the video, the time and what was wrong, and gets a code check if it can have
+  one. Every new video is checked against the whole list before it is sent.
+- **When in doubt it fails.** If the reviewer cannot tell whether a figure is behind or inside something, it is
+  inside, and it fails.
+
 ## Held objects (Jesper 2026-11-17: the telescope and the pistol were held the wrong way round)
 An object in a hand must look held and used the way a person would, in every frame.
 - **Every prop has a grip and a direction in the shared code:** where the hand holds it (handle, stock, shaft),

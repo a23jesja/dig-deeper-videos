@@ -1,0 +1,2 @@
+attack frames 9-44 (film 0.30-1.50 s): mur's right hand goes through the thing in mur L's hand (a box (0.11 x 0.98 x 0.05 m at 0.68, 1.03, -6.03)): part of it before the thing, part behind it, 100 cm
+BODY CHECK FAILED for gladiators-hook4-a: 168 frames, 1943 pairs tried, 1 faults

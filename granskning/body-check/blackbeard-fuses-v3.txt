@@ -1,0 +1,32 @@
+hook frames 8-37 (film 0.27-1.27 s): bb's left foot slides while he stands on it (5.5 cm a frame)
+hook frames 15-45 (film 0.50-1.53 s): bb's right foot slides while he stands on it (3.9 cm a frame)
+hook frames 22-22 (film 0.73-0.77 s): sailor's left hand is inside the thing in bb R's hand, a tube (0.02 x 0.18 x 0.10 m at -7.20, 2.20, 1.18), 4 cm
+sir frames 117-190 (film 3.90-6.37 s): sir's right thigh is inside a lathe (0.64 x 0.90 x 0.64 m at -8.50, 0.80, 4.06), 4 cm
+sir frames 117-190 (film 3.90-6.37 s): sir's right shin is inside a lathe (0.64 x 0.90 x 0.64 m at -8.50, 0.80, 4.06), 3 cm
+sir frames 117-190 (film 3.90-6.37 s): sir's right shin is inside a torus (0.68 x 0.04 x 0.68 m at -8.50, 0.67, 4.06), 4 cm
+sir frames 117-190 (film 3.90-6.37 s): sir's right thigh is inside a torus (0.68 x 0.04 x 0.68 m at -8.50, 0.93, 4.06), 5 cm
+ready frames 191-202 (film 6.37-6.77 s): bb's belly is inside a cylinder (0.39 x 0.06 x 0.40 m at 41.55, 1.04, 0.15), 12 cm
+ready frames 191-263 (film 6.37-8.80 s): bb's left thigh is inside a cylinder (0.39 x 0.06 x 0.40 m at 41.55, 1.04, 0.15), 10 cm
+ready frames 191-263 (film 6.37-8.80 s): bb's right thigh is inside a cylinder (0.39 x 0.06 x 0.40 m at 41.55, 1.04, 0.15), 10 cm
+ready frames 191-263 (film 6.37-8.80 s): bb's right shin is inside a cylinder (0.39 x 0.06 x 0.40 m at 41.55, 1.04, 0.15), 8 cm
+ready frames 191-263 (film 6.37-8.80 s): bb's left thigh is inside a cylinder (0.06 x 0.44 x 0.06 m at 41.68, 0.82, 0.15), 8 cm
+ready frames 191-197 (film 6.37-6.60 s): bb's right thigh is inside a cylinder (0.06 x 0.44 x 0.06 m at 41.68, 0.82, 0.15), 4 cm
+ready frames 191-197 (film 6.37-6.60 s): bb's right shin is inside a cylinder (0.06 x 0.44 x 0.06 m at 41.68, 0.82, 0.15), 6 cm
+ready frames 191-208 (film 6.37-6.97 s): bb's lower foot is sunk into a box (4.40 x 0.10 x 3.40 m at 42.00, 0.55, 0.00), 25 cm
+ready frames 192-219 (film 6.40-7.33 s): a box (0.08 x 0.76 x 0.08 m at 41.99, 0.98, -0.24) stands 0.58 m behind boy, hidden by his body and showing on both sides of it: it seems to go through him, 19 cm
+ready frames 198-263 (film 6.60-8.80 s): bb's left shin is inside a cylinder (0.06 x 0.44 x 0.06 m at 41.68, 0.82, 0.15), 6 cm
+ready frames 199-201 (film 6.63-6.73 s): boy's right foot slides while he stands on it (2.3 cm a frame)
+ready frames 204-217 (film 6.80-7.27 s): a box (0.08 x 0.76 x 0.08 m at 41.99, 0.98, -0.86) stands 1.38 m behind boy, hidden by his body and showing on both sides of it: it seems to go through him, 23 cm
+ready frames 208-263 (film 6.93-8.80 s): bb's left shin is inside a cylinder (0.39 x 0.06 x 0.40 m at 41.55, 1.04, 0.15), 8 cm
+ready frames 213-263 (film 7.10-8.80 s): bb's left foot is inside a cylinder (0.06 x 0.44 x 0.06 m at 41.68, 0.82, 0.15), 3 cm
+tie frames 385-411 (film 12.83-13.73 s): a box (0.03 x 0.78 x 0.03 m at 40.75, 1.97, -1.70) stands 1.22 m behind bb, hidden by his body and showing on both sides of it: it seems to go through him, 22 cm
+light frames 498-529 (film 16.60-17.67 s): the thing in boy R's hand, a box (0.31 x 0.59 x 0.05 m at 42.30, 1.93, 0.53), is drawn over bb's head, 31 cm
+light frames 498-529 (film 16.60-17.67 s): the thing in boy R's hand, a sphere (0.05 x 0.05 x 0.03 m at 42.15, 2.22, 0.55), is drawn over bb's head, 100 cm
+light frames 530-530 (film 17.67-17.70 s): the thing in boy R's hand, a box (0.63 x 0.17 x 0.10 m at 42.16, 1.59, 0.56), is drawn over bb's chest, 38 cm
+light frames 531-532 (film 17.70-17.77 s): the thing in boy R's hand, a box (0.63 x 0.18 x 0.10 m at 42.06, 1.36, 0.55), is drawn over bb's right thigh, 54 cm
+light frames 533-578 (film 17.77-19.30 s): the thing in boy R's hand, a box (0.63 x 0.17 x 0.10 m at 42.22, 1.04, 0.56), is drawn over bb's right shin, 38 cm
+light frames 533-578 (film 17.77-19.30 s): a box (0.08 x 0.76 x 0.08 m at 43.11, 0.98, -0.86) stands 1.23 m behind boy, hidden by his body and showing on both sides of it: it seems to go through him, 6 cm
+light frames 537-537 (film 17.90-17.93 s): a box (0.08 x 0.76 x 0.08 m at 41.99, 0.98, -0.24) stands 0.55 m behind bb, hidden by his body and showing on both sides of it: it seems to go through him, 3 cm
+book frames 830-971 (film 27.67-32.40 s): merchant (2.10 x 0.08 x 0.20 m at -8.20, 1.25, -0.20) stands 1.28 m behind rd, hidden by his body and showing on both sides of it: it seems to go through him, 10 cm
+book frames 830-971 (film 27.67-32.40 s): merchant (2.10 x 0.08 x 0.20 m at -8.20, 1.25, -0.20) stands 0.44 m behind l0, hidden by his body and showing on both sides of it: it seems to go through him, 7 cm
+BODY CHECK FAILED for blackbeard-fuses: 1110 frames of 1110, 2001 figure-frames, 4408 pairs tried, 31 faults (2 s)

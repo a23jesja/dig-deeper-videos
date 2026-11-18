@@ -1,0 +1,28 @@
+hook frames 8-37 (film 0.27-1.27 s): bb's left foot slides while he stands on it (5.5 cm a frame)
+hook frames 15-45 (film 0.50-1.53 s): bb's right foot slides while he stands on it (3.9 cm a frame)
+hook frames 22-22 (film 0.73-0.77 s): sailor's left hand is inside the thing in bb R's hand, a tube (0.02 x 0.18 x 0.10 m at -7.20, 2.20, 1.18), 4 cm
+sir frames 117-190 (film 3.90-6.37 s): sir's right thigh is inside a lathe (0.64 x 0.90 x 0.64 m at -8.50, 0.80, 4.06), 4 cm
+sir frames 117-190 (film 3.90-6.37 s): sir's right shin is inside a lathe (0.64 x 0.90 x 0.64 m at -8.50, 0.80, 4.06), 3 cm
+sir frames 117-190 (film 3.90-6.37 s): sir's right shin is inside a torus (0.68 x 0.04 x 0.68 m at -8.50, 0.67, 4.06), 4 cm
+sir frames 117-190 (film 3.90-6.37 s): sir's right thigh is inside a torus (0.68 x 0.04 x 0.68 m at -8.50, 0.93, 4.06), 5 cm
+ready frames 191-202 (film 6.37-6.77 s): bb's belly is inside a cylinder (0.39 x 0.06 x 0.40 m at 41.55, 1.04, 0.15), 12 cm
+ready frames 191-263 (film 6.37-8.80 s): bb's left thigh is inside a cylinder (0.39 x 0.06 x 0.40 m at 41.55, 1.04, 0.15), 10 cm
+ready frames 191-263 (film 6.37-8.80 s): bb's right thigh is inside a cylinder (0.39 x 0.06 x 0.40 m at 41.55, 1.04, 0.15), 10 cm
+ready frames 191-263 (film 6.37-8.80 s): bb's right shin is inside a cylinder (0.39 x 0.06 x 0.40 m at 41.55, 1.04, 0.15), 8 cm
+ready frames 191-263 (film 6.37-8.80 s): bb's left thigh is inside a cylinder (0.06 x 0.44 x 0.06 m at 41.68, 0.82, 0.15), 8 cm
+ready frames 191-197 (film 6.37-6.60 s): bb's right thigh is inside a cylinder (0.06 x 0.44 x 0.06 m at 41.68, 0.82, 0.15), 4 cm
+ready frames 191-197 (film 6.37-6.60 s): bb's right shin is inside a cylinder (0.06 x 0.44 x 0.06 m at 41.68, 0.82, 0.15), 6 cm
+ready frames 191-208 (film 6.37-6.97 s): bb's lower foot is sunk into a box (4.40 x 0.10 x 3.40 m at 42.00, 0.55, 0.00), 25 cm
+ready frames 198-263 (film 6.60-8.80 s): bb's left shin is inside a cylinder (0.06 x 0.44 x 0.06 m at 41.68, 0.82, 0.15), 6 cm
+ready frames 202-255 (film 6.73-8.53 s): a box (0.08 x 0.76 x 0.08 m at 41.99, 0.98, -0.24) stands 0.43 m behind boy, hidden by his body and showing on both sides of it: it seems to go through him, 10 cm
+ready frames 208-263 (film 6.93-8.80 s): bb's left shin is inside a cylinder (0.39 x 0.06 x 0.40 m at 41.55, 1.04, 0.15), 8 cm
+ready frames 213-263 (film 7.10-8.80 s): bb's left foot is inside a cylinder (0.06 x 0.44 x 0.06 m at 41.68, 0.82, 0.15), 3 cm
+beard frames 340-340 (film 11.33-11.37 s): a box (0.03 x 0.78 x 0.03 m at 40.75, 1.97, -1.70) stands 1.17 m behind bb, hidden by his body and showing on both sides of it: it seems to go through him, 4 cm
+tie frames 373-373 (film 12.43-12.47 s): a box (0.03 x 0.78 x 0.03 m at 40.75, 1.97, -1.70) stands 1.17 m behind bb, hidden by his body and showing on both sides of it: it seems to go through him, 4 cm
+light frames 498-578 (film 16.60-19.30 s): a box (0.08 x 0.76 x 0.08 m at 41.99, 0.98, -0.24) stands 0.58 m behind bb, hidden by his body and showing on both sides of it: it seems to go through him, 19 cm
+book frames 830-971 (film 27.67-32.40 s): merchant (2.10 x 0.08 x 0.20 m at -8.20, 1.25, -0.20) stands 1.28 m behind rd, hidden by his body and showing on both sides of it: it seems to go through him, 10 cm
+book frames 830-971 (film 27.67-32.40 s): merchant (2.10 x 0.08 x 0.20 m at -8.20, 1.25, -0.20) stands 0.45 m behind l0, hidden by his body and showing on both sides of it: it seems to go through him, 8 cm
+book frames 830-971 (film 27.67-32.40 s): rd's head lies over l1's head in the picture (28 px into it, nearer the lens), 26 cm
+book frames 830-971 (film 27.67-32.40 s): the thing in rd L+R's hand, a box (0.56 x 0.40 x 0.09 m at -7.45, 1.44, 1.29), is drawn over l1's chest, 23 cm
+book frames 830-971 (film 27.67-32.40 s): the thing in rd L+R's hand, a box (0.53 x 0.37 x 0.07 m at -7.45, 1.44, 1.31), is drawn over l1's chest, 23 cm
+BODY CHECK FAILED for blackbeard-fuses: 1110 frames of 1110, 2001 figure-frames, 4960 pairs tried (a figure against a solid, a held thing or another figure), 27 faults (2 s)

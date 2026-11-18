@@ -1,0 +1,207 @@
+hook frames 0-46 (film 0.00-1.57 s): nero's head lies over r1's head in the picture (9 px into it, nearer the lens), 287 cm
+hook frames 3-64 (film 0.10-2.17 s): r1's left foot slides while he stands on it (9.2 cm a frame)
+hook frames 3-44 (film 0.10-1.50 s): r2's left foot slides while he stands on it (9.3 cm a frame)
+hook frames 9-32 (film 0.30-1.10 s): r1's face is covered by nero's head (76 % of it), 100 cm
+hook frames 11-51 (film 0.37-1.73 s): r1's right foot slides while he stands on it (8.5 cm a frame)
+hook frames 11-71 (film 0.37-2.40 s): r2's right foot slides while he stands on it (8.5 cm a frame)
+hook frames 11-30 (film 0.37-1.03 s): sir's right foot slides while he stands on it (2.2 cm a frame)
+hook frames 15-45 (film 0.50-1.53 s): sir's head lies over r2's head in the picture (8 px into it, nearer the lens), 633 cm
+hook frames 15-66 (film 0.50-2.23 s): r1's lower foot is above a box (2.00 x 0.58 x 80.00 m at 3.10, -0.01, 0.00): floating, 15 cm
+hook frames 15-68 (film 0.50-2.30 s): r2's lower foot is above a box (2.00 x 0.58 x 80.00 m at -3.10, -0.01, 0.00): floating, 15 cm
+hook frames 16-42 (film 0.53-1.43 s): r2's face is covered by sir's head (100 % of it), 100 cm
+hook frames 20-20 (film 0.67-0.70 s): sir's left foot slides while he stands on it (1.2 cm a frame)
+hook frames 34-49 (film 1.13-1.67 s): r2's belly is inside a box (0.60 x 0.07 x 1.30 m at -3.30, 1.02, 12.00), 11 cm
+hook frames 34-49 (film 1.13-1.67 s): r2's left thigh is inside a box (0.60 x 0.07 x 1.30 m at -3.30, 1.02, 12.00), 9 cm
+hook frames 34-35 (film 1.13-1.20 s): r2's left foot is inside a box (0.08 x 0.74 x 0.08 m at -3.51, 0.65, 12.56), 3 cm
+hook frames 35-49 (film 1.17-1.67 s): r2's right thigh is inside a box (0.60 x 0.07 x 1.30 m at -3.30, 1.02, 12.00), 9 cm
+hook frames 35-36 (film 1.17-1.23 s): r2's right thigh is inside a box (0.08 x 0.74 x 0.08 m at -3.09, 0.65, 12.56), 8 cm
+hook frames 35-36 (film 1.17-1.23 s): r2's right shin is inside a box (0.08 x 0.74 x 0.08 m at -3.09, 0.65, 12.56), 3 cm
+hook frames 35-40 (film 1.17-1.37 s): r2's chest is inside a lathe (0.36 x 0.40 x 0.36 m at -3.30, 1.26, 12.40), 19 cm
+hook frames 35-39 (film 1.17-1.33 s): r2's belly is inside a lathe (0.36 x 0.40 x 0.36 m at -3.30, 1.26, 12.40), 17 cm
+hook frames 35-38 (film 1.17-1.30 s): r2's left upper arm is inside a lathe (0.36 x 0.40 x 0.36 m at -3.30, 1.26, 12.40), 5 cm
+hook frames 36-38 (film 1.20-1.30 s): a box (0.08 x 0.74 x 0.08 m at -3.51, 0.65, 12.56) stands 0.09 m behind r2, hidden by his body and showing on both sides of it: it seems to go through him, 23 cm
+hook frames 36-37 (film 1.20-1.27 s): r1's head is inside a buffer (2.12 x 1.99 x 0.74 m at 3.95, 2.91, 10.20), 12 cm
+hook frames 36-37 (film 1.20-1.27 s): r2's left thigh is inside a lathe (0.36 x 0.40 x 0.36 m at -3.30, 1.26, 12.40), 7 cm
+hook frames 36-38 (film 1.20-1.30 s): r2's chest is inside a cylinder (0.17 x 0.02 x 0.17 m at -3.30, 1.43, 12.40), 10 cm
+hook frames 37-37 (film 1.23-1.27 s): r2's left upper arm is inside a cylinder (0.17 x 0.02 x 0.17 m at -3.30, 1.43, 12.40), 3 cm
+hook frames 39-51 (film 1.30-1.73 s): a box (0.07 x 0.07 x 7.04 m at 4.08, 1.42, 13.25) stands 0.00 m behind r1, hidden by his body and showing on both sides of it: it seems to go through him, 10 cm
+hook frames 39-41 (film 1.30-1.40 s): a box (0.08 x 0.74 x 0.08 m at -3.09, 0.65, 12.56) stands 0.23 m behind r2, hidden by his body and showing on both sides of it: it seems to go through him, 16 cm
+hook frames 39-44 (film 1.30-1.50 s): r2's chest is inside a lathe (0.36 x 0.40 x 0.36 m at -3.30, 1.26, 12.00), 20 cm
+hook frames 39-39 (film 1.30-1.33 s): r2's head is inside a lathe (0.36 x 0.40 x 0.36 m at -3.30, 1.26, 12.40), 4 cm
+hook frames 40-43 (film 1.33-1.47 s): r2's head is inside a lathe (0.36 x 0.40 x 0.36 m at -3.30, 1.26, 12.00), 7 cm
+hook frames 40-43 (film 1.33-1.47 s): r2's belly is inside a lathe (0.36 x 0.40 x 0.36 m at -3.30, 1.26, 12.00), 11 cm
+hook frames 40-43 (film 1.33-1.47 s): r2's left upper arm is inside a lathe (0.36 x 0.40 x 0.36 m at -3.30, 1.26, 12.00), 13 cm
+hook frames 40-43 (film 1.33-1.47 s): r2's chest is inside a cylinder (0.17 x 0.02 x 0.17 m at -3.30, 1.43, 12.00), 7 cm
+hook frames 41-43 (film 1.37-1.47 s): r2's head is inside a cylinder (0.17 x 0.02 x 0.17 m at -3.30, 1.43, 12.00), 5 cm
+hook frames 44-44 (film 1.47-1.50 s): r2's head is inside a lathe (0.36 x 0.40 x 0.36 m at -3.30, 1.26, 11.60), 2 cm
+hook frames 44-49 (film 1.47-1.67 s): r2's chest is inside a lathe (0.36 x 0.40 x 0.36 m at -3.30, 1.26, 11.60), 19 cm
+hook frames 44-47 (film 1.47-1.60 s): r2's left upper arm is inside a lathe (0.36 x 0.40 x 0.36 m at -3.30, 1.26, 11.60), 8 cm
+hook frames 45-48 (film 1.50-1.63 s): r2's belly is inside a lathe (0.36 x 0.40 x 0.36 m at -3.30, 1.26, 11.60), 16 cm
+hook frames 45-48 (film 1.50-1.63 s): r2's chest is inside a cylinder (0.17 x 0.02 x 0.17 m at -3.30, 1.43, 11.60), 10 cm
+hook frames 46-47 (film 1.53-1.60 s): r2's left thigh is inside a lathe (0.36 x 0.40 x 0.36 m at -3.30, 1.26, 11.60), 7 cm
+hook frames 46-46 (film 1.53-1.57 s): r2's left upper arm is inside a cylinder (0.17 x 0.02 x 0.17 m at -3.30, 1.43, 11.60), 3 cm
+hook frames 48-65 (film 1.60-2.20 s): a box (0.08 x 0.74 x 0.08 m at -3.51, 0.65, 11.44) stands 0.02 m behind r2, hidden by his body and showing on both sides of it: it seems to go through him, 21 cm
+hook frames 48-53 (film 1.60-1.80 s): r2's left foot is inside a cylinder (0.51 x 0.30 x 0.52 m at -3.50, 0.43, 11.20), 11 cm
+hook frames 48-53 (film 1.60-1.80 s): r2's left shin is inside a torus (0.58 x 0.06 x 0.57 m at -3.50, 0.58, 11.20), 3 cm
+hook frames 48-53 (film 1.60-1.80 s): r2's left foot is inside a torus (0.58 x 0.06 x 0.57 m at -3.50, 0.58, 11.20), 3 cm
+hook frames 48-48 (film 1.60-1.63 s): r2's left thigh is inside a box (0.08 x 0.74 x 0.08 m at -3.51, 0.65, 11.44), 3 cm
+hook frames 48-48 (film 1.60-1.63 s): r2's left shin is inside a box (0.08 x 0.74 x 0.08 m at -3.51, 0.65, 11.44), 2 cm
+hook frames 48-49 (film 1.60-1.67 s): r2's right thigh is inside a box (0.08 x 0.74 x 0.08 m at -3.09, 0.65, 11.44), 6 cm
+hook frames 48-49 (film 1.60-1.67 s): r2's right shin is inside a box (0.08 x 0.74 x 0.08 m at -3.09, 0.65, 11.44), 5 cm
+hook frames 48-49 (film 1.60-1.67 s): r2's right foot is inside a box (0.08 x 0.74 x 0.08 m at -3.09, 0.65, 11.44), 3 cm
+hook frames 51-56 (film 1.70-1.90 s): a box (0.08 x 0.74 x 0.08 m at -3.09, 0.65, 11.44) stands 0.16 m behind r2, hidden by his body and showing on both sides of it: it seems to go through him, 9 cm
+hook frames 52-57 (film 1.73-1.93 s): a box (0.07 x 0.07 x 7.04 m at -4.08, 1.42, 14.10) stands 0.00 m behind r2, hidden by his body and showing on both sides of it: it seems to go through him, 8 cm
+hook frames 53-53 (film 1.77-1.80 s): r2's left shin is inside a cylinder (0.51 x 0.30 x 0.52 m at -3.50, 0.43, 11.20), 3 cm
+flames frames 79-116 (film 2.63-3.90 s): man's belly is inside a box (1.10 x 0.80 x 1.50 m at -2.95, 0.68, 6.30), 16 cm
+flames frames 79-115 (film 2.63-3.87 s): man's right forearm is inside a box (1.10 x 0.80 x 1.50 m at -2.95, 0.68, 6.30), 15 cm
+flames frames 79-115 (film 2.63-3.87 s): man's right hand is inside a box (1.10 x 0.80 x 1.50 m at -2.95, 0.68, 6.30), 30 cm
+flames frames 79-114 (film 2.63-3.83 s): man's left thigh is inside a box (1.10 x 0.80 x 1.50 m at -2.95, 0.68, 6.30), 46 cm
+flames frames 79-117 (film 2.63-3.93 s): man's right thigh is inside a box (1.10 x 0.80 x 1.50 m at -2.95, 0.68, 6.30), 46 cm
+flames frames 79-115 (film 2.63-3.87 s): man's left shin is inside a box (1.10 x 0.80 x 1.50 m at -2.95, 0.68, 6.30), 45 cm
+flames frames 79-117 (film 2.63-3.93 s): man's right shin is inside a box (1.10 x 0.80 x 1.50 m at -2.95, 0.68, 6.30), 45 cm
+flames frames 79-116 (film 2.63-3.90 s): man's left foot is inside a box (1.10 x 0.80 x 1.50 m at -2.95, 0.68, 6.30), 21 cm
+flames frames 79-117 (film 2.63-3.93 s): man's right foot is inside a box (1.10 x 0.80 x 1.50 m at -2.95, 0.68, 6.30), 21 cm
+flames frames 79-113 (film 2.63-3.80 s): man's belly is inside a box (0.86 x 0.04 x 1.26 m at -2.95, 1.07, 6.30), 10 cm
+flames frames 79-114 (film 2.63-3.83 s): man's right forearm is inside a box (0.86 x 0.04 x 1.26 m at -2.95, 1.07, 6.30), 6 cm
+flames frames 79-110 (film 2.63-3.70 s): man's left thigh is inside a box (0.86 x 0.04 x 1.26 m at -2.95, 1.07, 6.30), 7 cm
+flames frames 79-110 (film 2.63-3.70 s): man's right thigh is inside a box (0.86 x 0.04 x 1.26 m at -2.95, 1.07, 6.30), 8 cm
+flames frames 87-111 (film 2.90-3.73 s): man's left foot slides while he stands on it (3.5 cm a frame)
+flames frames 89-93 (film 2.97-3.13 s): man's left upper arm is inside a cylinder (0.23 x 0.12 x 0.07 m at -3.19, 1.34, 6.30), 4 cm
+flames frames 92-118 (film 3.07-3.97 s): gran's right foot slides while he stands on it (2.1 cm a frame)
+flames frames 92-121 (film 3.07-4.07 s): man's right foot slides while he stands on it (3.3 cm a frame)
+flames frames 96-121 (film 3.20-4.07 s): gran's left hand is inside a box (1.10 x 0.80 x 1.50 m at -2.95, 0.68, 6.30), 11 cm
+flames frames 97-121 (film 3.23-4.07 s): gran's left forearm is inside a box (1.10 x 0.80 x 1.50 m at -2.95, 0.68, 6.30), 10 cm
+flames frames 97-121 (film 3.23-4.07 s): gran's left foot is inside a box (1.10 x 0.80 x 1.50 m at -2.95, 0.68, 6.30), 19 cm
+flames frames 97-110 (film 3.23-3.70 s): man's left hand is inside a box (0.86 x 0.04 x 1.26 m at -2.95, 1.07, 6.30), 6 cm
+flames frames 98-113 (film 3.27-3.80 s): man's left hand is inside a box (1.10 x 0.80 x 1.50 m at -2.95, 0.68, 6.30), 6 cm
+flames frames 99-121 (film 3.30-4.07 s): gran's left upper arm is inside a box (1.10 x 0.80 x 1.50 m at -2.95, 0.68, 6.30), 7 cm
+flames frames 100-121 (film 3.33-4.07 s): gran's left thigh is inside a box (1.10 x 0.80 x 1.50 m at -2.95, 0.68, 6.30), 45 cm
+flames frames 100-121 (film 3.33-4.07 s): gran's left shin is inside a box (1.10 x 0.80 x 1.50 m at -2.95, 0.68, 6.30), 42 cm
+flames frames 101-107 (film 3.37-3.60 s): gran's left foot slides while he stands on it (2.5 cm a frame)
+flames frames 102-121 (film 3.40-4.07 s): gran's chest is inside a box (1.10 x 0.80 x 1.50 m at -2.95, 0.68, 6.30), 9 cm
+flames frames 102-121 (film 3.40-4.07 s): gran's left forearm is inside a box (0.86 x 0.04 x 1.26 m at -2.95, 1.07, 6.30), 5 cm
+flames frames 103-121 (film 3.43-4.07 s): gran's belly is inside a box (1.10 x 0.80 x 1.50 m at -2.95, 0.68, 6.30), 25 cm
+flames frames 103-121 (film 3.43-4.07 s): gran's left upper arm is inside a box (0.86 x 0.04 x 1.26 m at -2.95, 1.07, 6.30), 6 cm
+flames frames 105-121 (film 3.50-4.07 s): gran's right thigh is inside a box (1.10 x 0.80 x 1.50 m at -2.95, 0.68, 6.30), 45 cm
+flames frames 105-121 (film 3.50-4.07 s): gran's right shin is inside a box (1.10 x 0.80 x 1.50 m at -2.95, 0.68, 6.30), 38 cm
+flames frames 105-121 (film 3.50-4.07 s): gran's right foot is inside a box (1.10 x 0.80 x 1.50 m at -2.95, 0.68, 6.30), 16 cm
+flames frames 106-121 (film 3.53-4.07 s): gran's chest is inside a box (0.86 x 0.04 x 1.26 m at -2.95, 1.07, 6.30), 10 cm
+flames frames 107-121 (film 3.57-4.07 s): gran's belly is inside a box (0.86 x 0.04 x 1.26 m at -2.95, 1.07, 6.30), 9 cm
+flames frames 115-116 (film 3.83-3.90 s): woman's left foot is inside a box (2.00 x 0.58 x 80.00 m at -3.10, -0.01, 0.00), 2 cm
+flames frames 115-120 (film 3.83-4.03 s): woman's left foot is inside a box (0.22 x 0.60 x 80.00 m at -2.10, 0.00, 0.00), 13 cm
+flames frames 115-115 (film 3.83-3.87 s): woman's lower foot is sunk into a box (0.22 x 0.60 x 80.00 m at -2.10, 0.00, 0.00), 17 cm
+flames frames 119-121 (film 3.97-4.07 s): woman's left forearm goes through the thing in woman R's hand (sack (0.55 x 0.31 x 0.55 m at -1.90, 0.82, 7.21)): part of it before the thing, part behind it, 100 cm
+flames frames 119-121 (film 3.97-4.07 s): woman's left hand goes through the thing in woman R's hand (sack (0.55 x 0.31 x 0.55 m at -1.90, 0.82, 7.21)): part of it before the thing, part behind it, 100 cm
+flames frames 119-121 (film 3.97-4.07 s): woman's left forearm is inside the thing in woman R's hand, sack (0.16 x 0.03 x 0.25 m at -1.90, 0.84, 7.21), 4 cm
+flames frames 121-121 (film 4.03-4.07 s): a box (0.07 x 0.07 x 7.64 m at -4.08, 1.42, 6.68) stands 0.00 m behind man, hidden by his body and showing on both sides of it: it seems to go through him, 4 cm
+flames2 frames 122-165 (film 4.07-5.53 s): a box (0.07 x 0.07 x 7.64 m at -4.08, 1.42, 6.68) stands 0.00 m behind man, hidden by his body and showing on both sides of it: it seems to go through him, 4 cm
+flames2 frames 123-123 (film 4.10-4.13 s): man's right foot slides while he stands on it (3.6 cm a frame)
+flames2 frames 125-165 (film 4.17-5.53 s): sir's head lies over man's head in the picture (9 px into it, nearer the lens), 148 cm
+flames2 frames 125-165 (film 4.17-5.53 s): gran's left hand is inside a box (1.10 x 0.80 x 1.50 m at -2.95, 0.68, 6.30), 11 cm
+flames2 frames 127-165 (film 4.23-5.53 s): man's face is covered by sir's head (35 % of it), 88 cm
+flames2 frames 128-165 (film 4.27-5.53 s): gran's left forearm is inside a box (1.10 x 0.80 x 1.50 m at -2.95, 0.68, 6.30), 10 cm
+flames2 frames 129-130 (film 4.30-4.37 s): man's left foot slides while he stands on it (1.9 cm a frame)
+flames2 frames 134-165 (film 4.47-5.53 s): gran's left upper arm is inside a box (1.10 x 0.80 x 1.50 m at -2.95, 0.68, 6.30), 6 cm
+flames2 frames 134-165 (film 4.47-5.53 s): gran's left upper arm is inside a box (0.86 x 0.04 x 1.26 m at -2.95, 1.07, 6.30), 6 cm
+flames2 frames 134-165 (film 4.47-5.53 s): gran's left forearm is inside a box (0.86 x 0.04 x 1.26 m at -2.95, 1.07, 6.30), 5 cm
+flames2 frames 152-159 (film 5.07-5.33 s): woman's left foot is inside a box (0.22 x 0.60 x 80.00 m at -2.10, 0.00, 0.00), 13 cm
+flames2 frames 153-156 (film 5.10-5.23 s): woman's left shin is inside a box (0.22 x 0.60 x 80.00 m at -2.10, 0.00, 0.00), 4 cm
+flames2 frames 155-155 (film 5.17-5.20 s): woman's lower foot is sunk into a box (0.22 x 0.60 x 80.00 m at -2.10, 0.00, 0.00), 20 cm
+flames2 frames 156-158 (film 5.20-5.30 s): the thing in woman R's hand, sack (0.53 x 0.31 x 0.54 m at -1.95, 0.86, 4.39), is drawn over man's right thigh, 23 cm
+flames2 frames 156-165 (film 5.20-5.53 s): woman's left forearm goes through the thing in woman R's hand (sack (0.53 x 0.31 x 0.54 m at -1.95, 0.86, 4.39)): part of it before the thing, part behind it, 100 cm
+flames2 frames 156-164 (film 5.20-5.50 s): woman's lower foot is above a box (4.20 x 0.30 x 80.00 m at 0.00, -0.15, 0.00): floating, 13 cm
+flames2 frames 158-161 (film 5.27-5.40 s): the thing in woman R's hand, knot (0.17 x 0.06 x 0.19 m at -1.95, 0.99, 4.24), is drawn over man's right thigh, 77 cm
+flames2 frames 158-158 (film 5.27-5.30 s): woman's left foot slides while he stands on it (5.8 cm a frame)
+flames2 frames 159-160 (film 5.30-5.37 s): the thing in woman R's hand, sack (0.53 x 0.31 x 0.54 m at -1.94, 0.82, 4.16), is drawn over man's right shin, 23 cm
+flames2 frames 159-161 (film 5.30-5.40 s): the thing in woman R's hand, sack (0.19 x 0.03 x 0.25 m at -1.94, 0.84, 4.16), is drawn over man's right thigh, 54 cm
+flames2 frames 160-160 (film 5.33-5.37 s): the thing in woman R's hand, sack (0.19 x 0.03 x 0.25 m at -1.94, 0.84, 4.09), is drawn over man's right shin, 77 cm
+flames2 frames 160-162 (film 5.33-5.43 s): woman's left hand goes through the thing in woman R's hand (sack (0.53 x 0.31 x 0.54 m at -1.94, 0.82, 4.09)): part of it before the thing, part behind it, 25 cm
+flames2 frames 161-163 (film 5.37-5.47 s): the thing in woman R's hand, sack (0.53 x 0.31 x 0.54 m at -1.94, 0.82, 4.01), is drawn over man's left shin, 38 cm
+flames2 frames 161-165 (film 5.37-5.53 s): gran's left thigh is inside a box (1.10 x 0.80 x 1.50 m at -2.95, 0.68, 6.30), 43 cm
+flames2 frames 161-165 (film 5.37-5.53 s): gran's left shin is inside a box (1.10 x 0.80 x 1.50 m at -2.95, 0.68, 6.30), 42 cm
+flames2 frames 162-165 (film 5.40-5.53 s): the thing in woman R's hand, knot (0.17 x 0.06 x 0.19 m at -1.93, 0.99, 3.94), is drawn over man's left thigh, 85 cm
+flames2 frames 162-165 (film 5.40-5.53 s): girl's face is covered by sir's chest (29 % of it), 100 cm
+flames2 frames 163-165 (film 5.43-5.53 s): woman's head lies over man's head in the picture (53 px into it, nearer the lens), 109 cm
+flames2 frames 163-165 (film 5.43-5.53 s): sir's head lies over woman's head in the picture (33 px into it, nearer the lens), 81 cm
+flames2 frames 163-165 (film 5.43-5.53 s): gran's left foot is inside a box (1.10 x 0.80 x 1.50 m at -2.95, 0.68, 6.30), 12 cm
+flames2 frames 164-165 (film 5.47-5.53 s): man's face is covered by woman's head (53 % of it), 53 cm
+flames2 frames 164-165 (film 5.47-5.53 s): the thing in woman R's hand, sack (0.53 x 0.31 x 0.54 m at -1.93, 0.96, 3.78), is drawn over man's left thigh, 46 cm
+flames2 frames 164-165 (film 5.47-5.53 s): the thing in woman R's hand, sack (0.19 x 0.03 x 0.25 m at -1.93, 0.98, 3.78), is drawn over man's left thigh, 100 cm
+flames2 frames 165-165 (film 5.50-5.53 s): woman's face is covered by sir's head (29 % of it), 29 cm
+notso frames 166-208 (film 5.53-6.97 s): the thing in nero L's hand, a box (0.26 x 0.12 x 0.03 m at 0.10, 1.02, 1.63), is drawn over sir's chest, 85 cm
+notso frames 166-208 (film 5.53-6.97 s): the thing in nero L's hand, a sphere (0.07 x 0.07 x 0.06 m at -0.03, 0.97, 1.63), is drawn over sir's chest, 100 cm
+notso frames 166-208 (film 5.53-6.97 s): the thing in nero L's hand, a box (0.33 x 0.14 x 0.01 m at 0.24, 1.07, 1.61), is drawn over sir's chest, 38 cm
+notso frames 166-208 (film 5.53-6.97 s): the thing in nero L's hand, a box (0.41 x 0.15 x 0.00 m at 0.21, 1.04, 1.59), is drawn over sir's chest, 46 cm
+notso frames 166-208 (film 5.53-6.97 s): the thing in nero L's hand, a box (0.41 x 0.15 x 0.00 m at 0.21, 1.06, 1.59), is drawn over sir's chest, 54 cm
+notso frames 166-208 (film 5.53-6.97 s): the thing in nero L's hand, a box (0.41 x 0.15 x 0.00 m at 0.20, 1.07, 1.59), is drawn over sir's chest, 54 cm
+notso frames 167-208 (film 5.57-6.97 s): the thing in nero R's hand, a box (0.45 x 0.38 x 0.01 m at 0.39, 1.01, 1.58), is drawn over sir's chest, 46 cm
+notso frames 169-208 (film 5.63-6.97 s): the thing in nero R's hand, a box (0.49 x 0.41 x 0.01 m at 0.37, 1.05, 1.58), is drawn over sir's chest, 46 cm
+tacitus frames 209-281 (film 6.97-9.40 s): a box (6.00 x 0.24 x 0.20 m at 0.00, 0.12, -151.50) stands 1.35 m behind tac, hidden by his body and showing on both sides of it: it seems to go through him, 4 cm
+tacitus frames 209-281 (film 6.97-9.40 s): tac's right hand goes through the thing in tac L's hand (a cylinder (0.36 x 0.03 x 0.05 m at 0.27, 1.07, -150.11)): part of it before the thing, part behind it, 100 cm
+tacitus frames 235-235 (film 7.83-7.87 s): tac's left hand goes through the thing in tac R's hand (a box (0.10 x 0.18 x 0.02 m at 0.30, 1.00, -150.06)): part of it before the thing, part behind it, 33 cm
+away frames 312-342 (film 10.40-11.43 s): a box (0.11 x 2.30 x 0.11 m at 203.78, 3.15, 0.91) stands 0.33 m behind msg, hidden by his body and showing on both sides of it: it seems to go through him, 24 cm
+away frames 312-313 (film 10.40-10.47 s): msg's right foot slides while he stands on it (3.5 cm a frame)
+gardens frames 343-469 (film 11.43-15.67 s): sacker's head lies over gran's head in the picture (27 px into it, nearer the lens), 103 cm
+gardens frames 343-469 (film 11.43-15.67 s): gran's face is covered by sacker's head (76 % of it), 94 cm
+gardens frames 343-447 (film 11.43-14.93 s): gran's face is covered by cough's chest (71 % of it), 71 cm
+gardens frames 343-388 (film 11.43-12.97 s): girl's head lies over gran's head in the picture (62 px into it, nearer the lens), 222 cm
+gardens frames 343-387 (film 11.43-12.93 s): gran's face is covered by girl's head (100 % of it), 100 cm
+gardens frames 343-469 (film 11.43-15.67 s): sacker's head lies over oldman's head in the picture (9 px into it, nearer the lens), 94 cm
+gardens frames 343-469 (film 11.43-15.67 s): oldman's face is covered by sacker's right forearm (41 % of it), 94 cm
+gardens frames 343-460 (film 11.43-15.37 s): cough's head lies over oldman's head in the picture (24 px into it, nearer the lens), 161 cm
+gardens frames 343-469 (film 11.43-15.67 s): oldman's face is covered by cough's chest (82 % of it), 100 cm
+gardens frames 343-397 (film 11.43-13.27 s): girl's head lies over oldman's head in the picture (99 px into it, nearer the lens), 429 cm
+gardens frames 343-395 (film 11.43-13.20 s): oldman's face is covered by girl's head (100 % of it), 100 cm
+gardens frames 343-459 (film 11.43-15.33 s): cough's head lies over sacker's head in the picture (36 px into it, nearer the lens), 115 cm
+gardens frames 343-448 (film 11.43-14.97 s): sacker's face is covered by cough's head (82 % of it), 82 cm
+gardens frames 343-392 (film 11.43-13.10 s): girl's head lies over sacker's head in the picture (89 px into it, nearer the lens), 269 cm
+gardens frames 343-389 (film 11.43-13.00 s): sacker's face is covered by girl's head (100 % of it), 100 cm
+gardens frames 343-408 (film 11.43-13.63 s): girl's head lies over woman2's head in the picture (41 px into it, nearer the lens), 275 cm
+gardens frames 343-406 (film 11.43-13.57 s): woman2's face is covered by girl's head (53 % of it), 100 cm
+gardens frames 343-398 (film 11.43-13.30 s): girl's head lies over cough's head in the picture (90 px into it, nearer the lens), 207 cm
+gardens frames 343-393 (film 11.43-13.13 s): cough's face is covered by girl's head (100 % of it), 100 cm
+gardens frames 343-469 (film 11.43-15.67 s): a box (0.02 x 2.90 x 0.02 m at -198.39, 1.50, 0.32) stands 1.44 m behind nero, hidden by his body and showing on both sides of it: it seems to go through him, 21 cm
+gardens frames 343-455 (film 11.43-15.20 s): a box (0.02 x 2.90 x 0.02 m at -198.23, 1.50, 0.62) stands 1.18 m behind nero, hidden by his body and showing on both sides of it: it seems to go through him, 4 cm
+gardens frames 343-469 (film 11.43-15.67 s): a box (0.29 x 0.12 x 1.52 m at -198.31, 0.45, 0.80) stands 0.27 m behind nero, hidden by his body and showing on both sides of it: it seems to go through him, 13 cm
+gardens frames 343-411 (film 11.43-13.73 s): girl's lower foot is sunk into a box (3.40 x 0.22 x 40.00 m at -200.00, -0.07, 20.30), 4 cm
+gardens frames 343-399 (film 11.43-13.33 s): mother's lower foot is sunk into a box (3.40 x 0.22 x 40.00 m at -200.00, -0.07, 20.30), 4 cm
+gardens frames 343-469 (film 11.43-15.67 s): nero's lower foot is sunk into a box (3.40 x 0.22 x 40.00 m at -200.00, -0.07, 20.30), 4 cm
+gardens frames 384-469 (film 12.80-15.67 s): a box (0.02 x 2.90 x 0.02 m at -198.34, 1.50, 0.64) stands 1.14 m behind nero, hidden by his body and showing on both sides of it: it seems to go through him, 14 cm
+gardens frames 388-469 (film 12.93-15.67 s): cough's head lies over woman2's head in the picture (4 px into it, nearer the lens), 119 cm
+gardens frames 408-424 (film 13.60-14.17 s): cough's lower foot is above a box (600.00 x 0.20 x 600.00 m at 0.00, -0.32, -100.00): floating, 22 cm
+gardens frames 425-469 (film 14.17-15.67 s): cough's lower foot is sunk into a box (3.40 x 0.22 x 40.00 m at -200.00, -0.07, 20.30), 4 cm
+gardens frames 455-469 (film 15.17-15.67 s): woman2's lower foot is above a box (600.00 x 0.20 x 600.00 m at 0.00, -0.32, -100.00): floating, 22 cm
+gardens frames 460-462 (film 15.33-15.43 s): a box (0.02 x 2.90 x 0.02 m at -198.29, 1.50, 0.31) stands 1.47 m behind nero, hidden by his body and showing on both sides of it: it seems to go through him, 25 cm
+gardens frames 461-469 (film 15.37-15.67 s): woman2's face is covered by cough's head (35 % of it), 65 cm
+six frames 472-514 (film 15.73-17.17 s): run0's left foot slides while he stands on it (10.0 cm a frame)
+six frames 472-514 (film 15.73-17.17 s): run1's left foot slides while he stands on it (10.1 cm a frame)
+six frames 472-514 (film 15.73-17.17 s): run3's left foot slides while he stands on it (10.0 cm a frame)
+six frames 472-520 (film 15.73-17.37 s): run4's left foot slides while he stands on it (8.4 cm a frame)
+six frames 473-514 (film 15.77-17.17 s): run2's left foot slides while he stands on it (7.6 cm a frame)
+six frames 474-485 (film 15.80-16.20 s): run0's left shin is inside a box (0.90 x 0.30 x 0.62 m at -1.25, 0.15, 9.60), 20 cm
+six frames 474-485 (film 15.80-16.20 s): run0's left foot is inside a box (0.90 x 0.30 x 0.62 m at -1.25, 0.15, 9.60), 18 cm
+six frames 479-528 (film 15.97-17.63 s): run4's right foot slides while he stands on it (7.6 cm a frame)
+six frames 481-524 (film 16.03-17.50 s): run0's right foot slides while he stands on it (9.0 cm a frame)
+six frames 481-524 (film 16.03-17.50 s): run1's right foot slides while he stands on it (9.1 cm a frame)
+six frames 481-524 (film 16.03-17.50 s): run2's right foot slides while he stands on it (6.9 cm a frame)
+six frames 481-524 (film 16.03-17.50 s): run3's right foot slides while he stands on it (9.1 cm a frame)
+six frames 482-529 (film 16.07-17.67 s): run4's lower foot is above a box (4.20 x 0.30 x 80.00 m at 0.00, -0.15, 0.00): floating, 8 cm
+six frames 485-488 (film 16.17-16.30 s): run4's face is covered by run3's right hand (24 % of it), 29 cm
+six frames 485-527 (film 16.17-17.60 s): run0's lower foot is above a box (4.20 x 0.30 x 80.00 m at 0.00, -0.15, 0.00): floating, 16 cm
+six frames 485-527 (film 16.17-17.60 s): run1's lower foot is above a box (4.20 x 0.30 x 80.00 m at 0.00, -0.15, 0.00): floating, 16 cm
+six frames 485-527 (film 16.17-17.60 s): run2's lower foot is above a box (4.20 x 0.30 x 80.00 m at 0.00, -0.15, 0.00): floating, 16 cm
+six frames 485-527 (film 16.17-17.60 s): run3's lower foot is above a box (4.20 x 0.30 x 80.00 m at 0.00, -0.15, 0.00): floating, 16 cm
+six frames 500-507 (film 16.67-16.93 s): run1's right shin is inside a box (0.90 x 0.30 x 0.62 m at 1.25, 0.15, 9.60), 20 cm
+six frames 500-506 (film 16.67-16.90 s): run1's right foot is inside a box (0.90 x 0.30 x 0.62 m at 1.25, 0.15, 9.60), 18 cm
+six frames 505-506 (film 16.83-16.90 s): run1's lower foot is sunk into a box (0.90 x 0.30 x 0.62 m at 1.25, 0.15, 9.60), 24 cm
+rumour frames 530-608 (film 17.67-20.30 s): a's lower foot is sunk into a box (3.40 x 0.22 x 40.00 m at -200.00, -0.07, 20.30), 4 cm
+rumour frames 530-608 (film 17.67-20.30 s): c's lower foot is sunk into a box (3.40 x 0.22 x 40.00 m at -200.00, -0.07, 20.30), 4 cm
+rumour frames 530-608 (film 17.67-20.30 s): b's lower foot is sunk into a box (3.40 x 0.22 x 40.00 m at -200.00, -0.07, 20.30), 4 cm
+rumour frames 561-608 (film 18.70-20.30 s): b's head lies over c's head in the picture (14 px into it, nearer the lens), 25 cm
+sang frames 630-630 (film 21.00-21.03 s): nero's right hand goes through the thing in nero L's hand (a box (0.37 x 0.28 x 0.07 m at -0.21, 1.74, 159.74)): part of it before the thing, part behind it, 33 cm
+lyre frames 926-1020 (film 30.87-34.03 s): the thing in nero L's hand, a sphere (0.09 x 0.07 x 0.08 m at 0.30, 1.25, 1.37), is drawn over sir's chest, 100 cm
+lyre frames 952-1019 (film 31.73-34.00 s): the thing in nero L's hand, a box (0.15 x 0.38 x 0.13 m at 0.35, 1.05, 1.41), is drawn over sir's chest, 23 cm
+lyre frames 952-1019 (film 31.73-34.00 s): the thing in nero L's hand, a box (0.35 x 0.11 x 0.29 m at 0.45, 1.26, 1.48), is drawn over sir's chest, 15 cm
+loop frames 1089-1113 (film 36.30-37.13 s): nero's head lies over r1's head in the picture (49 px into it, nearer the lens), 188 cm
+loop frames 1089-1111 (film 36.30-37.07 s): r1's face is covered by nero's head (100 % of it), 100 cm
+BODY CHECK FAILED for nero-fiddle: 1114 frames of 1113, 3508 figure-frames, 15044 pairs tried, 206 faults (5 s)

@@ -308,9 +308,13 @@ const PIST_AT = inCabin([0.35, 0, 0.1]), CUT9 = 1.15;
   rd.actAt(-1, { ...reach(rs, "R", aside(rc, R.cam, rw * 0.27)), ...reach(rs, "L", aside(rc, R.cam, -rw * 0.27)), head: [0, 8, 0] }, 10, { in: 0.01, handL: "grip", handR: "grip", face: { brow: 0.8, lid: 0.1, mouth: 0.5 } });
   wag(rd, 0, 6, P({ head: [-4, 8, 0] }), P({ head: [4, 6, 0] }), 0.9, { handL: "grip", handR: "grip", face: { brow: 0.8, lid: 0.1, mouth: 0.5 } });
   // (the listeners half a step in from the edges and the lens a little wider: in v3 both were cut by the picture's edges)
-  const listen = ([[SAILOR_D, 1.82, 3.6, -0.6, 40], [TOWNSWOMAN_D, 1.64, 3.7, 0.62, -40]] as [Design, number, number, number, number][]).map(([D, h, d, l, off], i) => {
+  const listen = ([[SAILOR_D, 1.82, 3.6, -0.64, 40], [TOWNSWOMAN_D, 1.64, 3.7, 0.62, -40]] as [Design, number, number, number, number][]).map(([D, h, d, l, off], i) => {
     const [x, z] = R.spot(d, l), m = mover(D, h, x, z, R.toward(x, z, off)); m.stand(9);
-    m.actAt(-1, { armL: arm(20, 12, 70, 10), armR: arm(20, 12, 70, 10), head: [0, -2, 0] }, 10, { in: 0.01, handL: "relaxed", handR: "relaxed", face: { wide: 0.9, lid: 0, brow: 1, mouth: i === 1 ? 0.5 : 0.2, smile: -0.4 } });
+    // (the sailor's left arm hangs straight at his side, the hand in sight below the sleeve: held out like the right, turned to the reader
+    // as he is, it put that hand behind the reader's fist on the book's edge, his sleeve ending in the reader's fist, one fist for two
+    // arms (the body check's test g; Jesper's choice to put it right before the delivery, 18 Nov). Across to his stomach it was hidden
+    // behind his body)
+    m.actAt(-1, { armL: i === 0 ? arm(4, 6, 8, 4) : arm(20, 12, 70, 10), armR: arm(20, 12, 70, 10), head: [0, -2, 0] }, 10, { in: 0.01, handL: "relaxed", handR: "relaxed", face: { wide: 0.9, lid: 0, brow: 1, mouth: i === 1 ? 0.5 : 0.2, smile: -0.4 } });
     if (D === SHIPBOY_D) m.actAt(1.6, { px: -0.35, armL: arm(60, -20, 120, -20), armR: arm(60, -20, 120, -20), head: [-20, 0, 0] }, 9, { in: 0.35, antic: 0.2, over: 1.2, handL: "fist", handR: "fist", face: { wide: 1, lid: 0, brow: 1, mouth: 0.5, smile: -0.8 } });
     return { D, m }; });
   shots.push({ id: "book", a: T.s11, b: T.s12, still: 2.0, sounds: [{ t: 0.3, k: "paper", g: 0.5 }, { t: 2.6, k: "paper", g: 0.4 }],

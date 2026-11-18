@@ -17,6 +17,13 @@ Enligt "Impossible things: zero tolerance" i DAILY-RULES.md (Jesper 18 november 
 | 11 | Gladiatorerna v3 | 28–31,3 | Klingan i handen mellan de två som går ut ligger över nätkämpens ben och höft. | granskaren | 1 | hållen sak mot annan kropp |
 | 12 | Gladiatorerna v4, öppning a omgång 2 | 0,30–0,45 | Murmillons svärdshand sitter framför skölden med armen bakom, alltså genom skölden. Rättat i omgång 3. | granskaren | 1 | arm mot sköld |
 | 13 | Gladiatorerna v1 | 25,6–26,9 | Givarens duk var lösa remsor som hängde bredvid handen. Rättat i v3. | granskaren | 4 | hållen sak sitter i handen |
+| 14 | Gladiatorerna v4, öppning a omgång 3 (212709ce, godkänd av granskaren) | 0,33–1,10 | Murmillons svärdshand ligger på sköldens framsida, men klingan reser sig bakom sköldens överkant. Svärdet går alltså igenom skölden, tydligast vid 1,05 s. Granskaren såg bara 0–0,6 s ruta för ruta. | byggsessionens kroppskontroll | 1 | hand framför och klinga bakom samma sköld |
+| 15 | Nero v3 (9054d01a) | 11,4–15,4 | Mannen i vit tunika håller säcken framför ansiktet genom hela bilden, så att huvudet aldrig syns. | granskaren | 6 | egen hållen sak över eget ansikte |
+| 16 | Nero v3 (9054d01a) | 23,6 | Stråkens spets ligger inne i Sirs överarm när han tar fiolen. Det går inte att avgöra framför eller inne, så det underkänns. | granskaren | 1, 5 | hållen sak mot annans arm |
+| 17 | Blackbeard v4 (8b70f500) | 7,5–8,8 | Blackbeards öppna hand kommer ned på pojkens knytnäve vid brickans hörn. Näven ligger över hans handflata, två händer på samma ställe. | granskaren | 5 | två händer från olika figurer över varandra |
+| 18 | Blackbeard v4 (8b70f500) | 25,7–27,2 | Blackbeards hattbrätte i förgrunden täcker kockens upplyfta arm och hörnet av hans huvud. | granskaren | 6 | förgrund över en bakgrundsfigurs arm eller huvud |
+| 19 | Blackbeard v1–v4 | 3,9–6,4 | Tunnan i förgrunden täcker Sirs högra ben och halva rocken, inom de första fem sekunderna (Jespers regel 1, 18 november). | granskaren | 6 | föremål i förgrunden över en figur |
+| 20 | Blackbeard v4 (90620c7e) | 27,7–32,4 | Sjömannens vänstra hand gömd bakom läsarens knytnäve vid bokens kant; hans ärm slutar i läsarens näve, en näve för två armar | byggsessionens test (g) | 5 | två händer från olika figurer över varandra |
 
 ## Kodkontrollen mot listan (18 november, kroppskontrollen `film_info.mjs <film> body`)
 Kontrollen körd på de levererade filernas kod (9eeae2b; öppning a omgång 2 på 5f36d8a). Utskriften rad för rad finns i `granskning/body-check/`, med en tabell i README.md där.

@@ -550,7 +550,7 @@ export const NERO_FIDDLE: Film = {
   grade: (T) => GRADES.find((q) => T >= q.a && T < q.b)?.g(T) ?? null,
   // each is the film's own frame at that time (text.md names the times), with the words laid over it
   thumbs: [
-    { T: 0.5, words: ["DID NERO", "FIDDLE?"], y: 0.68, size: 150 },
+    { T: 1.5, words: ["DID NERO", "FIDDLE?"], y: 0.68, size: 150 },      // Sir Digsworth whole in the picture, pointing (at 0.5 s he was still stepping in)
     { T: SANG + 1.2, words: ["OR DID", "HE SING?"], y: 0.7, size: 140 },
     { T: LATER + 1.3, words: ["NO", "FIDDLE"], y: 0.7, size: 150 },
   ],

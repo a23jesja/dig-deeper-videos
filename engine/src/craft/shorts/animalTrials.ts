@@ -131,7 +131,7 @@ const T11 = cut("water", "said_no");
 // the lawyer on the field rubs a pinch of dry earth between his fingers, lets it fall and shakes his head
 const T12 = cut("said_no", "picky");
 const BARREN_AT: V3 = [FX - 2.4, 0, FZ + 0.4];
-{ const V = lens(BARREN_AT[0] - 2.5 - 0.11, 1.5, BARREN_AT[2] + 1.0 - 0.28, 0.93, -0.37, -4, 52),      // (a little to the left, so that his hand held out is well inside the picture)
+{ const V = lens(BARREN_AT[0] - 2.5 - 0.05, 1.5, BARREN_AT[2] + 1.0 - 0.13, 0.93, -0.37, -4, 52),      // (a little to the left, so that his hand held out is well inside the picture)
   H = toward(BARREN_AT, V.cam.pos) + 25, m = mover(ADVOCATE_D, 1.8, BARREN_AT[0], BARREN_AT[2], H); m.stand(9);
   const s: Stand = { D: ADVOCATE_D, at: BARREN_AT, heading: H, h: 1.8, cam: V.cam }, hand = ahead(BARREN_AT, H, 0.14, 0.56, 1.02);      // (held out to his side in the picture's plane, clear of his body, so that the earth he rubs shows: forward toward the lens the card drew it at his chest, as a hand on his heart)
   m.actAt(-1, { ...reach(s, "R", hand), armL: arm(14, 10, 30, 8), head: [10, 16, 0] }, 10, { in: 0.01, handR: "fist", handL: "relaxed", face: { brow: -0.4, lid: 0.3, mouth: 0.2, smile: -0.4 } });

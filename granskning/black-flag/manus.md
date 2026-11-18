@@ -200,3 +200,40 @@ Granskningens fem punkter på version 4, alla med den godkända greppkoden från
 
 Också: skeppspojken står så att kikaren inte går över hans ansikte. Kontroller: filmkontrollen OK, greppkontrollen 392 avläsningar utan fel.
 
+
+## Version 6: kikaren följer handen, huvudet vänder sig först när okularet har lämnat ögat, rösten märkt och två egna repliker (18 november)
+
+**Jespers punkt.** Kikaren hänger inte längre i luften när han sänker den. Motorns `blend` har fått `glue`: den punkt på kikaren som låg i högerhanden vid ögat glider till den punkt som ligger i handen när kikaren är sänkt, och kikaren flyttas varje ruta så att den punkten är i handen. Kikaren följer alltså handen ned, och sedan över till armhålan.
+
+Kroppen vänder sig först 0,1 s efter att handen har börjat sänka kikaren, och huvudet rätar upp sig samtidigt: först när okularet har lämnat ögat.
+
+**Greppkontrollen läser varje ruta.** I version 5 fann den tolv fel som den gamla kontrollen var tionde sekund missade:
+- kikaren utan hand, rutorna 436–442 och 450–451;
+- handen 6 cm från fästet i dragningen, ruta 458;
+- huggaren sjönk till 47 grader rutan före hugget, ruta 466;
+- tre höjda sablar i den röda flaggans bild som sjönk under 55 grader, rutorna 544, 550 och 556.
+
+Alla rättas i version 6: dragningen i nio steg i stället för fem, armen hålls uppe tills hugget börjar, och sablarnas vickning har en högre nedre ände.
+
+**Rösten märkt (oförändrad, inget nytt att spela in):**
+
+| Rad | Märkning | Vem |
+|---|---|---|
+| Why did pirates fly black flags? | [OWN] | berättaren, frågan |
+| To say: we will kill you all? | [OWN] | Sir Digsworth, hans felaktiga gissning |
+| No. It was an offer. | [SOURCE] | [F], [N] |
+| Pirates often crept close under a friendly flag, then ran up the black one. | [SOURCE] | [F], [N], [J-L] |
+| It meant: give up now, and we show mercy. | [SOURCE] | [F], [N] |
+| Some ships gave up at the very sight. | [SOURCE] | [J-T], [J-R] |
+| Fight back, and a red flag might follow: no mercy. | [SOURCE] | [F], [R1], [N] |
+| The black flag was meant to win the treasure without a fight. | [SOURCE] | [R1], [F] |
+| One crew had no black flag, so they hoisted a dirty tarpaulin and fired a gun. | [SOURCE] | [J-D] |
+| It worked. | [SOURCE] | [J-D] |
+
+**Nya egna repliker, som pratbubblor ovanpå bilden (rösten flyttas inte):**
+- "...Oh no.": handelsskeppets sjöman, sedd bakifrån, när den svarta flaggan går upp och hans mugg faller, omkring 9,75–10,97 s.
+- "Close enough.": styrmannen när den smutsiga presenningen har kommit upp i masten, omkring 28,1–29,5 s.
+
+Ingen av dem bär ett faktum: båda är bara reaktioner på det som rösten och bilden redan visar. Inget skämt om död.
+
+**Egna repliker: 4** (frågan, Sirs gissning och de två bubblorna).

@@ -514,12 +514,17 @@ export const inHand = (o: THREE.Object3D, r = 0.2) => { const sack = o.getObject
 export const quiet = <T,>(f: () => T): T => { const on = AUDIT.on; AUDIT.on = false; try { return f(); } finally { AUDIT.on = on; } };
 /** A thing on its way from one hold to another (from the eye to the hand, from one hand to the other): it is put both ways, and laid
  *  k of the way from the first to the second; the fingers of the nearer hold are kept. `holder` names the hands on it meanwhile
- *  ("mc R+L" while it changes hands) */
-export const blend = (into: THREE.Group, o: THREE.Object3D, k: number, A: (g: THREE.Group) => void, B: (g: THREE.Group) => void, P: string, holder: string, at?: V3) => {
+ *  ("mc R+L" while it changes hands). `glue`: the hand that carries it across. The point of the thing that lay in that hand in the
+ *  first hold (where the hand was then: `was`, or where it is now) slides to the point that lies in it in the second, and the thing is
+ *  moved so that this point is in the hand in every frame: it goes with the hand instead of drifting on its own clock (black flag v5:
+ *  the spyglass hung in the air while his hand went down) */
+export const blend = (into: THREE.Group, o: THREE.Object3D, k: number, A: (g: THREE.Group) => void, B: (g: THREE.Group) => void, P: string, holder: string, at?: V3, glue?: { a: Staged; side: Side; was?: V3 }) => {
   const ga = new THREE.Group(), gb = new THREE.Group();
-  quiet(() => A(ga)); const pa = o.position.clone(), qa = o.quaternion.clone();
-  quiet(() => B(gb)); const pb = o.position.clone(), qb = o.quaternion.clone();
+  quiet(() => A(ga)); const pa = o.position.clone(), qa = o.quaternion.clone(); o.updateMatrix(); const ia = o.matrix.clone().invert();
+  quiet(() => B(gb)); const pb = o.position.clone(), qb = o.quaternion.clone(); o.updateMatrix(); const ib = o.matrix.clone().invert();
   o.position.lerpVectors(pa, pb, k); o.quaternion.slerpQuaternions(qa, qb, k);
+  if (glue) { const h = palm(glue.a, glue.side), la = new THREE.Vector3(...(glue.was ?? h)).applyMatrix4(ia), lb = new THREE.Vector3(...h).applyMatrix4(ib);
+    o.updateMatrix(); const w = la.lerp(lb, k).applyMatrix4(o.matrix); o.position.x += h[0] - w.x; o.position.y += h[1] - w.y; o.position.z += h[2] - w.z; }
   const keep = k < 0.5 ? ga : gb, drop = k < 0.5 ? gb : ga;
   for (const c of [...keep.children]) if (c !== o) into.add(c);
   drop.traverse((c) => { const m = c as THREE.Mesh; if (!m.isMesh || c === o || o.getObjectById(c.id)) return; m.geometry?.dispose(); for (const mat of (Array.isArray(m.material) ? m.material : [m.material]) as THREE.MeshBasicMaterial[]) { mat.map?.dispose(); mat.dispose(); } });

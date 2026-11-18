@@ -279,14 +279,15 @@ const SWAP = at("creep", /^then/) - 0.12;
   const A: V3 = [-5.3, MD + 0.86, 5.52], B: V3 = [FLAGSEA.mx + BRIG.sail.x, FLAGSEA.yard, 6.85];      // the halyard: belayed at the rail beside him, up to the yard
   // he looks through the glass side on to us; then he turns until we see him at a slant from the side his scabbard hangs on (grip
   // sheet 3: a draw is shown only that way)
-  const AT: V3 = [-5.75, MD, 5.25], H0 = 46, H1 = V.toward(-5.75, 5.25, -28), mc = mover(CUSTOMS_D, 1.9, -5.75, 5.25, H0); mc.stand(LOW - 0.05).turn(H1 - H0, 0.26).stand(8);      // turned before the tuck
+  const AT: V3 = [-5.75, MD, 5.25], H0 = 46, H1 = V.toward(-5.75, 5.25, -28), mc = mover(CUSTOMS_D, 1.9, -5.75, 5.25, H0); mc.stand(LOW + 0.05).turn(H1 - H0, 0.17).stand(8);      // turned once the eyepiece has left his eye (version 6), and round before the tuck
   const PEER = { brow: -0.5, lid: 0.2, smile: -0.3 }, SHOCK = { wide: 1, lid: 0, brow: 1, mouth: 0.4, smile: -0.8 }, GRIM = { brow: -1, lid: 0, wide: 0.6, smile: -1 };
   // the glass at the eye we see, the other eye squeezed shut, one fist at the eyepiece and the other further out on the wide tube; it
   // points nearly level, at the sloop's quarterdeck under her black flag
   const TARGET: V3 = [SX - 0.05, QD + 1.45, SZ], ST: Stand = { D: CUSTOMS_D, at: AT, heading: H0, h: 1.9, cam: V.cam, pose: { head: [0, -4, 0], lean: -2 } };
   mc.actAt(-1, { ...spyPose(ST, TARGET), head: [0, -4, 0], lean: -2 }, LOW + 1.3, { in: 0.01, out: 0.14, handR: "grip", handL: "grip", face: { ...PEER, lid: 0.7, shut: spyEye(V.cam, ST.at, TARGET, ST.heading) } });
   // he lowers it into his right hand and swallows
-  mc.actAt(LOW, { armR: arm(34, 8, 76, -24), armL: arm(20, 14, 40, 10), head: [0, 0, 0], lean: 0 }, TUCK - LOW + 0.12, { in: 0.2, out: 0.1, antic: 0, over: 1.2, handR: "grip", handL: "fist", face: SHOCK });
+  mc.actAt(LOW, { armR: arm(34, 8, 76, -24), armL: arm(20, 14, 40, 10) }, TUCK - LOW + 0.12, { in: 0.2, out: 0.1, antic: 0, over: 1.2, handR: "grip", handL: "fist", face: SHOCK });
+  mc.actAt(LOW + 0.1, { head: [0, 0, 0], lean: 0 }, TUCK - LOW + 0.02, { in: 0.14, out: 0.1, antic: 0, over: 1.1, handR: "grip", handL: "fist", face: SHOCK });
   mc.actAt(GULP, { head: [0, 15, 0], py: -0.03 }, 0.2, { in: 0.08, out: 0.1, antic: 0, over: 1, handR: "grip", handL: "fist", face: SHOCK });
   // he tucks it under his left arm, to have both hands free: his right hand takes it across to the armpit and the arm clamps it
   const S1: Stand = { D: CUSTOMS_D, at: AT, heading: H1, h: 1.9, cam: V.cam }, J1 = jointsOf(S1);
@@ -295,9 +296,9 @@ const SWAP = at("creep", /^then/) - 0.12;
   // sheath (grips.ts drawPose), the body turning and leaning back with it
   const SD = (k: number): Stand => ({ D: CUSTOMS_D, at: AT, heading: H1, h: 1.9, cam: V.cam, pose: { twist: 6 + 36 * k, lean: -10 * k } });
   // five steps of the draw, each reached as the sabre gets there (drawK below: the same clock)
-  for (const k of [0, 0.25, 0.5, 0.75, 1]) mc.actAt(DRAW + k * (DRAWN - DRAW) - 0.06, { ...drawPose(SD(k), "L", k), twist: 6 + 36 * k, lean: -10 * k }, k < 1 ? 0.14 : 0.2, { in: 0.06, out: 0.04, antic: 0, over: 1, handR: "grip", handL: "grip", face: GRIM });
+  for (let i = 0; i <= 8; i++) { const k = i / 8; mc.actAt(DRAW + k * (DRAWN - DRAW) - 0.03, { ...drawPose(SD(k), "L", k), twist: 6 + 36 * k, lean: -10 * k }, k < 1 ? 0.07 : 0.2, { in: 0.03, out: 0.02, antic: 0, over: 1, handR: "grip", handL: "grip", face: GRIM }); }
   // then the hanger up over his shoulder and down through the halyard on his right; the glass stays clamped under his left arm
-  mc.actAt(DRAWN, { armR: arm(150, 40, 200, 10), armL: arm(14, 16, 26, 10), twist: -18, lean: -4, head: [-30, -6, 0] }, SLASH - DRAWN - 0.02, { in: 0.18, out: 0.04, antic: 0, over: 1.2, handR: "grip", handL: "fist", face: GRIM });
+  mc.actAt(DRAWN, { armR: arm(150, 40, 200, 10), armL: arm(14, 16, 26, 10), twist: -18, lean: -4, head: [-30, -6, 0] }, SLASH - DRAWN - 0.02, { in: 0.18, out: 0.01, antic: 0, over: 1.2, handR: "grip", handL: "fist", face: GRIM });
   mc.actAt(SLASH - 0.02, { armR: arm(36, 34, 46, 40), armL: arm(14, 16, 26, 10), twist: 12, lean: 8, head: [-30, 4, 0] }, 0.5, { in: 0.07, out: 0.2, antic: 0, over: 1.5, handR: "grip", handL: "fist", face: GRIM });
   mc.actAt(SLASH + 0.42, { armR: arm(20, 16, 40, 10), armL: arm(14, 16, 26, 10), head: [0, -24, 0], lean: -3 }, 9, { in: 0.24, antic: 0, over: 1.2, handR: "grip", handL: "fist", face: { wide: 0.8, lid: 0, brow: 1, smile: -0.8, gaze: [0, -1] } });
   const WORRY = { wide: 0.8, lid: 0, brow: 0.9, smile: -0.7 };
@@ -321,12 +322,14 @@ const SWAP = at("creep", /^then/) - 0.12;
       // the halyard: cut above his shoulder; its lower end drops by the rail and its upper end flies up to the yard
       const C = mix3(A, B, 0.14), u = t - SLASH;
       if (u < 0) line(g, A, B, 0.02); else { line(g, A, [A[0], Math.max(A[1] + 0.06, C[1] - 16 * u * u), A[2] + 0.3 * clamp(u / 0.24)], 0.02); if (u < 0.3) line(g, mix3(C, B, u * 3), mix3(C, B, Math.min(1, u * 3 + 0.22)), 0.02); }
-      // the spyglass: at his eye with both hands on the tube; lowered into his right hand by its middle; across into his left armpit
+      // the spyglass: at his eye with both hands on the tube; lowered into his right hand by its middle; across into his left armpit.
+      // Both moves go with his right hand (blend's glue): it never hangs in the air (version 6)
       const lowR = (q: THREE.Group) => wield(q, GLASS(), SPYGLASS, "lowered", c.mc, "R", cam, { at: MIDG }), under = (q: THREE.Group) => underArm(q, GLASS(), c.mc, "L", cam, { at: MIDG });
       if (t < LOW) spy(g, GLASS(), c.mc, cam, TARGET);
-      else if (t < LOW + 0.24) blend(g, GLASS(), smooth((t - LOW) / 0.24), (q) => spy(q, GLASS(), c.mc, cam, TARGET), lowR, "spyglass", "mc R");
+      else if (t < LOW + 0.24) { const was = quiet(() => palm(stageAt(on("mc", CUSTOMS_D, mc, LOW, MD, { seed: 4, blink: false }), cam), "R"));
+        blend(g, GLASS(), smooth((t - LOW) / 0.24), (q) => spy(q, GLASS(), c.mc, cam, TARGET), lowR, "spyglass", "mc R", undefined, { a: c.mc, side: "R", was }); }
       else if (t < TUCK) lowR(g);
-      else if (t < TUCK + 0.2) blend(g, GLASS(), smooth((t - TUCK) / 0.2), lowR, under, "spyglass", "mc R+L");
+      else if (t < TUCK + 0.1) blend(g, GLASS(), smooth((t - TUCK) / 0.1), lowR, under, "spyglass", "mc R+L", undefined, { a: c.mc, side: "R" });      // done while his hand is at the armpit
       else under(g);
       // the hanger: in its scabbard on his baldric; drawn along the sheath with his left hand on the scabbard (grips.ts drawSabre); up
       // over his shoulder, down through the halyard, and lowered
@@ -367,7 +370,7 @@ const RED = { a: cut("sight", "red"), b: cut("red", "answer"), up: 0 };
     m.actAt(FIRE + 0.03 + 0.03 * i, "duck", 0.46, { in: 0.08, out: 0.22, antic: 0, over: 1.2 });
     m.actAt(FIRE + 0.6 + 0.05 * i, { head: [i % 2 ? 40 : -40, 0, 0] }, RED0 - FIRE - 0.3, { in: 0.2, out: 0.2, antic: 0, over: 1.1, face: { brow: -0.8, lid: 0.15, smile: -0.5 } });
     m.actAt(t0, { armR: arm(152, 32, 184, 12), lean: 4, head: [-off, -4, 0] }, 9, { in: 0.2, antic: 0.5, over: 1.7, handR: "grip", face: { brow: -1, lid: 0, wide: 0.5, mouth: 0.7, smile: 0.7 } });
-    wag(m, t0 + 0.4, 3, P({ armR: arm(158, 26, 190, 6) }), P({ armR: arm(146, 38, 176, 20) }), 0.5 + 0.06 * i, { handR: "grip" }); return { m, t0 }; };
+    wag(m, t0 + 0.4, 3, P({ armR: arm(160, 24, 194, 4) }), P({ armR: arm(152, 32, 186, 12) }), 0.5 + 0.06 * i, { handR: "grip" }); return { m, t0 }; };
   const mate = draw(MATE_D, 1.66, -2.2, 5.6, 2, -10), peeker = draw(PIRATE2_D, 1.9, -1.8, 6.1, 1, -4), cap = draw(CAPTAIN_D, 1.86, -2.2, 6.6, 0, 4), pir = draw(PIRATE_D, 1.8, -1.8, 7.05, 3, 10);
   // the captain's order: an arm thrown up toward the staff and down
   cap.m.actAt(RED0 - 0.5, { armL: arm(150, 50, 180, 40), head: [40, -10, 0] }, 0.6, { in: 0.2, out: 0.14, antic: 0.3, over: 1.6, handL: "point", face: { brow: -1, lid: 0, smile: -0.4 } });
@@ -382,7 +385,9 @@ const RED = { a: cut("sight", "red"), b: cut("red", "answer"), up: 0 };
       put(g, BRIG_GREEN(), [FLAGSEA.mx, 0, FLAGSEA.mz]); sailAt(g, FLAGSEA.yard, 0);
       const dn = smooth((t - RED0 + 0.35) / 0.4); if (dn < 1) fly(g, "pirate", TOP - 3.6 * dn, T, 1 - 0.8 * dn);
       if (t > RED0 - 0.05) fly(g, "red", 2.4 + (TOP - 2.4) * smooth((t - RED0) / 0.55), T, 0.3 + 0.7 * smooth((t - RED0 - 0.35) / 0.3));
-      team.forEach(([n, , q], i) => { if (t > q.t0 + 0.05) sword(g, i, c[n], cam); });
+      // each sabre comes up with its arm: at the ready as it leaves the scabbard, raised once the arm is up (it pointed 39 degrees in v5)
+      // (the man at the back, seen more from the side, reads raised at once)
+      team.forEach(([n, , q], i) => { if (t > q.t0 + 0.05) { const k = n === "pir" ? 1 : smooth((t - q.t0 - 0.05) / 0.16); if (k < 1) sword(g, i, c[n], cam, "ready", "R", ["raised", k]); else sword(g, i, c[n], cam); } });
       // his pistol: the butt in his left hand, held up along his arm, aimed and kicked up by the shot; lowered at his side at the end
       if (t < NM - 0.45) wield(g, PISTOL(), PISTOL_P, "up", c.stub, "L", cam);
       else if (t < NM + 0.1) wield(g, PISTOL(), PISTOL_P, "up", c.stub, "L", cam, { blend: ["lowered", smooth((t - NM + 0.45) / 0.55)] });
@@ -597,6 +602,9 @@ export const BLACK_FLAG: Film = {
     { T: RED.up + 1.5, words: ["RED MEANT", "NO MERCY"], y: 0.72, size: 132 },
     { T: TARP.mid + 2.2, words: ["NO FLAG?", "NO PROBLEM"], y: 0.72, size: 126 },
   ],
+  // our own lines (DAILY-RULES, "Our own lines"), as bubbles over the picture: the merchant's sailor as the black flag goes up behind
+  // the pirates' cloth, and the mate when the dirty tarpaulin is at the masthead
+  bubbles: [{ a: SWAP + 0.55, b: cut("creep", "meant") - 0.03, text: "...Oh no.", who: "sailor" }, { a: TARP.mid + 2.0, b: TARP.b - 0.05, text: "Close enough.", who: "cor" }],
   hits: [{ t: SIGHT.hit, amp: 0.3, dur: 0.3 }, { t: FIGHT.hit, amp: 0.35, dur: 0.25 }, { t: GUN.hit, amp: 0.9, dur: 0.4 }],
   beds: [{ k: "sea", a: 0, b: END, g: 1 }, { k: "wind", a: 0, b: END, g: 0.4 }], music: "shanty", audio: "craft/black-flag.wav",
 };

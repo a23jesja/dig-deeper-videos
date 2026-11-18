@@ -73,7 +73,7 @@ const add = (s: Shot) => shots.push(s);
  *  is seen: its middle level with the top of his head and a little behind it, so that its top shows over his head between his hands and
  *  his face is clear (v3b, the review: in the gardens the sack lay before the man's face through the whole shot) */
 const onBack = (g: THREE.Group, o: THREE.Object3D, a: Staged, cam: Cam, scale: number) => { const s = a.joint("crown"), sk = put(g, o, [s[0], s[1], s[2]]); sk.scale.setScalar(scale); sk.updateMatrixWorld(true);
-  const now = new THREE.Box3().setFromObject(sk).getCenter(new THREE.Vector3()), want = new THREE.Vector3(...near([s[0], s[1] + 0.06, s[2]], cam, -0.3)); sk.position.add(want.sub(now)); sk.updateMatrixWorld(true); return sk; };
+  const now = new THREE.Box3().setFromObject(sk).getCenter(new THREE.Vector3()), want = new THREE.Vector3(...near([s[0], s[1] + 0.12, s[2]], cam, -0.42)); sk.position.add(want.sub(now)); sk.updateMatrixWorld(true); return sk; };
 /** the first shot, kept for the coda that leads back into it */
 let HOOK: Shot;
 /** which light lies over each stretch of the film (film seconds): set by the shots */

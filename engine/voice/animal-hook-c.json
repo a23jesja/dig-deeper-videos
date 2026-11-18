@@ -1,0 +1,30 @@
+{
+ "voice": "bm_george",
+ "speed": 1.02,
+ "gap": 0.24,
+ "lead": 0.0,
+ "risk": [
+  "weevils",
+  "village",
+  "lawyer",
+  "trial"
+ ],
+ "note": "Hook-lab opening clip c for 'Were animals really put on trial?' (granskning/animal-trials/manus.md, hook lab): the claim first, then the question as the second line, then the film's first line, whose 'Yes.' ends the clip. Same voice, speed and gaps as voice/animal-trials.json.",
+ "lines": [
+  {
+   "id": "hook",
+   "text": "These weevils had a lawyer.",
+   "gap": 0.3
+  },
+  {
+   "id": "question",
+   "text": "Were animals really put on trial?",
+   "gap": 0.34
+  },
+  {
+   "id": "vines",
+   "text": "Yes. Weevils were eating a village's vines, so the village took them to court.",
+   "gap": 0.26
+  }
+ ]
+}

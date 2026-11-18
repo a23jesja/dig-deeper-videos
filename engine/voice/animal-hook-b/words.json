@@ -1,0 +1,152 @@
+[
+{
+"w": "A",
+"a": 0.0,
+"b": 0.14,
+"line": "hook"
+},
+{
+"w": "village",
+"a": 0.14,
+"b": 0.48,
+"line": "hook"
+},
+{
+"w": "sued",
+"a": 0.48,
+"b": 0.94,
+"line": "hook"
+},
+{
+"w": "its",
+"a": 0.94,
+"b": 1.2,
+"line": "hook"
+},
+{
+"w": "weevils.",
+"a": 1.2,
+"b": 1.68,
+"line": "hook"
+},
+{
+"w": "Were",
+"a": 2.205,
+"b": 2.335,
+"line": "question"
+},
+{
+"w": "animals",
+"a": 2.335,
+"b": 2.835,
+"line": "question"
+},
+{
+"w": "really",
+"a": 2.835,
+"b": 3.415,
+"line": "question"
+},
+{
+"w": "put",
+"a": 3.415,
+"b": 3.795,
+"line": "question"
+},
+{
+"w": "on",
+"a": 3.795,
+"b": 3.995,
+"line": "question"
+},
+{
+"w": "trial?",
+"a": 3.995,
+"b": 4.355,
+"line": "question"
+},
+{
+"w": "Yes.",
+"a": 5.01,
+"b": 5.3,
+"line": "vines"
+},
+{
+"w": "Weevils",
+"a": 5.58,
+"b": 5.88,
+"line": "vines"
+},
+{
+"w": "were",
+"a": 5.88,
+"b": 6.08,
+"line": "vines"
+},
+{
+"w": "eating",
+"a": 6.08,
+"b": 6.34,
+"line": "vines"
+},
+{
+"w": "a",
+"a": 6.34,
+"b": 6.54,
+"line": "vines"
+},
+{
+"w": "village's",
+"a": 6.54,
+"b": 6.98,
+"line": "vines"
+},
+{
+"w": "vines,",
+"a": 6.98,
+"b": 7.3,
+"line": "vines"
+},
+{
+"w": "so",
+"a": 7.7,
+"b": 7.92,
+"line": "vines"
+},
+{
+"w": "the",
+"a": 7.92,
+"b": 8.04,
+"line": "vines"
+},
+{
+"w": "village",
+"a": 8.04,
+"b": 8.3,
+"line": "vines"
+},
+{
+"w": "took",
+"a": 8.3,
+"b": 8.62,
+"line": "vines"
+},
+{
+"w": "them",
+"a": 8.62,
+"b": 8.86,
+"line": "vines"
+},
+{
+"w": "to",
+"a": 8.86,
+"b": 9.04,
+"line": "vines"
+},
+{
+"w": "court.",
+"a": 9.04,
+"b": 9.32,
+"line": "vines"
+}
+]

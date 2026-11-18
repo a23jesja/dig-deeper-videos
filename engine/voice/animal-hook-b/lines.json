@@ -1,0 +1,23 @@
+[
+ {
+  "id": "hook",
+  "a": 0.0,
+  "b": 1.905,
+  "text": "A village sued its weevils.",
+  "voice": "bm_george"
+ },
+ {
+  "id": "question",
+  "a": 2.205,
+  "b": 4.67,
+  "text": "Were animals really put on trial?",
+  "voice": "bm_george"
+ },
+ {
+  "id": "vines",
+  "a": 5.01,
+  "b": 9.496,
+  "text": "Yes. Weevils were eating a village's vines, so the village took them to court.",
+  "voice": "bm_george"
+ }
+]

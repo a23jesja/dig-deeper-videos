@@ -1,0 +1,68 @@
+[
+ {
+  "id": "hook",
+  "a": 0.0,
+  "b": 2.216,
+  "text": "Blackbeard's beard smoked in battle."
+ },
+ {
+  "id": "why",
+  "a": 2.566,
+  "b": 4.285,
+  "text": "Why would anyone do that?"
+ },
+ {
+  "id": "guess",
+  "a": 4.585,
+  "b": 6.199,
+  "text": "To keep his face warm?"
+ },
+ {
+  "id": "no",
+  "a": 6.499,
+  "b": 8.633,
+  "text": "No. Watch him get ready for a fight."
+ },
+ {
+  "id": "beard",
+  "a": 8.933,
+  "b": 14.249,
+  "text": "First he twisted his beard, which grew up to his eyes, into little tails with ribbons."
+ },
+ {
+  "id": "fuses",
+  "a": 14.499,
+  "b": 19.168,
+  "text": "Then he tucked slow-burning fuses under his hat, so they smoked beside his beard."
+ },
+ {
+  "id": "pistols",
+  "a": 19.418,
+  "b": 21.571,
+  "text": "Add six pistols across his chest."
+ },
+ {
+  "id": "hell",
+  "a": 21.871,
+  "b": 24.027,
+  "text": "Now he looked like something out of hell."
+ },
+ {
+  "id": "surrender",
+  "a": 24.377,
+  "b": 27.474,
+  "text": "It was probably meant to make crews give up without a fight."
+ },
+ {
+  "id": "book",
+  "a": 27.824,
+  "b": 32.207,
+  "text": "Nearly all of this comes from one book, printed six years after he died."
+ },
+ {
+  "id": "costume",
+  "a": 32.557,
+  "b": 34.576,
+  "text": "So the fire was a costume."
+ }
+]

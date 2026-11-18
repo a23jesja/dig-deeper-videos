@@ -1,0 +1,27 @@
+{
+ "voice": "bm_george",
+ "speed": 1.06,
+ "gap": 0.16,
+ "lead": 0.0,
+ "risk": [
+  "gladiators",
+  "referee",
+  "doctored",
+  "spared",
+  "arena"
+ ],
+ "note": "Short 'Did gladiators really fight to the death?' (granskning/gladiators-death/manus.md, version 2), opening with the hook lab's chosen clip a (the same first two lines); bm_george.",
+ "lines": [
+  { "id": "hook", "text": "Did gladiators really fight to the death?", "gap": 0.35 },
+  { "id": "guess", "text": "Two go in, one comes out. Right?", "gap": 0.3 },
+  { "id": "not", "text": "Not usually.", "gap": 0.25 },
+  { "id": "nine", "text": "About nine times in ten, a gladiator lived to fight another day.", "gap": 0.3 },
+  { "id": "cost", "text": "Each one was trained, fed and doctored, and that cost a great deal.", "gap": 0.25 },
+  { "id": "owner", "text": "The last thing the school's owner wanted was a dead one.", "gap": 0.35 },
+  { "id": "rules", "text": "There were rules, and a referee.", "gap": 0.25 },
+  { "id": "finger", "text": "A beaten man raised a finger to give up.", "gap": 0.25 },
+  { "id": "spared", "text": "And most of the time, he was spared.", "gap": 0.35 },
+  { "id": "answer", "text": "So no. Most fights ended with both men walking out.", "gap": 0.35 },
+  { "id": "doctor", "text": "One arena doctor boasted that under his care, hardly any gladiators died.", "gap": 0.2 }
+ ]
+}

@@ -1,0 +1,28 @@
+{
+ "voice": "bm_george",
+ "speed": 1.06,
+ "gap": 0.16,
+ "lead": 0.0,
+ "risk": [
+  "Blackbeard's",
+  "fuses",
+  "ribbons",
+  "pistols",
+  "costume",
+  "slow-burning"
+ ],
+ "note": "Short 'Why did Blackbeard light fuses in his beard?' (granskning/blackbeard-fuses/manus.md, version 2), opening with the hook lab's chosen clip b (its first two lines); bm_george.",
+ "lines": [
+  { "id": "hook", "text": "Blackbeard's beard smoked in battle.", "gap": 0.35 },
+  { "id": "why", "text": "Why would anyone do that?", "gap": 0.3 },
+  { "id": "guess", "text": "To keep his face warm?", "gap": 0.3 },
+  { "id": "no", "text": "No. Watch him get ready for a fight.", "gap": 0.3 },
+  { "id": "beard", "text": "First he twisted his beard, which grew up to his eyes, into little tails with ribbons.", "gap": 0.25 },
+  { "id": "fuses", "text": "Then he tucked slow-burning fuses under his hat, so they smoked beside his beard.", "gap": 0.25 },
+  { "id": "pistols", "text": "Add six pistols across his chest.", "gap": 0.3 },
+  { "id": "hell", "text": "Now he looked like something out of hell.", "gap": 0.35 },
+  { "id": "surrender", "text": "It was probably meant to make crews give up without a fight.", "gap": 0.35 },
+  { "id": "book", "text": "Nearly all of this comes from one book, printed six years after he died.", "gap": 0.35 },
+  { "id": "costume", "text": "So the fire was a costume.", "gap": 0.2 }
+ ]
+}

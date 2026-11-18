@@ -1,16 +1,17 @@
 # Risk words: animal-trials
 
-Listen to `riskord.wav` (16.5 s). Each clip = the word with 0.5 s around it, 0.3 s silence between.
+Listen to `riskord.wav` (18.3 s). Each clip = the word with 0.5 s around it, 0.3 s silence between.
 
 | word | in narration (s) | in riskord.wav (s) |
 |---|---|---|
-| weevils | 3.38-3.67 | 0.00-1.30 |
-| weevils | 8.78-9.24 | 1.60-3.06 |
-| weevils | 19.02-19.42 | 3.36-4.76 |
-| weevils' | 26.61-26.99 | 5.06-6.44 |
-| village's | 4.33-4.78 | 6.74-8.18 |
-| verdict | 35.79-36.17 | 8.48-9.86 |
-| barren | 29.37-29.71 | 10.16-11.50 |
-| clients | 30.05-30.43 | 11.80-13.18 |
-| herb | 16.37-16.73 | 13.48-14.84 |
-| inspect | 34.19-34.56 | 15.14-16.52 |
+| weevils | 1.20-1.68 | 0.00-1.48 |
+| weevils | 5.58-5.88 | 1.78-3.08 |
+| weevils | 10.99-11.45 | 3.38-4.84 |
+| weevils | 21.22-21.62 | 5.14-6.54 |
+| weevils' | 28.82-29.20 | 6.84-8.22 |
+| village's | 6.54-6.98 | 8.52-9.96 |
+| verdict | 38.00-38.38 | 10.26-11.64 |
+| barren | 31.58-31.92 | 11.94-13.28 |
+| clients | 32.26-32.64 | 13.58-14.96 |
+| herb | 18.57-18.93 | 15.26-16.62 |
+| inspect | 36.39-36.77 | 16.92-18.30 |

@@ -13,10 +13,15 @@
   "herb",
   "inspect"
  ],
- "note": "Length test 'Were animals really put on trial?' (granskning/animal-trials/manus.md, version 1, approved with three changes on 18 Nov): the weevils of Saint-Julien, 1587. Sir Digsworth bm_george; the two villagers' own lines in bm_daniel and bf_isabella (anonymous villagers, never the real lawyers or judge). Opening a (the question) is recorded here; openings b and c add their own first line when the hook lab is built. Re-recorded at speed 1.02 with 0.04 s longer gaps (18 Nov): at 1.09 the voice was 43.6 s, under the test's 45-55 s.",
+ "note": "Length test 'Were animals really put on trial?' (granskning/animal-trials/manus.md, version 1, approved with three changes on 18 Nov): the weevils of Saint-Julien, 1587. Sir Digsworth bm_george; the two villagers' own lines in bm_daniel and bf_isabella (anonymous villagers, never the real lawyers or judge). Opening a (the question) is recorded here; openings b and c add their own first line when the hook lab is built. Re-recorded at speed 1.02 with 0.04 s longer gaps (18 Nov): at 1.09 the voice was 43.6 s, under the test's 45-55 s. Opening b chosen in the hook lab (18 Nov): its first line 'A village sued its weevils.' added before the question, as in voice/animal-hook-b.json.",
  "lines": [
   {
    "id": "hook",
+   "text": "A village sued its weevils.",
+   "gap": 0.3
+  },
+  {
+   "id": "question",
    "text": "Were animals really put on trial?",
    "gap": 0.34
   },

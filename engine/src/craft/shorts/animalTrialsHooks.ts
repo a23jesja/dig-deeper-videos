@@ -119,8 +119,9 @@ export const yesShot = (id: string, a0: number, b0: number, W: Word[], words: st
   sir.actAt(-1, PALM, 10, { in: 0.01, handR: "open", handL: "relaxed", face: { brow: 1, lid: 0, wide: 0.3, smile: 0.3 } });
   sir.actAt(ty - 0.12, sitting({ armR: arm(24, 12, 70, 10), armL: arm(20, 10, 60, 8), head: [turn, 14, 0], lean: 6 }), 0.16, { in: 0.1, out: 0.16, antic: 0, handR: "relaxed", handL: "relaxed", face: { brow: 0.4, lid: 0.3, smile: 0.8 } });
   sir.actAt(ty + 0.3, sitting({ armR: arm(24, 12, 70, 10), armL: arm(20, 10, 60, 8), head: [turn, -2, 0], lean: 2 }), 10, { in: 0.2, handR: "relaxed", handL: "relaxed", face: { brow: 0.6, lid: 0.2, smile: 0.7 } });
-  const old = seated(VILLAGER_OLD_D, 1.7, OLD_AT, H);
-  old.actAt(-1, sitting({ armL: arm(30, 8, 70, 6), armR: arm(30, 8, 70, 6), lean: 8, head: [-10, -2, 0] }), 10, { in: 0.01, handR: "relaxed", handL: "relaxed", face: { brow: -0.4, lid: 0.2, smile: -0.2 } });
+  // (his hands on his thighs, inside the picture: held out before him his right forearm left it by the right edge, the review of hook b v2)
+  const old = seated(VILLAGER_OLD_D, 1.7, OLD_AT, H), ol: Stand = { D: VILLAGER_OLD_D, at: OLD_AT, heading: H, h: 1.7, cam: SIRC.cam, pose: SIT };
+  old.actAt(-1, sitting({ ...reach(ol, "L", ahead(OLD_AT, H, 0.16, -0.1, 0.56)), ...reach(ol, "R", ahead(OLD_AT, H, 0.16, 0.1, 0.56)), lean: 8, head: [-10, -2, 0] }), 10, { in: 0.01, handR: "relaxed", handL: "relaxed", face: { brow: -0.4, lid: 0.2, smile: -0.2 } });
   return { id, a: a0, b: b0, still: Math.max(0.1, ty + 0.1), capsTop: 150, sounds: [],
     cam: (_t, u) => SIRC.push(0.08 * u), sun: { target: SIR_AT, reach: 4 },
     cast: (t, T) => [on("old", VILLAGER_OLD_D, old, t, FL), on("sir", SIR_D, sir, t, FL, { talk: talk(W, T, words) })] };

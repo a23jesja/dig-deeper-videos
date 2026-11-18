@@ -5,12 +5,12 @@
 import * as THREE from "three";
 import { Film, Shot, Cam, V3, Staged, play, mix3 } from "../stage/film";
 import { mover, MM } from "../stage/acting";
-import { lens, once, noShade, near, palm, fuseSmoke, aside } from "../stage/staging";
+import { lens, once, noShade, near, palm, fuseSmoke, aside, span } from "../stage/staging";
 import { glow } from "../world/fire";
 import { GLADIUS, NET, STICK, TRIDENT, SHIELD_ARM, shieldOn, pole, polePose, Stand, PISTOL, SABRE, MUG, SPYGLASS, BUCKET, LINSTOCK, FIDDLE, BOW, GRAPES, BUNDLE, wield, spy, spyEye, spyPose, aimPose, usePose, sheathed, drawSabre, drawPose, reach, liftPose, haul, haulPose, carryBy, fiddlePose, fiddlePlay, citharaPose, citharaHold, shoulderPose, onShoulder, inHand, letGo, jointsOf, handshake, handOn, RIBBON, SPILL, FUSE, WOODSWORD, BOWL, SPOON, ROLL, COIN, MAPPA, PEN, SCROLL, OLIVE } from "../stage/grips";
 import { flagSea } from "../world/ship";
 import { group, mesh, box } from "../world/kit";
-import { gladius, scutum, trident, netBunch, refStick, spyglass, pistolHeld, sabre, mugHeld, scabbard, bucketHeld, linstock, chest, fiddle, fiddleBow, fiddleByNeck, cithara, grapes, bundleHeld, bench, ribbonBow, tray, spill, fuseCord, pistolSling, openBook, woodSword, stretcher, bowl, spoon, bandageRoll, coinHeld, mappa, reedPen, scrollHeld, olive } from "../world/props";
+import { gladius, scutum, trident, netBunch, refStick, spyglass, pistolHeld, sabre, mugHeld, scabbard, bucketHeld, linstock, chest, fiddle, fiddleBow, fiddleByNeck, cithara, grapes, bundleHeld, bench, ribbonBow, tray, spill, fuseCord, pistolSling, openBook, woodSword, stretcher, bowl, bowlRim, spoon, bandageRoll, coinHeld, mappa, reedPen, scrollHeld, olive } from "../world/props";
 import { MURMILLO_D, RETIARIUS_D, REFEREE_D, CUSTOMS_D, SHIPOWNER_D, PIRATE_D, SAILOR_D, PIRATE2_D, CAPTAIN_D, COOK_D, GUNNER_D, DOCKER_D, DOCKHAND_D, NERO_D, NERO_STAGE_D, ROMAN_WOMAN2_D, CITIZEN_D, BLACKBEARD_D, YOU_D, YOU_CHECK_D, SIR_D, BLACKBEARD_PREP_D, BLACKBEARD_ARMED_D, SHIPBOY_D, OLDHAND_D, MURMILLO_BARE_D, CARRIED_D, TRAINER_D, PUPIL_D, OWNER_D, DOCTOR_D, SPONSOR_D, BEARER_D, BEARER2_D } from "../looks";
 import type { HandKind } from "../ink";
 import type { Pose } from "../rig";
@@ -189,8 +189,8 @@ const shots5: Shot[] = [];
 const card5 = (id: string, figs: Fig[], thing: (g: THREE.Group, c: Staged[], cam: Cam) => void, W = V) => { card2(id, figs, thing, W); const s = shots2.pop()!, a = shots5.length * LEN; shots5.push({ ...s, a, b: a + LEN }); };
 const RIB = once(() => noShade(ribbonBow("#2f6fb0", 1.3))), TRAY_O = once(() => tray()), SPILL_O = once(() => noShade(spill())), FUSE_O = once(() => noShade(fuseCord())), FUSE_LIT = once(() => noShade(fuseCord(0.17, true)));
 const SLING_O = once(() => pistolSling(0.62)), BOOK_O = once(() => openBook()), WOOD = once(() => noShade(woodSword())), STRETCH = once(() => stretcher(1.9)), SCUTUM5 = once(() => noShade(scutum()));
-const BOWL_O = once(() => noShade(bowl())), SPOON_O = once(() => noShade(spoon())), ROLL_O = once(() => noShade(bandageRoll())), COIN_O = once(() => noShade(coinHeld(0.04))), MAPPA_O = once(() => noShade(mappa()));
-const PEN_O = once(() => noShade(reedPen())), SCROLL_O = once(() => noShade(scrollHeld())), OLIVE_O = once(() => noShade(olive())), OLIVES = once(() => noShade(bowl(0.07, true))), BENCH = once(() => bench(1.6));
+const BOWL_O = once(() => noShade(bowlRim())), SPOON_O = once(() => noShade(spoon())), ROLL_O = once(() => noShade(bandageRoll())), COIN_O = once(() => noShade(coinHeld(0.04))), MAPPA_O = once(() => noShade(mappa()));
+const PEN_O = once(() => noShade(reedPen())), SCROLL_O = once(() => noShade(scrollHeld())), OLIVE_O = once(() => noShade(olive())), OLIVES = once(() => noShade(bowlRim(0.07, true))), BENCH = once(() => bench(1.6));
 /** which way (+1 right, -1 left in the picture) a figure's right shoulder lies from his left */
 const rightWay = (s: Stand) => { const j = jointsOf(s), r = aside([0, 0, 0], s.cam, 1); return Math.sign((j("shR")[0] - j("shL")[0]) * r[0] + (j("shR")[2] - j("shL")[2]) * r[2]) || -1; };
 /** the glow at the lit end of a held thing (a prop with userData.tip) */
@@ -211,8 +211,10 @@ both((view, turn) => card5(`tray-carry-${view}`, [{ D: SHIPBOY_D, h: 1.28, turn,
   (g, [a], cam) => { carryBy(g, TRAY_O(), a, "L", a, "R", cam); TRAY_O().rotateX(0.55); }));
 both((view, turn) => card5(`spill-light-${view}`, [{ D: SHIPBOY_D, h: 1.28, turn, pose: () => usePose(SPILL, "light", "R"), hands: R1, face: { wide: 0.8, brow: 1, lid: 0, mouth: 0.3 } }],
   (g, [a], cam) => { wield(g, SPILL_O(), SPILL, "light", a, "R", cam); tipGlow(g, SPILL_O(), cam); }));
-both((view, turn) => card5(`fuse-tuck-${view}`, [{ D: BLACKBEARD_PREP_D, h: 1.92, turn, pose: (s) => { const j = jointsOf(s), w = rightWay(s); return { ...reach(s, "R", aside(near(j("skull"), s.cam, 0.06), s.cam, w * 0.2, -0.02)), head: [0, 4, 0] }; }, hands: R1, face: FIERCE }],
-  (g, [a], cam) => { wield(g, FUSE_O(), FUSE, "tuck", a, "R", cam); }));
+// the fuse is pushed up under the brim: the fist round its middle just below the brim at his temple, its upper half going up behind the
+// hat (behind his card, so that the hat hides its top end) and its lower half hanging by his cheek, as it then hangs in the films
+both((view, turn) => card5(`fuse-tuck-${view}`, [{ D: BLACKBEARD_PREP_D, h: 1.92, turn, pose: (s) => { const j = jointsOf(s), w = rightWay(s); return { ...reach(s, "R", aside(near(j("skull"), s.cam, 0.06), s.cam, w * 0.19, 0.02)), head: [0, 4, 0] }; }, hands: R1, face: FIERCE }],
+  (g, [a], cam) => { wield(g, FUSE_O(), FUSE, "tuck", a, "R", cam, { d: -0.05, at: 0.085 }); }));
 both((view, turn) => card5(`sling-lift-${view}`, [{ D: BLACKBEARD_D, h: 1.92, turn, pose: (s) => ({ ...twoHands(s, 0.62, 0.32, 0.22), head: [0, 10, 0] }), hands: LR, face: FIERCE }],
   (g, [a], cam) => { carryBy(g, SLING_O(), a, "L", a, "R", cam); fuseSmoke(g, a, 1, cam); }));
 both((view, turn) => card5(`fuse-blow-${view}`, [{ D: BLACKBEARD_ARMED_D, h: 1.92, turn, pose: (s) => { const j = jointsOf(s), w = rightWay(s), m = mix3(j("neck"), j("skull"), 0.5); return reach(s, "R", aside(near(m, s.cam, 0.14), s.cam, w * 0.05, -0.16)); }, hands: R1, face: { brow: -0.4, lid: 0.3, mouth: 0, smile: -0.3 } }],
@@ -223,10 +225,10 @@ both((view, turn) => card5(`book-read-${view}`, [{ D: OLDHAND_D, h: 1.74, turn, 
 // the gladiators: the practice sword with the trainer's hand on the pupil's wrist, the stretcher, the bowl and the spoon on the bench,
 // the bandage, the coin, the sponsor's cloth, the pen and the scroll, the olive, the hands that pull the beaten man up, a hand on a
 // shoulder
-{ const pup = standAt(PUPIL_D, -0.32, 40, 1.76, usePose(WOODSWORD, "ready", "R"));
-  card5("woodsword-ready-front", [{ D: PUPIL_D, h: 1.76, dx: -0.32, turn: 40, pose: () => usePose(WOODSWORD, "ready", "R"), hands: R1, face: { brow: 0.6, lid: 0.1, mouth: 0.2 } },
-    { D: TRAINER_D, h: 1.8, dx: 0.42, turn: -30, pose: (s) => reach(s, "R", near(jointsOf(pup)("wrR"), s.cam, 0.05)), hands: { handR: "grip" }, face: { brow: -0.6, lid: 0.2 } }],
-    (g, [p, t], cam) => { wield(g, WOOD(), WOODSWORD, "ready", p, "R", cam); handOn(t, "R", p, "wrR", cam, "wrist"); }); }
+for (const [view, tp, tt] of [["front", 40, -40], ["side", 62, -62]] as [string, number, number][]) { const pup = standAt(PUPIL_D, -0.3, tp, 1.76, usePose(WOODSWORD, "guard", "R"));
+  card5(`woodsword-guard-${view}`, [{ D: PUPIL_D, h: 1.76, dx: -0.3, turn: tp, pose: () => usePose(WOODSWORD, "guard", "R"), hands: R1, face: { brow: 0.6, lid: 0.1, mouth: 0.2 } },
+    { D: TRAINER_D, h: 1.8, dx: 0.3, turn: tt, pose: (s) => ({ ...reach(s, "L", near(jointsOf(pup)("wrR"), s.cam, 0.08)), lean: 8 }), hands: { handL: "grip" }, face: { brow: -0.6, lid: 0.2 } }],
+    (g, [p, t], cam) => { wield(g, WOOD(), WOODSWORD, "guard", p, "R", cam); handOn(t, "L", p, "wrR", cam, "wrist"); }); }
 { const W2 = lens(X, 1.4, Z + 3.0, 0, -1, -2, 70), hy = 0.8, ms = [mover(BEARER_D, 1.76, X - 0.95, Z, 90), mover(BEARER2_D, 1.74, X + 0.95, Z, 90), mover(CARRIED_D, 1.8, X + 0.05, Z - 0.28, 90)];      // on the main deck (further back the lens is outside the ship)
   for (const m of ms) m.stand(9);
   const st = (D: Design, m: MM, x: number): Stand => ({ D, at: [x, 0, Z], heading: 90, h: m.h, cam: W2.cam });
@@ -239,20 +241,29 @@ both((view, turn) => card5(`book-read-${view}`, [{ D: OLDHAND_D, h: 1.74, turn, 
   shots5.push({ id: "stretcher-carry-side", a: a0, b: a0 + LEN, still: LEN / 2, hide: ["merchant", "msail"], cam: () => W2.cam, sun: { target: [X, 1, Z], reach: 6 },
     cast: (t) => [on("b0", BEARER_D, ms[0], t), on("b1", BEARER2_D, ms[1], t), play("man", CARRIED_D, ms[2], t, [0, hy + 0.02, 0], ms[2].h, { blink: false })],
     things: (g, c, _t, _T, cam) => { carryBy(g, STRETCH(), c.b0, "R", c.b1, "R", cam, 0.02); } }); }
-both((view, turn) => card5(`bowl-eat-${view}`, [{ D: MURMILLO_BARE_D, h: 1.84, turn, pose: (s) => { const sp = { ...s, pose: { ...SIT, ...usePose(BOWL, "hold", "L") } }, j = jointsOf(sp), w = rightWay(s), mouth = mix3(j("neck"), j("skull"), 0.45); return { ...SIT, ...usePose(BOWL, "hold", "L"), ...reach(sp, "R", aside(near(mouth, s.cam, 0.12), s.cam, w * 0.04, -0.07)) }; }, hands: LR, face: { brow: 0.3, lid: 0.3, mouth: 0.4, smile: 0.2 } }],
-  (g, [a], cam) => { const b = BENCH(); b.position.set(X, 0, Z - 0.32); g.add(b); wield(g, BOWL_O(), BOWL, "hold", a, "L", cam); wield(g, SPOON_O(), SPOON, "eat", a, "R", cam); }));
-{ const mur = standAt(MURMILLO_BARE_D, -0.3, 40, 1.84, { armL: [[70, 20], [92, 14]] });
-  card5("bandage-wrap-front", [{ D: MURMILLO_BARE_D, h: 1.84, dx: -0.3, turn: 40, pose: () => ({ armL: [[70, 20], [92, 14]] }), hands: { handL: "fist" }, face: { brow: 0.2, lid: 0.3 } },
-    { D: DOCTOR_D, h: 1.72, dx: 0.42, turn: -40, pose: (s) => { const j = jointsOf(mur); return reach(s, "R", near(mix3(j("elL"), j("wrL"), 0.35), s.cam, 0.06)); }, hands: R1, face: { brow: 0.3, lid: 0.35 } }],
-    (g, [m, d], cam) => { wield(g, ROLL_O(), ROLL, "wrap", d, "R", cam); handOn(d, "R", m, "elL", cam, "arm"); }); }
+/** which of a figure's hands is the nearer to the lens (the one that shows when he is seen from the side): facing to the right of the
+ *  picture his right hand is toward us, facing to the left his left; seen from the front, the left */
+const nearHand = (heading: number, cam: Cam): "L" | "R" => { const h = (heading * Math.PI) / 180, r = aside([0, 0, 0], cam, 1), f = Math.sin(h) * r[0] + Math.cos(h) * r[2]; return f > 0.3 ? "R" : "L"; };
+/** the hands of a figure eating: the nearer hand by the rim of a bowl at his upper chest (the bowl inward of it, below the other
+ *  hand, which is at his mouth) */
+const eating = (s: Stand, base: Partial<Pose> = {}): Partial<Pose> => { const sp = { ...s, pose: base }, j = jointsOf(sp), b = nearHand(s.heading, s.cam), e = b === "L" ? "R" : "L", wb = b === "R" ? rightWay(s) : -rightWay(s), chest = mix3(j("neck"), j("pelvis"), 0.26), mouth = mix3(j("neck"), j("skull"), 0.45);
+  return { ...base, ...reach(sp, b, aside(near(chest, s.cam, 0.2), s.cam, wb * 0.13, 0)), ...reach(sp, e, aside(near(mouth, s.cam, 0.14), s.cam, -wb * 0.05, -0.07)) }; };
+for (const [view, turn] of [["front", 0], ["slant", 30]] as [string, number][]) (() => card5(`bowl-eat-${view}`, [{ D: MURMILLO_BARE_D, h: 1.84, turn, pose: (s) => eating(s, SIT), hands: LR, face: { brow: 0.3, lid: 0.3, mouth: 0.4, smile: 0.2 } }],
+  (g, [a], cam) => { const b = BENCH(); b.position.set(X, 0, Z - 0.32); g.add(b); const h = nearHand(a.heading, cam); wield(g, BOWL_O(), BOWL, "rim", a, h, cam); wield(g, SPOON_O(), SPOON, "eat", a, h === "L" ? "R" : "L", cam); }))();
+// the bandage: the gladiator holds his left forearm out to the doctor across the picture (so that the turns of linen round it show);
+// the doctor holds the roll against it, the strip running from the roll onto the arm, and his other hand supports the elbow
+for (const [view, tm, td] of [["front", -32, 34], ["side", -64, 62]] as [string, number, number][]) { const ARM: Partial<Pose> = { armL: [[64, 8], [88, 2]] }, mur = standAt(MURMILLO_BARE_D, 0.32, tm, 1.84, ARM);
+  card5(`bandage-wrap-${view}`, [{ D: DOCTOR_D, h: 1.72, dx: -0.36, turn: td, pose: (s) => { const j = jointsOf(mur); return { ...reach(s, "R", near(mix3(j("elL"), j("wrL"), 0.55), s.cam, 0.08)), ...reach(s, "L", near([j("elL")[0], j("elL")[1] - 0.03, j("elL")[2]], s.cam, 0.06)), head: [0, 12, 0] }; }, hands: { handR: "grip", handL: "open" }, face: { brow: 0.3, lid: 0.4 } },
+    { D: MURMILLO_BARE_D, h: 1.84, dx: 0.32, turn: tm, pose: () => ARM, hands: { handL: "fist" }, face: { brow: 0.2, lid: 0.3, smile: -0.2 } }],
+    (g, [d, m], cam) => { wield(g, ROLL_O(), ROLL, "wrap", d, "R", cam); handOn(d, "L", m, "elL", cam, "arm"); const r = palm(d, "R"), q = mix3(m.joint("elL"), m.joint("wrL"), 0.5), s = group([mesh(box(1, 0.045, 0.004), "#f6f2e6", { at: [0.5, 0, 0], line: 0.4, shadow: false })]); span(g, s, near(r, cam, 0.06), near(q, cam, 0.06), cam, 0); s.scale.x = Math.hypot(r[0] - q[0], r[1] - q[1], r[2] - q[2]); }); }
 both((view, turn) => card5(`coin-show-${view}`, [{ D: OWNER_D, h: 1.7, turn, pose: () => ({ ...usePose(COIN, "show", "R"), head: [0, 6, 0] }), hands: R1, face: { brow: 0.6, lid: 0.3, smile: 0.7 } }],
   (g, [a], cam) => { wield(g, COIN_O(), COIN, "show", a, "R", cam, { d: 0.1 }); }));
 both((view, turn) => card5(`cloth-wave-${view}`, [{ D: SPONSOR_D, h: 1.76, turn, pose: () => usePose(MAPPA, "wave", "R"), hands: R1, face: { brow: 0.6, smile: 0.6, mouth: 0.3 } }],
   (g, [a], cam) => { wield(g, MAPPA_O(), MAPPA, "wave", a, "R", cam); }));
 both((view, turn) => card5(`pen-write-${view}`, [{ D: DOCTOR_D, h: 1.72, turn, pose: (s) => { const ps = { ...s, pose: usePose(SCROLL, "hold", "L") }, j = jointsOf(ps), w = rightWay(s), top = mix3(j("wrL"), j("tipL"), 0.5), mid: V3 = [top[0], top[1] - 0.2, top[2]]; return { ...usePose(SCROLL, "hold", "L"), ...reach(ps, "R", aside(near(mid, s.cam, 0.06), s.cam, -w * 0.02, 0.1)), head: [0, 10, 0] }; }, hands: LR, face: { brow: 0.2, lid: 0.45, smile: 0.4 } }],
   (g, [a], cam) => { wield(g, SCROLL_O(), SCROLL, "hold", a, "L", cam); wield(g, PEN_O(), PEN, "write", a, "R", cam, { d: 0.1 }); }));
-both((view, turn) => card5(`olive-eat-${view}`, [{ D: ROMAN_WOMAN2_D, h: 1.62, turn, pose: (s) => { const j = jointsOf(s), w = rightWay(s), mouth = mix3(j("neck"), j("skull"), 0.42); return { ...usePose(BOWL, "hold", "L"), ...reach(s, "R", aside(near(mouth, s.cam, 0.1), s.cam, w * 0.03, -0.02)) }; }, hands: LR, face: { lid: 0.45, mouth: 0.3, smile: 0.2 } }],
-  (g, [a], cam) => { wield(g, OLIVES(), BOWL, "hold", a, "L", cam); wield(g, OLIVE_O(), OLIVE, "eat", a, "R", cam, { d: 0.12 }); }));
+for (const [view, turn] of [["front", 0], ["slant", 30]] as [string, number][]) (() => card5(`olive-eat-${view}`, [{ D: ROMAN_WOMAN2_D, h: 1.62, turn, pose: (s) => eating(s), hands: LR, face: { lid: 0.45, mouth: 0.3, smile: 0.2 } }],
+  (g, [a], cam) => { const h = nearHand(a.heading, cam); wield(g, OLIVES(), BOWL, "rim", a, h, cam); wield(g, OLIVE_O(), OLIVE, "eat", a, h === "L" ? "R" : "L", cam, { d: 0.12 }); }))();
 { const meet: V3 = [X + 0.08, 0.98, Z + 0.12];
   card5("hands-pull-front", [{ D: MURMILLO_D, h: 1.84, dx: -0.32, turn: 55, pose: (s) => ({ ...reach(s, "R", meet), lean: 10 }), hands: R1, face: { brow: 0.3, smile: 0.4, mouth: 0 } },
     { D: RETIARIUS_D, h: 1.86, dx: 0.48, turn: -55, pose: (s) => ({ py: -0.5, lean: -8, ...reach({ ...s, pose: { py: -0.5, lean: -8 } }, "L", meet) }), hands: { handL: "grip" }, face: { brow: 0.6, lid: 0.1, smile: 0.2 } }],

@@ -113,9 +113,11 @@ export const FUSE: Prop = { name: "fuse", uses: {
   tuck: { arm: A(150, 30, 200, 10), level: 84, ok: within(55, 115, "a fuse tucked under the hat stands up at its brim") },
   blow: { arm: A(40, 10, 150, -10), level: 74, ok: within(45, 110, "a fuse held to the lips stands up before them") } } };
 /** the wooden practice sword (props.ts woodSword): held as the gladius is */
-export const WOODSWORD: Prop = { name: "wooden sword", hilt: GLADIUS.hilt, uses: { ready: GLADIUS.uses.ready } };
+export const WOODSWORD: Prop = { name: "wooden sword", hilt: GLADIUS.hilt, uses: { ready: GLADIUS.uses.ready,
+  /** in guard before his chest, the point forward and a little up, clear of his face (as the trainer puts it right) */ guard: { arm: A(46, 24, 92, 12), turn: 14, ok: within(-15, 60, "a practice sword in guard points forward before his chest") } } };
 /** a bowl held from below in an open hand, upright (props.ts bowl) */
-export const BOWL: Prop = { name: "bowl", uses: { hold: { arm: A(30, 10, 100, -12), level: 0, ok: within(-10, 10, "a bowl of food is held upright") } } };
+export const BOWL: Prop = { name: "bowl", uses: { hold: { arm: A(30, 10, 100, -12), level: 0, ok: within(-10, 10, "a bowl of food is held upright") },
+  /** by its rim (props.ts bowlRim), just under the chin: the bowl lies inward from the fingers, toward the middle of his chest */ rim: { arm: A(40, 6, 120, -24), level: 180, ok: any } } };
 /** the spoon (props.ts spoon): its bowl in the porridge, or brought to the mouth */
 export const SPOON: Prop = { name: "spoon", uses: {
   dip: { arm: A(30, 12, 92, -14), level: -40, ok: within(-85, -10, "a spoon in the bowl points down into it") },

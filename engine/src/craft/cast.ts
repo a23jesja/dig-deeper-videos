@@ -32,6 +32,10 @@ export type Look = {
   /** a lit slow-match tucked under the hat on each side of the face, its tip glowing (the drawing marks the tips "fuseA" and "fuseB"
    *  so that the stage can make them smoke: staging.ts fuseSmoke) */
   fuses?: boolean;
+  /** the fuses tucked in but not lit yet: a dark tip, no glow, no marks (so the stage gives them no smoke) */
+  fusesUnlit?: boolean;
+  /** only the fuse on this side of his face (-1 = the one drawn on the left of the face card, "fuseA"; 1 = the right, "fuseB") */
+  fuseSide?: -1 | 1;
   /** true = the corrected open mouth (its sheet was approved on 17 Nov 2026; looks.ts castDesign switches it on for every look): an open mouth is the opening
    *  alone, with no mouth line across it; the mood lies in the opening's shape (its upper edge and the lower lip bend up at the
    *  corners in a smile, down in anger and fear), and a narrow angry opening shows clenched teeth */
@@ -259,9 +263,10 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
     }
     // lit slow-matches under the hat, one on each side of the face: a twisted cord from under the brim down beside the cheek, its tip
     // glowing; the brim (drawn after) covers its top. The tips are marked for the stage, which makes them smoke and flicker
-    if (L.fuses && !away) for (const s of [-1, 1]) { const q = at(h, s * 82, 1.06); if (q.d < -0.18 * b) continue;
+    if (L.fuses && !away) for (const s of [-1, 1]) { const q = at(h, s * 82, 1.06); if (q.d < -0.18 * b || (L.fuseSide && s !== L.fuseSide)) continue;
       const out = Math.sign(q.x || s), x0 = q.x - out * 0.02 * H, y0 = -0.96 * H, x1 = q.x + out * 0.1 * H, y1 = -0.42 * H, cord: P2[] = [[x0, y0], [q.x + out * 0.07 * H, -0.74 * H], [x1, y1]];
       k.line(spline(cord, false, 5), 17 * u, "#3a2414"); k.line(spline(cord, false, 5), 11 * u, "#5a3a22"); for (let j = 1; j < 8; j++) { const p = spline(cord, false, 5), c = p[Math.round((p.length - 1) * j / 8)]; k.line([[c[0] - 5 * u, c[1] - 4 * u], [c[0] + 5 * u, c[1] + 4 * u]], 2.6 * u, "#8a6440"); }
+      if (L.fusesUnlit) { piece(k, ellPts(x1, y1, 0.032 * H, 0.036 * H), "#3a2a1c"); continue; }
       const gr = k.g.createRadialGradient(x1, y1, 0, x1, y1, 0.16 * H); gr.addColorStop(0, "rgba(255,140,40,0.55)"); gr.addColorStop(1, "rgba(255,110,30,0)"); k.g.fillStyle = gr; k.g.beginPath(); k.g.arc(x1, y1, 0.16 * H, 0, 7); k.g.fill();
       piece(k, ellPts(x1, y1, 0.04 * H, 0.046 * H), "#ff6a1a"); k.shape(ellPts(x1, y1 + 0.006 * H, 0.02 * H, 0.024 * H), "#ffe08a", 0); k.mark(s < 0 ? "fuseA" : "fuseB", x1, y1); }
     if (!tipBehind) pipe();

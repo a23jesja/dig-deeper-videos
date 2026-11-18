@@ -7,6 +7,7 @@ import { BLACK_FLAG } from "./blackFlag";
 import { NERO_FIDDLE } from "./neroFiddle";
 import { GRIP_SHEET, GRIP_SHEET_2, GRIP_SHEET_3, GRIP_SHEET_4, LOOK_BLACKBEARD, LOOK_YOU, GRIP_SHEET_5 } from "./gripSheet";
 import { BB_HOOK_A, BB_HOOK_B, BB_HOOK_C } from "./blackbeardHooks";
+import { BLACKBEARD_FUSES } from "./blackbeardFuses";
 import { ARENA_SET, GLAD_HOOK_A, GLAD_HOOK_B, GLAD_HOOK_C } from "./gladiatorsHooks";
 export const RomePee: React.FC = () => <Stage film={ROME_PEE} />;
 export const ROME_PEE_FRAMES = Math.round(ROME_PEE.seconds * ROME_PEE.fps);
@@ -37,6 +38,8 @@ export const GRIP_SHEET_5_FRAMES = Math.round(GRIP_SHEET_5.seconds * GRIP_SHEET_
 export const LOOK_YOU_FRAMES = Math.round(LOOK_YOU.seconds * LOOK_YOU.fps);
 export const BlackbeardHookA: React.FC = () => <Stage film={BB_HOOK_A} />;
 export const BlackbeardHookB: React.FC = () => <Stage film={BB_HOOK_B} />;
+export const BlackbeardFuses: React.FC = () => <Stage film={BLACKBEARD_FUSES} />;
+export const BLACKBEARD_FUSES_FRAMES = Math.round(BLACKBEARD_FUSES.seconds * BLACKBEARD_FUSES.fps);
 export const BlackbeardHookC: React.FC = () => <Stage film={BB_HOOK_C} />;
 export const BB_HOOK_FRAMES = Math.round(BB_HOOK_A.seconds * BB_HOOK_A.fps);
 export const ArenaSet: React.FC = () => <Stage film={ARENA_SET} />;

@@ -605,6 +605,8 @@ export const stretcher = (len = 2.3, w = 0.56) => { const g = group([mesh(box(le
 export const bowl = (r = 0.075, olives = false, lift = 0.045) => { const g = group([mesh(cyl(r, r * 0.6, r * 0.7, 16), C.wood, { at: [0, lift + r * 0.35, 0], line: 0.6 }), mesh(cyl(r * 0.94, r * 0.94, 0.01, 16), olives ? "#4a4a2a" : "#efe2bc", { at: [0, lift + r * 0.66, 0], line: 0, shadow: false })]);
   if (olives) for (let i = 0; i < 7; i++) { const a = i * 2.4, d = (i % 3) * r * 0.25; g.add(mesh(ball(r * 0.17, 8), i % 2 ? "#3a3a24" : "#5a5a2a", { at: [Math.cos(a) * d, lift + r * 0.72, Math.sin(a) * d], scale: [1, 0.8, 1], line: 0.3, shadow: false })); }
   return g; };
+/** the same bowl held by its rim: the fingers round the rim at the origin, the bowl along +x from it and hanging just below the fingers */
+export const bowlRim = (r = 0.075, olives = false) => { const b = bowl(r, olives, 0); b.position.set(r * 0.92, -r * 0.62, 0); return group([b]); };
 /** a wooden spoon: held at the end of its handle (the origin), its bowl along +x */
 export const spoon = (len = 0.17) => group([mesh(box(len * 0.75, 0.012, 0.01), "#b0803c", { at: [len * 0.375, 0, 0], ...F0 }), mesh(ball(1, 10), "#b0803c", { at: [len * 0.86, 0, 0], scale: [0.03, 0.02, 0.008], line: 0.4, shadow: false })]);
 /** a roll of linen bandage held in the fingers (the roll at the origin), its loose end hanging toward -y */

@@ -371,7 +371,17 @@ export const MURMILLO_D = castDesign(MURMILLO, "the murmillo"), RETIARIUS_D = ca
 export const BLACKBEARD_PREP: Look = { ...BLACKBEARD, id: "blackbeardprep", fuses: false };
 /** Blackbeard ready for the fight: the fuses lit under his hat and the sling of six pistols across his chest */
 export const BLACKBEARD_ARMED: Look = { ...BLACKBEARD, id: "blackbeardarmed", sling: true };
+/** before the ribbons: the tails of his beard plaited but not tied with colour yet; and half way, five of six tied */
+export const BLACKBEARD_BARE: Look = { ...BLACKBEARD_PREP, id: "blackbeardbare", tails: BLACKBEARD.tails!.map(() => "#2a2226") };
+export const BLACKBEARD_HALF: Look = { ...BLACKBEARD_PREP, id: "blackbeardhalf", tails: BLACKBEARD.tails!.map((c, i) => (i === 4 ? "#2a2226" : c)) };
+/** the fuses tucked under the hat, not lit yet */
+export const BLACKBEARD_UNLIT: Look = { ...BLACKBEARD, id: "blackbeardunlit", fusesUnlit: true };
 export const BLACKBEARD_PREP_D = castDesign(BLACKBEARD_PREP, "Blackbeard"), BLACKBEARD_ARMED_D = castDesign(BLACKBEARD_ARMED, "Blackbeard");
+/** after the fight, one fuse pulled out (the other still under his hat) */
+/** (the one he keeps is on the right of his face card: his left, as he faces us; his right hand has pulled the other) */
+export const BLACKBEARD_ONE: Look = { ...BLACKBEARD_ARMED, id: "blackbeardone", fuseSide: 1 };
+export const BLACKBEARD_ONE_D = castDesign(BLACKBEARD_ONE, "Blackbeard");
+export const BLACKBEARD_BARE_D = castDesign(BLACKBEARD_BARE, "Blackbeard"), BLACKBEARD_HALF_D = castDesign(BLACKBEARD_HALF, "Blackbeard"), BLACKBEARD_UNLIT_D = castDesign(BLACKBEARD_UNLIT, "Blackbeard");
 
 // ---------------- the gladiators' school, the gate and the stands (gladiators-death) ----------------
 /** the heavy gladiator at school: his helmet off, short dark hair, a bandage being wound round his left forearm */

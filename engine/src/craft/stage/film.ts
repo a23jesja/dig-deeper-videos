@@ -115,6 +115,8 @@ export const captions = (words: Word[], skip: (w: Word) => boolean = () => false
   out.forEach((c, i) => { const n = out[i + 1], want = c.a + CAP_MIN; if (c.b < want) c.b = n ? Math.max(c.b, Math.min(want, n.a)) : want; });
   // a caption that would run a moment past a cut (less than 0.4 s) ends on the cut, when it has been up long enough to be read: text
   // that hangs over into the next picture looks like a slip
+  // a caption that the voice says in a moment ("INTO" stood four frames) comes up a little early, into the pause before it, if there is one
+  out.forEach((c, i) => { if (c.b - c.a >= 0.4) return; const p = out[i - 1], first = Math.max(p ? p.b : 0, c.a - 0.3); c.a = Math.min(c.a, Math.max(first, c.b - 0.4)); });
   for (const c of out) for (const x of cuts) if (x > c.a + 0.5 && x < c.b && c.b - x < 0.4) c.b = x;
   return out;
 };

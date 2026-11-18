@@ -132,25 +132,29 @@ const T5a = at("nine", /^gladiator/) - 0.12;
     cast: (t) => [on("pup", PUPIL_D, pup, t), on("tr", TRAINER_D, tr, t)],
     things: (g, c, _t, _T, cam) => { wield(g, WOOD(), WOODSWORD, "guard", c.pup, "R", cam); handOn(c.tr, "L", c.pup, "wrR", cam, "wrist"); } }); }
 
-// 7. ... FED AND DOCTORED, AND THAT COST A GREAT DEAL. On the bench the big one eats his porridge; beside him the doctor winds a bandage
-//    round another man's forearm
-{ const { x: LX, z: LZ } = LUDUS, V = lens(LX + 1.83, 1.3, LZ - 3.4, 0, 1, -4, 50), bAt: V3 = [LX + 1.0, 0, LZ + 0.4], eh = 174;      // (he faces us, the bench behind him under his seat, as on grip sheet 5)
+// 7. ... FED AND DOCTORED, AND THAT COST A GREAT DEAL. On the bench the big one eats his porridge, and beside him the doctor winds a
+//    bandage round the forearm of the arm that holds his bowl (the script: "medan en läkare lindar hans underarm")
+{ const { x: LX, z: LZ } = LUDUS, bAt: V3 = [LX + 1.0, 0, LZ + 0.4], eh = 174, V0 = lens(LX + 1.0, 1.3, LZ - 2.9, 0, 1, -4, 48);      // (he faces us, the bench behind him under his seat, as on grip sheet 5)
   const eat = mover(MURMILLO_BARE_D, 1.84, bAt[0], bAt[2], eh); eat.stand(9);
-  const es: Stand = { D: MURMILLO_BARE_D, at: [bAt[0], 0, bAt[2]], heading: eh, h: 1.84, cam: V.cam }, bh = nearHand(eh, V.cam), sh: "L" | "R" = bh === "L" ? "R" : "L";
+  const es0: Stand = { D: MURMILLO_BARE_D, at: bAt, heading: eh, h: 1.84, cam: V0.cam }, bh = nearHand(eh, V0.cam), sh: "L" | "R" = bh === "L" ? "R" : "L", EAT = eating(es0, SIT), ej = jointsOf({ ...es0, pose: EAT });
+  // the doctor stands out beside the bowl arm, a little toward us, half turned to us and to the arm
+  const shB = ej(`sh${bh}` as "shL"), out = [shB[0] - bAt[0], shB[2] - bAt[2]], ol = Math.hypot(out[0], out[1]) || 1, dAt: V3 = [shB[0] + (out[0] / ol) * 0.5, 0, shB[2] + (out[1] / ol) * 0.5 - 0.12];
+  const fore = mix3(ej(`el${bh}` as "elL"), ej(`wr${bh}` as "wrL"), 0.45), V = lens((bAt[0] + dAt[0]) / 2, 1.3, LZ - 2.9, 0, 1, -4, 48);
+  const toArm = [fore[0] - dAt[0], fore[2] - dAt[2]], toCam = [V.cam.pos[0] - dAt[0], V.cam.pos[2] - dAt[2]], ta = Math.hypot(toArm[0], toArm[1]) || 1, tc = Math.hypot(toCam[0], toCam[1]) || 1;
+  const dh = (Math.atan2(toArm[0] / ta + toCam[0] / tc, toArm[1] / ta + toCam[1] / tc) * 180) / Math.PI, doc = mover(DOCTOR_D, 1.72, dAt[0], dAt[2], dh); doc.stand(9);
+  const es: Stand = { ...es0, cam: V.cam }, dst: Stand = { D: DOCTOR_D, at: dAt, heading: dh, h: 1.72, cam: V.cam }, rh = nearHand(dh, V.cam), oh: "L" | "R" = rh === "L" ? "R" : "L";
   eat.actAt(-1, { ...eating(es, SIT) }, 10, { in: 0.01, handL: "grip", handR: "grip", face: { brow: 0.3, lid: 0.3, mouth: 0.4, smile: 0.2 } });
-  const dAt: V3 = [LX + 2.1, 0, LZ + 0.5], mAt: V3 = [LX + 2.65, 0, LZ + 0.5], dh = 150, mh = -150, ARM: Partial<Pose> = { armL: [[64, 8], [88, 2]] };
-  const pat = mover(THRAEX_D, 1.78, mAt[0], mAt[2], mh), doc = mover(DOCTOR_D, 1.72, dAt[0], dAt[2], dh); pat.stand(9); doc.stand(9);
-  const pst: Stand = { D: THRAEX_D, at: mAt, heading: mh, h: 1.78, cam: V.cam, pose: ARM }, dst: Stand = { D: DOCTOR_D, at: dAt, heading: dh, h: 1.72, cam: V.cam }, pj = jointsOf(pst);
-  pat.actAt(-1, { ...ARM }, 10, { in: 0.01, handL: "fist", face: { brow: 0.2, lid: 0.3, smile: -0.2 } });
-  // (the roll in his near hand, in front of him; the far hand steadies the arm at the elbow: with the roll in the far hand its forearm
-  // was behind his body)
-  doc.actAt(-1, { ...reach(dst, "L", near(mix3(pj("elL"), pj("wrL"), 0.55), V.cam, 0.08)), ...reach(dst, "R", near([pj("elL")[0], pj("elL")[1] - 0.03, pj("elL")[2]], V.cam, 0.06)), head: [0, 12, 0] }, 10, { in: 0.01, handL: "grip", handR: "open", face: { brow: 0.3, lid: 0.4 } });
-  shots.push({ id: "fed", a: T6, b: T7, still: 1.2, sounds: [{ t: 0.4, k: "tap", g: 0.3 }, { t: 1.4, k: "paper", g: 0.3 }],
-    cam: (_t, u) => V.push(0.08 * u), sun: { target: [LX + 1.5, 0, LZ + 0.3], reach: 6 },
-    cast: (t) => [on("eat", MURMILLO_BARE_D, eat, t), on("pat", THRAEX_D, pat, t), on("doc", DOCTOR_D, doc, t)],
+  // the roll in his near hand at the forearm, his other hand steadying the arm at the elbow; the roll goes round (up and down) as he winds
+  const at3 = (k: number): V3 => near([fore[0], fore[1] + 0.025 * k, fore[2]], V.cam, 0.08), elb = ej(`el${bh}` as "elL");
+  doc.actAt(-1, { ...reach(dst, rh, at3(0)), ...reach(dst, oh, near([elb[0], elb[1] - 0.03, elb[2]], V.cam, 0.06)), head: [0, 12, 0] }, 10, { in: 0.01, handL: rh === "L" ? "grip" : "open", handR: rh === "R" ? "grip" : "open", face: { brow: 0.3, lid: 0.4, smile: 0.2 } });
+  wag(doc, 0.2, 2.4, P({ ...reach(dst, rh, at3(1)) }), P({ ...reach(dst, rh, at3(-1)) }), 0.45, rh === "L" ? { handL: "grip" } : { handR: "grip" });
+  shots.push({ id: "fed", a: T6, b: T7, still: 1.2, sounds: [{ t: 0.4, k: "tap", g: 0.3 }, { t: 1.1, k: "paper", g: 0.3 }, { t: 1.9, k: "paper", g: 0.3 }],
+    cam: (_t, u) => V.push(0.08 * u), sun: { target: [(bAt[0] + dAt[0]) / 2, 0, LZ + 0.3], reach: 6 },
+    cast: (t) => [on("eat", MURMILLO_BARE_D, eat, t), on("doc", DOCTOR_D, doc, t)],
     things: (g, c, _t, _T, cam) => { const b = BENCH(); b.position.set(bAt[0], 0, bAt[2] + 0.32); b.rotation.y = 0; g.add(b); wield(g, BOWL_O(), BOWL, "rim", c.eat, bh, cam); wield(g, SPOON_O(), SPOON, "eat", c.eat, sh, cam);
-      wield(g, ROLL_O(), ROLL, "wrap", c.doc, "L", cam); handOn(c.doc, "R", c.pat, "elL", cam, "arm");
-      const r = palm(c.doc, "L"), q = mix3(c.pat.joint("elL"), c.pat.joint("wrL"), 0.5), s = group([mesh(box(1, 0.045, 0.004), "#f6f2e6", { at: [0.5, 0, 0], line: 0.4, shadow: false })]); span(g, s, near(r, cam, 0.06), near(q, cam, 0.06), cam, 0); s.scale.x = Math.hypot(r[0] - q[0], r[1] - q[1], r[2] - q[2]); } }); }
+      wield(g, ROLL_O(), ROLL, "wrap", c.doc, rh, cam); handOn(c.doc, oh, c.eat, `el${bh}` as "elL", cam, "arm");
+      // the strip from the roll round his forearm
+      const r = palm(c.doc, rh), q = mix3(c.eat.joint(`el${bh}` as "elL"), c.eat.joint(`wr${bh}` as "wrL"), 0.5), s = group([mesh(box(1, 0.045, 0.004), "#f6f2e6", { at: [0.5, 0, 0], line: 0.4, shadow: false })]); span(g, s, near(r, cam, 0.06), near(q, cam, 0.06), cam, 0); s.scale.x = Math.hypot(r[0] - q[0], r[1] - q[1], r[2] - q[2]); } }); }
 
 // 8. THE LAST THING THE SCHOOL'S OWNER ... by the gate, the owner counts coins out of his chest and holds one up to the light
 const GATE = rim(0, -2.2), OWNER_AT: V3 = [GATE[0], 0, GATE[1] + 1.2], MAN_AT: V3 = [GATE[0] - 0.75, 0, GATE[1] + 1.0];
@@ -160,7 +164,7 @@ const GATE = rim(0, -2.2), OWNER_AT: V3 = [GATE[0], 0, GATE[1] + 1.2], MAN_AT: V
   shots.push({ id: "coins", a: T7, b: T8, still: 0.6, sounds: [{ t: 0.15, k: "coin", g: 0.6 }, { t: 0.55, k: "coin", g: 0.5 }],
     cam: (_t, u) => V.push(0.06 * u), sun: { target: OWNER_AT, reach: 6 },
     cast: (t) => [on("own", OWNER_D, own, t)],
-    things: (g, c, _t, _T, cam) => { const ch = COINS(); ch.position.set(OWNER_AT[0] + 0.5, 0, OWNER_AT[2] - 0.3); ch.rotation.y = -0.5; g.add(ch); wield(g, COIN_O(), COIN, "show", c.own, "R", cam, { d: 0.1 }); } }); }
+    things: (g, c, _t, _T, cam) => { const ch = COINS(); ch.position.set(OWNER_AT[0] + 0.36, 0, OWNER_AT[2] + 0.3); ch.rotation.y = -0.75; g.add(ch); wield(g, COIN_O(), COIN, "show", c.own, "R", cam, { d: 0.1 }); } }); }
 
 // 9. ... WANTED WAS A DEAD ONE. "DO YOU KNOW WHAT YOU COST ME?" He bites his nails, then pats his gladiator on the shoulder and asks
 { const V = lens((MAN_AT[0] + OWNER_AT[0]) / 2 - 1.18, 1.45, (MAN_AT[2] + OWNER_AT[2]) / 2 + 2.98, 0.37, -0.93, -2, 50), mh = V.toward(MAN_AT[0], MAN_AT[2], -30), oh = V.toward(OWNER_AT[0], OWNER_AT[2], -35);
@@ -208,7 +212,7 @@ const ground: V3 = [FIGHT[0] + 1.1, 0.03, FIGHT[2] + 0.5];
   wag(sp, 0, 3, P({ ...usePose(MAPPA, "wave", "R") }), P({ armR: arm(150, 40, 170, 30) }), 0.32, { handR: "grip" });
   shots.push({ id: "sponsor", a: T11, b: T12, still: 0.7, sounds: [{ t: 0.1, k: "flap", g: 0.7 }, { t: 0.42, k: "flap", g: 0.6 }],
     cam: (_t, u) => V.push(0.06 * u), sun: { target: sAt, reach: 6 },
-    cast: (t) => [on("sp", SPONSOR_D, sp, t, BOXY)],
+    cast: (t) => [{ ...on("sp", SPONSOR_D, sp, t, BOXY), noShade: true }],
     things: (g, c, _t, T, cam) => { crowd(g, FAR, T, cam, 1); wield(g, MAPPA_O(), MAPPA, "wave", c.sp, "R", cam); } }); }
 
 // 13. ... HE WAS SPARED. The heavy man gives the net man his hand and pulls him up off his knee
@@ -245,28 +249,33 @@ const ground: V3 = [FIGHT[0] + 1.1, 0.03, FIGHT[2] + 0.5];
   doc.actAt(1.25, { ...WRITE(0), head: [-10, -6, 0] }, 9, { in: 0.25, antic: 0, over: 1.1, handL: "grip", handR: "grip", face: { brow: 0.7, lid: 0.3, smile: 0.9 } });
   shots.push({ id: "doctor", a: T14, b: T15, still: 1.4, sounds: [{ t: 0.3, k: "scratch", g: 0.35 }, { t: 0.8, k: "scratch", g: 0.35 }],
     cam: (_t, u) => V.push(0.1 * u), sun: { target: dAt, reach: 6 },
-    cast: (t) => [on("doc", DOCTOR_D, doc, t)],
+    cast: (t) => [{ ...on("doc", DOCTOR_D, doc, t), noShade: true }],
     things: (g, c, _t, _T, cam) => { const tb = TABLE(); tb.position.set(tx, 0, tz - 0.05); g.add(tb); wield(g, SCROLL_O(), SCROLL, "hold", c.doc, "L", cam); wield(g, PEN_O(), PEN, "write", c.doc, "R", cam, { d: 0.1 }); } }); }
 
 // 16. ... UNDER HIS CARE, HARDLY ANY GLADIATORS DIED. Behind him in a row his patients, bandaged, show their muscles
-{ const { x: LX, z: LZ } = LUDUS, V = lens(LX + 1.6, 1.5, LZ - 2.6, 0, 1, -3, 52), row: [Design, number][] = [[MURMILLO_BARE_D, 1.84], [SECUTOR_D, 1.72], [THRAEX_D, 1.78], [PROVOCATOR_D, 1.76], [MURMILLO2_D, 1.88]];
-  const men = row.map(([D, h], i) => { const x = LX + 0.0 + i * 0.8, z = LZ + 1.4 + (i % 2) * 0.25, m = mover(D, h, x, z, V.toward(x, z, (i - 2) * 6)); m.stand(9);
+{ const { x: LX, z: LZ } = LUDUS, V = lens(LX - 1.43, 1.5, LZ - 4.5, 0, 1, -3, 52), row: [Design, number][] = [[MURMILLO_BARE_D, 1.84], [SECUTOR_D, 1.72], [THRAEX_D, 1.78], [PROVOCATOR_D, 1.76]];
+  const men = row.map(([D, h], i) => { const x = LX - 2.7 + i * 0.85, z = LZ + 1.4 + (i % 2) * 0.15, m = mover(D, h, x, z, V.toward(x, z, (i - 2) * 6)); m.stand(9);
     m.actAt(-1, { armL: arm(16, 12, 30, 8), armR: arm(16, 12, 30, 8) }, 10, { in: 0.01, handL: "fist", handR: "fist", face: { brow: 0.2, lid: 0.2, smile: 0.5 } });
-    m.actAt(0.25 + 0.18 * i, { armL: arm(80, 80, 150, 80), armR: arm(80, 80, 150, 80), lean: -3 }, 9, { in: 0.3, antic: 0.15, over: 1.3, handL: "fist", handR: "fist", face: { brow: 0.5, lid: 0.1, smile: 0.9, mouth: 0.3 } });
+    m.actAt(0.25 + 0.18 * i, { armR: arm(80, 40, 168, 10), lean: -3 }, 9, { in: 0.3, antic: 0.15, over: 1.3, handL: "fist", handR: "fist", face: { brow: 0.5, lid: 0.1, smile: 0.9, mouth: 0.3 } });
     return { D, m, name: `p${i}` }; });
   shots.push({ id: "patients", a: T15, b: T16, still: 2.0, sounds: men.map((_, i) => ({ t: 0.3 + 0.18 * i, k: "scuff", g: 0.3 })),
-    cam: (_t, u) => V.push(0.08 * u), sun: { target: [LX + 1.6, 0, LZ + 1.5], reach: 7 },
-    cast: (t) => men.map((q) => on(q.name, q.D, q.m, t)) }); }
+    cam: (_t, u) => V.push(0.08 * u), sun: { target: [LX - 1.43, 0, LZ + 1.5], reach: 7 },
+    cast: (t) => men.map((q) => ({ ...on(q.name, q.D, q.m, t), noShade: true })) }); }
 
-// 17. "RELAX. THEY'LL PROBABLY BE FINE." Down on the sand the next pair clash (the sound); Sir Digsworth has his hands over his eyes
-//     again, and the woman with the olives tells him so
+// 17. "RELAX. THEY'LL PROBABLY BE FINE." At last Sir Digsworth has his hands down; she says it and he reaches for her olives. Then down
+//     on the sand the next pair clash (the sound), and his hands go back over his eyes while she eats on (the script's last picture)
 { const sir = mover(SIR_D, 1.8, SIR.at[0], SIR.at[2], SIR.heading - 8), wh = WOMAN.heading - 12, wom = mover(ROMAN_WOMAN2_D, 1.62, WOMAN.at[0], WOMAN.at[2], wh); sir.stand(9); wom.stand(9);
-  const ss: Stand = { D: SIR_D, at: SIR.at, heading: SIR.heading - 8, h: 1.8, cam: TWO.cam };
-  sir.actAt(-1, { ...reach(ss, "L", by(SIR.at, SIR.heading - 8, -0.07, 0.17, 1.56)), ...reach(ss, "R", by(SIR.at, SIR.heading - 8, 0.07, 0.17, 1.56)), head: [0, 4, 0] }, 10, { in: 0.01, handL: "open", handR: "open", face: { brow: 1, lid: 0, wide: 1, mouth: 0.4 } });
-  wag(sir, 0, 3, P({ lean: 2, roll: 1.5 }), P({ lean: -1, roll: -1.5 }), 0.13);
-  const ws: Stand = { D: ROMAN_WOMAN2_D, at: WOMAN.at, heading: wh, h: 1.62, cam: TWO.cam }, bh = nearHand(wh, TWO.cam);
-  wom.actAt(-1, { ...eating(ws), head: [-30, 2, 0] }, 10, { in: 0.01, handL: "grip", handR: "grip", face: { lid: 0.4, brow: 0.3, smile: 0.5 } });
-  shots.push({ id: "relax", a: T16, b: T17, still: 1.0, sounds: [{ t: 0.1, k: "thud", g: 0.6, p: -0.5 }, { t: 0.15, k: "ting", g: 0.6, p: -0.5 }],
+  const ss: Stand = { D: SIR_D, at: SIR.at, heading: SIR.heading - 8, h: 1.8, cam: TWO.cam }, CLASH = 1.05;
+  const ws: Stand = { D: ROMAN_WOMAN2_D, at: WOMAN.at, heading: wh, h: 1.62, cam: TWO.cam }, bh = nearHand(wh, TWO.cam), EAT = eating(ws), bowlAt = jointsOf({ ...ws, pose: EAT })(`wr${bh}` as "wrL");
+  // his hand on her side reaches toward the bowl (it stops short of it: the clash comes first)
+  const toHer = Math.sign((WOMAN.at[0] - SIR.at[0]) * aside([0, 0, 0], TWO.cam, 1)[0] + (WOMAN.at[2] - SIR.at[2]) * aside([0, 0, 0], TWO.cam, 1)[2]) || 1, sj = jointsOf(ss);
+  const herSide: "L" | "R" = Math.sign((sj("shR")[0] - sj("shL")[0]) * aside([0, 0, 0], TWO.cam, 1)[0] + (sj("shR")[2] - sj("shL")[2]) * aside([0, 0, 0], TWO.cam, 1)[2]) === toHer ? "R" : "L";
+  sir.actAt(-1, { armL: arm(14, 12, 30, 8), armR: arm(14, 12, 30, 8), head: [30, -2, 0] }, 10, { in: 0.01, handL: "relaxed", handR: "relaxed", face: { brow: 0.6, lid: 0.1, smile: 0.3, wide: 0.2 } });
+  sir.actAt(0.45, { ...reach(ss, herSide, aside([bowlAt[0], bowlAt[1] + 0.1, bowlAt[2]], TWO.cam, -toHer * 0.14, 0)), head: [30, 4, 0] }, 10, { in: 0.35, antic: 0, over: 1.1, ...(herSide === "L" ? { handL: "open" as const } : { handR: "open" as const }), face: { brow: 0.6, lid: 0.1, smile: 0.5 } });
+  sir.actAt(CLASH, { ...reach(ss, "L", by(SIR.at, SIR.heading - 8, -0.07, 0.17, 1.56)), ...reach(ss, "R", by(SIR.at, SIR.heading - 8, 0.07, 0.17, 1.56)), head: [0, 4, 0] }, 10, { in: 0.14, antic: 0.1, over: 1.3, handL: "open", handR: "open", face: { brow: 1, lid: 0, wide: 1, mouth: 0.4 } });
+  wag(sir, CLASH + 0.15, 1.5, P({ lean: 2, roll: 1.5 }), P({ lean: -1, roll: -1.5 }), 0.13);
+  wom.actAt(-1, { ...EAT, head: [-30, 2, 0] }, 10, { in: 0.01, handL: "grip", handR: "grip", face: { lid: 0.4, brow: 0.3, smile: 0.5 } });
+  shots.push({ id: "relax", a: T16, b: T17, still: 0.8, sounds: [{ t: CLASH - 0.05, k: "thud", g: 0.7, p: -0.5 }, { t: CLASH, k: "ting", g: 0.6, p: -0.5 }],
     cam: (_t, u) => TWO.push(0.1 * u), sun: { target: SIR.at, reach: 7 },
     cast: (t, T) => [on("sir", SIR_D, sir, t, ARENA.wall), on("wom", ROMAN_WOMAN2_D, wom, t, ARENA.wall, { talk: talk(W, T, ["relax"]) })],
     things: (g, c, _t, T, cam) => { crowd(g, STANDS, T, cam, 0.9); wield(g, OLIVES(), BOWL, "rim", c.wom, bh, cam); } }); }
@@ -285,7 +294,7 @@ export const GLADIATORS_DEATH: Film = {
   beds: [{ k: "crowd", a: 0, b: T5, g: 0.8 }, { k: "wind", a: 0, b: END, g: 0.25 }, { k: "crowd", a: T9, b: T14, g: 0.9 }, { k: "crowd", a: T16, b: END, g: 0.8 }], audio: "craft/gladiators-death.wav",
   thumbs: [
     { T: 0.3, words: ["TO THE", "DEATH?"], y: 0.7, size: 150 },
-    { T: (T4 + T5) / 2, words: ["NINE IN TEN", "WALKED OUT"], y: 0.72, size: 120 },
-    { T: T10 + 1.8, words: ["ONE FINGER", "SAVED HIM"], y: 0.72, size: 120 },
+    { T: (T4 + T5a) / 2, words: ["NINE IN TEN", "WALKED OUT"], y: 0.72, size: 120 },
+    { T: T10 + 1.8, words: ["HE RAISED", "ONE FINGER"], y: 0.72, size: 120 },
   ],
 };

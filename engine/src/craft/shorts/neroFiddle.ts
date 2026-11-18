@@ -97,16 +97,18 @@ const fiddler = (dur: number, cam: Cam) => { const s = NST(cam), n = mover(NERO_
   sir.actAt(IN - 0.12, { armR: arm(86, 52, 98, 58), armL: arm(20, 10, 60, 0), head: [-44, 4, 0], lean: 6 }, 9, { in: 0.22, antic: 0.25, over: 1.4, handR: "point", handL: "fist", face: { wide: 1, lid: 0, brow: 1, gaze: [-0.8, 0.2] } });
   wag(sir, IN + 0.25, 0.55, P({ armR: arm(90, 52, 102, 58) }), P({ armR: arm(82, 52, 92, 56) }), 0.3, { handR: "point" });
   sir.actAt(1.45, { head: [10, -2, 0], armR: arm(60, 40, 110, 50), lean: 0 }, 0.85, { in: 0.26, out: 0.24, antic: 0.2, over: 1.4, handR: "open", face: { wide: 1, lid: 0, brow: 1 } });
-  // two people run for it along the far pavement
-  const r1 = mover(CITIZEN_D, 1.74, 3.1, 13, 180), r2 = mover(ROMAN_WOMAN_D, 1.66, -3.2, 15, 180); for (const m of [r1, r2]) m.run(mt(m, 16));
+  // two people run for it down the far street (v3: down the middle of the road, seen between the emperor and Sir Digsworth: along the
+  // pavements their heads were behind the two in front, the lens being at the height of the heads, and one ran through a stall)
+  // (to the right of the fiddle in the picture all the way, one behind the other, his bundle in the hand away from her)
+  const r1 = mover(CITIZEN_D, 1.74, -0.3, 17.0, 180), r2 = mover(ROMAN_WOMAN_D, 1.66, -0.97, 20.5, 180); for (const m of [r1, r2]) m.run(mt(m, 16));
   for (const m of [r1, r2]) m.actAt(-1, { armL: arm(60, 20, 120, 0), armR: arm(60, 20, 120, 0) }, 10, { in: 0.01, handL: "grip", handR: "grip", face: { wide: 1, lid: 0, brow: 1, mouth: 0.5, smile: -1 } });
   GRADES.push({ a: 0, b: b0, g: (T) => fireNight(T, 50, 28) });
   HOOK = { id: "hook", a: 0, b: b0, still: 0.5,
     sounds: [...sir.cues().filter((q) => q.k === "step" && q.t < b0).map((q) => ({ t: q.t, k: "step", g: 0.6 })), ...swings(0, b0 - 0.1, 0.28, b0).map((t, i) => ({ t, k: "scratch", g: 0.7, p: -0.3 + 0.1 * (i % 2) })), { t: 0.4, k: "crack", g: 0.6, p: 0.5 }, { t: 1.6, k: "crack", g: 0.6, p: -0.5 }, { t: 2.3, k: "whoosh", g: 0.5 }],
     cam: (_t, u) => V.push(0.36 * u), sun: { target: [0, 0, 3], reach: 9 },
-    cast: (t, T) => [on("r1", CITIZEN_D, r1, t, WALK, { seed: 3 }), on("r2", ROMAN_WOMAN_D, r2, t, WALK, { seed: 4 }), on("nero", NERO_D, nero, t, 0, { seed: 5, blink: false }), on("sir", SIR_D, sir, t, 0, { talk: talk(W, T, ["hook"]), blink: false })],
+    cast: (t, T) => [on("r1", CITIZEN_D, r1, t, 0, { seed: 3 }), on("r2", ROMAN_WOMAN_D, r2, t, 0, { seed: 4 }), on("nero", NERO_D, nero, t, 0, { seed: 5, blink: false }), on("sir", SIR_D, sir, t, 0, { talk: talk(W, T, ["hook"]), blink: false })],
     things: (g, c, _t, T, cam) => { streetFire(g, T, cam); fiddlePlay(g, FIDDLE(), BOW(), c.nero, cam);
-      wield(g, inHand(HELD[0]()), BUNDLE, "carry", c.r1, "L", cam); wield(g, inHand(HELD[1]()), BUNDLE, "carry", c.r2, "L", cam); } };
+      wield(g, inHand(HELD[0]()), BUNDLE, "carry", c.r1, "R", cam); wield(g, inHand(HELD[1]()), BUNDLE, "carry", c.r2, "L", cam); } };
   add(HOOK);
 }
 // 2. FLAMES EVERYWHERE, AND HE PLAYS A TUNE! Seen across the street at a burning house: fire out of its windows and along its roof.
@@ -122,12 +124,15 @@ const fiddler = (dur: number, cam: Cam) => { const s = NST(cam), n = mover(NERO_
   wag(sir, PLAYS + 0.06, 3, P({ armL: arm(130, 58, 176, 50) }), P({ armL: arm(116, 66, 158, 62) }), 0.26, { handL: "fist", face: { brow: -1, lid: 0, wide: 0.6, smile: -0.8 } });
   const FEAR = { wide: 1, lid: 0, brow: 1, mouth: 0.5, smile: -1 };
   // the woman with her bundle in her arms and the girl she pulls along by the hand
-  const woman = mover(ROMAN_WOMAN2_D, 1.72, -1.75, 9.8, 180), girl = mover(GIRL_D, 1.14, -1.2, 9.6, 180); woman.run(mt(woman, 12), { step: 1.0 }); girl.run(mt(girl, 12), { step: 1.5, tau: 0.26 });
+  // (v3: a little further from the kerb, which her foot went into, and further up the street, so that she does not catch up with the
+  // man and pass in front of him before the cut)
+  const woman = mover(ROMAN_WOMAN2_D, 1.72, -1.5, 11.5, 180), girl = mover(GIRL_D, 1.14, -0.95, 11.3, 180); woman.run(mt(woman, 12), { step: 1.0 }); girl.run(mt(girl, 12), { step: 1.5, tau: 0.26 });
   woman.actAt(-1, { armR: arm(50, 6, 96, -30), armL: arm(-30, 30, -50, 20), head: [0, -4, 0], lean: 6 }, 10, { in: 0.01, handR: "grip", handL: "grip", face: FEAR });
   girl.actAt(-1, { armR: arm(150, 30, 170, 20), head: [50, -10, 0] }, 10, { in: 0.01, handR: "grip", face: { wide: 1, lid: 0, brow: 1, mouth: 0.6, smile: -0.8 } });
-  // the man who drags the old woman along the pavement and stops to wait for her
-  const man = mover(FULLER_D, 1.78, -2.9, 6.6, 180), gran = mover(GRANNY_D, 1.5, -2.95, 7.5, 180);
-  man.walk(mt(man, 1.7), { step: 0.62, tau: 0.4 }).stand(0.7).walk(mt(man, 4), { step: 0.62, tau: 0.4 }); gran.walk(mt(gran, 1.3), { step: 0.5, tau: 0.36 }).stand(0.2).walk(mt(gran, 4), { step: 0.5, tau: 0.36 });
+  // the man who drags the old woman along the pavement and stops to wait for her (v3, Jesper: they walked through the stone block; they
+  // now go round it, along the edge of the pavement between the block and the road)
+  const man = mover(FULLER_D, 1.78, -2.18, 6.3, 180), gran = mover(GRANNY_D, 1.5, -2.18, 7.25, 180);
+  man.walk(mt(man, 1.4), { step: 0.62, tau: 0.4 }).stand(0.7).walk(mt(man, 3.0), { step: 0.62, tau: 0.4 }); gran.walk(mt(gran, 1.3), { step: 0.5, tau: 0.36 }).stand(0.2).walk(mt(gran, 4), { step: 0.5, tau: 0.36 });
   man.actAt(-1, { armL: arm(-40, 30, -60, 20), twist: -20, head: [0, 0, 0] }, 10, { in: 0.01, handL: "grip", face: { brow: -0.6, lid: 0, wide: 0.6, smile: -0.8 } });
   man.actAt(1.2, { twist: 44, head: [52, 6, 0], armR: arm(60, 30, 110, 40) }, 0.95, { in: 0.34, out: 0.3, antic: 0, over: 1.2, handR: "open", face: { brow: 1, lid: 0, wide: 0.8, mouth: 0.6, smile: -0.8 } });
   gran.actAt(-1, { lean: 16, armR: arm(70, 10, 90, 0), armL: arm(30, 10, 80, 0), head: [0, -10, 0] }, 10, { in: 0.01, handR: "open", handL: "grip", face: { brow: 0.8, lid: 0.3, mouth: 0.4, smile: -0.8 } });
@@ -156,7 +161,7 @@ const fiddler = (dur: number, cam: Cam) => { const s = NST(cam), n = mover(NERO_
 // 3. NOT SO FAST: close on the two of them. Sir Digsworth has caught the bow in mid stroke and holds up a finger; the emperor opens
 //    his eyes and looks round at him
 {
-  const a0 = cut("flames", "notso"), b0 = cut("notso", "away"), V = lens(0.33, 1.3, -0.35, 0, 1, 5, 52), GRAB = 0.2;
+  const a0 = cut("flames", "notso"), b0 = cut("notso", "away"), V = lens(0.18, 1.3, -0.35, 0, 1, 5, 56), GRAB = 0.2;
   const s3 = NST(V.cam), nero = mover(NERO_D, 1.74, NX, NZ, 172); nero.stand(9);
   nero.actAt(-1, { ...fiddlePose(s3), lean: -2 }, 10, { in: 0.01, handL: "grip", handR: "grip", face: { lid: 0.95, smile: 1, brow: 0.6 } });
   wag(nero, -0.4, GRAB + 0.4, P(bowPose(s3, 0.2)), P(bowPose(s3, 0.44)), 0.56, { handR: "grip" });
@@ -164,8 +169,8 @@ const fiddler = (dur: number, cam: Cam) => { const s = NST(cam), n = mover(NERO_
   // where the bow is when he catches it: from Nero's fist through the strings; Sir Digsworth's fist closes on it beyond the strings
   const N3 = neroAt(nero, GRAB, V.cam), frog = mix3(N3.joint("wrR"), N3.joint("tipR"), 0.5), across = fiddleAt(N3, V.cam).bowAt;
   const bd = [across[0] - frog[0], across[1] - frog[1], across[2] - frog[2]], bn = Math.hypot(...bd) || 1, CATCHP: V3 = [frog[0] + (bd[0] / bn) * 0.5, frog[1] + (bd[1] / bn) * 0.5, frog[2] + (bd[2] / bn) * 0.5];
-  const S3: Stand = { D: SIR_D, at: [0.04, 0, SZ + 0.05], heading: 186, h: 1.8, cam: V.cam, pose: { lean: 8 } };
-  const sir = mover(SIR_D, 1.8, 0.04, SZ + 0.05, 186); sir.stand(9);
+  const S3: Stand = { D: SIR_D, at: [-0.25, 0, SZ + 0.05], heading: 186, h: 1.8, cam: V.cam, pose: { lean: 8 } };
+  const sir = mover(SIR_D, 1.8, -0.25, SZ + 0.05, 186); sir.stand(9);
   sir.actAt(-1, { armR: arm(70, 30, 100, 44), armL: arm(46, 16, 150, 0), head: [-30, 0, 0], lean: 8 }, 10, { in: 0.01, handR: "open", handL: "point", face: { brow: -0.6, lid: 0.1, smile: 0.3, gaze: [-0.7, 0] } });
   sir.actAt(GRAB - 0.12, { ...reach(S3, "R", CATCHP) }, 9, { in: 0.12, antic: 0, over: 1.2, handR: "grip", handL: "point" });
   wag(sir, 0.3, 2, P({ armL: arm(46, 22, 154, 10) }), P({ armL: arm(46, 10, 146, -10) }), 0.34, { handL: "point" });
@@ -206,12 +211,15 @@ const PAPER = once(() => paint("scrollbare", 8, 8, (q) => { q.fillStyle = "#efe2
   const a0 = TAC_A, b0 = TAC_B, V0 = lens(STUDY.x + 0.25, 1.55, STUDY.z + 2.9, -0.05, -1, -1, 46), [tx, tz] = V0.spot(3.05, -0.05), hd = V0.toward(tx, tz, 14);
   const V = lens(STUDY.x + 0.22, 1.24, STUDY.z + 2.1, -0.05, -1, 0, 46);
   const tac = mover(TACITUS_D, 1.76, tx, tz, hd); tac.stand(9);
-  const HOLD = usePose(SCROLL, "hold", "L"), DOWN = { brow: 0.2, lid: 0.5, smile: 0.2 };
+  // (v3, Jesper: his writing hand went through the paper. On a card the body and the hands lie on one plane, so a sheet held before his
+  // chest is either before the writing hand or behind the body: the scroll is held out at his side, a little behind him, where nothing of
+  // him hides it, and the writing arm reaching across lies before it wherever it crosses it)
+  const SHEET_D = -0.05, HOLD = usePose(SCROLL, "side", "L"), DOWN = { brow: 0.2, lid: 0.5, smile: 0.2 };
   const S4: Stand = { D: TACITUS_D, at: [tx, 0, tz], heading: hd, h: 1.76, cam: V.cam, pose: HOLD }, j = jointsOf(S4);
   const wr = Math.sign((j("shR")[0] - j("shL")[0]) * (aside([0, 0, 0], V.cam, 1)[0]) + (j("shR")[2] - j("shL")[2]) * (aside([0, 0, 0], V.cam, 1)[2])) || -1;
   tac.actAt(-1, { ...HOLD, head: [0, 12, 0] }, 10, { in: 0.01, handL: "grip", handR: "grip", face: DOWN });      // (only the scroll's arm here: the sheet is read off it below)
   // where the sheet hangs (his left hand holds it still), and which side of it the lens sees
-  const sheet = quiet(() => { const st = stageAt(on("tac", TACITUS_D, tac, 0.3, 0, { seed: 7 }), V.cam); wield(new THREE.Group(), SCROLL_O(), SCROLL, "hold", st, "L", V.cam); SCROLL_O().updateMatrixWorld(true); return SCROLL_O().matrixWorld.clone(); });
+  const sheet = quiet(() => { const st = stageAt(on("tac", TACITUS_D, tac, 0.3, 0, { seed: 7 }), V.cam); wield(new THREE.Group(), SCROLL_O(), SCROLL, "side", st, "L", V.cam, { d: SHEET_D }); SCROLL_O().updateMatrixWorld(true); return SCROLL_O().matrixWorld.clone(); });
   const face = new THREE.Vector3(...V.cam.pos).applyMatrix4(sheet.clone().invert()).z >= 0 ? 1 : -1;
   const onSheet = (x: number, y: number): V3 => new THREE.Vector3(face * x, y, 0).applyMatrix4(sheet).toArray() as V3;
   // the reach that puts the pen's tip on a point of the sheet: first the hand a little above and before it, then corrected twice by where
@@ -235,7 +243,9 @@ const PAPER = once(() => paint("scrollbare", 8, 8, (q) => { q.fillStyle = "#efe2
     sounds: [...[0.25, 0.5, 0.75, 1.15, 1.4].map((t) => ({ t, k: "scratch", g: 0.35 })), { t: 1.7, k: "paper", g: 0.4 }],
     cam: (_t, u) => V.push(0.1 * smooth(u)), sun: { target: [STUDY.x, 0, STUDY.z], reach: 6 },
     cast: (t) => [on("tac", TACITUS_D, tac, t, 0, { seed: 7 })],
-    things: (g, c, t, T, cam) => { g.add(STUDY_ROOM()); const S = wield(g, SCROLL_O(), SCROLL, "hold", c.tac, "L", cam); wield(g, QUILL(), PEN, "write", c.tac, "R", cam, { d: 0.1 });
+    // (v3, Jesper: his writing hand went through the paper, the top of the fist behind the roller and the bottom before the sheet; the
+    // scroll is now held behind his card, so that the whole writing hand is before the sheet, the pen's tip on it in the picture)
+    things: (g, c, t, T, cam) => { g.add(STUDY_ROOM()); const S = wield(g, SCROLL_O(), SCROLL, "side", c.tac, "L", cam, { d: SHEET_D }); wield(g, QUILL(), PEN, "write", c.tac, "R", cam, { d: 0.1 });
       // the lines still to come are bare sheet; the line he is on fills in as far as the pen's tip has gone
       S.updateMatrixWorld(true); QUILL().updateMatrixWorld(true); const tip = S.worldToLocal(QUILL().localToWorld(PEN_TIP.clone())), xf = face * tip.x;
       const onS = (m: THREE.Mesh) => { m.applyMatrix4(S.matrixWorld); g.add(m); };
@@ -267,7 +277,8 @@ const villaShot = (id: string, a0: number, b0: number, messenger: boolean) => {
   wag(nero, 0.1, messenger ? LOOK - 0.1 : len, P({ armR: arm(160, 22, 188, -6) }), P({ armR: arm(168, 22, 202, -6) }), 0.6, { handR: "grip" });
   if (messenger) { nero.actAt(LOOK, { head: [40, -4, 0], lean: 0 }, JUMP - LOOK, { in: 0.2, out: 0.08, antic: 0, over: 1.2, face: { lid: 0, wide: 0.8, brow: 1, mouth: 0.3, smile: -0.7, gaze: [0.8, 0] } });
     nero.actAt(JUMP, "recoil", 9, { in: 0.08, antic: 0, over: 1.5 }); }
-  const [m0x, m0z] = V.spot(1.5, -2.6), [m1x, m1z] = V.spot(3.25, -0.62), run = Math.hypot(m1x - m0x, m1z - m0z);
+  // (v3: he stops beside the signpost, not in front of it, where it seemed to go up through his head and down between his legs)
+  const [m0x, m0z] = V.spot(1.5, -2.6), [m1x, m1z] = V.spot(3.25, -1.3), run = Math.hypot(m1x - m0x, m1z - m0z);
   const msg = mover(RUNNER_D, 1.78, m0x, m0z, (Math.atan2(m1x - m0x, m1z - m0z) * 180) / Math.PI); msg.run(mt(msg, run)).stand(9);
   msg.actAt(HERE, { lean: 40, py: -0.12, armL: arm(44, 10, 30, 0), armR: arm(44, 10, 30, 0), head: [0, 20, 0] }, POINT - HERE + 0.05, { in: 0.16, out: 0.14, antic: 0, over: 1.3, handL: "open", handR: "open", face: { lid: 0.5, brow: 1, mouth: 0.7, smile: -1 } });
   msg.actAt(POINT, { lean: 8, twist: -30, armL: arm(100, 70, 104, 76), head: [-30, -4, 0] }, 9, { in: 0.2, antic: 0.3, over: 1.6, handL: "point", face: { wide: 1, lid: 0, brow: 1, mouth: 0.5, smile: -1 } });
@@ -300,26 +311,31 @@ const SIX_B = cut("six", "rumour"), SIX_A = SIX_B - 2.0;
   const nero = mover(NERO_D, 1.74, q.x + 1.3, q.z + 1.75, V.toward(q.x + 1.3, q.z + 1.75, -26)); nero.stand(9);
   const CALM = { brow: 0.4, lid: 0.1, smile: -0.2, mouth: 0.3 };
   nero.actAt(-1, { armL: arm(84, 62, 104, 70), armR: arm(42, 36, 96, 38), head: [-30, 0, 0], lean: 2 }, 10, { in: 0.01, handL: "open", handR: "open", face: CALM });
-  wag(nero, 0.2, 5, P({ armR: arm(44, 36, 114, 32) }), P({ armR: arm(40, 40, 84, 46) }), 0.7, { handL: "open", handR: "open", face: CALM });
-  // each on his own line through the gate, a good step behind the one before, and then off to the side across the grass
+  // (v3: his welcoming hand a little less wide, so that it does not go into the man who coughs as he passes)
+  wag(nero, 0.2, 5, P({ armR: arm(44, 28, 114, 24) }), P({ armR: arm(40, 32, 84, 36) }), 0.7, { handL: "open", handR: "open", face: CALM });
+  // each on his own line through the gate, a good step behind the one before, and then off to the side across the grass (v3: the lines
+  // spread across the gate, so that no head lies over another and every face shows: the lens is low, and in one file the faces behind
+  // were behind the ones in front)
   const lane = (D: Design, h: number, x: number, back: number, pace = 0.3, veer = -32) => { const m = mover(D, h, q.x + x, q.z - back, 0), o = { step: pace * 2, tau: 0.4 }; m.walk(mt(m, back + 1.0), { ...o, keep: true }).turn(veer, 0.3).walk(mt(m, 7), o); return m; };
   const SAD = { brow: 0.8, lid: 0.1, smile: -0.7 };
-  const mother = lane(ROMAN_WOMAN_D, 1.66, -0.45, -0.4, 0.3, -26); mother.actAt(-1, { armL: arm(24, 26, 34, 30), armR: arm(44, 8, 100, -24), head: [24, 6, 0] }, 10, { in: 0.01, handL: "grip", handR: "grip", face: { ...SAD, gaze: [0.4, 0.5] } });
+  const mother = lane(ROMAN_WOMAN_D, 1.66, -0.45, -0.4, 0.3, -45); mother.actAt(-1, { armL: arm(24, 26, 34, 30), armR: arm(44, 8, 100, -24), head: [24, 6, 0] }, 10, { in: 0.01, handL: "grip", handR: "grip", face: { ...SAD, gaze: [0.4, 0.5] } });
   // a girl of about twelve (her face well above the captions as she comes nearer; a smaller child walked with her face behind them)
-  const girl = lane(GIRL_D, 1.5, 0.13, -0.4, 0.44, -26); girl.actAt(-1, { armR: arm(50, 30, 64, 26), head: [50, -14, 0] }, 10, { in: 0.01, handR: "grip", face: { wide: 1, lid: 0, brow: 1, mouth: 0.4, smile: -0.3 } });
-  const cough = lane(CITIZEN_D, 1.74, 0.0, 2.3, 0.3, -10); cough.actAt(-1, { lean: 14, armR: arm(60, 10, 150, -30), head: [0, 14, 0] }, 10, { in: 0.01, handR: "fist", face: { lid: 0.8, brow: -0.8, mouth: 0.5, smile: -0.8 } });
+  const girl = lane(GIRL_D, 1.5, 0.13, -0.4, 0.44, -45); girl.actAt(-1, { armR: arm(50, 30, 64, 26), head: [50, -14, 0] }, 10, { in: 0.01, handR: "grip", face: { wide: 1, lid: 0, brow: 1, mouth: 0.4, smile: -0.3 } });
+  const cough = lane(CITIZEN_D, 1.74, 0.55, 2.8, 0.3, 0); cough.actAt(-1, { lean: 14, armR: arm(60, 10, 150, -30), head: [0, 14, 0] }, 10, { in: 0.01, handR: "fist", face: { lid: 0.8, brow: -0.8, mouth: 0.5, smile: -0.8 } });
   wag(cough, 1.0, 6, P({ lean: 22, py: -0.03 }), P({ lean: 10 }), 0.42, { handR: "fist", face: { lid: 0.8, brow: -0.8, mouth: 0.5, smile: -0.8 } });
-  const woman2 = lane(ROMAN_WOMAN2_D, 1.72, -0.6, 4.1, 0.3, -30); woman2.actAt(-1, { armL: arm(46, 6, 96, -34), armR: arm(46, 6, 96, -34), head: [30, 2, 0] }, 10, { in: 0.01, handL: "grip", handR: "grip", face: { ...SAD, gaze: [0.6, 0] } });
-  const sacker = lane(BAKER_D, 1.7, -0.05, 5.8, 0.26, -12); sacker.actAt(-1, { lean: 28, armL: arm(150, 20, 200, -10), armR: arm(150, 20, 200, -10), head: [0, -20, 0] }, 10, { in: 0.01, handL: "grip", handR: "grip", face: { brow: -1, lid: 0.3, mouth: 0.5, smile: -0.8 } });
-  const oldman = lane(OLDMAN_D, 1.64, -0.5, 7.4, 0.2, -20); oldman.actAt(-1, { lean: 12, armR: arm(-20, 10, -60, 10), armL: arm(30, 20, 70, 30), head: [24, 4, 0] }, 10, { in: 0.01, handR: "fist", handL: "open", face: { brow: 0.6, lid: 0.3, smile: -0.5 } });
-  const gran = lane(GRANNY_D, 1.5, 0.0, 7.5, 0.2, -20); gran.actAt(-1, { lean: 18, armR: arm(60, 6, 80, 0), armL: arm(30, 10, 70, 0), head: [0, -8, 0] }, 10, { in: 0.01, handR: "grip", handL: "open", face: { brow: 0.6, lid: 0.4, smile: -0.5 } });
-  const folk: [string, Design, MM][] = [["gran", GRANNY_D, gran], ["oldman", OLDMAN_D, oldman], ["sacker", BAKER_D, sacker], ["woman2", ROMAN_WOMAN2_D, woman2], ["cough", CITIZEN_D, cough], ["girl", GIRL_D, girl], ["mother", ROMAN_WOMAN_D, mother]];
+  const woman2 = lane(ROMAN_WOMAN2_D, 1.72, -1.25, 4.1, 0.3, -30); woman2.actAt(-1, { armL: arm(46, 6, 96, -34), armR: arm(46, 6, 96, -34), head: [30, 2, 0] }, 10, { in: 0.01, handL: "grip", handR: "grip", face: { ...SAD, gaze: [0.6, 0] } });
+  const sacker = lane(BAKER_D, 1.7, -0.9, 5.8, 0.26, -12); sacker.actAt(-1, { lean: 28, armL: arm(150, 20, 200, -10), armR: arm(150, 20, 200, -10), head: [0, -20, 0] }, 10, { in: 0.01, handL: "grip", handR: "grip", face: { brow: -1, lid: 0.3, mouth: 0.5, smile: -0.8 } });
+  const oldman = lane(OLDMAN_D, 1.64, -0.6, 7.4, 0.2, -20); oldman.actAt(-1, { lean: 12, armR: arm(-20, 10, -60, 10), armL: arm(26, 8, 60, 12), head: [24, 4, 0] }, 10, { in: 0.01, handR: "fist", handL: "open", face: { brow: 0.6, lid: 0.3, smile: -0.5 } });
+  const gran = lane(GRANNY_D, 1.5, -0.15, 7.5, 0.2, -20); gran.actAt(-1, { lean: 18, armR: arm(60, 6, 80, 0), armL: arm(30, 10, 70, 0), head: [0, -8, 0] }, 10, { in: 0.01, handR: "grip", handL: "open", face: { brow: 0.6, lid: 0.4, smile: -0.5 } });
+  const AHEAD = 2.1, folk: [string, Design, MM][] = [["gran", GRANNY_D, gran], ["oldman", OLDMAN_D, oldman], ["sacker", BAKER_D, sacker], ["woman2", ROMAN_WOMAN2_D, woman2], ["cough", CITIZEN_D, cough], ["girl", GIRL_D, girl], ["mother", ROMAN_WOMAN_D, mother]];
   GRADES.push({ a: a0, b: b0, g: () => "linear-gradient(180deg, #b6aecb 0%, #f2c9b4 46%, #f6e2cf 100%)" });
   add({ id: "gardens", a: a0, b: b0, still: 2.2,
     sounds: [{ t: 0.05, k: "creak", g: 0.9, dur: 0.6 }, ...cough.cues().filter((c) => c.k === "step" && c.t < len).map((c) => ({ t: c.t, k: "step", g: 0.6, p: -0.2 })), ...mother.cues().filter((c) => c.k === "step" && c.t < len).map((c) => ({ t: c.t, k: "step", g: 0.5, p: 0.2 })),
       { t: 1.3, k: "scuff", g: 0.5, p: -0.3 }, { t: 2.2, k: "scuff", g: 0.5, p: -0.3 }, { t: 2.6, k: "sack", g: 0.6, p: 0.3 }],
     cam: (_t, u) => V.push(0.08 * u), sun: { target: [q.x, 0, q.z + 2], reach: 11 },
-    cast: (t) => [...folk.map(([n, D, m], i) => on(n, D, m, t, 0, { seed: i + 1 })), on("nero", NERO_D, nero, t, 0, { seed: 5 })],
+    // (v3: the mother and the girl a little further along their way, through the gate and turning off across the grass as we come in, so
+    // that the ones behind them are seen through the gate; behind the two in front their faces were hidden)
+    cast: (t) => [...folk.map(([n, D, m], i) => on(n, D, m, t + (n === "mother" || n === "girl" ? AHEAD : 0), 0, { seed: i + 1 })), on("nero", NERO_D, nero, t, 0, { seed: 5 })],
     things: (g, c, t, T, cam) => {
       // the far leaf is still swinging open as we come in; the near one stands open under his hand
       const o = 1.2 + 0.55 * smooth(t / 0.6); put(g, LEAF_L(), [q.x - gw / 2, 0, q.z], -o); put(g, LEAF_R(), [q.x + gw / 2, 0, q.z], Math.PI + 1.75);
@@ -336,7 +352,7 @@ const SIX_B = cut("six", "rumour"), SIX_A = SIX_B - 2.0;
   const a0 = SIX_A, b0 = SIX_B, len = b0 - a0, V = lens(0.4, 5.4, -3.5, 0, 1, -12, 58), FALL = 1.2;
   const front = (t: number) => 17 - 8.2 * t;      // how far down the street the fire has come (z)
   const FRIGHT = { wide: 1, lid: 0, brow: 1, mouth: 0.6, smile: -0.8 };
-  const run = ([[CITIZEN_D, 1.74, -0.9, 10], [ROMAN_WOMAN2_D, 1.72, 0.9, 12], [BAKER_D, 1.7, 0.1, 14.5], [FULLER_D, 1.78, -1.6, 16.5], [GIRL_D, 1.14, -1.05, 16.7]] as [Design, number, number, number][]).map(([D, h, x, z], i) => { const m = mover(D, h, x, z, 180); m.run(mt(m, 14), i === 4 ? { step: 1.5, tau: 0.26 } : i === 2 ? { step: 0.95 } : undefined);
+  const run = ([[CITIZEN_D, 1.74, -0.9, 10], [ROMAN_WOMAN2_D, 1.72, 0.9, 12], [BAKER_D, 1.7, 0.1, 14.5], [FULLER_D, 1.78, -1.6, 16.5], [GIRL_D, 1.14, -0.98, 16.85]] as [Design, number, number, number][]).map(([D, h, x, z], i) => { const m = mover(D, h, x, z, 180); m.run(mt(m, 14), i === 4 ? { step: 1.5, tau: 0.26 } : i === 2 ? { step: 0.95 } : undefined);
     // one looks back as he runs, one hugs her bundle, one is bent under a sack, one pulls a girl along by the hand
     if (i === 0) { m.actAt(-1, { head: [0, -4, 0] }, 10, { in: 0.01, face: FRIGHT }); m.actAt(0.4, { twist: 44, head: [64, -6, 0] }, 0.9, { in: 0.34, out: 0.3, antic: 0, over: 1.2, face: FRIGHT }); }
     if (i === 1) m.actAt(-1, { armL: arm(46, 6, 96, -34), armR: arm(46, 6, 96, -34), lean: 8 }, 10, { in: 0.01, handL: "grip", handR: "grip", face: FRIGHT });
@@ -367,7 +383,8 @@ const SANG = at("rumour", /^Nero/) - 0.12;
 {
   const a0 = cut("six", "rumour"), b0 = SANG, q = FIRE.garden, V = lens(q.x + 1.0, 1.5, q.z + 8.0, 0, 1, -3, 56), ON = 0.95, POINT = 1.85;
   const who = (D: Design, h: number, d: number, l: number, off: number) => { const [x, z] = V.spot(d, l), m = mover(D, h, x, z, V.toward(x, z, off)); m.stand(9); return m; };
-  const a = who(CITIZEN_D, 1.74, 2.95, -0.42, -30), b = who(ROMAN_WOMAN_D, 1.66, 2.65, 0.08, 6), c = who(MERCHANT_D, 1.72, 2.95, 0.6, 20);
+  // (v3: the bearded man a little further from the woman, whose head lay in his face as she leaned in to whisper)
+  const a = who(CITIZEN_D, 1.74, 2.95, -0.42, -30), b = who(ROMAN_WOMAN_D, 1.66, 2.65, 0.08, 6), c = who(MERCHANT_D, 1.72, 2.95, 0.72, 20);
   a.actAt(-1, { lean: 10, roll: 8, armL: arm(60, 20, 150, -30), armR: arm(50, 0, 110, -30), head: [40, 4, 8] }, 10, { in: 0.01, handR: "open", handL: "open", face: { brow: 0.8, lid: 0.1, mouth: 0.5, gaze: [0.8, 0] } });
   wag(a, 0.1, ON - 0.1, P({ armR: arm(50, 0, 116, -40) }), P({ armR: arm(50, 0, 100, -16) }), 0.24, { handR: "open" });
   a.actAt(ON + 0.1, { lean: 0, roll: 0, head: [24, 0, 0], armL: arm(20, 10, 50, 0), armR: arm(20, 10, 50, 0) }, 9, { in: 0.3, antic: 0, over: 1.1, handL: "relaxed", handR: "relaxed", face: { brow: 0.6, lid: 0.1, smile: 0.3, gaze: [0.7, 0] } });
@@ -394,7 +411,8 @@ const SANG = at("rumour", /^Nero/) - 0.12;
   const S8: Stand = { D: NERO_D, at: [s.x - 0.1, s.y, s.z - 0.2], heading: 180, h: 1.74, cam: V.cam, pose: { lean: -6 } };
   nero.actAt(-1, { armR: arm(40, 14, 128, -44), armL: (citharaPose(S8, false) as { armL: [[number, number], [number, number]] }).armL, head: [0, -18, 6], lean: -6 }, 10, { in: 0.01, handR: "open", handL: "grip", face: { lid: 0.9, brow: 1, mouth: 1 } });
   wag(nero, 0, 4, P({ roll: 5, head: [10, -22, 8], py: 0.02 }), P({ roll: -5, head: [-10, -14, -6], py: -0.01 }), 1.1);
-  nero.actAt(TROY - 0.2, { armR: arm(150, 40, 176, 30), lean: -10 }, 9, { in: 0.3, antic: 0.3, over: 1.4, handR: "open", face: { lid: 0.9, brow: 1, mouth: 1 } });
+  // (v3: the arm swings up without the dip before it, which drove the hand into the cithara in his other hand for a frame)
+  nero.actAt(TROY - 0.2, { armR: arm(150, 40, 176, 30), lean: -10 }, 9, { in: 0.3, antic: 0, over: 1.4, handR: "open", face: { lid: 0.9, brow: 1, mouth: 1 } });
   GRADES.push({ a: a0, b: b0, g: (T) => { const f = flicker(T); return `radial-gradient(ellipse 78% 56% at 50% 45%, ${hex(255 * f, 214 * f, 170 * f)} 0%, ${hex(222 * f, 138 * f, 100 * f)} 44%, #3a2440 84%, #1c1226 100%)`; } });
   add({ id: "sang", a: a0, b: b0, still: TROY + 0.2,
     sounds: [{ t: 0.1, k: "ting", g: 0.6, p: 0.2 }, { t: 0.9, k: "ting", g: 0.6, p: 0.2 }, { t: 1.7, k: "ting", g: 0.6, p: 0.2 }, { t: 0.5, k: "crack", g: 0.6, p: -0.5 }, { t: 2.1, k: "crack", g: 0.6, p: 0.5 }],
@@ -513,14 +531,14 @@ const LYRE = at("cithara", /^kind/) - 0.32, SEVEN = at("cithara", /^seven/), WID
 //     cithara has its seven strings in every picture)
 const AND = (at("close", /^lyre/) + 0.43 + at("close", /^And/)) / 2;
 {
-  const a0 = WIDE, b0 = AND, V = lens(1.99, 1.45, -0.22, -0.62, 0.78, -2, 58);
+  const a0 = WIDE, b0 = AND, V = lens(1.83, 1.45, -0.35, -0.62, 0.78, -2, 58);      // (v3: 20 cm to the right, with Sir Digsworth)
   const nero = mover(NERO_D, 1.74, NX, NZ, V.toward(NX, NZ, 22)); nero.stand(9);
   const SING = { lid: 0.9, brow: 1, mouth: 1 }, S13: Stand = { D: NERO_D, at: [NX, 0, NZ], heading: V.toward(NX, NZ, 22), h: 1.74, cam: V.cam, pose: { lean: -6 } };
   const HOLD13 = (citharaPose(S13, false) as { armL: [[number, number], [number, number]] }).armL;
   nero.actAt(-1, { armL: HOLD13, ...pluckPose(S13, 3), head: [0, -20, 6], lean: -6 }, 10, { in: 0.01, handL: "grip", handR: "open", face: SING });
   // he sweeps his open hand across the strings, from the far side to the near and back
   wag(nero, 0, b0 - a0, P({ ...pluckPose(S13, 1), roll: 4, head: [8, -24, 8] }), P({ ...pluckPose(S13, 5), roll: -4, head: [-8, -16, -4] }), 0.42, { handL: "grip", handR: "open", face: SING });
-  const sir = mover(SIR_D, 1.8, SX - 0.06, SZ, V.toward(SX - 0.06, SZ, -14)); sir.stand(9);
+  const sir = mover(SIR_D, 1.8, SX - 0.2, SZ, V.toward(SX - 0.2, SZ, -14)); sir.stand(9);
   const PAIN = { lid: 0.9, brow: -1, smile: -1 };
   sir.actAt(-1, { armL: arm(20, 10, 50, 0), armR: arm(20, 10, 50, 0), head: [-30, 0, 0] }, 1.25, { in: 0.01, out: 0.1, handL: "relaxed", handR: "relaxed", face: { brow: 0.4, lid: 0.1, gaze: [-0.7, 0] } });
   sir.actAt(0.22, { armL: arm(70, 50, 160, 6), armR: arm(70, 50, 160, 6), head: [0, 6, 0], py: -0.03, lean: -4 }, 9, { in: 0.2, antic: 0.2, over: 1.5, handL: "point", handR: "point", face: PAIN });

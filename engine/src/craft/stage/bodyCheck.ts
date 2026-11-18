@@ -111,9 +111,14 @@ export const bodyCheck = (film: Film, opt: { every?: number; shots?: string[] } 
     const stage = (t: number) => { const cam = s.cam(t, t / (s.b - s.a)), st: Record<string, Staged> = {}; for (const a of s.cast(t, s.a + t)) st[a.name] = stageAt(a, cam); return { cam, st }; };
     // what the shot puts in the set and leaves standing: the same thing in the same place at six moments through the shot
     const probe = [0, 0.2, 0.4, 0.6, 0.8, 1].map((k) => times[Math.min(times.length - 1, Math.round(k * (times.length - 1)))]);
+    // things carried on a body but in no hand (a sack on the back, a bundle hugged): the same object near a figure at every moment read
+    const carried = new Set<string>(), nearAll = new Map<string, number>();
     const fixed: Ob[] = []; { const later: Map<string, THREE.Vector3[]>[] = [];
       for (const t of probe.slice(1)) { const { st } = stage(t), th = things(s, t, st), at = new Map<string, THREE.Vector3[]>();
-        th.g.traverse((o) => { const m = o as THREE.Mesh; if (!m.isMesh || holderOf(m, th.heldBy)) return; const { g, c } = placeOf(m); at.set(g, [...(at.get(g) ?? []), c]); }); later.push(at); }
+        const joints: THREE.Vector3[] = []; for (const a of Object.values(st)) for (const j of ["neck", "pelvis", "skull", "wrL", "wrR", "shL", "shR"] as Joint[]) joints.push(new THREE.Vector3(...a.joint(j)));
+        th.g.traverse((o) => { const m = o as THREE.Mesh; if (!m.isMesh || holderOf(m, th.heldBy)) return; const { g, c } = placeOf(m); at.set(g, [...(at.get(g) ?? []), c]);
+          if (joints.some((j) => j.distanceTo(c) < 0.35)) nearAll.set(m.uuid, (nearAll.get(m.uuid) ?? 0) + 1); }); later.push(at); }
+      for (const [u, n] of nearAll) if (n === probe.length - 1) carried.add(u);
       // read last, from a call whose objects are not moved since: the things of the first moment that stand in the same place in all
       const { st } = stage(probe[0]), th = things(s, probe[0], st);
       th.g.traverse((o) => { const m = o as THREE.Mesh; if (!m.isMesh || holderOf(m, th.heldBy)) return; const { g, c } = placeOf(m); if (!later.every((at) => (at.get(g) ?? []).some((q) => q.distanceTo(c) < 0.03))) return; const b = obOf(m); if (b) fixed.push(b); }); }
@@ -124,7 +129,13 @@ export const bodyCheck = (film: Film, opt: { every?: number; shots?: string[] } 
       // what the lens can see: a fault anywhere in the picture counts, however small or far; one out of the picture cannot be seen
       const seen = (p: THREE.Vector3, r = 0) => { const q = p.clone().project(lens), d = p.distanceTo(C), m = r / Math.max(0.1, d); return q.z < 1 && q.z > -1 && Math.abs(q.x) < 1 + m && Math.abs(q.y) < 1 + m; };
       const held: Ob[] = []; th.g.traverse((o) => { const m = o as THREE.Mesh; if (!m.isMesh) return; const h = holderOf(m, th.heldBy); if (!h || h === "worn") return; const b = obOf(m, h); if (b) { b.root = rootOf(m, th.heldBy); held.push(b); } });
-      const solids = [...base, ...fixed].filter((o) => !o.aabb.containsPoint(C));
+      // what the shot moves but nobody holds (a gate's leaf swinging open, a door, a cart): a solid on this frame where it stands now. Small
+      // things that go with a figure (a fuse, a bandage, a ribbon) are left out: under 0.4 m
+      const moving: Ob[] = []; th.g.traverse((o) => { const m = o as THREE.Mesh; if (!m.isMesh || holderOf(m, th.heldBy) || carried.has(m.uuid)) return; const { g: gu, c } = placeOf(m); if (fixed.some((f) => f.geo.uuid === gu && f.aabb.getCenter(new THREE.Vector3()).distanceTo(c) < 0.05)) return;
+        // (and only things with a body to them: flames, glows and painted cards are flat, and fire is not a solid)
+        if (m.geometry.type === "PlaneGeometry" || m.geometry.type === "ShapeGeometry" || m.geometry.type === "BufferGeometry") return;
+        const b = obOf(m); if (b && Math.max(...b.aabb.getSize(new THREE.Vector3()).toArray()) >= 0.4) moving.push(b); });
+      const solids = [...base, ...fixed, ...moving].filter((o) => !o.aabb.containsPoint(C));
       const bodies = Object.values(st).map((a) => { const sc = a.h / 1.8, J = (j: Joint | [Joint, Joint, number]) => { if (typeof j === "string") return new THREE.Vector3(...a.joint(j)); const [x, y, k] = j; return new THREE.Vector3(...a.joint(x)).lerp(new THREE.Vector3(...a.joint(y)), k); };
         const headL = new THREE.Vector3(...a.joint("crown")).distanceTo(new THREE.Vector3(...a.joint("skull")));
         const parts = PARTS.map((P) => { const A = J(P.a), B = J(P.b), r = P.r < 0 ? -P.r * headL : P.r * sc, n = Math.max(2, Math.ceil(A.distanceTo(B) / 0.035)), pts: THREE.Vector3[] = []; for (let i = 0; i <= n; i++) pts.push(A.clone().lerp(B, i / n)); return { P, r, pts, tol: P.tol * Math.max(1, sc) }; });
@@ -143,13 +154,18 @@ export const bodyCheck = (film: Film, opt: { every?: number; shots?: string[] } 
       const bodyAt = (f: (typeof flat)[number], x: number, y: number, only?: Set<string>) => { let best: { name: string; d: number } | null = null; for (const c of f.caps) { if (only && !only.has(c.q.P.name)) continue; const d = capHit(c, x, y); if (d && (!best || d < best.d)) best = { name: c.q.P.name, d }; } return best; };
       const inFrame = (p: { x: number; y: number }) => p.x >= 0 && p.x <= 1080 && p.y >= 0 && p.y <= 1920;
       for (const f of flat) { const a = f.B.a, me = f.B.box.getCenter(new THREE.Vector3()).distanceTo(C);
-        // (a) a post, a pole or a mast close behind him, hidden by his body and showing on both sides of it: it seems to go through him
+        // (a) a post, a pole or a mast close behind him (within a metre), hidden by his body and showing on both sides of it: it seems to go
+        //     through him
         for (const o of solids) { const z = o.bb.getSize(new THREE.Vector3()), sz = [z.x * o.s[0], z.y * o.s[1], z.z * o.s[2]], ax = sz.indexOf(Math.max(...sz)), thin = sz.filter((_, i) => i !== ax);
           if (sz[ax] < 0.5 || Math.max(...thin) > 0.25 || (o.kind !== "box" && o.kind !== "cyl")) continue;
-          const back = o.aabb.distanceToPoint(C) - me; if (back < -0.3 || back > 1.5 || !o.aabb.clone().expandByScalar(1.5).intersectsBox(f.B.box)) continue;
+          // standing up (within 35 degrees of upright): a post, a pole, a mast; a rail or a beam lying behind someone reads as behind him
+          { const e = new THREE.Vector3(); e.setComponent(ax, 1); e.transformDirection(o.M); if (Math.abs(e.y) < Math.cos((35 * Math.PI) / 180)) continue; }
+          if (!o.aabb.clone().expandByScalar(1.5).intersectsBox(f.B.box)) continue;
           const c0 = o.bb.getCenter(new THREE.Vector3()), e = new THREE.Vector3(); e.setComponent(ax, (o.bb.max.getComponent(ax) - o.bb.min.getComponent(ax)) / 2);
           const P0 = c0.clone().sub(e).applyMatrix4(o.M), P1 = c0.clone().add(e).applyMatrix4(o.M), st: string[] = [];
-          for (let i = 0; i <= 40; i++) { const p = P0.clone().lerp(P1, i / 40), s2 = scr(p); if (!inFrame(s2)) { st.push("out"); continue; } const hb = bodyAt(f, s2.x, s2.y, CORE); st.push(hb && hb.d < s2.d ? "hid" : "seen"); }
+          // how far behind him it is: measured where it is hidden by him (a long rail along a wall far behind is not close behind)
+          let back = Infinity; for (let i = 0; i <= 40; i++) { const p = P0.clone().lerp(P1, i / 40), s2 = scr(p); if (!inFrame(s2)) { st.push("out"); continue; } const hb = bodyAt(f, s2.x, s2.y, CORE); const hid = !!hb && hb.d < s2.d; st.push(hid ? "hid" : "seen"); if (hid) back = Math.min(back, s2.d - hb!.d); }
+          if (back > 1.0) continue;
           const i0 = st.indexOf("seen"), i1 = st.lastIndexOf("seen"), mid = st.slice(i0 + 1, i1);
           if (i0 >= 0 && i1 > i0 && mid.filter((x) => x === "hid").length >= 3) note(`${s.id}|${a.name}|through|${o.mesh.uuid}`, { shot: s.id, who: a.name, kind: "solid", what: `${describe(o)} stands ${Math.max(0, back).toFixed(2)} m behind ${a.name}, hidden by his body and showing on both sides of it: it seems to go through him` }, F, mid.filter((x) => x === "hid").length / 100); }
         // (b) his face covered by more than a fifth by someone not clearly behind it (a head, a body, an arm): nearer the lens, or at
@@ -162,10 +178,11 @@ export const bodyCheck = (film: Film, opt: { every?: number; shots?: string[] } 
             if (ov > 0.08 * hd.rA && gh.A.d < hc.d + 0.06) note(`${s.id}|${a.name}|heads|${g.B.a.name}`, { shot: s.id, who: a.name, kind: "figure", what: `${g.B.a.name}'s head lies over ${a.name}'s head in the picture (${Math.round(ov)} px into it, ${gh.A.d < hc.d - 0.06 ? "nearer the lens" : "at the same depth: drawn into each other"})` }, F, ov / hd.rA); for (const [u, v] of samples) { const hb = bodyAt(g, hc.x + u * R, hc.y + v * R); if (hb && hb.d < hc.d + 0.06) { n++; by = hb.name; } }
             if (n / samples.length > 0.2) note(`${s.id}|${a.name}|face|${g.B.a.name}`, { shot: s.id, who: a.name, kind: "figure", what: `${a.name}'s face is covered by ${g.B.a.name}'s ${by} (${Math.round((100 * n) / samples.length)} % of it)` }, F, n / samples.length); } }
         // (c) a thing in someone else's hand drawn over his head, chest or legs
-        //     (at any depth: a match near the lens drawn across the men hauling far behind is as wrong as a blade across the man beside him)
+        //     (up to 3 m behind it: a match near the lens drawn across the men hauling behind is as wrong as a blade across the man beside
+        //     him; a fiddle bow in front of people running 15 m down the street is only in front of them, as it would be)
         for (const o of held) { if (o.holder!.split(" & ").some((part) => part.split(" ")[0] === a.name)) continue;
           const c0 = o.bb.getCenter(new THREE.Vector3()), z = o.bb.getSize(new THREE.Vector3()), sz = [z.x * o.s[0], z.y * o.s[1], z.z * o.s[2]], ax = sz.indexOf(Math.max(...sz)), e = new THREE.Vector3(); e.setComponent(ax, z.getComponent(ax) / 2);
-          let n = 0, part = ""; for (let i = 0; i <= 12; i++) { const p = c0.clone().sub(e).lerp(c0.clone().add(e), i / 12).applyMatrix4(o.M), s2 = scr(p); if (!inFrame(s2)) continue; const hb = bodyAt(f, s2.x, s2.y, CORE); if (hb && s2.d < hb.d) { n++; part = hb.name; } }
+          let n = 0, part = ""; for (let i = 0; i <= 12; i++) { const p = c0.clone().sub(e).lerp(c0.clone().add(e), i / 12).applyMatrix4(o.M), s2 = scr(p); if (!inFrame(s2)) continue; const hb = bodyAt(f, s2.x, s2.y, CORE); if (hb && s2.d < hb.d && hb.d - s2.d < 3) { n++; part = hb.name; } }
           if (n >= 2) note(`${s.id}|${a.name}|over|${o.mesh.uuid}|${part}`, { shot: s.id, who: a.name, kind: "held", what: `the thing in ${o.holder}'s hand, ${describe(o)}, is drawn over ${a.name}'s ${part}` }, F, n / 13); }
         // (d) a hand or a forearm that does not hold a thing goes through it: in the picture part of the hand lies in front of the thing
         //     and part behind it (Tacitus's writing hand: the top of the fist behind the scroll's roller, the bottom before the sheet)
@@ -176,11 +193,13 @@ export const bodyCheck = (film: Film, opt: { every?: number; shots?: string[] } 
         const roots = new Map<THREE.Object3D, Ob[]>(); for (const o of held) if (o.root) roots.set(o.root, [...(roots.get(o.root) ?? []), o]);
         for (const [root, obs] of roots) { const holder = obs[0].holder!, sides = new Set<string>(); for (const part of holder.split(" & ")) { const [who, hands] = part.split(" "); if (who === a.name && hands) for (const h of hands.split("+")) sides.add(h); }
           const box = new THREE.Box3(); for (const o of obs) box.union(o.aabb); if (!box.clone().expandByScalar(0.1).intersectsBox(f.B.box)) continue;
-          for (const q of f.B.parts) { if (!q.P.hand || sides.has(q.P.hand)) continue; let front = 0, behind = 0, mixed = 0; const sp = q.P.name.endsWith("hand") ? span(q.P.hand) : 0.02;
-            for (const p of q.pts) { if (box.distanceToPoint(p) > 0.3 || !seen(p)) continue; const dir = p.clone().sub(C), d = dir.length(); rc.set(C, dir.normalize()); rc.near = 0.05; rc.far = d + 2; let n = 0, fa = 0, inn = 0;
-              for (const o of obs) for (const h of rc.intersectObject(o.mesh, false)) { if (h.distance < d - sp - 0.005) n++; else if (h.distance > d + 0.005) fa++; else inn++; }
-              if (inn || (n && fa)) mixed++; else if (n) behind++; else if (fa) front++; }
-            if (mixed || (front && behind)) note(`${s.id}|${a.name}|thru|${q.P.name}|${root.uuid}`, { shot: s.id, who: a.name, kind: "held", what: `${a.name}'s ${q.P.name} goes through the thing in ${holder}'s hand (${nameOf(root) || describe(obs[0])}): part of it before the thing, part behind it` }, F, (mixed + Math.min(front, behind)) / q.pts.length); } } }
+          //     The forearm and the hand are read together, as one arm: a forearm behind the sheet with the hand before it has gone through it
+          for (const side of ["L", "R"] as const) { if (sides.has(side)) continue; let front = 0, behind = 0, mixed = 0, n0 = 0, where = "";
+            for (const q of f.B.parts) { if (q.P.hand !== side) continue; const sp = q.P.name.endsWith("hand") ? span(side) : 0.02; n0 += q.pts.length;
+              for (const p of q.pts) { if (box.distanceToPoint(p) > 0.3 || !seen(p)) continue; const dir = p.clone().sub(C), d = dir.length(); rc.set(C, dir.normalize()); rc.near = 0.05; rc.far = d + 2; let n = 0, fa = 0, inn = 0;
+                for (const o of obs) for (const h of rc.intersectObject(o.mesh, false)) { if (h.distance < d - sp - 0.005) n++; else if (h.distance > d + 0.005) fa++; else inn++; }
+                if (inn || (n && fa)) { mixed++; where = q.P.name; } else if (n) { behind++; where ||= q.P.name; } else if (fa) front++; } }
+            if (mixed || (front && behind)) note(`${s.id}|${a.name}|thru|${side}|${root.uuid}`, { shot: s.id, who: a.name, kind: "held", what: `${a.name}'s ${side === "L" ? "left" : "right"} arm goes through the thing in ${holder}'s hand (${nameOf(root) || describe(obs[0])}) at the ${where}: part of the arm before the thing, part behind it` }, F, (mixed + Math.min(front, behind)) / Math.max(1, n0)); } } }
       for (const B of bodies) { const a = B.a, floor = a.at[1], near = (o: Ob) => o.aabb.intersectsBox(B.box);
         const mine = (o: Ob) => !!o.holder && o.holder.split(" & ").some((part) => part.split(" ")[0] === a.name);
         const holdSides = (o: Ob) => { const sides = new Set<string>(); for (const part of (o.holder ?? "").split(" & ")) { const [who, hands] = part.split(" "); if (who === a.name && hands) for (const h of hands.split("+")) sides.add(h); } return sides; };

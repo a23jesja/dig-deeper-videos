@@ -61,8 +61,9 @@ export const romeStreet = () => {
     root.add(mesh(box(2.0, WALK + 0.3, 80), "#ffffff", { at: [s * 3.1, (WALK - 0.3) / 2, 0], map: (slabs(), paint("slabs", 256, 256, () => {}, [3, 100])) }));
     root.add(mesh(box(0.22, WALK + 0.32, 80), C.stoneL, { at: [s * 2.1, (WALK - 0.28) / 2, 0], line: 0.7 }));
   }
-  // stepping stones across the road, in two places
-  for (const z of [-4.2, 9.6]) for (const x of [-1.25, 0, 1.25]) root.add(mesh(box(0.9, 0.3, 0.62), C.stone, { at: [x, 0.15, z] }));
+  // stepping stones across the road, in two places (Nero v3: the nearer row further up the street, out of the way of the people who run
+  // along it, who went through the stones: there is no step up onto them in the motion library)
+  for (const z of [-4.2, 24]) for (const x of [-1.25, 0, 1.25]) root.add(mesh(box(0.9, 0.3, 0.62), C.stone, { at: [x, 0.15, z] }));
   // houses: every one its own colour
   const left: House[] = [
     { w: 7, h: 5.0, d: 6, wall: "#fbf3df", dado: C.red, door: -1.4, doorCol: C.green, windows: [1.6, -1.4], shutter: C.green, signs: [{ x: 1.7, y: 2.0, w: 2.7, h: 0.95, lines: ["HELVIVM", "AED · O · V · F"], ink: "#b3261e", bg: "#fbf3df" }] },
@@ -92,7 +93,8 @@ export const romeStreet = () => {
   // the corner by the laundry: the big jar (the collector's table and strongbox are moved by the films)
   { const j = streetJar(0.82); j.position.set(...ROME.jar); root.add(j); }
   // street furniture: the fountain, a bench, the cook-shop counter, jars, a cart further down
-  { const f = fountain(); f.position.set(-2.95, WALK, 6.3); f.rotation.y = Math.PI / 2; root.add(f); }
+  // (Nero v3: 25 cm nearer the wall, so that there is room on the pavement to go round it on the road side)
+  { const f = fountain(); f.position.set(-3.2, WALK, 6.3); f.rotation.y = Math.PI / 2; root.add(f); }
   { const b = bench(1.8); b.rotation.y = Math.PI / 2; b.position.set(-3.85, WALK, 0.8); root.add(b); }
   { const b = barCounter(2.4); b.rotation.y = -Math.PI / 2; b.position.set(3.7, WALK, -5.6); root.add(b); for (const dz of [-0.5, 0.2]) { const l = loaf(0.13); l.position.set(3.7, WALK + 0.97, -6.45 + dz * 0.5); root.add(l); } }
   for (const [x, zz, t] of [[-3.6, 4.2, 0], [-3.3, 3.8, 1], [3.6, -9.2, 0], [3.3, -9.8, 2], [-3.4, -8.5, 1], [-3.5, 11.2, 2]] as number[][]) { const o = t === 0 ? amphora(0.95) : t === 1 ? jar(0.7) : basket(); o.position.set(x, WALK, zz); if (t === 0) { o.rotation.z = 0.24; o.position.y += 0.02; } root.add(o); }
@@ -146,7 +148,10 @@ export const romeFire = () => {
     for (const s of [-1, 1]) g.add(mesh(box(30, H, 0.5), "#e9dcb6", { at: [s * (15 + gw / 2), H / 2, 0] }), mesh(box(30.1, 0.24, 0.7), C.terra, { at: [s * (15 + gw / 2), H + 0.12, 0], line: 0.7 }), mesh(box(30.02, 0.9, 0.54), "#c9b98a", { at: [s * (15 + gw / 2), 0.45, 0], line: 0.5 }),
       mesh(box(0.7, H + 0.5, 0.7), C.stoneL, { at: [s * (gw / 2 + 0.35), (H + 0.5) / 2, 0] }), mesh(ball(0.3, 12), C.stoneL, { at: [s * (gw / 2 + 0.35), H + 0.8, 0] }));
     g.add(mesh(box(gw + 1.4, 0.4, 0.74), C.stoneL, { at: [0, H + 0.2, 0], line: 0.8 }));
-    g.add(mesh(box(64, 0.2, 40), "#8fc06a", { at: [0, -0.08, 20.3], line: 0, shadow: false }), mesh(box(3.4, 0.22, 40), "#e6d9b4", { at: [0, -0.07, 20.3], line: 0, shadow: false }), mesh(box(64, 0.22, 2.6), "#e6d9b4", { at: [0, -0.07, 9], line: 0, shadow: false }));
+    // (Nero v3: the lawn and the paths level with the ground the people stand on; the paths were 4 cm above it, so feet stood in them)
+    // (and the path on to the gate from outside, which people come along: outside there was no ground at their height)
+    g.add(mesh(box(3.4, 0.22, 12.6), "#e6d9b4", { at: [0, -0.102, -6.0], line: 0, shadow: false }));
+    g.add(mesh(box(64, 0.2, 40), "#8fc06a", { at: [0, -0.1, 20.3], line: 0, shadow: false }), mesh(box(3.4, 0.22, 40), "#e6d9b4", { at: [0, -0.102, 20.3], line: 0, shadow: false }), mesh(box(64, 0.22, 2.6), "#e6d9b4", { at: [0, -0.102, 9], line: 0, shadow: false }));
     for (const [x, z, h] of [[-5, 4, 7], [5.4, 5, 8], [-9, 13, 9], [9.5, 14, 8], [-14, 6, 8], [14, 7, 9], [-4.6, 20, 9], [5, 22, 10]] as number[][]) { const t = cypress(h); t.position.set(x, 0, z); g.add(t); }
     { const f = fountain(); f.position.set(0, 0, 16); g.add(f); }
     g.add(mesh(box(64, 0.2, 30), "#dccb9c", { at: [0, -0.1, -15.3], line: 0, shadow: false }), mesh(box(4.2, 0.22, 30), "#a3a5b4", { at: [0, -0.09, -15.3], line: 0, shadow: false }));

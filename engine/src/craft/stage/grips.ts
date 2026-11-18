@@ -131,7 +131,10 @@ export const MAPPA: Prop = { name: "cloth", uses: { wave: { arm: A(160, 30, 190,
 /** the reed pen (props.ts reedPen), its nib down on the sheet it writes on */
 export const PEN: Prop = { name: "pen", uses: { write: { arm: A(40, 10, 95, -12), level: -62, ok: within(-115, -20, "a pen that writes points down at the sheet") } } };
 /** a scroll held up by its upper roller (props.ts scrollHeld), the sheet hanging below the fist */
-export const SCROLL: Prop = { name: "scroll", uses: { hold: { arm: A(40, 10, 100, -24), level: 0, ok: within(-8, 8, "a held scroll hangs from its upper roller") } } };
+export const SCROLL: Prop = { name: "scroll", uses: { hold: { arm: A(40, 10, 100, -24), level: 0, ok: within(-8, 8, "a held scroll hangs from its upper roller") },
+  /** held out at the side by the outer end of its roller, the sheet hanging between the hand and the body (Tacitus in Nero v3, written on
+   *  by the other hand reaching across) */
+  side: { arm: A(40, 26, 100, 6), level: 180, ok: (d) => (Math.abs(Math.abs(ang(d)) - 180) <= 8 ? null : `a scroll held out at the side hangs from its roller, toward the body (it points ${ang(d).toFixed(0)} degrees)`) } } };
 /** an olive between finger and thumb, at the mouth */
 export const OLIVE: Prop = { name: "olive", uses: { eat: { arm: A(40, 10, 150, -10), level: 0, ok: any } } };
 // ---------------- grip sheet 6: the animal trials (Saint-Julien's court and vineyard) ----------------
@@ -606,7 +609,10 @@ export const auditGrips = (film: Film, step?: number) => {
       s.things?.(g, staged, t, s.a + t, cam); const now = new Map<string, { holder: string; prop: string }>(), at = `${s.id} at ${t.toFixed(2)} s (film ${(s.a + t).toFixed(2)} s, frame ${Math.round((s.a + t) * film.fps)})`;
       for (const u of new Set(UNSEEN)) bad.push(`${at}: ${u}: the hand holds something but its forearm is hidden behind his head or body (the fist would float)`);
       lensOf.fov = cam.fov; lensOf.position.set(...cam.pos); lensOf.lookAt(...cam.look); lensOf.updateProjectionMatrix(); lensOf.updateMatrixWorld(true);
-      for (const r of AUDIT.rows) { now.set(r.id, { holder: r.holder, prop: r.prop }); if (r.holder) held++; if (r.err) bad.push(`${at}: ${r.holder}'s ${r.prop} (${r.use}): ${r.err}`);
+      // (a thing and the hand that holds it both out of the picture cannot be seen: the mother of Nero's gardens, walked off to the side)
+      const offPic = (p?: V3) => { if (!p) return false; const q = new THREE.Vector3(...p).project(lensOf); return q.z > 1 || Math.abs(q.x) > 1.08 || Math.abs(q.y) > 1.05; };
+      for (const r of AUDIT.rows) { now.set(r.id, { holder: r.holder, prop: r.prop }); if (r.holder) held++; const gone = offPic(r.at) && (!r.o || (r.o.updateWorldMatrix(true, false), offPic(new THREE.Vector3().setFromMatrixPosition(r.o.matrixWorld).toArray() as V3)));
+        if (r.err && !gone) bad.push(`${at}: ${r.holder}'s ${r.prop} (${r.use}): ${r.err}`);
         // a thing that stands on nothing has a hand on it in every frame: one of the hands its holder names touches it in the picture
         else if (r.o && r.holder && !RESTS.has(r.use)) { let off = Infinity; for (const part of r.holder.split(" & ")) { const [who, hands] = part.split(" "), a = staged[who]; if (a && hands) off = Math.min(off, offThing(r.o, a, hands.split("+") as Side[], cam)); }
           if (off > 0.01 && off < Infinity) bad.push(`${at}: the ${r.prop} (${r.use}) has no hand on it: the nearest of ${r.holder} is ${(off * 100).toFixed(0)} cm off it (a thing that rests on nothing is in a hand in every frame)`); }

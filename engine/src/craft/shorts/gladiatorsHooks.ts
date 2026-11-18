@@ -64,11 +64,10 @@ const sandKick = (g: THREE.Group, T: number, cam: Cam, p: V3, k: number, seed = 
 /** the crowd on the far side, behind the fighters seen from the front row (the sponsor's box keeps its front rows) */
 const FAR: Fan[] = fans(LOOKS, Math.PI / 2 - 0.7, Math.PI / 2 + 0.7, [0, 1, 2, 3, 4, 5, 6, 7, 8], 5).filter((f) => !(Math.abs(f.at[0]) < 2.5 && f.at[1] < ARENA.wall + 1));
 const MID: V3 = [(SIR.at[0] + WOMAN.at[0]) / 2, ARENA.wall, (SIR.at[2] + WOMAN.at[2]) / 2];
-/** the lenses: low on the sand at the fight, at Sir in the front row, the two of them in the front row, down from the rail at the fight */
+/** the lenses: low on the sand at the fight, at Sir in the front row, the two of them in the front row */
 const LOWA = lens(FIGHT[0], 1.5, FIGHT[2] + 4.5, 0, -1, -12, 52);       // the fight above the question's three lines
 const FRONT = lens(SIR.at[0] + 0.12, ARENA.wall + 1.55, SIR.at[2] + 2.5, -0.05, -1, 2, 38);
 const TWO = lens(MID[0], ARENA.wall + 1.5, MID[2] + 3.0, 0, -1, 2, 42);
-const OVER = lens(SIR.at[0] + 0.4, ARENA.wall + 1.75, SIR.at[2] + 0.62, 0.5, 0.87, -28, 36);     // from beside Sir at the rail, down at the fight
 
 /** the heavy man and the net fighter squared up across the fight's mark, `gap` metres apart, each turned a little toward +z (the sand side) */
 const pair = (gap = 2.1) => { const mur = mover(MURMILLO_D, 1.84, FIGHT[0] - gap / 2, FIGHT[2], 62), ret = mover(RETIARIUS_D, 1.86, FIGHT[0] + gap / 2, FIGHT[2], -62); return { mur, ret }; };
@@ -79,12 +78,13 @@ const shieldMan = (g: THREE.Group, a: Staged, cam: Cam, use: string, blend?: [st
 /** Sir Digsworth and the woman beside him in the front row: "Two go in, one comes out. Right?" Two fingers up on "Two", one on "one",
  *  and on "Right?" he turns to her; she shakes her head. `net` = the net still hangs over his head */
 const twoShot = (id: string, a0: number, b0: number, W: Word[], net = false): Shot => {
-  // the hand counts up in front of his shoulder, inside the picture
+  // the hand counts up beside his head on the side toward her, the elbow out and the forearm upright: clear of his face and hers, and
+  // inside the picture (his right hand would be at its edge)
   const sir = mover(SIR_D, 1.8, SIR.at[0], SIR.at[2], SIR.heading - 8), wom = mover(ROMAN_WOMAN2_D, 1.62, WOMAN.at[0], WOMAN.at[2], WOMAN.heading - 12); sir.stand(9); wom.stand(9);
-  const t2 = say(W, "Two") - a0, t1 = say(W, "one") - a0, tr = say(W, "Right") - a0, UP = { armR: arm(102, 10, 162, 2), armL: arm(14, 12, 30, 8) };
+  const t2 = say(W, "Two") - a0, t1 = say(W, "one") - a0, tr = say(W, "Right") - a0, UP = { armL: arm(28, 52, 166, 6), armR: arm(14, 12, 30, 8) };
   sir.actAt(-1, { armL: arm(14, 12, 30, 8), armR: arm(14, 12, 30, 8), head: [0, -2, 0] }, 10, { in: 0.01, handL: "relaxed", handR: "relaxed", face: { brow: 0.6, lid: 0.1, smile: 0.3 } });
-  sir.actAt(t2 - 0.3, UP, t1 - t2 + 0.25, { in: 0.22, out: 0.01, handR: "two", face: { brow: 0.9, lid: 0, smile: 0.5 } });
-  sir.actAt(t1 - 0.05, UP, 9, { in: 0.01, handR: "point", face: { brow: 0.9, lid: 0, smile: 0.5 } });
+  sir.actAt(t2 - 0.3, UP, t1 - t2 + 0.25, { in: 0.22, out: 0.01, handL: "two", face: { brow: 0.9, lid: 0, smile: 0.5 } });
+  sir.actAt(t1 - 0.05, UP, 9, { in: 0.01, handL: "point", face: { brow: 0.9, lid: 0, smile: 0.5 } });
   sir.actAt(tr - 0.25, { head: [34, -2, 0] }, 9, { in: 0.25, antic: 0, over: 1.1, face: { brow: 1, lid: 0, smile: 0.7, wide: 0.3 } });
   wom.actAt(-1, { armL: arm(22, -6, 64, -46), armR: arm(22, -6, 64, -46), head: [-26, 0, 0] }, 10, { in: 0.01, handL: "relaxed", handR: "relaxed", face: { lid: 0.45, brow: -0.2, smile: -0.1 } });
   wag(wom, Math.max(0, tr - 0.35), 1.4, P({ head: [-40, 4, 0] }), P({ head: [-12, 4, 0] }), 0.3, { face: { lid: 0.5, brow: 0.3, smile: -0.3 } });
@@ -97,7 +97,7 @@ const draped = (g: THREE.Group, crown: V3, cam: Cam, drop: number, tilt = 0, han
 
 // a: the fight already happening -------------------------------------------------------------------------------------------------
 const A = (() => {
-  const W = wa as Word[], L = byId(la), b1 = 1.5, b2 = (L.hook.b + L.guess.a) / 2, shots: Shot[] = [];
+  const W = wa as Word[], L = byId(la), b1 = 1.5, b2 = Math.min(3.0, L.guess.a - 0.05), shots: Shot[] = [];
   // the trident already on the shield in the first frame, sand flying; the heavy man drives his sword past it, the net man swings back
   const { mur, ret } = pair(1.9), TH = 0.55; mur.stand(9); ret.stand(9);
   const stand = (at: V3, heading: number, D: Design, h: number): Stand => ({ D, at, heading, h, cam: LOWA.cam });
@@ -127,7 +127,7 @@ const A = (() => {
 
 // b: a statement over the action ---------------------------------------------------------------------------------------------------
 const B = (() => {
-  const W = wb as Word[], L = byId(lb), b1 = 1.4, b2 = (L.hook.b + L.guess.a) / 2, shots: Shot[] = [];
+  const W = wb as Word[], L = byId(lb), b1 = 1.5, hb = (L.hook.b + L.guess.a) / 2, b2 = say(W, "Two") - 0.12, shots: Shot[] = [];
   // the net man down on one knee with one finger raised (he gives up), the heavy man's sword up over him: "Most gladiators walked out alive."
   const LOWB = lens(FIGHT[0], 1.25, FIGHT[2] + 4.9, 0, -1, -5, 54), { mur, ret } = pair(1.45); mur.stand(9); ret.stand(9);
   mur.actAt(-1, { ...usePose(GLADIUS, "raised", "R"), armL: SHIELD_ARM, lean: 6, head: [0, 8, 0] }, 10, { in: 0.01, handL: "grip", handR: "grip", face: { brow: -1, lid: 0.1, mouth: 0.5 } });
@@ -144,21 +144,21 @@ const B = (() => {
   m2.mur.actAt(0.35, { ...usePose(GLADIUS, "lowered", "R"), armL: SHIELD_ARM, lean: -2, head: [-20, 0, 0] }, 9, { in: 0.4, antic: 0, over: 1.1, face: { brow: 0.6, lid: 0.2, mouth: 0.2 } });
   m2.ret.actAt(-1, { py: -0.5, lean: -8, armL: arm(150, 26, 178, 14), armR: arm(30, 30, 70, 20), head: [0, -10, 0] }, 10, { in: 0.01, handL: "point", handR: "open", face: { brow: 1, lid: 0, wide: 0.9, mouth: 0.3, smile: -0.6 } });
   const rs: Stand = { D: REFEREE_D, at: RAT, heading: 20, h: 1.74, cam: WIDE2.cam };
-  ref.actAt(-1, polePose(rs, "L", by(rs.at, 20, -0.24, 0.3, 1.12), by(rs.at, 20, 3, 0.3, 1.12), 0.48), 10, { in: 0.01, handL: "grip", handR: "grip", face: { brow: -0.6, lid: 0.1, mouth: 0.5 } });
+  ref.actAt(-1, polePose(rs, "L", by(rs.at, 20, -0.24, 0.3, 1.12), by(rs.at, 20, 3, 0.3, 1.12), 0.48), 10, { in: 0.01, handL: "grip", handR: "grip", face: { brow: -0.9, lid: 0, mouth: 0.6, smile: -0.8 } });
   shots.push({ id: "referee", a: b1, b: b2, still: 0.8, sounds: [{ t: 0.1, k: "step", g: 0.7 }, { t: 0.4, k: "step", g: 0.7 }, { t: 0.45, k: "tap", g: 0.8 }],
     cam: (_t, u) => WIDE2.push(0.12 * u), sun: { target: FIGHT, reach: 10 },
     cast: (t) => [on("mur", MURMILLO_D, m2.mur, t), on("ret", RETIARIUS_D, m2.ret, t), on("ref", REFEREE_D, ref, t)],
     things: (g, c, t, T, cam) => { crowd(g, STANDS, T, cam, 0.8); shieldMan(g, c.mur, cam, "raised", ["lowered", smooth((t - 0.35) / 0.4)], true); setDown(g, TRI(), "trident", ground, cam, -4);
       pole(g, STICK_O(), c.ref, cam, "L", by(c.ref.at, c.ref.heading, 3, 0.3, 1.12), { back: 0.36, len: 1.35, name: "stick" }); } });
   shots.push(twoShot("guess", b2, LEN, W));
-  return { W, shots, text: ["MOST GLADIATORS", "WALKED OUT ALIVE."], hookB: b2 };
+  return { W, shots, text: ["MOST GLADIATORS", "WALKED OUT ALIVE."], hookB: hb };
 })();
 
 // c: Sir Digsworth in trouble ------------------------------------------------------------------------------------------------------
 const C = (() => {
-  const W = wc as Word[], L = byId(lc), b1 = 1.5, b2 = (L.hook.b + L.guess.a) / 2, shots: Shot[] = [];
+  const W = wc as Word[], L = byId(lc), b1 = 1.5, b2 = Math.min(3.0, L.guess.a - 0.05), shots: Shot[] = [];
   // the net already in the air at him in the first frame; it lands over his head and he fights it
-  const NET_LENS = lens(SIR.at[0] + 0.15, ARENA.wall + 1.6, SIR.at[2] + 3.0, -0.05, -1, 5, 44), LAND = 0.32;
+  const NET_LENS = lens(SIR.at[0] + 0.15, ARENA.wall + 1.6, SIR.at[2] + 3.0, -0.05, -1, -3, 44), LAND = 0.32;      // looking a little down: his face above the question's lines
   const sir = mover(SIR_D, 1.8, SIR.at[0], SIR.at[2], SIR.heading - 6); sir.stand(9);
   sir.actAt(-1, { armL: arm(40, 20, 120, 10), armR: arm(40, 20, 120, 10), head: [0, -12, 0], lean: -6 }, 10, { in: 0.01, handL: "open", handR: "open", face: { brow: 1, lid: 0, wide: 1, mouth: 0.8 } });
   sir.actAt(LAND, { armL: arm(150, 30, 190, 20), armR: arm(150, 30, 190, 20), head: [0, 6, 0], lean: 4 }, 9, { in: 0.15, face: { brow: 1, lid: 0.2, mouth: 0.7, smile: -0.4 } });
@@ -172,12 +172,14 @@ const C = (() => {
   // down on the sand the net man looks up at the stands, empty-handed, and shrugs; the heavy man beside him stares
   const m = pair(1.6); m.mur.stand(9); m.ret.stand(9);
   const up = (x: number, z: number) => facingTo(x, z, SIR.at[0], SIR.at[2]);
-  const ret = mover(RETIARIUS_D, 1.86, FIGHT[0] + 0.7, FIGHT[2] + 0.3, up(FIGHT[0] + 0.7, FIGHT[2] + 0.3)), mur = mover(MURMILLO_D, 1.84, FIGHT[0] - 0.75, FIGHT[2] + 0.1, up(FIGHT[0] - 0.75, FIGHT[2] + 0.1) + 40); ret.stand(9); mur.stand(9);
+  const ret = mover(RETIARIUS_D, 1.86, FIGHT[0] + 0.7, FIGHT[2] + 0.3, up(FIGHT[0] + 0.7, FIGHT[2] + 0.3)), mur = mover(MURMILLO_D, 1.84, FIGHT[0] - 0.45, FIGHT[2] + 0.1, up(FIGHT[0] - 0.45, FIGHT[2] + 0.1) + 40); ret.stand(9); mur.stand(9);
+  const mid: V3 = [FIGHT[0] + 0.125, 0, FIGHT[2] + 0.2], o = [SIR.at[0] + 0.4, SIR.at[2] + 0.62], d = Math.hypot(mid[0] - o[0], mid[2] - o[1]);
+  const PAIR = lens(o[0], ARENA.wall + 1.75, o[1], (mid[0] - o[0]) / d, (mid[2] - o[1]) / d, -28, 38);      // from beside Sir at the rail, down at the two of them
   ret.actAt(-1, { ...usePose(TRIDENT, "ready", "L"), armR: arm(40, 50, 70, 60), head: [0, -16, 0] }, 10, { in: 0.01, handL: "grip", handR: "open", face: { brow: 0.8, lid: 0, smile: 0.5, mouth: 0.2 } });
   ret.actAt(0.35, { armR: arm(36, 70, 40, 90), head: [8, -16, 10], py: 0.02 }, 9, { in: 0.2, antic: 0, over: 1.2, face: { brow: 1, lid: 0, smile: 0.7, mouth: 0.3 } });
   mur.actAt(-1, { ...usePose(GLADIUS, "ready", "R"), armL: SHIELD_ARM, head: [-36, 0, 0] }, 10, { in: 0.01, handL: "grip", handR: "grip", face: { brow: -0.8, lid: 0.45, smile: -0.2 } });
   shots.push({ id: "shrug", a: b1, b: b2, still: 0.7, sounds: [{ t: 0.35, k: "scuff", g: 0.5 }],
-    cam: (_t, u) => OVER.push(0.08 * u), sun: { target: FIGHT, reach: 9 },
+    cam: (_t, u) => PAIR.push(0.08 * u), sun: { target: FIGHT, reach: 9 },
     cast: (t) => [on("mur", MURMILLO_D, mur, t), on("ret", RETIARIUS_D, ret, t)],
     things: (g, c, _t, T, cam) => { crowd(g, FAR, T, cam, 0.6); shieldMan(g, c.mur, cam, "ready", undefined, true); wield(g, TRI(), TRIDENT, "ready", c.ret, "L", cam, { at: 0.75 }); } });
   shots.push(twoShot("guess", b2, LEN, W, true));

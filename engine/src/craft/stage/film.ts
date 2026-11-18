@@ -91,6 +91,8 @@ export const capWidth = (t: string) => [...t.toUpperCase().replace(/[.,":;]/g, "
 const WEAK_ART = /^(a|an|the)$/i, WEAK_LINK = /^(and|of|on|in|with|to|for|from|at|by|as|or|but|his|her|its)$/i, bare = (w: string) => w.replace(/[^A-Za-z']/g, "");
 /** the captions of a film: the words two or three at a time. A caption never runs past a comma or a full stop, and inside a clause
  *  the breaks are chosen so that no caption ends on "a", "the" or "of", no name is split in two and no word stands alone if it can be helped */
+/** the shortest time a caption stays up when nothing comes after it at once (seconds) */
+const CAP_MIN = 0.6;
 export const captions = (words: Word[], skip: (w: Word) => boolean = () => false): Caption[] => {
   const out: Caption[] = [], clauses: Word[][] = []; let cur: Word[] = [];
   for (const w of words) { if (skip(w)) { if (cur.length) clauses.push(cur); cur = []; continue; } if (cur.length && w.line !== cur[0].line) { clauses.push(cur); cur = []; } cur.push(w); if (/[.,!?;:]"?$/.test(w.w)) { clauses.push(cur); cur = []; } }
@@ -108,6 +110,9 @@ export const captions = (words: Word[], skip: (w: Word) => boolean = () => false
   }
   // a caption stays until the next one comes, if the gap is short, so that the band does not flicker
   out.forEach((c, i) => { const n = out[i + 1]; if (n && n.a - c.b < 0.25) c.b = n.a; });
+  // and it stays long enough to be read (the voice's timings can end a short last word almost where it starts: "Right?" stood for four
+  // frames), but never into the next one
+  out.forEach((c, i) => { const n = out[i + 1], want = c.a + CAP_MIN; if (c.b < want) c.b = n ? Math.max(c.b, Math.min(want, n.a)) : want; });
   return out;
 };
 export const smooth = (u: number) => (u <= 0 ? 0 : u >= 1 ? 1 : u * u * (3 - 2 * u));

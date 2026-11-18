@@ -2,7 +2,7 @@
 import * as THREE from "three";
 import { Actor, Cam, V3, Staged, mix3 } from "./film";
 import { figureCard, fingersCard } from "../world/people";
-import { glow as fxGlow, wisp as fxWisp } from "../world/fire";
+import { glow as fxGlow, curl as fxCurl, bank as fxBank } from "../world/fire";
 
 /** a camera at (cx, cy, cz) looking along (fx, fz) on the ground, tipped by pitch degrees. `spot(d, l)` is the place d metres ahead
  *  and l metres to the right of it; `toward(x, z, off)` is the heading that faces the lens, turned by `off` degrees */
@@ -140,8 +140,18 @@ export const carry = (into: THREE.Group, o: THREE.Object3D, a: Staged, sa: "L" |
 /** The lit slow-matches a figure wears (a look with `fuses`): thin smoke curls up from each glowing tip the drawing marks, drifts a
  *  little and thins away, and the glow on his cheek breathes. Nothing is drawn for a tip the lens cannot see. `seed` keeps two
  *  figures' smoke apart */
+/** the grey of a slow-match's smoke: darker than a pipe's, so that it shows against a pale sail at phone size */
+const SMOKE = 0x8a8580;
 export const fuseSmoke = (into: THREE.Group, a: Staged, T: number, cam: Cam, seed = 0) => {
-  (["fuseA", "fuseB"] as const).forEach((n, j) => { const p = a.mark?.(n); if (!p) return; const q = near(p, cam, 0.06), s = seed * 3.1 + j * 1.7;
-    const toLens = Math.atan2(cam.pos[0] - p[0], cam.pos[2] - p[2]); fxWisp(into, q, T, toLens, 16, 0.7, 0.17, 0.09, s);
-    fxGlow(into, near(p, cam, 0.02), 0.09, 0.09, T, Math.atan2(cam.pos[0] - p[0], cam.pos[2] - p[2]), s); });
+  // a haze round his head and beard, behind his card (a bank's puffs spread 0.4 m either way in depth): it shows round the edges of
+  // the face and never covers it
+  const hd = a.joint("skull"), toHead = Math.atan2(cam.pos[0] - hd[0], cam.pos[2] - hd[2]), rt = aside([0, 0, 0], cam, 1);
+  const nk = a.joint("neck"); fxBank(into, near([nk[0], nk[1] - 0.18, nk[2]], cam, -0.5), T, toHead, 0.72, 0.7, 9, 0.4, 0.62, 0.02, seed + 5, SMOKE);
+  (["fuseA", "fuseB"] as const).forEach((n, j) => { const p = a.mark?.(n); if (!p) return; const s = seed * 3.1 + j * 1.7, toLens = Math.atan2(cam.pos[0] - p[0], cam.pos[2] - p[2]);
+    // from the glowing end the smoke rises thick and curls out, away from his face
+    const out = Math.sign((p[0] - hd[0]) * rt[0] + (p[2] - hd[2]) * rt[2]) || (j ? 1 : -1);
+    fxCurl(into, near(p, cam, 0.06), T, toLens, [rt[0] * out * 0.22, 0, rt[2] * out * 0.22], 18, 0.6, 0.09, 0.32, 1, s, SMOKE);
+    // and some of it hangs down the side of his beard, outward from the face
+    fxBank(into, near(aside([p[0], p[1] - 0.34, p[2]], cam, out * 0.09), cam, 0.02), T, toLens, 0.14, 0.32, 4, 0.15, 0.5, 0.01, s + 11, SMOKE);
+    fxGlow(into, near(p, cam, 0.03), 0.24, 0.24, T, toLens, s); });
 };

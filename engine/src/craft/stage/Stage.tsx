@@ -44,7 +44,7 @@ const STROKE = "#101014";
 const big = (px: number): React.CSSProperties => ({ font: `900 ${px}px 'Arial Black', Arial, sans-serif`, color: "#ffffff", WebkitTextStroke: `${Math.round(px * 0.2)}px ${STROKE}`, paintOrder: "stroke fill", textAlign: "center", lineHeight: 1.08, letterSpacing: "-0.01em" });
 /** captions two or three words at a time in the lower third, above the part the Shorts interface covers; the question as the hook */
 const Words: React.FC<{ film: Film }> = ({ film }) => {
-  const T = useCurrentFrame() / film.fps, caps = useMemo(() => captions(film.words, (w) => w.b <= film.hook.b + 0.02), [film]);
+  const T = useCurrentFrame() / film.fps, caps = useMemo(() => captions(film.words, (w) => w.b <= film.hook.b + 0.02, film.shots.map((s) => s.a)), [film]);
   const c = caps.find((q) => T >= q.a - 0.03 && T < q.b), hook = T >= film.hook.a && T < film.hook.b, sign = film.sign && T >= film.sign.a && T < film.sign.b;
   return (
     <AbsoluteFill>

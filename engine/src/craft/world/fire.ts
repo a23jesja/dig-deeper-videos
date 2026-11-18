@@ -99,6 +99,13 @@ export const bank = (into: THREE.Object3D, p: V3, t: number, toLens: number, w =
     if (op < 0.04) continue; const m = new THREE.Mesh(PUFFGEO, bankMat(op, col)); m.position.set(p[0] + ax * a + nx * dep, y, p[2] + az * a + nz * dep);
     m.rotation.set(0, toLens, 0); m.scale.set(s * 1.3, s, 1); m.renderOrder = 3; m.castShadow = false; into.add(m); }
 };
+/** thick smoke from a smouldering end (a slow-match): puffs that leave `p` already big enough to see, grow as they rise `rise` metres,
+ *  bend away along `drift` (a world vector reached at the top, so that the smoke curls out from a face, not over it) and fade */
+export const curl = (into: THREE.Object3D, p: V3, t: number, toLens: number, drift: V3, n = 14, rise = 0.55, big0 = 0.06, big1 = 0.26, o = 0.9, seed = 0, /** a darker grey shows against a pale sail */ col?: number) => {
+  for (let k = 0; k < n; k++) { const u = (t * 0.45 + k / n + seed * 0.13) % 1, s = big0 + (big1 - big0) * u, op = o * Math.pow(1 - u, 0.8) * Math.min(1, 0.35 + u * 14), sw = Math.sin(k * 2.3 + t * 1.9 + seed) * (0.01 + 0.04 * u), d = u * u;
+    if (op < 0.04) continue; const m = new THREE.Mesh(PUFFGEO, col === undefined ? puffMat(op) : bankMat(op, col)); m.position.set(p[0] + drift[0] * d + sw * Math.cos(toLens), p[1] + 0.01 + u * rise + drift[1] * d, p[2] + drift[2] * d - sw * Math.sin(toLens));
+    m.rotation.set(0, toLens, 0); m.scale.set(s, s, 1); m.renderOrder = 5; m.castShadow = false; into.add(m); }
+};
 export const wisp = (into: THREE.Object3D, p: V3, t: number, toLens: number, n = 12, rise = 0.5, big = 0.09, drift = 0.08, seed = 0) => {
   for (let k = 0; k < n; k++) { const u = (t * 0.5 + k / n + seed * 0.13) % 1, s = (0.03 + big * u), o = (1 - u * 0.85) * Math.min(1, u * 8), sw = Math.sin(k * 2.3 + t * 1.9 + seed) * (0.015 + 0.05 * u);
     if (o < 0.04) continue; const m = new THREE.Mesh(PUFFGEO, puffMat(o)); m.position.set(p[0] + sw + drift * u, p[1] + 0.02 + u * rise, p[2]); m.rotation.set(0, toLens, 0); m.scale.set(s, s, 1); m.renderOrder = 5; m.castShadow = false; into.add(m); }

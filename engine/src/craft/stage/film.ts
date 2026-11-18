@@ -93,7 +93,7 @@ const WEAK_ART = /^(a|an|the)$/i, WEAK_LINK = /^(and|of|on|in|with|to|for|from|a
  *  the breaks are chosen so that no caption ends on "a", "the" or "of", no name is split in two and no word stands alone if it can be helped */
 /** the shortest time a caption stays up when nothing comes after it at once (seconds) */
 const CAP_MIN = 0.6;
-export const captions = (words: Word[], skip: (w: Word) => boolean = () => false): Caption[] => {
+export const captions = (words: Word[], skip: (w: Word) => boolean = () => false, /** the times of the film's cuts */ cuts: number[] = []): Caption[] => {
   const out: Caption[] = [], clauses: Word[][] = []; let cur: Word[] = [];
   for (const w of words) { if (skip(w)) { if (cur.length) clauses.push(cur); cur = []; continue; } if (cur.length && w.line !== cur[0].line) { clauses.push(cur); cur = []; } cur.push(w); if (/[.,!?;:]"?$/.test(w.w)) { clauses.push(cur); cur = []; } }
   if (cur.length) clauses.push(cur);
@@ -113,6 +113,9 @@ export const captions = (words: Word[], skip: (w: Word) => boolean = () => false
   // and it stays long enough to be read (the voice's timings can end a short last word almost where it starts: "Right?" stood for four
   // frames), but never into the next one
   out.forEach((c, i) => { const n = out[i + 1], want = c.a + CAP_MIN; if (c.b < want) c.b = n ? Math.max(c.b, Math.min(want, n.a)) : want; });
+  // a caption that would run a moment past a cut (less than 0.4 s) ends on the cut, when it has been up long enough to be read: text
+  // that hangs over into the next picture looks like a slip
+  for (const c of out) for (const x of cuts) if (x > c.a + 0.5 && x < c.b && c.b - x < 0.4) c.b = x;
   return out;
 };
 export const smooth = (u: number) => (u <= 0 ? 0 : u >= 1 ? 1 : u * u * (3 - 2 * u));

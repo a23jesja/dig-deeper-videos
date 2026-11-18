@@ -44,7 +44,7 @@ const HOOK = (() => { const s = attack("hook", 0, T1); shots.push(s); return s; 
 // (and no one whose face would be above the picture or cut by its sides: their bodies hung in at the top without heads, and big faces
 // were cut by the edges)
 const EDGES = [[-400, 1480, -900, 0], [-400, 70, -900, 2000], [1010, 1480, -900, 2000]];
-const PEEK_FANS = spread(STANDS, FRONT.cam, [[40, 1040, 60, 440], ...EDGES], 2.2, 60), TWO_FANS = spread(STANDS, TWO.cam, [[40, 1040, -900, 330], ...EDGES], 2.2, 60);
+const PEEK_FANS = spread(STANDS, FRONT.cam, [[40, 1040, 60, 440], ...EDGES], 2.2, 60), TWO_FANS = spread(STANDS, TWO.cam, [[40, 1040, -900, 330], [0, 660, 330, 980], ...EDGES], 2.2, 60);      // (the second box: nobody right behind Sir's head and cap, review of v4)
 { const sir = mover(SIR_D, 1.8, SIR.at[0], SIR.at[2], SIR.heading - 6); sir.stand(9);
   const ss: Stand = { D: SIR_D, at: SIR.at, heading: SIR.heading - 6, h: 1.8, cam: FRONT.cam };
   sir.actAt(-1, { ...reach(ss, "L", by(SIR.at, SIR.heading - 6, -0.07, 0.17, 1.56)), ...reach(ss, "R", by(SIR.at, SIR.heading - 6, 0.07, 0.17, 1.56)), head: [0, 4, 0] }, 10, { in: 0.01, handL: "open", handR: "open", face: { brow: 1, lid: 0, wide: 1, mouth: 0.4 } });
@@ -164,7 +164,7 @@ const T5a = at("nine", /^gladiator/) - 0.12;
 // (v4: he faces us, the bowl before his chest on his right, his left forearm held out to his left, where the doctor sits and winds the
 // bandage: the bowl and the bandage at the two sides of the picture, each pair of hands at its own work. Turned to the doctor, his bowl
 // hand and the doctor's hands met between them, and the doctor's head lay over his face)
-{ const { x: LX, z: LZ } = LUDUS, E: V3 = [LX + 1.0, 0, LZ + 0.4], V = lens(E[0] - 0.66, 1.0, E[2] - 4.0, 0, 1, 7, 56), eh = V.toward(E[0], E[2], -18), fw: [number, number] = [Math.sin((eh * Math.PI) / 180), Math.cos((eh * Math.PI) / 180)], rt: [number, number] = [-Math.cos((eh * Math.PI) / 180), Math.sin((eh * Math.PI) / 180)];
+{ const { x: LX, z: LZ } = LUDUS, E: V3 = [LX + 1.0, 0, LZ + 0.4], V = lens(E[0] + 0.1, 1.0, E[2] - 4.0, -0.13, 1, 7, 60), eh = V.toward(E[0], E[2], -18), fw: [number, number] = [Math.sin((eh * Math.PI) / 180), Math.cos((eh * Math.PI) / 180)], rt: [number, number] = [-Math.cos((eh * Math.PI) / 180), Math.sin((eh * Math.PI) / 180)];
   const eat = mover(MURMILLO_EATER_D, 1.84, E[0], E[2], eh); eat.stand(9);
   // the bowl in his far hand, held out in front of him past his chest, where it shows; his near (left) forearm, drawn in front of him,
   // resting out toward the doctor at waist height, where the bandage on it shows
@@ -222,20 +222,23 @@ const GATE = rim(0, -2.2), OWNER_AT: V3 = [GATE[0], 0, GATE[1] + 1.2], MAN_AT: V
     things: (g, c, _t, _T, cam) => { const ch = COINS(); ch.position.set(OWNER_AT[0] + 0.52, 0, OWNER_AT[2] + 0.5); ch.rotation.y = -0.75; g.add(ch); wield(g, COIN_O(), COIN, "show", c.own, "R", cam, { d: 0.1 }); } }); }
 
 // 9. ... WANTED WAS A DEAD ONE. "DO YOU KNOW WHAT YOU COST ME?" He bites his nails, then pats his gladiator on the shoulder and asks
-{ const V = lens((MAN_AT[0] + OWNER_AT[0]) / 2 - 1.18, 1.45, (MAN_AT[2] + OWNER_AT[2]) / 2 + 2.98, 0.37, -0.93, -2, 50), mh = V.toward(MAN_AT[0], MAN_AT[2], -30), oh = V.toward(OWNER_AT[0], OWNER_AT[2], -35);
+// (the review of v4: the lens wider and 0.3 m to the left of the line it looks along, so that the murmillo's arm is not cut by the left edge)
+{ const V = lens((MAN_AT[0] + OWNER_AT[0]) / 2 - 1.18 - 0.93 * 0.3, 1.45, (MAN_AT[2] + OWNER_AT[2]) / 2 + 2.98 - 0.37 * 0.3, 0.37, -0.93, -2, 66), mh = V.toward(MAN_AT[0], MAN_AT[2], -30), oh = V.toward(OWNER_AT[0], OWNER_AT[2], -35);
   const man = mover(MURMILLO_GRILLE_D, 1.84, MAN_AT[0], MAN_AT[2], mh), own = mover(OWNER_D, 1.7, OWNER_AT[0], OWNER_AT[2], oh); man.stand(9); own.stand(9);
   const ms: Stand = { D: MURMILLO_GRILLE_D, at: MAN_AT, heading: mh, h: 1.84, cam: V.cam }, os: Stand = { D: OWNER_D, at: OWNER_AT, heading: oh, h: 1.7, cam: V.cam }, mj = jointsOf(ms), oj = jointsOf(os), PAT = say(W, "Do", T8) - T8 - 0.3;
   // (at ease: the shield rests low at his side; held at guard height it covered his face)
   man.actAt(-1, { ...usePose(GLADIUS, "lowered", "R"), armL: arm(14, 18, 40, 10) }, 10, { in: 0.01, handL: "grip", handR: "grip", face: { brow: -0.7, lid: 0.15 } });
   own.actAt(-1, { ...reach(os, "R", near(mix3(oj("neck"), oj("skull"), 0.45), V.cam, 0.12)), head: [-20, 4, 0] }, PAT + 0.2, { in: 0.01, out: 0.25, handR: "fist", face: { brow: 1, lid: 0.1, wide: 0.5, smile: -0.6 } });
   wag(own, 0.1, PAT - 0.1, P({ py: 0.01 }), P({ py: -0.01 }), 0.12);
-  // (on top of the shoulder: to its middle, his hand passed over the murmillo's own hand for a frame, v4's body check)
-  own.actAt(PAT, { ...reach(os, "R", near([mj("shL")[0], mj("shL")[1] + 0.06, mj("shL")[2]], V.cam, 0.08)), head: [24, 4, 0] }, 9, { in: 0.3, antic: 0.1, over: 1.1, handR: "open", face: { brow: 0.7, lid: 0.2, smile: 0.5 } });
+  // (G2, the review of v4: no pat. His hand on the murmillo's shoulder lay behind the shield with only its open fingers showing over
+  // the shoulder, as if he waved behind it; he lowers his fist and smiles instead)
+  own.actAt(PAT, { armR: arm(14, 12, 30, 8), head: [24, 4, 0] }, 9, { in: 0.3, antic: 0.1, over: 1.1, handR: "relaxed", face: { brow: 0.7, lid: 0.2, smile: 0.5 } });
+  void mj;
   // (the captions over the arena wall at the top: lower down they lay over the owner's hand)
-  shots.push({ id: "owner", capsTop: 200, a: T8, b: T9, still: PAT + 1.0, sounds: [{ t: PAT + 0.35, k: "tap", g: 0.5 }],
+  shots.push({ id: "owner", capsTop: 200, a: T8, b: T9, still: PAT + 1.0, sounds: [],
     cam: (_t, u) => V.push(0.08 * u), sun: { target: MAN_AT, reach: 6 },
     cast: (t, T) => [on("man", MURMILLO_GRILLE_D, man, t), on("own", OWNER_D, own, t, 0, { talk: talk(W, T, ["cost_me"]) })],
-    things: (g, c, t, _T, cam) => { shieldMan(g, c.man, cam, "lowered"); if (t > PAT + 0.3) handOn(c.own, "R", c.man, "shL", cam, "shoulder"); } }); }
+    things: (g, c, t, _T, cam) => { shieldMan(g, c.man, cam, "lowered"); void t; } }); }
 
 // 10. THERE WERE RULES, AND A REFEREE. He strides in between the two with his stick across them, and the sword comes down
 const ground: V3 = [FIGHT[0] + 1.1, 0.03, FIGHT[2] + 0.5];
@@ -276,7 +279,9 @@ const ground: V3 = [FIGHT[0] + 1.1, 0.03, FIGHT[2] + 0.5];
   const FAR_SP = FAR.filter((f) => { const v = [f.at[0] - cp[0], f.at[1] + 1.5 - cp[1], f.at[2] - cp[2]], n = Math.hypot(v[0], v[1], v[2]); return (v[0] * toCl[0] + v[1] * toCl[1] + v[2] * toCl[2]) / (n * cl) < Math.cos((9 * Math.PI) / 180); });
   // and the man at the left edge whose face was always behind a cheering hand: nobody in the left eighth of the picture near the box
   const lensV = new THREE.PerspectiveCamera(V.cam.fov, 1080 / 1920, 0.1, 900); lensV.position.set(...V.cam.pos); lensV.lookAt(...V.cam.look); lensV.updateMatrixWorld(true);
-  const FAR_SP2 = FAR_SP.filter((f) => { const q = new THREE.Vector3(f.at[0], f.at[1] + 1.5, f.at[2]).project(lensV); return !(q.x < -0.72 && Math.hypot(f.at[0] - bx, f.at[2] - bz) < 6); });
+  // (and nobody cut by the edges of the picture: the review of v4 found a man halved by the right edge; a figure is in or out, so
+  // anyone whose head lies in the band either side of an edge goes, the lens's push-in counted)
+  const FAR_SP2 = FAR_SP.filter((f) => { const q = new THREE.Vector3(f.at[0], f.at[1] + 1.5, f.at[2]).project(lensV); return !(q.x < -0.72 && Math.hypot(f.at[0] - bx, f.at[2] - bz) < 6) && !(Math.abs(q.x) > 0.8 && Math.abs(q.x) < 1.4); });
   // (the captions over the awning: lower down they lay over his hand with the cloth)
   shots.push({ id: "sponsor", capsTop: 260, a: T11, b: T12, still: 0.7, sounds: [{ t: 0.1, k: "flap", g: 0.7 }, { t: 0.42, k: "flap", g: 0.6 }],
     cam: (_t, u) => V.push(0.06 * u), sun: { target: sAt, reach: 6 },

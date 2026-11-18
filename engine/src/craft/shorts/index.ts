@@ -39,4 +39,4 @@ FILMS["gladiators-hook-b"] = { film: GLAD_HOOK_B, comp: "GladiatorsHookB" };
 FILMS["gladiators-hook-c"] = { film: GLAD_HOOK_C, comp: "GladiatorsHookC" };
 export { captions } from "../stage/film";
 export { auditGrips } from "../stage/grips";
-export { occlusions } from "../stage/occlusion";
+export { occlusions, textOver } from "../stage/occlusion";

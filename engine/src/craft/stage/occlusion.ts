@@ -4,7 +4,8 @@
 // world's solid things: a face with two or more of its points behind something fails, and so does a figure with something across its
 // chest or its middle that has the figure showing on both sides of it.
 import * as THREE from "three";
-import type { Film } from "./film";
+import { Film, captions, textBoxes } from "./film";
+import { stageAt } from "./staging";
 
 /** a thing that stops the eye: drawn solid (not a glow, a puff of smoke or a pane of light) */
 const solid = (m: THREE.Mesh) => {
@@ -48,5 +49,27 @@ export const occlusions = (film: Film, step = 0.2) => {
       }
     }
   }
+  return bad;
+};
+
+/** No line of text over a face, a chest or a hand (the review of gladiators v4: "när figurerna nu är större får ingen text ligga över
+ *  ansikte, bröst, händer eller själva handlingen"). Every tenth of a second the lines on screen (the question, or the caption, where
+ *  the shot puts it) are laid against each figure's face (a circle from the crown to the chin), chest (the neck to below the ribs) and
+ *  hands (circles at the wrists). A figure whose face is out of the picture is left out */
+export const textOver = (film: Film, step = 0.1) => {
+  const bad: string[] = [], seen = new Set<string>(), caps = captions(film.words, (w) => w.b <= film.hook.b + 0.02, film.shots.map((s) => s.a));
+  const lens = new THREE.PerspectiveCamera(50, 1080 / 1920, 0.1, 3000);
+  const hit = (b: [number, number, number, number], c: [number, number], r: number) => { const x = Math.max(b[0], Math.min(c[0], b[2])), y = Math.max(b[1], Math.min(c[1], b[3])); return Math.hypot(x - c[0], y - c[1]) < r; };
+  for (const s of film.shots) for (let t = 0; t < s.b - s.a - 1e-6; t += step) {
+    const T = s.a + t, lines = textBoxes(film, T, caps); if (!lines.length) continue;
+    const cam = s.cam(t, t / (s.b - s.a)); lens.fov = cam.fov; lens.position.set(...cam.pos); lens.lookAt(...cam.look); lens.updateProjectionMatrix(); lens.updateMatrixWorld(true);
+    const P = (v: number[]): [number, number] => { const q = new THREE.Vector3(v[0], v[1], v[2]).project(lens); return [(q.x + 1) * 540, (1 - q.y) * 960]; };
+    for (const a of s.cast(t, T)) { const st = stageAt(a, cam), cr = P(st.joint("crown")), sk = P(st.joint("skull")), R = Math.max(14, Math.hypot(cr[0] - sk[0], cr[1] - sk[1]) * 0.55), hc: [number, number] = [(cr[0] + sk[0]) / 2, (cr[1] + sk[1]) / 2];
+      if (hc[0] < -R || hc[0] > 1080 + R || hc[1] < -R || hc[1] > 1920 + R) continue;
+      const nk = P(st.joint("neck")), pv = P(st.joint("pelvis")), parts: [string, [number, number], number][] = [["face", hc, R]];
+      for (const k of [0.15, 0.4, 0.65]) parts.push(["chest", [nk[0] + (pv[0] - nk[0]) * k, nk[1] + (pv[1] - nk[1]) * k], R * 0.8]);
+      for (const sd of ["L", "R"] as const) parts.push([`${sd === "L" ? "left" : "right"} hand`, P(st.joint(sd === "L" ? "wrL" : "wrR")), R * 0.45]);
+      for (const l of lines) for (const [part, c, r] of parts) { const key = `${s.id}:${a.name}:${part}:${l.text}`; if (seen.has(key) || !hit(l.box, c, r)) continue; seen.add(key);
+        bad.push(`${s.id} at ${t.toFixed(1)} s (film ${T.toFixed(1)} s): the text "${l.text}" lies over ${a.name}'s ${part}`); } } }
   return bad;
 };

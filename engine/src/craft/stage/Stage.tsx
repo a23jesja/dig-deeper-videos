@@ -9,7 +9,7 @@ import { useThree } from "@react-three/fiber";
 import { setOutline, aimSun, sunDir } from "../world/kit";
 import { figureCard } from "../world/people";
 import { shake } from "../motion";
-import { Film, Cam, Staged, shotAt, captions, capWidth } from "./film";
+import { Film, Cam, Staged, shotAt, captions, capWidth, hookTop, CAP_TOP } from "./film";
 
 export const SW = 1080, SH = 1920;
 const dispose = (g: THREE.Object3D) => g.traverse((o) => { const m = o as THREE.Mesh; if (!m.isMesh || !m.userData.own) return; m.geometry?.dispose(); for (const mat of (Array.isArray(m.material) ? m.material : [m.material]) as THREE.MeshBasicMaterial[]) { mat.map?.dispose(); mat.dispose(); } (m.customDepthMaterial as THREE.Material | undefined)?.dispose(); });
@@ -48,8 +48,8 @@ const Words: React.FC<{ film: Film }> = ({ film }) => {
   const c = caps.find((q) => T >= q.a - 0.03 && T < q.b), hook = T >= film.hook.a && T < film.hook.b, sign = film.sign && T >= film.sign.a && T < film.sign.b;
   return (
     <AbsoluteFill>
-      {hook && <div style={{ position: "absolute", left: 40, right: 40, top: 1292 - Math.round((film.hook.size ?? 108) * 1.09) * Math.max(0, film.hook.text.length - 2), ...big(film.hook.size ?? 108) }}>{film.hook.text.map((l, i) => <div key={i} style={{ color: i === film.hook.text.length - 1 ? "#ffd83a" : "#ffffff" }}>{l}</div>)}</div>}
-      {!hook && c && <div style={{ position: "absolute", left: 30, right: 30, top: 1440, whiteSpace: "nowrap", ...big(Math.round(96 * Math.min(1, 8.9 / capWidth(c.text)))) }}>{c.text}</div>}
+      {hook && <div style={{ position: "absolute", left: 40, right: 40, top: hookTop(film), ...big(film.hook.size ?? 108) }}>{film.hook.text.map((l, i) => <div key={i} style={{ color: i === film.hook.text.length - 1 ? "#ffd83a" : "#ffffff" }}>{l}</div>)}</div>}
+      {!hook && c && <div style={{ position: "absolute", left: 30, right: 30, top: film.shots.find((x) => T >= x.a && T < x.b)?.capsTop ?? CAP_TOP, whiteSpace: "nowrap", ...big(Math.round(96 * Math.min(1, 8.9 / capWidth(c.text)))) }}>{c.text}</div>}
       {(film.labels ?? []).filter((q) => T >= q.a && T < q.b).map((q, i) => <div key={`l${i}`} style={{ position: "absolute", left: 30, right: 30, top: q.top ?? 300, whiteSpace: "nowrap", ...big(q.size ?? 110), color: q.col ?? "#ffd83a" }}>{q.text(T)}</div>)}
       {sign && <div style={{ position: "absolute", left: 50, right: 50, top: 296, padding: "12px 24px", background: "rgba(16,16,20,0.8)", color: "#ffffff", font: "700 40px Arial, sans-serif", borderRadius: 12, textAlign: "center", lineHeight: 1.2 }}>{film.sign!.text}</div>}
     </AbsoluteFill>

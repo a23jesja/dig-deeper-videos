@@ -24,7 +24,7 @@ if (typeof globalThis.document === "undefined") {
   globalThis.document = { createElement: () => { const g = context(); return { width: 300, height: 150, style: {}, getContext: () => g, toDataURL: () => "", addEventListener() {} }; }, createElementNS: () => ({ style: {} }) };
   globalThis.Path2D = class { constructor() { return quiet({}); } };
 }
-const { FILMS, captions, auditGrips, occlusions } = await import(pathToFileURL(tmp).href); fs.rmSync(tmp, { force: true });
+const { FILMS, captions, auditGrips, occlusions, textOver } = await import(pathToFileURL(tmp).href); fs.rmSync(tmp, { force: true });
 if (!FILMS[name]) { console.error(`no film named ${name}; there are: ${Object.keys(FILMS).join(", ")}`); process.exit(1); }
 const { film, comp } = FILMS[name], f = (t) => Math.round(t * film.fps);
 const rows = film.shots.map((s) => ({ id: s.id, a: f(s.a), b: f(s.b), still: Math.min(f(s.b) - 1, f(s.a + (s.still ?? (s.b - s.a) / 2))), seconds: +(s.b - s.a).toFixed(2) }));
@@ -66,6 +66,8 @@ else if (what === "check") {
   if (film.sign && film.sign.a < 5) bad.push("the sign comes before second five");
   // nothing in the foreground covers a face or cuts a figure in two (Jesper, 18 November): rays from the lens through the world
   for (const o of occlusions(film)) bad.push(o);
+  // no line of text over a face, a chest or a hand (the review of gladiators v4)
+  for (const o of textOver(film)) bad.push(o);
   if (bad.length) { console.error(`FILM CHECK FAILED for ${name}:`); for (const b of bad) console.error("  " + b); process.exit(1); }
   console.log(`FILM CHECK OK for ${name}: ${film.shots.length} shots, ${film.seconds.toFixed(1)} s, no figure seen from more than 35 degrees above, none standing in another or in a solid, none jumping, no face covered and no figure cut by a thing in the foreground`);
 }

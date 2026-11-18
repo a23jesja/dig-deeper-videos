@@ -32,3 +32,11 @@ Granska de första fem sekunderna med tio bildrutor per sekund. Skicka båda som
 - The animal trials wait until both v4 are done.
 - Point 6, the sources: "about nine out of ten times" is National Geographic's wording, with no named researcher. "Both participants left the arena on their feet" is R. R. R. Smith's. Write out which period and which place each source speaks of, straight from the texts, and change the voice if the figure does not cover what the film shows.
 - The STOPP goes point by point against his list, with full-size stills of every point.
+
+## The review's answer to the gladiators' hook lab round 2 (b7deeb4)
+Opening **a** chosen, with two fixes; re-render only hook4-a and send it as a short STOPP (10 fps, phone size) before the film is rendered.
+1. The question's text lay in the middle of the attack (63–75 % of the height: over the shield's rim where the trident strikes, both men's hands and chests). Put it in the top fifth over the sky, or in the sand strip at the bottom if there is room. The meeting, the hands and the faces must be free in every frame. **The same holds for every line of text in all of v4**: now that the figures are bigger, no text may lie over a face, a chest, hands or the action itself.
+2. The sword's meeting with the shield must show: at 0.42 s the sword chopped down behind the shield. It must come down in front of the shield's rim onto the trident's prongs, the blade crossing the trident visibly at 0.42 s. The net man's jab must read as a jab: the arm stretches out from frame 0 to frame 2.
+- The text without "really" stays (six of the voice's words).
+- c: the net lies over Sir's whole face through the guess (against the face rule). b: the text lay over the referee's chest; the referee shot itself works for point 4.
+- Point 6: keep "about nine times in ten" in the voice; add National Geographic 2021 (Andrew Curry) with Katherine Welch's "Out of 10 pairs, there would be one death, possibly two" as a second source in the description; say there that the sources give the estimate for Roman gladiators in general, without a period or a place, and that the film shows an arena with no name and no year; strike "the share varied between times and places".

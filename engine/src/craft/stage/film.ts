@@ -33,6 +33,9 @@ export type Shot = {
   things?: (into: THREE.Group, cast: Record<string, Staged>, t: number, T: number, cam: Cam) => void;
   /** the sounds of what happens in this shot, and what lies under it: times in seconds into the shot */
   sounds?: Sound[]; beds?: Bed[];
+  /** where this shot's captions stand, in pixels from the picture's top (CAP_TOP when left out): above or below the figures, so that
+   *  no line lies over a face, a chest, hands or what they are doing (the review of gladiators v4); the film check reads it */
+  capsTop?: number;
 };
 /** a sound on the picture: what kind (audio/craft_sfx.py makes it), when, how loud (1 = its normal level), where from left (-1) to right (1) */
 export type Sound = { t: number; k: string; g?: number; p?: number; dur?: number; big?: number; run?: boolean; surface?: string };
@@ -52,7 +55,7 @@ export type Film = {
   shots: Shot[];
   words: Word[];
   /** the question, on screen with the voice in the first seconds */
-  hook: { text: string[]; a: number; b: number; /** the height of its letters in pixels (108 when left out) */ size?: number };
+  hook: { text: string[]; a: number; b: number; /** the height of its letters in pixels (108 when left out) */ size?: number; /** its top in pixels from the top of the picture (above the figures when they fill the lower half); low by default */ top?: number };
   /** a small sign when something is dramatised: never in the first five seconds, two seconds long */
   sign?: { text: string; a: number; b: number };
   /** words laid over the picture for a while, in the captions' letters, high in the picture (a counter of days, a name): `text` may
@@ -97,6 +100,16 @@ export const talk = (words: Word[], T: number, ids?: string[]) => { const w = id
 /** caption chunks from the word timings: two or three words, never wider than the picture, a new chunk after a full stop and
  *  after a comma that ends two words or more */
 /** how wide a caption is in the caption type, in letters of ordinary width (the band holds about 9.3; a little more is set a little smaller) */
+/** where the question's first line stands, and the captions when a shot does not say */
+export const hookTop = (film: Film) => film.hook.top ?? 1292 - Math.round((film.hook.size ?? 108) * 1.09) * Math.max(0, film.hook.text.length - 2);
+export const CAP_TOP = 1440;
+/** the boxes the visible lines of text cover at film time T, [x0, y0, x1, y1] in pixels (the Stage draws them; the check reads them) */
+export const textBoxes = (film: Film, T: number, caps: { a: number; b: number; text: string }[]): { text: string; box: [number, number, number, number] }[] => {
+  if (T >= film.hook.a && T < film.hook.b) { const sz = film.hook.size ?? 108, top = hookTop(film), lh = sz * 1.08; return film.hook.text.map((l, i) => { const w = Math.min(1000, capWidth(l) * 1.194 * sz); return { text: l, box: [540 - w / 2, top + i * lh, 540 + w / 2, top + (i + 1) * lh] as [number, number, number, number] }; }); }
+  const c = caps.find((q) => T >= q.a - 0.03 && T < q.b); if (!c) return [];
+  const sh = film.shots.find((x) => T >= x.a && T < x.b), sz = Math.round(96 * Math.min(1, 8.9 / capWidth(c.text))), w = Math.min(1020, capWidth(c.text) * 1.194 * sz), top = sh?.capsTop ?? CAP_TOP;
+  return [{ text: c.text, box: [540 - w / 2, top, 540 + w / 2, top + sz * 1.08] }];
+};
 export const capWidth = (t: string) => [...t.toUpperCase().replace(/[.,":;]/g, "")].reduce((n, ch) => n + (ch === " " ? 0.44 : /[I!']/.test(ch) ? 0.47 : /[MW]/.test(ch) ? 1.4 : 1), 0) * 0.68;
 const WEAK_ART = /^(a|an|the)$/i, WEAK_LINK = /^(and|of|on|in|with|to|for|from|at|by|as|or|but|his|her|its)$/i, bare = (w: string) => w.replace(/[^A-Za-z']/g, "");
 /** the captions of a film: the words two or three at a time. A caption never runs past a comma or a full stop, and inside a clause

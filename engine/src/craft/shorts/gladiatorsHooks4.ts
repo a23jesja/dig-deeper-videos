@@ -16,7 +16,7 @@ import { GLADIUS, SHIELD_ARM, STICK, AUDIT, usePose, pole, polePose, reach, shie
 import { arenaWorld, crowd, ARENA } from "../world/arena";
 import { SIR_D, MURMILLO_GRILLE_D, RETIARIUS_D, REFEREE_D } from "../looks";
 import type { Pose } from "../rig";
-import { on, SIR, STANDS, FIGHT, TRI, SCUTUM, STICK_O, say, by, sandKick, FRONT, pair, GUARD, shieldMan, twoShot, draped } from "./gladiatorsHooks";
+import { on, SIR, STANDS, FIGHT, TRI, SCUTUM, GLAD, STICK_O, say, by, sandKick, FRONT, pair, GUARD, shieldMan, twoShot, draped } from "./gladiatorsHooks";
 import wa from "../../../voice/gladiators-hook4-a/words.json";
 import la from "../../../voice/gladiators-hook4-a/lines.json";
 import wb from "../../../voice/gladiators-hook4-b/words.json";
@@ -61,9 +61,14 @@ export const attack = (id: string, a0: number, b0: number, extra: Shot["sounds"]
   // The net man's arms keep one grip all through: the rear hand (his near one, the left) back at his hip, the front hand 0.55 m up the
   // shaft. The jab, the flinch and the yank are his body moving (lean, and the pelvis forward and back), and the trident is rigid in his
   // hands. (Moving the hands instead made his far arm swing out between grips, in front of the prongs.)
-  const HIT = 0.07, HIT2 = 1.3, GRIP0: V3 = by(RA, -62, -0.12, -0.12, 0.98);
-  ret.actAt(-1, { ...polePose(rs, "L", GRIP0, RIM0, 0.55), lean: 6, pz: -0.1, twist: -6 }, 10, { in: 0.01, handL: "grip", handR: "grip", face: { brow: -1, lid: 0.05, mouth: 0.7 } });
-  ret.actAt(-0.01, { lean: 16, pz: 0 }, 10, { in: HIT + 0.01, antic: 0 });
+  const HIT = 0.07, HIT2 = 1.3, GRIP0: V3 = by(RA, -62, -0.12, -0.12, 0.98), GRIPJ: V3 = lerp3(GRIP0, RIM0, -0.09);
+  // the jab from frame 0 to frame 2: his rear (near) arm drives the shaft forward through the front hand, which stays where it is and
+  // guides it (so the far arm, which swings out when its hand is moved, keeps still), and his body comes forward behind it
+  // (the far arm keeps one solution all through; only the near arm goes from bent to stretched, and the lean barely changes, because
+  // the arms' angles are solved for him standing straight and a changed lean moves both hands)
+  const P0 = polePose(rs, "L", GRIP0, RIM0, 0.5), PJ = polePose(rs, "L", GRIPJ, RIM0, 0.57);
+  ret.actAt(-1, { ...P0, armL: (PJ as { armL: Pose["armL"] }).armL, lean: 9, pz: -0.08, twist: -6 }, 10, { in: 0.01, handL: "grip", handR: "grip", face: { brow: -1, lid: 0.05, mouth: 0.7 } });
+  ret.actAt(-0.01, { armL: (P0 as { armL: Pose["armL"] }).armL, lean: 16, pz: 0 }, 10, { in: HIT + 0.01, antic: 0 });
   // he flinches back from the falling sword, then yanks the trident back and jabs again
   ret.actAt(0.2, { lean: 8, pz: -0.03, head: [0, -8, 0] }, 10, { in: 0.16, antic: 0, face: { brow: 1, lid: 0, wide: 0.9, mouth: 0.5 } });
   ret.actAt(CHOP + 0.12, { lean: 7, pz: -0.09, head: [0, 2, 0] }, 10, { in: 0.25, antic: 0, face: { brow: -1, lid: 0, mouth: 0.6 } });
@@ -86,7 +91,9 @@ export const attack = (id: string, a0: number, b0: number, extra: Shot["sounds"]
     sounds: [{ t: 0.0, k: "whoosh", g: 0.8 }, { t: HIT - 0.01, k: "ting", g: 1.0 }, { t: HIT - 0.01, k: "thud", g: 0.9 }, { t: 0.16, k: "whoosh", g: 0.5 }, { t: HIT2 - 0.01, k: "ting", g: 0.9 }, { t: HIT2 - 0.01, k: "thud", g: 0.7 }, { t: CHOP, k: "ting", g: 1.0, p: -0.1 }, { t: CHOP + 0.2, k: "scuff", g: 0.6 }, { t: 1.1, k: "step", g: 0.5 }, ...extra],
     cam: (_t, u) => CLOSE.push(0.03 + 0.12 * u), sun: { target: FIGHT, reach: 6 },
     cast: (t) => [on("mur", MURMILLO_GRILLE_D, mur, t), on("ret", RETIARIUS_D, ret, t)],
-    things: (g, c, t, T, cam) => { crowd(g, ATTACK_STANDS, T, cam, 0.95); const [use, blend] = sword(t, c.mur.joint("wrR")[1]); shieldMan(g, c.mur, cam, use, blend);
+    // (the sword is drawn 0.16 m nearer the lens than his hand, before the shield, so that the falling blade crosses the prongs on the
+    // rim in sight: drawn at the hand, it went down behind the shield)
+    things: (g, c, t, T, cam) => { crowd(g, ATTACK_STANDS, T, cam, 0.95); const [use, blend] = sword(t, c.mur.joint("wrR")[1]); wield(g, GLAD(), GLADIUS, use, c.mur, "R", cam, { d: 0.16, ...(blend ? { blend } : {}) }); shieldOn(g, SCUTUM(), c.mur, "L", cam);
       // the trident lies along the line through both palms (the front hand always on it), rigid: it reaches as far as it does at the jab
       const pr = palm(c.ret, "L"), pf = palm(c.ret, "R"), d = across(cam, pr, pf) || 1, far: V3 = [pr[0] + (pf[0] - pr[0]) * 3 / d, pr[1] + (pf[1] - pr[1]) * 3 / d, pr[2] + (pf[2] - pr[2]) * 3 / d];
       pole(g, TRI(), c.ret, cam, "L", far, { len: 1.9, name: "trident", use: "thrust", back: reach() });
@@ -146,10 +153,10 @@ const netOnSir = (id: string, a0: number, b0: number, W: Word[]): Shot => {
 // ---------------- the three clips ----------------
 const clip = (id: string, W: Word[], shots: Shot[], text: string[], textB: number): Film => ({
   id, fps: 30, seconds: LEN, sky: "#9fd6ff", world: arenaWorld, shots, words: W,
-  hook: { text, a: 0, b: textB, size: 80 }, beds: [{ k: "crowd", a: 0, b: LEN, g: 0.9 }, { k: "wind", a: 0, b: LEN, g: 0.25 }], audio: `craft/${id}.wav` });
+  hook: { text, a: 0, b: textB, size: 80, top: 130 }, beds: [{ k: "crowd", a: 0, b: LEN, g: 0.9 }, { k: "wind", a: 0, b: LEN, g: 0.25 }], audio: `craft/${id}.wav` });
 const T1 = 1.5;
 const A4 = (() => { const W = wa as Word[], L = byId(la), T2 = Math.max(T1 + 1.5, Math.min(3.0, L.guess.a - 0.05));
-  return clip("gladiators-hook4-a", W, [attack("attack", 0, T1), peek("peek", T1, T2, W), twoShot("guess", T2, LEN, W)], ["DID GLADIATORS", "FIGHT TO", "THE DEATH?"], T2); })();
+  return clip("gladiators-hook4-a", W, [attack("attack", 0, T1), peek("peek", T1, T2, W), { ...twoShot("guess", T2, LEN, W), capsTop: 230 }], ["DID GLADIATORS", "FIGHT TO", "THE DEATH?"], T2); })();
 const B4 = (() => { const W = wb as Word[], L = byId(lb), T2 = say(W, "Two"), hb = (L.hook.b + L.guess.a) / 2;
   return clip("gladiators-hook4-b", W, [attack("attack", 0, T1), refereeClose("referee", T1, T2), twoShot("guess", T2, LEN, W)], ["MOST GLADIATORS", "WALKED OUT ALIVE."], Math.max(T1, hb)); })();
 const C4 = (() => { const W = wc as Word[], L = byId(lc), T2 = Math.max(T1 + 1.5, Math.min(3.0, L.guess.a - 0.05));

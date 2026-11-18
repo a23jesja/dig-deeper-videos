@@ -45,6 +45,26 @@ We have changed style about six times in a week and published almost nothing new
 - **Videos go out.** A video that passes the checks and Jesper's yes is published; it is not held back for
   another round of polish. What the numbers show decides the next improvement.
 - **Only Jesper can unfreeze the look.**
+- **Frozen means the style, not its faults (Jesper 2026-11-17).** The character's shapes, proportions, colours
+  and line are frozen. Correcting something that looks wrong inside that style is allowed and expected, in the
+  shared code, after the reviewer's approval: a closed eye drawn as an arc without the ring, a mouth that shows
+  on top of a beard, a profile that looks unfinished. If it is unclear whether something is a fault or a change
+  of style, ask Jesper.
+- **Thumbnails:** 1080x1920 for Shorts, 1280x720 for long videos. A Short's thumbnail must also exist as a frame
+  in the video, because the app may only offer frames to choose from; name the time of that frame in text.md.
+
+## Plan B if the first long video fails (Jesper 2026-11-17)
+The pirate day video is the test of the history format. Judge it seven days after publishing, on the numbers
+that do not depend on the channel being small (views alone mislead on a new channel):
+- **Click-through rate** on impressions (Analytics, Reach): 4 % or more is good, under 2 % is a fail.
+- **Average percentage viewed** (Engagement): 35 % or more is good, under 20 % is a fail.
+- **Viewers left at 0:30** on the retention curve: 65 % or more is good, under 45 % is a fail.
+Good or in between on all three: keep the format and improve. A fail on two of three: Plan B.
+**Plan B:** history-inspired fiction instead of documented fact. Same idea of "you" in another age, but with
+our own characters, invented stories and twists, no source list. The look is reworked somewhat, the theme can
+change. Keep the engine, rig, motion library, held-object code and review rules; they are not the problem.
+Fiction about real, named people is avoided or clearly marked as invented, and the description says the story
+is fiction. Only Jesper starts Plan B.
 
 ## The review mailbox (Jesper 2026-11-18): the cloud session reviews so Jesper does not have to
 The session on the computer and the cloud session talk through git, because the cloud session cannot reach the
@@ -190,6 +210,68 @@ sent to Jesper, and reuse them from then on.
    on top, sent to Jesper as a contact sheet and a small clip. Build fully only after his yes. The sketch must
    already pass "Action, not portraits".
 
+## Held objects (Jesper 2026-11-17: the telescope and the pistol were held the wrong way round)
+An object in a hand must look held and used the way a person would, in every frame.
+- **Every prop has a grip and a direction in the shared code:** where the hand holds it (handle, stock, shaft),
+  which end is the working end (muzzle, blade, lens, spout, tip) and which way is up. A prop is never attached
+  to the hand by one point with a free angle.
+- **The hand closes around the grip:** fingers drawn over the object, thumb on the near side. The object never
+  floats beside, behind or in front of the fist.
+- **Use poses, one per prop, built once:** telescope with the small eyepiece at the eye, the wide end away from
+  the face, the tube pointing where the character looks, the far hand supporting it; pistol with the grip in the
+  hand and the barrel pointing away from the holder along the forearm; sword by the hilt with the blade away
+  from the body; mug by the handle, upright unless drinking; paper with the text toward the reader.
+- **Carried and lowered:** a lowered pistol points down and forward, a lowered telescope hangs from the hand at
+  its middle, a sheathed sword hangs at the hip and never passes through a leg.
+- **Put down or dropped:** an object leaves the hand only by being placed, thrown or dropped with a fall and a
+  landing. It never hangs in the air or changes hand between two frames.
+- **Check by script:** for every frame where a prop is held, the grip point lies inside the hand and the working
+  end points within the allowed angle for that use pose. The reviewer looks at every held object in close-up.
+
+## Our own lines, not only sources (Jesper 2026-11-18) - every video, Shorts and long
+The story follows the sources, but the characters are allowed to be characters. Invented lines, jokes, asides
+and reactions make the viewer feel they are watching a show, not a list of facts.
+- **How much:** in a Short at least two or three invented lines; in a long video about one every 20-30 seconds.
+  The story still carries the video; the lines season it.
+- **Kinds:** Sir Digsworth's asides and wrong guesses ("I'll have the tea, thank you."), side characters
+  reacting or answering back ("Rum all out?!"), small banter between two characters, a running gag, a callback
+  to an earlier moment. Ordinary lines are fine too: "Over here!", "Is that a weevil?".
+- **Who speaks:** Sir Digsworth keeps bm_george. Side characters may speak short lines with other free Kokoro
+  voices (read the voice list first, never a paid voice), or in a speech bubble. The pronunciation rules apply.
+- **The line between fact and invention:** an invented line never carries a fact. No invented numbers, dates,
+  names or events, and nothing invented is presented as what really happened. Never put an invented line in
+  quotation marks as a historical quote, on a document, on a sign or after "he wrote" or "says". Real quotes
+  keep their source. The description says the scenes are dramatised.
+- **Respect:** jokes are about the situation, the habits and Sir Digsworth himself, never about real victims'
+  suffering or deaths.
+- **In the script:** every invented line is marked [OWN] and every claim [SOURCE], so the reviewer can check
+  that no [OWN] line carries a fact. The reviewer also asks: is it funny or alive enough, or does it read like a
+  list?
+
+## The hook lab (Jesper 2026-11-17): most of the polish goes into the first five seconds
+The numbers so far: half the viewers swipe away in the first second, and a third of those who stay leave in the
+first quarter of the video. Those who get past it stay to the end. So the first five seconds get most of the work.
+- **Build the opening first.** Before the rest of the Short, build seconds 0-5 in three clearly different
+  versions, for example: (a) the strangest moment already happening, (b) a shocking statement spoken over action,
+  (c) Sir Digsworth in trouble with the question on screen. Render each as a small clip. The reviewer picks the
+  strongest by the checks below; when in doubt Jesper picks. Only then is the rest built.
+- **Frame one:** something is already moving (character and camera), the strange thing is big and in the middle,
+  the voice and a sound hit start on frame one, no fade-in, no music intro, no logo. Text at most six words and the
+  same words as the voice.
+- **The first spoken words** are the claim or the question, never a year, a place or a name. "Rome taxed pee."
+  is better than "In 70 AD, Emperor Vespasian...".
+- **Seconds 1-5:** a new picture every 1.5-2.5 seconds, each adding something: the stakes, a reaction, the
+  problem. Give a reason to stay ("the answer is worse"), and keep that promise in the last third.
+- **Seconds 5-25:** a small surprise or turn about every five seconds ("but then", "except"). No stretch of more
+  than five seconds where only the voice moves the story on.
+- **The end leads back to the start** so the Short can loop, and the last word does not end on a pause.
+- **The first five seconds are reviewed at ten frames per second** and at phone size, with and without sound.
+  Any flaw there (a prop held wrong, a stiff pose, an unreadable word, a cut-off figure) fails the Short, even if
+  the same flaw would pass later in the video.
+- **Learn from every Short.** Record in GROWTH.md for each one: which opening type it used, "stayed and watched"
+  in percent, and the second where the retention curve drops most. After ten Shorts, the opening type with the best
+  numbers becomes the default and this section is updated.
+
 ## The first second of every Short (hard rule)
 - Frame one shows the most striking moment of the story: one big subject filling the picture, already moving.
 - The hook is on screen as text while the voice says it. No intro, no year, no establishing shot first.
@@ -305,6 +387,22 @@ Keep the Kokoro `bm_george` voice; no human narrator. Everything else in this pl
 Because the voice is synthetic, the script, pacing and pictures have to carry more: vary sentence length, leave pauses
 for jokes, and time every picture to the word.
 
+## Pronunciation (Jesper 2026-11-17: "live" was read as in "live broadcast" in the Pompeii Short)
+The voice guesses how to say words that are spelled the same but sound different, and the transcript check
+cannot catch it, because the spelling is the same either way.
+- **Before recording, scan the script for risk words:** live, lives, read, lead, wind, wound, tear, close, bow,
+  row, bass, dove, minute, use, house, present, record, object, desert, content, refuse, perfect, separate,
+  estimate, graduate, plus every number, year, date, Roman numeral, abbreviation, unit, and foreign or ancient
+  name (Vesuvius, Pliny, Herculaneum).
+- **For each one, first try to rewrite** so the word is gone or cannot be misread ("people call this home"
+  instead of "people live here"; "seventy-nine A.D." written out).
+- **If the word must stay, fix its sound** with a phoneme override for that word. Read the documentation of the
+  installed kokoro-onnx and misaki versions for how; do not guess the syntax. Keep the fixed words in one shared
+  file in the engine (`pronunciation`), so each word is solved once for all videos.
+- **Listen check:** after recording, cut out each risk word with half a second around it into one short file
+  and list them in the delivery note, so Jesper can hear them in a minute. The reviewer cannot judge sound.
+- A wrong pronunciation is a reason to record the line again, never to publish as it is.
+
 ## Use the installed skills (Jesper 2026-11-14: the session had skipped all of them)
 Load these before the matching step instead of writing everything from scratch, and say in the final message which
 ones were used:
@@ -346,6 +444,15 @@ code, acted emotions), `kmilo93sd/agent-video-editor` (pacing, cuts, captions, t
 
 ## Thumbnail (as important as the video, Jesper 2026-11-13)
 Every video and Short gets its own thumbnail, made and checked before the video is sent for approval.
+- **Painted thumbnails for long videos (Jesper 2026-11-17).** Successful channels paint their thumbnails in a
+  richer style than the video itself. For long videos, the build session writes a Flow prompt in text.md and
+  Jesper generates the picture by hand in Google Flow, with the frozen character sheet as reference image. Rules:
+  the character must be recognisably ours (same clothes, colours, monocle, cap), the scene must happen in the
+  video, one big face with one strong emotion, saturated colours, a plain background, at most three words.
+  The code-drawn variants are still made, so there is always a choice. For Shorts the build session still
+  delivers frame-based thumbnails; Jesper may make a painted one himself (Flow, which he already pays for, or a
+  free tier of ChatGPT) if the app lets him upload it. Painted pictures are made by Jesper by hand only: no
+  session generates images, spends credits or drives an image service.
 - **Three variants** are rendered and sent to Jesper together with the video; he picks one. Nothing is published
   with a thumbnail he has not approved.
 - **One idea, readable in one second:** one big subject that IS the story, Sir Digsworth large with a clear reaction

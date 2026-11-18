@@ -51,8 +51,8 @@ that?"); the other Shorts keep that shape.
 |---|---|---|---|---|---|---|---|---|
 | Did pirates really make you walk the plank? | 30.4 s | c (built before the hook lab) | __ % | __ s | __ | __ | __ % | __ |
 | Why did Rome tax pee? | 32.7 s | a (built before the hook lab) | __ % | __ s | __ | __ | __ % | __ |
-| Why did pirates fly a black flag? | 32.5 s | a (built before the hook lab) | __ % | __ s | __ | __ | __ % | __ |
-| Did Nero fiddle while Rome burned? | 32.7 s | a (built before the hook lab); **test: short silence before the loop** | __ % | __ s | __ | __ | __ % | __ |
+| Why did pirates fly a black flag? (**published 18 Nov 2026, version 6**) | 32.5 s | a (built before the hook lab) | __ % | __ s | __ | __ | __ % | __ |
+| Did Nero fiddle while Rome burned? (**published 18 Nov 2026, version 2**) | 37.2 s | a (built before the hook lab; version 2 moves from frame one); **test: short silence before the loop** | __ % | __ s | __ | __ | __ % | __ |
 | Did gladiators fight to the death? | __ | a (chosen in the hook lab, 18 Nov 2026: the trident already on the shield in the first frame, the crowd on its feet, under "Did gladiators fight to the death?") | __ % | __ s | __ | __ | __ % | __ |
 | Blackbeard and the burning fuses | __ | b (chosen in the hook lab, 18 Nov 2026: he strides out of the smoke with his cutlass up over "Blackbeard's beard smoked in battle."; the review's choice, Jesper may switch to c) | __ % | __ s | __ | __ | __ % | __ |
 | **TEST, 45-55 s:** Were animals really put on trial? | __ | __ | __ % | __ s | __ | __ | __ % | __ |
@@ -73,6 +73,11 @@ after the last word ("strings.", ends at 31.29 s), the emperor stares at it, and
 (last word "worked." ends at 30.19 s, the video is 32.51 s). When Jesper sends the numbers, compare Nero's
 "stayed and watched", the share watched and the second where viewers leave at the end with the black flag's, to see
 whether the shorter silence keeps more of them into the loop.
+
+**Published 18 November 2026 (Jesper):** Nero as **version 2** and the black flag as **version 6**. Version 2 of Nero has no
+snapping string: its last word ("there.") ends at 35.68 s and the video is 37.16 s, so **1.49 s** pass before "Did" starts
+again (the coda runs back into the first frame); the black flag still has **2.32 s**. The test above stands with these
+numbers. Fill in the two rows when Jesper sends the figures from YouTube Studio.
 
 ## What the Emu War retention curve showed (Engagement tab, read by Jesper 17 November 2026)
 - 49.5 % stayed; 50.5 % swiped away in the first second.

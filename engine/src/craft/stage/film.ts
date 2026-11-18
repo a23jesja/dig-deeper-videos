@@ -62,6 +62,9 @@ export type Film = {
    *  speaker's name in the shot's cast: the bubble stands above his head and its tail points at it; dx, dy move it from there (px).
    *  Never a historical quote: no quotation marks, nothing that carries a fact. */
   bubbles?: { a: number; b: number; text: string; who: string; dx?: number; dy?: number; size?: number }[];
+  /** a veil of smoke over the whole picture: it thickens from nothing at `a` to `to` (0-1) at `b` and stays (a film that ends in smoke,
+   *  so that its loop back to the first frame comes out of the smoke) */
+  veils?: { a: number; b: number; col: string; to: number }[];
   /** impacts that shake the camera */
   hits?: { t: number; amp: number; dur?: number }[];
   /** what lies under the whole film (film seconds), and the name of its music in audio/film_music.py */

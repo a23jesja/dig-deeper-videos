@@ -311,10 +311,11 @@ export const FRENCH_MATE: Look = { ...SAILOR, id: "frenchmate", P: { ...COLONIST
  *  friendly */
 export const YOU: Look = {
   id: "you", P: { ...COLONIST, thigh: 206, shin: 196, shW: 100, hipW: 52 }, head: { a: 104, b: 108, H: 226, jaw: 0.88, round: 0.55, eye: 1.0 }, skin: "#e2a77c", brow: "#4a2e1c",
-  hat: "none", hair: { col: "#4a2e1c", kind: "short" },
-  top: "tunic", coat: "#fbf6ea", accent: "#2f5fa0", belt: "#8a6a44", stripes: { col: "#2f5fa0" }, scarf: "#c8402f",
+  hat: "none", hair: { col: "#5a3620", kind: "messy" },
+  // Jesper's choice for the long film: tousled brown hair, a white linen shirt, a red neckerchief, striped trousers
+  top: "tunic", coat: "#f8f4ea", accent: "#e8e0cc", belt: "#8a6a44", scarf: "#c8402f",
   rows: [[-56, 104, 80, 82], [20, 100, 82, 78], [100, 94, 80, 70], [190, 102, 78, 66], [242, 108, 60, 60], [266, 52, 38, 42]],
-  legs: "trousers", trous: "#d9cfb4", feet: "shoes", sleeve: "long", arm: [29, 23, 17], leg: [40, 34, 30],
+  legs: "trousers", trous: "#efe8d8", trousStripes: "#2f5fa0", feet: "shoes", sleeve: "long", arm: [29, 23, 17], leg: [40, 34, 30],
 };
 /** the same in a blue-checked shirt (the choice put to Jesper with the striped one) */
 export const YOU_CHECK: Look = { ...YOU, id: "youcheck", stripes: { col: "#2f5fa0", check: true } };

@@ -16,6 +16,34 @@
   "tacitus": {
    "ph": "tˈæsɪtəs",
    "note": "TASS-i-tus"
+  },
+  "1722": {
+   "ph": "sˈɛvəntˌiːn twˈɛntitˈuː",
+   "note": "seventeen twenty-two (espeak read the year as one thousand seven hundred and twenty-two)"
+  },
+  "1724": {
+   "ph": "sˈɛvəntˌiːn twˈɛntifˈɔː",
+   "note": "seventeen twenty-four (espeak read the year as one thousand seven hundred and twenty-four)"
+  },
+  "1950s": {
+   "ph": "nˈaɪntiːn fˈɪftiz",
+   "note": "nineteen-fifties (espeak read nineteen hundred and fifty z)"
+  },
+  "roberts'": {
+   "ph": "ɹˈɒbəts",
+   "note": "as Roberts (Jesper: lock it, though espeak already says it so)"
+  },
+  "davis's": {
+   "ph": "dˈeɪvɪsɪz",
+   "note": "DAY-vis-iz"
+  },
+  "moses's": {
+   "ph": "mˈəʊzɪzɪz",
+   "note": "MOH-ziz-iz (espeak gave MOH-sis-iz)"
+  },
+  "come close": {
+   "ph": "kˈʌm klˈəʊs",
+   "note": "close the adjective, /kləʊs/, not the verb /kləʊz/"
   }
  }
 }

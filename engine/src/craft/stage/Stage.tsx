@@ -87,6 +87,12 @@ const Bubbles: React.FC<{ film: Film }> = ({ film }) => {
     </AbsoluteFill>
   );
 };
+/** the film's veils of smoke: soft, lighter in the middle, thickening as they come */
+const Veils: React.FC<{ film: Film }> = ({ film }) => {
+  const T = useCurrentFrame() / film.fps;
+  return <>{(film.veils ?? []).filter((v) => T >= v.a).map((v, i) => { const u = Math.min(1, (T - v.a) / (v.b - v.a)), o = v.to * u * u * (3 - 2 * u);
+    return <AbsoluteFill key={`v${i}`} style={{ opacity: o, background: `radial-gradient(ellipse at 50% 42%, ${v.col}ee 0%, ${v.col} 55%, ${v.col} 100%)` }} />; })}</>;
+};
 /** the film's tint for the time T, multiplied over the picture */
 const Grade: React.FC<{ film: Film; at?: number }> = ({ film, at }) => { const fr = useCurrentFrame(), g = film.grade?.(at ?? fr / film.fps); return g ? <AbsoluteFill style={{ background: g, mixBlendMode: "multiply" }} /> : null; };
 export const Stage: React.FC<{ film: Film }> = ({ film }) => {
@@ -97,6 +103,7 @@ export const Stage: React.FC<{ film: Film }> = ({ film }) => {
         <Scene film={film} />
       </ThreeCanvas>
       <Grade film={film} />
+      <Veils film={film} />
       {p.words !== false && <Bubbles film={film} />}
       {p.words !== false && <Words film={film} />}
       {p.audio !== false && film.audio && <Audio src={staticFile(film.audio)} />}

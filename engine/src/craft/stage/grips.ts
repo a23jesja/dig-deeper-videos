@@ -585,7 +585,7 @@ const RESTS = new Set(["under arm"]);
 /** `step` = seconds between readings; without it every frame the film shows is read (a fault of two frames falls between tenths) */
 export const auditGrips = (film: Film, step?: number) => {
   const bad: string[] = [], spots: { shot: string; frame: number; prop: string; use: string; holder: string; x: number; y: number }[] = []; let held = 0; AUDIT.on = true;
-  const lensOf = new THREE.PerspectiveCamera(50, 1080 / 1920, 0.1, 900);
+  const lensOf = new THREE.PerspectiveCamera(50, 1080 / 1920, 0.1, 900), carryFlag = new Set<string>();
   try { for (const s of film.shots) { let prev = new Map<string, { holder: string; prop: string }>();
     const times: number[] = []; if (step) for (let t = 0; t < s.b - s.a - 1e-6; t += step) times.push(t); else for (let F = Math.ceil(s.a * film.fps - 1e-6); F < s.b * film.fps - 1e-6; F++) times.push(Math.max(0, F / film.fps - s.a));
     for (const t of times) {
@@ -603,6 +603,22 @@ export const auditGrips = (film: Film, step?: number) => {
         if (!is) bad.push(`${at}: the ${was.prop} leaves ${was.holder}'s hand without being set down, thrown or dropped`);
         else if (is.holder && is.holder !== was.holder && !shares(was.holder, is.holder) && is.holder.split(" ")[0] !== was.holder.split(" ")[0]) bad.push(`${at}: the ${was.prop} jumps from ${was.holder} to ${is.holder} between two frames`);
         else if (is.holder && is.holder !== was.holder && !shares(was.holder, is.holder)) bad.push(`${at}: the ${was.prop} changes hand (${was.holder} to ${is.holder}) between two frames`); }
+      // two or more who carry one thing (Jesper, 18 November): each one's head shows whole, neither behind the other carrier (nearer the lens)
+      // nor behind the thing they carry; a head with more than a quarter of it covered fails, once per shot and carrier
+      const carriers = new Map<string, { o: THREE.Object3D; prop: string; who: Staged[] }>();
+      for (const r of AUDIT.rows) if (r.use === "carry" && r.o && /:[ab]$/.test(r.id)) { const w = staged[r.holder.split(" ")[0]]; if (!w) continue; const e = carriers.get(r.o.uuid) ?? { o: r.o, prop: r.prop, who: [] }; if (!e.who.includes(w)) e.who.push(w); carriers.set(r.o.uuid, e); }
+      const C = new THREE.Vector3(...cam.pos), far = (p: V3) => C.distanceTo(new THREE.Vector3(...p)), scr = (p: V3): [number, number] => { const q = new THREE.Vector3(...p).project(lensOf); return [(q.x * 0.5 + 0.5) * 1080, (0.5 - q.y * 0.5) * 1920]; };
+      for (const { o, prop, who } of carriers.values()) { if (who.length < 2) continue;
+        o.updateMatrixWorld(true); const box = new THREE.Box3().setFromObject(o), cs: [number, number][] = []; for (const x of [box.min.x, box.max.x]) for (const y of [box.min.y, box.max.y]) for (const z of [box.min.z, box.max.z]) cs.push(scr([x, y, z]));
+        const ox0 = Math.min(...cs.map((c) => c[0])), ox1 = Math.max(...cs.map((c) => c[0])), oy0 = Math.min(...cs.map((c) => c[1])), oy1 = Math.max(...cs.map((c) => c[1])), oFar = far(box.getCenter(new THREE.Vector3()).toArray() as V3);
+        const headOf = (w: Staged) => { const hc: V3 = [w.at[0], w.at[1] + 0.9 * w.h, w.at[2]], c = scr(hc), e = scr(aside(hc, cam, 0.075 * w.h, 0)); return { hc, c, R: Math.hypot(e[0] - c[0], e[1] - c[1]) }; };
+        for (const X of who) { const { hc, c, R } = headOf(X), dX = far(hc); let cov = 0, by = "", n = 0;
+          for (const [f, k] of [[0, 1], [0.5, 8], [0.95, 8]] as [number, number][]) for (let i = 0; i < k; i++) { const sx = c[0] + f * R * Math.cos((i * 2 * Math.PI) / k), sy = c[1] + f * R * Math.sin((i * 2 * Math.PI) / k); n++; let hit = "";
+            if (oFar < dX - 0.02 && sx >= ox0 && sx <= ox1 && sy >= oy0 && sy <= oy1) hit = `the ${prop} they carry`;
+            for (const Y of who) { if (Y === X || far(Y.at) > far(X.at) - 0.05) continue; const yh = headOf(Y), t0 = scr([Y.at[0], Y.at[1] + 0.82 * Y.h, Y.at[2]]), t1 = scr([Y.at[0], Y.at[1] + 0.45 * Y.h, Y.at[2]]), hw = Math.abs(scr(aside([Y.at[0], Y.at[1] + 0.62 * Y.h, Y.at[2]], cam, 0.13 * Y.h, 0))[0] - (t0[0] + t1[0]) / 2);
+              if (Math.hypot(sx - yh.c[0], sy - yh.c[1]) < yh.R || (sy >= t0[1] && sy <= t1[1] && Math.abs(sx - (t0[0] + t1[0]) / 2) < hw)) hit = Y.name; }
+            if (hit) { cov++; by = hit; } }
+          const key = `${s.id}:${X.name}`; if (cov / n > 0.24 && !carryFlag.has(key)) { carryFlag.add(key); bad.push(`${at}: ${X.name}'s head is behind ${by} (two who carry one thing each show the whole head)`); } } }
       prev = now; } } } finally { AUDIT.on = false; }
   return { bad, held, spots };
 };

@@ -1,0 +1,57 @@
+{
+ "voice": "bm_george",
+ "speed": 1.0,
+ "gap": 0.6,
+ "lead": 0.3,
+ "risk": [
+  "Bartholomew",
+  "Roberts'",
+  "quartermaster",
+  "1724",
+  "1950s",
+  "Howell",
+  "Davis's",
+  "Blackbeard's",
+  "Moses's",
+  "come close",
+  "1722"
+ ],
+ "lines": [
+  {
+   "id": "bart",
+   "text": "What did you just sign? Bartholomew Roberts' rules."
+  },
+  {
+   "id": "qm",
+   "text": "The man giving orders isn't the captain. It's the quartermaster, chosen by the crew."
+  },
+  {
+   "id": "book",
+   "text": "A book printed in 1724 says any man could walk in and help himself to the captain's dinner."
+  },
+  {
+   "id": "arr",
+   "text": "That accent comes from films made in the 1950s."
+  },
+  {
+   "id": "davis",
+   "text": "On Howell Davis's ship, where Roberts learned the trade, the rules promised the best pair of pistols on board."
+  },
+  {
+   "id": "bb",
+   "text": "The same book quotes Blackbeard's own journal."
+  },
+  {
+   "id": "moses",
+   "text": "Strike another man on board, and the same ship gave you what they called Moses's Law."
+  },
+  {
+   "id": "close",
+   "text": "Pirates often flew false colours, a friendly flag, so their target would let them come close."
+  },
+  {
+   "id": "end",
+   "text": "That's exactly how it ended for Roberts' crew, in 1722."
+  }
+ ]
+}

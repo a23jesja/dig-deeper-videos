@@ -18,7 +18,9 @@ export type Look = {
   /** width of the brim of a brimmed hat (1 = as drawn; a white brodie with a small brim is a mob cap) */
   brim?: number;
   /** short = hair on top and behind, bald = a wreath at the sides, back = only behind (under a hat), bun = on top with a knot behind */
-  hair?: { col: string; kind: "short" | "bald" | "back" | "bun" | "queue" };
+  hair?: { col: string; kind: "short" | "bald" | "back" | "bun" | "queue" | "messy" };
+  /** stripes down trousers (a sailor's striped slops): their colour, on the trousers' own colour */
+  trousStripes?: string;
   lash?: boolean; lips?: string;
   /** moustache: colour, how far the tips reach (in head half-widths), how far they turn up, thickness at the root */
   mous?: { col: string; span: number; curl: number; w: number }; beard?: string;
@@ -188,7 +190,7 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
   piece(k, skull, skin);
   if (L.hair) {
     // the hairline runs from the top of the brow back behind the ear down to the nape, so the hair follows the head in every view
-    const tailed = L.hair.kind === "queue", kind = tailed || (o.hatOff && L.hair.kind === "back") ? "short" : L.hair.kind, y0 = kind === "bald" ? -0.72 * H : -1.03 * H, patches: P2[][] = [];
+    const tailed = L.hair.kind === "queue", kind = tailed || (o.hatOff && L.hair.kind === "back") || L.hair.kind === "messy" ? "short" : L.hair.kind, y0 = kind === "bald" ? -0.72 * H : -1.03 * H, patches: P2[][] = [];
     for (const half of [0, 1]) {
       const rowsH: number[][] = [];
       for (let q = 0; q <= 8; q++) {
@@ -202,6 +204,15 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
       const all = kind === "short" || kind === "bun" ? [...patches, [[-2 * w, -1.2 * H], [2 * w, -1.2 * H], [2 * w, -0.78 * H], [0, -0.75 * H], [-2 * w, -0.78 * H]] as P2[]] : patches;
       if (all.length) k.group(all, L.hair!.col, k.ol * 0.7);
     });
+    if (L.hair.kind === "messy") {
+      // tousled: tufts stand out along the top of the head's outline (each pointing away from the middle of the head), and a few
+      // strands fall over the brow when the face is turned to us
+      const top = skull.filter((p) => p[1] < -0.72 * H).sort((p, q) => p[0] - q[0]), n = top.length, c: P2 = [0, -0.62 * H];
+      for (let i = 1; i < 8; i++) { const p = top[Math.round(((n - 1) * i) / 8)]; if (!p) continue; const d = unit(sub(p, c)), t: P2 = [-d[1], d[0]], len = (0.13 + 0.05 * Math.sin(i * 2.3)) * H, bend = 0.05 * H * Math.sin(i * 1.7);
+        piece(k, [add(p, t, -0.07 * H), add(add(p, d, len), t, bend), add(p, t, 0.07 * H), add(p, d, -0.05 * H)], L.hair.col); }
+      if (!away && h.cos > 0.2) for (const az of [-26, -6, 14]) { const q = at(h, az, 1.02); if (q.d < 0.3 * b) continue; const x = q.x, y = -0.86 * H;
+        piece(k, [[x - 0.06 * w, y - 0.1 * H], [x + 0.08 * w, y - 0.1 * H], [x + 0.03 * w + Math.sin(az) * 0.05 * w, y + 0.12 * H]], L.hair.col); }
+    }
   }
   if (L.hair?.kind === "queue" && h.cos <= -0.3) queue();
   // --- the face (not drawn from behind) ---
@@ -400,16 +411,21 @@ const drawTrue = (L: Look) => (k: Ink, sk: Sk, o: FigOpts) => {
   // the hem trails behind the move and swings past when it stops: the lower rows are pushed back along the way the figure faces
   const sw = (o.sway ?? 0) * sk.sin, hemAt = (i: number) => -sw * (i === 0 ? (L.skirt ? 46 : 26) : i === 1 ? (L.skirt ? 26 : 10) : L.skirt && i === 2 ? 10 : 0);
   const outline = () => { const c = Math.abs(sk.cos), s = Math.abs(sk.sin), fr = sk.sin >= 0; return spline([...L.rows.map(([a, w, df, db], i) => F.T(Math.hypot(w * c, (fr ? df : db) * s) + hemAt(i), a)), ...L.rows.map(([a, w, df, db], i) => F.T(-Math.hypot(w * c, (fr ? db : df) * s) + hemAt(i), a)).reverse()], true, 5); };
+  // stripes down a piece of the trouser leg from p to q (its half-widths w0, w1), clipped to the piece
+  const stripesOn = (p: P2, q: P2, w0: number, w1: number, colS: string) => { const poly = seg(p, q, w0, w1), d = unit(sub(q, p)), n: P2 = [-d[1], d[0]];
+    k.clip(poly, () => { for (const f of [-0.62, -0.1, 0.42]) k.line([add(add(p, n, w0 * f), d, -20), add(add(q, n, w1 * f), d, 20)], Math.max(5, 0.24 * w0), colS, "butt"); }); k.shape(poly, null); };
   const leg = (s: Side) => {
     const H = J("hip", s), K = J("kn", s), A = J("an", s), bare = L.legs === "bare", col = bare ? L.skin : L.trous ?? "#463a37";
     const sp = shoePts(sk, s, 50, bare ? 0.27 : 0.34, bare ? 0.15 : 0.2);
     if (L.skirt) { piece(k, sp.pts, "#2a2220"); return; }
     piece(k, seg(K, A, L.leg[1] * (L.stockings ? 0.86 : 1), L.leg[2], bare || L.stockings ? 6 : 3), L.stockings ?? col);
+    if (L.trousStripes && !bare) stripesOn(K, A, L.leg[1], L.leg[2], L.trousStripes);
     if (L.wrapLeg === s) { piece(k, seg(mid(K, A, 0.06), mid(K, A, 0.8), L.leg[1] + 5, L.leg[2] + 5, 0, 0.3, true), "#f6f2e6"); const dv = unit(sub(A, K)), pp: P2 = [-dv[1], dv[0]]; for (const u of [0.25, 0.45, 0.65]) { const m = mid(K, A, u), w0 = L.leg[1] + 3; k.line([add(add(m, pp, -w0), dv, -4), add(add(m, pp, w0), dv, 4)], k.ol * 0.45, "#bdb5a2"); } }
     if (L.greave === s) { piece(k, seg(mid(K, A, 0.04), mid(K, A, 0.86), L.leg[1] + 6, L.leg[2] + 5, 0, 0.3, true), "#c9ced6"); k.line([mid(K, A, 0.1), mid(K, A, 0.8)], k.ol * 0.5); }
     if (L.feet === "sandals") { piece(k, sp.pts, shade(L.skin, 0.97)); for (const u of [0.3, 0.6]) k.line([add(add(sp.O, sp.ex, sp.span * u), sp.up, 2), add(add(sp.O, sp.ex, sp.span * (u + 0.05)), sp.up, P.foot * (u < 0.5 ? 0.27 : 0.18))], 6, "#7a4a2a", "butt"); k.line([sp.O, add(sp.O, sp.ex, sp.span)], 7, "#7a4a2a", "butt"); }
     else { piece(k, sp.pts, "#2a2220"); if (L.feet === "boots") piece(k, seg(mid(K, A, 0.5), add(A, [0, P.ankle * 0.3]), L.leg[2] + 5, L.leg[2] + 6, 0, 0.3, true), "#3a2a22"); if (L.spats) piece(k, seg(mid(K, A, 0.84), add(A, [0, P.ankle * 0.45]), L.leg[2] + 3, L.leg[2] + 7, 0, 0.3, true), "#f6eedb"); }
     piece(k, seg(H, K, L.leg[0], L.leg[1]), col);
+    if (L.trousStripes && !bare) stripesOn(H, K, L.leg[0], L.leg[1], L.trousStripes);
     if (L.stockings) piece(k, seg(mid(K, A, 0.02), mid(K, A, 0.14), L.leg[1] * 1.04, L.leg[1] * 0.98, 0, 0.3, true), shade(col, 0.8));
     if (L.buckle && L.feet === "shoes") { const c = add(add(sp.O, sp.ex, sp.span * 0.55), sp.up, P.foot * 0.2); k.shape([[c[0] - 9, c[1] - 8], [c[0] + 9, c[1] - 8], [c[0] + 9, c[1] + 8], [c[0] - 9, c[1] + 8]], BRASS, k.ol * 0.7); }
     pin(k, K, 7);

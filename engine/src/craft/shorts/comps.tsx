@@ -40,6 +40,7 @@ export const BlackbeardHookA: React.FC = () => <Stage film={BB_HOOK_A} />;
 export const BlackbeardHookB: React.FC = () => <Stage film={BB_HOOK_B} />;
 export const BlackbeardFuses: React.FC = () => <Stage film={BLACKBEARD_FUSES} />;
 export const BLACKBEARD_FUSES_FRAMES = Math.round(BLACKBEARD_FUSES.seconds * BLACKBEARD_FUSES.fps);
+export const BlackbeardFusesThumbs: React.FC = () => <Thumbs film={BLACKBEARD_FUSES} />;
 export const BlackbeardHookC: React.FC = () => <Stage film={BB_HOOK_C} />;
 export const BB_HOOK_FRAMES = Math.round(BB_HOOK_A.seconds * BB_HOOK_A.fps);
 export const ArenaSet: React.FC = () => <Stage film={ARENA_SET} />;

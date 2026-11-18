@@ -46,7 +46,8 @@ export const spread = (fans: typeof STANDS, cam: Cam, boxes: number[][], k = 2.2
   const placed = without(fans, cam, boxes, m).map((f) => { const c = new THREE.Vector3(f.at[0], f.at[1] + 0.88 * f.h, f.at[2]), v = c.clone().project(pc), e = c.clone().addScaledVector(right, 0.12 * f.h).project(pc);
     return { f, x: (v.x + 1) * 540, y: (1 - v.y) * 960, r: Math.abs(e.x - v.x) * 540, d: c.distanceTo(pc.position) }; }).sort((a, b) => a.d - b.d);
   return placed.filter((p) => { if (kept.some((q) => Math.hypot(p.x - q.x, p.y - q.y) < k * Math.max(p.r, q.r))) return false; kept.push(p); return true; }).map((p) => p.f); };
-const ATTACK_STANDS = without(STANDS, CLOSE.cam, [[-40, 190, 360, 800]]);
+// (and nobody in the blade's path through the chop, 0.30-0.42 s: a face in the crowd lay 35 % behind the falling blade; the review of v4)
+const ATTACK_STANDS = without(STANDS, CLOSE.cam, [[-40, 190, 360, 800], [-40, 500, 360, 860]]);
 /** the trident's whole length from its butt to the tips of its prongs (props.ts trident(1.6): a 1.6 m shaft and 0.27 m prongs) */
 const TRI_LEN = 1.87;
 const right = (cam: Cam) => { const fx = cam.look[0] - cam.pos[0], fz = cam.look[2] - cam.pos[2], n = Math.hypot(fx, fz) || 1; return [-fz / n, fx / n]; };
@@ -66,7 +67,7 @@ export const attack = (id: string, a0: number, b0: number, extra: Shot["sounds"]
   const RIM0: V3 = by(MA, 62, -0.05, 0.4, 1.53);
   /** the chop: the arm swings from raised (from frame 0) to lowered (from DOWN_AT s), each act chained on the last so that the swing is one
    *  movement; CHOP = when the falling hand passes the rim's height and the blade, then level, meets the rim and the prongs on it */
-  const DOWN_AT = 0.3, CHOP = 0.42, CHOP_ARM = arm(176, 18, 84, 10), CUT = 0.85;
+  const DOWN_AT = 0.28, CHOP = 0.42, CHOP_ARM = arm(176, 18, 84, 10), CUT = 0.85;
   // The net man's arms keep one grip all through: the rear hand (his near one, the left) back at his hip, the front hand 0.55 m up the
   // shaft. The jab, the flinch and the yank are his body moving (lean, and the pelvis forward and back), and the trident is rigid in his
   // hands. (Moving the hands instead made his far arm swing out between grips, in front of the prongs.)
@@ -83,7 +84,9 @@ export const attack = (id: string, a0: number, b0: number, extra: Shot["sounds"]
   ret.actAt(CHOP + 0.12, { lean: 7, pz: -0.09, head: [0, 2, 0] }, 10, { in: 0.25, antic: 0, face: { brow: -1, lid: 0, mouth: 0.6 } });
   // (the second jab a little shorter: at full reach his far upper arm touched the shield, 2 cm in)
   ret.actAt(HIT2 - 0.16, { lean: 13, pz: 0, head: [0, 0, 0] }, 10, { in: 0.17, antic: 0, face: { brow: -1, lid: 0.05, mouth: 0.7 } });
-  mur.actAt(-1, { ...usePose(GLADIUS, "raised", "R"), armL: SHIELD_ARM, lean: 5, twist: -4, head: [0, -24, 0] }, 10, { in: 0.01, handL: "grip", handR: "grip", face: { brow: -1, lid: 0.05, mouth: 0.6 } });
+  // (his shield a few centimetres lower than the usual shield arm, so that its top edge stays under his visor as the blow lands)
+  const SHIELD_LOW = arm(18, 8, 86, -30);
+  mur.actAt(-1, { ...usePose(GLADIUS, "raised", "R"), armL: SHIELD_LOW, lean: 5, twist: -4, head: [0, -24, 0] }, 10, { in: 0.01, handL: "grip", handR: "grip", face: { brow: -1, lid: 0.05, mouth: 0.6 } });
   // (an overhand blow over the shield's top: it ends with his upper arm up and his forearm level, his fist beside the shield's near
   // edge and the blade lying across the shield's top onto the prongs; the arm shows all the way and never goes behind or through the
   // shield. The round-2 chop went down to his hip, behind the shield. The blade follows his forearm, so the forearm sets its angle.
@@ -92,7 +95,7 @@ export const attack = (id: string, a0: number, b0: number, extra: Shot["sounds"]
   // (his head up and back as the blow lands, so that his visor shows over his chopping forearm: with it level, his own fist and blade
   // lay over half his visor from the chop to the end of the shot, the body check's test f)
   mur.actAt(0.12, { head: [0, -34, 0] }, 10, { in: 0.14, glide: true });
-  mur.actAt(DOWN_AT, { armR: CHOP_ARM, armL: SHIELD_ARM, lean: 8, twist: 8, head: [0, -34, 0] }, 10, { in: 0.12, glide: true, face: { brow: -1, lid: 0, mouth: 0.8 } });
+  mur.actAt(DOWN_AT, { armR: CHOP_ARM, armL: SHIELD_LOW, lean: 8, twist: 8, head: [0, -34, 0] }, 10, { in: 0.11, glide: true, face: { brow: -1, lid: 0, mouth: 0.8 } });
   // (after the chop he holds the blade level across the shield's top, pressing the trident down, to the end of the shot. Back to his
   // guard, his fist came before the shield while the blade rose behind its top edge, the sword through the shield (the review of
   // opening a round 3, regression row 14); raised again for the next blow, his fist passed before his own visor)

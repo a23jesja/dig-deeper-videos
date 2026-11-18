@@ -1,8 +1,9 @@
 // What a Short of the craft kit consists of, without rendering it: its shots with their frames, the frame that stands for each shot
 // in the sketch, and the caption chunks.
 //   usage: node scripts/film_info.mjs <film> [stills|shots|json|check|grips|audio|caps|thumbs]
-//     grips = the held things, read on every tenth of a second: the grip in the hand, the working end where its use allows, nothing
-//             leaving a hand without a fall or changing hand between frames; `grips spots` = where they are in the picture (json)
+//     grips = the held things, read on every frame: the grip in the hand, the working end where its use allows, a hand on every
+//             held thing, nothing leaving a hand without a fall or changing hand between frames; `grips spots` = where they are in
+//             the picture (json); `grips tenths` = read every tenth of a second only (quicker, misses faults of one or two frames)
 //     stills = the sketch frames as a comma list (for scripts/stills.mjs)     shots = shots.json for scripts/short_qa.py
 import fs from "node:fs"; import path from "node:path"; import os from "node:os"; import { pathToFileURL } from "node:url"; import { build } from "esbuild";
 const name = process.argv[2], what = process.argv[3] ?? "table";
@@ -59,9 +60,9 @@ else if (what === "check") {
   console.log(`FILM CHECK OK for ${name}: ${film.shots.length} shots, ${film.seconds.toFixed(1)} s, no figure seen from more than 35 degrees above, none standing in another or in a solid, none jumping`);
 }
 else if (what === "grips") {
-  const { bad, held, spots } = auditGrips(film);
+  const { bad, held, spots } = auditGrips(film, process.argv[4] === "tenths" ? 0.1 : undefined);
   if (process.argv[4] === "spots") console.log(JSON.stringify(spots));
-  else { for (const b of bad) console.log(b); console.log(bad.length ? `GRIPS FAIL: ${bad.length} faults in ${held} held readings` : `grips ok: ${held} readings of a thing in a hand, every grip in the hand and every working end where its use allows`); }
+  else { for (const b of bad) console.log(b); console.log(bad.length ? `GRIPS FAIL: ${bad.length} faults in ${held} held readings` : `grips ok: ${held} readings of a thing in a hand, every grip in the hand, a hand on every held thing and every working end where its use allows`); }
   process.exit(bad.length && process.argv[4] !== "spots" ? 1 : 0);
 }
 else if (what === "audio") {

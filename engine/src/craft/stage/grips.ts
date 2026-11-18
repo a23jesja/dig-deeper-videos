@@ -104,7 +104,7 @@ export const TRIDENT: Prop = { name: "trident", uses: { ready: { arm: A(22, 16, 
 export const STICK: Prop = { name: "stick", uses: { ready: { arm: A(22, 16, 74, 6), level: 80, ok: within(55, 105, "a stick held ready stands up beside him") } } };
 
 /** what the script check has seen in the frame it is reading: one row per thing in a hand, falling or set down */
-export const AUDIT: { on: boolean; rows: { id: string; prop: string; use: string; holder: string; err: string | null; at?: V3 }[] } = { on: false, rows: [] };
+export const AUDIT: { on: boolean; rows: { id: string; prop: string; use: string; holder: string; err: string | null; at?: V3; /** the thing itself: the script check sees that a hand named in `holder` is on it */ o?: THREE.Object3D }[] } = { on: false, rows: [] };
 const pic = (cam: Cam) => { const fx = cam.look[0] - cam.pos[0], fz = cam.look[2] - cam.pos[2], n = Math.hypot(fx, fz) || 1; return (p: V3, q: V3): [number, number] => [((q[0] - p[0]) * -fz + (q[2] - p[2]) * fx) / n, q[1] - p[1]]; };
 const unit = (v: [number, number]): [number, number] => { const n = Math.hypot(v[0], v[1]) || 1; return [v[0] / n, v[1] / n]; };
 const chest = (a: Staged) => mix3(a.joint("pelvis"), a.joint("neck"), 0.75);
@@ -135,7 +135,7 @@ export const wield = (into: THREE.Group, o: THREE.Object3D, P: Prop, use: string
   if (AUDIT.on) { const off = Math.hypot(...P2(palm(a, side), gp)), w = new THREE.Vector3(1, 0, 0).applyQuaternion(o.quaternion), seen = unit(P2([0, 0, 0], [w.x, w.y, w.z]));
     const between = opt.blend && opt.blend[1] > 0.02 && opt.blend[1] < 0.98, U2 = opt.blend && opt.blend[1] >= 0.98 ? P.uses[opt.blend[0]] : P.uses[use];
     const err = off > fistR(a, side, cam) ? `the grip is ${(off * 100).toFixed(0)} cm from the hand` : between ? null : U2.ok([seen[0] * s, seen[1]]) ?? (P.hilt && U2.level === undefined ? hiltWrong(o, P.hilt, a, side, cam, s, seen) : null);
-    AUDIT.rows.push({ id: o.uuid, prop: P.name, use, holder: `${a.name} ${side}`, err, at: palm(a, side) }); }
+    AUDIT.rows.push({ id: o.uuid, prop: P.name, use, holder: `${a.name} ${side}`, err, at: palm(a, side), o }); }
   return o;
 };
 /** what is wrong with a hand on a hilt, as a viewer sees it: the hand must be right behind the guard, the knuckle bow on the outside of
@@ -191,7 +191,7 @@ export const spy = (into: THREE.Group, o: THREE.Object3D, a: Staged, cam: Cam, t
   span(into, o, eye, aside(eye, cam, d[0], d[1]), cam, 0); fingers(into, a, opt.one ? [H.near] : [H.near, H.far], cam, 0.24);
   if (AUDIT.on) { const lie = (s: Side) => { const v = P2(e0, palm(a, s)); return { off: Math.abs(v[0] * d[1] - v[1] * d[0]), along: dot(v, d), r: fistR(a, s, cam) }; }, n1 = lie(H.near), n2 = opt.one ? null : lie(H.far);
     const err = Math.abs(facing(a.heading, cam)) < 0.35 && Math.abs(d[0]) > 0.5 ? "seen from the front with the tube to his side: a spyglass is used with his head turned to what he looks at" : a.mark && !a.mark("eyeA") && !a.mark("eyeB") ? "the eye it is put to is not in view" : !(Math.abs(a.o.face?.shut ?? 0) > 0.5 && Math.sign(a.o.face?.shut ?? 0) === spyEye(cam, a.at, target, a.heading)) ? "the eye at the eyepiece is open beside it (face.shut = spyEye)" : n1.off > n1.r ? `the near hand is ${(n1.off * 100).toFixed(0)} cm off the tube` : n1.along < 0.08 || n1.along > len ? "the near hand is not on the tube" : n2 && n2.off > n2.r ? `the supporting hand is ${(n2.off * 100).toFixed(0)} cm off the tube` : n2 && (n2.along > len || n2.along < n1.along + 0.08) ? "the supporting hand is not further out on the tube" : null;
-    AUDIT.rows.push({ id: o.uuid, prop: "spyglass", use: "look", holder: `${a.name} ${opt.one ? H.near : `${H.near}+${H.far}`}`, err, at: mix3(e0, palm(a, opt.one ? H.near : H.far), 0.5) }); }
+    AUDIT.rows.push({ id: o.uuid, prop: "spyglass", use: "look", holder: `${a.name} ${opt.one ? H.near : `${H.near}+${H.far}`}`, err, at: mix3(e0, palm(a, opt.one ? H.near : H.far), 0.5), o }); }
   return o;
 };
 /** Where a thing that has left a hand is t seconds later: let go at `p0` with the speed `v0` (metres a second; nothing = dropped), it
@@ -327,7 +327,7 @@ export const drawSabre = (into: THREE.Group, sab: THREE.Object3D, scab: THREE.Ob
       : S.farHip ? "the draw is at the far hip, where the blade would vanish into his body: show it at a slant from the scabbard's side"
       : off > fistR(a, hand, cam) * 0.6 ? `the drawing hand is ${(off * 100).toFixed(1)} cm from the grip it draws (on the sheath's line; at most ${(fistR(a, hand, cam) * 60).toFixed(1)} cm, inside the fist)`
       : held > fistR(a, hip, cam) * 1.2 ? `the other hand is ${(held * 100).toFixed(0)} cm off the scabbard it holds` : face < 0.09 ? `the drawing hand comes within ${(Math.max(0, face) * 100).toFixed(0)} cm of his face (at least a fist's breadth)` : null;
-    AUDIT.rows.push({ id: sab.uuid, prop: "sabre", use: "draw", holder: `${a.name} ${hand}`, err, at: palm(a, hand) }); }
+    AUDIT.rows.push({ id: sab.uuid, prop: "sabre", use: "draw", holder: `${a.name} ${hand}`, err, at: palm(a, hand), o: sab }); }
   return sab;
 };
 /** how far a point is in front of a figure's card, toward the lens (metres) */
@@ -381,8 +381,8 @@ export const fiddlePlay = (into: THREE.Group, fid: THREE.Object3D, bow: THREE.Ob
   span(into, fid, neck, F.chin, cam, 0.06); if (bow) span(into, bow, pR, opt.bowTo ?? F.bowAt, cam, 0.12); fingers(into, a, bow ? ["L", "R"] : ["L"], cam, 0.17);
   if (AUDIT.on) { const P2 = pic(cam), v = P2(F.chin, palm(a, "L")), along = dot(v, F.dir), off = Math.abs(v[0] * F.dir[1] - v[1] * F.dir[0]);
     const b = unit(P2(pR, F.bowAt)), w = P2(F.chin, pR), den = b[0] * F.dir[1] - b[1] * F.dir[0], u = Math.abs(den) < 1e-6 ? 99 : (w[0] * F.dir[1] - w[1] * F.dir[0]) / -den, vv = dot([w[0] + b[0] * u, w[1] + b[1] * u], F.dir);
-    AUDIT.rows.push({ id: fid.uuid, prop: "fiddle", use: "play", holder: `${a.name} L`, err: off > fistR(a, "L", cam) ? `the left hand is ${(off * 100).toFixed(0)} cm off the neck` : along < 0.3 || along > 0.58 ? "the left hand is not on the neck" : null, at: mix3(F.chin, palm(a, "L"), 0.5) });
-    if (bow) AUDIT.rows.push({ id: bow.uuid, prop: "bow", use: "play", holder: `${a.name} R`, err: vv < 0.16 || vv > 0.34 ? "the bow does not cross the strings between the bridge and the fingerboard" : u < 0.12 || u > 0.6 ? "the bow touches the strings outside its own length" : null, at: F.bowAt }); }
+    AUDIT.rows.push({ id: fid.uuid, o: fid, prop: "fiddle", use: "play", holder: `${a.name} L`, err: off > fistR(a, "L", cam) ? `the left hand is ${(off * 100).toFixed(0)} cm off the neck` : along < 0.3 || along > 0.58 ? "the left hand is not on the neck" : null, at: mix3(F.chin, palm(a, "L"), 0.5) });
+    if (bow) AUDIT.rows.push({ id: bow.uuid, o: bow, prop: "bow", use: "play", holder: `${a.name} R`, err: vv < 0.16 || vv > 0.34 ? "the bow does not cross the strings between the bridge and the fingerboard" : u < 0.12 || u > 0.6 ? "the bow touches the strings outside its own length" : null, at: F.bowAt }); }
 };
 /** The cithara held upright against his left side, leaning a little out: his left hand on its outer arm, and when he plays his right
  *  hand on the strings. `o` = props.ts cithara (its foot at the origin, `h` high, its face toward +z) */
@@ -414,7 +414,7 @@ export const citharaHold = (into: THREE.Group, o: THREE.Object3D, a: Staged, cam
   const C = inLeft(a, cam, citharaAt(J(a), cam, a.heading, h, opt.out)), d = opt.d ?? 0.06; span(into, o, C.base, aside(C.base, cam, Math.cos(C.tilt), Math.sin(C.tilt)), cam, d); fingers(into, a, ["L"], cam, d + 0.22);      // the fist round the arm, all of it in front of the frame and the strings
   if (play) fingers(into, a, ["R"], cam, d + 0.22, true);      // the playing hand lies on the strings, all of it well in front of them (a lens close below sees the planes slant)
   if (AUDIT.on) { const P2 = pic(cam), offR = Math.hypot(...P2(C.strings, palm(a, "R")));
-    AUDIT.rows.push({ id: o.uuid, prop: "cithara", use: play ? "play" : "hold", holder: `${a.name} L`, err: C.moved > 0.06 ? `the cithara has to move ${(C.moved * 100).toFixed(0)} cm across the picture to meet his left hand (the pose does not put the hand on its arm)` : play && offR > 0.16 ? `the right hand is ${(offR * 100).toFixed(0)} cm from the strings` : null, at: mix3(C.arm, C.strings, 0.5) }); }
+    AUDIT.rows.push({ id: o.uuid, o, prop: "cithara", use: play ? "play" : "hold", holder: `${a.name} L`, err: C.moved > 0.06 ? `the cithara has to move ${(C.moved * 100).toFixed(0)} cm across the picture to meet his left hand (the pose does not put the hand on its arm)` : play && offR > 0.16 ? `the right hand is ${(offR * 100).toFixed(0)} cm from the strings` : null, at: mix3(C.arm, C.strings, 0.5) }); }
   return o;
 };
 /** A rope hauled hand over hand: it comes down from `top` through his upper hand and his lower hand, and its slack end falls to the
@@ -441,8 +441,8 @@ export const carryBy = (into: THREE.Group, o: THREE.Object3D, a: Staged, sa: Sid
   const fd = d + ((o.userData.depth as number) ?? 0.1) / 2 + 0.2;      // the fingers well in front of the whole chest (its corners reach nearer the lens than its face), so that the hand in the ring shows
   if (a === b) fingers(into, a, [sa, sb], cam, fd); else { fingers(into, a, [sa], cam, fd); fingers(into, b, [sb], cam, fd); }
   if (AUDIT.on) { const err = Math.abs(n - G) > 0.1 ? `the hands are ${(Math.abs(n - G) * 100).toFixed(0)} cm too ${n > G ? "far apart" : "close together"} for the handles` : null;
-    if (a === b) AUDIT.rows.push({ id: o.uuid, prop: "chest", use: "carry", holder: `${a.name} ${sa}+${sb}`, err, at: pa });
-    else AUDIT.rows.push({ id: `${o.uuid}:a`, prop: "chest", use: "carry", holder: `${a.name} ${sa}`, err, at: pa }, { id: `${o.uuid}:b`, prop: "chest", use: "carry", holder: `${b.name} ${sb}`, err, at: pb }); }
+    if (a === b) AUDIT.rows.push({ id: o.uuid, prop: "chest", use: "carry", holder: `${a.name} ${sa}+${sb}`, err, at: pa, o });
+    else AUDIT.rows.push({ id: `${o.uuid}:a`, prop: "chest", use: "carry", holder: `${a.name} ${sa}`, err, at: pa, o }, { id: `${o.uuid}:b`, prop: "chest", use: "carry", holder: `${b.name} ${sb}`, err, at: pb, o }); }
   return o;
 };
 /** A bundle carried over the shoulder: his hand holds the knot in front of his shoulder and the bundle hangs behind his back. `o` =
@@ -453,7 +453,7 @@ export const onShoulder = (into: THREE.Group, o: THREE.Object3D, a: Staged, side
   span(into, o, near(palm(a, side), cam, 0.05), aside(near(palm(a, side), cam, 0.05), cam, 1, 0), cam, 0);
   const sack = o.getObjectByName("sack"); if (sack) sack.position.set(front ? 0 : back * r * 0.9, front ? r * 0.25 : -r * 0.55, -(r + 0.16));
   fingers(into, a, [side], cam, 0.1);
-  if (AUDIT.on) AUDIT.rows.push({ id: o.uuid, prop: "bundle", use: "shoulder", holder: `${a.name} ${side}`, err: null, at: palm(a, side) });
+  if (AUDIT.on) AUDIT.rows.push({ id: o.uuid, prop: "bundle", use: "shoulder", holder: `${a.name} ${side}`, err: null, at: palm(a, side), o });
   return o;
 };
 /** the bundle back in its place below the knot, for carrying it in the hand with `wield` */
@@ -473,7 +473,7 @@ export const blend = (into: THREE.Group, o: THREE.Object3D, k: number, A: (g: TH
   for (const c of [...keep.children]) if (c !== o) into.add(c);
   drop.traverse((c) => { const m = c as THREE.Mesh; if (!m.isMesh || c === o || o.getObjectById(c.id)) return; m.geometry?.dispose(); for (const mat of (Array.isArray(m.material) ? m.material : [m.material]) as THREE.MeshBasicMaterial[]) { mat.map?.dispose(); mat.dispose(); } });
   into.add(o);
-  if (AUDIT.on) AUDIT.rows.push({ id: o.uuid, prop: P, use: "between", holder, err: null, at: at ?? [o.position.x, o.position.y, o.position.z] });
+  if (AUDIT.on) AUDIT.rows.push({ id: o.uuid, prop: P, use: "between", holder, err: null, at: at ?? [o.position.x, o.position.y, o.position.z], o });
   return o;
 };
 /** a thing that is gone from a hand by magic (it burns away, it shrinks into the fist): noted as put away, not dropped */
@@ -481,23 +481,60 @@ export const vanish = (o: THREE.Object3D, P: Prop | string) => { if (AUDIT.on) A
 /** which way a thing held in this hand is laid (true = turned over, its working end to the left), for letGo's `mirror` */
 export const heldOver = (a: Staged, side: Side, cam: Cam) => outward(a, side, cam) < 0;
 
-/** The script check. Stages every figure of every shot on every tenth of a second, lets the shot put its things in their hands, and
+/** The script check. Stages every figure of every shot on every frame, lets the shot put its things in their hands, and
  *  lists what is wrong: a grip that is not in the hand, a working end outside what the use allows, a thing that changes hand from
- *  one frame to the next, and a thing that leaves a hand without being set down, thrown or dropped. Needs a `document`
+ *  one frame to the next, a thing that leaves a hand without being set down, thrown or dropped, and a held thing with no hand on it
+ *  (on its way from one hold to the next, the hands gone ahead of it). Needs a `document`
  *  (scripts/film_info.mjs gives it a stand-in that keeps count of the canvas transforms, so that the eyes are where they are drawn) */
 /** two holders share a hand ("mc R" and "mc R+L"): a thing that passes from hand to hand through both hands */
 const shares = (a: string, b: string) => a.split(" & ").some((pa) => b.split(" & ").some((pb) => { const [na, ha] = pa.split(" "), [nb, hb] = pb.split(" "); return na === nb && !!ha && !!hb && ha.split("+").some((h) => hb.split("+").includes(h)); }));
-export const auditGrips = (film: Film, step = 0.1) => {
+/** a convex outline round points in the picture (counter-clockwise) */
+const hull2 = (pts: [number, number][]): [number, number][] => {
+  const p = [...pts].sort((a, b) => a[0] - b[0] || a[1] - b[1]), cr = (o: [number, number], a: [number, number], b: [number, number]) => (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]);
+  const lo: [number, number][] = [], hi: [number, number][] = [];
+  for (const q of p) { while (lo.length >= 2 && cr(lo[lo.length - 2], lo[lo.length - 1], q) <= 0) lo.pop(); lo.push(q); }
+  for (const q of p.reverse()) { while (hi.length >= 2 && cr(hi[hi.length - 2], hi[hi.length - 1], q) <= 0) hi.pop(); hi.push(q); }
+  return [...lo.slice(0, -1), ...hi.slice(0, -1)];
+};
+/** how far the point [0, 0] lies outside a convex outline (0 = inside it) */
+const outside = (h: [number, number][]): number => {
+  if (!h.length) return Infinity;
+  let inside = h.length >= 3, d = Infinity;
+  for (let i = 0; i < h.length; i++) { const A = h[i], B = h[(i + 1) % h.length], v: [number, number] = [B[0] - A[0], B[1] - A[1]];
+    if (v[0] * -A[1] - v[1] * -A[0] < 0) inside = false;
+    const u = Math.max(0, Math.min(1, dot([-A[0], -A[1]], v) / (dot(v, v) || 1))); d = Math.min(d, Math.hypot(A[0] + v[0] * u, A[1] + v[1] * u)); }
+  return inside ? 0 : d;
+};
+/** how far beyond the reach of his fist the nearest of a figure's named hands is from a thing, as the picture shows it (0 or less = a
+ *  hand is on it). The thing is taken as the outline of the box round its visible parts in its own terms (a long tube is a thin strip,
+ *  a shield its face), seen from the lens */
+const offThing = (o: THREE.Object3D, a: Staged, sides: Side[], cam: Cam): number => {
+  o.updateMatrixWorld(true); const inv = o.matrixWorld.clone().invert(), box = new THREE.Box3(), m = new THREE.Matrix4();
+  o.traverseVisible((c) => { const g = (c as THREE.Mesh).geometry as THREE.BufferGeometry | undefined; if (!g?.attributes?.position) return; if (!g.boundingBox) g.computeBoundingBox(); box.union(g.boundingBox!.clone().applyMatrix4(m.multiplyMatrices(inv, c.matrixWorld))); });
+  if (box.isEmpty()) return 0;
+  const P2 = pic(cam), corners: V3[] = [];
+  for (const x of [box.min.x, box.max.x]) for (const y of [box.min.y, box.max.y]) for (const z of [box.min.z, box.max.z]) { const q = new THREE.Vector3(x, y, z).applyMatrix4(o.matrixWorld); corners.push([q.x, q.y, q.z]); }
+  let best = Infinity; for (const s of sides) { const p = palm(a, s); best = Math.min(best, outside(hull2(corners.map((c) => P2(p, c)))) - fistR(a, s, cam)); }
+  return best;
+};
+/** things noted with a holder that rest on something other than a hand (a spyglass clamped under the arm rests on his side) */
+const RESTS = new Set(["under arm"]);
+/** `step` = seconds between readings; without it every frame the film shows is read (a fault of two frames falls between tenths) */
+export const auditGrips = (film: Film, step?: number) => {
   const bad: string[] = [], spots: { shot: string; frame: number; prop: string; use: string; holder: string; x: number; y: number }[] = []; let held = 0; AUDIT.on = true;
   const lensOf = new THREE.PerspectiveCamera(50, 1080 / 1920, 0.1, 900);
   try { for (const s of film.shots) { let prev = new Map<string, { holder: string; prop: string }>();
-    for (let t = 0; t < s.b - s.a - 1e-6; t += step) {
+    const times: number[] = []; if (step) for (let t = 0; t < s.b - s.a - 1e-6; t += step) times.push(t); else for (let F = Math.ceil(s.a * film.fps - 1e-6); F < s.b * film.fps - 1e-6; F++) times.push(Math.max(0, F / film.fps - s.a));
+    for (const t of times) {
       AUDIT.rows = []; UNSEEN.length = 0; const cam = s.cam(t, t / (s.b - s.a)), g = new THREE.Group(), staged: Record<string, Staged> = {};
       for (const a of s.cast(t, s.a + t)) { const p = figureCard(a.D, a.pose, a.o, { at: a.at, heading: a.heading, h: a.h }, cam.pos); staged[a.name] = { ...a, joint: p.joint, mesh: p.mesh, mark: p.mark }; }
-      s.things?.(g, staged, t, s.a + t, cam); const now = new Map<string, { holder: string; prop: string }>(), at = `${s.id} at ${t.toFixed(1)} s`;
+      s.things?.(g, staged, t, s.a + t, cam); const now = new Map<string, { holder: string; prop: string }>(), at = `${s.id} at ${t.toFixed(2)} s (film ${(s.a + t).toFixed(2)} s, frame ${Math.round((s.a + t) * film.fps)})`;
       for (const u of new Set(UNSEEN)) bad.push(`${at}: ${u}: the hand holds something but its forearm is hidden behind his head or body (the fist would float)`);
       lensOf.fov = cam.fov; lensOf.position.set(...cam.pos); lensOf.lookAt(...cam.look); lensOf.updateProjectionMatrix(); lensOf.updateMatrixWorld(true);
       for (const r of AUDIT.rows) { now.set(r.id, { holder: r.holder, prop: r.prop }); if (r.holder) held++; if (r.err) bad.push(`${at}: ${r.holder}'s ${r.prop} (${r.use}): ${r.err}`);
+        // a thing that stands on nothing has a hand on it in every frame: one of the hands its holder names touches it in the picture
+        else if (r.o && r.holder && !RESTS.has(r.use)) { let off = Infinity; for (const part of r.holder.split(" & ")) { const [who, hands] = part.split(" "), a = staged[who]; if (a && hands) off = Math.min(off, offThing(r.o, a, hands.split("+") as Side[], cam)); }
+          if (off > 0.01 && off < Infinity) bad.push(`${at}: the ${r.prop} (${r.use}) has no hand on it: the nearest of ${r.holder} is ${(off * 100).toFixed(0)} cm off it (a thing that rests on nothing is in a hand in every frame)`); }
         if (r.at) { const q = new THREE.Vector3(...r.at).project(lensOf); spots.push({ shot: s.id, frame: Math.round((s.a + t) * film.fps), prop: r.prop, use: r.use, holder: r.holder, x: Math.round((q.x * 0.5 + 0.5) * 1080), y: Math.round((0.5 - q.y * 0.5) * 1920) }); } }
       for (const [id, was] of prev) { if (!was.holder) continue; const is = now.get(id);
         if (!is) bad.push(`${at}: the ${was.prop} leaves ${was.holder}'s hand without being set down, thrown or dropped`);
@@ -518,7 +555,7 @@ export const pole = (into: THREE.Group, o: THREE.Object3D, a: Staged, cam: Cam, 
   span(into, o, butt, aside(butt, cam, d[0], d[1]), cam, 0.05); fingers(into, a, opt.one ? [rear] : [rear, front], cam, 0.17);
   if (AUDIT.on) { const lie = (s: Side) => { const v = P2(butt, palm(a, s)); return { off: Math.abs(v[0] * d[1] - v[1] * d[0]), along: dot(v, d), r: fistR(a, s, cam) }; }, r = lie(rear), f = opt.one ? null : lie(front), len = opt.len ?? 1.4;
     const err = r.off > r.r ? `the rear hand is ${(r.off * 100).toFixed(0)} cm off the shaft` : f && f.off > f.r ? `the front hand is ${(f.off * 100).toFixed(0)} cm off the shaft` : f && (f.along < r.along + 0.15 || f.along > len) ? "the front hand is not further along the shaft than the rear hand" : null;
-    AUDIT.rows.push({ id: o.uuid, prop: opt.name ?? "pole", use: "two hands", holder: `${a.name} ${opt.one ? rear : `${rear}+${front}`}`, err, at: palm(a, rear) }); }
+    AUDIT.rows.push({ id: o.uuid, prop: opt.name ?? "pole", use: "two hands", holder: `${a.name} ${opt.one ? rear : `${rear}+${front}`}`, err, at: palm(a, rear), o }); }
   return o;
 };
 /** The arms of a figure holding a long thing in two hands: the rear hand at `grip` (a point in the world: at his hip for a thrust, at his
@@ -537,7 +574,7 @@ export const shieldOn = (into: THREE.Group, o: THREE.Object3D, a: Staged, side: 
   const h = (a.heading * Math.PI) / 180, fx = Math.sin(h), fz = Math.cos(h), pm = palm(a, side), cx = cam.pos[0] - pm[0], cz = cam.pos[2] - pm[2], cn = Math.hypot(cx, cz) || 1, toward = (fx * cx + fz * cz) / cn;
   let nx = fx + cx / cn, nz = fz + cz / cn; if (Math.hypot(nx, nz) < 0.3) { nx = fx; nz = fz; }
   const p = near(pm, cam, toward < -0.2 ? -0.16 : 0.08); o.position.set(p[0], p[1], p[2]); o.rotation.set(0, Math.atan2(nx, nz), 0); o.rotateX(((opt.tilt ?? 0) * Math.PI) / 180); into.add(o);
-  if (AUDIT.on) AUDIT.rows.push({ id: o.uuid, prop: "shield", use: "on arm", holder: `${a.name} ${side}`, err: null, at: pm });
+  if (AUDIT.on) AUDIT.rows.push({ id: o.uuid, prop: "shield", use: "on arm", holder: `${a.name} ${side}`, err: null, at: pm, o });
   return o;
 };
 

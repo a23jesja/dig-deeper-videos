@@ -9,7 +9,7 @@ import { mover, mt, wag, arm, MM } from "../stage/acting";
 import { lens, once, noShade, put, near, carry, palm, aside, span, stageAt, fingers } from "../stage/staging";
 import { wield, letGo, blend, quiet, vanish, inHand, onShoulder, fiddlePlay, fiddlePose, bowPose, fiddleAt, citharaHold, citharaPose, citharaPlace, pluckPose, reach, jointsOf, usePose, Stand, GRAPES as GRAPES_P, BUNDLE, FIDDLE as FIDDLE_P, BOW as BOW_P, PEN, SCROLL } from "../stage/grips";
 import { romeFire, FIRE, WALK } from "../world/rome";
-import { mesh, box, ball, cyl, group } from "../world/kit";
+import { mesh, box, ball, cyl, group, paint } from "../world/kit";
 import { flames, sparks, smoke, embers, flicker, glow, flying } from "../world/fire";
 import { fiddleByNeck, fiddleBow, cithara, grapes, bundle, bundleHeld, tent, gateLeaf, painted, table, scrollHeld, reedPen, C } from "../world/props";
 import { SIR_D, NERO_D, TACITUS_D, RUNNER_D, CITIZEN_D, ROMAN_WOMAN_D, ROMAN_WOMAN2_D, ROMAN_WOMAN3_D, GIRL_D, OLDMAN_D, GRANNY_D, BAKER_D, FULLER_D, MERCHANT_D } from "../looks";
@@ -192,24 +192,62 @@ const STUDY_ROOM = once(() => { const { x, z } = STUDY, g = new THREE.Group(), w
   const desk = table(1.1, 0.6, 0.9); desk.position.set(x - 0.95, 0, z - 0.75); g.add(desk);
   for (let i = 0; i < 4; i++) g.add(mesh(cyl(0.04, 0.04, 0.34, 10), "#efe2bc", { at: [x - 1.2 + i * 0.12, 0.95, z - 0.75 + (i % 2) * 0.06], rot: [0, 0, Math.PI / 2], line: 0.4, shadow: false }));
   // his name, on a plaque on the wall above his head (clear of his face, and whole inside the picture)
-  const plaque = painted(["TACITUS"], 1.0, 0.3, { ink: "#fbf3df", bg: "#7a2f2a", edge: "#e7bb48", pad: 0.14 }); plaque.position.set(x + 0.16, 2.42, z - 1.5); g.add(plaque);
+  const plaque = painted(["TACITUS"], 1.0, 0.3, { ink: "#fbf3df", bg: "#7a2f2a", edge: "#e7bb48", pad: 0.14 }); plaque.position.set(x + 0.16, 2.44, z - 1.5); g.add(plaque);
   return g; });
-const QUILL = once(() => noShade(reedPen())), SCROLL_O = once(() => noShade(scrollHeld()));
+const QUILL = once(() => noShade(reedPen())), SCROLL_O = once(() => noShade(scrollHeld())), PEN_TIP = new THREE.Vector3(0.14, 0, 0);
+// the sheet's own writing (props.ts scrollHeld): line i on the canvas at y = 20 + 16 i, 5 px high, from x = 16; the sheet 0.3 x 0.38 m
+// hangs from the roller at its origin
+const LY = (i: number) => -0.015 - (0.38 * (22.5 + 16 * i)) / 256, LX0 = -0.15 + (0.3 * 16) / 192, LLEN = (i: number) => (0.3 * (150 - (((20 + 16 * i) * 7) % 40))) / 192;
+const PAPER = once(() => paint("scrollbare", 8, 8, (q) => { q.fillStyle = "#efe2bc"; q.fillRect(0, 0, 8, 8); })), INK = once(() => paint("scrollink", 8, 8, (q) => { q.fillStyle = "#4a3a2a"; q.fillRect(0, 0, 8, 8); }));
+// version 2b (review: he stood still for 2.5 s): he writes two lines you can see fill in, the pen running along each; the lens comes in
+// slowly; an oil lamp flickers on a bracket on the wall beside him; he still looks up on "says Tacitus"
 {
-  const a0 = TAC_A, b0 = TAC_B, V = lens(STUDY.x + 0.25, 1.55, STUDY.z + 2.9, -0.05, -1, -1, 46), [tx, tz] = V.spot(3.05, -0.05), hd = V.toward(tx, tz, 14);
+  // he stands where he stood in version 2; the lens is nearer (waist up), so that the writing reads on a phone and stays above the captions
+  const a0 = TAC_A, b0 = TAC_B, V0 = lens(STUDY.x + 0.25, 1.55, STUDY.z + 2.9, -0.05, -1, -1, 46), [tx, tz] = V0.spot(3.05, -0.05), hd = V0.toward(tx, tz, 14);
+  const V = lens(STUDY.x + 0.22, 1.24, STUDY.z + 2.1, -0.05, -1, 0, 46);
   const tac = mover(TACITUS_D, 1.76, tx, tz, hd); tac.stand(9);
-  const S4: Stand = { D: TACITUS_D, at: [tx, 0, tz], heading: hd, h: 1.76, cam: V.cam, pose: usePose(SCROLL, "hold", "L") }, j = jointsOf(S4);
-  const top = mix3(j("wrL"), j("tipL"), 0.5), mid: V3 = [top[0], top[1] - 0.2, top[2]], wr = Math.sign((j("shR")[0] - j("shL")[0]) * (aside([0, 0, 0], V.cam, 1)[0]) + (j("shR")[2] - j("shL")[2]) * (aside([0, 0, 0], V.cam, 1)[2])) || -1;
-  const WRITE = (k: number) => ({ ...usePose(SCROLL, "hold", "L"), ...reach(S4, "R", aside(near(mid, V.cam, 0.06), V.cam, -wr * (0.02 + 0.03 * k), 0.1 - 0.04 * Math.abs(k))), head: [0, 12, 0] as [number, number, number] });
-  tac.actAt(-1, WRITE(0), 10, { in: 0.01, handL: "grip", handR: "grip", face: { brow: 0.2, lid: 0.5, smile: 0.2 } });
-  wag(tac, 0.2, 1.6, P(WRITE(1)), P(WRITE(-1)), 0.36, { handL: "grip", handR: "grip", face: { brow: 0.2, lid: 0.5, smile: 0.2 } });
-  tac.actAt(1.75, { ...WRITE(0), head: [-16, -4, 0] }, 9, { in: 0.3, antic: 0, over: 1.1, handL: "grip", handR: "grip", face: { brow: 0.6, lid: 0.1, smile: 0.3, gaze: [-0.4, 0] } });
+  const HOLD = usePose(SCROLL, "hold", "L"), DOWN = { brow: 0.2, lid: 0.5, smile: 0.2 };
+  const S4: Stand = { D: TACITUS_D, at: [tx, 0, tz], heading: hd, h: 1.76, cam: V.cam, pose: HOLD }, j = jointsOf(S4);
+  const wr = Math.sign((j("shR")[0] - j("shL")[0]) * (aside([0, 0, 0], V.cam, 1)[0]) + (j("shR")[2] - j("shL")[2]) * (aside([0, 0, 0], V.cam, 1)[2])) || -1;
+  tac.actAt(-1, { ...HOLD, head: [0, 12, 0] }, 10, { in: 0.01, handL: "grip", handR: "grip", face: DOWN });      // (only the scroll's arm here: the sheet is read off it below)
+  // where the sheet hangs (his left hand holds it still), and which side of it the lens sees
+  const sheet = quiet(() => { const st = stageAt(on("tac", TACITUS_D, tac, 0.3, 0, { seed: 7 }), V.cam); wield(new THREE.Group(), SCROLL_O(), SCROLL, "hold", st, "L", V.cam); SCROLL_O().updateMatrixWorld(true); return SCROLL_O().matrixWorld.clone(); });
+  const face = new THREE.Vector3(...V.cam.pos).applyMatrix4(sheet.clone().invert()).z >= 0 ? 1 : -1;
+  const onSheet = (x: number, y: number): V3 => new THREE.Vector3(face * x, y, 0).applyMatrix4(sheet).toArray() as V3;
+  // the reach that puts the pen's tip on a point of the sheet: first the hand a little above and before it, then corrected twice by where
+  // the tip really lands with that reach (one correction for the whole shot left the tip 3-4 cm under the line)
+  const guess = (P: V3) => aside(near(P, V.cam, 0.06), V.cam, -wr * 0.02, 0.1);
+  const tipFor = (T: V3) => quiet(() => { const m = mover(TACITUS_D, 1.76, tx, tz, hd); m.stand(9); m.actAt(-1, { ...HOLD, ...reach(S4, "R", T) }, 10, { in: 0.01, handL: "grip", handR: "grip" });
+    const st = stageAt(on("tac", TACITUS_D, m, 0.5, 0, { seed: 7 }), V.cam); wield(new THREE.Group(), QUILL(), PEN, "write", st, "R", V.cam, { d: 0.1 }); QUILL().updateMatrixWorld(true); return QUILL().localToWorld(PEN_TIP.clone()); });
+  const hand = (x: number, i: number) => { const P = onSheet(x, LY(i)); let T = guess(P);
+    for (let n = 0; n < 2; n++) { const tp = tipFor(T); T = [T[0] + P[0] - tp.x, T[1] + P[1] - tp.y, T[2] + P[2] - tp.z]; } return reach(S4, "R", T); };
+  const LINES: [number, number, number][] = [[5, 0.2, 0.95], [6, 1.1, 1.62]];
+  // from the first frame his pen is at the start of the line; every step holds until the next has taken over (an arm that let go fell
+  // back to his side for a moment)
+  tac.actAt(-1, { ...HOLD, ...hand(LX0, 5), head: [0, 12, 0] }, 10, { in: 0.01, handL: "grip", handR: "grip", face: DOWN });
+  for (const [i, w0, w1] of LINES) { const n = 6, dt = (w1 - w0) / n;
+    tac.actAt(w0 - 0.14, { ...HOLD, ...hand(LX0, i), head: [0, 13, 0] }, 0.2, { in: 0.12, out: 0.02, antic: 0, over: 1, handL: "grip", handR: "grip", face: DOWN });
+    for (let k = 1; k <= n; k++) tac.actAt(w0 + (k - 1) * dt, { ...HOLD, ...hand(LX0 + (LLEN(i) * k) / n, i), head: [0, 12 + (k % 2), 0] }, k < n ? dt * 2 : i === 6 ? 9 : 0.3, { in: dt, out: 0.02, antic: 0, over: 1, handL: "grip", handR: "grip", face: DOWN }); }
+  tac.actAt(1.75, { head: [-16, -4, 0] }, 9, { in: 0.3, antic: 0, over: 1.1, handL: "grip", handR: "grip", face: { brow: 0.6, lid: 0.1, smile: 0.3, gaze: [-0.4, 0] } });
+  const LAMP: V3 = [STUDY.x + 0.72, 1.2, STUDY.z - 1.44];
   GRADES.push({ a: a0, b: b0, g: () => "linear-gradient(180deg, #f3e2c4 0%, #f6e6cc 55%, #f0d8b4 100%)" });
-  add({ id: "tacitus", a: a0, b: b0, still: 1.2,
-    sounds: [{ t: 0.25, k: "scratch", g: 0.35 }, { t: 0.7, k: "scratch", g: 0.35 }, { t: 1.15, k: "scratch", g: 0.35 }, { t: 1.7, k: "paper", g: 0.4 }],
-    cam: (_t, u) => V.push(0.06 * u), sun: { target: [STUDY.x, 0, STUDY.z], reach: 6 },
+  add({ id: "tacitus", a: a0, b: b0, still: 0.6,
+    sounds: [...[0.25, 0.5, 0.75, 1.15, 1.4].map((t) => ({ t, k: "scratch", g: 0.35 })), { t: 1.7, k: "paper", g: 0.4 }],
+    cam: (_t, u) => V.push(0.1 * smooth(u)), sun: { target: [STUDY.x, 0, STUDY.z], reach: 6 },
     cast: (t) => [on("tac", TACITUS_D, tac, t, 0, { seed: 7 })],
-    things: (g, c, _t, _T, cam) => { g.add(STUDY_ROOM()); wield(g, SCROLL_O(), SCROLL, "hold", c.tac, "L", cam); wield(g, QUILL(), PEN, "write", c.tac, "R", cam, { d: 0.1 }); } });
+    things: (g, c, t, T, cam) => { g.add(STUDY_ROOM()); const S = wield(g, SCROLL_O(), SCROLL, "hold", c.tac, "L", cam); wield(g, QUILL(), PEN, "write", c.tac, "R", cam, { d: 0.1 });
+      // the lines still to come are bare sheet; the line he is on fills in as far as the pen's tip has gone
+      S.updateMatrixWorld(true); QUILL().updateMatrixWorld(true); const tip = S.worldToLocal(QUILL().localToWorld(PEN_TIP.clone())), xf = face * tip.x;
+      const onS = (m: THREE.Mesh) => { m.applyMatrix4(S.matrixWorld); g.add(m); };
+      const top = -0.015 - (0.38 * 98) / 256, bot = -0.015 - (0.38 * 252) / 256;
+      onS(mesh(box(0.28, top - bot, 0.008), "#ffffff", { at: [0, (top + bot) / 2, 0], map: PAPER(), line: 0, shadow: false }));
+      for (const [i, w0, w1] of LINES) { const L = LLEN(i), e = t < w0 ? 0 : t >= w1 ? L : Math.max(0, Math.min(L, xf - LX0));
+        if (e > 0.004) onS(mesh(box(e, 0.0074, 0.01), "#ffffff", { at: [face * (LX0 + e / 2), LY(i), 0], map: INK(), line: 0, shadow: false })); }
+      // the oil lamp on its bracket, its flame breathing, and the warm light it throws on the wall
+      g.add(mesh(box(0.34, 0.04, 0.16), "#8a5a30", { at: [LAMP[0], LAMP[1], LAMP[2]], line: 0.5 }), mesh(ball(0.07, 12), "#b5653a", { at: [LAMP[0], LAMP[1] + 0.05, LAMP[2]], scale: [1.4, 0.55, 1], line: 0.5 }),
+        mesh(cyl(0.018, 0.024, 0.07, 8), "#b5653a", { at: [LAMP[0] + 0.1, LAMP[1] + 0.06, LAMP[2]], rot: [0, 0, Math.PI / 2], line: 0.4 }));
+      flames(g, [LAMP[0] + 0.14, LAMP[1] + 0.07, LAMP[2]], T, 0.075, 0, 1, 0, 3, cam.pos);
+      glow(g, [LAMP[0] + 0.1, LAMP[1] + 0.25, STUDY.z - 1.5], 1.3, 1.3, T, 0, 3); } });
 }
 // 5. ... NERO WAS NOT EVEN IN ROME: day, the terrace of the villa above the sea, a signpost in the picture: "ANTIUM – 50 km from Rome",
 //    its arrow pointing along the coast at the smoke. He lets grapes down into his mouth; a messenger runs in and points back at the

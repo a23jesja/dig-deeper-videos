@@ -10,8 +10,9 @@ const name = process.argv[2], what = process.argv[3] ?? "table";
 const tmp = path.join(os.tmpdir(), `filminfo-${process.pid}.mjs`);
 await build({ entryPoints: [path.resolve("src/craft/shorts/index.ts")], bundle: true, platform: "node", format: "esm", outfile: tmp, loader: { ".json": "json" }, logLevel: "silent" });
 // a stand-in for the browser's canvas, so that the figures can be drawn without a browser: nothing is painted, but the transforms
-// are kept count of, because the drawing notes where the eyes are with them
-if (what === "grips") {
+// are kept count of, because the drawing notes where the eyes are with them. Every mode has it: a film may place a prop while it is
+// planned (Nero's Tacitus reads where the scroll hangs), and props paint their textures
+if (typeof globalThis.document === "undefined") {
   const mul = (a, b) => [a[0] * b[0] + a[2] * b[1], a[1] * b[0] + a[3] * b[1], a[0] * b[2] + a[2] * b[3], a[1] * b[2] + a[3] * b[3], a[0] * b[4] + a[2] * b[5] + a[4], a[1] * b[4] + a[3] * b[5] + a[5]];
   const quiet = (own) => new Proxy(own, { get: (o, k) => (k in o ? o[k] : typeof k === "string" ? (o[k] = () => {}) : undefined) });
   const context = () => { let m = [1, 0, 0, 1, 0, 0]; const st = [];

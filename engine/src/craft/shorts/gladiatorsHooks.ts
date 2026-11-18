@@ -78,7 +78,7 @@ export const shieldMan = (g: THREE.Group, a: Staged, cam: Cam, use: string, blen
 
 /** Sir Digsworth and the woman beside him in the front row: "Two go in, one comes out. Right?" Two fingers up on "Two", one on "one",
  *  and on "Right?" he turns to her; she shakes her head. `net` = the net still hangs over his head */
-export const twoShot = (id: string, a0: number, b0: number, W: Word[], net = false): Shot => {
+export const twoShot = (id: string, a0: number, b0: number, W: Word[], net = false, V: ReturnType<typeof lens> = TWO): Shot => {
   // the hand counts up beside his head on the side toward her, the elbow out and the forearm upright: clear of his face and hers, and
   // inside the picture (his right hand would be at its edge)
   const sir = mover(SIR_D, 1.8, SIR.at[0], SIR.at[2], SIR.heading - 8), wom = mover(ROMAN_WOMAN_OLIVES_D, 1.62, WOMAN.at[0], WOMAN.at[2], WOMAN.heading - 12); sir.stand(9); wom.stand(9);
@@ -89,7 +89,7 @@ export const twoShot = (id: string, a0: number, b0: number, W: Word[], net = fal
   sir.actAt(tr - 0.25, { head: [34, -2, 0] }, 9, { in: 0.25, antic: 0, over: 1.1, face: { brow: 1, lid: 0, smile: 0.7, wide: 0.3 } });
   wom.actAt(-1, { armL: arm(22, -6, 64, -46), armR: arm(22, -6, 64, -46), head: [-26, 0, 0] }, 10, { in: 0.01, handL: "relaxed", handR: "relaxed", face: { lid: 0.45, brow: -0.2, smile: -0.1 } });
   wag(wom, Math.max(0, tr - 0.35), 1.4, P({ head: [-40, 4, 0] }), P({ head: [-12, 4, 0] }), 0.3, { face: { lid: 0.5, brow: 0.3, smile: -0.3 } });
-  return { id, a: a0, b: b0, still: (b0 - a0) * 0.6, sounds: [], cam: (_t, u) => TWO.push(0.08 * u), sun: { target: MID, reach: 7 },
+  return { id, a: a0, b: b0, still: (b0 - a0) * 0.6, sounds: [], cam: (_t, u) => V.push(0.08 * u), sun: { target: MID, reach: 7 },
     cast: (t, T) => [on("sir", SIR_D, sir, t, ARENA.wall, { talk: talk(W, T, ["guess"]) }), on("wom", ROMAN_WOMAN_OLIVES_D, wom, t, ARENA.wall)],
     things: (g, c, _t, T, cam) => { crowd(g, STANDS, T, cam, 0.55); if (net) draped(g, c.sir.joint("crown"), cam, 0.16); } };
 };

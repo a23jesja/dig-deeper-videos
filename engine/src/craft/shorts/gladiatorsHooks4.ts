@@ -16,7 +16,7 @@ import { GLADIUS, SHIELD_ARM, STICK, AUDIT, usePose, pole, polePose, reach, shie
 import { arenaWorld, crowd, ARENA } from "../world/arena";
 import { SIR_D, MURMILLO_GRILLE_D, RETIARIUS_D, REFEREE_D } from "../looks";
 import type { Pose } from "../rig";
-import { on, SIR, STANDS, FIGHT, TRI, SCUTUM, GLAD, STICK_O, say, by, sandKick, FRONT, pair, GUARD, shieldMan, twoShot, draped } from "./gladiatorsHooks";
+import { on, SIR, WOMAN, STANDS, FIGHT, TRI, SCUTUM, GLAD, STICK_O, say, by, sandKick, pair, GUARD, shieldMan, twoShot, draped } from "./gladiatorsHooks";
 import wa from "../../../voice/gladiators-hook4-a/words.json";
 import la from "../../../voice/gladiators-hook4-a/lines.json";
 import wb from "../../../voice/gladiators-hook4-b/words.json";
@@ -54,10 +54,11 @@ export const attack = (id: string, a0: number, b0: number, extra: Shot["sounds"]
   const { mur, ret } = pair(GAP); mur.stand(9); ret.stand(9);
   const MA: V3 = [FIGHT[0] - GAP / 2, 0, FIGHT[2]], RA: V3 = [FIGHT[0] + GAP / 2, 0, FIGHT[2]];
   const rs: Stand = { D: RETIARIUS_D, at: RA, heading: -62, h: 1.86, cam: CLOSE.cam };
-  const RIM0: V3 = by(MA, 62, -0.05, 0.55, 1.3);
+  // the prongs strike the shield's top edge a hand's width in from its near corner, where the overhand blow comes down on them
+  const RIM0: V3 = by(MA, 62, -0.05, 0.4, 1.53);
   /** the chop: the arm swings from raised (from frame 0) to lowered (from DOWN_AT s), each act chained on the last so that the swing is one
    *  movement; CHOP = when the falling hand passes the rim's height and the blade, then level, meets the rim and the prongs on it */
-  const DOWN_AT = 0.26, CHOP = 0.42, H_UP = 1.77, H_LOW = 0.76;
+  const DOWN_AT = 0.26, CHOP = 0.42, CHOP_ARM = arm(176, 18, 84, 10), CUT = 0.85;
   // The net man's arms keep one grip all through: the rear hand (his near one, the left) back at his hip, the front hand 0.55 m up the
   // shaft. The jab, the flinch and the yank are his body moving (lean, and the pelvis forward and back), and the trident is rigid in his
   // hands. (Moving the hands instead made his far arm swing out between grips, in front of the prongs.)
@@ -74,11 +75,16 @@ export const attack = (id: string, a0: number, b0: number, extra: Shot["sounds"]
   ret.actAt(CHOP + 0.12, { lean: 7, pz: -0.09, head: [0, 2, 0] }, 10, { in: 0.25, antic: 0, face: { brow: -1, lid: 0, mouth: 0.6 } });
   ret.actAt(HIT2 - 0.16, { lean: 16, pz: 0, head: [0, 0, 0] }, 10, { in: 0.17, antic: 0, face: { brow: -1, lid: 0.05, mouth: 0.7 } });
   mur.actAt(-1, { ...usePose(GLADIUS, "raised", "R"), armL: SHIELD_ARM, lean: 5, twist: -4 }, 10, { in: 0.01, handL: "grip", handR: "grip", face: { brow: -1, lid: 0.05, mouth: 0.6 } });
-  mur.actAt(DOWN_AT, { ...usePose(GLADIUS, "lowered", "R"), armL: SHIELD_ARM, lean: 18, twist: 10 }, 10, { in: 0.42, antic: 0, face: { brow: -1, lid: 0, mouth: 0.8 } });
+  // (an overhand blow over the shield's top: it ends with his upper arm up and his forearm level, his fist beside the shield's near
+  // edge and the blade lying across the shield's top onto the prongs; the arm shows all the way and never goes behind or through the
+  // shield. The round-2 chop went down to his hip, behind the shield. The blade follows his forearm, so the forearm sets its angle.
+  // The sword is drawn 0.14 m nearer the lens than his fist, so that the level blade lies before the shield's top edge and over the
+  // prongs, not hidden behind it; the fist is beside the shield, so it never shows before it)
+  mur.actAt(DOWN_AT, { armR: CHOP_ARM, armL: SHIELD_ARM, lean: 12, twist: 8 }, 10, { in: 0.16, antic: 0, face: { brow: -1, lid: 0, mouth: 0.8 } });
   mur.actAt(1.0, { ...GUARD, lean: 8, py: -0.03 }, 10, { in: 0.4, antic: 0, face: { brow: -1, lid: 0.15, mouth: 0.4 } });
   /** which use the sword is in, and how far toward the next: in the chop, as far as his hand has fallen, and the blade a little ahead
    *  of the arm, so that when the arm is level the blade already points down at the rim, not at the net man's face */
-  const sword = (t: number, hy: number): [string, [string, number] | undefined] => t < DOWN_AT ? ["raised", undefined] : t < 1.0 ? ["raised", ["lowered", Math.pow(Math.min(1, Math.max(0, (H_UP - hy) / (H_UP - H_LOW))), 0.35)]] : ["lowered", ["ready", smooth((t - 1.0) / 0.14)]];
+  const sword = (t: number): [string, [string, number] | undefined] => t < DOWN_AT ? ["raised", undefined] : t < 1.0 ? ["raised", ["lowered", CUT * smooth((t - DOWN_AT) / 0.16)]] : ["ready", undefined];
   /** how far behind the rear hand the trident's butt is, so that at the jab (HIT) its prongs are on the shield's near rim: found once,
    *  by staging both at that moment */
   let B: number | undefined;
@@ -86,14 +92,12 @@ export const attack = (id: string, a0: number, b0: number, extra: Shot["sounds"]
     // a shield of its own for the measuring, so that the one in the picture is never taken out of the frame being drawn, placed with
     // the grip check paused (it is not a thing in anyone's hand in any frame)
     const was = AUDIT.on; AUDIT.on = false; const sh = noShade(scutum()); shieldOn(new THREE.Group(), sh, m, "L", cam); AUDIT.on = was; sh.updateWorldMatrix(true, true); const bx = new THREE.Box3().setFromObject(sh);
-    return (B = TRI_LEN - across(cam, palm(r, "L"), [bx.max.x + 0.03, 1.32, (bx.min.z + bx.max.z) / 2 + 0.06])); };
+    return (B = TRI_LEN - across(cam, palm(r, "L"), [bx.max.x - 0.17, bx.max.y + 0.02, (bx.min.z + bx.max.z) / 2 + 0.06])); };
   return { id, a: a0, b: b0, still: CHOP,
     sounds: [{ t: 0.0, k: "whoosh", g: 0.8 }, { t: HIT - 0.01, k: "ting", g: 1.0 }, { t: HIT - 0.01, k: "thud", g: 0.9 }, { t: 0.16, k: "whoosh", g: 0.5 }, { t: HIT2 - 0.01, k: "ting", g: 0.9 }, { t: HIT2 - 0.01, k: "thud", g: 0.7 }, { t: CHOP, k: "ting", g: 1.0, p: -0.1 }, { t: CHOP + 0.2, k: "scuff", g: 0.6 }, { t: 1.1, k: "step", g: 0.5 }, ...extra],
     cam: (_t, u) => CLOSE.push(0.03 + 0.12 * u), sun: { target: FIGHT, reach: 6 },
     cast: (t) => [on("mur", MURMILLO_GRILLE_D, mur, t), on("ret", RETIARIUS_D, ret, t)],
-    // (the sword is drawn 0.16 m nearer the lens than his hand, before the shield, so that the falling blade crosses the prongs on the
-    // rim in sight: drawn at the hand, it went down behind the shield)
-    things: (g, c, t, T, cam) => { crowd(g, ATTACK_STANDS, T, cam, 0.95); const [use, blend] = sword(t, c.mur.joint("wrR")[1]); wield(g, GLAD(), GLADIUS, use, c.mur, "R", cam, { d: 0.16, ...(blend ? { blend } : {}) }); shieldOn(g, SCUTUM(), c.mur, "L", cam);
+    things: (g, c, t, T, cam) => { crowd(g, ATTACK_STANDS, T, cam, 0.95); const [use, blend] = sword(t); wield(g, GLAD(), GLADIUS, use, c.mur, "R", cam, { d: 0.14, ...(blend ? { blend } : {}) }); shieldOn(g, SCUTUM(), c.mur, "L", cam);
       // the trident lies along the line through both palms (the front hand always on it), rigid: it reaches as far as it does at the jab
       const pr = palm(c.ret, "L"), pf = palm(c.ret, "R"), d = across(cam, pr, pf) || 1, far: V3 = [pr[0] + (pf[0] - pr[0]) * 3 / d, pr[1] + (pf[1] - pr[1]) * 3 / d, pr[2] + (pf[2] - pr[2]) * 3 / d];
       pole(g, TRI(), c.ret, cam, "L", far, { len: 1.9, name: "trident", use: "thrust", back: reach() });
@@ -101,14 +105,17 @@ export const attack = (id: string, a0: number, b0: number, extra: Shot["sounds"]
 };
 
 // ---------------- what follows ----------------
+/** Sir's lenses tipped up (the review of round 2: the text lay over faces in the crowd behind him): the top of the stands and the sky
+ *  at the top of the picture, where the question and the captions go; Sir and the woman lower in it */
+export const FRONT4 = lens(SIR.at[0] + 0.12, ARENA.wall + 1.55, SIR.at[2] + 2.3, -0.05, -1, 11, 44), TWO4 = lens((SIR.at[0] + WOMAN.at[0]) / 2, ARENA.wall + 1.5, (SIR.at[2] + WOMAN.at[2]) / 2 + 3.0, 0, -1, 9, 42);
 /** a: Sir Digsworth in the front row peeking between his fingers, the crowd on its feet round him (as in the film) */
 const peek = (id: string, a0: number, b0: number, W: Word[]): Shot => {
   const sir = mover(SIR_D, 1.8, SIR.at[0], SIR.at[2], SIR.heading - 6); sir.stand(9);
-  const ss: Stand = { D: SIR_D, at: SIR.at, heading: SIR.heading - 6, h: 1.8, cam: FRONT.cam };
+  const ss: Stand = { D: SIR_D, at: SIR.at, heading: SIR.heading - 6, h: 1.8, cam: FRONT4.cam };
   sir.actAt(-1, { ...reach(ss, "L", by(SIR.at, SIR.heading - 6, -0.07, 0.17, 1.56)), ...reach(ss, "R", by(SIR.at, SIR.heading - 6, 0.07, 0.17, 1.56)), head: [0, 4, 0] }, 10, { in: 0.01, handL: "open", handR: "open", face: { brow: 1, lid: 0, wide: 1, mouth: 0.4 } });
   wag(sir, 0, 2, P({ lean: 2, roll: 1.5 }), P({ lean: -1, roll: -1.5 }), 0.11);
   return { id, a: a0, b: b0, still: 0.7, sounds: [{ t: 0.05, k: "thud", g: 0.5, p: 0.4 }],
-    cam: (_t, u) => FRONT.push(0.1 * u), sun: { target: SIR.at, reach: 6 },
+    cam: (_t, u) => FRONT4.push(0.1 * u), sun: { target: SIR.at, reach: 6 },
     cast: (t, T) => [on("sir", SIR_D, sir, t, ARENA.wall, { talk: talk(W, T, ["hook"]) })],
     things: (g, _c, _t, T, cam) => crowd(g, STANDS, T, cam, 0.9) };
 };
@@ -153,10 +160,10 @@ const netOnSir = (id: string, a0: number, b0: number, W: Word[]): Shot => {
 // ---------------- the three clips ----------------
 const clip = (id: string, W: Word[], shots: Shot[], text: string[], textB: number): Film => ({
   id, fps: 30, seconds: LEN, sky: "#9fd6ff", world: arenaWorld, shots, words: W,
-  hook: { text, a: 0, b: textB, size: 80, top: 130 }, beds: [{ k: "crowd", a: 0, b: LEN, g: 0.9 }, { k: "wind", a: 0, b: LEN, g: 0.25 }], audio: `craft/${id}.wav` });
+  hook: { text, a: 0, b: textB, size: 76, top: 110 }, beds: [{ k: "crowd", a: 0, b: LEN, g: 0.9 }, { k: "wind", a: 0, b: LEN, g: 0.25 }], audio: `craft/${id}.wav` });
 const T1 = 1.5;
 const A4 = (() => { const W = wa as Word[], L = byId(la), T2 = Math.max(T1 + 1.5, Math.min(3.0, L.guess.a - 0.05));
-  return clip("gladiators-hook4-a", W, [attack("attack", 0, T1), peek("peek", T1, T2, W), { ...twoShot("guess", T2, LEN, W), capsTop: 230 }], ["DID GLADIATORS", "FIGHT TO", "THE DEATH?"], T2); })();
+  return clip("gladiators-hook4-a", W, [attack("attack", 0, T1), peek("peek", T1, T2, W), { ...twoShot("guess", T2, LEN, W, false, TWO4), capsTop: 200 }], ["DID GLADIATORS", "FIGHT TO", "THE DEATH?"], T2); })();
 const B4 = (() => { const W = wb as Word[], L = byId(lb), T2 = say(W, "Two"), hb = (L.hook.b + L.guess.a) / 2;
   return clip("gladiators-hook4-b", W, [attack("attack", 0, T1), refereeClose("referee", T1, T2), twoShot("guess", T2, LEN, W)], ["MOST GLADIATORS", "WALKED OUT ALIVE."], Math.max(T1, hb)); })();
 const C4 = (() => { const W = wc as Word[], L = byId(lc), T2 = Math.max(T1 + 1.5, Math.min(3.0, L.guess.a - 0.05));

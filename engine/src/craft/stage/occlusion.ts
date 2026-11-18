@@ -5,7 +5,9 @@
 // chest or its middle that has the figure showing on both sides of it.
 import * as THREE from "three";
 import { Film, captions, textBoxes } from "./film";
-import { stageAt } from "./staging";
+import { stageAt, aside } from "./staging";
+import { CROWD_LOG } from "../world/people";
+import type { Staged } from "./film";
 
 /** a thing that stops the eye: drawn solid (not a glow, a puff of smoke or a pane of light) */
 const solid = (m: THREE.Mesh) => {
@@ -55,7 +57,8 @@ export const occlusions = (film: Film, step = 0.2) => {
 /** No line of text over a face, a chest or a hand (the review of gladiators v4: "när figurerna nu är större får ingen text ligga över
  *  ansikte, bröst, händer eller själva handlingen"). Every tenth of a second the lines on screen (the question, or the caption, where
  *  the shot puts it) are laid against each figure's face (a circle from the crown to the chin), chest (the neck to below the ribs) and
- *  hands (circles at the wrists). A figure whose face is out of the picture is left out */
+ *  hands (circles at the wrists), and against every face in the crowd at least 14 px across (the limit the grip check uses; the review
+ *  of round 2: the question lay over the eyes of a man behind Sir). A figure whose face is out of the picture is left out */
 export const textOver = (film: Film, step = 0.1) => {
   const bad: string[] = [], seen = new Set<string>(), caps = captions(film.words, (w) => w.b <= film.hook.b + 0.02, film.shots.map((s) => s.a));
   const lens = new THREE.PerspectiveCamera(50, 1080 / 1920, 0.1, 3000);
@@ -70,6 +73,13 @@ export const textOver = (film: Film, step = 0.1) => {
       for (const k of [0.15, 0.4, 0.65]) parts.push(["chest", [nk[0] + (pv[0] - nk[0]) * k, nk[1] + (pv[1] - nk[1]) * k], R * 0.8]);
       for (const sd of ["L", "R"] as const) parts.push([`${sd === "L" ? "left" : "right"} hand`, P(st.joint(sd === "L" ? "wrL" : "wrR")), R * 0.45]);
       for (const l of lines) for (const [part, c, r] of parts) { const key = `${s.id}:${a.name}:${part}:${l.text}`; if (seen.has(key) || !hit(l.box, c, r)) continue; seen.add(key);
-        bad.push(`${s.id} at ${t.toFixed(1)} s (film ${T.toFixed(1)} s): the text "${l.text}" lies over ${a.name}'s ${part}`); } } }
+        bad.push(`${s.id} at ${t.toFixed(1)} s (film ${T.toFixed(1)} s): the text "${l.text}" lies over ${a.name}'s ${part}`); } }
+    // the crowd: the shot's things drawn once with the crowd's heads logged
+    if (s.things) { const st: Record<string, Staged> = {}; for (const a of s.cast(t, T)) st[a.name] = stageAt(a, cam);
+      CROWD_LOG.on = true; CROWD_LOG.heads.length = 0; try { s.things(new THREE.Group(), st, t, T, cam); } finally { CROWD_LOG.on = false; }
+      for (const cr of CROWD_LOG.heads) { const hc = [cr.at[0], cr.at[1] + 0.88 * cr.h, cr.at[2]], c = P(hc), e = P(aside(hc as [number, number, number], cam, 0.075 * cr.h, 0)), R = Math.hypot(e[0] - c[0], e[1] - c[1]);
+        if (R < 14 || c[0] < 0 || c[0] > 1080 || c[1] < 0 || c[1] > 1920) continue;
+        for (const l of lines) { const key = `${s.id}:crowd:${l.text}`; if (seen.has(key) || !hit(l.box, c, R * 0.8)) continue; seen.add(key);
+          bad.push(`${s.id} at ${t.toFixed(1)} s (film ${T.toFixed(1)} s): the text "${l.text}" lies over a face in the crowd (${Math.round(2 * R)} px across, at ${Math.round(c[0])}, ${Math.round(c[1])})`); } } } }
   return bad;
 };

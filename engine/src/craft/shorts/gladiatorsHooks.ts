@@ -73,7 +73,8 @@ const OVER = lens(SIR.at[0] + 0.4, ARENA.wall + 1.75, SIR.at[2] + 0.62, 0.5, 0.8
 /** the heavy man and the net fighter squared up across the fight's mark, `gap` metres apart, each turned a little toward +z (the sand side) */
 const pair = (gap = 2.1) => { const mur = mover(MURMILLO_D, 1.84, FIGHT[0] - gap / 2, FIGHT[2], 62), ret = mover(RETIARIUS_D, 1.86, FIGHT[0] + gap / 2, FIGHT[2], -62); return { mur, ret }; };
 const GUARD = { ...usePose(GLADIUS, "ready", "R"), armL: SHIELD_ARM };
-const shieldMan = (g: THREE.Group, a: Staged, cam: Cam, use: string, blend?: [string, number]) => { wield(g, GLAD(), GLADIUS, use, a, "R", cam, blend ? { blend } : {}); shieldOn(g, SCUTUM(), a, "L", cam); };
+/** the heavy man with his sword and his shield; `acting` = his face plays in the shot, so the shield keeps below his chin */
+const shieldMan = (g: THREE.Group, a: Staged, cam: Cam, use: string, blend?: [string, number], acting = false) => { wield(g, GLAD(), GLADIUS, use, a, "R", cam, blend ? { blend } : {}); shieldOn(g, SCUTUM(), a, "L", cam, { acting }); };
 
 /** Sir Digsworth and the woman beside him in the front row: "Two go in, one comes out. Right?" Two fingers up on "Two", one on "one",
  *  and on "Right?" he turns to her; she shakes her head. `net` = the net still hangs over his head */
@@ -110,7 +111,7 @@ const A = (() => {
     cam: (_t, u) => LOWA.push(0.18 * u), sun: { target: FIGHT, reach: 10 },
     cast: (t) => [on("mur", MURMILLO_D, mur, t), on("ret", RETIARIUS_D, ret, t)],
     things: (g, c, t, T, cam) => { crowd(g, STANDS, T, cam, 0.95); const k = smooth((t - TH) / 0.12) * (1 - smooth((t - TH - 0.45) / 0.3)); shieldMan(g, c.mur, cam, "ready", ["thrust", k]);
-      pole(g, TRI(), c.ret, cam, "R", palm(c.ret, "L"), { len: 1.9, name: "trident" }); sandKick(g, T, cam, [FIGHT[0], 0, FIGHT[2] + 0.2], 1 - smooth(t / 0.9), 1); } });
+      pole(g, TRI(), c.ret, cam, "R", palm(c.ret, "L"), { len: 1.9, name: "trident", use: "thrust" }); sandKick(g, T, cam, [FIGHT[0], 0, FIGHT[2] + 0.2], 1 - smooth(t / 0.9), 1); } });
   // FIGHT TO THE DEATH? Sir Digsworth in the front row, peeking between his fingers, the crowd on its feet round him
   const sir = mover(SIR_D, 1.8, SIR.at[0], SIR.at[2], SIR.heading - 6); sir.stand(9);
   const ss: Stand = { D: SIR_D, at: SIR.at, heading: SIR.heading - 6, h: 1.8, cam: FRONT.cam };
@@ -147,7 +148,7 @@ const B = (() => {
   shots.push({ id: "referee", a: b1, b: b2, still: 0.8, sounds: [{ t: 0.1, k: "step", g: 0.7 }, { t: 0.4, k: "step", g: 0.7 }, { t: 0.45, k: "tap", g: 0.8 }],
     cam: (_t, u) => WIDE2.push(0.12 * u), sun: { target: FIGHT, reach: 10 },
     cast: (t) => [on("mur", MURMILLO_D, m2.mur, t), on("ret", RETIARIUS_D, m2.ret, t), on("ref", REFEREE_D, ref, t)],
-    things: (g, c, t, T, cam) => { crowd(g, STANDS, T, cam, 0.8); shieldMan(g, c.mur, cam, "raised", ["lowered", smooth((t - 0.35) / 0.4)]); setDown(g, TRI(), "trident", ground, cam, -4);
+    things: (g, c, t, T, cam) => { crowd(g, STANDS, T, cam, 0.8); shieldMan(g, c.mur, cam, "raised", ["lowered", smooth((t - 0.35) / 0.4)], true); setDown(g, TRI(), "trident", ground, cam, -4);
       pole(g, STICK_O(), c.ref, cam, "L", by(c.ref.at, c.ref.heading, 3, 0.3, 1.12), { back: 0.36, len: 1.35, name: "stick" }); } });
   shots.push(twoShot("guess", b2, LEN, W));
   return { W, shots, text: ["MOST GLADIATORS", "WALKED OUT ALIVE."], hookB: b2 };
@@ -178,7 +179,7 @@ const C = (() => {
   shots.push({ id: "shrug", a: b1, b: b2, still: 0.7, sounds: [{ t: 0.35, k: "scuff", g: 0.5 }],
     cam: (_t, u) => OVER.push(0.08 * u), sun: { target: FIGHT, reach: 9 },
     cast: (t) => [on("mur", MURMILLO_D, mur, t), on("ret", RETIARIUS_D, ret, t)],
-    things: (g, c, _t, T, cam) => { crowd(g, FAR, T, cam, 0.6); shieldMan(g, c.mur, cam, "ready"); wield(g, TRI(), TRIDENT, "ready", c.ret, "L", cam, { at: 0.75 }); } });
+    things: (g, c, _t, T, cam) => { crowd(g, FAR, T, cam, 0.6); shieldMan(g, c.mur, cam, "ready", undefined, true); wield(g, TRI(), TRIDENT, "ready", c.ret, "L", cam, { at: 0.75 }); } });
   shots.push(twoShot("guess", b2, LEN, W, true));
   return { W, shots, text: ["DID GLADIATORS", "FIGHT TO", "THE DEATH?"], hookB: b2 };
 })();

@@ -134,10 +134,17 @@ export const wield = (into: THREE.Group, o: THREE.Object3D, P: Prop, use: string
   const gp: V3 = opt.at ? (new THREE.Vector3(opt.at * o.scale.x, 0, 0).applyQuaternion(o.quaternion).add(o.position).toArray() as V3) : [o.position.x, o.position.y, o.position.z];
   if (AUDIT.on) { const off = Math.hypot(...P2(palm(a, side), gp)), w = new THREE.Vector3(1, 0, 0).applyQuaternion(o.quaternion), seen = unit(P2([0, 0, 0], [w.x, w.y, w.z]));
     const between = opt.blend && opt.blend[1] > 0.02 && opt.blend[1] < 0.98, U2 = opt.blend && opt.blend[1] >= 0.98 ? P.uses[opt.blend[0]] : P.uses[use];
-    const err = off > fistR(a, side, cam) ? `the grip is ${(off * 100).toFixed(0)} cm from the hand` : between ? null : U2.ok([seen[0] * s, seen[1]]) ?? (P.hilt && U2.level === undefined ? hiltWrong(o, P.hilt, a, side, cam, s, seen) : null);
+    const thrusting = use === "thrust" || (opt.blend?.[0] === "thrust" && opt.blend[1] > 0.5);
+    const err = (off > fistR(a, side, cam) ? `the grip is ${(off * 100).toFixed(0)} cm from the hand` : between ? null : U2.ok([seen[0] * s, seen[1]]) ?? (P.hilt && U2.level === undefined ? hiltWrong(o, P.hilt, a, side, cam, s, seen) : null)) ?? (thrusting ? frontThrust(a, cam) : null);
     AUDIT.rows.push({ id: o.uuid, prop: P.name, use, holder: `${a.name} ${side}`, err, at: palm(a, side), o }); }
   return o;
 };
+/** how far (degrees) the way a figure's face looks is turned from the lens: the way he faces plus the turn of his head */
+const offLens = (a: Staged, cam: Cam) => { const h = ((a.heading + ((a.pose as Partial<Pose>)?.head?.[0] ?? 0)) * Math.PI) / 180, cx = cam.pos[0] - a.at[0], cz = cam.pos[2] - a.at[2], n = Math.hypot(cx, cz) || 1;
+  return (Math.acos(Math.max(-1, Math.min(1, (Math.sin(h) * cx + Math.cos(h) * cz) / n))) * 180) / Math.PI; };
+/** a thrust seen from the front with his face to the lens: he would stab to the side while he looks at us (the same fault as a spyglass
+ *  used from the front). His head turns to the man he thrusts at, or the thrust is shown from the side */
+const frontThrust = (a: Staged, cam: Cam): string | null => Math.abs(facing(a.heading, cam)) < 0.35 && offLens(a, cam) < 35 ? "a thrust seen from the front with his face to the lens: turn his head and eyes to the man he thrusts at, or show the thrust from the side" : null;
 /** what is wrong with a hand on a hilt, as a viewer sees it: the hand must be right behind the guard, the knuckle bow on the outside of
  *  the fingers (down and away from the body), and the blade must carry on along the forearm */
 const hiltWrong = (o: THREE.Object3D, H: NonNullable<Prop["hilt"]>, a: Staged, side: Side, cam: Cam, s: number, seen: [number, number]): string | null => {
@@ -509,13 +516,18 @@ const outside = (h: [number, number][]): number => {
  *  hand is on it). The thing is taken as the outline of the box round its visible parts in its own terms (a long tube is a thin strip,
  *  a shield its face), seen from the lens */
 const offThing = (o: THREE.Object3D, a: Staged, sides: Side[], cam: Cam): number => {
+  let best = Infinity; for (const s of sides) { const h = boxHull(o, cam, palm(a, s)); if (!h) return 0; best = Math.min(best, outside(h) - fistR(a, s, cam)); }
+  return best;
+};
+/** the outline of the box round a thing's visible parts (in its own terms) as the lens sees it, in the picture's metres from `about`
+ *  (null = nothing of it is visible) */
+const boxHull = (o: THREE.Object3D, cam: Cam, about: V3): [number, number][] | null => {
   o.updateMatrixWorld(true); const inv = o.matrixWorld.clone().invert(), box = new THREE.Box3(), m = new THREE.Matrix4();
   o.traverseVisible((c) => { const g = (c as THREE.Mesh).geometry as THREE.BufferGeometry | undefined; if (!g?.attributes?.position) return; if (!g.boundingBox) g.computeBoundingBox(); box.union(g.boundingBox!.clone().applyMatrix4(m.multiplyMatrices(inv, c.matrixWorld))); });
-  if (box.isEmpty()) return 0;
-  const P2 = pic(cam), corners: V3[] = [];
-  for (const x of [box.min.x, box.max.x]) for (const y of [box.min.y, box.max.y]) for (const z of [box.min.z, box.max.z]) { const q = new THREE.Vector3(x, y, z).applyMatrix4(o.matrixWorld); corners.push([q.x, q.y, q.z]); }
-  let best = Infinity; for (const s of sides) { const p = palm(a, s); best = Math.min(best, outside(hull2(corners.map((c) => P2(p, c)))) - fistR(a, s, cam)); }
-  return best;
+  if (box.isEmpty()) return null;
+  const P2 = pic(cam), corners: [number, number][] = [];
+  for (const x of [box.min.x, box.max.x]) for (const y of [box.min.y, box.max.y]) for (const z of [box.min.z, box.max.z]) { const q = new THREE.Vector3(x, y, z).applyMatrix4(o.matrixWorld); corners.push(P2(about, [q.x, q.y, q.z])); }
+  return hull2(corners);
 };
 /** things noted with a holder that rest on something other than a hand (a spyglass clamped under the arm rests on his side) */
 const RESTS = new Set(["under arm"]);
@@ -550,12 +562,12 @@ export const POLE = { back: 0.32, gap: 0.5 };
 /** A long thing held in two hands (a trident, a referee's stick): the shaft runs through both fists along the line from the rear hand toward
  *  `aim` in the picture, its butt `back` behind the rear hand. `o` = the model (butt at the origin, shaft along +x), `len` = its length (the
  *  front hand must be on it). The rear hand is `rear`; the other holds it `gap` further on (`one` = the rear hand only) */
-export const pole = (into: THREE.Group, o: THREE.Object3D, a: Staged, cam: Cam, rear: Side, aim: V3, opt: { back?: number; gap?: number; one?: boolean; len?: number; name?: string } = {}) => {
+export const pole = (into: THREE.Group, o: THREE.Object3D, a: Staged, cam: Cam, rear: Side, aim: V3, opt: { back?: number; gap?: number; one?: boolean; len?: number; name?: string; /** "thrust" = driven at someone (the check then wants his face turned to it when he is seen from the front) */ use?: string } = {}) => {
   const P2 = pic(cam), back = opt.back ?? POLE.back, front: Side = rear === "L" ? "R" : "L", pr = palm(a, rear), d = unit(P2(pr, aim)), butt = aside(pr, cam, -d[0] * back, -d[1] * back);
   span(into, o, butt, aside(butt, cam, d[0], d[1]), cam, 0.05); fingers(into, a, opt.one ? [rear] : [rear, front], cam, 0.17);
   if (AUDIT.on) { const lie = (s: Side) => { const v = P2(butt, palm(a, s)); return { off: Math.abs(v[0] * d[1] - v[1] * d[0]), along: dot(v, d), r: fistR(a, s, cam) }; }, r = lie(rear), f = opt.one ? null : lie(front), len = opt.len ?? 1.4;
-    const err = r.off > r.r ? `the rear hand is ${(r.off * 100).toFixed(0)} cm off the shaft` : f && f.off > f.r ? `the front hand is ${(f.off * 100).toFixed(0)} cm off the shaft` : f && (f.along < r.along + 0.15 || f.along > len) ? "the front hand is not further along the shaft than the rear hand" : null;
-    AUDIT.rows.push({ id: o.uuid, prop: opt.name ?? "pole", use: "two hands", holder: `${a.name} ${opt.one ? rear : `${rear}+${front}`}`, err, at: palm(a, rear), o }); }
+    const err = r.off > r.r ? `the rear hand is ${(r.off * 100).toFixed(0)} cm off the shaft` : f && f.off > f.r ? `the front hand is ${(f.off * 100).toFixed(0)} cm off the shaft` : f && (f.along < r.along + 0.15 || f.along > len) ? "the front hand is not further along the shaft than the rear hand" : opt.use === "thrust" ? frontThrust(a, cam) : null;
+    AUDIT.rows.push({ id: o.uuid, prop: opt.name ?? "pole", use: opt.use ?? "two hands", holder: `${a.name} ${opt.one ? rear : `${rear}+${front}`}`, err, at: palm(a, rear), o }); }
   return o;
 };
 /** The arms of a figure holding a long thing in two hands: the rear hand at `grip` (a point in the world: at his hip for a thrust, at his
@@ -570,11 +582,16 @@ export const SHIELD_ARM = A(24, 8, 92, -30);
 /** The scutum on the arm (props.ts scutum): its grip behind the boss in the fist of `side`, upright, its face turned half way between the
  *  lens and the way the holder faces, so that from the front it covers him and from the side it is seen foreshortened in front of him.
  *  Seen from behind, it is on his far side */
-export const shieldOn = (into: THREE.Group, o: THREE.Object3D, a: Staged, side: Side, cam: Cam, opt: { tilt?: number } = {}) => {
+export const shieldOn = (into: THREE.Group, o: THREE.Object3D, a: Staged, side: Side, cam: Cam, opt: { tilt?: number; /** his face acts in this shot (he is beaten, he speaks, he reaches out): the shield must stay below his chin */ acting?: boolean } = {}) => {
   const h = (a.heading * Math.PI) / 180, fx = Math.sin(h), fz = Math.cos(h), pm = palm(a, side), cx = cam.pos[0] - pm[0], cz = cam.pos[2] - pm[2], cn = Math.hypot(cx, cz) || 1, toward = (fx * cx + fz * cz) / cn;
   let nx = fx + cx / cn, nz = fz + cz / cn; if (Math.hypot(nx, nz) < 0.3) { nx = fx; nz = fz; }
   const p = near(pm, cam, toward < -0.2 ? -0.16 : 0.08); o.position.set(p[0], p[1], p[2]); o.rotation.set(0, Math.atan2(nx, nz), 0); o.rotateX(((opt.tilt ?? 0) * Math.PI) / 180); into.add(o);
-  if (AUDIT.on) AUDIT.rows.push({ id: o.uuid, prop: "shield", use: "on arm", holder: `${a.name} ${side}`, err: null, at: pm, o });
+  if (AUDIT.on) {
+    // in front of him (not on his far side seen from behind), the shield must leave his eyes free; when his face acts, his chin too
+    const covers = (q: V3 | null | undefined) => { if (!q) return false; const hl = boxHull(o, cam, q); return !!hl && outside(hl) === 0; };
+    const eyes = [a.mark?.("eyeA"), a.mark?.("eyeB")], chin = mix3(a.joint("neck"), a.joint("skull"), 0.45);
+    const err = toward < -0.2 ? null : eyes.some(covers) ? "the shield hides his eyes" : opt.acting && covers(chin) ? "his face acts in this shot, but the shield covers it above his chin: lower the shield or turn it" : null;
+    AUDIT.rows.push({ id: o.uuid, prop: "shield", use: "on arm", holder: `${a.name} ${side}`, err, at: pm, o }); }
   return o;
 };
 

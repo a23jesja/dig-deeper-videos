@@ -321,10 +321,17 @@ const ground: V3 = [FIGHT[0] + 1.1, 0.03, FIGHT[2] + 0.5];
 // 16. ... UNDER HIS CARE, HARDLY ANY GLADIATORS DIED. Behind him in a row his patients, bandaged, show their muscles
 // (Jesper's review of v3: the men lower and bigger in the picture. Three of them, close together, the lens near and low and looking
 // up a little, so that they fill half its height from the feet up and the lower half is not empty sand)
-{ const { x: LX, z: LZ } = LUDUS, CXp = LX - 1.43, V = lens(CXp, 0.95, LZ + 1.4 - 4.3, 0, 1, 9, 50), row: [Design, number][] = [[MURMILLO_BARE_D, 1.84], [SECUTOR_D, 1.72], [THRAEX_D, 1.78]];
-  const men = row.map(([D, h], i) => { const x = CXp + (i - 1) * 0.62, z = LZ + 1.4 + (i % 2) * 0.12, m = mover(D, h, x, z, V.toward(x, z, (i - 1) * 8)); m.stand(9);
-    m.actAt(-1, { armL: arm(16, 12, 30, 8), armR: arm(16, 12, 30, 8) }, 10, { in: 0.01, handL: "fist", handR: "fist", face: { brow: 0.2, lid: 0.2, smile: 0.5 } });
-    m.actAt(0.25 + 0.18 * i, { armR: arm(80, 40, 168, 10), lean: -3 }, 9, { in: 0.3, antic: 0.15, over: 1.3, handL: "fist", handR: "fist", face: { brow: 0.5, lid: 0.1, smile: 0.9, mouth: 0.3 } });
+// (v4, the body check: each flexed his right arm toward the next man, and the fist came up beside that man's face; their hanging
+// fists met at their sides. Now the fists rest before their thighs, the two outer men flex the outer arm, away from the others, and
+// the middle man shows his chest with both fists together before his belly; the lens a little further back, so that the outer arms
+// stay in the picture)
+{ const { x: LX, z: LZ } = LUDUS, CXp = LX - 1.43, V = lens(CXp, 0.95, LZ + 1.4 - 4.8, 0, 1, 9, 50), row: [Design, number][] = [[MURMILLO_BARE_D, 1.84], [SECUTOR_D, 1.72], [THRAEX_D, 1.78]];
+  const men = row.map(([D, h], i) => { const x = CXp + (i - 1) * 0.66, z = LZ + 1.4 + (i % 2) * 0.12, hd = V.toward(x, z, (i - 1) * 8), m = mover(D, h, x, z, hd); m.stand(9);
+    const st: Stand = { D, at: [x, 0, z], heading: hd, h, cam: V.cam }, fists = (y: number, f: number, s: number) => ({ ...reach(st, "L", by([x, 0, z], hd, -s, f, y)), ...reach(st, "R", by([x, 0, z], hd, s, f, y)) });
+    m.actAt(-1, fists(0.82, 0.14, 0.13), 10, { in: 0.01, handL: "fist", handR: "fist", face: { brow: 0.2, lid: 0.2, smile: 0.5 } });
+    // (facing the lens his right arm is on the picture's left: the man on the left flexes his right, the one on the right his left)
+    const flex = i === 1 ? { ...fists(1.02, 0.24, 0.05), lean: 4 } : i === 0 ? { armL: arm(80, 40, 168, 10), lean: -3 } : { armR: arm(80, 40, 168, 10), lean: -3 };
+    m.actAt(0.25 + 0.18 * i, flex, 9, { in: 0.3, antic: 0.15, over: 1.3, handL: "fist", handR: "fist", face: { brow: 0.5, lid: 0.1, smile: 0.9, mouth: 0.3 } });
     return { D, m, name: `p${i}` }; });
   // (the captions in the sky: lower down they lay over the men's hands)
   shots.push({ id: "patients", capsTop: 260, a: T15, b: T16, still: 2.0, sounds: men.map((_, i) => ({ t: 0.3 + 0.18 * i, k: "scuff", g: 0.3 })),

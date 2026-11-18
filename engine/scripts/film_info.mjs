@@ -79,7 +79,8 @@ else if (what === "check") {
   console.log(`FILM CHECK OK for ${name}: ${film.shots.length} shots, ${film.seconds.toFixed(1)} s, no figure seen from more than 35 degrees above, none standing in another or in a solid, none jumping, no face covered and no figure cut by a thing in the foreground`);
 }
 else if (what === "body") {
-  const t0 = Date.now(), r = bodyCheck(film, { every: Number(process.argv[4] ?? 1) || 1 }), lines = bodyLines(film, r);
+  // body <every> <shot,shot>: only those shots (a quick look while staging one)
+  const t0 = Date.now(), only = process.argv[5]?.split(","), r = bodyCheck(film, { every: Number(process.argv[4] ?? 1) || 1, ...(only ? { shots: only } : {}) }), lines = bodyLines(film, r);
   for (const l of lines) console.log(l);
   console.log(`${lines.length ? "BODY CHECK FAILED" : "BODY CHECK OK"} for ${name}: ${r.frames} frames of ${f(film.seconds)}, ${r.figuresTried} figure-frames, ${r.pairs} pairs tried (a figure against a solid, a held thing or another figure), ${lines.length} faults (${((Date.now() - t0) / 1000).toFixed(0)} s)`);
   process.exit(lines.length ? 1 : 0);

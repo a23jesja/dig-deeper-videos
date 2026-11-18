@@ -84,7 +84,9 @@ const T5a = at("nine", /^gladiator/) - 0.12;
   const pace = (m: MM, i: number) => m.stand(0.04 * (i % 3)).walk(mt(m, 3.6), { step: 0.42 / m.LL, tau: 0.5 }).stand(9);
   const walkers: { D: Design; h: number; m: MM; name: string; x: number; z: number }[] = [];
   const looks: [Design, number][] = [[MURMILLO_BARE_D, 1.84], [THRAEX_D, 1.78], [SECUTOR_D, 1.72], [HOPLOMACHUS_D, 1.8], [PROVOCATOR_D, 1.76], [RETIARIUS2_D, 1.8], [RETIARIUS3_D, 1.7], [MURMILLO2_D, 1.88], [SECUTOR_D, 1.74]];
-  looks.forEach(([D, h], i) => { const row = Math.floor(i / 2), [x, z] = at(row * 1.9 + (i % 2) * 0.95, i % 2 ? 0.55 : -0.62), m = mover(D, h, x, z, HW); pace(m, i);
+  // (the sixth walks beside the fifth, his hand on the other's shoulder: half a row behind and across the parade, as the others are spread,
+  // his hand fell half a metre short of the shoulder)
+  looks.forEach(([D, h], i) => { const row = Math.floor(i / 2), [x, z] = i === 5 ? at(row * 1.9 + 0.12, 0.0) : at(row * 1.9 + (i % 2) * 0.95, i % 2 ? 0.55 : -0.62), m = mover(D, h, x, z, HW); pace(m, i);
     m.actAt(-1, { armL: arm(16, 12, 30, 8), armR: arm(16, 12, 30, 8), head: [0, i % 2 ? 4 : -2, 0] }, 10, { in: 0.01, handL: "relaxed", handR: "relaxed", face: { brow: 0.2, lid: 0.3, smile: i % 3 ? 0.1 : 0.4 } });
     walkers.push({ D, h, m, name: `g${i}`, x, z }); });
   // the sixth leans on the fifth beside him: his left hand on the other's right shoulder
@@ -176,13 +178,16 @@ const T5a = at("nine", /^gladiator/) - 0.12;
 
 // 8. THE LAST THING THE SCHOOL'S OWNER ... by the gate, the owner counts coins out of his chest and holds one up to the light
 const GATE = rim(0, -2.2), OWNER_AT: V3 = [GATE[0], 0, GATE[1] + 1.2], MAN_AT: V3 = [GATE[0] - 0.75, 0, GATE[1] + 1.0];
-{ const V = lens(OWNER_AT[0] - 2.6, 1.35, OWNER_AT[2] + 2.4, 0.74, -0.68, -3, 46), oh = V.toward(OWNER_AT[0], OWNER_AT[2], 25), own = mover(OWNER_D, 1.7, OWNER_AT[0], OWNER_AT[2], oh); own.stand(9);
+{ const V = lens(OWNER_AT[0] - 2.6, 1.35, OWNER_AT[2] + 2.4, 0.776, -0.642, -3, 46), oh = V.toward(OWNER_AT[0], OWNER_AT[2], 25), own = mover(OWNER_D, 1.7, OWNER_AT[0], OWNER_AT[2], oh); own.stand(9);
   own.actAt(-1, { ...usePose(COIN, "show", "R"), head: [0, 6, 0] }, 10, { in: 0.01, handR: "grip", face: { brow: 0.6, lid: 0.3, smile: 0.7 } });
   own.actAt(0.9, { head: [-30, 0, 0] }, 9, { in: 0.3, antic: 0, over: 1.1, face: { brow: 0.9, lid: 0.1, smile: -0.4, wide: 0.4 } });
-  shots.push({ id: "coins", a: T7, b: T8, still: 0.6, sounds: [{ t: 0.15, k: "coin", g: 0.6 }, { t: 0.55, k: "coin", g: 0.5 }],
+  // (the captions over the arena wall at the top: lower down they lay over his robe and the chest)
+  shots.push({ id: "coins", capsTop: 200, a: T7, b: T8, still: 0.6, sounds: [{ t: 0.15, k: "coin", g: 0.6 }, { t: 0.55, k: "coin", g: 0.5 }],
     cam: (_t, u) => V.push(0.06 * u), sun: { target: OWNER_AT, reach: 6 },
     cast: (t) => [on("own", OWNER_D, own, t)],
-    things: (g, c, _t, _T, cam) => { const ch = COINS(); ch.position.set(OWNER_AT[0] + 0.36, 0, OWNER_AT[2] + 0.3); ch.rotation.y = -0.75; g.add(ch); wield(g, COIN_O(), COIN, "show", c.own, "R", cam, { d: 0.1 }); } }); }
+    // (the chest a step further from him, beside him and a little before him: his left leg stood inside it; further to the side the right
+    // edge cut it)
+    things: (g, c, _t, _T, cam) => { const ch = COINS(); ch.position.set(OWNER_AT[0] + 0.52, 0, OWNER_AT[2] + 0.5); ch.rotation.y = -0.75; g.add(ch); wield(g, COIN_O(), COIN, "show", c.own, "R", cam, { d: 0.1 }); } }); }
 
 // 9. ... WANTED WAS A DEAD ONE. "DO YOU KNOW WHAT YOU COST ME?" He bites his nails, then pats his gladiator on the shoulder and asks
 { const V = lens((MAN_AT[0] + OWNER_AT[0]) / 2 - 1.18, 1.45, (MAN_AT[2] + OWNER_AT[2]) / 2 + 2.98, 0.37, -0.93, -2, 50), mh = V.toward(MAN_AT[0], MAN_AT[2], -30), oh = V.toward(OWNER_AT[0], OWNER_AT[2], -35);

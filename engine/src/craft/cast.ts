@@ -31,6 +31,10 @@ export type Look = {
   beardHigh?: boolean;
   /** small plaited tails hanging from the beard's foot, each tied with a ribbon of the colour given (one tail per colour) */
   tails?: string[];
+  /** one tail being plaited by his fingers (Jesper's review of Blackbeard v3: show the fingers twisting a plait): drawn twice as long
+   *  and wide as the others (a tail beside a fist was hidden by it), its lobes at `phase` of their twist (a few looks at phases in turn
+   *  make it turn), with no ribbon until it is tied; the drawing marks its top and its end ("plaitTop", "plaitEnd") for the hands */
+  plait?: { tail: number; phase: number; /** tied: its ribbon on, as the other tails */ tied?: boolean };
   /** a lit slow-match tucked under the hat on each side of the face, its tip glowing (the drawing marks the tips "fuseA" and "fuseB"
    *  so that the stage can make them smoke: staging.ts fuseSmoke) */
   fuses?: boolean;
@@ -270,8 +274,12 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
       // the plaited tails, each tied with a ribbon: they hang from the foot of the beard and go down with the jaw
       if (L.tails?.length) { const n = L.tails.length;
         L.tails.forEach((col, i) => { const az = n === 1 ? 0 : lerp(-52, 52, i / (n - 1)), q = at(h, az, 1.02); if (!seen(q)) return;
-          const t0 = Math.abs(az) / A, y0 = lerp(0.2 * H, -0.02 * H, (t0 / 0.69) ** 1.6) + drop * Math.max(0, 1 - Math.abs(az) / 72) - 0.02 * H, len = (0.3 + 0.05 * ((i * 7) % 3)) * H, wd = 0.05 * H * Math.max(0.45, Math.abs(Math.cos((az * Math.PI) / 180 + phi)));
-          for (let j = 0; j < 4; j++) { const yy = y0 + len * (j + 0.5) / 4.4; piece(k, ellPts(q.x + Math.sin(j * 2.1) * 0.008 * H, yy, wd * (1 - j * 0.12), len / 7.4), L.beard!); }
+          const t0 = Math.abs(az) / A, y0 = lerp(0.2 * H, -0.02 * H, (t0 / 0.69) ** 1.6) + drop * Math.max(0, 1 - Math.abs(az) / 72) - 0.02 * H, len0 = (0.3 + 0.05 * ((i * 7) % 3)) * H, wd0 = 0.05 * H * Math.max(0.45, Math.abs(Math.cos((az * Math.PI) / 180 + phi)));
+          const pl = L.plait && L.plait.tail === i ? L.plait.phase : null, big = pl !== null, len = big ? len0 * 2.2 : len0, wd = big ? wd0 * 1.7 : wd0;
+          for (let j = 0; j < 4; j++) { const yy = y0 + len * (j + 0.5) / 4.4, tw = pl === null ? 1 : 0.78 + 0.3 * Math.abs(Math.cos(j * 1.6 + pl)), sx = pl === null ? Math.sin(j * 2.1) * 0.008 * H : Math.sin(j * 2.1 + pl) * 0.016 * H;
+            piece(k, ellPts(q.x + sx, yy, wd * (1 - j * 0.12) * tw, len / 7.4), L.beard!);
+            if (pl !== null) k.line([[q.x + sx - wd * 0.6, yy - len / 14], [q.x + sx + wd * 0.6, yy + len / 14]], 2.4 * u); }
+          if (pl !== null) { k.mark("plaitTop", q.x, y0 + len * 0.1); k.mark("plaitEnd", q.x, y0 + len * 0.9); if (!L.plait!.tied) return; }
           const yb = y0 + len * 0.95, bx = q.x, bw = 0.075 * H;
           piece(k, [[bx, yb], [bx - bw, yb - bw * 0.55], [bx - bw, yb + bw * 0.55]], col); piece(k, [[bx, yb], [bx + bw, yb - bw * 0.55], [bx + bw, yb + bw * 0.55]], col); piece(k, ellPts(bx, yb, bw * 0.32, bw * 0.32), shade(col, 0.82)); }); }
     }

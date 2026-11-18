@@ -406,6 +406,10 @@ export const BLACKBEARD_PREP_D = castDesign(BLACKBEARD_PREP, "Blackbeard"), BLAC
 /** (the one he keeps is on the right of his face card: his left, as he faces us; his right hand has pulled the other) */
 export const BLACKBEARD_ONE: Look = { ...BLACKBEARD_ARMED, id: "blackbeardone", fuseSide: 1 };
 export const BLACKBEARD_ONE_D = castDesign(BLACKBEARD_ONE, "Blackbeard");
+/** the half-done beard with its last tail being plaited, at four phases of the twist (shown in turn, they make the plait turn in his fingers) */
+export const BLACKBEARD_PLAIT_D = [0, 1, 2, 3].map((k) => castDesign({ ...BLACKBEARD_PREP, id: `blackbeardplait${k}`, tails: BLACKBEARD.tails!.map((c, i) => (i === 3 ? "#2a2226" : c)), plait: { tail: 3, phase: (k * Math.PI) / 2 } }, "Blackbeard"));
+/** the same tail just tied, its ribbon on (still drawn large, as in the shot where he tied it) */
+export const BLACKBEARD_PLAITED_D = castDesign({ ...BLACKBEARD_PREP, id: "blackbeardplaited", plait: { tail: 3, phase: 0, tied: true } }, "Blackbeard");
 export const BLACKBEARD_BARE_D = castDesign(BLACKBEARD_BARE, "Blackbeard"), BLACKBEARD_HALF_D = castDesign(BLACKBEARD_HALF, "Blackbeard"), BLACKBEARD_UNLIT_D = castDesign(BLACKBEARD_UNLIT, "Blackbeard");
 
 // ---------------- the gladiators' school, the gate and the stands (gladiators-death) ----------------

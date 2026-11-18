@@ -127,7 +127,7 @@ const A = (() => {
 
 // b: a statement over the action ---------------------------------------------------------------------------------------------------
 const B = (() => {
-  const W = wb as Word[], L = byId(lb), b1 = 1.5, hb = (L.hook.b + L.guess.a) / 2, b2 = say(W, "Two") - 0.12, shots: Shot[] = [];
+  const W = wb as Word[], L = byId(lb), b1 = 1.5, hb = (L.hook.b + L.guess.a) / 2, b2 = say(W, "Two"), shots: Shot[] = [];      // the cut on "Two", where "WAIT" gives way
   // the net man down on one knee with one finger raised (he gives up), the heavy man's sword up over him: "Most gladiators walked out alive."
   const LOWB = lens(FIGHT[0], 1.25, FIGHT[2] + 4.9, 0, -1, -5, 54), { mur, ret } = pair(1.45); mur.stand(9); ret.stand(9);
   mur.actAt(-1, { ...usePose(GLADIUS, "raised", "R"), armL: SHIELD_ARM, lean: 6, head: [0, 8, 0] }, 10, { in: 0.01, handL: "grip", handR: "grip", face: { brow: -1, lid: 0.1, mouth: 0.5 } });

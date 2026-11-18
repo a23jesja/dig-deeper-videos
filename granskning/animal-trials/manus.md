@@ -62,6 +62,12 @@ Filer: `hook-a.mp4`, `hook-b.mp4`, `hook-c.mp4` och deras `hook-x-10fps-telefon.
 
 Två klipp är kortare än 1,5 s: a:s första (1,40 s) och åhörarbänken (1,37 s). Det beror på att frågan är 2,1 s och svaret "Yes." kommer vid 2,81 s. Sista bilden i a (1,06 s) fortsätter i filmen till "court." (cirka 7,3 s).
 
+**Granskningens val (18 november): öppning b**, med tre ändringar i filmen. Inget nytt klipp behövs, och ändringarna kollas i filmens STOPP. Jespers nya krav från samma dag gäller också: kameran nära, figurerna på 50–80 % av höjden och ingen tom yta i nedre halvan.
+1. Rättssalsbilden (2,07–3,63 s i b, och samma uppställning i filmen) tas närmare. Advokaten, den tomma bänken och domaren med klubban ska fylla 50–80 % av höjden, och golvet får inte ta den nedre halvan. Den tomma bänken ska tydligt synas som de anklagades plats, till exempel med advokaten som visar fram den med öppen hand.
+2. Sirs "Yes." (3,63 s) tas närmare, så att han och åhörarna fyller bilden. Nu är den övre tredjedelen tom vägg.
+3. Slingan: sista bilden är bymannen med rullen i vingården, alltså ruta 0, till exempel när han rycker på axlarna på "Nobody knows".
+I filmens alla bilder: ingen figur skuren av bildkanten, varje huvud synligt, och händerna ska gå att följa. Filmen väntar tills gladiatorerna och Blackbeard v4 är klara.
+
 **Ändrat i rättssalen för den stående bilden:** de anklagades bänk står vänd mot åhörarnas sida (inte mot domaren), med räcke och spjälor, så att det syns att den är tom. Domaren står på en hög estrad med klubbans block på ett litet bord vid sin högra hand, där klubbslaget på greppblad 6 landar.
 
 ## Titel och thumbnails (title.py)

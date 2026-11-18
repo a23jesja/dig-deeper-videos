@@ -1,0 +1,93 @@
+[
+ {
+  "id": "hook",
+  "a": 0.0,
+  "b": 2.64,
+  "text": "Did gladiators really fight to the death?",
+  "voice": "bm_george"
+ },
+ {
+  "id": "guess",
+  "a": 2.94,
+  "b": 5.126,
+  "text": "Two go in, one comes out. Right?",
+  "voice": "bm_george"
+ },
+ {
+  "id": "not",
+  "a": 5.346,
+  "b": 6.442,
+  "text": "Not usually.",
+  "voice": "bm_george"
+ },
+ {
+  "id": "nine",
+  "a": 6.622,
+  "b": 10.804,
+  "text": "About nine times in ten, a gladiator lived to fight another day.",
+  "voice": "bm_george"
+ },
+ {
+  "id": "cost",
+  "a": 11.004,
+  "b": 14.856,
+  "text": "Each one was trained, fed and doctored, and that cost a great deal.",
+  "voice": "bm_george"
+ },
+ {
+  "id": "owner",
+  "a": 15.036,
+  "b": 18.444,
+  "text": "The last thing the school's owner wanted was a dead one.",
+  "voice": "bm_george"
+ },
+ {
+  "id": "cost_me",
+  "a": 18.694,
+  "b": 20.238,
+  "text": "Do you know what you cost me?",
+  "voice": "bm_lewis"
+ },
+ {
+  "id": "rules",
+  "a": 20.458,
+  "b": 22.528,
+  "text": "There were rules, and a referee.",
+  "voice": "bm_george"
+ },
+ {
+  "id": "finger",
+  "a": 22.708,
+  "b": 25.512,
+  "text": "A beaten man raised a finger to give up.",
+  "voice": "bm_george"
+ },
+ {
+  "id": "spared",
+  "a": 25.692,
+  "b": 27.863,
+  "text": "And most of the time, he was spared.",
+  "voice": "bm_george"
+ },
+ {
+  "id": "answer",
+  "a": 28.083,
+  "b": 31.435,
+  "text": "So no. Most fights ended with both men walking out.",
+  "voice": "bm_george"
+ },
+ {
+  "id": "doctor",
+  "a": 31.685,
+  "b": 36.68,
+  "text": "One arena doctor boasted that under his care, hardly any gladiators died.",
+  "voice": "bm_george"
+ },
+ {
+  "id": "relax",
+  "a": 36.98,
+  "b": 38.7,
+  "text": "Relax. They'll probably be fine.",
+  "voice": "bf_emma"
+ }
+]

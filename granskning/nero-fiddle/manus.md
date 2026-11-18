@@ -173,8 +173,8 @@ Jespers regel 18 november ("Our own lines, not only sources") gäller den här f
 | 6,9-11,4 | [SOURCE] | When the fire began, says Tacitus, Nero was not even in Rome. | berättaren ([T] 39.1, [D]) |
 | 11,4-15,7 | [SOURCE] | He came back and opened his own gardens to the homeless. | berättaren ([T] 39.1, [D]) |
 | 15,7-17,7 | [SOURCE] | The fire raged for six days. | berättaren ([T] 40.1, [S]) |
-| 17,7-18,6 | [OWN] | Psst! | pratbubbla, mannen som viskar ryktet |
-| 18,6-20,2 | [OWN] | Did you hear? | pratbubbla, kvinnan som viskar det vidare |
+| 17,7-19,0 | [OWN] | Psst! | pratbubbla, mannen som viskar ryktet |
+| 19,0-20,2 | [OWN] | Did you hear? | pratbubbla, kvinnan som viskar det vidare |
 | 17,7-22,2 | [SOURCE] | And a rumour spread: while Rome burned, Nero sang of the fall of Troy. | berättaren ([T] 39, [S], [Dio]) |
 | 22,2-27,4 | [SOURCE] | Sang, perhaps. Fiddled, never. The fiddle came about a thousand years later. | berättaren ([T], [S], [Dio], [D], [G]) |
 | 27,4-30,9 | [SOURCE] | His instrument was the cithara, a kind of lyre with seven strings. | berättaren ([G], [S], [D]) |

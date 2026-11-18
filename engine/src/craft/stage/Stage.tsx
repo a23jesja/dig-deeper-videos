@@ -55,6 +55,37 @@ const Words: React.FC<{ film: Film }> = ({ film }) => {
     </AbsoluteFill>
   );
 };
+/** where a place in the world is on the picture, seen by `cam` (null behind the lens) */
+const toScreen = (cam: Cam, p: [number, number, number]): [number, number] | null => {
+  const c = new THREE.PerspectiveCamera(cam.fov, SW / SH, 0.1, 3000); c.position.set(cam.pos[0], cam.pos[1], cam.pos[2]); c.lookAt(cam.look[0], cam.look[1], cam.look[2]); c.updateMatrixWorld();
+  const v = new THREE.Vector3(p[0], p[1], p[2]).project(c); return v.z > 1 ? null : [((v.x + 1) / 2) * SW, ((1 - v.y) / 2) * SH];
+};
+const backOut = (k: number) => 1 + 2.7 * (k - 1) ** 3 + 1.7 * (k - 1) ** 2;
+/** the film's speech bubbles: a white rounded bubble with the comic outline, above the speaker's head with its tail toward it; it pops
+ *  up in 0.14 s with a little overshoot and goes in 0.08 s. Kept inside the picture and above the captions. */
+const Bubbles: React.FC<{ film: Film }> = ({ film }) => {
+  const T = useCurrentFrame() / film.fps, live = (film.bubbles ?? []).filter((q) => T >= q.a && T < q.b);
+  if (!live.length) return null;
+  const shot = shotAt(film, T), t = T - shot.a, cam = shot.cam(t, t / (shot.b - shot.a)), cast = shot.cast(t, T);
+  return (
+    <AbsoluteFill>
+      {live.map((q, i) => {
+        const who = cast.find((x) => x.name === q.who), head = who ? toScreen(cam, [who.at[0], who.at[1] + who.h * 0.9, who.at[2]]) : null, H = head ?? [SW / 2, 760];
+        const px = q.size ?? 72, w = Math.min(SW - 80, q.text.length * px * 0.66 + 80), h = Math.round(px * 1.12 + 44);
+        const x = Math.max(40 + w / 2, Math.min(SW - 40 - w / 2, H[0] + (q.dx ?? 0))), y = Math.max(40 + h, Math.min(1400, H[1] + (q.dy ?? -px * 2.6)));
+        const k = Math.min(1, (T - q.a) / 0.14), out = Math.min(1, Math.max(0, (q.b - T) / 0.08)), s = (k < 1 ? 0.6 + 0.4 * backOut(k) : 1) * (0.7 + 0.3 * out);
+        // the tail: from the bubble's lower edge toward the head, stopping well short of the face
+        const dx = H[0] - x, dy = H[1] - y, far = Math.hypot(dx, dy) || 1, reach = Math.min(110, far * 0.55), tip = [x + (dx / far) * reach, y + (dy / far) * reach], bx = Math.max(x - w / 2 + 50, Math.min(x + w / 2 - 50, x + dx * 0.12));
+        return (
+          <React.Fragment key={`b${i}`}>
+            <svg width={SW} height={SH} style={{ position: "absolute", left: 0, top: 0, opacity: k * out }}><polygon points={`${bx - 26},${y - 8} ${bx + 26},${y - 8} ${tip[0]},${tip[1]}`} fill="#fffdf5" stroke={STROKE} strokeWidth={7} strokeLinejoin="round" /></svg>
+            <div style={{ position: "absolute", left: x - w / 2, top: y - h, width: w, height: h, boxSizing: "border-box", background: "#fffdf5", border: `7px solid ${STROKE}`, borderRadius: h / 2, display: "flex", alignItems: "center", justifyContent: "center", font: `900 ${px}px 'Arial Black', Arial, sans-serif`, color: STROKE, whiteSpace: "nowrap", transform: `scale(${s})`, transformOrigin: `${bx - (x - w / 2)}px 100%`, opacity: out }}>{q.text}</div>
+          </React.Fragment>
+        );
+      })}
+    </AbsoluteFill>
+  );
+};
 /** the film's tint for the time T, multiplied over the picture */
 const Grade: React.FC<{ film: Film; at?: number }> = ({ film, at }) => { const fr = useCurrentFrame(), g = film.grade?.(at ?? fr / film.fps); return g ? <AbsoluteFill style={{ background: g, mixBlendMode: "multiply" }} /> : null; };
 export const Stage: React.FC<{ film: Film }> = ({ film }) => {
@@ -65,6 +96,7 @@ export const Stage: React.FC<{ film: Film }> = ({ film }) => {
         <Scene film={film} />
       </ThreeCanvas>
       <Grade film={film} />
+      {p.words !== false && <Bubbles film={film} />}
       {p.words !== false && <Words film={film} />}
       {p.audio !== false && film.audio && <Audio src={staticFile(film.audio)} />}
     </AbsoluteFill>

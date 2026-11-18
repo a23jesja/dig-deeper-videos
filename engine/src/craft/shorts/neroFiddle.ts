@@ -217,8 +217,9 @@ const QUILL = once(() => noShade(reedPen())), SCROLL_O = once(() => noShade(scro
 //    there."): the same terrace, without the messenger
 const SIGNPOST = once(() => { const g = new THREE.Group(); g.add(mesh(box(0.1, 2.3, 0.1), "#7a4a26", { at: [0, 1.15, 0], line: 0.6 }));
   const b = painted(["ANTIUM", "50 km from Rome"], 1.12, 0.48, { ink: "#3a2414", bg: "#f3e2b8", edge: "#7a4a26", pad: 0.1 }); b.position.set(0.1, 2.0, 0.07); g.add(b);
-  // the arrow above the board, toward the smoke (along -x of the post: the film turns the post so that this points to the smoke)
-  const arrow = group([mesh(box(0.7, 0.1, 0.04), "#b3261e", { at: [-0.2, 0, 0], line: 0.5 }), mesh(box(0.2, 0.2, 0.04), "#b3261e", { at: [-0.56, 0, 0], rot: [0, 0, Math.PI / 4], line: 0.5 })]); arrow.position.set(0.1, 2.42, 0.08); g.add(arrow);      // above the board, clear of every head
+  // the arrow above the board, toward the smoke (along +x of the post, which the film turns to face the lens: the smoke rises on the
+  // horizon to the right, in the open sky above the emperor)
+  const arrow = group([mesh(box(0.7, 0.1, 0.04), "#b3261e", { at: [0.2, 0, 0], line: 0.5 }), mesh(box(0.2, 0.2, 0.04), "#b3261e", { at: [0.56, 0, 0], rot: [0, 0, Math.PI / 4], line: 0.5 })]); arrow.position.set(0.1, 2.42, 0.08); g.add(arrow);      // above the board, clear of every head
   return g; });
 const villaShot = (id: string, a0: number, b0: number, messenger: boolean) => {
   const len = b0 - a0, v = FIRE.villa, V = lens(v.x + 3.2, v.y + 1.45, v.z + 4.6, 0.3, -1, -4, 58);
@@ -233,7 +234,7 @@ const villaShot = (id: string, a0: number, b0: number, messenger: boolean) => {
   msg.actAt(HERE, { lean: 40, py: -0.12, armL: arm(44, 10, 30, 0), armR: arm(44, 10, 30, 0), head: [0, 20, 0] }, POINT - HERE + 0.05, { in: 0.16, out: 0.14, antic: 0, over: 1.3, handL: "open", handR: "open", face: { lid: 0.5, brow: 1, mouth: 0.7, smile: -1 } });
   msg.actAt(POINT, { lean: 8, twist: -30, armL: arm(100, 70, 104, 76), head: [-30, -4, 0] }, 9, { in: 0.2, antic: 0.3, over: 1.6, handL: "point", face: { wide: 1, lid: 0, brow: 1, mouth: 0.5, smile: -1 } });
   let GR0: V3 | null = null;
-  const [fx, fz] = V.spot(330, -74), [px, pz] = V.spot(3.7, -0.5);
+  const [fx, fz] = V.spot(330, 64), [px, pz] = V.spot(3.7, -0.5);      // about 11 degrees right of the lens axis: above the emperor
   GRADES.push({ a: a0, b: b0, g: () => null });
   add({ id, a: a0, b: b0, still: messenger ? POINT + 0.4 : len * 0.6,
     sounds: messenger ? [...msg.cues().filter((q) => q.k === "step" && q.t < HERE).map((q) => ({ t: q.t, k: "step", run: true, g: 0.9, p: -0.5 })), { t: HERE, k: "scuff", g: 0.9, p: -0.2 }, { t: POINT, k: "whoosh", g: 0.5, p: -0.3 }, { t: JUMP, k: "whoosh", g: 0.7, p: 0.3 }] : [{ t: 0.3, k: "splash", g: 0.25 }],
@@ -516,6 +517,10 @@ export const NERO_FIDDLE: Film = {
     { T: LATER + 1.3, words: ["NO", "FIDDLE"], y: 0.7, size: 150 },
   ],
   hits: [{ t: SIX_A + 1.2, amp: 0.5, dur: 0.3 }],
+  // our own lines (DAILY-RULES, "Our own lines"), as bubbles over the picture: the rumour whispered on, and the emperor at his cithara
+  // while Sir Digsworth holds his ears
+  bubbles: [{ a: cut("six", "rumour") + 0.05, b: cut("six", "rumour") + 0.9, text: "Psst!", who: "a" }, { a: cut("six", "rumour") + 0.95, b: SANG - 0.06, text: "Did you hear?", who: "b" },
+    { a: WIDE + 0.45, b: AND - 0.05, text: "Sing along!", who: "nero" }],
   labels: [{ a: SIX_A, b: SIX_B, top: 310, text: (T) => "DAY " + ["I", "II", "III", "IV", "V", "VI"][Math.max(0, Math.min(5, Math.floor(((T - SIX_A) / (SIX_B - SIX_A)) * 6)))] }],
   beds: [{ k: "fire", a: 0, b: TAC_A, g: 0.9 }, { k: "sea", a: TAC_B, b: cut("away", "gardens"), g: 0.7 }, { k: "fire", a: SIX_A, b: SIX_B, g: 1 }, { k: "fire", a: SANG, b: AND, g: 0.8 }, { k: "sea", a: AND, b: END13, g: 0.6 }, { k: "fire", a: END13, b: END, g: 0.8 }], music: "roman", audio: "craft/nero-fiddle.wav",
 };

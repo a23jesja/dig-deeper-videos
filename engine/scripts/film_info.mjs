@@ -68,6 +68,8 @@ else if (what === "grips") {
 else if (what === "audio") {
   // everything the sound needs (audio/film_audio.py): each shot's sounds on their frames, the beds, the voice, the music, the impacts
   const cues = [], beds = (film.beds ?? []).map((b) => ({ k: b.k, f0: f(b.a), f1: f(b.b), g: b.g ?? 1 }));
+  // each speech bubble pops up with a small tap
+  for (const q of film.bubbles ?? []) cues.push({ f: f(q.a), shot: "bubble", k: "tap", g: 0.45, p: 0 });
   for (const s of film.shots) { for (const c of s.sounds ?? []) { if (c.t < -0.001 || s.a + c.t > s.b + 0.6) console.error(`warning: ${s.id}: sound ${c.k} at ${c.t.toFixed(2)} s lies outside its shot`); const { t, ...rest } = c; cues.push({ f: f(s.a + c.t), shot: s.id, ...rest }); }
     for (const b of s.beds ?? []) beds.push({ k: b.k, f0: f(s.a + b.a), f1: f(s.a + b.b), g: b.g ?? 1 }); }
   cues.sort((a, b) => a.f - b.f);

@@ -58,6 +58,10 @@ export type Film = {
   /** words laid over the picture for a while, in the captions' letters, high in the picture (a counter of days, a name): `text` may
    *  change with the film's time; `top` = pixels from the top (300 when left out), `col` its colour */
   labels?: { a: number; b: number; text: (T: number) => string; top?: number; size?: number; col?: string }[];
+  /** speech bubbles: our own short lines (DAILY-RULES, "Our own lines") laid over the picture without moving the voice. `who` is the
+   *  speaker's name in the shot's cast: the bubble stands above his head and its tail points at it; dx, dy move it from there (px).
+   *  Never a historical quote: no quotation marks, nothing that carries a fact. */
+  bubbles?: { a: number; b: number; text: string; who: string; dx?: number; dy?: number; size?: number }[];
   /** impacts that shake the camera */
   hits?: { t: number; amp: number; dur?: number }[];
   /** what lies under the whole film (film seconds), and the name of its music in audio/film_music.py */

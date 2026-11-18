@@ -18,7 +18,7 @@ import { CastViews, CAST_VIEW_FRAMES, CW, CH } from "./craft/CastViews";
 import { FaceSheet, FACE_SHEET_FRAMES, FW, FH } from "./craft/FaceSheet";
 import { SirTest, SirMoves, SIR_TEST_FRAMES, TW, TH, TFPS, MVW, MVH } from "./craft/SirMotion";
 import { SetViews, SET_VIEWS } from "./craft/world/SetViews";
-import { RomePee, ROME_PEE_FRAMES, PiratePlank, PIRATE_PLANK_FRAMES, PiratePlankThumbs, RomePeeThumbs, BlackFlag, BLACK_FLAG_FRAMES, BlackFlagThumbs, NeroFiddle, NERO_FIDDLE_FRAMES, NeroFiddleThumbs, GripSheet, GRIP_SHEET_FRAMES, GripSheet2, GRIP_SHEET_2_FRAMES, GripSheet3, GRIP_SHEET_3_FRAMES, GripSheet4, GRIP_SHEET_4_FRAMES, LookBlackbeard, LOOK_BLACKBEARD_FRAMES, LookYou, LOOK_YOU_FRAMES, GripSheet5, GRIP_SHEET_5_FRAMES, BlackbeardHookA, BlackbeardHookB, BlackbeardHookC, BB_HOOK_FRAMES, BlackbeardFuses, BLACKBEARD_FUSES_FRAMES, BlackbeardFusesThumbs, GladiatorsDeath, GLADIATORS_DEATH_FRAMES, GladiatorsDeathThumbs, ArenaSet, ARENA_SET_FRAMES, GladiatorsHookA, GladiatorsHookB, GladiatorsHookC, GLAD_HOOK_FRAMES } from "./craft/shorts/comps";
+import { RomePee, ROME_PEE_FRAMES, PiratePlank, PIRATE_PLANK_FRAMES, PiratePlankThumbs, RomePeeThumbs, BlackFlag, BLACK_FLAG_FRAMES, BlackFlagThumbs, NeroFiddle, NERO_FIDDLE_FRAMES, NeroFiddleThumbs, GripSheet, GRIP_SHEET_FRAMES, GripSheet2, GRIP_SHEET_2_FRAMES, GripSheet3, GRIP_SHEET_3_FRAMES, GripSheet4, GRIP_SHEET_4_FRAMES, LookBlackbeard, LOOK_BLACKBEARD_FRAMES, LookYou, LOOK_YOU_FRAMES, GripSheet5, GRIP_SHEET_5_FRAMES, GripSheet6, GRIP_SHEET_6_FRAMES, BlackbeardHookA, BlackbeardHookB, BlackbeardHookC, BB_HOOK_FRAMES, BlackbeardFuses, BLACKBEARD_FUSES_FRAMES, BlackbeardFusesThumbs, GladiatorsDeath, GLADIATORS_DEATH_FRAMES, GladiatorsDeathThumbs, ArenaSet, ARENA_SET_FRAMES, GladiatorsHookA, GladiatorsHookB, GladiatorsHookC, GLAD_HOOK_FRAMES } from "./craft/shorts/comps";
 import { PompeiiStills, POMPEII_STILLS } from "./craft/world/PompeiiStills";
 import { BostonStills, BOSTON_STILLS } from "./craft/world/BostonStills";
 import { EnvKit, ENV_PARTS } from "./videos/emu/env/EnvKit";
@@ -85,6 +85,7 @@ export const Root: React.FC = () => (
     <Composition id="LookBlackbeard" component={LookBlackbeard} durationInFrames={LOOK_BLACKBEARD_FRAMES} fps={30} width={1080} height={1920} />
     <Composition id="LookYou" component={LookYou} durationInFrames={LOOK_YOU_FRAMES} fps={30} width={1080} height={1920} />
     <Composition id="GripSheet5" component={GripSheet5} durationInFrames={GRIP_SHEET_5_FRAMES} fps={30} width={1080} height={1920} />
+    <Composition id="GripSheet6" component={GripSheet6} durationInFrames={GRIP_SHEET_6_FRAMES} fps={30} width={1080} height={1920} />
     <Composition id="BlackbeardHookA" component={BlackbeardHookA} durationInFrames={BB_HOOK_FRAMES} fps={30} width={1080} height={1920} />
     <Composition id="BlackbeardHookB" component={BlackbeardHookB} durationInFrames={BB_HOOK_FRAMES} fps={30} width={1080} height={1920} />
     <Composition id="BlackbeardFuses" component={BlackbeardFuses} durationInFrames={BLACKBEARD_FUSES_FRAMES} fps={30} width={1080} height={1920} />

@@ -623,3 +623,28 @@ export const scrollHeld = (w = 0.3, h = 0.38) => { const map = paint("scrollwrit
   return group([mesh(cyl(0.016, 0.016, w + 0.06, 10), C.woodD, { rot: [0, 0, Math.PI / 2], line: 0.5, shadow: false }), mesh(box(w, h, 0.004), "#ffffff", { at: [0, -h / 2 - 0.015, 0], map, line: 0.5, shadow: false }), mesh(cyl(0.016, 0.016, w + 0.06, 10), C.woodD, { at: [0, -h - 0.03, 0], rot: [0, 0, Math.PI / 2], line: 0.5, shadow: false })]); };
 /** one olive, held between finger and thumb (the origin) */
 export const olive = () => group([mesh(ball(0.013, 8), "#3a3a24", { scale: [1.25, 1, 1], line: 0.3, shadow: false })]);
+
+// ---------------- the animal trials: Saint-Julien's court and vineyard (grip sheet 6) ----------------
+/** the villagers' complaint: a rolled parchment tied with a red ribbon, held at its middle (the origin), lying along x */
+export const complaintRoll = (len = 0.3) => group([mesh(cyl(0.025, 0.025, len, 12), "#efe2bc", { rot: [0, 0, Math.PI / 2], line: 0.5, shadow: false }),
+  mesh(cyl(0.027, 0.027, 0.028, 12), "#b8322a", { at: [len * 0.26, 0, 0], rot: [0, 0, Math.PI / 2], line: 0.3, shadow: false })]);
+/** a clay water jug carried by the loop handle over its mouth: the handle's top at the origin, the jug hanging below it, upright */
+export const jugHeld = (h = 0.26) => { const r = h * 0.36, j = group([mesh(cyl(r * 0.8, r, h * 0.62, 14), "#b0643c", { at: [0, h * 0.31, 0], line: 0.5, shadow: false }),
+  mesh(cyl(r * 0.45, r * 0.8, h * 0.22, 14), "#b0643c", { at: [0, h * 0.73, 0], line: 0.5, shadow: false }), mesh(cyl(r * 0.5, r * 0.45, h * 0.06, 14), "#9a5432", { at: [0, h * 0.87, 0], line: 0.4, shadow: false }),
+  mesh(arc(r * 0.55, h * 0.03, Math.PI, 12), "#9a5432", { at: [0, h * 0.9, 0], line: 0.4, shadow: false })]); j.position.y = -(h * 0.9 + r * 0.55); return group([j]); };
+/** a surveyor's measuring rod, marked in dark bands, held at chest height (the origin): its foot along -x toward the ground, its top along +x */
+export const measureRod = (below = 1.18, above = 0.8) => { const len = below + above, g = group([mesh(box(len, 0.042, 0.042), "#c9a46a", { at: [(above - below) / 2, 0, 0], line: 0.5, shadow: false })]);
+  for (let x = -below + 0.15; x < above - 0.05; x += 0.3) g.add(mesh(box(0.15, 0.045, 0.045), "#3a2a1a", { at: [x, 0, 0], line: 0, shadow: false })); return g; };
+/** the judge's gavel: a wooden mallet held by its handle (the origin), its head across the far end along +x */
+export const gavel = () => group([mesh(box(0.24, 0.022, 0.022), "#6a4a2a", { at: [0.07, 0, 0], line: 0.5, shadow: false }), mesh(cyl(0.034, 0.034, 0.1, 12), "#7a5232", { at: [0.2, 0, 0], line: 0.5, shadow: false })]);
+/** the lawyer's big book, held open in both hands by its edges like openBook, but its pages only writing */
+export const plainBook = (w = 0.52, h = 0.36) => { const map = paint("bookplain", 512, 352, (g) => { g.fillStyle = "#f3e6c4"; g.fillRect(0, 0, 512, 352); g.fillStyle = "#cdb98a"; g.fillRect(253, 0, 6, 352);
+    g.fillStyle = "#5a4a3a"; for (const x0 of [26, 280]) for (let y = 34; y < 330; y += 18) g.fillRect(x0, y, (y * 7) % 54 === 4 ? 150 : 205, 6); g.fillStyle = "#9a2a22"; g.fillRect(26, 30, 40, 40); g.fillRect(280, 30, 40, 40); });
+  const g = group([mesh(box(w + 0.03, h + 0.03, 0.02), "#4a2a1a", { at: [0, 0, -0.012] }), mesh(box(w, h, 0.012), "#ffffff", { map, line: 0.5, shadow: false })]);
+  g.userData.grips = [[-w / 2 - 0.01, 0, 0], [w / 2 + 0.01, 0, 0]]; g.userData.depth = 0.04; return g; };
+/** the court's record: a thick bound book lying open on a table at its end, the last leaf of writing on the left; on the right only the inside
+ *  of the back board and a ragged stub where the last page was torn out. Its origin is at the middle of its spine, on the table top */
+export const recordBook = (w = 0.5, h = 0.34) => { const map = paint("recordpages", 512, 352, (g) => { g.fillStyle = "#efe2bc"; g.fillRect(0, 0, 259, 352); g.fillStyle = "#4a3a2a";
+    for (let y = 30; y < 330; y += 18) g.fillRect(24, y, 200 - ((y * 13) % 50), 5); g.fillStyle = "#8a6a4a"; g.fillRect(259, 0, 253, 352);
+    g.fillStyle = "#efe2bc"; g.beginPath(); g.moveTo(259, 0); for (let y = 0; y <= 352; y += 16) g.lineTo(272 + ((y * 7) % 13), y); g.lineTo(259, 352); g.closePath(); g.fill(); });
+  return group([mesh(box(w + 0.03, 0.05, h + 0.03), "#5a3a22", { at: [0, 0.025, 0], line: 0.6 }), mesh(box(w, 0.006, h), "#ffffff", { at: [0, 0.053, 0], map, line: 0.4, shadow: false })]); };

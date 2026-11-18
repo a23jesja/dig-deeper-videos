@@ -134,6 +134,17 @@ export const PEN: Prop = { name: "pen", uses: { write: { arm: A(40, 10, 95, -12)
 export const SCROLL: Prop = { name: "scroll", uses: { hold: { arm: A(40, 10, 100, -24), level: 0, ok: within(-8, 8, "a held scroll hangs from its upper roller") } } };
 /** an olive between finger and thumb, at the mouth */
 export const OLIVE: Prop = { name: "olive", uses: { eat: { arm: A(40, 10, 150, -10), level: 0, ok: any } } };
+// ---------------- grip sheet 6: the animal trials (Saint-Julien's court and vineyard) ----------------
+/** the villagers' complaint, a rolled parchment held at its middle (props.ts complaintRoll): carried at his side, or held out to show */
+export const COMPLAINT: Prop = { name: "complaint", uses: { carry: { arm: A(10, 14, 30, 6), level: 0, ok: within(-25, 25, "a carried roll lies level in the fist") },
+  show: { arm: A(84, 8, 94, 0), level: 0, ok: within(-20, 20, "a roll held out to show lies level") } } };
+/** a clay jug carried by the loop handle over its mouth (props.ts jugHeld), hanging upright as a bucket does */
+export const JUG: Prop = { name: "jug", uses: { carry: { arm: A(6, 12, 12, 6), level: 0, ok: within(-8, 8, "a jug carried by its handle hangs upright") } } };
+/** a surveyor's measuring rod held at chest height (props.ts measureRod), standing upright with its foot on the ground */
+export const ROD: Prop = { name: "rod", uses: { staff: { arm: A(24, 14, 62, 6), level: 90, ok: within(75, 105, "a measuring rod stands upright, its foot on the ground") } } };
+/** the judge's gavel (props.ts gavel), its head along +x: raised to strike, or brought down on the table */
+export const GAVEL: Prop = { name: "gavel", uses: { raised: { arm: A(130, 24, 160, 10), level: 60, ok: within(25, 105, "a raised gavel's head is up") },
+  strike: { arm: A(46, 16, 80, 8), level: -25, ok: within(-75, 10, "a gavel that strikes points down at the table") } } };
 
 /** what the script check has seen in the frame it is reading: one row per thing in a hand, falling or set down */
 export const AUDIT: { on: boolean; rows: { id: string; prop: string; use: string; holder: string; err: string | null; at?: V3; /** the thing itself: the script check sees that a hand named in `holder` is on it */ o?: THREE.Object3D }[] } = { on: false, rows: [] };

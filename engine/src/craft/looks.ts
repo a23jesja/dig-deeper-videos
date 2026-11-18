@@ -341,6 +341,21 @@ export const OLDMAN: Look = { ...CITIZEN, id: "oldman", head: { a: 108, b: 112, 
  *  a bald man at phone size; ROMAN_WOMAN2 itself stays as it is, for the published Nero film) */
 export const ROMAN_WOMAN_OLIVES: Look = { ...ROMAN_WOMAN2, id: "romanwomanolives", hair: { col: "#1c1410", kind: "bun" } };
 export const ROMAN_WOMAN_OLIVES_D = castDesign(ROMAN_WOMAN_OLIVES);
+// ---------------- the animal trials: Saint-Julien in Savoy, 1587 (granskning/animal-trials/manus.md) ----------------
+/** a winegrower of Saint-Julien: a long-sleeved brown tunic belted over hose, a straw hat, short brown hair */
+export const VILLAGER: Look = { ...CITIZEN, id: "villager", head: { a: 112, b: 112, H: 228, jaw: 1.0, round: 0.5, eye: 0.9 }, skin: "#e2ad84", brow: "#4a3020", hat: "boater", hatCol: "#d9b86a", hatBand: "#7a5a36", hair: { col: "#4a3020", kind: "short" }, coat: "#7a6a4a", accent: "#5a4a32", belt: "#4a3a26", legs: "trousers", trous: "#5a4f40", feet: "shoes", sleeve: "long" };
+/** a winegrower's wife: a long blue-grey dress with long sleeves, an apron and a white linen coif over her hair */
+export const VILLAGER_WOMAN: Look = { ...ROMAN_WOMAN, id: "villagerwoman", head: { a: 104, b: 110, H: 226, jaw: 0.86, round: 0.6, eye: 1.04 }, skin: "#ecbf98", brow: "#5a3a22", hat: "brodie", hatCol: "#f6f1e4", brim: 0.7, hair: { col: "#5a3a22", kind: "back" }, coat: "#5a6a8a", accent: "#ece2c8", cloak: undefined, belt: "#ece2c8", apron: "#ece2c8", feet: "shoes", sleeve: "long" };
+/** the bishop's official, who judges the case: older, grey, in a long dark violet cassock with a white collar and a black skullcap */
+export const OFFICIAL: Look = { ...CITIZEN, id: "official", head: { a: 114, b: 118, H: 232, jaw: 1.04, round: 0.45, eye: 0.84 }, skin: "#ebc4a0", brow: "#a8a29a", hat: "brodie", hatCol: "#1e1a22", brim: 0.6, hair: { col: "#a8a29a", kind: "short" },
+  coat: "#3a2a4a", accent: "#f4efe2", belt: "#5a3a6a", skirt: true, rows: [[-400, 150, 112, 124], [-280, 140, 104, 114], [-120, 122, 94, 100], [0, 112, 90, 86], [100, 106, 90, 78], [190, 112, 82, 70], [244, 114, 62, 62], [268, 56, 40, 44]], legs: "trousers", trous: "#2a2230", feet: "shoes", sleeve: "long" };
+/** the lawyer the court gives the weevils: a long black gown with white bands at the throat and a black coif, dark hair, a sharp face */
+export const ADVOCATE: Look = { ...OFFICIAL, id: "advocate", head: { a: 104, b: 112, H: 232, jaw: 0.9, round: 0.35, eye: 0.92 }, skin: "#e7bc96", brow: "#2a1c14", hatCol: "#141216", hair: { col: "#2a1c14", kind: "short" }, coat: "#1e1c22", accent: "#f6f2e8", belt: "#1e1c22" };
+/** one of the experts sent to look at the field: a green doublet over hose, a brown felt hat */
+export const EXPERT: Look = { ...VILLAGER, id: "expert", head: { a: 108, b: 114, H: 230, jaw: 0.96, round: 0.45, eye: 0.88 }, skin: "#ddb08a", brow: "#6a5a4a", hatCol: "#5a4030", hatBand: "#2a1c14", hair: { col: "#6a5a4a", kind: "short" }, beard: "#6a5a4a", coat: "#4a6a5a", accent: "#2a3a30", belt: "#2a1c14", trous: "#3a3a30" };
+/** the court's clerk, who keeps the record: a long grey gown, bald, spectacles of his own (none drawn) */
+export const CLERK: Look = { ...ADVOCATE, id: "clerk", head: { a: 108, b: 108, H: 226, jaw: 0.92, round: 0.55, eye: 0.9 }, hat: "none", hair: { col: "#7a6a5a", kind: "bald" }, coat: "#5a5a62", belt: "#3a3a42" };
+export const VILLAGER_D = castDesign(VILLAGER), VILLAGER_WOMAN_D = castDesign(VILLAGER_WOMAN), OFFICIAL_D = castDesign(OFFICIAL), ADVOCATE_D = castDesign(ADVOCATE), EXPERT_D = castDesign(EXPERT), CLERK_D = castDesign(CLERK);
 export const ROMAN_WOMAN2_D = castDesign(ROMAN_WOMAN2), ROMAN_WOMAN3_D = castDesign(ROMAN_WOMAN3), GIRL_D = castDesign(GIRL), OLDMAN_D = castDesign(OLDMAN);
 
 // ---------------- the arena (gladiators-death) ----------------

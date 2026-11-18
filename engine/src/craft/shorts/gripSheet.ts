@@ -9,6 +9,9 @@ import { lens, once, noShade, near, palm, fuseSmoke, aside, span } from "../stag
 import { glow } from "../world/fire";
 import { GLADIUS, NET, STICK, TRIDENT, SHIELD_ARM, shieldOn, pole, polePose, Stand, PISTOL, SABRE, MUG, SPYGLASS, BUCKET, LINSTOCK, FIDDLE, BOW, GRAPES, BUNDLE, wield, spy, spyEye, spyPose, aimPose, usePose, sheathed, drawSabre, drawPose, reach, liftPose, haul, haulPose, carryBy, fiddlePose, fiddlePlay, citharaPose, citharaHold, shoulderPose, onShoulder, inHand, letGo, jointsOf, handshake, handOn, RIBBON, SPILL, FUSE, WOODSWORD, BOWL, SPOON, ROLL, COIN, MAPPA, PEN, SCROLL, OLIVE } from "../stage/grips";
 import { flagSea } from "../world/ship";
+import { COMPLAINT, JUG, ROD, GAVEL } from "../stage/grips";
+import { complaintRoll, jugHeld, measureRod, gavel, plainBook, recordBook, table as tableT } from "../world/props";
+import { VILLAGER_D, VILLAGER_WOMAN_D, OFFICIAL_D, ADVOCATE_D, EXPERT_D, CLERK_D } from "../looks";
 import { group, mesh, box } from "../world/kit";
 import { gladius, scutum, trident, netBunch, refStick, spyglass, pistolHeld, sabre, mugHeld, scabbard, bucketHeld, linstock, chest, fiddle, fiddleBow, fiddleByNeck, cithara, grapes, bundleHeld, bench, ribbonBow, tray, spill, fuseCord, pistolSling, openBook, woodSword, stretcher, bowl, bowlRim, spoon, bandageRoll, coinHeld, mappa, reedPen, scrollHeld, olive } from "../world/props";
 import { MURMILLO_GRILLE_D, MURMILLO_D, RETIARIUS_D, REFEREE_D, CUSTOMS_D, SHIPOWNER_D, PIRATE_D, SAILOR_D, PIRATE2_D, CAPTAIN_D, COOK_D, GUNNER_D, DOCKER_D, DOCKHAND_D, NERO_D, NERO_STAGE_D, ROMAN_WOMAN2_D, CITIZEN_D, BLACKBEARD_D, YOU_D, SIR_D, BLACKBEARD_PREP_D, BLACKBEARD_ARMED_D, SHIPBOY_D, OLDHAND_D, MURMILLO_BARE_D, CARRIED_D, TRAINER_D, PUPIL_D, OWNER_D, DOCTOR_D, SPONSOR_D, BEARER_D, BEARER2_D } from "../looks";
@@ -284,4 +287,33 @@ for (const [view, turn] of [["front", 0], ["slant", 30]] as [string, number][]) 
 both((view, turn) => card5(`murmillo-grille-${view}`, [{ D: MURMILLO_GRILLE_D, h: 1.84, turn, pose: () => ({ ...usePose(GLADIUS, "ready", "R"), armL: SHIELD_ARM }), hands: LR, face: { brow: -0.7, lid: 0.15 } }],
   (g, [a], cam) => { wield(g, GLAD(), GLADIUS, "ready", a, "R", cam); shieldOn(g, SCUTUM(), a, "L", cam); }));
 export const GRIP_SHEET_5: Film = { ...GRIP_SHEET, id: "grip-sheet-5", seconds: shots5.length * LEN, shots: shots5 };
+
+// ---------------- sheet 6: the animal trials (granskning/animal-trials/manus.md): the new things in hand, each from the front and the side,
+// held by the film's own people: the villagers' complaint carried and held out, the lawyer's book, a jug carried by its handle, the
+// experts' measuring rod, the judge's gavel raised and striking, and the clerk's hand on the record with its last page torn out ----------------
+const shots6: Shot[] = [];
+const card6 = (id: string, figs: Fig[], thing: (g: THREE.Group, c: Staged[], cam: Cam) => void, W = V) => { card2(id, figs, thing, W); const s = shots2.pop()!, a = shots6.length * LEN; shots6.push({ ...s, a, b: a + LEN }); };
+const ROLL6 = once(() => noShade(complaintRoll())), JUG6 = once(() => noShade(jugHeld())), ROD6 = once(() => noShade(measureRod())), GAVEL6 = once(() => noShade(gavel())), BOOK6 = once(() => plainBook()), RECORD6 = once(() => recordBook()), DESK6 = once(() => tableT(1.0, 0.6, 0.76));
+const PLAIN = { brow: 0.2, lid: 0.2, smile: 0.1 };
+both((view, turn) => card6(`complaint-carry-${view}`, [{ D: VILLAGER_D, h: 1.76, turn, pose: () => usePose(COMPLAINT, "carry", "R"), hands: R1, face: { brow: -0.5, lid: 0.1, mouth: 0.2, smile: -0.3 } }],
+  (g, [a], cam) => { wield(g, ROLL6(), COMPLAINT, "carry", a, "R", cam); }));
+both((view, turn) => card6(`complaint-show-${view}`, [{ D: VILLAGER_D, h: 1.76, turn, pose: () => usePose(COMPLAINT, "show", "R"), hands: R1, face: { brow: -0.6, lid: 0, mouth: 0.4, smile: -0.4 } }],
+  (g, [a], cam) => { wield(g, ROLL6(), COMPLAINT, "show", a, "R", cam); }));
+both((view, turn) => card6(`book-plead-${view}`, [{ D: ADVOCATE_D, h: 1.8, turn, pose: (s) => ({ ...twoHands(s, 0.66, 0.27, 0.24), head: [0, 4, 0] }), hands: LR, face: { brow: 0.6, lid: 0.1, mouth: 0.4 } }],
+  (g, [a], cam) => { carryBy(g, BOOK6(), a, "L", a, "R", cam); }));
+both((view, turn) => card6(`jug-carry-${view}`, [{ D: VILLAGER_WOMAN_D, h: 1.64, turn, pose: () => usePose(JUG, "carry", "R"), hands: R1, face: PLAIN }],
+  (g, [a], cam) => { wield(g, JUG6(), JUG, "carry", a, "R", cam); }));
+both((view, turn) => card6(`rod-staff-${view}`, [{ D: EXPERT_D, h: 1.78, turn, pose: () => usePose(ROD, "staff", "R"), hands: R1, face: { brow: 0.3, lid: 0.3 } }],
+  (g, [a], cam) => { wield(g, ROD6(), ROD, "staff", a, "R", cam); }));
+both((view, turn) => card6(`gavel-raised-${view}`, [{ D: OFFICIAL_D, h: 1.74, turn, pose: () => usePose(GAVEL, "raised", "R"), hands: R1, face: { brow: -0.6, lid: 0.1, mouth: 0.3, smile: -0.3 } }],
+  (g, [a], cam) => { wield(g, GAVEL6(), GAVEL, "raised", a, "R", cam); }));
+both((view, turn) => card6(`gavel-strike-${view}`, [{ D: OFFICIAL_D, h: 1.74, turn, pose: () => usePose(GAVEL, "strike", "R"), hands: R1, face: { brow: -0.8, lid: 0.1, mouth: 0.5, smile: -0.4 } }],
+  (g, [a], cam) => { wield(g, GAVEL6(), GAVEL, "strike", a, "R", cam); }));
+// the clerk at his desk, his hand flat on the record where its last page was torn out (nothing in his hand: the record lies on the desk)
+both((view, turn) => card6(`record-page-${view}`, [{ D: CLERK_D, h: 1.72, turn, pose: (s) => { const f: [number, number] = [Math.sin((s.heading * Math.PI) / 180), Math.cos((s.heading * Math.PI) / 180)], r: [number, number] = [-f[1], f[0]];
+      return { ...reach(s, "R", [s.at[0] + f[0] * 0.42 + r[0] * 0.08, 0.84, s.at[2] + f[1] * 0.42 + r[1] * 0.08]), head: [0, 14, 0] }; }, hands: { handR: "open" }, face: { brow: 0.8, lid: 0.2, mouth: 0.3, smile: -0.2 } }],
+  (g, [a], cam) => { const f: [number, number] = [Math.sin((a.heading * Math.PI) / 180), Math.cos((a.heading * Math.PI) / 180)], d = DESK6(), b = RECORD6();
+    d.position.set(a.at[0] + f[0] * 0.5, 0, a.at[2] + f[1] * 0.5); d.rotation.y = (a.heading * Math.PI) / 180; g.add(d);
+    b.position.set(a.at[0] + f[0] * 0.42, 0.76, a.at[2] + f[1] * 0.42); b.rotation.y = (a.heading * Math.PI) / 180; g.add(b); }));
+export const GRIP_SHEET_6: Film = { ...GRIP_SHEET, id: "grip-sheet-6", seconds: shots6.length * LEN, shots: shots6 };
 

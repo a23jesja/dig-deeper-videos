@@ -7,12 +7,12 @@ import * as THREE from "three";
 import { Film, Shot, Cam, V3, Staged, Word, play, talk, smooth, mix3 } from "../stage/film";
 import { mover, mt, wag, arm, MM } from "../stage/acting";
 import { lens, once, noShade, put, near, carry, palm, aside, span, stageAt, fingers } from "../stage/staging";
-import { wield, letGo, blend, quiet, vanish, inHand, onShoulder, fiddlePlay, fiddlePose, bowPose, fiddleAt, citharaHold, citharaPose, citharaPlace, pluckPose, reach, jointsOf, Stand, GRAPES as GRAPES_P, BUNDLE, FIDDLE as FIDDLE_P, BOW as BOW_P } from "../stage/grips";
+import { wield, letGo, blend, quiet, vanish, inHand, onShoulder, fiddlePlay, fiddlePose, bowPose, fiddleAt, citharaHold, citharaPose, citharaPlace, pluckPose, reach, jointsOf, usePose, Stand, GRAPES as GRAPES_P, BUNDLE, FIDDLE as FIDDLE_P, BOW as BOW_P, PEN, SCROLL } from "../stage/grips";
 import { romeFire, FIRE, WALK } from "../world/rome";
-import { mesh, box, ball } from "../world/kit";
+import { mesh, box, ball, cyl, group } from "../world/kit";
 import { flames, sparks, smoke, embers, flicker, glow, flying } from "../world/fire";
-import { fiddleByNeck, fiddleBow, cithara, grapes, bundle, bundleHeld, tent, gateLeaf, C } from "../world/props";
-import { SIR_D, NERO_D, NERO_STAGE_D, RUNNER_D, CITIZEN_D, ROMAN_WOMAN_D, ROMAN_WOMAN2_D, ROMAN_WOMAN3_D, GIRL_D, OLDMAN_D, GRANNY_D, BAKER_D, FULLER_D, MERCHANT_D } from "../looks";
+import { fiddleByNeck, fiddleBow, cithara, grapes, bundle, bundleHeld, tent, gateLeaf, painted, table, scrollHeld, reedPen, C } from "../world/props";
+import { SIR_D, NERO_D, TACITUS_D, RUNNER_D, CITIZEN_D, ROMAN_WOMAN_D, ROMAN_WOMAN2_D, ROMAN_WOMAN3_D, GIRL_D, OLDMAN_D, GRANNY_D, BAKER_D, FULLER_D, MERCHANT_D } from "../looks";
 import type { Pose } from "../rig";
 import type { Design } from "../designs/common";
 import words from "../../../voice/nero-fiddle/words.json";
@@ -21,8 +21,8 @@ import lines from "../../../voice/nero-fiddle/lines.json";
 const W = words as Word[], L = Object.fromEntries((lines as { id: string; a: number; b: number }[]).map((l) => [l.id, l]));
 const cut = (a: string, b: string) => (L[a].b + L[b].a) / 2;       // a cut falls in the pause between two lines
 /** the last shot ends soon after the last word; a short coda then leads back into the first frame, so that the film loops */
-/** the end: the string snaps right after the last word, he stares at it, and the coda leads into the first frame: from the end of the
- *  last word to "Did" 1.44 s (a test of a short silence before the loop, GROWTH.md) */
+/** the end: after the closing line (Jesper's, version 2) a short coda leads into the first frame: from the end of the last word to "Did"
+ *  1.44 s (a test of a short silence before the loop, GROWTH.md) */
 const LAST = W[W.length - 1].b, END13 = LAST + 0.6, CODA = 0.84, END = END13 + CODA;
 /** when a word of a line is spoken (film seconds) */
 const at = (line: string, re: RegExp) => W.find((w) => w.line === line && re.test(w.w))!.a;
@@ -85,23 +85,25 @@ const neroAt = (m: MM, t: number, cam: Cam) => { const a = on("nero", NERO_D, m,
  *  strings by his right hand (stage/grips.ts fiddlePose and bowPose, solved for the lens of the shot); his eyes shut */
 const fiddler = (dur: number, cam: Cam) => { const s = NST(cam), n = mover(NERO_D, 1.74, NX, NZ, 172); n.stand(9);
   n.actAt(-1, { ...fiddlePose(s), lean: -2 }, dur + 1, { in: 0.01, out: 0.12, handL: "grip", handR: "grip", face: { lid: 0.95, smile: 1, brow: 0.6 } });
-  wag(n, 0, dur - 0.05, P({ ...bowPose(s, 0.2), roll: 3 }), P({ ...bowPose(s, 0.44), roll: -3 }), 0.56, { handR: "grip" }); return n; };
+  wag(n, 0, dur - 0.05, P({ ...bowPose(s, 0.2), roll: 6, head: [8, 4, 6] }), P({ ...bowPose(s, 0.44), roll: -6, head: [-8, 10, -6] }), 0.56, { handR: "grip" }); return n; };
 // 1. THE HOOK: the picture of the saying. Night, the street on fire; the emperor saws at a fiddle with his eyes shut, and Sir
 //    Digsworth points at it with his whole arm, looks at us, and points again
 {
   const b0 = cut("hook", "flames"), V = lens(0.2, 1.45, -1.2, 0, 1, -3, 58);
   const nero = fiddler(b0 + 0.2, V.cam);
-  const sir = mover(SIR_D, 1.8, SX, SZ, 196); sir.stand(9);
-  sir.actAt(-1, { armR: arm(86, 52, 98, 58), armL: arm(20, 10, 60, 0), head: [-44, 4, 0], lean: 6 }, 10, { in: 0.01, handR: "point", handL: "fist", face: { wide: 1, lid: 0, brow: 1, gaze: [-0.8, 0.2] } });
-  wag(sir, 0.1, 1.2, P({ armR: arm(90, 52, 102, 58) }), P({ armR: arm(82, 52, 92, 56) }), 0.3, { handR: "point" });
+  // Sir Digsworth strides in from the right of the picture (moving from the very first frame) and throws his arm out at the emperor
+  const IN = 0.7, sir = mover(SIR_D, 1.8, SX - 0.85, SZ + 0.08, 92); sir.walk(mt(sir, 0.82), { step: 0.62, tau: 0.3 }).turn(104, 0.3).stand(9);
+  sir.actAt(-1, { armR: arm(30, 14, 60, 10), armL: arm(20, 10, 60, 0), head: [-30, 0, 0], lean: 4 }, IN + 0.2, { in: 0.01, out: 0.14, handR: "relaxed", handL: "fist", face: { wide: 1, lid: 0, brow: 1, gaze: [-0.8, 0.2] } });
+  sir.actAt(IN - 0.12, { armR: arm(86, 52, 98, 58), armL: arm(20, 10, 60, 0), head: [-44, 4, 0], lean: 6 }, 9, { in: 0.22, antic: 0.25, over: 1.4, handR: "point", handL: "fist", face: { wide: 1, lid: 0, brow: 1, gaze: [-0.8, 0.2] } });
+  wag(sir, IN + 0.25, 0.55, P({ armR: arm(90, 52, 102, 58) }), P({ armR: arm(82, 52, 92, 56) }), 0.3, { handR: "point" });
   sir.actAt(1.45, { head: [10, -2, 0], armR: arm(60, 40, 110, 50), lean: 0 }, 0.85, { in: 0.26, out: 0.24, antic: 0.2, over: 1.4, handR: "open", face: { wide: 1, lid: 0, brow: 1 } });
   // two people run for it along the far pavement
   const r1 = mover(CITIZEN_D, 1.74, 3.1, 13, 180), r2 = mover(ROMAN_WOMAN_D, 1.66, -3.2, 15, 180); for (const m of [r1, r2]) m.run(mt(m, 16));
   for (const m of [r1, r2]) m.actAt(-1, { armL: arm(60, 20, 120, 0), armR: arm(60, 20, 120, 0) }, 10, { in: 0.01, handL: "grip", handR: "grip", face: { wide: 1, lid: 0, brow: 1, mouth: 0.5, smile: -1 } });
   GRADES.push({ a: 0, b: b0, g: (T) => fireNight(T, 50, 28) });
   HOOK = { id: "hook", a: 0, b: b0, still: 0.5,
-    sounds: [...swings(0, b0 - 0.1, 0.28, b0).map((t, i) => ({ t, k: "scratch", g: 0.7, p: -0.3 + 0.1 * (i % 2) })), { t: 0.4, k: "crack", g: 0.6, p: 0.5 }, { t: 1.6, k: "crack", g: 0.6, p: -0.5 }, { t: 2.3, k: "whoosh", g: 0.5 }],
-    cam: (_t, u) => V.push(0.22 * u), sun: { target: [0, 0, 3], reach: 9 },
+    sounds: [...sir.cues().filter((q) => q.k === "step" && q.t < b0).map((q) => ({ t: q.t, k: "step", g: 0.6 })), ...swings(0, b0 - 0.1, 0.28, b0).map((t, i) => ({ t, k: "scratch", g: 0.7, p: -0.3 + 0.1 * (i % 2) })), { t: 0.4, k: "crack", g: 0.6, p: 0.5 }, { t: 1.6, k: "crack", g: 0.6, p: -0.5 }, { t: 2.3, k: "whoosh", g: 0.5 }],
+    cam: (_t, u) => V.push(0.36 * u), sun: { target: [0, 0, 3], reach: 9 },
     cast: (t, T) => [on("r1", CITIZEN_D, r1, t, WALK, { seed: 3 }), on("r2", ROMAN_WOMAN_D, r2, t, WALK, { seed: 4 }), on("nero", NERO_D, nero, t, 0, { seed: 5, blink: false }), on("sir", SIR_D, sir, t, 0, { talk: talk(W, T, ["hook"]), blink: false })],
     things: (g, c, _t, T, cam) => { streetFire(g, T, cam); fiddlePlay(g, FIDDLE(), BOW(), c.nero, cam);
       wield(g, inHand(HELD[0]()), BUNDLE, "carry", c.r1, "L", cam); wield(g, inHand(HELD[1]()), BUNDLE, "carry", c.r2, "L", cam); } };
@@ -177,47 +179,85 @@ const fiddler = (dur: number, cam: Cam) => { const s = NST(cam), n = mover(NERO_
       // the fist that stopped it
       if (t < GRAB) fiddlePlay(g, FIDDLE(), BOW(), c.nero, cam); else { fiddlePlay(g, FIDDLE(), BOW(), c.nero, cam, { bowTo: palm(c.sir, "R") }); fingers(g, c.sir, ["R"], cam, 0.17); } } });
 }
-// 4. WHEN THE FIRE BEGAN, SAYS TACITUS, NERO WAS NOT EVEN IN ROME: day, the terrace of the villa above the sea. He lets grapes down
-//    into his mouth; a messenger runs in, bends over his knees, and points back along the coast, where smoke stands; Nero looks,
-//    starts so that the grapes fly, and runs
-const SIGN = { a: cut("notso", "away") + 0.04, b: cut("gardens", "six") };
+// 4. WHEN THE FIRE BEGAN, SAYS TACITUS, ... Tacitus at his desk some fifty years later, writing it down: a scroll in one hand, the pen in
+//    the other, his name on a plaque on the wall beside him (version 2: so that nobody takes the messenger at the villa for him)
+const TAC_A = cut("notso", "away"), TAC_B = (W.find((w) => w.line === "away" && /^Tacitus/.test(w.w))!.b + at("away", /^Nero/)) / 2;
+const STUDY = { x: 0, z: -150 };
+const STUDY_ROOM = once(() => { const { x, z } = STUDY, g = new THREE.Group(), wall = "#e8d6b0", wood = "#8a5a30";
+  g.add(mesh(box(6, 0.1, 5), "#b98a5a", { at: [x, -0.05, z] }), mesh(box(6, 3.2, 0.16), wall, { at: [x, 1.6, z - 1.6] }), mesh(box(0.16, 3.2, 5), wall, { at: [x - 2.6, 1.6, z] }), mesh(box(0.16, 3.2, 5), wall, { at: [x + 2.6, 1.6, z] }));
+  g.add(mesh(box(6, 0.24, 0.2), "#b3261e", { at: [x, 0.12, z - 1.5], line: 0.5 }));
+  // shelves of scrolls behind him, their round ends toward us
+  for (const [sx, sy] of [[-1.55, 0.9], [-1.55, 1.45], [1.55, 0.9], [1.55, 1.45]] as [number, number][]) { g.add(mesh(box(1.2, 0.05, 0.36), wood, { at: [x + sx, sy, z - 1.38], line: 0.5 }));
+    for (let i = 0; i < 7; i++) g.add(mesh(cyl(0.045, 0.045, 0.32, 10), i % 3 ? "#efe2bc" : "#e2cf9e", { at: [x + sx - 0.5 + i * 0.16, sy + 0.07, z - 1.36], rot: [Math.PI / 2, 0, 0], line: 0.4, shadow: false })); }
+  const desk = table(1.1, 0.6, 0.9); desk.position.set(x - 0.95, 0, z - 0.75); g.add(desk);
+  for (let i = 0; i < 4; i++) g.add(mesh(cyl(0.04, 0.04, 0.34, 10), "#efe2bc", { at: [x - 1.2 + i * 0.12, 0.95, z - 0.75 + (i % 2) * 0.06], rot: [0, 0, Math.PI / 2], line: 0.4, shadow: false }));
+  // his name, on a plaque on the wall above his head (clear of his face, and whole inside the picture)
+  const plaque = painted(["TACITUS"], 1.0, 0.3, { ink: "#fbf3df", bg: "#7a2f2a", edge: "#e7bb48", pad: 0.14 }); plaque.position.set(x + 0.16, 2.42, z - 1.5); g.add(plaque);
+  return g; });
+const QUILL = once(() => noShade(reedPen())), SCROLL_O = once(() => noShade(scrollHeld()));
 {
-  const a0 = cut("notso", "away"), b0 = cut("away", "gardens"), len = b0 - a0, v = FIRE.villa, V = lens(v.x + 3.2, v.y + 1.45, v.z + 4.6, 0.3, -1, -4, 58);
-  const HERE = at("away", /^says/) - a0 - 0.1, POINT = HERE + 0.55, JUMP = at("away", /^not/) - a0 - 0.05, GO = JUMP + 0.5;
-  const [nx, nz] = V.spot(3.0, 0.32), nero = mover(NERO_D, 1.74, nx, nz, V.toward(nx, nz, -10)); nero.stand(GO).turn(74, 0.24).run(mt(nero, 6));
-  nero.actAt(-1, { armR: arm(164, 22, 196, -6), armL: arm(20, 14, 60, 4), head: [-10, -34, 0], lean: -8 }, JUMP + 1, { in: 0.01, out: 0.06, handR: "grip", handL: "relaxed", face: { lid: 0.7, smile: 0.8, mouth: 0.7, gaze: [0, -0.8] } });
-  wag(nero, 0.2, POINT - 0.3, P({ armR: arm(160, 22, 188, -6) }), P({ armR: arm(168, 22, 202, -6) }), 0.6, { handR: "grip" });
-  nero.actAt(POINT + 0.1, { head: [40, -4, 0], lean: 0 }, JUMP - POINT - 0.1, { in: 0.2, out: 0.08, antic: 0, over: 1.2, face: { lid: 0, wide: 0.8, brow: 1, mouth: 0.3, smile: -0.7, gaze: [0.8, 0] } });
-  nero.actAt(JUMP, "recoil", GO - JUMP + 0.1, { in: 0.08, out: 0.14, antic: 0, over: 1.5 });
-  nero.actAt(GO, { armL: arm(60, 20, 120, 0), armR: arm(60, 20, 120, 0), lean: 10 }, 9, { in: 0.14, antic: 0, over: 1.2, handL: "fist", handR: "fist", face: { wide: 1, lid: 0, brow: 1, mouth: 0.6, smile: -1 } });
+  const a0 = TAC_A, b0 = TAC_B, V = lens(STUDY.x + 0.25, 1.55, STUDY.z + 2.9, -0.05, -1, -1, 46), [tx, tz] = V.spot(3.05, -0.05), hd = V.toward(tx, tz, 14);
+  const tac = mover(TACITUS_D, 1.76, tx, tz, hd); tac.stand(9);
+  const S4: Stand = { D: TACITUS_D, at: [tx, 0, tz], heading: hd, h: 1.76, cam: V.cam, pose: usePose(SCROLL, "hold", "L") }, j = jointsOf(S4);
+  const top = mix3(j("wrL"), j("tipL"), 0.5), mid: V3 = [top[0], top[1] - 0.2, top[2]], wr = Math.sign((j("shR")[0] - j("shL")[0]) * (aside([0, 0, 0], V.cam, 1)[0]) + (j("shR")[2] - j("shL")[2]) * (aside([0, 0, 0], V.cam, 1)[2])) || -1;
+  const WRITE = (k: number) => ({ ...usePose(SCROLL, "hold", "L"), ...reach(S4, "R", aside(near(mid, V.cam, 0.06), V.cam, -wr * (0.02 + 0.03 * k), 0.1 - 0.04 * Math.abs(k))), head: [0, 12, 0] as [number, number, number] });
+  tac.actAt(-1, WRITE(0), 10, { in: 0.01, handL: "grip", handR: "grip", face: { brow: 0.2, lid: 0.5, smile: 0.2 } });
+  wag(tac, 0.2, 1.6, P(WRITE(1)), P(WRITE(-1)), 0.36, { handL: "grip", handR: "grip", face: { brow: 0.2, lid: 0.5, smile: 0.2 } });
+  tac.actAt(1.75, { ...WRITE(0), head: [-16, -4, 0] }, 9, { in: 0.3, antic: 0, over: 1.1, handL: "grip", handR: "grip", face: { brow: 0.6, lid: 0.1, smile: 0.3, gaze: [-0.4, 0] } });
+  GRADES.push({ a: a0, b: b0, g: () => "linear-gradient(180deg, #f3e2c4 0%, #f6e6cc 55%, #f0d8b4 100%)" });
+  add({ id: "tacitus", a: a0, b: b0, still: 1.2,
+    sounds: [{ t: 0.25, k: "scratch", g: 0.35 }, { t: 0.7, k: "scratch", g: 0.35 }, { t: 1.15, k: "scratch", g: 0.35 }, { t: 1.7, k: "paper", g: 0.4 }],
+    cam: (_t, u) => V.push(0.06 * u), sun: { target: [STUDY.x, 0, STUDY.z], reach: 6 },
+    cast: (t) => [on("tac", TACITUS_D, tac, t, 0, { seed: 7 })],
+    things: (g, c, _t, _T, cam) => { g.add(STUDY_ROOM()); wield(g, SCROLL_O(), SCROLL, "hold", c.tac, "L", cam); wield(g, QUILL(), PEN, "write", c.tac, "R", cam, { d: 0.1 }); } });
+}
+// 5. ... NERO WAS NOT EVEN IN ROME: day, the terrace of the villa above the sea, a signpost in the picture: "ANTIUM – 50 km from Rome",
+//    its arrow pointing along the coast at the smoke. He lets grapes down into his mouth; a messenger runs in and points back at the
+//    smoke; the emperor looks, and starts so that the grapes fly. Also the second half of the closing line ("And he probably wasn't even
+//    there."): the same terrace, without the messenger
+const SIGNPOST = once(() => { const g = new THREE.Group(); g.add(mesh(box(0.1, 2.3, 0.1), "#7a4a26", { at: [0, 1.15, 0], line: 0.6 }));
+  const b = painted(["ANTIUM", "50 km from Rome"], 1.12, 0.48, { ink: "#3a2414", bg: "#f3e2b8", edge: "#7a4a26", pad: 0.1 }); b.position.set(0.1, 2.0, 0.07); g.add(b);
+  // the arrow above the board, toward the smoke (along -x of the post: the film turns the post so that this points to the smoke)
+  const arrow = group([mesh(box(0.7, 0.1, 0.04), "#b3261e", { at: [-0.2, 0, 0], line: 0.5 }), mesh(box(0.2, 0.2, 0.04), "#b3261e", { at: [-0.56, 0, 0], rot: [0, 0, Math.PI / 4], line: 0.5 })]); arrow.position.set(0.1, 2.42, 0.08); g.add(arrow);      // above the board, clear of every head
+  return g; });
+const villaShot = (id: string, a0: number, b0: number, messenger: boolean) => {
+  const len = b0 - a0, v = FIRE.villa, V = lens(v.x + 3.2, v.y + 1.45, v.z + 4.6, 0.3, -1, -4, 58);
+  const HERE = 0.4, POINT = HERE + 0.45, LOOK = POINT + 0.25, JUMP = Math.min(len - 0.35, LOOK + 0.45);
+  const [nx, nz] = V.spot(3.0, 0.32), nero = mover(NERO_D, 1.74, nx, nz, V.toward(nx, nz, -10)); nero.stand(9);
+  nero.actAt(-1, { armR: arm(164, 22, 196, -6), armL: arm(20, 14, 60, 4), head: [-10, -34, 0], lean: -8 }, messenger ? JUMP + 1 : 10, { in: 0.01, out: 0.06, handR: "grip", handL: "relaxed", face: { lid: 0.7, smile: 0.8, mouth: 0.7, gaze: [0, -0.8] } });
+  wag(nero, 0.1, messenger ? LOOK - 0.1 : len, P({ armR: arm(160, 22, 188, -6) }), P({ armR: arm(168, 22, 202, -6) }), 0.6, { handR: "grip" });
+  if (messenger) { nero.actAt(LOOK, { head: [40, -4, 0], lean: 0 }, JUMP - LOOK, { in: 0.2, out: 0.08, antic: 0, over: 1.2, face: { lid: 0, wide: 0.8, brow: 1, mouth: 0.3, smile: -0.7, gaze: [0.8, 0] } });
+    nero.actAt(JUMP, "recoil", 9, { in: 0.08, antic: 0, over: 1.5 }); }
   const [m0x, m0z] = V.spot(1.5, -2.6), [m1x, m1z] = V.spot(3.25, -0.62), run = Math.hypot(m1x - m0x, m1z - m0z);
   const msg = mover(RUNNER_D, 1.78, m0x, m0z, (Math.atan2(m1x - m0x, m1z - m0z) * 180) / Math.PI); msg.run(mt(msg, run)).stand(9);
   msg.actAt(HERE, { lean: 40, py: -0.12, armL: arm(44, 10, 30, 0), armR: arm(44, 10, 30, 0), head: [0, 20, 0] }, POINT - HERE + 0.05, { in: 0.16, out: 0.14, antic: 0, over: 1.3, handL: "open", handR: "open", face: { lid: 0.5, brow: 1, mouth: 0.7, smile: -1 } });
   msg.actAt(POINT, { lean: 8, twist: -30, armL: arm(100, 70, 104, 76), head: [-30, -4, 0] }, 9, { in: 0.2, antic: 0.3, over: 1.6, handL: "point", face: { wide: 1, lid: 0, brow: 1, mouth: 0.5, smile: -1 } });
-  wag(msg, POINT + 0.3, 3, P({ armL: arm(106, 70, 112, 76), py: 0.02 }), P({ armL: arm(94, 70, 96, 76), py: -0.02 }), 0.34, { handL: "point", face: { wide: 1, lid: 0, brow: 1, mouth: 0.5, smile: -1 } });
-  let GR0: V3 | null = null;      // where the grapes' stalk leaves his hand
-  const [fx, fz] = V.spot(330, -74);
-  add({ id: "away", a: a0, b: b0, still: POINT + 0.4,
-    sounds: [...msg.cues().filter((q) => q.k === "step" && q.t < HERE).map((q) => ({ t: q.t, k: "step", run: true, g: 0.9, p: -0.5 })), { t: HERE, k: "scuff", g: 0.9, p: -0.2 }, { t: POINT, k: "whoosh", g: 0.5, p: -0.3 }, { t: JUMP, k: "whoosh", g: 0.7, p: 0.3 }, { t: JUMP + 0.5, k: "tap", g: 0.5, p: 0.4 },
-      ...nero.cues().filter((q) => q.k === "step" && q.t > GO && q.t < len).map((q) => ({ t: q.t, k: "step", run: true, g: 0.9, p: 0.1 }))],
+  let GR0: V3 | null = null;
+  const [fx, fz] = V.spot(330, -74), [px, pz] = V.spot(3.7, -0.5);
+  GRADES.push({ a: a0, b: b0, g: () => null });
+  add({ id, a: a0, b: b0, still: messenger ? POINT + 0.4 : len * 0.6,
+    sounds: messenger ? [...msg.cues().filter((q) => q.k === "step" && q.t < HERE).map((q) => ({ t: q.t, k: "step", run: true, g: 0.9, p: -0.5 })), { t: HERE, k: "scuff", g: 0.9, p: -0.2 }, { t: POINT, k: "whoosh", g: 0.5, p: -0.3 }, { t: JUMP, k: "whoosh", g: 0.7, p: 0.3 }] : [{ t: 0.3, k: "splash", g: 0.25 }],
     cam: (_t, u) => V.push(0.16 * u), sun: { target: [v.x + 4, v.y, v.z + 1], reach: 8 },
-    cast: (t) => [on("msg", RUNNER_D, msg, t, v.y, { seed: 2 }), on("nero", NERO_D, nero, t, v.y, { seed: 5 })],
+    cast: (t) => [...(messenger ? [on("msg", RUNNER_D, msg, t, v.y, { seed: 2 })] : []), on("nero", NERO_D, nero, t, v.y, { seed: 5 })],
     things: (g, c, t, T, cam) => {
-      // the smoke of Rome, far along the coast: a glow at its foot
+      // the smoke of Rome, far along the coast: a glow at its foot; the signpost at the balustrade, its arrow toward the smoke
       smoke(g, [fx, 6, fz], T * 0.5, 9, 78, 20, 50, 0, "#5a5664", 5); g.add(mesh(ball(1, 14), "#ff8a3a", { at: [fx, 2, fz], scale: [34, 10, 10], line: 0, shadow: false, receive: false, glow: "#e0521a" }));
-      // the grapes: over his mouth, then thrown up as he starts
+      const sp = SIGNPOST(); sp.position.set(px, v.y, pz); sp.rotation.set(0, Math.atan2(cam.pos[0] - px, cam.pos[2] - pz), 0); g.add(sp);
       const u = t - JUMP;
-      if (u < 0) wield(g, GRAPES(), GRAPES_P, "hold", c.nero, "R", cam);
+      if (!messenger || u < 0) wield(g, GRAPES(), GRAPES_P, "hold", c.nero, "R", cam);
       else { const camJ = V.push(0.16 * JUMP / len); GR0 ??= quiet(() => near(palm(stageAt(on("nero", NERO_D, nero, JUMP, v.y, { seed: 5 }), camJ), "R"), camJ, 0.05));
         letGo(g, GRAPES(), GRAPES_P, GR0, [0.5, 3.2, -0.2], u, v.y, cam, { centre: [0, -0.18], r: 0.07, spin: 1.2 }); }
     } });
-}
-// 5. HE CAME BACK AND OPENED HIS OWN GARDENS TO THE HOMELESS: a smoky dawn, inside the garden, low down. The gate stands open; the
+};
+villaShot("away", TAC_B, cut("away", "gardens"), true);
+/** the six days from above: two seconds, ending at the cut before the rumour (Jesper: at most two seconds from above) */
+const SIX_B = cut("six", "rumour"), SIX_A = SIX_B - 2.0;
+// 6. HE CAME BACK AND OPENED HIS OWN GARDENS TO THE HOMELESS: a smoky dawn, inside the garden, low down. The gate stands open; the
 //    emperor is at its leaf with a hand on it and waves them in. They come through one after another with air between them, each with
 //    his own trouble, and go off across the grass: a mother with a girl by the hand, a man who coughs, a woman with her bundle in her
 //    arms, a man bent under a sack, an old man and an old woman together
 {
-  const a0 = cut("away", "gardens"), b0 = cut("gardens", "six"), len = b0 - a0, q = FIRE.garden, gw = FIRE.gate.w, V = lens(q.x + 0.5, 1.1, q.z + 6.0, -0.02, -1, 11, 54);
+  const a0 = cut("away", "gardens"), b0 = SIX_A, len = b0 - a0, q = FIRE.garden, gw = FIRE.gate.w, V = lens(q.x + 0.5, 1.1, q.z + 6.0, -0.02, -1, 11, 54);
   const nero = mover(NERO_D, 1.74, q.x + 1.3, q.z + 1.75, V.toward(q.x + 1.3, q.z + 1.75, -26)); nero.stand(9);
   const CALM = { brow: 0.4, lid: 0.1, smile: -0.2, mouth: 0.3 };
   nero.actAt(-1, { armL: arm(84, 62, 104, 70), armR: arm(42, 36, 96, 38), head: [-30, 0, 0], lean: 2 }, 10, { in: 0.01, handL: "open", handR: "open", face: CALM });
@@ -250,10 +290,11 @@ const SIGN = { a: cut("notso", "away") + 0.04, b: cut("gardens", "six") };
     } });
 }
 
-// 6. THE FIRE RAGED FOR SIX DAYS: from above the roofs, looking down the street. The fire walks from house to house toward us
-//    while the sky turns from night to day six times over; a roof falls in; small figures run
+// 7. THE FIRE RAGED FOR SIX DAYS: from above the roofs, looking down the street, two seconds. The fire walks from house to house toward
+//    us; a roof falls in; small figures run; a counter high in the picture goes DAY I to DAY VI (version 2: the sky no longer swings
+//    from night to day, which at this pace would flicker)
 {
-  const a0 = cut("gardens", "six"), b0 = cut("six", "rumour"), len = b0 - a0, V = lens(0.4, 5.4, -3.5, 0, 1, -12, 58), FALL = 1.35;
+  const a0 = SIX_A, b0 = SIX_B, len = b0 - a0, V = lens(0.4, 5.4, -3.5, 0, 1, -12, 58), FALL = 1.2;
   const front = (t: number) => 17 - 8.2 * t;      // how far down the street the fire has come (z)
   const FRIGHT = { wide: 1, lid: 0, brow: 1, mouth: 0.6, smile: -0.8 };
   const run = ([[CITIZEN_D, 1.74, -0.9, 10], [ROMAN_WOMAN2_D, 1.72, 0.9, 12], [BAKER_D, 1.7, 0.1, 14.5], [FULLER_D, 1.78, -1.6, 16.5], [GIRL_D, 1.14, -1.05, 16.7]] as [Design, number, number, number][]).map(([D, h, x, z], i) => { const m = mover(D, h, x, z, 180); m.run(mt(m, 14), i === 4 ? { step: 1.5, tau: 0.26 } : i === 2 ? { step: 0.95 } : undefined);
@@ -264,9 +305,7 @@ const SIGN = { a: cut("notso", "away") + 0.04, b: cut("gardens", "six") };
     if (i === 3) m.actAt(-1, { armR: arm(-30, 30, -50, 20), twist: -16 }, 10, { in: 0.01, handR: "grip", face: FRIGHT });
     if (i === 4) m.actAt(-1, { armL: arm(150, 30, 170, 20), head: [-40, -10, 0] }, 10, { in: 0.01, handL: "grip", face: FRIGHT });
     return { D, m, name: "run" + i }; });
-  // the sky goes round six times: dark, light, dark ... (a soft swing, not a flash)
-  GRADES.push({ a: a0, b: b0, g: (T) => { const u = (T - a0) / len, day = 0.5 - 0.5 * Math.cos(u * 12 * Math.PI), f = flicker(T), k = (a: number, b: number) => a + (b - a) * day;
-    return `linear-gradient(180deg, ${hex(k(52, 196), k(52, 214), k(120, 255))} 0%, ${hex(k(150, 236), k(104, 190), k(110, 170))} 46%, ${hex(255 * f, 190 * f, 130 * f)} 100%)`; } });
+  GRADES.push({ a: a0, b: b0, g: (T) => { const f = flicker(T); return `linear-gradient(180deg, ${hex(70, 62, 120)} 0%, ${hex(176, 120, 120)} 46%, ${hex(255 * f, 190 * f, 130 * f)} 100%)`; } });
   add({ id: "six", a: a0, b: b0, still: FALL + 0.25,
     sounds: [{ t: 0.1, k: "crack", g: 0.55, p: -0.4 }, { t: 0.7, k: "crack", g: 0.55, p: 0.4 }, { t: FALL, k: "smash", g: 0.75, big: 1.0, p: -0.3 }, { t: 1.9, k: "crack", g: 0.55, p: 0.3 }],
     cam: (_t, u) => V.push(0.8 * u), sun: { target: [0, 3, 6], reach: 16 },
@@ -281,11 +320,9 @@ const SIGN = { a: cut("notso", "away") + 0.04, b: cut("gardens", "six") };
       // a roof falls in on the left: its slab drops and tips, sparks burst from where it was
       const u = t - FALL; if (u > 0 && u < 0.9) { const slab = mesh(box(5.2, 0.3, 5.4), C.terra, { at: [-7.1, WALK + 5.5 - 3.2 * Math.min(1, u * u * 4), 6.6], rot: [0.5 * Math.min(1, u * 3), 0, -0.3 * Math.min(1, u * 3)], line: 0.8 }); g.add(slab);
         for (let k = 0; k < 18; k++) { const a = k * 0.7, v = 2.5 + (k % 5); g.add(mesh(ball(0.07, 6), k % 2 ? "#ffb02a" : "#ffe680", { at: [-6.6 + Math.cos(a) * v * u * 0.6, WALK + 5.6 + v * u - 4 * u * u, 6.6 + Math.sin(a) * v * u * 0.6], line: 0, shadow: false, glow: "#ff8a00" })); } }
-      // the sun and the moon go over in turn
-      const day = ((t / len) * 6) % 1, sunUp = day < 0.5, w = (sunUp ? day : day - 0.5) * 2; g.add(mesh(ball(1, 16), sunUp ? "#ffe680" : "#f2f0e6", { at: [-150 + 300 * w, 70 + 60 * Math.sin(Math.PI * w), 330], scale: sunUp ? 13 : 9, line: 0.6, shadow: false, receive: false, glow: sunUp ? "#ffb02a" : "#b8b6ae" }));
     } });
 }
-// 7. AND A RUMOUR SPREAD: evening in the garden camp. A man whispers into a woman's ear and mimes plucking strings; she claps a hand
+// 8. AND A RUMOUR SPREAD: evening in the garden camp. A man whispers into a woman's ear and mimes plucking strings; she claps a hand
 //    to her mouth, turns and whispers it on; the third points up toward the palace. Behind them two men get a tent up
 const SANG = at("rumour", /^Nero/) - 0.12;
 {
@@ -310,12 +347,12 @@ const SANG = at("rumour", /^Nero/) - 0.12;
     things: (g, _c, _t, T) => { const [tx, tz] = V.spot(8.5, -2.5), [ux, uz] = V.spot(9.5, 2.6); put(g, TENT_UP(), [tx, 0, tz], 0.2); put(g, TENT_B(), [ux, 0, uz], -0.3);
       smoke(g, [q.x - 6, 6, q.z - 40], T * 0.6, 8, 44, 10, 16, 0, "#6a6672", 1); } });
 }
-// 8. WHILE ROME BURNED, NERO SANG OF THE FALL OF TROY: the picture the rumour paints (dark round its edge). Nero on his own stage in
-//    the long robe of a lyre-player, a hand on his breast, singing with his mouth wide open, the city burning behind him
+// 9. WHILE ROME BURNED, NERO SANG OF THE FALL OF TROY: the picture the rumour paints (dark round its edge). Nero on his own stage in
+//    his own white and purple (version 2: not the green robe of a lyre-player), a hand on his breast, singing with his mouth wide open, the city burning behind him
 {
   const a0 = SANG, b0 = cut("rumour", "answer"), s = FIRE.stage, V = lens(s.x + 0.1, 1.5, s.z - 4.0, 0, 1, 8, 54), TROY = at("rumour", /^fall/) - a0;
-  const nero = mover(NERO_STAGE_D, 1.74, s.x - 0.1, s.z - 0.2, 180); nero.stand(9);
-  const S8: Stand = { D: NERO_STAGE_D, at: [s.x - 0.1, s.y, s.z - 0.2], heading: 180, h: 1.74, cam: V.cam, pose: { lean: -6 } };
+  const nero = mover(NERO_D, 1.74, s.x - 0.1, s.z - 0.2, 180); nero.stand(9);
+  const S8: Stand = { D: NERO_D, at: [s.x - 0.1, s.y, s.z - 0.2], heading: 180, h: 1.74, cam: V.cam, pose: { lean: -6 } };
   nero.actAt(-1, { armR: arm(40, 14, 128, -44), armL: (citharaPose(S8, false) as { armL: [[number, number], [number, number]] }).armL, head: [0, -18, 6], lean: -6 }, 10, { in: 0.01, handR: "open", handL: "grip", face: { lid: 0.9, brow: 1, mouth: 1 } });
   wag(nero, 0, 4, P({ roll: 5, head: [10, -22, 8], py: 0.02 }), P({ roll: -5, head: [-10, -14, -6], py: -0.01 }), 1.1);
   nero.actAt(TROY - 0.2, { armR: arm(150, 40, 176, 30), lean: -10 }, 9, { in: 0.3, antic: 0.3, over: 1.4, handR: "open", face: { lid: 0.9, brow: 1, mouth: 1 } });
@@ -323,7 +360,7 @@ const SANG = at("rumour", /^Nero/) - 0.12;
   add({ id: "sang", a: a0, b: b0, still: TROY + 0.2,
     sounds: [{ t: 0.1, k: "ting", g: 0.6, p: 0.2 }, { t: 0.9, k: "ting", g: 0.6, p: 0.2 }, { t: 1.7, k: "ting", g: 0.6, p: 0.2 }, { t: 0.5, k: "crack", g: 0.6, p: -0.5 }, { t: 2.1, k: "crack", g: 0.6, p: 0.5 }],
     cam: (_t, u) => V.push(0.3 * u), sun: { target: [s.x, 1, s.z], reach: 9 },
-    cast: (t) => [on("nero", NERO_STAGE_D, nero, t, s.y, { seed: 5, blink: false })],
+    cast: (t) => [on("nero", NERO_D, nero, t, s.y, { seed: 5, blink: false })],
     things: (g, c, t, T, cam) => {
       const e = cam.pos; for (const [x, h, i] of [[-13, 3.4, 1], [-6.4, 3.9, 2], [0.6, 3.0, 3], [7, 3.6, 4], [13.6, 3.3, 5]]) { if (i === 3) continue; flames(g, [s.x + x, h + 0.3, s.z + 10.6], T, 3.0, 4.6, 4, 0, i, e); flames(g, [s.x + x - 1.2, h * 0.62, s.z + 10.3], T, 1.3, 0, 1, 0, i + 5, e); }
       smoke(g, [s.x - 6, 9, s.z + 13], T, 8, 14, 2.6, 2, 0, "#4a4654", 1); smoke(g, [s.x + 7, 9, s.z + 13], T, 8, 14, 2.6, -2, 0, "#4a4654", 2); sparks(g, [s.x, 5, s.z + 9], T, 24, 16, 9, 3);
@@ -428,37 +465,38 @@ const LYRE = at("cithara", /^kind/) - 0.32, SEVEN = at("cithara", /^seven/), WID
     cast: (t) => [on("nero", NERO_D, nero, t, 0, { seed: 5, blink: false })],
     things: (g, c, t, T, cam) => {
       citharaHold(g, strum(CITH(), (i) => { const u = t - (P0 + (6 - i) * GAP); return u > 0 && u < 0.5 ? 0.012 * Math.sin(u * 70) * (1 - u * 2) : 0; }, -1, 1.7), c.nero, cam, true, 0.62, { out: OUT });
+      // the playing hand drawn again well in front of the strings, so that its finger is seen on the string it plucks (version 2)
+      fingers(g, c.nero, ["R"], cam, 0.5, true);
       flying(g, [CX, 2.6, NZ - 3], T, 6, 3, 2, 2, 7); } });
 }
-// 13. THE END: the two of them from the side of the street, the burning house behind. Nero sings at the top of his voice and sweeps the
-//     strings; behind him Sir Digsworth puts his fingers in his ears; the seventh string snaps, and the emperor looks at it
+// 13. SO NO FIDDLE. MAYBE A LYRE. The two of them from the side of the street, the burning house behind: Nero sings at the top of his
+//     voice and sweeps the seven strings; behind him Sir Digsworth puts his fingers in his ears (version 2: no string snaps, so that the
+//     cithara has its seven strings in every picture)
+const AND = (at("close", /^lyre/) + 0.43 + at("close", /^And/)) / 2;
 {
-  const a0 = WIDE, V = lens(1.99, 1.45, -0.22, -0.62, 0.78, -2, 58), SNAP = LAST + 0.06 - a0;
+  const a0 = WIDE, b0 = AND, V = lens(1.99, 1.45, -0.22, -0.62, 0.78, -2, 58);
   const nero = mover(NERO_D, 1.74, NX, NZ, V.toward(NX, NZ, 22)); nero.stand(9);
   const SING = { lid: 0.9, brow: 1, mouth: 1 }, S13: Stand = { D: NERO_D, at: [NX, 0, NZ], heading: V.toward(NX, NZ, 22), h: 1.74, cam: V.cam, pose: { lean: -6 } };
   const HOLD13 = (citharaPose(S13, false) as { armL: [[number, number], [number, number]] }).armL;
   nero.actAt(-1, { armL: HOLD13, ...pluckPose(S13, 3), head: [0, -20, 6], lean: -6 }, 10, { in: 0.01, handL: "grip", handR: "open", face: SING });
   // he sweeps his open hand across the strings, from the far side to the near and back
-  wag(nero, 0, SNAP - 0.05, P({ ...pluckPose(S13, 1), roll: 4, head: [8, -24, 8] }), P({ ...pluckPose(S13, 5), roll: -4, head: [-8, -16, -4] }), 0.42, { handL: "grip", handR: "open", face: SING });
-  const S13b: Stand = { ...S13, pose: { lean: 6, py: -0.03 } }, HOLD13b = (citharaPose(S13b, false) as { armL: [[number, number], [number, number]] }).armL;      // the hold solved for the way he leans back when it snaps
-  nero.actAt(SNAP + 0.04, { py: -0.03, head: [10, 26, 0], armL: HOLD13b, ...pluckPose(S13b, 4), lean: 6 }, 9, { in: 0.1, antic: 0, over: 1.5, handL: "grip", handR: "open", face: { lid: 0, wide: 0.8, brow: -1, smile: -1, gaze: [0.2, 0.9] } });
+  wag(nero, 0, b0 - a0, P({ ...pluckPose(S13, 1), roll: 4, head: [8, -24, 8] }), P({ ...pluckPose(S13, 5), roll: -4, head: [-8, -16, -4] }), 0.42, { handL: "grip", handR: "open", face: SING });
   const sir = mover(SIR_D, 1.8, SX - 0.06, SZ, V.toward(SX - 0.06, SZ, -14)); sir.stand(9);
   const PAIN = { lid: 0.9, brow: -1, smile: -1 };
   sir.actAt(-1, { armL: arm(20, 10, 50, 0), armR: arm(20, 10, 50, 0), head: [-30, 0, 0] }, 1.25, { in: 0.01, out: 0.1, handL: "relaxed", handR: "relaxed", face: { brow: 0.4, lid: 0.1, gaze: [-0.7, 0] } });
   sir.actAt(0.22, { armL: arm(70, 50, 160, 6), armR: arm(70, 50, 160, 6), head: [0, 6, 0], py: -0.03, lean: -4 }, 9, { in: 0.2, antic: 0.2, over: 1.5, handL: "point", handR: "point", face: PAIN });
-  if (SNAP > 1) wag(sir, 0.6, SNAP - 0.7, P({ roll: 3 }), P({ roll: -3 }), 0.42, { handL: "point", handR: "point", face: PAIN });
-  sir.actAt(SNAP + 0.25, { head: [-36, 4, 0] }, 9, { in: 0.2, antic: 0, over: 1.2, handL: "point", handR: "point", face: { lid: 0, brow: 0.8, wide: 0.5, smile: 0.3, gaze: [-0.8, 0.3] } });
-  GRADES.push({ a: a0, b: END + 1, g: (T) => fireNight(T, 50, 28) });
-  add({ id: "snap", a: a0, b: END13, still: 0.9,
-    sounds: [...swings(0, SNAP - 0.05, 0.21, END13 - a0).map((t, i) => ({ t, k: "ting", g: 0.7, p: -0.2 + 0.1 * (i % 3) })), { t: SNAP, k: "snap", g: 0.7, p: -0.2 }, { t: SNAP + 0.05, k: "ting", g: 0.8, p: -0.2 }, { t: 0.5, k: "crack", g: 0.5, p: 0.5 }],
+  wag(sir, 0.6, b0 - a0, P({ roll: 3 }), P({ roll: -3 }), 0.42, { handL: "point", handR: "point", face: PAIN });
+  GRADES.push({ a: a0, b: b0, g: (T) => fireNight(T, 50, 28) });
+  add({ id: "lyre", a: a0, b: b0, still: 1.2,
+    sounds: [...swings(0, b0 - a0 - 0.05, 0.21, b0 - a0).map((t, i) => ({ t, k: "ting", g: 0.7, p: -0.2 + 0.1 * (i % 3) })), { t: 0.5, k: "crack", g: 0.5, p: 0.5 }],
     cam: (_t, u) => V.push(0.16 * u), sun: { target: [0, 0, 3], reach: 9 },
     cast: (t) => [on("sir", SIR_D, sir, t, 0, { blink: false }), on("nero", NERO_D, nero, t, 0, { seed: 5, blink: false })],
-    things: (g, c, t, T, cam) => { streetFire(g, T, cam, 1.1);
-      const u = t - SNAP, ci = citharaHold(g, strum(CITH(), (i) => (u < 0 ? 0.012 * Math.sin(T * 44 + i * 1.7) : 0), u > 0 ? 6 : -1), c.nero, cam, true), p: V3 = [ci.position.x, ci.position.y, ci.position.z];
-      // the snapped string: it whips up and curls
-      if (u > 0) { const k = Math.min(1, u / 0.25); for (let j = 0; j < 6; j++) g.add(mesh(ball(0.008, 6), "#fbf6ea", { at: near(aside(p, cam, 0.098 + 0.03 * j * k + 0.02 * Math.sin(j * 1.3 + u * 6) * k, 0.62 * 0.36 + 0.05 * j + 0.06 * k * Math.sin(j * 0.9)), cam, 0.06), line: 0, shadow: false })); } } });
+    things: (g, c, _t, T, cam) => { streetFire(g, T, cam, 1.1); citharaHold(g, strum(CITH(), (i) => 0.012 * Math.sin(T * 44 + i * 1.7)), c.nero, cam, true); } });
 }
-// 14. THE CODA: back in the burning street a moment before the first frame: the emperor fiddles, Sir Digsworth points. The lens runs
+// 14. AND HE PROBABLY WASN'T EVEN THERE. The terrace at Antium again, the smoke far along the coast and the signpost: the emperor at his
+//     ease with his grapes
+villaShot("there", AND, END13, false);
+// 15. THE CODA: back in the burning street a moment before the first frame: the emperor fiddles, Sir Digsworth points. The lens runs
 //     straight on into the first frame, so that the film loops
 {
   const H = HOOK, len = H.b - H.a;
@@ -477,6 +515,7 @@ export const NERO_FIDDLE: Film = {
     { T: SANG + 1.2, words: ["OR DID", "HE SING?"], y: 0.7, size: 140 },
     { T: LATER + 1.3, words: ["NO", "FIDDLE"], y: 0.7, size: 150 },
   ],
-  hits: [{ t: cut("gardens", "six") + 1.35, amp: 0.5, dur: 0.3 }],
-  beds: [{ k: "fire", a: 0, b: SIGN.a, g: 0.9 }, { k: "sea", a: SIGN.a, b: cut("away", "gardens"), g: 0.7 }, { k: "fire", a: SIGN.b, b: cut("six", "rumour"), g: 1 }, { k: "fire", a: SANG, b: END, g: 0.8 }], music: "roman", audio: "craft/nero-fiddle.wav",
+  hits: [{ t: SIX_A + 1.2, amp: 0.5, dur: 0.3 }],
+  labels: [{ a: SIX_A, b: SIX_B, top: 310, text: (T) => "DAY " + ["I", "II", "III", "IV", "V", "VI"][Math.max(0, Math.min(5, Math.floor(((T - SIX_A) / (SIX_B - SIX_A)) * 6)))] }],
+  beds: [{ k: "fire", a: 0, b: TAC_A, g: 0.9 }, { k: "sea", a: TAC_B, b: cut("away", "gardens"), g: 0.7 }, { k: "fire", a: SIX_A, b: SIX_B, g: 1 }, { k: "fire", a: SANG, b: AND, g: 0.8 }, { k: "sea", a: AND, b: END13, g: 0.6 }, { k: "fire", a: END13, b: END, g: 0.8 }], music: "roman", audio: "craft/nero-fiddle.wav",
 };

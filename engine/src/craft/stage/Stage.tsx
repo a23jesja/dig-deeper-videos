@@ -50,6 +50,7 @@ const Words: React.FC<{ film: Film }> = ({ film }) => {
     <AbsoluteFill>
       {hook && <div style={{ position: "absolute", left: 40, right: 40, top: 1292 - Math.round((film.hook.size ?? 108) * 1.09) * Math.max(0, film.hook.text.length - 2), ...big(film.hook.size ?? 108) }}>{film.hook.text.map((l, i) => <div key={i} style={{ color: i === film.hook.text.length - 1 ? "#ffd83a" : "#ffffff" }}>{l}</div>)}</div>}
       {!hook && c && <div style={{ position: "absolute", left: 30, right: 30, top: 1440, whiteSpace: "nowrap", ...big(Math.round(96 * Math.min(1, 8.9 / capWidth(c.text)))) }}>{c.text}</div>}
+      {(film.labels ?? []).filter((q) => T >= q.a && T < q.b).map((q, i) => <div key={`l${i}`} style={{ position: "absolute", left: 30, right: 30, top: q.top ?? 300, whiteSpace: "nowrap", ...big(q.size ?? 110), color: q.col ?? "#ffd83a" }}>{q.text(T)}</div>)}
       {sign && <div style={{ position: "absolute", left: 50, right: 50, top: 296, padding: "12px 24px", background: "rgba(16,16,20,0.8)", color: "#ffffff", font: "700 40px Arial, sans-serif", borderRadius: 12, textAlign: "center", lineHeight: 1.2 }}>{film.sign!.text}</div>}
     </AbsoluteFill>
   );

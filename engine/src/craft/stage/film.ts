@@ -55,6 +55,9 @@ export type Film = {
   hook: { text: string[]; a: number; b: number; /** the height of its letters in pixels (108 when left out) */ size?: number };
   /** a small sign when something is dramatised: never in the first five seconds, two seconds long */
   sign?: { text: string; a: number; b: number };
+  /** words laid over the picture for a while, in the captions' letters, high in the picture (a counter of days, a name): `text` may
+   *  change with the film's time; `top` = pixels from the top (300 when left out), `col` its colour */
+  labels?: { a: number; b: number; text: (T: number) => string; top?: number; size?: number; col?: string }[];
   /** impacts that shake the camera */
   hits?: { t: number; amp: number; dur?: number }[];
   /** what lies under the whole film (film seconds), and the name of its music in audio/film_music.py */

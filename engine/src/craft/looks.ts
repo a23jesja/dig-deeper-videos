@@ -415,3 +415,9 @@ export const BEARER2: Look = { ...CITIZEN, id: "bearer2", coat: "#7a8a6a", accen
 export const MURMILLO_BARE_D = castDesign(MURMILLO_BARE, "the murmillo"), THRAEX_D = castDesign(THRAEX), SECUTOR_D = castDesign(SECUTOR), HOPLOMACHUS_D = castDesign(HOPLOMACHUS), PROVOCATOR_D = castDesign(PROVOCATOR);
 export const RETIARIUS2_D = castDesign(RETIARIUS2), RETIARIUS3_D = castDesign(RETIARIUS3), MURMILLO2_D = castDesign(MURMILLO2), CARRIED_D = castDesign(CARRIED);
 export const TRAINER_D = castDesign(TRAINER), PUPIL_D = castDesign(PUPIL), OWNER_D = castDesign(OWNER), DOCTOR_D = castDesign(DOCTOR), SPONSOR_D = castDesign(SPONSOR), BEARER_D = castDesign(BEARER), BEARER2_D = castDesign(BEARER2);
+
+// ---------------- the Nero Short, version 2 ----------------
+/** the historian Tacitus, writing about fifty years after the fire: grey, clean-shaven, a white toga with a senator's broad purple stripe */
+export const TACITUS: Look = { ...CITIZEN, id: "tacitus", P: { ...ROMAN, hipW: 56, shW: 104 }, head: { a: 108, b: 114, H: 234, jaw: 0.94, round: 0.35, eye: 0.84 }, skin: "#e6b890", brow: "#8a8478", hair: { col: "#aaa59a", kind: "short" },
+  coat: "#f6f1e4", accent: "#7a2f8a", clavi: "#7a2f8a", cloak: "#ece4d2", belt: undefined, sleeve: "long", arm: [28, 23, 17] };
+export const TACITUS_D = castDesign(TACITUS, "Tacitus");

@@ -17,6 +17,8 @@ downloaded, sampled or taken from a sound library, so there is no third-party li
 | rattle, paper, tap, ting, sack, book | a box shaken (takes `dur`), paper slid out, a fingertip knock, a small bright metal ring, a heavy cloth bag with coins, a soft thwap | synthesised in `craft_sfx.py` | our own work |
 | fall, squelch, scratch, sniff | a comic falling whistle going down in pitch (takes `dur`), a foot in wet cloth, a stylus in wax, a breath in through the nose | synthesised in `craft_sfx.py` | our own work |
 | step (surface `sand`, `wood`), thud (ignores `surface`) | the same footstep on soft sand (no click) and on a deck (hollow knock) | synthesised in `craft_sfx.py` | our own work |
+| gavel, munch | a judge's gavel on its block (a bright wooden crack), a beetle chewing a leaf close to (takes `dur`) | synthesised in `craft_sfx.py` | our own work |
+| birds, court | beds: small birds chirping now and then, a room with a few people murmuring | synthesised in `craft_sfx.py` | our own work |
 | sea, surf, lap, flap, flies, street | beds: waves against a hull, small waves on a beach, water lapping close by, a flag in the wind, a few flies, a quiet town street | synthesised in `craft_sfx.py` | our own work |
 | music "roman", "shanty" | a light comic piece (plucked strings, fife, hand drum, D mixolydian, about 104 bpm) and a rolling 6/8 piece (plucked bass, whistle, brushes, A dorian, about 96 dotted-quarter bpm); both our own tunes | synthesised in `film_music.py` from `lib/instruments.py` | our own work |
 | narration | Sir Digsworth's voice | Kokoro-82M, voice `bm_george`, run locally (`voice/make_voice.py`) | Apache-2.0 (model card) |

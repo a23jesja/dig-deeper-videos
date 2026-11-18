@@ -9,8 +9,8 @@
 #                    "cues":  [ { "f": 31, "k": "step", "g": 1, "p": -0.4, "run": false }, ... ],
 #                    "beds":  [ { "k": "wind", "f0": 0, "f1": 408, "g": 0.5 }, ... ] }
 #   kinds of cue:  step, scuff, thud, smash, coin, coinroll, blast, crack, tear, creak, whoosh, bark, splash, snap, shing, thunk, flap, rope, rattle,
-#                  paper, tap, ting, sack, fall, bubble, spray, drip, book, pour, squelch, scratch, sniff   (see SOUNDS.md)
-#   kinds of bed:  wind, crowd, panic, fire, rumble, sea, surf, lap, flap, flies, street
+#                  paper, tap, ting, sack, fall, bubble, spray, drip, book, pour, squelch, scratch, sniff, gavel, munch   (see SOUNDS.md)
+#   kinds of bed:  wind, crowd, panic, fire, rumble, sea, surf, lap, flap, flies, street, birds, court
 # The mix: voice at -16 LUFS, effects under it, the whole at -14 LUFS with a true peak under -1 dB.
 import inspect, json, os, sys
 import numpy as np
@@ -207,6 +207,23 @@ def paper(r):
         k = ns(r.uniform(0, dur - 0.03)); L = ns(0.006); ticks[k:k + L] += hp(r.standard_normal(L), 2500)[:L] * r.uniform(0.2, 1.0)
     y = bp(nz, 2200, 9000, 1) * (0.25 + 0.75 * smooth_noise(len(t), r, 25) ** 2) * np.sin(np.pi * t / dur) ** 0.7 * 0.5 + ticks * 0.5
     return fades(y, 0.01, 0.06)
+
+
+def gavel(r):
+    """a judge's gavel struck on its block: a hard, bright wooden crack with the short ring of the block under it"""
+    t = tt(0.35); nz = r.standard_normal(len(t))
+    body = sum(a * np.sin(phase(f * (1 + 0.05 * np.exp(-t / 0.004)))) * np.exp(-t / d) for f, a, d in ((r.uniform(560, 640), 0.8, 0.05), (r.uniform(1150, 1300), 0.45, 0.03), (r.uniform(190, 230), 0.6, 0.06)))
+    y = body + bp(nz, 1500, 7000, 1) * np.exp(-t / 0.004) * 0.9 + lp(nz, 600) * np.exp(-t / 0.01) * 0.4
+    return fades(y, 0.0003, 0.05)
+
+
+def munch(r, dur=0.6):
+    """a beetle chewing a leaf, heard close to: quick dry nibbles in a little burst"""
+    n = ns(dur); y = np.zeros(n); t0 = 0.0
+    while t0 < dur - 0.02:
+        k = ns(t0); L = min(ns(0.008), n - k); y[k:k + L] += hp(r.standard_normal(L), 3000)[:L] * np.exp(-np.arange(L) / ns(0.002)) * r.uniform(0.4, 1.0)
+        t0 += r.uniform(0.045, 0.085)
+    return fades(y * 0.8, 0.005, 0.05)
 
 
 def tap(r):
@@ -411,6 +428,18 @@ def flagbed(dur, r):
     return fades(np.stack(out) * 0.9, 0.3, 0.6)
 
 
+def birds(dur, r):
+    """the country by day: now and then a small bird's chirps, near and far, left and right"""
+    n = ns(dur); out = np.zeros((2, n)); t0 = r.uniform(0.1, 0.6)
+    while t0 < dur - 0.3:
+        f0 = r.uniform(2800, 4200); calls = int(r.uniform(2, 5)); g = r.uniform(0.25, 1.0); p = r.uniform(-0.8, 0.8); gap = r.uniform(0.09, 0.15)
+        for c in range(calls):
+            L = r.uniform(0.05, 0.11); t = tt(L); y = np.sin(phase(f0 * (1 + r.uniform(0.15, 0.4) * t / L))) * np.sin(np.pi * t / L) ** 2 * g
+            place(out, pan(y, p), t0 + c * gap, 1.0)
+        t0 += r.uniform(0.7, 2.2)
+    return fades(out * 0.3, 0.2, 0.3)
+
+
 def flies(dur, r, count=3):
     """a few flies buzzing round something: each a thin wavering buzz that comes close and goes away"""
     n = ns(dur); out = np.zeros((2, n)); t = np.arange(n) / SR
@@ -439,17 +468,17 @@ def street(dur, r):
 
 ONE = {"step": step, "scuff": scuff, "thud": thud, "smash": smash, "coin": coin, "coinroll": coinroll, "blast": blast, "crack": crack, "tear": tear, "creak": creak, "whoosh": whoosh, "bark": bark,
        "splash": splash, "snap": snap, "shing": shing, "thunk": thunk, "flap": flap, "rope": rope, "rattle": rattle, "paper": paper, "tap": tap, "ting": ting, "sack": sack, "fall": fall,
-       "bubble": bubble, "spray": spray, "drip": drip, "book": book, "pour": pour, "squelch": squelch, "scratch": scratch, "sniff": sniff}
+       "bubble": bubble, "spray": spray, "drip": drip, "book": book, "pour": pour, "squelch": squelch, "scratch": scratch, "sniff": sniff, "gavel": gavel, "munch": munch}
 BED = {"wind": lambda d, r: wind(d, r), "crowd": lambda d, r: crowd(d, r), "panic": lambda d, r: crowd(d, r, panic=True), "fire": fire, "rumble": rumble,
-       "sea": sea, "surf": surf, "lap": lap, "flap": flagbed, "flies": flies, "street": street}
+       "sea": sea, "surf": surf, "lap": lap, "flap": flagbed, "flies": flies, "street": street, "birds": birds, "court": lambda d, r: crowd(d, r, people=6)}
 # how loud each kind sits by itself (dB relative to the effects bus), before the cue's own gain
 LEVEL = {"step": -9, "scuff": -12, "thud": -3, "smash": -2, "coin": -12, "coinroll": -12, "blast": 4, "crack": -5, "tear": -8, "creak": -10, "whoosh": -10, "bark": -6,
          "splash": -5, "snap": -6, "shing": -10, "thunk": -7, "flap": -9, "rope": -7, "rattle": -9, "paper": -13, "tap": -9, "ting": -11, "sack": -6, "fall": -8,
-         "bubble": -9, "spray": -10, "drip": -9, "book": -8, "pour": -8, "squelch": -9, "scratch": -12, "sniff": -8,
+         "bubble": -9, "spray": -10, "drip": -9, "book": -8, "pour": -8, "squelch": -9, "scratch": -12, "sniff": -8, "gavel": -4, "munch": -10,
          "wind": -20, "crowd": -17, "panic": -12, "fire": -16, "rumble": -10,
-         "sea": -19, "surf": -21, "lap": -21, "flies": -13, "street": -13}
+         "sea": -19, "surf": -21, "lap": -21, "flies": -13, "street": -13, "birds": -16, "court": -19}
 # the bed "flap" (a flag) shares its name with the one-shot "flap" (a cloth snapping), so the beds have their own level table
-BED_LEVEL = {k: LEVEL[k] for k in ("wind", "crowd", "panic", "fire", "rumble", "sea", "surf", "lap", "flies", "street")}; BED_LEVEL["flap"] = -15
+BED_LEVEL = {k: LEVEL[k] for k in ("wind", "crowd", "panic", "fire", "rumble", "sea", "surf", "lap", "flies", "street", "birds", "court")}; BED_LEVEL["flap"] = -15
 
 
 def check_spec(spec):

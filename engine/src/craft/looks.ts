@@ -355,6 +355,11 @@ export const ADVOCATE: Look = { ...OFFICIAL, id: "advocate", head: { a: 104, b: 
 export const EXPERT: Look = { ...VILLAGER, id: "expert", head: { a: 108, b: 114, H: 230, jaw: 0.96, round: 0.45, eye: 0.88 }, skin: "#ddb08a", brow: "#6a5a4a", hatCol: "#5a4030", hatBand: "#2a1c14", hair: { col: "#6a5a4a", kind: "short" }, beard: "#6a5a4a", coat: "#4a6a5a", accent: "#2a3a30", belt: "#2a1c14", trous: "#3a3a30" };
 /** the court's clerk, who keeps the record: a long grey gown, bald, spectacles of his own (none drawn) */
 export const CLERK: Look = { ...ADVOCATE, id: "clerk", head: { a: 108, b: 108, H: 226, jaw: 0.92, round: 0.55, eye: 0.9 }, hat: "none", hair: { col: "#7a6a5a", kind: "bald" }, coat: "#5a5a62", belt: "#3a3a42" };
+/** an old winegrower for the gallery: grey hair and beard, bareheaded, a russet jerkin */
+export const VILLAGER_OLD: Look = { ...VILLAGER, id: "villagerold", head: { a: 114, b: 108, H: 224, jaw: 1.02, round: 0.55, eye: 0.86 }, skin: "#d9a47c", brow: "#b8b0a4", hat: "none", hair: { col: "#b8b0a4", kind: "short" }, beard: "#b8b0a4", coat: "#8a4a2a", accent: "#5a3018", belt: "#3a2418", trous: "#4a4a3a" };
+/** a younger village woman: a rust-red dress, a straw-coloured coif */
+export const VILLAGER_WOMAN2: Look = { ...VILLAGER_WOMAN, id: "villagerwoman2", head: { a: 102, b: 108, H: 224, jaw: 0.84, round: 0.62, eye: 1.06 }, skin: "#f0c8a4", brow: "#8a4a22", hatCol: "#e8d49a", hair: { col: "#8a4a22", kind: "back" }, coat: "#9a4a32", accent: "#f0e6cc", belt: "#f0e6cc", apron: "#f0e6cc" };
+export const VILLAGER_OLD_D = castDesign(VILLAGER_OLD), VILLAGER_WOMAN2_D = castDesign(VILLAGER_WOMAN2);
 export const VILLAGER_D = castDesign(VILLAGER), VILLAGER_WOMAN_D = castDesign(VILLAGER_WOMAN), OFFICIAL_D = castDesign(OFFICIAL), ADVOCATE_D = castDesign(ADVOCATE), EXPERT_D = castDesign(EXPERT), CLERK_D = castDesign(CLERK);
 export const ROMAN_WOMAN2_D = castDesign(ROMAN_WOMAN2), ROMAN_WOMAN3_D = castDesign(ROMAN_WOMAN3), GIRL_D = castDesign(GIRL), OLDMAN_D = castDesign(OLDMAN);
 

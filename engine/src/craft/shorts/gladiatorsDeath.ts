@@ -44,7 +44,7 @@ const HOOK = (() => { const s = attack("hook", 0, T1); shots.push(s); return s; 
 // (and no one whose face would be above the picture or cut by its sides: their bodies hung in at the top without heads, and big faces
 // were cut by the edges)
 const EDGES = [[-400, 1480, -900, 0], [-400, 70, -900, 2000], [1010, 1480, -900, 2000]];
-const PEEK_FANS = spread(STANDS, FRONT.cam, [[40, 1040, 60, 440], ...EDGES], 2.2, 60);
+const PEEK_FANS = spread(STANDS, FRONT.cam, [[40, 1040, 60, 440], ...EDGES], 2.2, 60), TWO_FANS = spread(STANDS, TWO.cam, [[40, 1040, -900, 330], ...EDGES], 2.2, 60);
 { const sir = mover(SIR_D, 1.8, SIR.at[0], SIR.at[2], SIR.heading - 6); sir.stand(9);
   const ss: Stand = { D: SIR_D, at: SIR.at, heading: SIR.heading - 6, h: 1.8, cam: FRONT.cam };
   sir.actAt(-1, { ...reach(ss, "L", by(SIR.at, SIR.heading - 6, -0.07, 0.17, 1.56)), ...reach(ss, "R", by(SIR.at, SIR.heading - 6, 0.07, 0.17, 1.56)), head: [0, 4, 0] }, 10, { in: 0.01, handL: "open", handR: "open", face: { brow: 1, lid: 0, wide: 1, mouth: 0.4 } });
@@ -57,7 +57,7 @@ const PEEK_FANS = spread(STANDS, FRONT.cam, [[40, 1040, 60, 440], ...EDGES], 2.2
 
 // 3. TWO GO IN, ONE COMES OUT. RIGHT? (two fingers, one, and he turns to her; she shakes her head)
 // (the captions at the top, over seats left empty, as in opening a: lower down they lay over his coat and her arms)
-shots.push({ ...twoShot("guess", T2, T3, W, false, TWO, spread(STANDS, TWO.cam, [[40, 1040, -900, 330], ...EDGES], 2.2, 60)), capsTop: 200 });
+shots.push({ ...twoShot("guess", T2, T3, W, false, TWO, TWO_FANS), capsTop: 200 });
 
 // 4. NOT USUALLY. She puts an olive in her mouth and points down at the sand; he looks at her
 { const sir = mover(SIR_D, 1.8, SIR.at[0], SIR.at[2], SIR.heading - 8), wh = WOMAN.heading - 12, wom = mover(ROMAN_WOMAN_OLIVES_D, 1.62, WOMAN.at[0], WOMAN.at[2], wh); sir.stand(9); wom.stand(9);
@@ -65,10 +65,11 @@ shots.push({ ...twoShot("guess", T2, T3, W, false, TWO, spread(STANDS, TWO.cam, 
   const ws: Stand = { D: ROMAN_WOMAN_OLIVES_D, at: WOMAN.at, heading: wh, h: 1.62, cam: TWO.cam }, bh = nearHand(wh, TWO.cam), eh: "L" | "R" = bh === "L" ? "R" : "L", POINT = 0.5;
   wom.actAt(-1, { ...eating(ws), head: [-10, 2, 0] }, 10, { in: 0.01, handL: "grip", handR: "grip", face: { lid: 0.45, mouth: 0.3, smile: 0.2 } });
   wom.actAt(POINT, { ...reach(ws, eh, by(WOMAN.at, wh, 0.1, 0.75, 0.75)), head: [-24, 12, 0] }, 9, { in: 0.25, antic: 0, over: 1.2, handL: eh === "L" ? "point" : "grip", handR: eh === "R" ? "point" : "grip", face: { lid: 0.3, brow: 0.4, smile: 0.35, mouth: 0.15 } });
-  shots.push({ id: "not", a: T3, b: T4, still: 0.9, sounds: [{ t: 0.2, k: "tap", g: 0.3 }],
+  // (the captions at the top over empty seats, the crowd behind them spread out, as in the guess)
+  shots.push({ id: "not", capsTop: 200, a: T3, b: T4, still: 0.9, sounds: [{ t: 0.2, k: "tap", g: 0.3 }],
     cam: (_t, u) => TWO.push(0.06 + 0.06 * u), sun: { target: SIR.at, reach: 7 },
     cast: (t) => [on("sir", SIR_D, sir, t, ARENA.wall), on("wom", ROMAN_WOMAN_OLIVES_D, wom, t, ARENA.wall)],
-    things: (g, c, t, T, cam) => { crowd(g, STANDS, T, cam, 0.5); wield(g, OLIVES(), BOWL, "rim", c.wom, bh, cam); if (t < POINT) wield(g, OLIVE_O(), OLIVE, "eat", c.wom, eh, cam, { d: 0.12 }); else vanish(OLIVE_O(), OLIVE); } }); }
+    things: (g, c, t, T, cam) => { crowd(g, TWO_FANS, T, cam, 0.5); wield(g, OLIVES(), BOWL, "rim", c.wom, bh, cam); if (t < POINT) wield(g, OLIVE_O(), OLIVE, "eat", c.wom, eh, cam, { d: 0.12 }); else vanish(OLIVE_O(), OLIVE); } }); }
 
 // 5. ABOUT NINE TIMES IN TEN, ... Nine walk out toward the gate in two files, each his own way (one with his arm bandaged, one leaning
 //    on the man beside him). The lens is high and goes back toward the gate at their own pace, so that every face stays whole in the
@@ -157,7 +158,8 @@ const T5a = at("nine", /^gladiator/) - 0.12;
   doc.actAt(-1, { ...reach(dst, rh, rollAt(0, 1)), ...(oh === "L" ? { armL: arm(16, 12, 30, 8) } : { armR: arm(16, 12, 30, 8) }), head: [0, 12, 0], ...DSIT }, 10, { in: 0.01, handL: rh === "L" ? "grip" : "relaxed", handR: rh === "R" ? "grip" : "relaxed", face: { brow: 0.4, lid: 0.4, smile: 0.2 } });
   for (let i = 1; i * (TURN / 2) < 2.9; i++) { const t0 = 0.12 + i * (TURN / 2); doc.actAt(t0, { ...reach(dst, rh, rollAt(t0 + 0.1, i % 2 ? -1 : 1)) }, 10, { in: TURN / 2 - 0.02, antic: 0, over: 0, ...(rh === "L" ? { handL: "grip" as const } : { handR: "grip" as const }) }); }
   const RING = once(() => Array.from({ length: 6 }, () => group([mesh(box(1, 0.034, 0.004), "#fbf8f0", { at: [0.5, 0, 0], line: 0.6, shadow: false, receive: false, glow: "#9a968c" })])));
-  shots.push({ id: "fed", a: T6, b: T7, still: 1.25, sounds: [{ t: 0.4, k: "tap", g: 0.3 }, { t: 1.5, k: "tap", g: 0.3 }, { t: 0.9, k: "paper", g: 0.3 }, { t: 1.9, k: "paper", g: 0.3 }],
+  // (the captions over the awning at the top: lower down they lay over the doctor's and the eater's hands)
+  shots.push({ id: "fed", capsTop: 140, a: T6, b: T7, still: 1.25, sounds: [{ t: 0.4, k: "tap", g: 0.3 }, { t: 1.5, k: "tap", g: 0.3 }, { t: 0.9, k: "paper", g: 0.3 }, { t: 1.9, k: "paper", g: 0.3 }],
     cam: (_t, u) => V.push(0.06 * u), sun: { target: [E[0] + 0.4, 0, E[2]], reach: 6 },
     cast: (t) => [{ ...on("eat", MURMILLO_EATER_D, eat, t), noShade: true }, { ...on("doc", DOCTOR_D, doc, t), noShade: true }],
     things: (g, c, t, _T, cam) => { const b = BENCH(); b.position.set(E[0] - fw[0] * 0.32, 0, E[2] - fw[1] * 0.32); b.rotation.y = ((eh - 180) * Math.PI) / 180; g.add(b);
@@ -191,7 +193,8 @@ const GATE = rim(0, -2.2), OWNER_AT: V3 = [GATE[0], 0, GATE[1] + 1.2], MAN_AT: V
   own.actAt(-1, { ...reach(os, "R", near(mix3(oj("neck"), oj("skull"), 0.45), V.cam, 0.12)), head: [-20, 4, 0] }, PAT + 0.2, { in: 0.01, out: 0.25, handR: "fist", face: { brow: 1, lid: 0.1, wide: 0.5, smile: -0.6 } });
   wag(own, 0.1, PAT - 0.1, P({ py: 0.01 }), P({ py: -0.01 }), 0.12);
   own.actAt(PAT, { ...reach(os, "R", near(mj("shL"), V.cam, 0.08)), head: [24, 4, 0] }, 9, { in: 0.3, antic: 0.1, over: 1.1, handR: "open", face: { brow: 0.7, lid: 0.2, smile: 0.5 } });
-  shots.push({ id: "owner", a: T8, b: T9, still: PAT + 1.0, sounds: [{ t: PAT + 0.35, k: "tap", g: 0.5 }],
+  // (the captions over the arena wall at the top: lower down they lay over the owner's hand)
+  shots.push({ id: "owner", capsTop: 200, a: T8, b: T9, still: PAT + 1.0, sounds: [{ t: PAT + 0.35, k: "tap", g: 0.5 }],
     cam: (_t, u) => V.push(0.08 * u), sun: { target: MAN_AT, reach: 6 },
     cast: (t, T) => [on("man", MURMILLO_GRILLE_D, man, t), on("own", OWNER_D, own, t, 0, { talk: talk(W, T, ["cost_me"]) })],
     things: (g, c, t, _T, cam) => { shieldMan(g, c.man, cam, "lowered"); if (t > PAT + 0.3) handOn(c.own, "R", c.man, "shL", cam, "shoulder"); } }); }
@@ -233,7 +236,8 @@ const ground: V3 = [FIGHT[0] + 1.1, 0.03, FIGHT[2] + 0.5];
   // and the man at the left edge whose face was always behind a cheering hand: nobody in the left eighth of the picture near the box
   const lensV = new THREE.PerspectiveCamera(V.cam.fov, 1080 / 1920, 0.1, 900); lensV.position.set(...V.cam.pos); lensV.lookAt(...V.cam.look); lensV.updateMatrixWorld(true);
   const FAR_SP2 = FAR_SP.filter((f) => { const q = new THREE.Vector3(f.at[0], f.at[1] + 1.5, f.at[2]).project(lensV); return !(q.x < -0.72 && Math.hypot(f.at[0] - bx, f.at[2] - bz) < 6); });
-  shots.push({ id: "sponsor", a: T11, b: T12, still: 0.7, sounds: [{ t: 0.1, k: "flap", g: 0.7 }, { t: 0.42, k: "flap", g: 0.6 }],
+  // (the captions over the awning: lower down they lay over his hand with the cloth)
+  shots.push({ id: "sponsor", capsTop: 260, a: T11, b: T12, still: 0.7, sounds: [{ t: 0.1, k: "flap", g: 0.7 }, { t: 0.42, k: "flap", g: 0.6 }],
     cam: (_t, u) => V.push(0.06 * u), sun: { target: sAt, reach: 6 },
     cast: (t) => [{ ...on("sp", SPONSOR_D, sp, t, BOXY), noShade: true }],
     things: (g, c, _t, T, cam) => { crowd(g, FAR_SP2, T, cam, 1); wield(g, CLOTH(), MAPPA, "wave", c.sp, "R", cam); flutter(CLOTH(), T); } }); }
@@ -258,7 +262,8 @@ const ground: V3 = [FIGHT[0] + 1.1, 0.03, FIGHT[2] + 0.5];
   const rs: Stand = { D: RETIARIUS_D, at: [rx, 0, rz], heading: H, h: 1.86, cam: V.cam }, sh = jointsOf(ms)("shR");
   ret.actAt(-1, { armR: arm(16, 12, 30, 8), ...reach(rs, "L", [sh[0], sh[1] + 0.04, sh[2]]), head: [16, 2, 0] }, 10, { in: 0.01, handL: "open", handR: "relaxed", face: { brow: 0.4, smile: 0.7, lid: 0.2 } });
   const [px, pz] = V.spot(4.3, 0);
-  shots.push({ id: "out", a: T13, b: T14, still: 1.6, sounds: mur.cues().filter((q) => q.k === "step").map((q) => ({ t: q.t, k: "step", g: 0.5 })),
+  // (the captions over the arena wall at the top: lower down they lay over the two men's hands)
+  shots.push({ id: "out", capsTop: 200, a: T13, b: T14, still: 1.6, sounds: mur.cues().filter((q) => q.k === "step").map((q) => ({ t: q.t, k: "step", g: 0.5 })),
     cam: (_t, u) => V.push(0.05 * u), sun: { target: [px, 0, pz], reach: 8 },
     cast: (t) => [on("mur", MURMILLO_GRILLE_D, mur, t), on("ret", RETIARIUS_D, ret, t)],
     things: (g, c, _t, T, cam) => { crowd(g, FAR, T, cam, 1); wield(g, GLAD(), GLADIUS, "lowered", c.mur, "R", cam); handOn(c.ret, "L", c.mur, "shR", cam, "shoulder"); petals(g, T, [px, 0, pz]); } }); }
@@ -270,7 +275,8 @@ const ground: V3 = [FIGHT[0] + 1.1, 0.03, FIGHT[2] + 0.5];
   doc.actAt(-1, WRITE(0), 10, { in: 0.01, handL: "grip", handR: "grip", face: { brow: 0.2, lid: 0.45, smile: 0.4 } });
   wag(doc, 0.15, 1.4, P(WRITE(1)), P(WRITE(-1)), 0.32, { handL: "grip", handR: "grip" });
   doc.actAt(1.25, { ...WRITE(0), head: [-10, -6, 0] }, 9, { in: 0.25, antic: 0, over: 1.1, handL: "grip", handR: "grip", face: { brow: 0.7, lid: 0.3, smile: 0.9 } });
-  shots.push({ id: "doctor", a: T14, b: T15, still: 1.4, sounds: [{ t: 0.3, k: "scratch", g: 0.35 }, { t: 0.8, k: "scratch", g: 0.35 }],
+  // (the captions over the awning at the top: lower down they lay over the doctor's chest)
+  shots.push({ id: "doctor", capsTop: 140, a: T14, b: T15, still: 1.4, sounds: [{ t: 0.3, k: "scratch", g: 0.35 }, { t: 0.8, k: "scratch", g: 0.35 }],
     cam: (_t, u) => V.push(0.1 * u), sun: { target: dAt, reach: 6 },
     cast: (t) => [{ ...on("doc", DOCTOR_D, doc, t), noShade: true }],
     things: (g, c, _t, _T, cam) => { const tb = TABLE(); tb.position.set(tx, 0, tz - 0.05); g.add(tb); wield(g, SCROLL_O(), SCROLL, "hold", c.doc, "L", cam); wield(g, PEN_O(), PEN, "write", c.doc, "R", cam, { d: 0.1 }); } }); }
@@ -283,7 +289,8 @@ const ground: V3 = [FIGHT[0] + 1.1, 0.03, FIGHT[2] + 0.5];
     m.actAt(-1, { armL: arm(16, 12, 30, 8), armR: arm(16, 12, 30, 8) }, 10, { in: 0.01, handL: "fist", handR: "fist", face: { brow: 0.2, lid: 0.2, smile: 0.5 } });
     m.actAt(0.25 + 0.18 * i, { armR: arm(80, 40, 168, 10), lean: -3 }, 9, { in: 0.3, antic: 0.15, over: 1.3, handL: "fist", handR: "fist", face: { brow: 0.5, lid: 0.1, smile: 0.9, mouth: 0.3 } });
     return { D, m, name: `p${i}` }; });
-  shots.push({ id: "patients", a: T15, b: T16, still: 2.0, sounds: men.map((_, i) => ({ t: 0.3 + 0.18 * i, k: "scuff", g: 0.3 })),
+  // (the captions in the sky: lower down they lay over the men's hands)
+  shots.push({ id: "patients", capsTop: 260, a: T15, b: T16, still: 2.0, sounds: men.map((_, i) => ({ t: 0.3 + 0.18 * i, k: "scuff", g: 0.3 })),
     cam: (_t, u) => V.push(0.08 * u), sun: { target: [CXp, 0, LZ + 1.5], reach: 5 },
     cast: (t) => men.map((q) => ({ ...on(q.name, q.D, q.m, t), noShade: true })) }); }
 
@@ -300,10 +307,11 @@ const ground: V3 = [FIGHT[0] + 1.1, 0.03, FIGHT[2] + 0.5];
   sir.actAt(CLASH, { ...reach(ss, "L", by(SIR.at, SIR.heading - 8, -0.07, 0.17, 1.56)), ...reach(ss, "R", by(SIR.at, SIR.heading - 8, 0.07, 0.17, 1.56)), head: [0, 4, 0] }, 10, { in: 0.14, antic: 0.1, over: 1.3, handL: "open", handR: "open", face: { brow: 1, lid: 0, wide: 1, mouth: 0.4 } });
   wag(sir, CLASH + 0.15, 1.5, P({ lean: 2, roll: 1.5 }), P({ lean: -1, roll: -1.5 }), 0.13);
   wom.actAt(-1, { ...EAT, head: [-30, 2, 0] }, 10, { in: 0.01, handL: "grip", handR: "grip", face: { lid: 0.4, brow: 0.3, smile: 0.5 } });
-  shots.push({ id: "relax", a: T16, b: T17, still: 0.8, sounds: [{ t: CLASH - 0.05, k: "thud", g: 0.7, p: -0.5 }, { t: CLASH, k: "ting", g: 0.6, p: -0.5 }],
+  // (the captions at the top over empty seats, the crowd behind them spread out, as in the guess)
+  shots.push({ id: "relax", capsTop: 200, a: T16, b: T17, still: 0.8, sounds: [{ t: CLASH - 0.05, k: "thud", g: 0.7, p: -0.5 }, { t: CLASH, k: "ting", g: 0.6, p: -0.5 }],
     cam: (_t, u) => TWO.push(0.1 * u), sun: { target: SIR.at, reach: 7 },
     cast: (t, T) => [on("sir", SIR_D, sir, t, ARENA.wall), on("wom", ROMAN_WOMAN_OLIVES_D, wom, t, ARENA.wall, { talk: talk(W, T, ["relax"]) })],
-    things: (g, c, _t, T, cam) => { crowd(g, STANDS, T, cam, 0.9); wield(g, OLIVES(), BOWL, "rim", c.wom, bh, cam); } }); }
+    things: (g, c, _t, T, cam) => { crowd(g, TWO_FANS, T, cam, 0.9); wield(g, OLIVES(), BOWL, "rim", c.wom, bh, cam); } }); }
 
 // 18. The coda: the fight a moment before the first frame; the lens runs on into it, so that the film loops
 { const CODA = HOOK.b - (END - T17); shots.push({ id: "loop", a: T17, b: END, still: 0.4, sounds: [{ t: 0.3, k: "whoosh", g: 0.5 }],

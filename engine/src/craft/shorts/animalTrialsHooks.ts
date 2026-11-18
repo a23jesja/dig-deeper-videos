@@ -25,13 +25,13 @@ import lc from "../../../voice/animal-hook-c/lines.json";
 
 type Lines = Record<string, { id: string; a: number; b: number }>;
 const byId = (l: unknown) => Object.fromEntries((l as { id: string; a: number; b: number }[]).map((x) => [x.id, x])) as Lines;
-const P = (o: Partial<Pose>) => o;
-const deg = (r: number) => (r * 180) / Math.PI;
+export const P = (o: Partial<Pose>) => o;
+export const deg = (r: number) => (r * 180) / Math.PI;
 /** the heading (degrees) from one point toward another */
 export const toward = (a: V3, b: V3) => deg(Math.atan2(b[0] - a[0], b[2] - a[2]));
 /** a point `f` metres in front of a figure at `at` facing `heading`, `r` to his right, `up` high */
 export const ahead = (at: V3, heading: number, f: number, r: number, up: number): V3 => { const h = (heading * Math.PI) / 180; return [at[0] + Math.sin(h) * f - Math.cos(h) * r, at[1] + up, at[2] + Math.cos(h) * f + Math.sin(h) * r]; };
-const FL = SJ.court.at[1];
+export const FL = SJ.court.at[1];
 
 // ---------------- the court: where everyone stands ----------------
 /** the judge on his dais (his floor), the lawyer beside the empty dock, the dock's seat, the gallery (Sir at its near end, the old man
@@ -40,11 +40,11 @@ export const JUDGE: V3 = inCourt([SJ.court.judge[0], SJ.court.dais, SJ.court.jud
 // (the seated men at the bench's front edge: a seated card's legs lie in its own plane, so that further back on the seat his shins went down
 // through its board, the body check)
 export const SIR_AT: V3 = inCourt([-3.2, 0, 2.0]), OLD_AT: V3 = inCourt([-3.1, 0, 1.3]), WOMAN_AT: V3 = inCourt([-3.0, 0, 0.8]);
-const GAVEL_O = once(() => noShade(gavel())), ROLL_O = once(() => noShade(complaintRoll()));
-const COURT_SUN = { target: inCourt([0, 0, -1]), reach: 6 };
+export const GAVEL_O = once(() => noShade(gavel())), ROLL_O = once(() => noShade(complaintRoll()));
+export const COURT_SUN = { target: inCourt([0, 0, -1]), reach: 6 };
 
 /** the judge striking: on the block at `hits` (seconds into the shot), the gavel raised between them; his head bowed a little, frowning */
-const judge = (hits: number[]) => {
+export const judge = (hits: number[]) => {
   const m = mover(OFFICIAL_D, 1.74, JUDGE[0], JUDGE[2], 0); m.stand(9);
   m.actAt(-1, { ...usePose(GAVEL, "strike", "R"), armL: arm(14, 10, 40, 8), head: [-8, 8, 0] }, 10, { in: 0.01, handR: "grip", handL: "relaxed", face: { brow: -0.9, lid: 0.15, mouth: 0.4, smile: -0.5 } });
   for (let i = 1; i < hits.length; i++) m.actAt(hits[i] - 0.5, { ...usePose(GAVEL, "raised", "R"), head: [-8, 2, 0] }, 0.3, { in: 0.2, out: 0.12, antic: 0, face: { brow: -1, lid: 0.05, mouth: 0.6, smile: -0.5 } });
@@ -53,7 +53,7 @@ const judge = (hits: number[]) => {
   return { m, up };
 };
 /** the lawyer beside the empty dock, presenting it to the court with his left hand, his head turned toward the judge */
-const lawyer = (cam: Cam, at: V3 = LAWYER, armR = arm(16, -6, 96, -58)) => {
+export const lawyer = (cam: Cam, at: V3 = LAWYER, armR = arm(16, -6, 96, -58)) => {
   const H = 8, m = mover(ADVOCATE_D, 1.8, at[0], at[2], H); m.stand(9);
   const s: Stand = { D: ADVOCATE_D, at, heading: H, h: 1.8, cam };
   m.actAt(-1, { ...reach(s, "L", ahead(at, H, 0.38, -0.55, 1.18)), armR, head: [-24, 2, 0], lean: 4 }, 10, { in: 0.01, handL: "open", handR: "relaxed", face: { brow: 0.7, lid: 0.1, mouth: 0.3, smile: 0.2 } });
@@ -76,8 +76,8 @@ export const courtShot = (id: string, a0: number, b0: number, hits: number[]): S
 export const LAWYER_C: V3 = inCourt([-0.2, 0, -0.42]);
 export const CLOSE = (() => { const p = inCourt([0.85, 1.42, 2.4]), q = inCourt([-0.05, 1.25, -1.2]), d = Math.hypot(q[0] - p[0], q[2] - p[2]);
   return lens(p[0], p[1], p[2], (q[0] - p[0]) / d, (q[2] - p[2]) / d, -6, 58); })();
-export const courtClose = (id: string, a0: number, b0: number, hits: number[]): Shot => {
-  const J = judge(hits), L = lawyer(CLOSE.cam, LAWYER_C, arm(8, -4, 128, -62));      // (his right hand on his chest: across his belly the dock's rail came over it)
+export const courtClose = (id: string, a0: number, b0: number, hits: number[], at: V3 = LAWYER_C): Shot => {
+  const J = judge(hits), L = lawyer(CLOSE.cam, at, arm(8, -4, 128, -62));      // (his right hand on his chest: across his belly the dock's rail came over it)
   return { id, a: a0, b: b0, still: Math.min(0.4, (b0 - a0) / 2), capsTop: 150, sounds: hits.map((t) => ({ t, k: "gavel", g: 1.0, p: -0.3 })),
     cam: (_t, u) => CLOSE.push(0.03 * u), sun: COURT_SUN,
     cast: (t) => [on("judge", OFFICIAL_D, J.m, t, FL + SJ.court.dais), on("lawyer", ADVOCATE_D, L, t, FL)],
@@ -85,15 +85,15 @@ export const courtClose = (id: string, a0: number, b0: number, hits: number[]): 
 };
 
 // ---------------- the gallery ----------------
-const GAL = (() => { const p = inCourt([-0.6, 1.55, 3.0]), q = inCourt([-3.4, 1.05, 1.38]), d = Math.hypot(q[0] - p[0], q[2] - p[2]);
+export const GAL = (() => { const p = inCourt([-0.6, 1.55, 3.0]), q = inCourt([-3.4, 1.05, 1.38]), d = Math.hypot(q[0] - p[0], q[2] - p[2]);
   return lens(p[0], p[1], p[2], (q[0] - p[0]) / d, (q[2] - p[2]) / d, -9, 60); })();
 // (change 2, as far as it goes: nearer than before and from above, both men whole with Sir's open palm inside the picture; the wall
 // above them holds the caption. Two seated men side by side are too wide for the upright picture to fill its height without cutting one)
-const SIRC = (() => { const p = inCourt([-1.55, 1.75, 2.9]), q = inCourt([-3.3, 0, 1.6]), d = Math.hypot(q[0] - p[0], q[2] - p[2]);
+export const SIRC = (() => { const p = inCourt([-1.55, 1.75, 2.9]), q = inCourt([-3.3, 0, 1.6]), d = Math.hypot(q[0] - p[0], q[2] - p[2]);
   return lens(p[0], p[1], p[2], (q[0] - p[0]) / d, (q[2] - p[2]) / d, -18, 61); })();
-const seated = (D: Design, h: number, at: V3, heading: number) => { const m = mover(D, h, at[0], at[2], heading); m.stand(9); return m; };
+export const seated = (D: Design, h: number, at: V3, heading: number) => { const m = mover(D, h, at[0], at[2], heading); m.stand(9); return m; };
 /** a seated figure's pose, with arms and head over it */
-const sitting = (o: Partial<Pose>) => ({ ...SIT, ...o });
+export const sitting = (o: Partial<Pose>) => ({ ...SIT, ...o });
 /** the gallery pointing at the dock (off the picture's right): the woman standing with her fist up, the old man seated pointing, Sir
  *  turning from the dock to the lens with his hand up, palm open, as he asks the question (`words` = the line ids he speaks) */
 export const galleryShot = (id: string, a0: number, b0: number, W: Word[], words: string[]): Shot => {
@@ -132,22 +132,22 @@ const BOW = (() => { const p = inCourt([0.0, 1.75, 3.0]), q = inCourt([-0.2, 1.3
   return lens(p[0], p[1], p[2], (q[0] - p[0]) / d, (q[2] - p[2]) / d, -15, 52); })();
 /** deep in his bow toward the empty dock on frame one, seen from the side so that the bow reads, his head turned to the lens: the near
  *  (right) hand on his chest, the far arm swept out low toward the dock; he rises at `rise`, the far hand presenting the dock */
-const bowShot = (id: string, a0: number, b0: number, rise: number): Shot => {
+export const bowShot = (id: string, a0: number, b0: number, rise: number, BW = BOW): Shot => {
   const H = toward(LAWYER, DOCK) - 6, m = mover(ADVOCATE_D, 1.8, LAWYER[0], LAWYER[2], H); m.stand(9);
-  const s: Stand = { D: ADVOCATE_D, at: LAWYER, heading: H, h: 1.8, cam: BOW.cam };
+  const s: Stand = { D: ADVOCATE_D, at: LAWYER, heading: H, h: 1.8, cam: BW.cam };
   m.actAt(-1, { lean: 48, armR: arm(20, -8, 104, -62), armL: arm(60, 16, 56, 24), head: [-40, -14, 0] }, 10, { in: 0.01, handL: "open", handR: "relaxed", face: { brow: 0.8, lid: 0.3, smile: 0.4 } });
   m.actAt(rise, { ...reach(s, "L", ahead(LAWYER, H, 0.6, -0.1, 1.1)), armR: arm(16, -6, 96, -58), head: [-38, 0, 0], lean: 4 }, 10, { in: 0.4, antic: 0, over: 1.05, handL: "open", handR: "relaxed", face: { brow: 0.8, lid: 0.1, mouth: 0.3, smile: 0.3 } });
   return { id, a: a0, b: b0, still: 0.3, sounds: [{ t: 0.0, k: "gavel", g: 0.9, p: -0.5 }, { t: rise + 0.1, k: "scuff", g: 0.5 }],
-    cam: (_t, u) => BOW.push(0.12 * u), sun: COURT_SUN,
+    cam: (_t, u) => BW.push(0.12 * u), sun: COURT_SUN,
     cast: (t) => [on("lawyer", ADVOCATE_D, m, t, FL)] };
 };
 
 // ---------------- the vineyard ----------------
 /** the aisle between rows i and i+1 of the vineyard at position u along it */
-const aisle = (i: number, u: number): V3 => { const p = vineAt(i, u); return [p[0], 0, p[2] + SJ.vine.gap / 2]; };
+export const aisle = (i: number, u: number): V3 => { const p = vineAt(i, u); return [p[0], 0, p[2] + SJ.vine.gap / 2]; };
 /** b: the villager in the aisle serving the village's complaint on the weevils: he holds the roll out at a vine beside him, whose big
  *  leaves crawl with chewing weevils, and jabs it at them on "sued" */
-const complaintShot = (id: string, a0: number, b0: number, W: Word[]): Shot => {
+export const complaintShot = (id: string, a0: number, b0: number, W: Word[]): Shot => {
   const at = aisle(1, 0.62), V = lens(at[0] + 2.6, 1.6, at[2] + 0.22, -1, -0.02, -5, 46), H = toward(at, V.cam.pos);
   const m = mover(VILLAGER_D, 1.76, at[0], at[2], H); m.stand(9);
   const ts = say(W, "sued");
@@ -163,8 +163,8 @@ const complaintShot = (id: string, a0: number, b0: number, W: Word[]): Shot => {
 /** big vine leaves with weevils on them, added to `g` at time t: each leaf at `at`, turned `rot` (its face toward +z before `yaw`); on
  *  the first leaf two weevils chew at the holes they ate (snouts toward the holes' middles, heads dipping in turn) and one walks across;
  *  on the second, one more chews */
-type Leaf = { at: V3; R: number; seed: number; bites: number; rot: [number, number, number] };
-const leafCluster = (g: THREE.Group, leaves: Leaf[], yaw: number, t: number, s = 1.3) => { for (const [i, L] of leaves.entries()) {
+export type Leaf = { at: V3; R: number; seed: number; bites: number; rot: [number, number, number] };
+export const leafCluster = (g: THREE.Group, leaves: Leaf[], yaw: number, t: number, s = 1.3) => { for (const [i, L] of leaves.entries()) {
   const o = new THREE.Group(); o.position.set(...L.at); o.rotation.set(L.rot[0], L.rot[1] + yaw, L.rot[2]); o.add(vineLeaf(L.R, L.seed, L.bites, i ? "#4f8f3a" : "#5fa246")); g.add(o);
   const up = new THREE.Vector3(0, 0, 1), bites = LEAF_BITES(L.R, L.seed, L.bites);
   const chew = (b: number, ph: number) => { const [x, y, h] = bites[b], a = 2.3 + ph, p: V3 = [x + Math.cos(a) * h * 1.25, y + Math.sin(a) * h, 0.002];
@@ -172,8 +172,8 @@ const leafCluster = (g: THREE.Group, leaves: Leaf[], yaw: number, t: number, s =
   if (i === 0) { chew(0, 0); chew(Math.min(2, L.bites - 1), 1.4); const u = Math.min(1, t / 1.6), p: V3 = [-0.09 + 0.13 * u, -0.06 + 0.07 * u, 0.002]; o.add(weevilOn(p, up, Math.atan2(0.07, 0.13) + 0.15 * Math.sin(t * 9), s)); }
   if (i === 1) chew(1, 0.7); } };
 /** a: weevils eating a vine's leaves, close: three big leaves at the end of a row, the lens out in the open beyond it */
-const LEAF_AT = (() => { const p = vineAt(1, 1); return [p[0] + 0.78, 0.98, p[2] + 0.02] as V3; })();
-const leafClose = (id: string, a0: number, b0: number): Shot => {
+export const LEAF_AT = (() => { const p = vineAt(1, 1); return [p[0] + 0.78, 0.98, p[2] + 0.02] as V3; })();
+export const leafClose = (id: string, a0: number, b0: number): Shot => {
   const V = lens(LEAF_AT[0] + 1.3, LEAF_AT[1] + 0.06, LEAF_AT[2] + 0.06, -1, -0.04, -3, 40);
   const leaves: Leaf[] = [
     { at: [LEAF_AT[0], LEAF_AT[1], LEAF_AT[2]], R: 0.19, seed: 3, bites: 3, rot: [-0.15, 0.1, 0.12] },
@@ -185,7 +185,7 @@ const leafClose = (id: string, a0: number, b0: number): Shot => {
     things: (g, _c, t) => leafCluster(g, leaves, Math.PI / 2, t) };
 };
 /** a: the village's vines, wide: a man and a woman stopped in the aisle, staring at the weevils on the vines beside them */
-const vinesWide = (id: string, a0: number, b0: number): Shot => {
+export const vinesWide = (id: string, a0: number, b0: number): Shot => {
   const man = aisle(2, 0.5), wo = aisle(2, 0.4), V = lens(man[0] + 3.0, 1.7, man[2], -1, 0, -6, 52);
   const m1 = mover(VILLAGER_D, 1.76, man[0], man[2] - 0.24, 135), m2 = mover(VILLAGER_WOMAN_D, 1.64, wo[0], wo[2] + 0.26, 45); m1.stand(9); m2.stand(9);
   m1.actAt(-1, { armL: arm(24, 46, 20, -40), armR: arm(24, 46, 20, -40), lean: 6, head: [-10, 10, 0] }, 10, { in: 0.01, handL: "fist", handR: "fist", face: { brow: -1, lid: 0.1, mouth: 0.3, smile: -0.6 } });
@@ -197,7 +197,7 @@ const vinesWide = (id: string, a0: number, b0: number): Shot => {
 };
 
 // ---------------- the three clips ----------------
-const beds = (court: [number, number][], vines: [number, number][]) => [...court.map(([a, b]) => ({ k: "court", a, b, g: 0.8 })), ...vines.map(([a, b]) => ({ k: "birds", a, b, g: 0.8 })), ...vines.map(([a, b]) => ({ k: "wind", a, b, g: 0.3 }))];
+export const beds = (court: [number, number][], vines: [number, number][]) => [...court.map(([a, b]) => ({ k: "court", a, b, g: 0.8 })), ...vines.map(([a, b]) => ({ k: "birds", a, b, g: 0.8 })), ...vines.map(([a, b]) => ({ k: "wind", a, b, g: 0.3 }))];
 /** `top`: the hook text's top in the picture (in the sky over the vineyard for b: lower down it lay over the villager's chest and hands) */
 const clip = (id: string, W: Word[], shots: Shot[], text: string[], textB: number, len: number, b: ReturnType<typeof beds>, top?: number): Film => ({
   id, fps: 30, seconds: len, sky: "#b8e0ff", world: stJulienWorld, shots, words: W, hook: { text, a: 0, b: textB, size: 80, ...(top ? { top } : {}) }, beds: b, audio: `craft/${id}.wav` });

@@ -360,7 +360,10 @@ export const VILLAGER_OLD: Look = { ...VILLAGER, id: "villagerold", head: { a: 1
 /** a younger village woman: a rust-red dress, a straw-coloured coif */
 export const VILLAGER_WOMAN2: Look = { ...VILLAGER_WOMAN, id: "villagerwoman2", head: { a: 102, b: 108, H: 224, jaw: 0.84, round: 0.62, eye: 1.06 }, skin: "#f0c8a4", brow: "#8a4a22", hatCol: "#e8d49a", hair: { col: "#8a4a22", kind: "back" }, coat: "#9a4a32", accent: "#f0e6cc", belt: "#f0e6cc", apron: "#f0e6cc" };
 export const VILLAGER_OLD_D = castDesign(VILLAGER_OLD), VILLAGER_WOMAN2_D = castDesign(VILLAGER_WOMAN2);
+/** the second of the court's two experts (animal trials): younger, clean-shaven, his coat brown */
+export const EXPERT2: Look = { ...EXPERT, id: "expert2", head: { a: 104, b: 110, H: 222, jaw: 0.9, round: 0.55, eye: 0.95 }, skin: "#c8956a", brow: "#3a2a1c", hair: { col: "#3a2a1c", kind: "short" }, beard: undefined, coat: "#7a5a3a", accent: "#4a3420", hatCol: "#3a3a3a" };
 export const VILLAGER_D = castDesign(VILLAGER), VILLAGER_WOMAN_D = castDesign(VILLAGER_WOMAN), OFFICIAL_D = castDesign(OFFICIAL), ADVOCATE_D = castDesign(ADVOCATE), EXPERT_D = castDesign(EXPERT), CLERK_D = castDesign(CLERK);
+export const EXPERT2_D = castDesign(EXPERT2);
 export const ROMAN_WOMAN2_D = castDesign(ROMAN_WOMAN2), ROMAN_WOMAN3_D = castDesign(ROMAN_WOMAN3), GIRL_D = castDesign(GIRL), OLDMAN_D = castDesign(OLDMAN);
 
 // ---------------- the arena (gladiators-death) ----------------

@@ -11,6 +11,7 @@ import { BLACKBEARD_FUSES } from "./blackbeardFuses";
 import { GLADIATORS_DEATH } from "./gladiatorsDeath";
 import { ST_JULIEN_SETS } from "./stJulienSets";
 import { AT_HOOK_A, AT_HOOK_B, AT_HOOK_C } from "./animalTrialsHooks";
+import { ANIMAL_TRIALS } from "./animalTrials";
 import { GLAD4_HOOK_A, GLAD4_HOOK_B, GLAD4_HOOK_C } from "./gladiatorsHooks4";
 import { ARENA_SET, GLAD_HOOK_A, GLAD_HOOK_B, GLAD_HOOK_C } from "./gladiatorsHooks";
 export const RomePee: React.FC = () => <Stage film={ROME_PEE} />;
@@ -52,6 +53,9 @@ export const GLADIATORS_DEATH_FRAMES = Math.round(GLADIATORS_DEATH.seconds * GLA
 export const GladiatorsDeathThumbs: React.FC = () => <Thumbs film={GLADIATORS_DEATH} />;
 export const SjSets: React.FC = () => <Stage film={ST_JULIEN_SETS} />;
 export const SJ_SETS_FRAMES = Math.round(ST_JULIEN_SETS.seconds * ST_JULIEN_SETS.fps);
+export const AnimalTrials: React.FC = () => <Stage film={ANIMAL_TRIALS} />;
+export const ANIMAL_TRIALS_FRAMES = Math.round(ANIMAL_TRIALS.seconds * ANIMAL_TRIALS.fps);
+export const AnimalTrialsThumbs: React.FC = () => <Thumbs film={ANIMAL_TRIALS} />;
 export const AnimalHookA: React.FC = () => <Stage film={AT_HOOK_A} />;
 export const AnimalHookB: React.FC = () => <Stage film={AT_HOOK_B} />;
 export const AnimalHookC: React.FC = () => <Stage film={AT_HOOK_C} />;

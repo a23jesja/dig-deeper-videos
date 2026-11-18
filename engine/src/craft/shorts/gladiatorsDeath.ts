@@ -9,7 +9,7 @@
 import * as THREE from "three";
 import { Film, Shot, V3, Word, Cam, Staged, talk, smooth, mix3 } from "../stage/film";
 import { mover, MM, arm, wag, mt } from "../stage/acting";
-import { lens, once, noShade, palm, near, aside, span } from "../stage/staging";
+import { lens, once, noShade, palm, near, aside, span, stageAt } from "../stage/staging";
 import { GLADIUS, TRIDENT, SHIELD_ARM, WOODSWORD, BOWL, SPOON, ROLL, COIN, MAPPA, PEN, SCROLL, OLIVE, shieldOn, wield, usePose, pole, polePose, reach, jointsOf, setDown, carryBy, handOn, handshake, vanish, Stand } from "../stage/grips";
 import { arenaWorld, crowd, ARENA, LUDUS, LUDUS_POST, LUDUS_TABLE, rim } from "../world/arena";
 import { woodSword, stretcher, bowl, bowlRim, spoon, bandageRoll, coinHeld, reedPen, scrollHeld, olive, bench, table, chest, stool } from "../world/props";
@@ -106,16 +106,20 @@ const T5a = at("nine", /^gladiator/) - 0.12;
   // (v4, the body check: the poles end in the bearers' hands, 1.78 m long (they ran on into their bodies); the wounded man further back on
   // the bed, so that his feet rest on it, and a little higher, on it rather than into it; his propping arm on the bed beside him, not
   // through the near pole)
-  const ms = [mover(BEARER_D, 1.76, X - 0.95, Z, 90), mover(BEARER2_D, 1.74, X + 0.95, Z, 90), mover(CARRIED_D, 1.8, X - 0.25, Z - 0.28, 90)];
+  // (the free arm of each bearer swings clear of the pole, the rear man's back and the front man's forward: hanging at his side it lay
+  // across the pole)
+  const ms = [mover(BEARER_D, 1.76, X - 0.95, Z, 90), mover(BEARER2_D, 1.74, X + 0.95, Z, 90), mover(CARRIED_D, 1.8, X - 0.36, Z - 0.28, 90)];
   for (const m of ms) m.walk(mt(m, 3.0), { step: 0.42 / m.LL, tau: 0.5 }).stand(9);
   const st = (D: Design, m: MM, x: number): Stand => ({ D, at: [x, 0, Z], heading: 90, h: m.h, cam: W2(0).cam });
-  ms[0].actAt(-1, { ...reach(st(BEARER_D, ms[0], X - 0.95), "R", [X - 0.89, hy, Z + 0.08]), armL: [[10, 8], [20, 4]] }, 10, { in: 0.01, handR: "grip", handL: "relaxed", face: { brow: 0.4, lid: 0.2 } });
-  ms[1].actAt(-1, { ...reach(st(BEARER2_D, ms[1], X + 0.95), "R", [X + 0.89, hy, Z + 0.08]), armL: [[10, 8], [20, 4]], head: [-45, 0, 0] }, 10, { in: 0.01, handR: "grip", handL: "relaxed", face: { brow: 0.4, lid: 0.2 } });
-  ms[2].actAt(-1, { py: -1, lean: -18, legL: { th: [88, 4], sh: [90, 2] }, legR: { th: [86, -2], sh: [88, 0] }, armL: [[-12, 6], [-6, 4]], armR: [[150, 26], [172, 10]], head: [-34, -4, 0] }, 10, { in: 0.01, handL: "open", handR: "open", face: { brow: 0.4, lid: 0.5, smile: 0.3 } });
+  ms[0].actAt(-1, { ...reach(st(BEARER_D, ms[0], X - 0.95), "R", [X - 0.89, hy, Z + 0.08]), armL: [[-18, 6], [-12, 4]] }, 10, { in: 0.01, handR: "grip", handL: "relaxed", face: { brow: 0.4, lid: 0.2 } });
+  ms[1].actAt(-1, { ...reach(st(BEARER2_D, ms[1], X + 0.95), "R", [X + 0.89, hy, Z + 0.08]), armL: [[20, 6], [28, 4]], head: [-45, 0, 0] }, 10, { in: 0.01, handR: "grip", handL: "relaxed", face: { brow: 0.4, lid: 0.2 } });
+  ms[2].actAt(-1, { py: -1, lean: -10, legL: { th: [86, 4], sh: [85, 2] }, legR: { th: [86, -2], sh: [85, 0] }, armL: [[34, 8], [52, 4]], armR: [[150, 26], [172, 10]], head: [-34, -4, 0] }, 10, { in: 0.01, handL: "open", handR: "open", face: { brow: 0.4, lid: 0.5, smile: 0.3 } });
   wag(ms[2], 0.2, 2.2, P({ armR: [[150, 26], [172, 10]] }), P({ armR: [[158, 14], [180, 0]] }), 0.55, { handR: "open" });
   shots.push({ id: "carried", a: T5a, b: T5, still: 1.0, sounds: ms[0].cues().filter((q) => q.k === "step" && q.t < T5 - T5a).map((q) => ({ t: q.t, k: "step", g: 0.45 })),
     cam: (t) => W2(t).cam, sun: { target: [X + 1.2, 1, Z], reach: 6 },
-    cast: (t) => [on("b0", BEARER_D, ms[0], t), on("b1", BEARER2_D, ms[1], t), on("man", CARRIED_D, ms[2], t, hy + 0.08)],
+    // (his seat goes up and down with the bed as the bearers step: on a fixed height he sank into it and floated over it in turn)
+    cast: (t) => { const cam = W2(t).cam, b0 = on("b0", BEARER_D, ms[0], t), b1 = on("b1", BEARER2_D, ms[1], t), bed = (palm(stageAt(b0, cam), "R")[1] + palm(stageAt(b1, cam), "R")[1]) / 2;
+      return [b0, b1, on("man", CARRIED_D, ms[2], t, bed + 0.1)]; },
     things: (g, c, _t, T, cam) => { crowd(g, STANDS, T, cam, 0.7); carryBy(g, STRETCH(), c.b0, "R", c.b1, "R", cam, 0.02); } }); }
 
 // 6. EACH ONE WAS TRAINED, ... In the school's yard the pupil holds the practice sword out toward the post they practise on; the trainer

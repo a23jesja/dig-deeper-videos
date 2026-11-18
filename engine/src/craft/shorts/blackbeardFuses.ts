@@ -113,11 +113,12 @@ const BB_AT = { stool: inCabin([CABIN.stool[0], 0, CABIN.stool[2] + 0.27]), mirr
 // (The review of v3: he stood up inside the stool, his legs between its legs. Getting up he steps forward off it, as one does, and
 // stands a step before it. v4: the lens a little wider and turned a little to the right, so that the boy and his tray are whole in the
 // picture to the end of the push in (the right edge cut his cheek, his ear and his hand), and the captain unshaded, as in the light shot: his hand in the shadow went grey)
-{ const V = cabinLens(0.0, 1.25, 3.15, -0.035, -1, 0, 54), BBH = V.toward(BB_AT.stool[0], BB_AT.stool[2], 18), bb = mover(BLACKBEARD_BARE_D, 1.92, BB_AT.stool[0], BB_AT.stool[2], BBH);
+{ const V = cabinLens(0.0, 1.25, 3.15, 0.026, -1, 0, 57), BBH = V.toward(BB_AT.stool[0], BB_AT.stool[2], 18), bb = mover(BLACKBEARD_BARE_D, 1.92, BB_AT.stool[0], BB_AT.stool[2], BBH);
   const UP = 0.35, upAt: V3 = [BB_AT.stool[0] + Math.sin((BBH * Math.PI) / 180) * UP, FL, BB_AT.stool[2] + Math.cos((BBH * Math.PI) / 180) * UP]; bb.stand(0.55).walk(mt(bb, UP), { step: 0.22, tau: 0.3 }).stand(9);
   // the boy comes in from the right to the captain's side, level with him, turned half toward him, the tray held out in both hands
-  // (v4: 12 cm further from him, so that the captain's hanging hand is clear of the boy's face and his fist of the tray)
-  const ex = CX + 0.32, ez = CZ + 0.5, eh = V.toward(ex, ez, -48), boy = mover(SHIPBOY_D, 1.28, ex - Math.sin((eh * Math.PI) / 180) * 0.16, ez - Math.cos((eh * Math.PI) / 180) * 0.16, eh); boy.walk(mt(boy, 0.16), { step: 0.32, tau: 0.22 }).stand(9);
+  // (v4: 22 cm further from him, so that the captain's hanging hand is clear of the boy's face and his fist of the boy's hand on the tray,
+  // seated, rising and standing)
+  const ex = CX + 0.42, ez = CZ + 0.5, eh = V.toward(ex, ez, -48), boy = mover(SHIPBOY_D, 1.28, ex - Math.sin((eh * Math.PI) / 180) * 0.16, ez - Math.cos((eh * Math.PI) / 180) * 0.16, eh); boy.walk(mt(boy, 0.16), { step: 0.32, tau: 0.22 }).stand(9);
   const ys = standOf(SHIPBOY_D, [ex, FL, ez], eh, V), yj = jointsOf(ys), yc = near(mix(yj("pelvis"), yj("neck"), 0.6), V.cam, 0.2), yw = rightWay(ys);
   // (his fists on his thighs as he sits, and his arms hang as he gets up: kept bent, his hand rose to the boy's face before he reached)
   bb.actAt(-1, { ...SIT, armL: arm(12, 8, 56, 10), armR: arm(12, 8, 56, 10), lean: 8, head: [0, 6, 0] }, 10, { in: 0.01, handL: "fist", handR: "fist", face: GRIM });
@@ -126,7 +127,8 @@ const BB_AT = { stool: inCabin([CABIN.stool[0], 0, CABIN.stool[2] + 0.27]), mirr
   // he looks down at the tray, his left hand on his belt before his own coat (the review of v4: reaching to the tray's near edge, his open
   // hand came down on the boy's fist, and hanging at his side it lay on it too; before that his sleeve came down against the boy's nose)
   const jb = jointsOf(bs), belt = aside(near(mix(jb("pelvis"), jb("neck"), 0.14), V.cam, 0.2), V.cam, -rightWay(bs) * 0.04);
-  bb.actAt(1.0, { ...reach(bs, "L", belt), head: [20, 8, 0] }, 9, { in: 0.4, glide: true, handL: "fist", face: { ...GRIM, brow: -0.6 } });
+  // (on his belt by the time the boy stops beside him: started later, his hand still hung by the boy's fist as he came up)
+  bb.actAt(0.55, { ...reach(bs, "L", belt), head: [20, 8, 0] }, 9, { in: 0.45, glide: true, handL: "fist", face: { ...GRIM, brow: -0.6 } });
   boy.actAt(-1, { ...reach(ys, "R", aside(yc, V.cam, yw * 0.27)), ...reach(ys, "L", aside(yc, V.cam, -yw * 0.27)), head: [-14, -6, 0] }, 10, { in: 0.01, handL: "grip", handR: "grip", face: { wide: 0.7, brow: 0.8, lid: 0, mouth: 0.2 } });
   shots.push({ id: "ready", capsTop: 160, a: T.s3, b: T.s4, still: 1.6, sounds: [{ t: 0.3, k: "creak", g: 0.8 }, ...boy.cues().filter((q) => q.k === "step").map((q) => ({ t: q.t, k: "step", g: 0.5, p: 0.3 }))],
     cam: (_t, u) => V.push(0.06 * u), sun: { target: inCabin([0, 0, 0]), reach: 4 },
@@ -284,7 +286,8 @@ const PIST_AT = inCabin([0.35, 0, 0.1]), CUT9 = 1.15;
 // 11. IT WAS PROBABLY MEANT TO MAKE CREWS GIVE UP WITHOUT A FIGHT. Across the water from behind him at his rail: the merchant's crew see
 // the smoking figure, and their hands go up one after another
 // (the lens a metre further back than he stands: he is a dark shape at the side, and the crew read)
-{ const S0 = lens(-0.75, 1.75, 1.45, -1, 0.08, -2, 42), S = lens(0.2, 1.8, 1.05, -1, 0.04, -2, 44), [bx, bz] = S0.spot(1.65, -0.44), bb = mover(BLACKBEARD_ARMED_D, 1.92, bx, bz, S.toward(bx, bz, 180)); bb.stand(9);
+{ const S0 = lens(-0.75, 1.75, 1.45, -1, 0.08, -2, 42), S = lens(0.2, 1.8, 1.05, -1, 0.04, -2, 44), /* v4, round 3: so far out that only his arm at the rail is in the picture, his hat wholly
+  outside it (a little further in, only the tip of its brim and a flap of his ear showed at the edge, a shape nobody could read) */ [bx, bz] = S0.spot(1.65, -0.57), bb = mover(BLACKBEARD_ARMED_D, 1.92, bx, bz, S.toward(bx, bz, 180)); bb.stand(9);
   bb.actAt(-1, { armL: arm(20, 30, 50, 30), armR: arm(20, 30, 50, 30), lean: -2 }, 10, { in: 0.01, handL: "fist", handR: "fist", face: MENACE });
   // (v4: their hands go up straight over their own shoulders and they stand a little further apart: the cook's hand lay over the old
   // hand's arm, and his and the sailor's hands met over their heads; the cook's right hand clear of Blackbeard's hat at the edge)
@@ -295,7 +298,7 @@ const PIST_AT = inCabin([0.35, 0, 0.1]), CUT9 = 1.15;
     return { D, m }; });
   shots.push({ id: "surrender", capsTop: 170, a: T.s10, b: T.s11, still: 2.4, sounds: [{ t: 0.4, k: "flap", g: 0.4 }],
     cam: (_t, u) => S.push(0.05 * u), sun: { target: [-5.5, MD, 1.5], reach: 9 },
-    cast: (t) => [on("bb", BLACKBEARD_ARMED_D, bb, t, 0, { seed: 3 }), ...crew.map(({ D, m }, i) => on(`c${i}`, D, m, t, MD, { seed: 11 + i }))],
+    cast: (t) => [{ ...on("bb", BLACKBEARD_ARMED_D, bb, t, 0, { seed: 3 }), noShade: true }, ...crew.map(({ D, m }, i) => on(`c${i}`, D, m, t, MD, { seed: 11 + i }))],
     // (his smoke smaller and thinner here: he stands near the lens at the picture's edge, and at full size it filled the corner)
     things: (g, c2, _t, T2, cam) => { fuseSmoke(g, c2.bb, T2, cam, 0, { scale: 0.5, alpha: 0.45 }); } }); }
 

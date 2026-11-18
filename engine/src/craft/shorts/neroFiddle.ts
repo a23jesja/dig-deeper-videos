@@ -519,7 +519,8 @@ export const NERO_FIDDLE: Film = {
   hits: [{ t: SIX_A + 1.2, amp: 0.5, dur: 0.3 }],
   // our own lines (DAILY-RULES, "Our own lines"), as bubbles over the picture: the rumour whispered on, and the emperor at his cithara
   // while Sir Digsworth holds his ears
-  bubbles: [{ a: cut("six", "rumour") + 0.05, b: cut("six", "rumour") + 0.9, text: "Psst!", who: "a" }, { a: cut("six", "rumour") + 0.95, b: SANG - 0.06, text: "Did you hear?", who: "b" },
+  // (each up at least 1.2 s, so that it can be read at phone size)
+  bubbles: [{ a: cut("six", "rumour") + 0.05, b: cut("six", "rumour") + 1.3, text: "Psst!", who: "a" }, { a: cut("six", "rumour") + 1.32, b: SANG - 0.06, text: "Did you hear?", who: "b" },
     { a: WIDE + 0.45, b: AND - 0.05, text: "Sing along!", who: "nero" }],
   labels: [{ a: SIX_A, b: SIX_B, top: 310, text: (T) => "DAY " + ["I", "II", "III", "IV", "V", "VI"][Math.max(0, Math.min(5, Math.floor(((T - SIX_A) / (SIX_B - SIX_A)) * 6)))] }],
   beds: [{ k: "fire", a: 0, b: TAC_A, g: 0.9 }, { k: "sea", a: TAC_B, b: cut("away", "gardens"), g: 0.7 }, { k: "fire", a: SIX_A, b: SIX_B, g: 1 }, { k: "fire", a: SANG, b: AND, g: 0.8 }, { k: "sea", a: AND, b: END13, g: 0.6 }, { k: "fire", a: END13, b: END, g: 0.8 }], music: "roman", audio: "craft/nero-fiddle.wav",

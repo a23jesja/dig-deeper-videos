@@ -55,6 +55,12 @@ else if (what === "check") {
   const hookClip = /-hook-[a-z]$/.test(film.id);
   if (hookClip ? film.seconds < 4 || film.seconds > 6 : film.seconds < 25 || film.seconds > 40) bad.push(`the film is ${film.seconds.toFixed(1)} s (${hookClip ? "a hook-lab clip: 4 to 6" : "25 to 40"})`);
   if (film.hook.a > 0.01) bad.push("the question is not on screen from the first frame");
+  // the speech bubbles: each up long enough to read at phone size, inside one shot, said by someone in it, and no quotation marks
+  for (const q of film.bubbles ?? []) { const s = film.shots.find((x) => q.a >= x.a - 0.001 && q.a < x.b), tag = `bubble "${q.text}" at ${q.a.toFixed(2)} s`;
+    if (q.b - q.a < 1.2 - 0.001) bad.push(`${tag}: up ${(q.b - q.a).toFixed(2)} s (at least 1.2 to be read)`);
+    if (!s || q.b > s.b + 0.001) bad.push(`${tag}: runs past the cut`);
+    else if (!s.cast((q.a + q.b) / 2 - s.a, (q.a + q.b) / 2).some((x) => x.name === q.who)) bad.push(`${tag}: ${q.who} is not in the shot`);
+    if (/["“”]/.test(q.text)) bad.push(`${tag}: quotation marks (an own line is never a quote)`); }
   if (film.sign && film.sign.a < 5) bad.push("the sign comes before second five");
   if (bad.length) { console.error(`FILM CHECK FAILED for ${name}:`); for (const b of bad) console.error("  " + b); process.exit(1); }
   console.log(`FILM CHECK OK for ${name}: ${film.shots.length} shots, ${film.seconds.toFixed(1)} s, no figure seen from more than 35 degrees above, none standing in another or in a solid, none jumping`);

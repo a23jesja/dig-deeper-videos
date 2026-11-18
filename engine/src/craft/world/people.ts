@@ -91,7 +91,7 @@ export const fingersCard = (D: Design, pose0: Pose, o: FigOpts, sp0: Spot, cam: 
   // the same card as the figure's (plantFix), so that the fingers lie on its hands
   const fx = plantFix(P, pose0, sp0, cam, mpu0), pose = fx.pose, mpu = fx.mpu, sp: Spot = { ...sp0, at: fx.at };
   const kinds = whole ? { L: o.handL ?? "relaxed", R: o.handR ?? "relaxed" } : undefined;
-  const pl = place(`${D.id}:fingers:${sides.join()}:${whole ? `${kinds!.L},${kinds!.R}` : ""}:${sp.at.join()}:${cam.join()}`, cw, ch, 0.93, s, mpu, sp, cam, 0, (g, yaw) => D.fingers!(new Ink(g, lineFor(D.ol, mpu, sp.at, cam, seen)), solve(P, pose, yaw), sides, kinds), seen);
+  const pl = place(`${D.id}:fingers:${sides.join()}:${whole ? `${kinds!.L},${kinds!.R}` : ""}:${sp.at.join()}:${cam.join()}`, cw, ch, 0.93, s, mpu, sp, cam, 0, (g, yaw) => D.fingers!(new Ink(g, lineFor(D.ol, mpu, sp.at, cam, seen), 1.1), solve(P, pose, yaw), sides, kinds), seen);
   pl.mesh.castShadow = false; return pl.mesh;
 };
 /** a four-legged animal; h = height at the shoulder in metres. `collar` = where a chain meets its collar, in the world */

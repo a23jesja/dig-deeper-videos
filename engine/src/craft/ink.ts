@@ -66,7 +66,8 @@ export const seg = (a: P2, b: P2, wa: number, wb: number, bulge = 0, at = 0.35, 
 
 export class Ink {
   g: CanvasRenderingContext2D; ol: number; ink = INK;
-  constructor(g: CanvasRenderingContext2D, ol = 9) { this.g = g; this.ol = STYLE.simple ? ol * 1.8 : ol; }
+  /** thick = how much heavier the simplified line is (fingers drawn over a held thing take less: they lie over a hand already outlined) */
+  constructor(g: CanvasRenderingContext2D, ol = 9, thick = 1.8) { this.g = g; this.ol = STYLE.simple ? ol * thick : ol; }
   /** places the drawing has noted while it was drawn (an eye, say), in canvas pixels: so that the stage can put a real thing there */
   marks: Record<string, P2> = {};
   mark(name: string, x: number, y: number) { const m = this.g.getTransform(); this.marks[name] = [m.a * x + m.c * y + m.e, m.b * x + m.d * y + m.f]; }

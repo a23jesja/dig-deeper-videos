@@ -226,7 +226,7 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
     // the jaw is its own card: it slides down over a dark card when he speaks. The mouth is large and lies clear of the moustache,
     // so that it reads at phone size: a line that bends with the mood when shut, a dark opening with a tongue (and teeth in a laugh) when open
     const sm = f.smile ?? 0.25, mw = (0.44 + 0.12 * Math.max(sm, 0)) * w;
-    const c0 = at(h, 0, 0.5).x, isOpen = m > 0.04, clench = !!L.mouth2 && isOpen && sm < -0.3 && m < 0.35, bend = L.mouth2 && isOpen ? (clench ? 1 : sm) : 0;
+    const c0 = at(h, 0, 0.5).x, isOpen = m > 0.04, clench = !STYLE.simple && !!L.mouth2 && isOpen && sm < -0.3 && m < 0.35, bend = L.mouth2 && isOpen ? (clench ? 1 : sm) : 0;
     // the corrected mouth: the upper edge of the opening and the lower lip (the top of the jaw card) bend with the mood
     const lipY = (x: number) => clench ? 0.055 * H * Math.min(1, Math.max(0, (1 - Math.abs(x - c0) / mw) / 0.25)) : bend * 0.05 * H * Math.max(0, 1 - ((x - c0) / mw) ** 2);      // clenched teeth: the lower lip is drawn straight down off them, so the mouth is an arch on a flat foot
     if (vis && isOpen && L.mouth2) { k.clip(skull, () => {
@@ -295,7 +295,7 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
     const eye = (s: number) => {
       const q = at(h, s * 28, 0.8); if (q.d < 0.1 * b) return;
       k.mark(s < 0 ? "eyeA" : "eyeB", q.x, yEye);
-      const fs = clamp(Math.cos(s * 28 * R + phi), 0.42, 1) ** 0.85, r = 0.32 * a * EY, rx = r * fs, ry = r * (1 + 0.16 * (f.wide ?? 0)), ball = ellPts(q.x, yEye, rx, ry), gz = f.gaze ?? [0, 0], lid = f.lid ?? 0.16;
+      const fs = clamp(Math.cos(s * 28 * R + phi), 0.42, 1) ** 0.85, r = 0.32 * a * (STYLE.simple ? Math.min(EY * 1.4, Math.max(EY, 1.45)) : EY), rx = r * fs, ry = r * (1 + 0.16 * (f.wide ?? 0)), ball = ellPts(q.x, yEye, rx, ry), gz = f.gaze ?? [0, 0], lid = f.lid ?? 0.16;
       // a shut eye is one arc and nothing else (no outline of the open eye is left round it, which read as spectacles): it bows upward
       // in a smile and downward otherwise
       const cx = (x: number) => { const m = k.g.getTransform(); return m.a * x + m.c * yEye + m.e; }, one = Math.abs(f.shut ?? 0) > 0.5 && Math.sign(cx(q.x) - cx(at(h, 0, 0.8).x)) === Math.sign(f.shut ?? 0);
@@ -303,7 +303,7 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
       if (shut) k.line(spline([[q.x - rx * 0.86, yEye - bow * ry * 0.14], [q.x, yEye + bow * ry * 0.34], [q.x + rx * 0.86, yEye - bow * ry * 0.14]], false, 8), 6.4 * u);
       else { k.shape(ball, "#fffdf6"); k.clip(ball, () => {
         const px = q.x + clamp(gz[0] * 0.5 + h.sin * 0.22 + ahead * 0.5, -0.56, 0.56) * rx, py = yEye + gz[1] * ry * 0.5; k.shape(ellPts(px, py, rx * 0.5, ry * 0.5), "#2a1f1a", 0); k.dot(px - rx * 0.17, py - ry * 0.2, r * 0.13, "#ffffff");
-        if (lid > 0.01) { const y = yEye - ry + 2 * ry * lid; k.shape([[q.x - rx - 2, yEye - ry - 2], [q.x + rx + 2, yEye - ry - 2], [q.x + rx + 2, y], [q.x - rx - 2, y]], shade(skin, 0.86), 0); k.line([[q.x - rx - 2, y], [q.x + rx + 2, y]], 4.6 * u, LINE, "butt"); }
+        if (lid > (STYLE.simple ? 0.35 : 0.01)) { const y = yEye - ry + 2 * ry * lid; k.shape([[q.x - rx - 2, yEye - ry - 2], [q.x + rx + 2, yEye - ry - 2], [q.x + rx + 2, y], [q.x - rx - 2, y]], STYLE.simple ? skin : shade(skin, 0.86), 0); if (!STYLE.simple) k.line([[q.x - rx - 2, y], [q.x + rx + 2, y]], 4.6 * u, LINE, "butt"); }
       });
       k.shape(ball, null); }
       if (L.lash) for (const j of [0, 1]) k.line([[q.x + s * rx * (0.7 + 0.25 * j) * (h.cos > 0.3 ? 1 : 0.4), yEye - ry * (0.75 - 0.3 * j)], [q.x + s * rx * (1.05 + 0.3 * j) * (h.cos > 0.3 ? 1 : 0.4), yEye - ry * (1.1 - 0.35 * j)]], 3.4);
@@ -322,7 +322,7 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
       piece(k, hull([[n1.x, -0.49 * H], [n2.x, -0.49 * H], [c1.x + out * 0.5, -0.385 * H], [c2.x + out * 0.5, -0.385 * H], [t0.x + out, -0.385 * H], [t0.x + out * 0.86, -0.35 * H], [t0.x, -0.335 * H]]), shade(skin, 0.9));
     }
   }
-  for (const e of ears) if (Math.abs(e.e.d) >= 0.55 * a && e.e.d > 0) e.draw();
+  for (const e of ears) if (Math.abs(e.e.d) >= 0.55 * a && e.e.d > 0 && !STYLE.simple) e.draw();
   // --- what sits on the head ---
   if (HAT === "cap") {
     capDraw(k, L, h, o.capLift ?? 0, away, "front");

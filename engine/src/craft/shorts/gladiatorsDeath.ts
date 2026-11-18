@@ -82,12 +82,13 @@ const T5a = at("nine", /^gladiator/) - 0.12;
 // (v4, the body check: in two files the back rows' heads and arms lay behind the front rows. Now a checkerboard laid out from the lens,
 // each man in a gap of the row before him, the rows far enough apart that each row's heads stand above the heads two rows ahead; the
 // one who leans walks beside the one he leans on, at the front)
-{ const LY = 5.0, LT = -28.5, C0 = lens(12.2, LY, 3.1, -0.85, -0.53, LT, 56), toLensH = (Math.atan2(0.85, 0.53) * 180) / Math.PI, HW = toLensH + 28, hr = (HW * Math.PI) / 180;
+// (the lens at 4.8 m and the parade 0.3 m further off: at 5 m the front pair were seen from 37 degrees above, more than a card allows)
+{ const LY = 4.8, LT = -27.5, C0 = lens(12.2, LY, 3.1, -0.85, -0.53, LT, 56), toLensH = (Math.atan2(0.85, 0.53) * 180) / Math.PI, HW = toLensH + 28, hr = (HW * Math.PI) / 180;
   const f: [number, number] = [Math.sin(hr), Math.cos(hr)], rg: [number, number] = [-Math.cos(hr), Math.sin(hr)], [ox, oz] = C0.spot(5.5, 0.6), SPEED = 0.84;
   /** a place in the parade: s metres behind the first row, q metres to the walkers' right */
   const LN = Math.hypot(0.85, 0.53), LF: [number, number] = [-0.85 / LN, -0.53 / LN], LR: [number, number] = [-LF[1], LF[0]];
   /** a place in the parade: d metres further from the lens than the front row, r metres to the right in the picture */
-  const at = (d: number, r: number): [number, number] => [ox + LF[0] * d + LR[0] * r, oz + LF[1] * d + LR[1] * r];
+  const at = (d: number, r: number): [number, number] => [ox + LF[0] * (d + 0.3) + LR[0] * r, oz + LF[1] * (d + 0.3) + LR[1] * r];
   const R0 = -0.5, SLOT: [number, number][] = [[2.2, R0 - 1.5], [2.2, R0 + 1.5], [2.2, R0], [4.4, R0 - 0.85], [0, R0 + 0.41], [0, R0 - 0.41], [4.4, R0 + 0.85], [6.6, R0 - 1.9], [6.6, R0 + 1.9]];
   void rg;
   const pace = (m: MM, i: number) => m.stand(0.04 * (i % 3)).walk(mt(m, 3.6), { step: 0.42 / m.LL, tau: 0.5 }).stand(9);

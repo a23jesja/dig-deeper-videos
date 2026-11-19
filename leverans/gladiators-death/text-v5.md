@@ -44,7 +44,7 @@ title.py (19 November, on version 5), the title "Did gladiators really fight to 
 - ONE FINGER UP: 80/100, no word repeated from the title.
 
 ## Phone copy
-`gladiators-death-v5-telefon.mp4` (md5 a28e920e): 1080x1920, H.264 High, AAC 320 kbit/s, under 29 MB.
+`gladiators-death-v5-telefon.mp4` (md5 912f91e4): 1080x1920, H.264 High, AAC 320 kbit/s, under 29 MB.
 
 ## What changed from version 4 (Jesper's list, 19 November)
 The voice, the story, the timing and the captions are as in version 4.
@@ -57,7 +57,8 @@ The voice, the story, the timing and the captions are as in version 4.
   - **3-5 s:** Sir explains with open hands.
   - **5.5-6 s:** the woman answers with one calm open hand.
   - **11 s:** the pupil holds his practice sword down with the elbow bent, and the trainer points.
-  - **12-15 s:** the gladiator eats with the bowl near his mouth, his bandaged arm on his knee. The doctor sits on his stool rolling his bandage close to his body.
+  - **1.5-3 s:** nobody in the stands right behind Sir's head and cap while he peeks.
+  - **12-15 s:** the gladiator stands beside the stone block and eats with the bowl at his mouth, his bandaged arm hanging. The doctor sits on his stool rolling his bandage close to his body.
   - **20.5-22 s:** the referee holds his stick in one hand against his shoulder.
   - **22.5-27 s:** the beaten man is down on one knee with one hand on the ground.
   - **32-34 s:** the doctor stands pleased behind his table with his arms crossed.

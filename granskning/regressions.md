@@ -24,6 +24,8 @@ Enligt "Impossible things: zero tolerance" i DAILY-RULES.md (Jesper 18 november 
 | 18 | Blackbeard v4 (8b70f500) | 25,7–27,2 | Blackbeards hattbrätte i förgrunden täcker kockens upplyfta arm och hörnet av hans huvud. | granskaren | 6 | förgrund över en bakgrundsfigurs arm eller huvud |
 | 19 | Blackbeard v1–v4 | 3,9–6,4 | Tunnan i förgrunden täcker Sirs högra ben och halva rocken, inom de första fem sekunderna (Jespers regel 1, 18 november). | granskaren | 6 | föremål i förgrunden över en figur |
 | 20 | Blackbeard v4 (90620c7e) | 27,7–32,4 | Sjömannens vänstra hand gömd bakom läsarens knytnäve vid bokens kant; hans ärm slutar i läsarens näve, en näve för två armar | byggsessionens test (g) | 5 | två händer från olika figurer över varandra |
+| 21 | Djurrättegångarna v1c | åhörarbänken | Sir och gubben sitter i luften ovanför träbänken, inte på den | Jesper | 1, 3 | sits under höften, varje ruta |
+| 21 | Djurrättegångarna v1c (216435bc) | 3,6–5,5 och 12,5–13,5 | Sir och gubben sitter i luften ovanför åhörarbänken, inte på den. Granskaren godkände bilden. | Jesper | 1, 3 | sits under höften, varje ruta |
 
 ## Kodkontrollen mot listan (18 november, kroppskontrollen `film_info.mjs <film> body`)
 Kontrollen körd på de levererade filernas kod (9eeae2b; öppning a omgång 2 på 5f36d8a). Utskriften rad för rad finns i `granskning/body-check/`, med en tabell i README.md där.

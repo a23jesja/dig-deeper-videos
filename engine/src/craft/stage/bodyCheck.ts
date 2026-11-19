@@ -12,6 +12,7 @@
 // A thing the figure stands on (its top no higher than his feet) is his floor, not a thing he stands in. A thing that encloses the lens
 // (the sky) is left out. The faults are kept per shot, figure and thing, with the frames they run over and the deepest point.
 import * as THREE from "three";
+import { castOf } from "./film";
 import type { Film, Staged, V3 } from "./film";
 import { stageAt } from "./staging";
 import { AUDIT } from "./grips";
@@ -97,7 +98,7 @@ const dist = (o: Ob, p: THREE.Vector3, r: number): number => {
  *  in the picture: Blackbeard v4, a dark shape at the hook's edge). The figures are drawn cards and are not in it */
 export const pickAt = (film: Film, frame: number, x: number, y: number) => {
   const T = frame / film.fps, s = film.shots.find((q) => T >= q.a - 1e-6 && T < q.b) ?? film.shots[film.shots.length - 1], t = Math.max(0, T - s.a), cam = s.cam(t, t / (s.b - s.a));
-  const st: Record<string, Staged> = {}; for (const a of s.cast(t, s.a + t)) st[a.name] = stageAt(a, cam);
+  const st: Record<string, Staged> = {}; for (const a of castOf(s)(t, s.a + t)) st[a.name] = stageAt(a, cam);
   const world = film.world(), g = new THREE.Group(); AUDIT.rows = []; AUDIT.on = true; CROWD_LOG.on = false;
   try { s.things?.(g, st, t, s.a + t, cam); } finally { AUDIT.on = false; }
   const root = new THREE.Group(); root.add(world, g); root.updateMatrixWorld(true);
@@ -131,7 +132,7 @@ export const bodyCheck = (film: Film, opt: { every?: number; shots?: string[] } 
   for (const s of film.shots) { if (opt.shots && !opt.shots.includes(s.id)) continue;
     const hide = new Set(s.hide ?? []), base = worldObs.filter((o) => !hiddenBy(o.mesh, hide));
     const F0 = Math.ceil(s.a * film.fps - 1e-6), F1 = Math.ceil(s.b * film.fps - 1e-6), times: number[] = []; for (let F = F0; F < F1; F += every) times.push(Math.max(0, F / film.fps - s.a));
-    const stage = (t: number) => { const cam = s.cam(t, t / (s.b - s.a)), st: Record<string, Staged> = {}; for (const a of s.cast(t, s.a + t)) st[a.name] = stageAt(a, cam); return { cam, st }; };
+    const stage = (t: number) => { const cam = s.cam(t, t / (s.b - s.a)), st: Record<string, Staged> = {}; for (const a of castOf(s)(t, s.a + t)) st[a.name] = stageAt(a, cam); return { cam, st }; };
     // what the shot puts in the set and leaves standing: the same thing in the same place at six moments through the shot
     const probe = [0, 0.2, 0.4, 0.6, 0.8, 1].map((k) => times[Math.min(times.length - 1, Math.round(k * (times.length - 1)))]);
     // things carried on a body but in no hand (a sack on the back, a bundle hugged): the same object near a figure at every moment read

@@ -13,7 +13,12 @@ export type FigOpts = { who?: Who; face?: Face; handL?: HandKind; handR?: HandKi
   /** the hat is not on the head (it flew off in a fall and is drawn by the scene where it lies) */
   hatOff?: boolean;
   /** false = no knee drape: seated, the garment below the waist hangs along the spine as it did before 20 Nov (the proof's planted fault) */
-  drape?: boolean };
+  drape?: boolean;
+  /** false = the pipe as it was before 20 Nov: its stem dropping with the jaw into an open mouth (the proof's planted fault) */
+  pipeHold?: boolean;
+  /** the figure drawn as its mirror image or not, fixed for the whole shot (film.ts castOf): turning across the angle where the mirror
+   *  changes, the head was redrawn the other way round between two frames */
+  mirror?: boolean };
 /** faceW = half the width that must show in a close-up of the face (moustache tips included) */
 export type Design = { id: string; name: string; ol: number; faceW?: number; props: (who: Who) => Props; draw: (k: Ink, sk: Sk, o: FigOpts) => void;
   /** the closed fingers of the named hands by themselves (the layer that lies in front of a thing held) */
@@ -22,7 +27,9 @@ export type Design = { id: string; name: string; ol: number; faceW?: number; pro
   hat?: (k: Ink, phiDeg: number) => void;
   /** the garment's torso rows [height above the pelvis, half-width, depth in front, depth behind] (design units), for the body check:
    *  a robe or a coat tail is drawn hanging along the spine down to its hem, sitting too */
-  garment?: number[][] };
+  garment?: number[][];
+  /** is the figure drawn mirrored at this view angle (cast.ts mirrored): film.ts castOf fixes it for a whole shot */
+  mirrorAt?: (yaw: number) => boolean };
 export const LIGHT: P2 = [0.8, 0.45]; // which way the shadow lies on a part (the light comes from the upper left)
 
 /** the torso's own frame: Q(l, d, a) = a point l to the figure's left, d in front of the spine and a above the pelvis along the spine */

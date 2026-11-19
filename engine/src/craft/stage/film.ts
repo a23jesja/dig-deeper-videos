@@ -163,3 +163,13 @@ export const mix3 = (a: V3, b: V3, u: number): V3 => [a[0] + (b[0] - a[0]) * u, 
 /** a camera that glides from one framing to another over the shot */
 export const glide = (from: Cam, to: Cam, ease = true) => (_t: number, u: number): Cam => { const k = ease ? smooth(u) : u; return { pos: mix3(from.pos, to.pos, k), look: mix3(from.look, to.look, k), fov: from.fov + (to.fov - from.fov) * k }; };
 export const shotAt = (film: Film, T: number) => film.shots.find((s) => T >= s.a && T < s.b) ?? film.shots[film.shots.length - 1];
+
+/** A shot's cast with each figure's mirror image fixed for the whole shot (the shot library review C: Sir turned across the angle where his
+ *  drawing is mirrored, so that his monocle shows, and his head was redrawn the other way round between two frames). The mirror is
+ *  decided once, by how the figure stands to the lens on the shot's first frame; every caller (the stage, the checks) uses this */
+const LOCKED = new WeakMap<Shot, Shot["cast"]>();
+export const castOf = (s: Shot): Shot["cast"] => { const had = LOCKED.get(s); if (had) return had;
+  let lock: Map<string, boolean> | null = null;
+  const f: Shot["cast"] = (t, T) => { if (!lock) { lock = new Map(); const c0 = s.cam(0, 0); for (const a of s.cast(0, s.a)) if (a.D.mirrorAt) lock.set(a.name, a.D.mirrorAt(a.heading - (Math.atan2(c0.pos[0] - a.at[0], c0.pos[2] - a.at[2]) * 180) / Math.PI)); }
+    return s.cast(t, T).map((a) => (lock!.has(a.name) && a.o.mirror === undefined ? { ...a, o: { ...a.o, mirror: lock!.get(a.name) } } : a)); };
+  LOCKED.set(s, f); return f; };

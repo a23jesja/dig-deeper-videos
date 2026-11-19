@@ -4,6 +4,7 @@
 // world's solid things: a face with two or more of its points behind something fails, and so does a figure with something across its
 // chest or its middle that has the figure showing on both sides of it.
 import * as THREE from "three";
+import { castOf } from "./film";
 import { Film, captions, textBoxes } from "./film";
 import { stageAt, aside } from "./staging";
 import { CROWD_LOG } from "../world/people";
@@ -34,7 +35,7 @@ export const occlusions = (film: Film, step = 0.2) => {
       // pillar or a table right beside him is the scene he stands in; a mast or a post near the lens is what the rule is about)
       const before = (p: THREE.Vector3, near = false) => { const d = p.clone().sub(C), dist = d.length(); rc.set(C, d.normalize()); rc.near = 0.05; rc.far = Math.max(0.06, near ? Math.min(dist - 0.12, dist * 0.66) : dist - 0.12); return rc.intersectObjects(live, false)[0]?.object ?? null; };
       const at = `${s.id} at ${t.toFixed(1)} s (film ${(s.a + t).toFixed(1)} s)`;
-      for (const a of s.cast(t, s.a + t)) {
+      for (const a of castOf(s)(t, s.a + t)) {
         const base = new THREE.Vector3(...a.at); if (base.clone().sub(C).dot(fwd) < 0.3) continue;
         const pt = (x: number, y: number) => base.clone().addScaledVector(right, x * a.h).addScaledVector(up, y * a.h);
         // the face: five points round it; two or more behind something is a covered face
@@ -67,7 +68,7 @@ export const textOver = (film: Film, step = 0.1) => {
     const T = s.a + t, lines = textBoxes(film, T, caps); if (!lines.length) continue;
     const cam = s.cam(t, t / (s.b - s.a)); lens.fov = cam.fov; lens.position.set(...cam.pos); lens.lookAt(...cam.look); lens.updateProjectionMatrix(); lens.updateMatrixWorld(true);
     const P = (v: number[]): [number, number] => { const q = new THREE.Vector3(v[0], v[1], v[2]).project(lens); return [(q.x + 1) * 540, (1 - q.y) * 960]; };
-    for (const a of s.cast(t, T)) { const st = stageAt(a, cam), cr = P(st.joint("crown")), sk = P(st.joint("skull")), R = Math.max(14, Math.hypot(cr[0] - sk[0], cr[1] - sk[1]) * 0.55), hc: [number, number] = [(cr[0] + sk[0]) / 2, (cr[1] + sk[1]) / 2];
+    for (const a of castOf(s)(t, T)) { const st = stageAt(a, cam), cr = P(st.joint("crown")), sk = P(st.joint("skull")), R = Math.max(14, Math.hypot(cr[0] - sk[0], cr[1] - sk[1]) * 0.55), hc: [number, number] = [(cr[0] + sk[0]) / 2, (cr[1] + sk[1]) / 2];
       if (hc[0] < -R || hc[0] > 1080 + R || hc[1] < -R || hc[1] > 1920 + R) continue;
       const nk = P(st.joint("neck")), pv = P(st.joint("pelvis")), parts: [string, [number, number], number][] = [["face", hc, R]];
       for (const k of [0.15, 0.4, 0.65]) parts.push(["chest", [nk[0] + (pv[0] - nk[0]) * k, nk[1] + (pv[1] - nk[1]) * k], R * 0.8]);
@@ -75,7 +76,7 @@ export const textOver = (film: Film, step = 0.1) => {
       for (const l of lines) for (const [part, c, r] of parts) { const key = `${s.id}:${a.name}:${part}:${l.text}`; if (seen.has(key) || !hit(l.box, c, r)) continue; seen.add(key);
         bad.push(`${s.id} at ${t.toFixed(1)} s (film ${T.toFixed(1)} s): the text "${l.text}" lies over ${a.name}'s ${part}`); } }
     // the crowd: the shot's things drawn once with the crowd's heads logged
-    if (s.things) { const st: Record<string, Staged> = {}; for (const a of s.cast(t, T)) st[a.name] = stageAt(a, cam);
+    if (s.things) { const st: Record<string, Staged> = {}; for (const a of castOf(s)(t, T)) st[a.name] = stageAt(a, cam);
       CROWD_LOG.on = true; CROWD_LOG.heads.length = 0; try { s.things(new THREE.Group(), st, t, T, cam); } finally { CROWD_LOG.on = false; }
       for (const cr of CROWD_LOG.heads) { const hc = [cr.at[0], cr.at[1] + 0.88 * cr.h, cr.at[2]], c = P(hc), e = P(aside(hc as [number, number, number], cam, 0.075 * cr.h, 0)), R = Math.hypot(e[0] - c[0], e[1] - c[1]);
         if (R < 14 || c[0] < 0 || c[0] > 1080 || c[1] < 0 || c[1] > 1920) continue;

@@ -177,14 +177,19 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
     // (the stem's end in the corner of the mouth, where the mouth line ends (36 degrees round, 0.72 of the way out): rooted on the face's
     //  outline at 34 degrees it began past the mouth's end, in his cheek, whenever his head was turned; the independent review of
     //  gladiators v5)
-    if (!L.pipe) return; const r0 = at(h, 34, 0.72), t = p3(h, a * 0.5 + a * 0.62, b * 0.86 + a * 0.5), y0 = yJaw - 0.01 * H + drop * 0.6, y1 = y0 + 0.11 * H;
+    // (the stem runs out to the side, 80 degrees from straight ahead: at 43 degrees, with his head turned that far toward the lens, it
+    //  was seen end on as a brown block under the moustache, "a tooth": the shot library review A. And the stem stays in the closed
+    //  corner of the mouth when he talks, the mouth opening on the other side (review B: "the pipe hangs in an open mouth"); pipeHold:
+    //  false = as before, the stem dropping with the jaw in the open mouth (the proof's planted fault)
+    if (!L.pipe) return; const old = o.pipeHold === false, r0 = at(h, 34, 0.72), t = old ? p3(h, a * 0.5 + a * 0.62, b * 0.86 + a * 0.5) : p3(h, a * 1.22, b * 0.6 + a * 0.14), y0 = yJaw - 0.01 * H + (old ? drop * 0.6 : 0), y1 = y0 + 0.11 * H;
+    if (old && m > 0.04 && t.d > -0.15 * b) k.mark("pipeOpen", r0.x, y0);
     piece(k, seg([r0.x, y0], [t.x, y1], 5 * u, 5 * u, 0, 0.3, true), "#3a2618");
     piece(k, [[t.x - 15 * u, y1 - 34 * u], [t.x + 15 * u, y1 - 34 * u], [t.x + 12 * u, y1 + 7 * u], [t.x - 12 * u, y1 + 7 * u]], "#8a4f2a");
     return t.d;
   };
   const ear = (s: number) => { const e = at(h, s * 90); return { e, draw: () => piece(k, ellPts(e.x, -0.5 * H, 0.17 * a, 0.12 * H), skinD) }; };
   const ears = [ear(-1), ear(1)];
-  const tipBehind = L.pipe ? p3(h, a * 1.12, b * 0.86 + a * 0.5).d < -0.15 * b : false;
+  const tipBehind = L.pipe ? (o.pipeHold === false ? p3(h, a * 1.12, b * 0.86 + a * 0.5) : p3(h, a * 1.22, b * 0.6 + a * 0.14)).d < -0.15 * b : false;
   if (tipBehind) pipe();
   if (away) { mousHalf(-1); mousHalf(1); }
   for (const e of ears) if (Math.abs(e.e.d) < 0.55 * a) e.draw();
@@ -228,8 +233,10 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
     const vis = nose0.d > -0.3 * b;
     // the jaw is its own card: it slides down over a dark card when he speaks. The mouth is large and lies clear of the moustache,
     // so that it reads at phone size: a line that bends with the mood when shut, a dark opening with a tongue (and teeth in a laugh) when open
-    const sm = f.smile ?? 0.25, mw = (0.44 + 0.12 * Math.max(sm, 0)) * w;
-    const c0 = at(h, 0, 0.5).x, isOpen = m > 0.04, clench = !STYLE.simple && !!L.mouth2 && isOpen && sm < -0.3 && m < 0.35, bend = L.mouth2 && isOpen ? (clench ? 1 : sm) : 0;
+    const sm = f.smile ?? 0.25, mw0 = (0.44 + 0.12 * Math.max(sm, 0)) * w;
+    // (a pipe in the corner of the mouth: open, the mouth opens on the other side and the pipe's corner stays shut round the stem)
+    const pc = L.pipe && o.pipeHold !== false && !tipBehind && m > 0.04 ? at(h, 34, 0.72).x : null, c00 = at(h, 0, 0.5).x, ps = pc === null ? 0 : Math.sign(pc - c00) || 1;
+    const mw = pc === null ? mw0 : mw0 * 0.62, c0 = pc === null ? c00 : c00 - ps * mw0 * 0.38, isOpen = m > 0.04, clench = !STYLE.simple && !!L.mouth2 && isOpen && sm < -0.3 && m < 0.35, bend = L.mouth2 && isOpen ? (clench ? 1 : sm) : 0;
     // the corrected mouth: the upper edge of the opening and the lower lip (the top of the jaw card) bend with the mood
     const lipY = (x: number) => clench ? 0.055 * H * Math.min(1, Math.max(0, (1 - Math.abs(x - c0) / mw) / 0.25)) : bend * 0.05 * H * Math.max(0, 1 - ((x - c0) / mw) ** 2);      // clenched teeth: the lower lip is drawn straight down off them, so the mouth is an arch on a flat foot
     if (vis && isOpen && L.mouth2) { k.clip(skull, () => {
@@ -245,6 +252,7 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
         }
       });
       k.line(spline(up, false, 4), 4.6 * u);
+      if (pc !== null) k.line([[c0 + ps * mw * 0.98, top + 0.02 * H], [pc, yJaw - 0.005 * H]], 5 * u);
     }); }
     if (vis && isOpen && !L.mouth2) { const c = c0; k.clip(skull, () => {
       k.shape([[c - mw, yJaw - 0.05 * H], [c + mw, yJaw - 0.05 * H], [c + mw * 0.9, yJaw + drop + 0.06 * H], [c - mw * 0.9, yJaw + drop + 0.06 * H]], MOUTH, 0);
@@ -310,12 +318,17 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
       });
       k.shape(ball, null); }
       if (L.lash) for (const j of [0, 1]) k.line([[q.x + s * rx * (0.7 + 0.25 * j) * (h.cos > 0.3 ? 1 : 0.4), yEye - ry * (0.75 - 0.3 * j)], [q.x + s * rx * (1.05 + 0.3 * j) * (h.cos > 0.3 ? 1 : 0.4), yEye - ry * (1.1 - 0.35 * j)]], 3.4);
-      if (L.monocle && s < 0) { const ring = ellPts(q.x, yEye, Math.max(rx * 1.36, ry * 1.02), ry * 1.34); k.clip(ring, () => { k.g.globalAlpha = 0.2; k.shape(ring, "#bfe6f2", 0); k.g.globalAlpha = 0.8; k.line([[q.x - rx * 0.7, yEye + ry * 0.2], [q.x - rx * 0.1, yEye - ry * 0.8]], rx * 0.2, "#ffffff"); k.g.globalAlpha = 1; }); k.shape(ring, null, 12.5); const i = k.ink; k.ink = BRASS; k.shape(ring, null, 7.5); k.ink = i; }
+      if (L.monocle && s < 0) mono = { x: q.x, rx, ry };
       // the brow is its own piece: up for surprise, down toward the nose for a frown
       const bi = at(h, s * 9, 0.8), bo = at(h, s * 46, 0.8), by = yEye - ry - 0.04 * H, bw = f.brow ?? 0, th = 0.04 * H;
       const yi = by - 0.014 * H - 0.055 * H * Math.max(bw, 0) + 0.045 * H * Math.max(-bw, 0), yo = by + 0.008 * H - 0.04 * H * Math.max(bw, 0) - 0.022 * H * Math.max(-bw, 0);
       piece(k, [[bi.x, yi], [(bi.x + bo.x) / 2, (yi + yo) / 2 - 0.012 * H], [bo.x, yo], [bo.x, yo + th * 0.8], [(bi.x + bo.x) / 2, (yi + yo) / 2 - 0.012 * H + th], [bi.x, yi + th]], L.brow);
     };
+    // (the monocle is drawn after the nose, which lay over its glass, and within the head's outline, which it went past on the far eye
+    //  of a turned head: the shot library review D)
+    let mono: { x: number; rx: number; ry: number } | null = null;
+    const monocle = () => { if (!mono) return; const { x, rx, ry } = mono, ring = ellPts(x, yEye, Math.max(rx * 1.36, ry * 1.02), ry * 1.34);
+      k.clip(skull, () => { k.clip(ring, () => { k.g.globalAlpha = 0.2; k.shape(ring, "#bfe6f2", 0); k.g.globalAlpha = 0.8; k.line([[x - rx * 0.7, yEye + ry * 0.2], [x - rx * 0.1, yEye - ry * 0.8]], rx * 0.2, "#ffffff"); k.g.globalAlpha = 1; }); k.shape(ring, null, 12.5); const i = k.ink; k.ink = BRASS; k.shape(ring, null, 7.5); k.ink = i; }); };
     const far = h.sin >= 0 ? 1 : -1;
     if (vis) eye(far);
     if (!away) { mousHalf(far); mousHalf(-far); if (L.mous && h.cos > 0.5) pin(k, [nose0.x * 0.9, yM + 1], 4); }
@@ -323,6 +336,7 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
       eye(-far);
       const t0 = at(h, 0, 0.9), n1 = at(h, -7, 0.9), n2 = at(h, 7, 0.9), c1 = at(h, -13, 0.9), c2 = at(h, 13, 0.9), out = 0.5 * a * h.sin;
       piece(k, hull([[n1.x, -0.49 * H], [n2.x, -0.49 * H], [c1.x + out * 0.5, -0.385 * H], [c2.x + out * 0.5, -0.385 * H], [t0.x + out, -0.385 * H], [t0.x + out * 0.86, -0.35 * H], [t0.x, -0.335 * H]]), shade(skin, 0.9));
+      monocle();
     }
   }
   for (const e of ears) if (Math.abs(e.e.d) >= 0.55 * a && e.e.d > 0 && !STYLE.simple) e.draw();
@@ -422,7 +436,7 @@ const within = (poly: P2[], p: P2) => { let i = false; for (let a = 0, b = poly.
 export const drawCast = (L: Look) => {
   const inner = drawTrue(L);
   return (k: Ink, sk: Sk, o: FigOpts) => {
-    if (!mirrored(L, sk.yaw)) return inner(k, sk, o);
+    if (!(o.mirror ?? mirrored(L, sk.yaw))) return inner(k, sk, o);
     k.g.save(); k.g.scale(-1, 1);
     inner(k, solve(sk.P, swapPose(sk.pose), -sk.yaw), { ...o, handL: o.handR, handR: o.handL, face: o.face ? { ...o.face, gaze: o.face.gaze ? [-o.face.gaze[0], o.face.gaze[1]] : undefined } : undefined });
     k.g.restore();

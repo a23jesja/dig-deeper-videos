@@ -4,6 +4,7 @@
 // reads every frame of a film: the grip must lie in the hand, and the working end must point within what the use allows.
 // A prop is modelled with its grip at the origin, its working end along +x and its top along +y (world/props.ts).
 import * as THREE from "three";
+import { castOf } from "./film";
 import type { Film, Cam, V3, Staged } from "./film";
 import { mix3 } from "./film";
 import { grip, palm, fingers, eyeOf, span, near, aside, UNSEEN } from "./staging";
@@ -614,7 +615,7 @@ export const auditGrips = (film: Film, step?: number) => {
     const times: number[] = []; if (step) for (let t = 0; t < s.b - s.a - 1e-6; t += step) times.push(t); else for (let F = Math.ceil(s.a * film.fps - 1e-6); F < s.b * film.fps - 1e-6; F++) times.push(Math.max(0, F / film.fps - s.a));
     for (const t of times) {
       AUDIT.rows = []; UNSEEN.length = 0; CROWD_LOG.on = true; CROWD_LOG.heads.length = 0; const cam = s.cam(t, t / (s.b - s.a)), g = new THREE.Group(), staged: Record<string, Staged> = {};
-      for (const a of s.cast(t, s.a + t)) { const p = figureCard(a.D, a.pose, a.o, { at: a.at, heading: a.heading, h: a.h, land: a.land }, cam.pos); staged[a.name] = { ...a, joint: p.joint, mesh: p.mesh, mark: p.mark }; }
+      for (const a of castOf(s)(t, s.a + t)) { const p = figureCard(a.D, a.pose, a.o, { at: a.at, heading: a.heading, h: a.h, land: a.land }, cam.pos); staged[a.name] = { ...a, joint: p.joint, mesh: p.mesh, mark: p.mark }; }
       s.things?.(g, staged, t, s.a + t, cam); const now = new Map<string, { holder: string; prop: string }>(), at = `${s.id} at ${t.toFixed(2)} s (film ${(s.a + t).toFixed(2)} s, frame ${Math.round((s.a + t) * film.fps)})`;
       for (const u of new Set(UNSEEN)) bad.push(`${at}: ${u}: the hand holds something but its forearm is hidden behind his head or body (the fist would float)`);
       lensOf.fov = cam.fov; lensOf.position.set(...cam.pos); lensOf.lookAt(...cam.look); lensOf.updateProjectionMatrix(); lensOf.updateMatrixWorld(true);

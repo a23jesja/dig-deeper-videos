@@ -2,6 +2,7 @@
 // shows, stands the cast in the world as cards drawn for the angle they are seen from, lets the shot add the things they hold, and
 // lays the captions over the picture. Shared by every Short.
 import React, { useMemo, useRef } from "react";
+import { castOf } from "./film";
 import * as THREE from "three";
 import { AbsoluteFill, Audio, getInputProps, staticFile, useCurrentFrame } from "remotion";
 import { ThreeCanvas } from "@remotion/three";
@@ -24,7 +25,7 @@ const Scene: React.FC<{ film: Film; at?: number; view?: Cam; res?: number }> = (
     const g = new THREE.Group(), seen = { fov: cam.fov, toSun: sunDir(rig) }, staged: Record<string, Staged> = {};
     // the scene's light on the figures, for this shot (kit.CardLight); none = the cards as they always were
     setCardLight(shot.light ?? film.light ?? null);
-    for (const a of shot.cast(t, T)) {
+    for (const a of castOf(shot)(t, T)) {
       const p = figureCard(a.D, a.pose, a.o, { at: a.at, heading: a.heading, h: a.h, land: a.land }, cam.pos, 0, seen);
       if (a.spin !== undefined) { const th = (a.spin * Math.PI) / 180, az = p.mesh.rotation.y, hh = a.h / 2; p.mesh.rotation.z = th; p.mesh.position.set(a.at[0] + Math.sin(th) * hh * Math.cos(az), a.at[1] - Math.cos(th) * hh, a.at[2] - Math.sin(th) * hh * Math.sin(az)); }
       if (a.noShade) for (const k of p.mesh.children) if ((k as THREE.Mesh).receiveShadow) k.visible = false;
@@ -68,7 +69,7 @@ const backOut = (k: number) => 1 + 2.7 * (k - 1) ** 3 + 1.7 * (k - 1) ** 2;
 const Bubbles: React.FC<{ film: Film }> = ({ film }) => {
   const T = useCurrentFrame() / film.fps, live = (film.bubbles ?? []).filter((q) => T >= q.a && T < q.b);
   if (!live.length) return null;
-  const shot = shotAt(film, T), t = T - shot.a, cam = shot.cam(t, t / (shot.b - shot.a)), cast = shot.cast(t, T);
+  const shot = shotAt(film, T), t = T - shot.a, cam = shot.cam(t, t / (shot.b - shot.a)), cast = castOf(shot)(t, T);
   return (
     <AbsoluteFill>
       {live.map((q, i) => {

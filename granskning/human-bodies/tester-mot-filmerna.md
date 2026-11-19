@@ -286,13 +286,15 @@ Black flag, Nero, the plank and Rome were built before the zero-tolerance body c
 
 ## Jesper's eight gladiator points
 
+All eight are caught: seven by the body check, the referee by the grip audit (`film_info <film> grips`, which deliver.sh runs as well). The new grip rule finds nothing in the other six films.
+
 | Jesper's point | Caught by | Where in the list |
 |---|---|---|
 | 3-5 s: Sir explains with his hands toward his own belly | arm toward the lens, drawn over its own body | guess 3.00-5.27 s, sir's left arm (0.45 leg lengths toward the lens) |
 | 5.5-6 s: the woman's straight arm with a clenched fist | arm toward the lens, drawn over its own body; joint limit | not 5.27-6.13 s, the spectator behind Sir (clapping toward the lens, drawn as an arm across her chest); not 5.27-6.53 s, wom and sir |
 | 11-11.5 s: the pupil's sword arm with a bent elbow | arm toward the lens, drawn over its own body | trained 10.93-12.17 s, pup's right arm (0.54 leg lengths: the arm and the sword come out of his chest) |
 | 12-14.5 s: the doctor's straight arms out | straight arm near shoulder height, elbow locked | fed 12.17-14.97 s, doc's left arm (bent 1 degree, 81 degrees from hanging) |
-| 20.5-22 s: the referee holds the stick in one hand | **not caught** | His arms are within every range and bent (87 and 119 degrees). The fault is how the stick is held: across, in two hands (the shot's grip "two hands"). This belongs to the held-objects rule, not to the body. Proposal: give the stick its use poses in the gesture library (one hand, leaned on the shoulder or pointing down), and let the grip audit fail a stick held level across in two hands. |
+| 20.5-22 s: the referee holds the stick in one hand | the grip audit: a stick, rod or spear held level across the body in two hands with nothing done with it (added after the review's yes, 19 Nov) | rules 20.37-22.60 s, ref L+R's stick (0 degrees from level): 68 frames. The body is within every range; the fault is the hold. The stick's use poses (one hand, leaned on the shoulder or pointing down) come with the gesture library |
 | 22.5-27 s: the beaten man on one knee with a hand on the ground | low with nothing under him | finger 22.63-25.63 s and pull 26.90-27.43 s, ret (hips at 53 %, no knee or hand on the ground) |
 | 27-28 s: the handshake close, elbows bent | straight arm, locked elbow, joint limit | pull 26.90-28.00 s, mur and ret |
 | 28-31 s: the hand on the other's shoulder, arm bent naturally | a hand put on someone cannot be seen there | out 28.00-30.33 s, ret's left hand (in the body it touches mur's shoulder; in the picture it is drawn behind mur's right upper arm) |

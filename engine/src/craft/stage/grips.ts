@@ -693,7 +693,11 @@ export const pole = (into: THREE.Group, o: THREE.Object3D, a: Staged, cam: Cam, 
   span(into, o, butt, aside(butt, cam, d[0], d[1]), cam, 0.05); fingers(into, a, opt.one ? [rear] : [rear, front], cam, 0.17);
   if (AUDIT.on) { const lie = (s: Side) => { const v = P2(butt, palm(a, s)); return { off: Math.abs(v[0] * d[1] - v[1] * d[0]), along: dot(v, d), r: fistR(a, s, cam) }; }, r = lie(rear), f = opt.one ? null : lie(front), len = opt.len ?? 1.4;
     const err = r.off > r.r ? `the rear hand is ${(r.off * 100).toFixed(0)} cm off the shaft` : f && f.off > f.r ? `the front hand is ${(f.off * 100).toFixed(0)} cm off the shaft` : f && (f.along < r.along + 0.15 || f.along > len) ? "the front hand is not further along the shaft than the rear hand" : opt.use === "thrust" ? frontThrust(a, cam) : null;
-    AUDIT.rows.push({ id: o.uuid, prop: opt.name ?? "pole", use: opt.use ?? "two hands", holder: `${a.name} ${opt.one ? rear : `${rear}+${front}`}`, err, at: palm(a, rear), o }); }
+    // a stick, a rod or a spear held level across the body in two hands, with nothing done with it (Jesper, 19 Nov: the referee holds
+    // his stick in one hand, leaned on his shoulder or pointing down; the review: "utom när figuren uttryckligen gör något med den, som
+    // att spärra en väg"). A use named by the shot (thrust, bar, ...) is something done with it; the default "two hands" is not
+    const level = !opt.one && !opt.use && Math.abs(d[1]) < Math.sin((25 * Math.PI) / 180);
+    AUDIT.rows.push({ id: o.uuid, prop: opt.name ?? "pole", use: opt.use ?? "two hands", holder: `${a.name} ${opt.one ? rear : `${rear}+${front}`}`, err: err ?? (level ? `held level across the body in two hands (${(Math.asin(Math.abs(d[1])) * 180 / Math.PI).toFixed(0)} degrees from level) with nothing done with it: hold it in one hand, leaned on the shoulder or pointing down, or name what he does with it (bar the way)` : null), at: palm(a, rear), o }); }
   return o;
 };
 /** The arms of a figure holding a long thing in two hands: the rear hand at `grip` (a point in the world: at his hip for a thrust, at his

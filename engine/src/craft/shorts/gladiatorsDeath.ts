@@ -203,7 +203,9 @@ const T5a = at("nine", /^gladiator/) - 0.12;
   const toArm = [mid[0] - dAt[0], mid[2] - dAt[2]], toCam = [V.cam.pos[0] - dAt[0], V.cam.pos[2] - dAt[2]], ta = Math.hypot(toArm[0], toArm[1]) || 1, tc = Math.hypot(toCam[0], toCam[1]) || 1;
   // he faces the forearm, turned a little toward us, so that his near hand is the one toward the arm (facing us, it was the other)
   const dh = (Math.atan2(toArm[0] / ta + (0.45 * toCam[0]) / tc, toArm[1] / ta + (0.45 * toCam[1]) / tc) * 180) / Math.PI, doc = mover(DOCTOR_D, 1.72, dAt[0], dAt[2], dh); doc.stand(9);
-  const DSIT: Partial<Pose> = { ...SIT, py: -0.36, lean: 6 }, dst: Stand = { D: DOCTOR_D, at: dAt, heading: dh, h: 1.72, cam: V.cam, pose: DSIT }, rh = nearHand(dh, V.cam), oh: "L" | "R" = rh === "L" ? "R" : "L";
+  // (v5, Jesper zoomed in on the doctor: "Han sitter i luften där och hans dress går igenom pallen". The seated card's thighs lay in front
+  //  of the stool and the robe went down through its seat. He stands beside the gladiator; no stool, nobody seated in this shot)
+  const DSIT: Partial<Pose> = { lean: 4 }, rh = nearHand(dh, V.cam), oh: "L" | "R" = rh === "L" ? "R" : "L";
   eat.actAt(-1, { ...EAT_UP, ...BA, ...NA, head: [35, 6, 0] }, 10, { in: 0.01, handL: "relaxed", handR: "grip", face: { brow: 0.3, lid: 0.35, mouth: 0.15, smile: 0.3 } });
   // he chews, his mouth working
   for (let i = 0; i * 0.26 < 2.9; i++) eat.actAt(0.1 + i * 0.26, { head: [35, 6 + (i % 2) * 3, 0] }, 10, { in: 0.12, antic: 0, handL: "relaxed", handR: "grip", face: { brow: 0.3, lid: 0.3, mouth: i % 2 ? 0.05 : 0.45, smile: 0.3 } });
@@ -223,9 +225,7 @@ const T5a = at("nine", /^gladiator/) - 0.12;
     cast: (t) => [{ ...on("eat", MURMILLO_EATER_D, eat, t), noShade: true }, { ...on("doc", DOCTOR_D, doc, t), noShade: true }],
     things: (g, c, t, _T, cam) => { const b = BENCH(); b.position.set(E[0] + rt[0] * 0.75 - fw[0] * 0.2, 0, E[2] + rt[1] * 0.75 - fw[1] * 0.2);      // (beside him, on his bowl side)
       b.rotation.y = ((eh - 180) * Math.PI) / 180; g.add(b);
-      // (the stool under his seat, where his pelvis is: put by his feet it stood beside him, v4)
-      const sd = STOOL(), pv = jointsOf(dst)("pelvis"), dr = (dh * Math.PI) / 180; sd.position.set(pv[0] - Math.sin(dr) * 0.15, 0, pv[2] - Math.cos(dr) * 0.15); sd.scale.y = 0.86; g.add(sd);
-      wield(g, PORRIDGE(), BOWL, "hold", c.eat, bh, cam);
+          wield(g, PORRIDGE(), BOWL, "hold", c.eat, bh, cam);
       wield(g, ROLL_O(), ROLL, "wrap", c.doc, rh, cam);
       // the turns already wound, as white bands across the forearm (a little slanted, as a spiral), and the strip from the roll to the last
       const el = c.eat.joint("elL"), wr = c.eat.joint("wrL"), n = 6 + 0 * turns(t), dir = new THREE.Vector3(wr[0] - el[0], wr[1] - el[1], wr[2] - el[2]).normalize();

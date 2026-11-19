@@ -86,10 +86,11 @@ export const twoShot = (id: string, a0: number, b0: number, W: Word[], net = fal
   // inside the picture (his right hand would be at its edge)
   const sir = mover(SIR_D, 1.8, SIR.at[0], SIR.at[2], SIR.heading - 8), wom = mover(ROMAN_WOMAN_OLIVES_D, 1.62, WOMAN.at[0], WOMAN.at[2], WOMAN.heading - 12); sir.stand(9); wom.stand(9);
   const t2 = say(W, "Two") - a0, t1 = say(W, "one") - a0, tr = say(W, "Right") - a0, ss: Stand = { D: SIR_D, at: SIR.at, heading: SIR.heading - 8, h: 1.8, cam: V.cam };
-  const UP = chest ? { ...reach(ss, "L", by(SIR.at, SIR.heading - 8, 0.02, 0.34, 1.08)), armR: arm(14, 12, 30, 8) } : { armL: arm(28, 52, 166, 6), armR: arm(14, 12, 30, 8) };
+  // (chest, gladiators v5, Jesper: "Sir Digsworth förklarar med öppna händer utåt, inte mot sin egen mage": the library's explaining hands)
+  const UP = chest ? { armL: [[16, 8], [72, 22]] as [[number, number], [number, number]], armR: [[18, 20], [70, 48]] as [[number, number], [number, number]] } : { armL: arm(28, 52, 166, 6), armR: arm(14, 12, 30, 8) };
   sir.actAt(-1, { armL: arm(14, 12, 30, 8), armR: arm(14, 12, 30, 8), head: [0, -2, 0] }, 10, { in: 0.01, handL: "relaxed", handR: "relaxed", face: { brow: 0.6, lid: 0.1, smile: 0.3 } });
-  sir.actAt(t2 - 0.3, UP, t1 - t2 + 0.25, { in: 0.22, out: 0.01, handL: "two", face: { brow: 0.9, lid: 0, smile: 0.5 } });
-  sir.actAt(t1 - 0.05, UP, 9, { in: 0.01, handL: "point", face: { brow: 0.9, lid: 0, smile: 0.5 } });
+  sir.actAt(t2 - 0.3, UP, t1 - t2 + 0.25, { in: 0.22, out: 0.01, handL: chest ? "open" : "two", handR: chest ? "open" : undefined, face: { brow: 0.9, lid: 0, smile: 0.5 } });
+  sir.actAt(t1 - 0.05, UP, 9, { in: 0.01, handL: chest ? "open" : "point", handR: chest ? "open" : undefined, face: { brow: 0.9, lid: 0, smile: 0.5 } });
   sir.actAt(tr - 0.25, { head: [chest ? 18 : 34, -2, 0] }, 9, { in: 0.25, antic: 0, over: 1.1, face: { brow: 1, lid: 0, smile: 0.7, wide: 0.3 } });
   wom.actAt(-1, { armL: arm(22, -6, 64, -46), armR: arm(22, -6, 64, -46), head: [-26, 0, 0] }, 10, { in: 0.01, handL: "relaxed", handR: "relaxed", face: { lid: 0.45, brow: -0.2, smile: -0.1 } });
   wag(wom, Math.max(0, tr - 0.35), 1.4, P({ head: [-40, 4, 0] }), P({ head: [-12, 4, 0] }), 0.3, { face: { lid: 0.5, brow: 0.3, smile: -0.3 } });

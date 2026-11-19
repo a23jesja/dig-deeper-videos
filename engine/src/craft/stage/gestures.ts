@@ -85,3 +85,16 @@ export const GESTURES: Record<string, Gesture> = {
   stickDown: { how: "A stick in one hand at the side, the arm hanging with the elbow a little bent, the stick pointing down and a little forward.",
     pose: () => ({ ...STAND, armR: [[4, 12], [16, 12]], armL: REST }), hands: { handR: "grip", handL: "relaxed" } },
 };
+
+// ---- the gestures in a film ----
+/** A gesture's upper body only (arms, hands, head, spine), for a figure that a film's Mover keeps on its feet: the Mover plants and walks
+ *  the legs itself, and a pose's own standing legs blended into its walk broke the solve (gladiators v5) */
+export const upper = (p: Partial<Pose>): Partial<Pose> => { const { legL: _l, legR: _r, px: _x, py: _y, pz: _z, ...rest } = p; void _l; void _r; void _x; void _y; void _z; return rest; };
+/** Kneeling on the right knee in a film: a Mover takes the legs an act names as free legs (motion.ts blends them as joint angles), so the
+ *  kneeling leg is the sheet's own free right leg (the shin back on the ground, the foot tipped 20) with the pelvis at -0.51, and the left
+ *  foot stays planted where the Mover stands him (a planted-foot leg named in an act broke the solve, gladiators v5) */
+export const KNEEL_PLANTED: Partial<Pose> = { py: -0.51, legR: { th: [-6, 4], sh: [-100, 0], pitch: 20 } as LegFK };
+/** standing up again after a kneel, in a film: the right leg straight down under him, the pelvis back up */
+export const STAND_UP: Partial<Pose> = { py: 0, legR: { th: [0, 4], sh: [0, 2], pitch: 0 } as LegFK };
+/** a kneeling gesture (kneel, kneelhand, getup) for a film: its upper body on the planted kneel */
+export const kneeling = (name: "kneel" | "kneelhand" | "getup", aim: Aim = "side"): Partial<Pose> => ({ ...upper(GESTURES[name].pose(aim, 0)), ...KNEEL_PLANTED });

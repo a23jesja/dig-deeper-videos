@@ -106,7 +106,9 @@ const POSES: Record<string, Pose> = {
   stand: { armL: [[12, 14], [22, 8]], armR: [[12, 14], [22, 8]] } as Pose,
   cheer: { armL: [[158, 30], [176, 18]], armR: [[158, 30], [176, 18]], head: [0, 8, 0] } as Pose,
   fist: { armR: [[154, 18], [174, 8]], armL: [[14, 14], [26, 8]] } as Pose,
-  clap: { armL: [[58, -8], [96, -40]], armR: [[58, -8], [96, -40]] } as Pose,
+  // (the elbows low and the hands meeting before the chest: with the upper arms swung far forward the hands went toward the lens and the
+  // card drew them over the body as a fist across the chest, the spectator behind Sir; gladiators v5)
+  clap: { armL: [[22, 8], [70, -45]], armR: [[22, 8], [70, -45]] } as Pose,
 };
 const OPTS: Record<string, FigOpts> = {
   stand: { handL: "relaxed", handR: "relaxed", face: { brow: 0.4, mouth: 0.2 } } as FigOpts,

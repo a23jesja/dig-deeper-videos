@@ -255,9 +255,13 @@ export const bodyCheck = (film: Film, opt: { every?: number; shots?: string[] } 
         //     ground, or a hand on it, or (crouching, not squatting deep) the body leaning in over the feet by 30 degrees
         if ((lw.low < 0.8 && lw.thigh > 50) || lw.low < 0.65) { const pel = W(v.pelvis), floor = a.at[1]; let seat = pel.y - floor < 0.22;
           const under = [0, 0.08, 0.16].map((b) => W([v.pelvis[0], v.pelvis[1], v.pelvis[2] - b / mpu]));
+          // (how far his hip joint is above the seat's top: sitting, it is 8-12 cm; more than 20 cm and he sits in the air above the seat, not on it.
+          //  Jesper, 19 Nov, the animal trials: "satt inte ens på träsoffan utan i luften")
+          let above = Infinity;
           if (!seat) for (const o of [...solids, ...held.filter((h) => !h.holder!.split(" & ").some((p) => p.split(" ")[0] === a.name))]) { for (const q of under) { if (o.aabb.min.x > q.x + 0.05 || o.aabb.max.x < q.x - 0.05 || o.aabb.min.z > q.z + 0.05 || o.aabb.max.z < q.z - 0.05) continue;
-            rc.set(new THREE.Vector3(q.x, q.y + 0.05, q.z), DIRS[3]); rc.near = 0; rc.far = 0.4; if (rc.intersectObject(o.mesh, false)[0]) { seat = true; break; } } if (seat) break; }
+            rc.set(new THREE.Vector3(q.x, q.y + 0.05, q.z), DIRS[3]); rc.near = 0; rc.far = 0.4; const hit = rc.intersectObject(o.mesh, false)[0]; if (hit) { seat = true; above = Math.min(above, hit.distance - 0.05); } } }
           const knee = Math.min(W(v.knL).y, W(v.knR).y) - floor < 0.1, hand = Math.min(W(v.tipL).y, W(v.tipR).y) - floor < 0.08, lean = lw.low > 0.6 && (a.pose.lean ?? 0) > 30;
+          run("hover", seat && above > 0.2 && above < Infinity && !knee && !hand, F, 4, () => pose("hover", `he sits in the air: his hips are ${(above * 100).toFixed(0)} cm above the seat under him (sitting, 8-12 cm)`, 1));
           run("support", !seat && !knee && !hand && !lean, F, 8, () => pose("support", `he is as low as one who sits or squats (hips at ${(lw.low * 100).toFixed(0)} % of standing) with nothing under him: no seat, no knee or hand on the ground`, 1)); }
       };
       // ---- in the picture (rule 5: what cannot be told from being inside is inside) ----

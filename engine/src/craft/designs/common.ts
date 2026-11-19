@@ -11,7 +11,9 @@ export type Face = { gaze?: P2; lid?: number; wide?: number; brow?: number; mout
 /** sway = how far loose things (the hem of a coat or skirt, the cap, the chain) trail behind the way the figure faces, -1..1 */
 export type FigOpts = { who?: Who; face?: Face; handL?: HandKind; handR?: HandKind; prop?: "cane" | "loaf" | null; capLift?: number; sway?: number;
   /** the hat is not on the head (it flew off in a fall and is drawn by the scene where it lies) */
-  hatOff?: boolean };
+  hatOff?: boolean;
+  /** false = no knee drape: seated, the garment below the waist hangs along the spine as it did before 20 Nov (the proof's planted fault) */
+  drape?: boolean };
 /** faceW = half the width that must show in a close-up of the face (moustache tips included) */
 export type Design = { id: string; name: string; ol: number; faceW?: number; props: (who: Who) => Props; draw: (k: Ink, sk: Sk, o: FigOpts) => void;
   /** the closed fingers of the named hands by themselves (the layer that lies in front of a thing held) */
@@ -24,10 +26,24 @@ export type Design = { id: string; name: string; ol: number; faceW?: number; pro
 export const LIGHT: P2 = [0.8, 0.45]; // which way the shadow lies on a part (the light comes from the upper left)
 
 /** the torso's own frame: Q(l, d, a) = a point l to the figure's left, d in front of the spine and a above the pelvis along the spine */
-export const frame = (sk: Sk) => {
-  const o = sk.j.pelvis, s = unit(sub(sk.j.neck, o)), n: P2 = [-s[1], s[0]];
-  const T = (l: number, a: number): P2 => [o[0] + n[0] * l + s[0] * a, o[1] + n[1] * l + s[1] * a];
-  return { T, Q: (l: number, d: number, a: number) => T(l * sk.cos + d * sk.sin, a), tilt: Math.atan2(s[0], -s[1]) / (Math.PI / 180), o, s, n };
+/** how far a figure sits (0 = not at all, 1 = seated): both thighs lifted toward level (the lower of the two, so that a kneel or a stride,
+ *  one thigh up and one down, is not a sitter) */
+export const seated = (sk: Sk) => { const lift = (sd: Side) => { const h = sk.v[`hip${sd}`], k = sk.v[`kn${sd}`], L = Math.hypot(k[0] - h[0], k[1] - h[1], k[2] - h[2]) || 1; return (Math.acos(clamp((h[1] - k[1]) / L, -1, 1)) * 180) / Math.PI; };
+  return clamp((Math.min(lift("L"), lift("R")) - 35) / 40, 0, 1); };
+/** `drape` (default on): seated, the garment below the waist lies over the lap (the knee drape). A point below the pelvis is laid along
+ *  the thighs, as foreshortened as the thighs are drawn, and past the knees down the shins, instead of hanging along the spine: a seated
+ *  card that drew every coat tail and robe straight down drew it through the seat (Jesper, gladiators v5: "hans dress går igenom
+ *  pallen"; proof control E). `drape: false` draws it as before (the proof's planted fault) */
+export const frame = (sk: Sk, drape = true) => {
+  const o = sk.j.pelvis, s = unit(sub(sk.j.neck, o)), n: P2 = [-s[1], s[0]], w = drape ? seated(sk) : 0, P = sk.P;
+  const mj = (a: string): P2 => { const l = sk.j[(a + "L") as Joint], r = sk.j[(a + "R") as Joint]; return [(l[0] + r[0]) / 2, (l[1] + r[1]) / 2]; };
+  const H = mj("hip"), K = mj("kn"), A = mj("an"), down: P2 = [-s[0], -s[1]];
+  /** the point `d` (design units) down the lap from the hips: along the thighs to the knee, then down the shins, and the way it runs there */
+  const lap = (d: number): { p: P2; dir: P2 } => { const [p0, p1, L0, d0] = d <= P.thigh ? [H, K, P.thigh, d] : [K, A, P.shin, d - P.thigh];
+    const v = sub(p1, p0), l = len(v), dir: P2 = l > 0.25 * L0 ? [v[0] / l, v[1] / l] : down; return { p: add(p0, v, Math.min(d0, L0 * 1.2) / L0), dir }; };
+  const T = (l: number, a: number): P2 => { const b: P2 = [o[0] + n[0] * l + s[0] * a, o[1] + n[1] * l + s[1] * a]; if (a >= 0 || w === 0) return b;
+    const { p, dir } = lap(-a), n2: P2 = [dir[1], -dir[0]], q: P2 = [p[0] + n2[0] * l, p[1] + n2[1] * l]; return [lerp(b[0], q[0], w), lerp(b[1], q[1], w)]; };
+  return { T, Q: (l: number, d: number, a: number) => T(l * sk.cos + d * sk.sin, a), tilt: Math.atan2(s[0], -s[1]) / (Math.PI / 180), o, s, n, drape: w };
 };
 /** the outline of a torso from rows [height above the pelvis, half-width seen from the front, depth in front of the spine, depth behind] */
 export const torsoPts = (sk: Sk, rows: number[][], smooth = true): P2[] => {

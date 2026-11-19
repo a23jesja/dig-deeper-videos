@@ -423,14 +423,17 @@ export const drawCast = (L: Look) => {
 };
 const drawTrue = (L: Look) => (k: Ink, sk: Sk, o: FigOpts) => {
   const ink0 = k.ink; k.ink = LINE;
-  const F = frame(sk), P = sk.P, f = o.face ?? {}, front = sk.cos > 0.12, back = sk.cos < -0.12, sideOn = Math.abs(sk.sin) > 0.5, d = Math.sign(sk.sin) || 1, jk = L.top === "jacket";
+  const F = frame(sk, o.drape !== false), P = sk.P, f = o.face ?? {}, front = sk.cos > 0.12, back = sk.cos < -0.12, sideOn = Math.abs(sk.sin) > 0.5, d = Math.sign(sk.sin) || 1, jk = L.top === "jacket";
   const J = (n: string, s: Side) => sk.j[(n + s) as Joint], coatD = shade(L.coat, 0.76), weave = L.weave ? F.o : undefined;
   /** the torso's surface: a point l to the figure's left at height a, on the front (or the back) of the body */
   const row = (a: number) => { const r = L.rows; let i = 0; while (i < r.length - 2 && r[i + 1][0] < a) i++; const t = clamp((a - r[i][0]) / (r[i + 1][0] - r[i][0]), 0, 1); return [0, 1, 2, 3].map((j) => lerp(r[i][j], r[i + 1][j], t)); };
   const S = (l: number, a: number, onBack = false) => { const r = row(a), u = clamp(l / r[1], -1, 1); return F.Q(l, (onBack ? -r[3] : r[2]) * Math.sqrt(1 - u * u), a); };
   // the hem trails behind the move and swings past when it stops: the lower rows are pushed back along the way the figure faces
   const sw = (o.sway ?? 0) * sk.sin, hemAt = (i: number) => -sw * (i === 0 ? (L.skirt ? 46 : 26) : i === 1 ? (L.skirt ? 26 : 10) : L.skirt && i === 2 ? 10 : 0);
-  const outline = () => { const c = Math.abs(sk.cos), s = Math.abs(sk.sin), fr = sk.sin >= 0; return spline([...L.rows.map(([a, w, df, db], i) => F.T(Math.hypot(w * c, (fr ? df : db) * s) + hemAt(i), a)), ...L.rows.map(([a, w, df, db], i) => F.T(-Math.hypot(w * c, (fr ? db : df) * s) + hemAt(i), a)).reverse()], true, 5); };
+  // (seated, the garment below the waist lies over the thighs: its depth there is the thigh's own, the cloth on the lap above and on the
+  //  seat below it, not the hanging robe's)
+  const lapRow = (r: number[]) => { if (r[0] >= 0 || !F.drape) return r; const t = L.leg[0] + 8; return [r[0], r[1], lerp(r[2], t, F.drape), lerp(r[3], t, F.drape)]; };
+  const outline = () => { const c = Math.abs(sk.cos), s = Math.abs(sk.sin), fr = sk.sin >= 0; return spline([...L.rows.map(lapRow).map(([a, w, df, db], i) => F.T(Math.hypot(w * c, (fr ? df : db) * s) + hemAt(i), a)), ...L.rows.map(lapRow).map(([a, w, df, db], i) => F.T(-Math.hypot(w * c, (fr ? db : df) * s) + hemAt(i), a)).reverse()], true, 5); };
   // stripes down a piece of the trouser leg from p to q (its half-widths w0, w1), clipped to the piece
   const stripesOn = (p: P2, q: P2, w0: number, w1: number, colS: string) => { const poly = seg(p, q, w0, w1), d = unit(sub(q, p)), n: P2 = [-d[1], d[0]];
     k.clip(poly, () => { for (const f of [-0.62, -0.1, 0.42]) k.line([add(add(p, n, w0 * f), d, -20), add(add(q, n, w1 * f), d, 20)], Math.max(5, 0.24 * w0), colS, "butt"); }); k.shape(poly, null); };

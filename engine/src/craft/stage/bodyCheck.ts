@@ -18,6 +18,7 @@ import { AUDIT } from "./grips";
 import { CROWD_LOG } from "../world/people";
 import { solve, type Joint } from "../rig";
 import { jointLimits, lockedElbows, lowness } from "./humanBody";
+import { seated } from "../designs/common";
 
 type Kind = "box" | "cyl" | "ball" | "lathe" | "probe";
 /** a solid thing as the check sees it, in the world as it stands on the frame it was read */
@@ -443,9 +444,17 @@ export const bodyCheck = (film: Film, opt: { every?: number; shots?: string[] } 
         if (a.D.garment) { const rows = a.D.garment, mpu = realOf(a).mpu, pv = new THREE.Vector3(...a.joint("pelvis")), up = new THREE.Vector3(...a.joint("neck")).sub(pv).normalize(), hr = (a.heading * Math.PI) / 180;
           const fw = new THREE.Vector3(Math.sin(hr), 0, Math.cos(hr)), lf = new THREE.Vector3().crossVectors(up, fw).normalize(), gpts: THREE.Vector3[] = [];
           const rowAt = (h: number) => { let i = 0; while (i < rows.length - 2 && rows[i + 1][0] < h) i++; const t = Math.max(0, Math.min(1, (h - rows[i][0]) / (rows[i + 1][0] - rows[i][0]))); return rows[i].map((x, j) => x + (rows[i + 1][j] - x) * t); };
-          const hem = rows[0][0]; if (hem < -20) for (let h = hem; h < -20; h += 25) { const [, w, df, db] = rowAt(h);
-            for (const [l, d] of [[0, df], [0, -db], [w, 0], [-w, 0], [0.7 * w, 0.7 * df], [-0.7 * w, 0.7 * df], [0.7 * w, -0.7 * db], [-0.7 * w, -0.7 * db], [0, 0]] as const)
-              gpts.push(pv.clone().addScaledVector(up, h * mpu).addScaledVector(lf, l * 0.9 * mpu).addScaledVector(fw, d * 0.9 * mpu)); }
+          // (seated, the card lays the garment over the lap, cast.ts / common.ts frame: along the real thighs and down the shins, the cloth as
+          //  thick as the thigh, on the lap above and on the seat below; blended in as far as he sits, as the drawing does)
+          const R = realOf(a), sitW = a.o.drape === false ? 0 : seated({ v: R.v } as Parameters<typeof seated>[0]), mid = (x: string): THREE.Vector3 => R.W(R.v[(x + "L") as Joint]).lerp(R.W(R.v[(x + "R") as Joint]), 0.5);
+          const HP = mid("hip"), KN = mid("kn"), AN = mid("an"), Pz = R.P, thR = 0.065 * (a.h / 1.8) + 0.01;
+          const lapAt = (d: number) => { const [p0, p1, L0, d0] = d <= Pz.thigh ? [HP, KN, Pz.thigh, d] : [KN, AN, Pz.shin, d - Pz.thigh]; const dir = p1.clone().sub(p0).normalize(); return { p: p0.clone().lerp(p1, Math.min(d0, L0 * 1.2) / L0), dir }; };
+          const hem = rows[0][0]; if (hem < -20) for (let h = hem; h < -20; h += 25) { const [, w, df, db] = rowAt(h), lp = sitW > 0 ? lapAt(-h) : null, perp = lp ? new THREE.Vector3().crossVectors(lf, lp.dir).normalize() : null;
+            for (const [l, d] of [[0, df], [0, -db], [w, 0], [-w, 0], [0.7 * w, 0.7 * df], [-0.7 * w, 0.7 * df], [0.7 * w, -0.7 * db], [-0.7 * w, -0.7 * db], [0, 0]] as const) {
+              const hang = pv.clone().addScaledVector(up, h * mpu).addScaledVector(lf, l * 0.9 * mpu).addScaledVector(fw, d * 0.9 * mpu);
+              if (!lp || !perp) { gpts.push(hang); continue; }
+              const onLap = lp.p.clone().addScaledVector(lf, l * 0.9 * mpu).addScaledVector(perp, Math.sign(d) * thR * (l !== 0 ? 0.7 : 1));
+              gpts.push(hang.lerp(onLap, sitW)); } }
           for (const o of solids.filter((o) => o.aabb.max.y > floor + 0.05)) { let worst = 0, low = Infinity;
             for (const p of gpts) { if (p.y < floor + 0.02 || o.aabb.distanceToPoint(p) > 0.02 || !seen(p)) continue; const pen = 0.02 - dist(o, p, 0.02); if (pen > worst) worst = pen; low = Math.min(low, p.y); }
             if (worst > 0.04) note(`${s.id}|${a.name}|garment|${o.mesh.uuid}`, { shot: s.id, who: a.name, kind: "solid", what: `${a.name}'s robe (the garment below his waist, down to its hem) goes through ${describe(o)}, ${(worst * 100).toFixed(0)} cm in` }, F, worst); } }

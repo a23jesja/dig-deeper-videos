@@ -27,6 +27,8 @@ export type Gesture = {
   needs?: "seat" | "ground";
   /** DAILY-RULES lesson 1: avoid unless the story is this action; then a close-up of the hands */
   avoid?: true;
+  /** the least turn from the lens (degrees, 0 = facing it) at which the gesture may be shown; under it, it is not used */
+  minTurn?: number;
 };
 
 const REST: [Seg, Seg] = [[0, 10], [10, 4]];
@@ -62,7 +64,10 @@ export const GESTURES: Record<string, Gesture> = {
     pose: () => ({ ...KNEEL, lean: 6, armL: [[30, 8], [60, 4]], armR: REST, head: [0, 6, 0] }), hands: { handL: "relaxed", handR: "relaxed" }, needs: "ground" },
   kneelhand: { how: "The beaten man: down on one knee with one hand on the ground beside him, the body leaning over it, the head down.",
     pose: () => ({ ...KNEEL, lean: 24, armR: [[12, 22], [8, 18]], armL: [[30, 8], [60, 4]], head: [0, 14, 0] }), hands: { handL: "relaxed", handR: "open" }, needs: "ground" },
-  sit: { how: "Sitting on the front half of a seat, the thighs level, the shins down, the feet flat. The hands rest on the thighs, the back upright.",
+  // (the review, 19 Nov, after the tightened seat check: seen from the front, a seated card's shins hang straight down under its hips, so
+  //  a seat cannot be under the hips without the shins inside it; every front-view sitter sat in the air in front of his seat. Sitting is
+  //  shown at three quarters or in profile only, never from the front)
+  sit: { minTurn: 45, how: "Sitting on the front half of a seat, the thighs level, the shins down, the feet flat. The hands rest on the thighs, the back upright. Shown at three quarters or in profile only, never from the front.",
     pose: () => ({ py: -0.36, legL: { th: [86, 6], sh: [4, 4] } as LegFK, legR: { th: [86, 6], sh: [4, 4] } as LegFK, armL: [[14, 8], [50, 4]], armR: [[14, 8], [50, 4]], lean: 2 }), hands: { handL: "relaxed", handR: "relaxed" }, needs: "seat" },
   fallen: { how: "Fallen on his back side: sitting on the ground, the legs out in front, the body leaning back on both hands planted behind him, the head up.",
     pose: () => ({ legL: { th: [84, 10], sh: [82, 8] } as LegFK, legR: { th: [80, 4], sh: [74, 2] } as LegFK, lean: -28, armL: [[-38, 18], [-30, 14]], armR: [[-38, 18], [-30, 14]], head: [0, -10, 0] }), hands: { handL: "open", handR: "open" }, needs: "ground" },

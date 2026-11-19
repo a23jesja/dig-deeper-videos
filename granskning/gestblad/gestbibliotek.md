@@ -69,6 +69,7 @@ Formen och färgerna är desamma. Ändringen gäller alla med trekantig hatt i n
 - **Knäböja** (`kneel`): Down on the right knee, the left foot planted ahead with the shin upright, the body upright or leaning a little forward. One hand rests on the raised knee, the other hangs.
 - **På ett knä med en hand i marken** (`kneelhand`): The beaten man: down on one knee with one hand on the ground beside him, the body leaning over it, the head down.
 - **Sitta** (`sit`): Sitting on the front half of a seat, the thighs level, the shins down, the feet flat. The hands rest on the thighs, the back upright.
+  - **Bara snett från sidan (minst 45°) eller i profil, aldrig rakt framifrån** (granskningen, 19 november). Ett sittande kort sett framifrån har underbenen rakt ned under höften, så sitsen kan inte ligga under höften utan att underbenen hamnar i den. Den rättade sittkontrollen hittade alla sittande framifrån 8–16 cm framför sin sits, även på det här bladet.
 - **Fallen (sitter på marken)** (`fallen`): Fallen on his back side: sitting on the ground, the legs out in front, the body leaning back on both hands planted behind him, the head up.
 - **Resa sig** (`getup`): Getting up from one knee: the front foot planted, the body leaning forward over it, both hands pushing on the raised knee, the eyes ahead.
 - **Händerna om huvudet** (`head`): Both hands on the sides of the head, the elbows up and out to the sides, bent about 130 degrees, the eyes wide. \"Oh no.\"

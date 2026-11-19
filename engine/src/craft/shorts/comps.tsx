@@ -72,3 +72,7 @@ export const GladiatorsHookA: React.FC = () => <Stage film={GLAD_HOOK_A} />;
 export const GladiatorsHookB: React.FC = () => <Stage film={GLAD_HOOK_B} />;
 export const GladiatorsHookC: React.FC = () => <Stage film={GLAD_HOOK_C} />;
 export const GLAD_HOOK_FRAMES = Math.round(GLAD_HOOK_A.seconds * GLAD_HOOK_A.fps);
+
+import { GESTURE_SHEET } from "./gestureSheet";
+export const GestureSheet: React.FC = () => <Stage film={GESTURE_SHEET} />;
+export const GESTURE_SHEET_FRAMES = Math.round(GESTURE_SHEET.seconds * GESTURE_SHEET.fps);

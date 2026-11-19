@@ -22,6 +22,7 @@ import { FaceSheet, FACE_SHEET_FRAMES, FW, FH } from "./craft/FaceSheet";
 import { SirTest, SirMoves, SIR_TEST_FRAMES, TW, TH, TFPS, MVW, MVH } from "./craft/SirMotion";
 import { SetViews, SET_VIEWS } from "./craft/world/SetViews";
 import { CabinTest, CABIN_TEST_FRAMES, CabinNight, CABIN_NIGHT_FRAMES } from "./craft/shorts/cabinTestComp";
+import { GestureSheet, GESTURE_SHEET_FRAMES } from "./craft/shorts/comps";
 import { RomePee, ROME_PEE_FRAMES, PiratePlank, PIRATE_PLANK_FRAMES, PiratePlankThumbs, RomePeeThumbs, BlackFlag, BLACK_FLAG_FRAMES, BlackFlagThumbs, NeroFiddle, NERO_FIDDLE_FRAMES, NeroFiddleThumbs, GripSheet, GRIP_SHEET_FRAMES, GripSheet2, GRIP_SHEET_2_FRAMES, GripSheet3, GRIP_SHEET_3_FRAMES, GripSheet4, GRIP_SHEET_4_FRAMES, LookBlackbeard, LOOK_BLACKBEARD_FRAMES, LookYou, LOOK_YOU_FRAMES, GripSheet5, GRIP_SHEET_5_FRAMES, GripSheet6, GRIP_SHEET_6_FRAMES, BlackbeardHookA, BlackbeardHookB, BlackbeardHookC, BB_HOOK_FRAMES, BlackbeardFuses, BLACKBEARD_FUSES_FRAMES, BlackbeardFusesThumbs, GladiatorsDeath, GLADIATORS_DEATH_FRAMES, GladiatorsDeathThumbs, SjSets, SJ_SETS_FRAMES, AnimalTrials, ANIMAL_TRIALS_FRAMES, AnimalTrialsThumbs, AnimalHookA, AnimalHookB, AnimalHookC, AT_HOOK_FRAMES, GladiatorsHook4A, GladiatorsHook4B, GladiatorsHook4C, GLAD4_HOOK_FRAMES, ArenaSet, ARENA_SET_FRAMES, GladiatorsHookA, GladiatorsHookB, GladiatorsHookC, GLAD_HOOK_FRAMES } from "./craft/shorts/comps";
 import { PompeiiStills, POMPEII_STILLS } from "./craft/world/PompeiiStills";
 import { BostonStills, BOSTON_STILLS } from "./craft/world/BostonStills";
@@ -97,6 +98,7 @@ export const Root: React.FC = () => (
     <Composition id="GladiatorsDeath" component={GladiatorsDeath} durationInFrames={GLADIATORS_DEATH_FRAMES} fps={30} width={1080} height={1920} />
     <Composition id="GladiatorsDeathThumbs" component={GladiatorsDeathThumbs} durationInFrames={3} fps={30} width={1080} height={1920} />
     <Composition id="SjSets" component={SjSets} durationInFrames={SJ_SETS_FRAMES} fps={30} width={1080} height={1920} />
+    <Composition id="GestureSheet" component={GestureSheet} durationInFrames={GESTURE_SHEET_FRAMES} fps={30} width={1080} height={1920} />
     <Composition id="CabinTest" component={CabinTest} durationInFrames={CABIN_TEST_FRAMES} fps={30} width={1080} height={1920} />
     <Composition id="CabinNight" component={CabinNight} durationInFrames={CABIN_NIGHT_FRAMES} fps={30} width={1080} height={1920} />
     <Composition id="AnimalTrials" component={AnimalTrials} durationInFrames={ANIMAL_TRIALS_FRAMES} fps={30} width={1080} height={1920} />

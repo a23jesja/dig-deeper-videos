@@ -370,9 +370,17 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
   } else if (HAT === "tricorn") {
     // three corners, one over the brow; the brim is turned up between them
     const col = L.hatCol ?? "#2a2a30", yb3 = -0.82 * H, rim: P2[] = [], top: P2[] = [];
-    for (let az = 0; az < 360; az += 10) { const c = Math.max(0, Math.cos(3 * az * R)), r = 1.12 + 0.52 * c ** 1.5, q = p3(h, r * a * Math.sin(az * R), r * b * Math.cos(az * R)); rim.push([q.x, yb3 + 0.03 * H]); top.push([q.x * 0.92, yb3 - 0.2 * H * (1 - c)]); }
-    const brimPts = hull([...rim, ...top]); piece(k, brimPts, col);
-    k.clip(brimPts, () => k.line(hull(top), 5, L.hatBand ?? "#e7bb48"));
+    // (Jesper 19 Nov: "så att spetsen inte blir en platt svart kil". The corner tips are rounded, the brim's near faces (turned up toward
+    // the lens) are a tone lighter than its far side, so that each corner reads as a folded brim with a body, and the brim's edge is
+    // drawn even on a black hat whose band is as black as the hat)
+    const near: { r: P2; t: P2; d: number }[] = [];
+    for (let az = 0; az < 360; az += 10) { const c = Math.max(0, Math.cos(3 * az * R)), r = 1.12 + 0.52 * c ** 1.5, q = p3(h, r * a * Math.sin(az * R), r * b * Math.cos(az * R)); rim.push([q.x, yb3 + 0.03 * H]); top.push([q.x * 0.92, yb3 - 0.2 * H * (1 - c)]); near.push({ r: rim[rim.length - 1], t: top[top.length - 1], d: q.d }); }
+    const brimPts = spline(hull([...rim, ...top]), true, 4); piece(k, brimPts, shade(col, 0.9));
+    const dark = parseInt(col.slice(1, 3), 16) + parseInt(col.slice(3, 5), 16) + parseInt(col.slice(5, 7), 16) < 150, lit = shade(col, dark ? 1.18 : 1.12);
+    k.clip(brimPts, () => { for (let i = 0; i < near.length; i++) { const p = near[i], n = near[(i + 1) % near.length]; if (p.d <= 0 && n.d <= 0) continue;
+        k.shape([p.t, n.t, n.r, p.r], lit, 0); }
+      k.line(hull(top), 5, L.hatBand && L.hatBand !== col ? L.hatBand : shade(col, dark ? 1.4 : 1.3)); });
+    k.shape(brimPts, null);
     piece(k, spline([[-0.86 * w, yb3 - 0.1 * H], [-0.7 * w, yb3 - 0.3 * H], [0, yb3 - 0.36 * H], [0.7 * w, yb3 - 0.3 * H], [0.86 * w, yb3 - 0.1 * H], [0, yb3 - 0.05 * H]], true, 5), shade(col, 1.25));
   } else if (HAT === "band") k.clip(skull, () => k.shape([[-2 * w, -0.82 * H], [2 * w, -0.82 * H], [2 * w, -0.72 * H], [-2 * w, -0.72 * H]], L.hatCol ?? CREAM, k.ol));
   // where the monocle's chain starts and bows (card coordinates of the head), if the monocle shows

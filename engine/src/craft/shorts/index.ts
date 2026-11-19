@@ -8,6 +8,7 @@ import { GRIP_SHEET, GRIP_SHEET_2, GRIP_SHEET_3, GRIP_SHEET_4, LOOK_BLACKBEARD, 
 import { BB_HOOK_A, BB_HOOK_B, BB_HOOK_C } from "./blackbeardHooks";
 import { BLACKBEARD_FUSES } from "./blackbeardFuses";
 import { cabinPainted, cabin3d } from "./cabinTest";
+import { GESTURE_SHEET } from "./gestureSheet";
 import { GLADIATORS_DEATH } from "./gladiatorsDeath";
 import { ST_JULIEN_SETS } from "./stJulienSets";
 import { AT_HOOK_A, AT_HOOK_B, AT_HOOK_C } from "./animalTrialsHooks";
@@ -47,3 +48,4 @@ export { bodyCheck, bodyLines, pickAt } from "../stage/bodyCheck";
 // the painted-cabin test (not a film): in node the painted layers are empty planes, so that the checks see the set and the figures
 FILMS["cabin-test-painted"] = { film: cabinPainted({}), comp: "CabinTest" };
 FILMS["cabin-test-3d"] = { film: cabin3d(), comp: "CabinTest" };
+FILMS["gesture-sheet"] = { film: GESTURE_SHEET, comp: "GestureSheet" };

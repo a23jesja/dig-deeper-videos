@@ -424,7 +424,9 @@ export const bodyCheck = (film: Film, opt: { every?: number; shots?: string[] } 
             if (worst > q.tol) note(`${s.id}|${a.name}|${q.P.name}|${o.mesh.uuid}`, { shot: s.id, who: a.name, kind: isHeld ? "held" : "solid", what: `${a.name}'s ${q.P.name} is inside ${isHeld ? `the thing in ${o.holder}'s hand, ` : ""}${describe(o)}` }, F, worst); } }
         // two people in the same space
         for (const B2 of bodies) { if (B2.a.name <= a.name || !B.box.intersectsBox(B2.box)) continue; pairs++;
-          for (const q of B.parts) for (const q2 of B2.parts) { const tol = Math.max(q.tol, q2.tol) + (q.P.hand || q2.P.hand ? 0.02 : 0); let worst = 0;
+          // (two hands declared as holding each other, grips.handshake: they meet by design, so those two hands are not "in the same space")
+          const joined = (q: Part, q2: Part) => !!q.hand && !!q2.hand && q.name.endsWith("hand") && q2.name.endsWith("hand") && th.rows.some((r) => r.use === "joined" && r.holder.includes(`${a.name} ${q.hand}`) && r.holder.includes(`${B2.a.name} ${q2.hand}`));
+          for (const q of B.parts) for (const q2 of B2.parts) { if (joined(q.P, q2.P)) continue; const tol = Math.max(q.tol, q2.tol) + (q.P.hand || q2.P.hand ? 0.02 : 0); let worst = 0;
             for (const p of q.pts) for (const p2 of q2.pts) { const pen = q.r + q2.r - p.distanceTo(p2); if (pen > worst && seen(p.clone().lerp(p2, 0.5))) worst = pen; }
             if (worst > tol) note(`${s.id}|${a.name}|${q.P.name}|${B2.a.name}|${q2.P.name}`, { shot: s.id, who: a.name, kind: "figure", what: `${a.name}'s ${q.P.name} and ${B2.a.name}'s ${q2.P.name} are in the same space` }, F, worst); } }
         // ---- the body moves like a human's (Jesper, 19 Nov: "Human bodies move like humans") ----

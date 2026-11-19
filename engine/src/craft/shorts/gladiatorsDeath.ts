@@ -47,7 +47,9 @@ const HOOK = (() => { const s = attack("hook", 0, T1); shots.push(s); return s; 
 // (and no one whose face would be above the picture or cut by its sides: their bodies hung in at the top without heads, and big faces
 // were cut by the edges)
 const EDGES = [[-400, 1480, -900, 0], [-400, 70, -900, 2000], [1010, 1480, -900, 2000]];
-const PEEK_FANS = spread(STANDS, FRONT.cam, [[40, 1040, 60, 440], ...EDGES], 2.2, 60), TWO_FANS = spread(STANDS, TWO.cam, [[40, 1040, -900, 330], [0, 660, 330, 980], ...EDGES], 2.2, 60);      // (the second box: nobody right behind Sir's head and cap, review of v4)
+// (v5, the review: a spectator stood right behind Sir in the peek, his head on Sir's cap, inside the first five seconds; as in the guess,
+// nobody behind Sir's head and cap: the second box)
+const PEEK_FANS = spread(STANDS, FRONT.cam, [[40, 1040, 60, 440], [150, 930, 300, 1200], ...EDGES], 2.2, 60), TWO_FANS = spread(STANDS, TWO.cam, [[40, 1040, -900, 330], [0, 660, 330, 980], ...EDGES], 2.2, 60);      // (the second box: nobody right behind Sir's head and cap, review of v4)
 { const sir = mover(SIR_D, 1.8, SIR.at[0], SIR.at[2], SIR.heading - 6); sir.stand(9);
   const ss: Stand = { D: SIR_D, at: SIR.at, heading: SIR.heading - 6, h: 1.8, cam: FRONT.cam };
   sir.actAt(-1, { ...reach(ss, "L", by(SIR.at, SIR.heading - 6, -0.07, 0.17, 1.56)), ...reach(ss, "R", by(SIR.at, SIR.heading - 6, 0.07, 0.17, 1.56)), head: [0, 4, 0] }, 10, { in: 0.01, handL: "open", handR: "open", face: { brow: 1, lid: 0, wide: 1, mouth: 0.4 } });

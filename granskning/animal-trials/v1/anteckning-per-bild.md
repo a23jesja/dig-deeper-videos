@@ -34,3 +34,9 @@ Changes in the shared code:
 - **Seated men:** they sit at the bench's front edge.
 - **Second expert:** a new look (EXPERT2).
 - **Film.range:** a film's own length window.
+
+## v1b (19 November): the review's four points
+- **13, too barren:** his hand is held out to his side, clear of his body. He rubs the dry earth, opens his hand, and the crumbs fall while he shakes his head.
+- **14, picky eaters:** he holds the leaf with its weevils in his own hand beside his face, with his monocle turned to it. His face is free.
+- **15, experts:** they stand in the roped field with the hills behind them. One sets his rod into the earth and leans on it, and the other watches. Their places are clear of the stones and bushes.
+- **17, the record:** it lies whole and big in the front of the picture, with its torn last page in sight. Sir stands behind the table on the wall side, facing the lens, and peers at it. The caption is over the table's front.

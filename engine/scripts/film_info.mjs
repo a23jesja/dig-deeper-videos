@@ -38,6 +38,8 @@ else if (what === "check") {
   const bad = [];
   for (const s of film.shots) {
     const len = s.b - s.a; if (len < 0.8 || len > 5) bad.push(`${s.id}: the shot is ${len.toFixed(2)} s long`);
+    // no footsteps (Jesper 19 Nov: "Ta bort ljudet som görs när personer går ... helt"): no step or scuff scheduled in any shot
+    for (const q of s.sounds ?? []) if (q.k === "step" || q.k === "scuff") bad.push(`${s.id} at ${q.t.toFixed(2)} s: a footstep sound (${q.k}) is scheduled; footsteps are removed`);
     for (let t = 0; t < len; t += 0.25) { const cam = s.cam(t, t / len); for (const a of s.cast(t, s.a + t)) {
       const d = Math.hypot(cam.pos[0] - a.at[0], cam.pos[2] - a.at[2]), el = (Math.atan2(cam.pos[1] - (a.at[1] + a.h * 0.5), d) * 180) / Math.PI;
       if (el > 35) { bad.push(`${s.id} at ${t.toFixed(2)} s: ${a.name} is seen from ${el.toFixed(0)} degrees above (at most 35 for a figure on a card)`); break; } } }

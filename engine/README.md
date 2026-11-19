@@ -75,3 +75,11 @@ The tools:
 - Every new technique is first shown on a sheet where the checks catch a deliberately planted error.
 
 `world/painted.ts` has no solid map yet, so no figure may stand in front of it in a video.
+
+## No footsteps (Jesper's decision, 19 November 2026)
+"Ta bort ljudet som görs när personer går i videosen och shortsen helt, det låter inte bra."
+
+There are no foot sounds in any film, Short or long video. That means no steps when walking or running, no scuff of a shoe, and no foot sound when someone steps or lands.
+- The mixer (`audio/craft_sfx.py`) refuses the kinds `step` and `scuff`.
+- The film check fails on any shot that schedules one.
+- The delivered films that still have them are listed in granskning/stegljud/stegljud-i-levererade-filmer.md. They are remade only on Jesper's word.

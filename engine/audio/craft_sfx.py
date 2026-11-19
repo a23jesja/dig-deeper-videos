@@ -466,7 +466,11 @@ def street(dur, r):
 
 
 
-ONE = {"step": step, "scuff": scuff, "thud": thud, "smash": smash, "coin": coin, "coinroll": coinroll, "blast": blast, "crack": crack, "tear": tear, "creak": creak, "whoosh": whoosh, "bark": bark,
+# Footsteps are gone (Jesper, 19 Nov 2026: "Ta bort ljudet som görs när personer går i videosen och shortsen helt, det låter inte bra"):
+# no step when walking or running, no scuff of a shoe, no foot sound when someone steps or lands. The kinds are refused below, so that no
+# film can schedule them; step() and scuff() are kept only so that an old film's sound can be read
+FOOT = {"step", "scuff"}
+ONE = {"thud": thud, "smash": smash, "coin": coin, "coinroll": coinroll, "blast": blast, "crack": crack, "tear": tear, "creak": creak, "whoosh": whoosh, "bark": bark,
        "splash": splash, "snap": snap, "shing": shing, "thunk": thunk, "flap": flap, "rope": rope, "rattle": rattle, "paper": paper, "tap": tap, "ting": ting, "sack": sack, "fall": fall,
        "bubble": bubble, "spray": spray, "drip": drip, "book": book, "pour": pour, "squelch": squelch, "scratch": scratch, "sniff": sniff, "gavel": gavel, "munch": munch}
 BED = {"wind": lambda d, r: wind(d, r), "crowd": lambda d, r: crowd(d, r), "panic": lambda d, r: crowd(d, r, panic=True), "fire": fire, "rumble": rumble,
@@ -485,7 +489,8 @@ def check_spec(spec):
     """every cue and bed must name a sound that exists; say which one does not, and where"""
     bad = []
     for c in spec.get("cues", []):
-        if c.get("k") not in ONE: bad.append(f"cue '{c.get('k')}' at frame {c.get('f')} (shot {c.get('shot', '?')}): no such sound; the sounds are {', '.join(sorted(ONE))}")
+        if c.get("k") in FOOT: bad.append(f"cue '{c.get('k')}' at frame {c.get('f')} (shot {c.get('shot', '?')}): footsteps are removed (Jesper 19 Nov); take the cue out of the film")
+        elif c.get("k") not in ONE: bad.append(f"cue '{c.get('k')}' at frame {c.get('f')} (shot {c.get('shot', '?')}): no such sound; the sounds are {', '.join(sorted(ONE))}")
     for b in spec.get("beds", []):
         if b.get("k") not in BED: bad.append(f"bed '{b.get('k')}' from frame {b.get('f0')}: no such bed; the beds are {', '.join(sorted(BED))}")
     if bad: raise SystemExit("SOUND SPEC FAILED:" + "".join("\n  " + m for m in bad))

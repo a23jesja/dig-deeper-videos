@@ -30,10 +30,13 @@ const P = (o: Partial<Pose>) => o, LEN = 5.6;
 
 // ---------------- the attack ----------------
 /** how far apart the two stand (their middles): close enough that both fit the upright picture at more than half its height */
-export const GAP = 1.15;
+// (1.15 until the independent review of gladiators v5: the shield, held further out so that the arm carrying it shows, met the net man's
+// hands at that distance)
+export const GAP = 1.5;
 /** the low lens: 3.75 m from the fight, 0.75 m up, looking up 12 degrees; the frame runs from just below their feet to above the wall,
  *  and is just wide enough for the two of them and the raised sword */
-export const CLOSE = lens(FIGHT[0] - 0.02, 0.75, FIGHT[2] + 3.75, 0, -1, 12, 48);
+// (54 degrees: at 48 the two, 1.5 m apart, were cut by the picture's edges, the raised sword and the net man's shoulder)
+export const CLOSE = lens(FIGHT[0] - 0.02, 0.75, FIGHT[2] + 3.75, 0, -1, 12, 54);
 /** the crowd for the attack, without the few spectators whose faces the raised blade stands in front of from frame 0 until the chop
  *  (the screen box x0, x1, y0, y1 measured through the attack, 24 px to spare); the rest of the stands stays full */
 export const without = (fans: typeof STANDS, cam: Cam, boxes: number[][], m = 24) => { const pc = new THREE.PerspectiveCamera(cam.fov, 1080 / 1920, 0.05, 500); pc.position.set(...cam.pos); pc.lookAt(...cam.look); pc.updateMatrixWorld(true); pc.updateProjectionMatrix();
@@ -60,32 +63,40 @@ const lerp3 = (a: V3, b: V3, k: number): V3 => [a[0] + (b[0] - a[0]) * k, a[1] +
  *  shield onto the trident (the blade meets the shield's rim at CHOP), pinning the prongs there; the net man yanks the
  *  trident straight back and jabs again at 1.3 s */
 export const attack = (id: string, a0: number, b0: number, extra: Shot["sounds"] = []): Shot => {
-  const { mur, ret } = pair(GAP); mur.stand(9); ret.stand(9);
+  // (the independent review of gladiators v5: no hand held the shield: seen from his left front it stood right at his body's edge with no
+  //  arm going into it. It is held out to his side (SHIELD_LOW's forearm forward and a little out, not across his belly), so that his upper
+  //  arm shows between his body and the shield's edge, going behind it; the prongs strike its rim as far out with it, RIM0. Turned toward
+  //  the lens instead, his own chopping arm went through the shield)
+  const MH = 62, { ret } = pair(GAP), mur = mover(MURMILLO_GRILLE_D, 1.84, FIGHT[0] - GAP / 2, FIGHT[2], MH); mur.stand(9); ret.stand(9);
   const MA: V3 = [FIGHT[0] - GAP / 2, 0, FIGHT[2]], RA: V3 = [FIGHT[0] + GAP / 2, 0, FIGHT[2]];
   const rs: Stand = { D: RETIARIUS_D, at: RA, heading: -62, h: 1.86, cam: CLOSE.cam };
   // the prongs strike the shield's top edge a hand's width in from its near corner, where the overhand blow comes down on them
-  const RIM0: V3 = by(MA, 62, -0.05, 0.4, 1.53);
+  const RIM0: V3 = by(MA, MH, -0.27, 0.42, 1.53);
   /** the chop: the arm swings from raised (from frame 0) to lowered (from DOWN_AT s), each act chained on the last so that the swing is one
    *  movement; CHOP = when the falling hand passes the rim's height and the blade, then level, meets the rim and the prongs on it */
   const DOWN_AT = 0.28, CHOP = 0.42, CHOP_ARM = arm(176, 18, 84, 10), CUT = 0.85;
   // The net man's arms keep one grip all through: the rear hand (his near one, the left) back at his hip, the front hand 0.55 m up the
   // shaft. The jab, the flinch and the yank are his body moving (lean, and the pelvis forward and back), and the trident is rigid in his
   // hands. (Moving the hands instead made his far arm swing out between grips, in front of the prongs.)
-  const HIT = 0.07, HIT2 = 1.3, GRIP0: V3 = by(RA, -62, -0.12, -0.12, 0.98), GRIPJ: V3 = lerp3(GRIP0, RIM0, -0.09);
+  const HIT = 0.07, HIT2 = 1.3, GRIP0: V3 = by(RA, -62, 0.08, 0.08, 0.98), GRIPJ: V3 = lerp3(GRIP0, RIM0, -0.06);
   // the jab from frame 0 to frame 2: his rear (near) arm drives the shaft forward through the front hand, which stays where it is and
   // guides it (so the far arm, which swings out when its hand is moved, keeps still), and his body comes forward behind it
   // (the far arm keeps one solution all through; only the near arm goes from bent to stretched, and the lean barely changes, because
   // the arms' angles are solved for him standing straight and a changed lean moves both hands)
-  const P0 = polePose(rs, "L", GRIP0, RIM0, 0.5), PJ = polePose(rs, "L", GRIPJ, RIM0, 0.57);
-  ret.actAt(-1, { ...P0, armL: (PJ as { armL: Pose["armL"] }).armL, lean: 9, pz: -0.08, twist: -6 }, 10, { in: 0.01, handL: "grip", handR: "grip", face: { brow: -1, lid: 0.05, mouth: 0.7 } });
-  ret.actAt(-0.01, { armL: (P0 as { armL: Pose["armL"] }).armL, lean: 16, pz: 0 }, 10, { in: HIT + 0.01, antic: 0 });
+  // (the independent review of gladiators v5: the front fist lay on his chest with its forearm toward the lens, no arm to follow to his
+  //  shoulder. The hands change places: the near arm (the one with the arm guard) is the front hand, seen whole from the shoulder to the
+  //  fist; the rear hand is the far one, before his belly (GRIP0), where its forearm shows; at his far hip it was hidden behind his body)
+  // (so it is now the far arm, the rear one, that drives the jab)
+  const P0 = polePose(rs, "R", GRIP0, RIM0, 0.32), PJ = polePose(rs, "R", GRIPJ, RIM0, 0.39);
+  ret.actAt(-1, { ...P0, armR: (PJ as { armR: Pose["armR"] }).armR, lean: 9, pz: -0.08, twist: -6 }, 10, { in: 0.01, handL: "grip", handR: "grip", face: { brow: -1, lid: 0.05, mouth: 0.7 } });
+  ret.actAt(-0.01, { armR: (P0 as { armR: Pose["armR"] }).armR, lean: 16, pz: 0 }, 10, { in: HIT + 0.01, antic: 0 });
   // he flinches back from the falling sword, then yanks the trident back and jabs again
   ret.actAt(0.2, { lean: 8, pz: -0.03, head: [0, -8, 0] }, 10, { in: 0.16, antic: 0, face: { brow: 1, lid: 0, wide: 0.9, mouth: 0.5 } });
   ret.actAt(CHOP + 0.12, { lean: 7, pz: -0.09, head: [0, 2, 0] }, 10, { in: 0.25, antic: 0, face: { brow: -1, lid: 0, mouth: 0.6 } });
   // (the second jab a little shorter: at full reach his far upper arm touched the shield, 2 cm in)
   ret.actAt(HIT2 - 0.16, { lean: 13, pz: 0, head: [0, 0, 0] }, 10, { in: 0.17, antic: 0, face: { brow: -1, lid: 0.05, mouth: 0.7 } });
   // (his shield a few centimetres lower than the usual shield arm, so that its top edge stays under his visor as the blow lands)
-  const SHIELD_LOW = arm(18, 8, 86, -30);
+  const SHIELD_LOW = arm(18, 8, 86, 20);
   mur.actAt(-1, { ...usePose(GLADIUS, "raised", "R"), armL: SHIELD_LOW, lean: 5, twist: -4, head: [0, -24, 0] }, 10, { in: 0.01, handL: "grip", handR: "grip", face: { brow: -1, lid: 0.05, mouth: 0.6 } });
   // (an overhand blow over the shield's top: it ends with his upper arm up and his forearm level, his fist beside the shield's near
   // edge and the blade lying across the shield's top onto the prongs; the arm shows all the way and never goes behind or through the
@@ -111,15 +122,15 @@ export const attack = (id: string, a0: number, b0: number, extra: Shot["sounds"]
     // a shield of its own for the measuring, so that the one in the picture is never taken out of the frame being drawn, placed with
     // the grip check paused (it is not a thing in anyone's hand in any frame)
     const was = AUDIT.on; AUDIT.on = false; const sh = noShade(scutum()); shieldOn(new THREE.Group(), sh, m, "L", cam); AUDIT.on = was; sh.updateWorldMatrix(true, true); const bx = new THREE.Box3().setFromObject(sh);
-    return (B = TRI_LEN - across(cam, palm(r, "L"), [bx.max.x - 0.17, bx.max.y + 0.02, (bx.min.z + bx.max.z) / 2 + 0.06])); };
+    return (B = TRI_LEN - across(cam, palm(r, "R"), [bx.max.x - 0.17, bx.max.y + 0.02, (bx.min.z + bx.max.z) / 2 + 0.06])); };
   return { id, a: a0, b: b0, still: CHOP,
     sounds: [{ t: 0.0, k: "whoosh", g: 0.8 }, { t: HIT - 0.01, k: "ting", g: 1.0 }, { t: HIT - 0.01, k: "thud", g: 0.9 }, { t: 0.16, k: "whoosh", g: 0.5 }, { t: HIT2 - 0.01, k: "ting", g: 0.9 }, { t: HIT2 - 0.01, k: "thud", g: 0.7 }, { t: CHOP, k: "ting", g: 1.0, p: -0.1 }, { t: CHOP + 0.2, k: "scuff", g: 0.6 }, { t: 1.1, k: "step", g: 0.5 }, ...extra],
     cam: (_t, u) => CLOSE.push(0.03 + 0.12 * u), sun: { target: FIGHT, reach: 6 },
     cast: (t) => [on("mur", MURMILLO_GRILLE_D, mur, t), on("ret", RETIARIUS_D, ret, t)],
     things: (g, c, t, T, cam) => { crowd(g, ATTACK_STANDS, T, cam, 0.95); const [use, blend] = sword(t); wield(g, GLAD(), GLADIUS, use, c.mur, "R", cam, { d: 0.14, ...(blend ? { blend } : {}) }); shieldOn(g, SCUTUM(), c.mur, "L", cam);
       // the trident lies along the line through both palms (the front hand always on it), rigid: it reaches as far as it does at the jab
-      const pr = palm(c.ret, "L"), pf = palm(c.ret, "R"), d = across(cam, pr, pf) || 1, far: V3 = [pr[0] + (pf[0] - pr[0]) * 3 / d, pr[1] + (pf[1] - pr[1]) * 3 / d, pr[2] + (pf[2] - pr[2]) * 3 / d];
-      pole(g, TRI(), c.ret, cam, "L", far, { len: 1.9, name: "trident", use: "thrust", back: reach() });
+      const pr = palm(c.ret, "R"), pf = palm(c.ret, "L"), d = across(cam, pr, pf) || 1, far: V3 = [pr[0] + (pf[0] - pr[0]) * 3 / d, pr[1] + (pf[1] - pr[1]) * 3 / d, pr[2] + (pf[2] - pr[2]) * 3 / d];
+      pole(g, TRI(), c.ret, cam, "R", far, { len: 1.9, name: "trident", use: "thrust", back: reach() });
       sandKick(g, T, cam, [FIGHT[0], 0, FIGHT[2] + 0.25], t < CHOP + 0.2 ? 0.55 : 1 - smooth((t - CHOP - 0.2) / 0.8) * 0.7, 1); } };
 };
 

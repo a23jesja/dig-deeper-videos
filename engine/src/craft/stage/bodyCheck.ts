@@ -266,6 +266,12 @@ export const bodyCheck = (film: Film, opt: { every?: number; shots?: string[] } 
             rc.set(new THREE.Vector3(q.x, q.y + 0.05, q.z), DIRS[3]); rc.near = 0; rc.far = 0.4; const hit = rc.intersectObject(o.mesh, false)[0];
             if (hit && strict) { seat = true; above = Math.min(above, hit.distance - 0.05); } else if (hit) off = Math.min(off, Math.hypot(q.x - pel.x, q.z - pel.z)); } }
           const knee = Math.min(W(v.knL).y, W(v.knR).y) - floor < 0.1, hand = Math.min(W(v.tipL).y, W(v.tipR).y) - floor < 0.08, lean = lw.low > 0.6 && (a.pose.lean ?? 0) > 30;
+          // (s2) a raised knee stands on its own foot. In one this low and not on a seat (kneeling, crouching), a knee off the ground whose foot
+          //      rests on the ground has the foot under it: the shin upright or leaning forward, not slanting back to a foot behind the knee
+          //      (the independent review of gladiators v5: the beaten man's front knee hung at the hem of his kilt, its shin slanting back to
+          //      a sandal flat behind him, "ingen fot under knät, så han svävar i en huk"; the support test passed him on his other knee)
+          if (!seat) for (const sd of ["L", "R"] as const) { const kn = v[`kn${sd}`], an = v[`an${sd}`], up = W(kn).y - floor, footDown = Math.min(W(v[`heel${sd}`]).y, W(v[`toe${sd}`]).y) - floor < 0.04, back = (kn[2] - an[2]) / P.shin;
+            run(`kneehang|${sd}`, up > 0.12 && footDown && back > 0.5, F, 4, () => pose(`kneehang|${sd}`, `the ${n(sd)} knee hangs ${(up * 100).toFixed(0)} cm above the ground with no foot under it: its shin slants back to a foot ${(back * P.shin * mpu * 100).toFixed(0)} cm behind the knee`, 1)); }
           run("hover", seat && above > 0.2 && above < Infinity && !knee && !hand, F, 4, () => pose("hover", `he sits in the air: his hips are ${(above * 100).toFixed(0)} cm above the seat under him (sitting, 8-12 cm)`, 1));
           run("support", !seat && !knee && !hand && !lean, F, 8, () => pose("support", `he is as low as one who sits or squats (hips at ${(lw.low * 100).toFixed(0)} % of standing) with nothing under him: ${off < Infinity ? `he sits off the seat's edge, the seat begins ${(off * 100).toFixed(0)} cm behind his hips` : "no seat"}, no knee or hand on the ground`, 1)); }
       };

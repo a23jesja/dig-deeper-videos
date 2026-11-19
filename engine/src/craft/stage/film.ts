@@ -27,6 +27,10 @@ export type Shot = {
   id: string; a: number; b: number;
   /** the moment of the shot that stands for it in the sketch (seconds into the shot) */
   still?: number;
+  /** the shot begins a new scene for these figures (by name: another place or another time), so what they held in their last shot need
+   *  not be in their hands here; the reason is said. Without it, a figure keeps what it held from its last shot in the same hands
+   *  (grips.ts auditGrips, the continuity between shots: the independent review of gladiators v5) */
+  newScene?: Record<string, string>;
   cam: (t: number, u: number) => Cam;
   /** the middle and half the size of the area that gets sharp shadows; default: 9 m round what the camera looks at */
   sun?: { target: V3; reach: number };

@@ -63,7 +63,7 @@ export const GESTURES: Record<string, Gesture> = {
   kneel: { how: "Down on the right knee, the left foot planted ahead with the shin upright, the body upright or leaning a little forward. One hand rests on the raised knee, the other hangs.",
     pose: () => ({ ...KNEEL, lean: 6, armL: [[30, 8], [60, 4]], armR: REST, head: [0, 6, 0] }), hands: { handL: "relaxed", handR: "relaxed" }, needs: "ground" },
   kneelhand: { how: "The beaten man: down on one knee with one hand on the ground beside him, the body leaning over it, the head down.",
-    pose: () => ({ ...KNEEL, lean: 24, armR: [[12, 22], [8, 18]], armL: [[30, 8], [60, 4]], head: [0, 14, 0] }), hands: { handL: "relaxed", handR: "open" }, needs: "ground" },
+    pose: () => ({ ...KNEEL, lean: 44, armR: [[10, 16], [14, 12]], armL: [[30, 8], [60, 4]], head: [0, 4, 0] }), hands: { handL: "relaxed", handR: "open" }, needs: "ground" },
   // (the review, 19 Nov, after the tightened seat check: seen from the front, a seated card's shins hang straight down under its hips, so
   //  a seat cannot be under the hips without the shins inside it; every front-view sitter sat in the air in front of his seat. Sitting is
   //  shown at three quarters or in profile only, never from the front)
@@ -98,8 +98,15 @@ export const upper = (p: Partial<Pose>): Partial<Pose> => { const { legL: _l, le
 /** Kneeling on the right knee in a film: a Mover takes the legs an act names as free legs (motion.ts blends them as joint angles), so the
  *  kneeling leg is the sheet's own free right leg (the shin back on the ground, the foot tipped 20) with the pelvis at -0.51, and the left
  *  foot stays planted where the Mover stands him (a planted-foot leg named in an act broke the solve, gladiators v5) */
-export const KNEEL_PLANTED: Partial<Pose> = { py: -0.51, legR: { th: [-6, 4], sh: [-100, 0], pitch: 20 } as LegFK };
-/** standing up again after a kneel, in a film: the right leg straight down under him, the pelvis back up */
-export const STAND_UP: Partial<Pose> = { py: 0, legR: { th: [0, 4], sh: [0, 2], pitch: 0 } as LegFK };
+/** (gladiators v5, the independent review: with the pelvis straight down over the planted foot, that foot lay behind his hips and its
+ *  shin slanted back from a knee hanging in the air at the hem of his kilt. The pelvis goes back half a leg's length (pz), so the planted
+ *  foot is ahead of him: its thigh about level, its shin upright under its knee, the foot flat; the right knee on the ground under the hips) */
+export const KNEEL_PLANTED: Partial<Pose> = { py: -0.51, pz: -0.5, legR: { th: [-6, 4], sh: [-100, 0], pitch: 20 } as LegFK };
+/** the beaten man's kneel with a hand on the ground (kneelhand): lower, the hips sat back toward the right heel (the kneeling thigh 40
+ *  degrees forward to its knee on the ground), so that the body leaning over can put its hand flat on the sand beside the front foot. Upright
+ *  on one knee the card's short arm stopped 21 cm above the sand (the independent review: "handen i marken") */
+export const KNEEL_LOW: Partial<Pose> = { py: -0.63, pz: -0.62, legR: { th: [40, 4], sh: [-100, 0], pitch: 20 } as LegFK };
+/** standing up again after a kneel, in a film: the right leg straight down under him, the pelvis back up and forward over the planted foot */
+export const STAND_UP: Partial<Pose> = { py: 0, pz: 0, legR: { th: [0, 4], sh: [0, 2], pitch: 0 } as LegFK };
 /** a kneeling gesture (kneel, kneelhand, getup) for a film: its upper body on the planted kneel */
-export const kneeling = (name: "kneel" | "kneelhand" | "getup", aim: Aim = "side"): Partial<Pose> => ({ ...upper(GESTURES[name].pose(aim, 0)), ...KNEEL_PLANTED });
+export const kneeling = (name: "kneel" | "kneelhand" | "getup", aim: Aim = "side"): Partial<Pose> => ({ ...upper(GESTURES[name].pose(aim, 0)), ...(name === "kneelhand" ? KNEEL_LOW : KNEEL_PLANTED) });

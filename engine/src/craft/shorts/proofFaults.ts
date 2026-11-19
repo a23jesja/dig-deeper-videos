@@ -3,11 +3,13 @@
 // This is repeated whenever a check or a set changes." This film is that proof, and nothing else: three shots, each with one fault made
 // on purpose, so that `film_info proof-faults body` must FAIL with each of them named. It is never delivered.
 import * as THREE from "three";
-import type { Film, Shot, Actor } from "../stage/film";
+import type { Film, Shot, Actor, Staged, Cam } from "../stage/film";
 import { lens } from "../stage/staging";
 import { POSES } from "../rig";
 import { SIR_D, DOCTOR_D } from "../looks";
-import { stool } from "../world/props";
+import { stool, woodSword } from "../world/props";
+import { kneeling } from "../stage/gestures";
+import { WOODSWORD, wield, usePose } from "../stage/grips";
 import { mesh, box, skyDome, sunRig } from "../world/kit";
 import { dayLight, DAY } from "./gestureSheet";
 import { SIT } from "./gripSheet";
@@ -23,8 +25,8 @@ const TURN = 55, FW: [number, number] = [Math.sin((V.toward(0, 0, TURN) * Math.P
 /** a seat `high` metres high and 0.4 m deep, its centre `back` metres behind his hips, turned with him. (A still figure stands with its
  *  feet on the floor: sitting, his hips are where his legs put them, about 0.46 m up) */
 const seat = (back: number, high = 0.42) => (g: THREE.Group) => { const m = mesh(box(1.0, high, 0.4), "#7a5a36", { at: [0, high / 2, 0] }), h = new THREE.Group(); h.add(m); h.position.set(-FW[0] * back, 0, -FW[1] * back); h.rotation.y = (V.toward(0, 0, TURN) * Math.PI) / 180; g.add(h); };
-const add = (id: string, cast: Actor | Actor[], things?: (g: THREE.Group) => void) => { const a = shots.length * LEN;
-  shots.push({ id, a, b: a + LEN, still: 1, cam: () => V.cam, sun: { target: [0, 0.8, 0], reach: 5 }, cast: () => (Array.isArray(cast) ? cast : [cast]), things: things ? (g) => things(g) : undefined }); };
+const add = (id: string, cast: Actor | Actor[], things?: (g: THREE.Group, c: Record<string, Staged>, cam: Cam) => void, more: Partial<Shot> = {}) => { const a = shots.length * LEN;
+  shots.push({ id, a, b: a + LEN, still: 1, cam: () => V.cam, sun: { target: [0, 0.8, 0], reach: 5 }, cast: () => (Array.isArray(cast) ? cast : [cast]), things: things ? (g, c, _t, _T, cam) => things(g, c, cam) : undefined, ...more }); };
 
 // A. sitting in the air ABOVE a seat: a low seat (0.22 m) right under his hips, its front edge 8 cm before them: his hips 24 cm above it
 add("A-sits-in-the-air", sir({ ...SIT, armL: [[18, 8], [50, 4]], armR: [[18, 8], [50, 4]] }, TURN), seat(0.12, 0.22));
@@ -42,5 +44,19 @@ add("E-control-sits-right", sir({ ...SIT, armL: [[18, 8], [50, 4]], armR: [[18, 
 //    robe, seated (SIT, py -0.36, lean 6), the stool 0.15 m behind his pelvis, scaled to 0.86 of its height, seen at three quarters
 add("F-robe-through-the-stool", { name: "doc", D: DOCTOR_D, h: 1.72, at: [0, 0, 0], heading: V.toward(0, 0, TURN), pose: { ...POSES.stand, ...SIT, py: -0.36, lean: 6, armL: [[18, 8], [50, 4]], armR: [[18, 8], [50, 4]] }, o: { handL: "relaxed", handR: "relaxed" } },
   (g) => { const sd = stool(); sd.position.set(-FW[0] * 0.15, 0, -FW[1] * 0.15); sd.scale.y = 0.86; g.add(sd); });
+
+// G. the beaten man's kneel as it was in gladiators v5 (the independent review, 19 Nov: "det främre knät hänger i luften i höjd med
+//    kjolfållen, och smalbenet lutar bakåt till en sandal som ligger platt bakom honom"): the pelvis dropped straight down over the planted
+//    left foot, the right knee on the ground. The body check must FAIL it on the hanging left knee (the support test passed it on the other)
+add("G-knee-hangs-in-the-air", sir({ py: -0.51, legR: { th: [-6, 4], sh: [-100, 0], pitch: 20 }, lean: 24, armR: [[12, 22], [8, 18]], armL: [[30, 8], [60, 4]] } as Partial<typeof POSES.stand>, TURN));
+// H. THE CONTROL for G: the kneel with a hand on the ground as the film has it now (gestures.ts kneeling("kneelhand")): the front foot under
+//    its knee, the other knee on the ground, the hand on the sand. The checks must pass it
+add("H-control-kneels-right", sir({ ...kneeling("kneelhand") }, TURN));
+// I and J. a held thing that vanishes between two shots (the independent review of gladiators v5: the murmillo's shield and sword gone
+//    in the shot after the finger, then the sword in the other hand). In I he holds a sword in his right hand; in J, the next shot, his
+//    hands are empty and nothing is set down. `film_info proof-faults grips` must FAIL J on the continuity between shots
+const SWORD = woodSword();
+add("I-holds-a-sword", { ...sir({ ...usePose(WOODSWORD, "lowered", "R") }), o: { handL: "relaxed", handR: "grip" } }, (g, c, cam) => wield(g, SWORD, WOODSWORD, "lowered", c.sir, "R", cam));
+add("J-sword-gone-next-shot", sir({}));
 
 export const PROOF_FAULTS: Film = { id: "proof-faults", fps: 30, seconds: shots.length * LEN, range: [0, 999], sky: "#9cc8f0", world, shots, words: [], hook: { text: [], a: 0, b: 0 }, light: dayLight(DAY.from, [0, 1, 0]) };

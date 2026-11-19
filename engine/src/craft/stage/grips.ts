@@ -602,7 +602,15 @@ const RESTS = new Set(["under arm"]);
 export const auditGrips = (film: Film, step?: number) => {
   const bad: string[] = [], spots: { shot: string; frame: number; prop: string; use: string; holder: string; x: number; y: number }[] = []; let held = 0; AUDIT.on = true;
   const lensOf = new THREE.PerspectiveCamera(50, 1080 / 1920, 0.1, 900), carryFlag = new Set<string>(), faceFlag = new Set<string>();
-  try { for (const s of film.shots) { let prev = new Map<string, { holder: string; prop: string }>();
+  // the continuity between shots (the independent review of gladiators v5: the murmillo's shield and sword were gone in the shot after
+  // the finger, and in the next his sword was in the other hand): what a figure (one design: one person) holds in the last frame of a
+  // shot is in the same hands in the first frame of the next shot he is in, unless that shot begins a new scene for him (Shot.newScene)
+  const lastHeld = new Map<object, { shot: string; items: Map<string, string> }>(), AUDIT_DOWN = new Map<string, Set<string>>();
+  const heldNow = (staged: Record<string, Staged>) => { const m = new Map<string, Map<string, string>>(); for (const a of Object.values(staged)) m.set(a.name, new Map());
+    for (const r of AUDIT.rows) if (r.holder && r.use !== "on" && r.use !== "joined") for (const part of r.holder.split(" & ")) { const [who, hands] = part.split(" "); m.get(who)?.set(r.prop, hands ?? ""); }
+    return m; };
+  const handName = (h: string) => h.split("+").map((x) => (x === "L" ? "left" : "right")).join(" and ");
+  try { for (const s of film.shots) { let prev = new Map<string, { holder: string; prop: string }>(); const ends: { first?: Map<string, Map<string, string>>; last?: Map<string, Map<string, string>>; staged?: Record<string, Staged> } = {};
     const times: number[] = []; if (step) for (let t = 0; t < s.b - s.a - 1e-6; t += step) times.push(t); else for (let F = Math.ceil(s.a * film.fps - 1e-6); F < s.b * film.fps - 1e-6; F++) times.push(Math.max(0, F / film.fps - s.a));
     for (const t of times) {
       AUDIT.rows = []; UNSEEN.length = 0; CROWD_LOG.on = true; CROWD_LOG.heads.length = 0; const cam = s.cam(t, t / (s.b - s.a)), g = new THREE.Group(), staged: Record<string, Staged> = {};
@@ -676,7 +684,17 @@ export const auditGrips = (film: Film, step?: number) => {
         let cov = 0, by = ""; for (const [f, k] of [[0, 1], [0.5, 8], [0.95, 8]] as [number, number][]) for (let i = 0; i < k; i++) { const x = c[0] + f * R * Math.cos((i * 2 * Math.PI) / k), y = c[1] + f * R * Math.sin((i * 2 * Math.PI) / k);
           pick.set((x / 1080) * 2 - 1, 1 - (y / 1920) * 2); ray.setFromCamera(pick, lensOf); ray.far = far(hc) - 0.03; for (const th of things) if (ray.intersectObject(th.o, true).length) { cov++; by = th.name; break; } }
         const key = `${s.id}:crowd:${by}`; if (cov / 17 > 0.25 && !faceFlag.has(key)) { faceFlag.add(key); bad.push(`${at}: a face in the crowd is ${Math.round((100 * cov) / 17)} % behind the ${by}`); } }
-      prev = now; } } } finally { AUDIT.on = false; CROWD_LOG.on = false; }
+      for (const r of AUDIT.rows) if (!r.holder && /^(down|landed|falling)$/.test(r.use)) AUDIT_DOWN.set(s.id, (AUDIT_DOWN.get(s.id) ?? new Set<string>()).add(r.prop));
+      if (t === times[0]) { ends.first = heldNow(staged); ends.staged = staged; }
+      if (t === times[times.length - 1]) ends.last = heldNow(staged);
+      prev = now; }
+    if (ends.first && ends.staged) for (const a of Object.values(ends.staged)) { const was = lastHeld.get(a.D), is = ends.first.get(a.name) ?? new Map<string, string>();
+      if (was && !s.newScene?.[a.name]) for (const [prop, hands] of was.items) { const h2 = is.get(prop), at = `${s.id} (film ${s.a.toFixed(2)} s, frame ${Math.ceil(s.a * film.fps - 1e-6)})`;
+        // (a thing that lies on the ground in this shot, set down or dropped, has left the hand in the picture: the trident on the sand)
+        if (h2 === undefined && AUDIT_DOWN.get(s.id)?.has(prop)) continue;
+        if (h2 === undefined) bad.push(`${at}: ${a.name}'s ${prop}, in his ${handName(hands)} hand at the end of the shot ${was.shot}, is gone (not set down in either shot): the same things stay in the same hands from shot to shot`);
+        else if (h2 !== hands) bad.push(`${at}: ${a.name}'s ${prop} was in his ${handName(hands)} hand at the end of the shot ${was.shot} and is in his ${handName(h2)} hand here`); }
+      lastHeld.set(a.D, { shot: s.id, items: ends.last?.get(a.name) ?? is }); } } } finally { AUDIT.on = false; CROWD_LOG.on = false; }
   return { bad, held, spots };
 };
 /** the uses whose thing is meant to be at the face (the face check lets them cover it) */

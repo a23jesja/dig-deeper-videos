@@ -174,7 +174,10 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
     piece(k, ribbon(P, [M.w, M.w, M.w * 0.88, M.w * 0.66, M.w * 0.42, M.w * 0.18]), M.col);
   };
   const pipe = () => {
-    if (!L.pipe) return; const r0 = at(h, 34), t = p3(h, a * 0.5 + a * 0.62, b * 0.86 + a * 0.5), y0 = yJaw - 0.01 * H + drop * 0.6, y1 = y0 + 0.11 * H;
+    // (the stem's end in the corner of the mouth, where the mouth line ends (36 degrees round, 0.72 of the way out): rooted on the face's
+    //  outline at 34 degrees it began past the mouth's end, in his cheek, whenever his head was turned; the independent review of
+    //  gladiators v5)
+    if (!L.pipe) return; const r0 = at(h, 34, 0.72), t = p3(h, a * 0.5 + a * 0.62, b * 0.86 + a * 0.5), y0 = yJaw - 0.01 * H + drop * 0.6, y1 = y0 + 0.11 * H;
     piece(k, seg([r0.x, y0], [t.x, y1], 5 * u, 5 * u, 0, 0.3, true), "#3a2618");
     piece(k, [[t.x - 15 * u, y1 - 34 * u], [t.x + 15 * u, y1 - 34 * u], [t.x + 12 * u, y1 + 7 * u], [t.x - 12 * u, y1 + 7 * u]], "#8a4f2a");
     return t.d;

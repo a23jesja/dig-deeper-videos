@@ -26,7 +26,7 @@ if (typeof globalThis.document === "undefined") {
   globalThis.document = { createElement: () => { const g = context(); return { width: 300, height: 150, style: {}, getContext: () => g, toDataURL: () => "", addEventListener() {} }; }, createElementNS: () => ({ style: {} }) };
   globalThis.Path2D = class { constructor() { return quiet({}); } };
 }
-const { FILMS, captions, auditGrips, occlusions, textOver, bodyCheck, bodyLines, pickAt } = await import(pathToFileURL(tmp).href); fs.rmSync(tmp, { force: true });
+const { FILMS, captions, auditGrips, occlusions, textOver, bodyCheck, bodyLines, pickAt, stageAt } = await import(pathToFileURL(tmp).href); fs.rmSync(tmp, { force: true });
 if (!FILMS[name]) { console.error(`no film named ${name}; there are: ${Object.keys(FILMS).join(", ")}`); process.exit(1); }
 const { film, comp } = FILMS[name], f = (t) => Math.round(t * film.fps);
 const rows = film.shots.map((s) => ({ id: s.id, a: f(s.a), b: f(s.b), still: Math.min(f(s.b) - 1, f(s.a + (s.still ?? (s.b - s.a) / 2))), seconds: +(s.b - s.a).toFixed(2) }));
@@ -89,6 +89,10 @@ else if (what === "body") {
   process.exit(lines.length ? 1 : 0);
 }
 // pick <frame> <x> <y> = what lies at that pixel of that frame (the set and the shot's things, nearest first)
+// joints <frame> [name] = where each figure's joints are on that frame (metres, the world), to measure a pose without rendering it
+else if (what === "joints") { const F = Number(process.argv[4]), who = process.argv[5], T = F / film.fps, s = film.shots.find((q) => T >= q.a - 1e-6 && T < q.b) ?? film.shots.at(-1), t = Math.max(0, T - s.a), cam = s.cam(t, t / (s.b - s.a));
+  for (const a of s.cast(t, s.a + t)) { if (who && a.name !== who) continue; const st = stageAt(a, cam); console.log(`${s.id} ${a.name} at ${a.at.map((x) => x.toFixed(2))} heading ${a.heading.toFixed(0)}`);
+    for (const j of ["pelvis", "hipL", "knL", "anL", "heelL", "toeL", "hipR", "knR", "anR", "heelR", "toeR", "wrL", "tipL", "wrR", "tipR", "neck"]) { try { console.log(`  ${j.padEnd(6)} ${st.joint(j).map((x) => x.toFixed(3)).join(" ")}`); } catch { /* no such joint */ } } } }
 else if (what === "pick") { const [F, x, y] = process.argv.slice(4).map(Number); console.log(JSON.stringify(pickAt(film, F, x, y), null, 1)); }
 else if (what === "grips") {
   const { bad, held, spots } = auditGrips(film, process.argv[4] === "tenths" ? 0.1 : undefined);

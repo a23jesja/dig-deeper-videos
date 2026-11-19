@@ -225,6 +225,18 @@ however short, in the background as much as in front. "It is only in the backgro
 7. Light, shadow or smoke that does something impossible: a shadow on the wrong side, a fire that lights
    nothing, smoke that cuts off in a straight line.
 8. Words on screen that disagree with the voice, or a caption covering a face.
+**It applies to every look and every technique** (Jesper 2026-11-19, after Blackbeard stood inside a painted
+sofa): 3D sets, painted or generated backgrounds, depth layers, photos, overlays, anything added later. A new
+look or tool is only allowed in a video once the code checks can see everything in it.
+- **Painted or generated backgrounds** count as solid wherever they show furniture, walls, rails or props. Before
+  a figure is placed in front of one, the build makes a solid map for it (from the depth map plus hand-marked
+  shapes where needed) and runs the same body and feet checks against it on every frame. No solid map, no figure in
+  front of the painting: then it may only be used where nobody stands on or near painted objects (far views,
+  windows, sky, empty establishing shots).
+- **Feet stand on painted floor only where the solid map says it is floor.** Shadows and contact shadows match the
+  painted light.
+- **Every new technique** is tested once on a sheet that shows the checks catching a deliberate error before it
+  is used in a video.
 **How it is caught, in this order:**
 - **By code, every frame.** The scene code tests every moving figure, background people included, and every
   prop against every solid in the set, and every foot against the ground, on every frame, before rendering. Any

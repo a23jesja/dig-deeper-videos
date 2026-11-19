@@ -68,4 +68,10 @@ The tools:
 - `scripts/depth_layers.py`: splits a painting into three depth layers.
 - `world/painted.ts`: places the layers in front of the lens.
 
-The checks cannot see what is painted, so painted parts are reviewed by eye against the foreground and nothing-through-anything rules.
+**Zero tolerance covers every technique** (Jesper, 19 November, after Blackbeard stood inside the painted sofa; DAILY-RULES "Impossible things: zero tolerance"). A painted or generated background counts as solid wherever it shows furniture, walls, rails or props.
+- No figure may stand in front of a painting until a solid map has been built for it. The map comes from the depth map, plus hand-marked shapes where needed.
+- The same body and feet checks then run against that map on every frame. Feet may stand on painted floor only where the map says it is floor.
+- Without a solid map, a painting is used only where nobody stands on or near painted objects: windows, sky, far views and empty openings.
+- Every new technique is first shown on a sheet where the checks catch a deliberately planted error.
+
+`world/painted.ts` has no solid map yet, so no figure may stand in front of it in a video.

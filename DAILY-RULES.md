@@ -493,8 +493,19 @@ Jesper does not pick times. The session picks the slot and tells him which one i
 Record views, average view duration, retention at 30 seconds and at 50 %, click-through rate and subscribers gained for
 every video in GROWTH.md. Make more of what holds viewers, stop what does not. Watch time matters more than views.
 
-## Voice (decided by Jesper 2026-11-13)
-Keep the Kokoro `bm_george` voice; no human narrator. Everything else in this plan is done in full.
+## Voice (decided by Jesper 2026-11-13; reopened 2026-11-19: the voice sounds too synthetic)
+Until Jesper picks from the voice test below, keep the Kokoro `bm_george` voice; no human narrator.
+**Voice test (Jesper 2026-11-19):** the narration must sound like a person telling a story: clear, steady level,
+natural pauses at commas and full stops. Three candidates read the same script and Jesper chooses by ear:
+- **A. Kokoro bm_george, tuned:** speed 1.0, one sentence at a time with set pauses (0.15 s comma, 0.35 s full
+  stop, 0.6 s before a punchline), best of three takes per sentence, loudness normalised, light compression.
+- **B. Qwen3-TTS VoiceDesign** (Apache-2.0 per the official model card; read the licence on the official GitHub
+  and Hugging Face pages before download): a designed voice from a text description of Sir Digsworth, no cloning.
+- **C. Chatterbox** (MIT per Resemble AI; read the LICENSE on GitHub first; every output carries an inaudible
+  watermark): its default voice, or cloned only from audio we own (a bm_george sample or Jesper's own voice).
+Never clone or imitate a real person or another channel's narrator. Non-commercial models are never used
+(F5-TTS weights, XTTS-v2, Voxtral, Fish Speech without a paid licence). The chosen voice is then fixed for Sir
+Digsworth; side characters keep short lines in other free voices.
 Because the voice is synthetic, the script, pacing and pictures have to carry more: vary sentence length, leave pauses
 for jokes, and time every picture to the word.
 

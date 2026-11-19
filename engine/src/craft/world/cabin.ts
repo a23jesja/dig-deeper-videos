@@ -5,7 +5,7 @@
 // falls in from above. (Blackbeard v4: without it, the sky and a sail showed over the back wall wherever the lens looked a little up.)
 // `cabinSea` puts it beside the two ships of flagSea, far enough off that neither ship shows through its windows.
 import * as THREE from "three";
-import { mesh, group, box, cyl, ball } from "./kit";
+import { mesh, group, box, cyl, ball, sunRig, type Sun } from "./kit";
 import { C, table, stool, chest } from "./props";
 import { flagSea } from "./ship";
 import type { V3 } from "../stage/film";
@@ -52,6 +52,18 @@ export const cabin = () => {
   const st = stool(); st.position.set(...CABIN.stool); g.add(st);
   const ch = chest(false, false, 0.7, 0.42, 0.44); ch.position.set(1.65, 0, -1.15); ch.rotation.y = -0.35; g.add(ch);
   return g;
+};
+/** The cabin at night (the painted-cabin test): the room alone at its place in the world, the night sea and the moon behind its
+ *  windows, and the light `light` (the same rig the painted version has, so that the figures take the same light in both) */
+export const cabinNight = (light: Sun) => {
+  const root = new THREE.Group(), c = cabin(); c.position.set(...CABIN.at); root.add(c);
+  const z = CABIN.at[2] - CABIN.d / 2 - 3, y = CABIN.at[1];
+  root.add(mesh(box(14, 8, 0.1), "#0f2147", { at: [CABIN.at[0], y + 2, z], line: 0, shadow: false }), mesh(box(14, 0.05, 3), "#16305e", { at: [CABIN.at[0], y - 0.2, z + 1.5], line: 0, shadow: false }));
+  root.add(mesh(ball(0.28, 16), "#eaf3ff", { at: [CABIN.at[0] + 0.9, y + 2.1, z + 0.1], line: 0, shadow: false }));
+  for (let i = 0; i < 40; i++) { const sx = ((i * 7919) % 1000) / 1000, sy = ((i * 104729) % 1000) / 1000; root.add(mesh(ball(0.018, 6), "#f4f1e0", { at: [CABIN.at[0] - 5 + sx * 10, y + 1.4 + sy * 3.5, z + 0.06], line: 0, shadow: false })); }
+  root.traverse((o) => { const m = o as THREE.Mesh; if (m.isMesh && (m.material as THREE.MeshBasicMaterial)?.color && o.parent === root) (m.material as THREE.Material).toneMapped = false; });
+  const rig = sunRig(light, inCabin([0, 0, 0])); root.add(rig); root.userData.rig = rig;
+  return root;
 };
 /** flagSea with the cabin beside it */
 export const cabinSea = () => { const root = flagSea(), c = cabin(); c.position.set(...CABIN.at); root.add(c); return root; };

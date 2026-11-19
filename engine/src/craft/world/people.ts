@@ -145,9 +145,11 @@ export const pointArm = (D: Design, pose: Pose, o: FigOpts, sp: Spot, cam: numbe
 const CROWD = new Map<string, { mat: THREE.MeshBasicMaterial; geo: THREE.PlaneGeometry }>();
 /** while the grip check runs (on), every crowd card drawn in a frame notes where it stands, so that the face check can see the faces in
  *  the crowd too (review of the gladiators Short: the sponsor's cloth hid a face in the box behind him) */
-export const CROWD_LOG: { on: boolean; heads: { at: [number, number, number]; h: number }[] } = { on: false, heads: [] };
+/** the crowd's figures as they are drawn while the log is on: where they stand, how tall, and (for the body check's human tests)
+ *  their pose, design and turn */
+export const CROWD_LOG: { on: boolean; heads: { at: [number, number, number]; h: number; D?: Design; pose?: Pose; o?: FigOpts; heading?: number; tag?: string }[] } = { on: false, heads: [] };
 export const crowdCard = (D: Design, pose: Pose, o: FigOpts, tag: string, sp: Spot, cam: number[]) => {
-  if (CROWD_LOG.on) CROWD_LOG.heads.push({ at: sp.at, h: sp.h ?? 1.7 });
+  if (CROWD_LOG.on) CROWD_LOG.heads.push({ at: sp.at, h: sp.h ?? 1.7, D, pose, o, heading: sp.heading, tag });
   const P = D.props(o.who ?? "sir"), T = bodyH(P), s = 0.34, cw = Math.round(T * 1.9 * s), ch = Math.round(T * 1.42 * s), mpu = (sp.h ?? 1.7) / T, feet = 0.93;
   const [x, y, z] = sp.at, az = Math.atan2(cam[0] - x, cam[2] - z), yaw = Math.round((sp.heading - az / D2R) / 20) * 20, key = `${D.id}:${tag}:${yaw}:${(sp.h ?? 1.7).toFixed(2)}`;
   let c = CROWD.get(key);

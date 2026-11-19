@@ -16,7 +16,8 @@ import type { Film, Staged, V3 } from "./film";
 import { stageAt } from "./staging";
 import { AUDIT } from "./grips";
 import { CROWD_LOG } from "../world/people";
-import type { Joint } from "../rig";
+import { solve, type Joint } from "../rig";
+import { jointLimits, lockedElbows, lowness } from "./humanBody";
 
 type Kind = "box" | "cyl" | "ball" | "lathe" | "probe";
 /** a solid thing as the check sees it, in the world as it stands on the frame it was read */
@@ -64,6 +65,8 @@ const obOf = (m: THREE.Mesh, holder?: string): Ob | null => {
   return { name: nameOf(m), kind, M, inv, s, bb, aabb, geo, mesh: m, closed: t === "ExtrudeGeometry", prof, holder };
 };
 
+const sub3 = (a: V3, b: V3): V3 => [a[0] - b[0], a[1] - b[1], a[2] - b[2]], dot3 = (a: V3, b: V3) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+const norm3 = (a: V3): V3 => { const l = Math.hypot(a[0], a[1], a[2]) || 1; return [a[0] / l, a[1] / l, a[2] / l]; }, mid3 = (a: V3, b: V3): V3 => [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2, (a[2] + b[2]) / 2];
 const segD2 = (px: number, py: number, ax: number, ay: number, bx: number, by: number) => { const dx = bx - ax, dy = by - ay, L = dx * dx + dy * dy, k = L ? Math.max(0, Math.min(1, ((px - ax) * dx + (py - ay) * dy) / L)) : 0; return Math.hypot(px - ax - dx * k, py - ay - dy * k); };
 const inPoly = (x: number, y: number, P: [number, number][]) => { let c = false; for (let i = 0, j = P.length - 1; i < P.length; j = i++) { const [xi, yi] = P[i], [xj, yj] = P[j]; if (yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi || 1e-12) + xi) c = !c; } return c; };
 const rc = new THREE.Raycaster(), DIRS = [[1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0], [0, 0, 1], [0, 0, -1], [0.577, 0.577, 0.577], [-0.577, 0.577, -0.577], [0.577, -0.577, -0.577], [-0.577, -0.577, 0.577]].map((d) => new THREE.Vector3(...d));
@@ -106,7 +109,7 @@ export const pickAt = (film: Film, frame: number, x: number, y: number) => {
     return { d: +h.distance.toFixed(2), colour: mat?.color ? `#${mat.color.getHexString()}` : "?", geo: m.geometry?.type, size: [z.x, z.y, z.z].map((v) => +v.toFixed(2)), at: [c.x, c.y, c.z].map((v) => +v.toFixed(2)), names, inThings: (() => { for (let p: THREE.Object3D | null = m; p; p = p.parent) if (p === g) return true; return false; })() }; }) };
 };
 
-export type BodyFault = { shot: string; who: string; what: string; f0: number; f1: number; deep: number; kind: "solid" | "held" | "figure" | "floor" | "slide" };
+export type BodyFault = { shot: string; who: string; what: string; f0: number; f1: number; deep: number; kind: "solid" | "held" | "figure" | "floor" | "slide" | "pose" };
 
 /** the faults of a film (all of them, every frame unless `every` > 1), and how much was tried */
 export const bodyCheck = (film: Film, opt: { every?: number; shots?: string[] } = {}) => {
@@ -114,11 +117,12 @@ export const bodyCheck = (film: Film, opt: { every?: number; shots?: string[] } 
   const note = (k: string, f: Omit<BodyFault, "f0" | "f1" | "deep">, F: number, deep: number) => { const e = faults.get(k); if (e) { e.f1 = F; e.deep = Math.max(e.deep, deep); } else faults.set(k, { ...f, f0: F, f1: F, deep }); };
   const world = film.world(); world.updateMatrixWorld(true);
   const worldObs: Ob[] = []; world.traverse((o) => { const b = obOf(o as THREE.Mesh); if (b) worldObs.push(b); });
-  const things = (s: Film["shots"][number], t: number, staged: Record<string, Staged>) => { const g = new THREE.Group(); AUDIT.rows = []; AUDIT.on = true; CROWD_LOG.on = false;
-    try { s.things?.(g, staged, t, s.a + t, s.cam(t, t / (s.b - s.a))); } finally { AUDIT.on = false; } g.updateMatrixWorld(true);
+  const things = (s: Film["shots"][number], t: number, staged: Record<string, Staged>) => { const g = new THREE.Group(); AUDIT.rows = []; AUDIT.on = true; CROWD_LOG.on = true; CROWD_LOG.heads.length = 0;
+    try { s.things?.(g, staged, t, s.a + t, s.cam(t, t / (s.b - s.a))); } finally { AUDIT.on = false; CROWD_LOG.on = false; } g.updateMatrixWorld(true);
+    const crowd = [...CROWD_LOG.heads];
     // a thing two carry is in the rows once for each of them: it is held by both
     const heldBy = new Map<THREE.Object3D, string>(); for (const r of AUDIT.rows) if (r.o) { const h = r.holder || (/sheath|scabbard/.test(r.use) ? "worn" : ""), was = heldBy.get(r.o); heldBy.set(r.o, was && h && was !== "worn" && h !== "worn" && !was.split(" & ").includes(h) ? `${was} & ${h}` : was || h); }
-    return { g, heldBy, rows: [...AUDIT.rows] }; };
+    return { g, heldBy, rows: [...AUDIT.rows], crowd }; };
   const holderOf = (o: THREE.Object3D, heldBy: Map<THREE.Object3D, string>) => { for (let p: THREE.Object3D | null = o; p; p = p.parent) { const h = heldBy.get(p); if (h !== undefined) return h; } return undefined; };
   const rootOf = (o: THREE.Object3D, heldBy: Map<THREE.Object3D, string>) => { for (let p: THREE.Object3D | null = o; p; p = p.parent) if (heldBy.has(p)) return p; return o; };
   // where a thing of the shot stands: its shape and the middle of its box (a sign turned toward the lens on every frame stands still)
@@ -140,6 +144,8 @@ export const bodyCheck = (film: Film, opt: { every?: number; shots?: string[] } 
       // read last, from a call whose objects are not moved since: the things of the first moment that stand in the same place in all
       const { st } = stage(probe[0]), th = things(s, probe[0], st);
       th.g.traverse((o) => { const m = o as THREE.Mesh; if (!m.isMesh || holderOf(m, th.heldBy)) return; const { g, c } = placeOf(m); if (!later.every((at) => (at.get(g) ?? []).some((q) => q.distanceTo(c) < 0.03))) return; const b = obOf(m); if (b) fixed.push(b); }); }
+    // how long each figure's pose has been held so (the human tests that need a time: half a second of a straight arm, and so on)
+    const runs = new Map<string, { start: number; n: number }>();
     const prevFoot = new Map<string, { heel: V3; toe: V3; side: "L" | "R"; rest: boolean }>(), airborne = new Map<string, number>(), sliding = new Map<string, number>();
     const lens = new THREE.PerspectiveCamera(50, 1080 / 1920, 0.05, 3000);
     for (const t of times) { const F = Math.round((s.a + t) * film.fps), { cam, st } = stage(t), th = things(s, t, st), C = new THREE.Vector3(...cam.pos); frames++;
@@ -160,6 +166,96 @@ export const bodyCheck = (film: Film, opt: { every?: number; shots?: string[] } 
         const parts = PARTS.map((P) => { const A = J(P.a), B = J(P.b), r = P.r < 0 ? -P.r * headL : P.r * sc, n = Math.max(2, Math.ceil(A.distanceTo(B) / 0.035)), pts: THREE.Vector3[] = []; for (let i = 0; i <= n; i++) pts.push(A.clone().lerp(B, i / n)); return { P, r, pts, tol: P.tol * Math.max(1, sc) }; });
         const box = new THREE.Box3(); for (const q of parts) for (const p of q.pts) box.expandByPoint(p); box.expandByScalar(0.15); return { a, parts, box }; });
       figuresTried += bodies.length;
+      /** the human tests of one figure on this frame (humanBody.ts): the joint limits on every frame; a straight arm held out near
+       *  shoulder height for more than half a second; a hand gesturing at his own body; the weight on a foot under the hips; and
+       *  something to sit or kneel on, or a hand on the ground, for a figure as low as one who sits */
+      /** a figure's real body: its skeleton in its own frame (design units, his left, up, forward) and W, which puts a point of it in the
+       *  world where his body really is (the card draws it flat; a seat is under the real pelvis) */
+      const realCache = new Map<string, { P: ReturnType<Staged["D"]["props"]>; v: ReturnType<typeof solve>["v"]; mpu: number; W: (p: V3) => THREE.Vector3 }>();
+      const realOf = (a: Staged) => { let r = realCache.get(a.name); if (r) return r; const P = a.D.props(a.o.who ?? "sir"), v = solve(P, a.pose, 0).v, mpu = a.h / (P.thigh + P.shin + P.ankle + P.spine + P.neck + P.head), hr = (a.heading * Math.PI) / 180;
+        r = { P, v, mpu, W: (p: V3) => new THREE.Vector3(a.at[0] + mpu * (p[0] * Math.cos(hr) + p[2] * Math.sin(hr)), a.at[1] + mpu * p[1], a.at[2] + mpu * (-p[0] * Math.sin(hr) + p[2] * Math.cos(hr))) }; realCache.set(a.name, r); return r; };
+      const TORSO = new Set(["chest", "belly"]);
+      const humanTests = (B: (typeof bodies)[number], F: number) => { const a = B.a, P = a.D.props(a.o.who ?? "sir"), sk = solve(P, a.pose, 0), v = sk.v, LL = P.thigh + P.shin;
+        const { mpu, W } = realOf(a);
+        // the skeleton turned as the lens sees it (z = toward the lens), as the card is drawn
+        const skView = solve(P, a.pose, a.heading - (Math.atan2(C.x - a.at[0], C.z - a.at[2]) * 180) / Math.PI);
+        /** while `on` holds frame after frame, count it; once it has held `need` frames, the fault is noted from the frame it began */
+        const run = (k: string, on: boolean, F: number, need: number, fire: () => void) => { const key = `${a.name}|${k}`, r = runs.get(key); if (!on) { runs.delete(key); return; }
+          const q = r ?? { start: F, n: 0 }; q.n += every; runs.set(key, q); if (q.n >= need) { const fk = `${s.id}|${a.name}|${k}`, fresh = !faults.has(fk); fire(); const e = faults.get(fk); if (fresh && e) e.f0 = q.start; } };
+        const pose = (key: string, what: string, deg: number) => note(`${s.id}|${a.name}|${key}`, { shot: s.id, who: a.name, kind: "pose", what: `${a.name}: ${what}` }, F, deg / 100);
+        // the joint limits, on every frame
+        for (const x of jointLimits(sk)) pose(`limit|${x.part}|${x.what.replace(/[\d.]+ degrees/g, "")}`, x.what, x.by);
+        const holds = (sd: "L" | "R") => th.rows.some((r) => r.holder && r.holder.split(" & ").some((p) => { const [w, h] = p.split(" "); return w === a.name && (h ?? "").split("+").includes(sd); }));
+        const n = (sd: "L" | "R") => (sd === "L" ? "left" : "right");
+        for (const sd of ["L", "R"] as const) { const kind = sd === "L" ? a.o.handL : a.o.handR;
+          // (k) a straight arm held out near shoulder height, as the body has it or as it is drawn on the card: straight (bent under 30
+          //     degrees) and the upper arm 60-120 degrees from hanging; or drawn straight (the hand on the line from the shoulder
+          //     through the elbow, within 20 degrees), level within 30 degrees and drawn at three quarters of its length or more. A
+          //     pointing hand (the hand drawn pointing) is what the rule allows: "unless pointing at or reaching for something"
+          const u = new THREE.Vector3(...(sub3(v[`el${sd}`], v[`sh${sd}`]))), f = new THREE.Vector3(...(sub3(v[`wr${sd}`], v[`el${sd}`]))), bend = (u.angleTo(f) * 180) / Math.PI, elev = (u.angleTo(new THREE.Vector3(0, -1, 0)) * 180) / Math.PI;
+          const S = new THREE.Vector3(...a.joint(`sh${sd}`)), E = new THREE.Vector3(...a.joint(`el${sd}`)), Wr = new THREE.Vector3(...a.joint(`wr${sd}`)), s2 = scr(S), e2 = scr(E), w2 = scr(Wr);
+          const da = Math.atan2(e2.y - s2.y, e2.x - s2.x), db = Math.atan2(w2.y - e2.y, w2.x - e2.x), dBend = Math.abs(((((db - da) * 180) / Math.PI + 540) % 360) - 180);
+          const SW = Wr.clone().sub(S), level = (Math.asin(Math.min(1, Math.abs(SW.y) / (SW.length() || 1))) * 180) / Math.PI, drawnLen = S.distanceTo(E) + E.distanceTo(Wr), trueLen = (P.upper + P.fore) * mpu;
+          const straight3 = bend < 30 && elev > 60 && elev < 120, straight2 = dBend < 20 && level < 30 && drawnLen > 0.75 * trueLen && inFrame(w2);
+          run(`tpose|${sd}`, (straight3 || straight2) && kind !== "point", F, 15, () => pose(`tpose|${sd}`, `the ${n(sd)} arm is held straight out near shoulder height for more than half a second${straight3 ? ` (bent ${bend.toFixed(0)} degrees, the upper arm ${elev.toFixed(0)} degrees from hanging)` : ` (drawn straight within ${dBend.toFixed(0)} degrees, ${level.toFixed(0)} degrees from level)`}`, 1));
+          // (k2) an elbow locked fully straight with the arm lifted, for more than half a second ("never fully straight unless the
+          //      action needs it": a pointing hand needs it)
+          run(`locked|${sd}`, lockedElbows(sk).includes(sd) && kind !== "point", F, 15, () => pose(`locked|${sd}`, `the ${n(sd)} elbow is locked straight with the arm lifted for more than half a second`, 1));
+          // (l) a hand gesturing at his own body: an empty open hand, off the body (not resting on it), its fingers pointing into his
+          //     chest or belly, for more than 0.4 s (the rule: "a character never gestures toward its own body"; Jesper: Sir explaining
+          //     with his hand toward his own belly). Arms crossed are left out: there both hands lie at the other side
+          if (!holds(sd) && kind !== "fist" && kind !== "grip") { const tip = v[`tip${sd}`], wr = v[`wr${sd}`], dir = norm3(sub3(tip, wr)), A = v.pelvis, Bn = v.neck, ax = sub3(Bn, A), L2 = dot3(ax, ax) || 1;
+            const near = (p: V3) => { const k = Math.max(0, Math.min(1, dot3(sub3(p, A), ax) / L2)); const c: V3 = [A[0] + ax[0] * k, A[1] + ax[1] * k, A[2] + ax[2] * k]; return Math.hypot(p[0] - c[0], p[1] - c[1], p[2] - c[2]); };
+            const torsoR = 0.95 * P.shW, gap = near(tip) - torsoR; let hit = false;
+            for (let k = 1; k <= 12; k++) { const q: V3 = [tip[0] + dir[0] * k * 0.05 * LL, tip[1] + dir[1] * k * 0.05 * LL, tip[2] + dir[2] * k * 0.05 * LL]; if (near(q) < torsoR * 0.8) { hit = true; break; } }
+            const other = v[`wr${sd === "L" ? "R" : "L"}`], crossed = Math.sign(wr[0]) !== (sd === "L" ? 1 : -1) && Math.sign(other[0]) !== (sd === "L" ? -1 : 1) && wr[2] > 0 && other[2] > 0;
+            run(`self|${sd}`, hit && gap > 0.03 * LL && gap < 0.5 * LL && tip[2] > 0 && !crossed, F, 12, () => pose(`self|${sd}`, `the ${n(sd)} hand gestures at his own body (its fingers point into his chest or belly from ${(gap / LL * 0.95).toFixed(2)} leg lengths off it)`, 1)); }
+          // (m) the arm reaching toward the lens (or away from it, behind him) by more than 0.4 leg lengths, with the hand drawn over his
+          //     own chest or belly: the card cannot draw depth, so the elbow is not seen and the hand reads as put on his own body, or
+          //     the arm as coming out of his chest (Jesper: Sir's hand toward his belly at 3-5 s, the pupil's sword arm at 11 s). For
+          //     more than 0.4 s
+          { const kv = skView.v, depth = (kv[`wr${sd}`][2] - (kv.neck[2] + kv.pelvis[2]) / 2) / LL, me = flat.find((q) => q.B === B), w2d = scr(new THREE.Vector3(...a.joint(`wr${sd}`)));
+            const over = !!me && inFrame(w2d) && !!bodyAt(me, w2d.x, w2d.y, TORSO);
+            run(`lens|${sd}`, over && Math.abs(depth) > 0.4, F, 12, () => pose(`lens|${sd}`, `the ${n(sd)} arm reaches ${depth > 0 ? "toward" : "away from"} the lens (${Math.abs(depth).toFixed(2)} leg lengths) and is drawn over his own body: its elbow cannot be seen and the hand reads as on his own body`, 1)); }
+          // (n) a raised hand beside another figure that does not touch him: the rule's "both hands meet at the same point" (a hand on a
+          //     shoulder, a handshake, a pull up). The real hand within 5-20 cm of the other's body, chest, shoulder, arm or hand, the
+          //     wrist lifted above the hips, for more than half a second
+          // (o) a hand put on someone (`handOn`: a shoulder, a back) must be seen there: in the picture its palm lies on his drawn body and
+          //     is not hidden behind it. A hand that goes behind his head or body reads as an arm raised behind him (Jesper: the
+          //     gladiator's hand on the other's shoulder at 28-31 s)
+          if (th.rows.some((r) => r.use === "on" && r.holder && r.holder.split(" & ").some((p) => { const [w, h] = p.split(" "); return w === a.name && (h ?? "").split("+").includes(sd); }))) {
+            const pm = scr(new THREE.Vector3(...a.joint(`wr${sd}`)).lerp(new THREE.Vector3(...a.joint(`tip${sd}`)), 0.5)); let on = "", hidden = false;
+            for (const g of flat) { if (g.B === B) continue; const hb = bodyAt(g, pm.x, pm.y); if (hb) { on = `${g.B.a.name}'s ${hb.name}`; hidden = hb.d < pm.d - 0.02; break; } }
+            run(`onseen|${sd}`, !inFrame(pm) || !on || hidden, F, 6, () => pose(`onseen|${sd}`, `the ${n(sd)} hand that is put on someone ${!on ? "does not lie on him in the picture" : `lies behind ${on} in the picture`}: the touch cannot be seen`, 1)); }
+          // (a hand put on someone, `handOn`, is such a hand too: it must touch him; a thing in the hand is not)
+          const holdsThing = th.rows.some((r) => r.use !== "on" && r.holder && r.holder.split(" & ").some((p) => { const [w, h] = p.split(" "); return w === a.name && (h ?? "").split("+").includes(sd); }));
+          if (!holdsThing && v[`wr${sd}`][1] > v.pelvis[1] + 0.2 * LL) { const palmW = W(mid3(v[`wr${sd}`], v[`tip${sd}`]));
+            for (const B2 of bodies) { if (B2 === B || B2.a.spin !== undefined) continue; const o2 = realOf(B2.a), segs: [THREE.Vector3, THREE.Vector3, number, string][] = [
+                [o2.W(o2.v.pelvis), o2.W(o2.v.neck), 0.95 * o2.P.shW * o2.mpu, "body"], [o2.W(o2.v.shL), o2.W(o2.v.elL), 0.05, "arm"], [o2.W(o2.v.shR), o2.W(o2.v.elR), 0.05, "arm"],
+                [o2.W(o2.v.elL), o2.W(o2.v.wrL), 0.045, "arm"], [o2.W(o2.v.elR), o2.W(o2.v.wrR), 0.045, "arm"], [o2.W(o2.v.wrL), o2.W(o2.v.tipL), 0.045, "hand"], [o2.W(o2.v.wrR), o2.W(o2.v.tipR), 0.045, "hand"]];
+              let gap = Infinity, part = ""; for (const [p0, p1, r, nm] of segs) { const d = new THREE.Line3(p0, p1).closestPointToPoint(palmW, true, new THREE.Vector3()).distanceTo(palmW) - r - 0.045; if (d < gap) { gap = d; part = nm; } }
+              run(`hover|${sd}|${B2.a.name}`, gap > 0.05 && gap < 0.2, F, 15, () => pose(`hover|${sd}|${B2.a.name}`, `the ${n(sd)} hand is raised beside ${B2.a.name}'s ${part} ${(gap * 100).toFixed(0)} cm off it, for more than half a second: it neither touches him nor is away from him`, 1)); } } }
+        // (w) the weight on a foot under the hips: seen from above, a foot on the ground (or the line between two) lies under the hips
+        //     (the line from one hip joint to the other) or within a fifth of a leg's length of it, for a figure standing (not one low
+        //     enough to sit, kneel or crouch); 0.3 s and more (a stride passes through it). Under the hips, not under the middle of the
+        //     pelvis: a walker on one foot has it under his own hip
+        const lw = lowness(sk), low0 = Math.min(v.heelL[1], v.toeL[1], v.heelR[1], v.toeR[1]);
+        { const feet = (["L", "R"] as const).filter((sd) => Math.min(v[`heel${sd}`][1], v[`toe${sd}`][1]) < low0 + 0.04 * LL);
+          const seg = (sd: "L" | "R") => [v[`heel${sd}`], v[`toe${sd}`]] as [V3, V3], pts: [V3, V3][] = feet.map(seg);
+          if (feet.length === 2) pts.push([mid3(...seg("L")), mid3(...seg("R"))]);
+          const hips = [0, 0.25, 0.5, 0.75, 1].map((k) => mid3(v.hipL, v.hipL).map((x, i) => x + (v.hipR[i] - x) * k) as V3);
+          const off = Math.min(...hips.flatMap((h) => pts.map(([p, q]) => segD2(h[0], h[2], p[0], p[2], q[0], q[2])))) / LL;
+          run("weight", lw.low > 0.8 && off > 0.2, F, 9, () => pose("weight", `his weight is on no foot: the feet on the ground are ${off.toFixed(2)} leg lengths from under his hips, for more than 0.3 s`, 1)); }
+        // (s) as low as one who sits or squats (the pelvis under 80 % of its standing height, with a thigh lifted past 50 degrees, or
+        //     under 65 % anyhow): a seat under the real pelvis or the buttocks behind it (within 0.35 m below), or sitting on the ground, or a knee on the
+        //     ground, or a hand on it, or (crouching, not squatting deep) the body leaning in over the feet by 30 degrees
+        if ((lw.low < 0.8 && lw.thigh > 50) || lw.low < 0.65) { const pel = W(v.pelvis), floor = a.at[1]; let seat = pel.y - floor < 0.22;
+          const under = [0, 0.08, 0.16].map((b) => W([v.pelvis[0], v.pelvis[1], v.pelvis[2] - b / mpu]));
+          if (!seat) for (const o of [...solids, ...held.filter((h) => !h.holder!.split(" & ").some((p) => p.split(" ")[0] === a.name))]) { for (const q of under) { if (o.aabb.min.x > q.x + 0.05 || o.aabb.max.x < q.x - 0.05 || o.aabb.min.z > q.z + 0.05 || o.aabb.max.z < q.z - 0.05) continue;
+            rc.set(new THREE.Vector3(q.x, q.y + 0.05, q.z), DIRS[3]); rc.near = 0; rc.far = 0.4; if (rc.intersectObject(o.mesh, false)[0]) { seat = true; break; } } if (seat) break; }
+          const knee = Math.min(W(v.knL).y, W(v.knR).y) - floor < 0.1, hand = Math.min(W(v.tipL).y, W(v.tipR).y) - floor < 0.08, lean = lw.low > 0.6 && (a.pose.lean ?? 0) > 30;
+          run("support", !seat && !knee && !hand && !lean, F, 8, () => pose("support", `he is as low as one who sits or squats (hips at ${(lw.low * 100).toFixed(0)} % of standing) with nothing under him: no seat, no knee or hand on the ground`, 1)); }
+      };
       // ---- in the picture (rule 5: what cannot be told from being inside is inside) ----
       const foc = 960 / Math.tan((cam.fov * Math.PI) / 360), scr = (p: THREE.Vector3) => { const q = p.clone().project(lens); return { x: (q.x + 1) * 540, y: (1 - q.y) * 960, d: p.distanceTo(C) }; };
       /** a body as it is drawn: its pieces as flat capsules in the picture, as wide as the drawing (wider than the body is deep) */
@@ -279,6 +375,27 @@ export const bodyCheck = (film: Film, opt: { every?: number; shots?: string[] } 
                 for (const o of obs) for (const h of rc.intersectObject(o.mesh, false)) { if (h.distance < d - sp - 0.005) n++; else if (h.distance > d + 0.005) fa++; else inn++; }
                 if (inn || (n && fa)) { mixed++; where = q.P.name; } else if (n) { behind++; where ||= q.P.name; } else if (fa) front++; } }
             if (mixed || (front && behind)) note(`${s.id}|${a.name}|thru|${side}|${root.uuid}`, { shot: s.id, who: a.name, kind: "held", what: `${a.name}'s ${side === "L" ? "left" : "right"} arm goes through the thing in ${holder}'s hand (${nameOf(root) || describe(obs[0])}) at the ${where}: part of the arm before the thing, part behind it` }, F, (mixed + Math.min(front, behind)) / Math.max(1, n0)); } } }
+      // the crowd's figures big enough in the picture to read their pose (a sixth of the frame's height or more: the spectator behind Sir
+      // in the gladiators' stands, her arm straight across her chest with a fist at 5.5-6 s): the joint limits, the straight arm held out
+      // and the locked elbow, as for the cast. (Their seats and feet are the stands', not tested here)
+      for (const cr of th.crowd) { if (!cr.D || !cr.pose) continue; const top = scr(new THREE.Vector3(cr.at[0], cr.at[1] + cr.h, cr.at[2])), bot = scr(new THREE.Vector3(...cr.at));
+        if (Math.abs(bot.y - top.y) < 1920 / 6 || (!inFrame(top) && !inFrame(bot))) continue;
+        const nm = `a spectator (${cr.tag}) at ${cr.at.map((x) => x.toFixed(1)).join(", ")}`, kc = `crowd|${cr.tag}|${cr.at.map((x) => x.toFixed(1)).join()}`, P = cr.D.props(cr.o?.who ?? "sir"), csk = solve(P, cr.pose, 0), cv = csk.v;
+        const cpose = (key: string, what: string) => note(`${s.id}|${kc}|${key}`, { shot: s.id, who: nm, kind: "pose", what: `${nm}: ${what}` }, F, 0.01);
+        const crun = (k: string, on: boolean, need: number, fire: () => void) => { const key = `${kc}|${k}`, r = runs.get(key); if (!on) { runs.delete(key); return; } const q = r ?? { start: F, n: 0 }; q.n += every; runs.set(key, q);
+          if (q.n >= need) { const fk = `${s.id}|${kc}|${k}`, fresh = !faults.has(fk); fire(); const e = faults.get(fk); if (fresh && e) e.f0 = q.start; } };
+        for (const x of jointLimits(csk)) cpose(`limit|${x.part}|${x.what.replace(/[\d.]+ degrees/g, "")}`, x.what);
+        for (const sd of ["L", "R"] as const) { const kind = sd === "L" ? cr.o?.handL : cr.o?.handR, u = new THREE.Vector3(...sub3(cv[`el${sd}`], cv[`sh${sd}`])), f = new THREE.Vector3(...sub3(cv[`wr${sd}`], cv[`el${sd}`]));
+          const bend = (u.angleTo(f) * 180) / Math.PI, elev = (u.angleTo(new THREE.Vector3(0, -1, 0)) * 180) / Math.PI, side = sd === "L" ? "left" : "right";
+          crun(`tpose|${sd}`, bend < 30 && elev > 60 && elev < 120 && kind !== "point", 15, () => cpose(`tpose|${sd}`, `the ${side} arm is held straight out near shoulder height for more than half a second (bent ${bend.toFixed(0)} degrees, the upper arm ${elev.toFixed(0)} degrees from hanging)`));
+          crun(`locked|${sd}`, lockedElbows(csk).includes(sd) && kind !== "point", 15, () => cpose(`locked|${sd}`, `the ${side} elbow is locked straight with the arm lifted for more than half a second`));
+          // (m) as for the cast: the arm reaching toward the lens or away from it by more than 0.4 leg lengths, its wrist drawn over its
+          //     own chest or belly (the crowd's card is drawn at its turn rounded to 20 degrees, crowdCard). The spectator clapping with
+          //     her hands toward the lens, drawn as an arm across her chest with a fist
+          { const LLc = P.thigh + P.shin, yaw = Math.round((cr.heading! - (Math.atan2(C.x - cr.at[0], C.z - cr.at[2]) * 180) / Math.PI) / 20) * 20, vk = solve(P, cr.pose, yaw), j = vk.j, z = vk.z;
+            const w = j[`wr${sd}`], ny = j.neck[1], py = j.pelvis[1], k = Math.max(0, Math.min(1, (w[1] - ny) / (py - ny || 1))), sx = j.neck[0] + (j.pelvis[0] - j.neck[0]) * k;
+            const over = w[1] > ny && w[1] < py && Math.abs(w[0] - sx) < P.shW, depth = (z[`wr${sd}`] - (z.neck + z.pelvis) / 2) / LLc;
+            crun(`lens|${sd}`, over && Math.abs(depth) > 0.4, 12, () => cpose(`lens|${sd}`, `the ${side} arm reaches ${depth > 0 ? "toward" : "away from"} the lens (${Math.abs(depth).toFixed(2)} leg lengths) and is drawn over its own body: the hand reads as on its own body`)); } } }
       for (const B of bodies) { const a = B.a, floor = a.at[1], near = (o: Ob) => o.aabb.intersectsBox(B.box);
         const mine = (o: Ob) => !!o.holder && o.holder.split(" & ").some((part) => part.split(" ")[0] === a.name);
         const holdSides = (o: Ob) => { const sides = new Set<string>(); for (const part of (o.holder ?? "").split(" & ")) { const [who, hands] = part.split(" "); if (who === a.name && hands) for (const h of hands.split("+")) sides.add(h); } return sides; };
@@ -294,6 +411,8 @@ export const bodyCheck = (film: Film, opt: { every?: number; shots?: string[] } 
           for (const q of B.parts) for (const q2 of B2.parts) { const tol = Math.max(q.tol, q2.tol) + (q.P.hand || q2.P.hand ? 0.02 : 0); let worst = 0;
             for (const p of q.pts) for (const p2 of q2.pts) { const pen = q.r + q2.r - p.distanceTo(p2); if (pen > worst && seen(p.clone().lerp(p2, 0.5))) worst = pen; }
             if (worst > tol) note(`${s.id}|${a.name}|${q.P.name}|${B2.a.name}|${q2.P.name}`, { shot: s.id, who: a.name, kind: "figure", what: `${a.name}'s ${q.P.name} and ${B2.a.name}'s ${q2.P.name} are in the same space` }, F, worst); } }
+        // ---- the body moves like a human's (Jesper, 19 Nov: "Human bodies move like humans") ----
+        if (a.spin === undefined) humanTests(B, F);
         // the feet: the lower one rests on what is under it; a foot that rests does not slide
         if (a.spin === undefined) { const feet = (["L", "R"] as const).map((sd) => { const h = new THREE.Vector3(...a.joint(sd === "L" ? "heelL" : "heelR")), o2 = new THREE.Vector3(...a.joint(sd === "L" ? "toeL" : "toeR")); return h.y < o2.y ? h : o2; });
           // (a foot planted on its landing spot is the one he stands on, even when its joint lies higher than the other foot's: the drawing
@@ -336,4 +455,4 @@ export const bodyCheck = (film: Film, opt: { every?: number; shots?: string[] } 
 };
 
 /** the faults as lines for the film check: shot, frames (and film seconds), who, what, how deep */
-export const bodyLines = (film: Film, r: ReturnType<typeof bodyCheck>) => r.faults.map((f) => `${f.shot} frames ${f.f0}-${f.f1} (film ${(f.f0 / film.fps).toFixed(2)}-${((f.f1 + 1) / film.fps).toFixed(2)} s): ${f.what}${f.kind === "slide" ? ` (up to ${f.deep.toFixed(1)} px a frame)` : `, ${(f.deep * 100).toFixed(0)} cm`}`);
+export const bodyLines = (film: Film, r: ReturnType<typeof bodyCheck>) => r.faults.map((f) => `${f.shot} frames ${f.f0}-${f.f1} (film ${(f.f0 / film.fps).toFixed(2)}-${((f.f1 + 1) / film.fps).toFixed(2)} s): ${f.what}${f.kind === "slide" ? ` (up to ${f.deep.toFixed(1)} px a frame)` : f.kind === "pose" ? "" : `, ${(f.deep * 100).toFixed(0)} cm`}`);

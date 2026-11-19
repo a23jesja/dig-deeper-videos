@@ -103,3 +103,14 @@ The limits written on the sheet hold:
 - kneeling, kneeling with a hand on the ground, and getting up read best three-quarter from the front;
 - the stick on the shoulder is shown only from the front; from the side the stick points down;
 - the handshake, pulling someone up and the hand on a shoulder are avoided. When the story is that action, it is shown as a close-up of the hands or as its result (lessons from the reference Shorts, 1).
+
+## THE QUALITY GATE (Jesper, 19 November 2026; DAILY-RULES, at the top)
+Nothing is built or sent that does not pass all six gates:
+1. **Topic:** Jesper approves the topic. A 12-year-old must understand in one sentence why it is surprising, using known words. No specialist words in the title, the hook or the first ten seconds.
+2. **Shot library:** a film uses only shot types that Jesper has approved as a 3-5 s test clip. Sitting is not approved until its clip is.
+3. **Proof:** three deliberate faults are made, and the checks must stop every one: a figure sitting in the air above a seat, an arm locked straight out, and a foot inside a sofa. This is repeated whenever a check or a set changes.
+4. **Risk sheet:** before the full render, Jesper sees one image of every moment where a figure touches something.
+5. **Voice:** the voice chosen in the voice test.
+6. **Review:** the review approves only what it can prove for each shot: every figure, every contact and the check result.
+
+No new Short is built until gates 2, 3 and 5 exist.

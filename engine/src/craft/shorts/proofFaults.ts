@@ -6,7 +6,8 @@ import * as THREE from "three";
 import type { Film, Shot, Actor } from "../stage/film";
 import { lens } from "../stage/staging";
 import { POSES } from "../rig";
-import { SIR_D } from "../looks";
+import { SIR_D, DOCTOR_D } from "../looks";
+import { stool } from "../world/props";
 import { mesh, box, skyDome, sunRig } from "../world/kit";
 import { dayLight, DAY } from "./gestureSheet";
 import { SIT } from "./gripSheet";
@@ -22,8 +23,8 @@ const TURN = 55, FW: [number, number] = [Math.sin((V.toward(0, 0, TURN) * Math.P
 /** a seat `high` metres high and 0.4 m deep, its centre `back` metres behind his hips, turned with him. (A still figure stands with its
  *  feet on the floor: sitting, his hips are where his legs put them, about 0.46 m up) */
 const seat = (back: number, high = 0.42) => (g: THREE.Group) => { const m = mesh(box(1.0, high, 0.4), "#7a5a36", { at: [0, high / 2, 0] }), h = new THREE.Group(); h.add(m); h.position.set(-FW[0] * back, 0, -FW[1] * back); h.rotation.y = (V.toward(0, 0, TURN) * Math.PI) / 180; g.add(h); };
-const add = (id: string, cast: Actor, things?: (g: THREE.Group) => void) => { const a = shots.length * LEN;
-  shots.push({ id, a, b: a + LEN, still: 1, cam: () => V.cam, sun: { target: [0, 0.8, 0], reach: 5 }, cast: () => [cast], things: things ? (g) => things(g) : undefined }); };
+const add = (id: string, cast: Actor | Actor[], things?: (g: THREE.Group) => void) => { const a = shots.length * LEN;
+  shots.push({ id, a, b: a + LEN, still: 1, cam: () => V.cam, sun: { target: [0, 0.8, 0], reach: 5 }, cast: () => (Array.isArray(cast) ? cast : [cast]), things: things ? (g) => things(g) : undefined }); };
 
 // A. sitting in the air ABOVE a seat: a low seat (0.22 m) right under his hips, its front edge 8 cm before them: his hips 24 cm above it
 add("A-sits-in-the-air", sir({ ...SIT, armL: [[18, 8], [50, 4]], armR: [[18, 8], [50, 4]] }, TURN), seat(0.12, 0.22));
@@ -37,5 +38,9 @@ add("D-sits-beside-the-seat", sir({ ...SIT, armL: [[18, 8], [50, 4]], armR: [[18
 // E. THE CONTROL, no fault: he sits right, on a seat 0.36 m high reaching from 10 cm before his hips to 30 cm behind them. The checks
 // must pass it: a check that fails every seated man proves nothing
 add("E-control-sits-right", sir({ ...SIT, armL: [[18, 8], [50, 4]], armR: [[18, 8], [50, 4]] }, TURN), seat(0.1, 0.36));
+// F. the gladiators' doctor as he was in v5 before 19 Nov (Jesper: "Han sitter i luften där och hans dress går igenom pallen"): a long
+//    robe, seated (SIT, py -0.36, lean 6), the stool 0.15 m behind his pelvis, scaled to 0.86 of its height, seen at three quarters
+add("F-robe-through-the-stool", { name: "doc", D: DOCTOR_D, h: 1.72, at: [0, 0, 0], heading: V.toward(0, 0, TURN), pose: { ...POSES.stand, ...SIT, py: -0.36, lean: 6, armL: [[18, 8], [50, 4]], armR: [[18, 8], [50, 4]] }, o: { handL: "relaxed", handR: "relaxed" } },
+  (g) => { const sd = stool(); sd.position.set(-FW[0] * 0.15, 0, -FW[1] * 0.15); sd.scale.y = 0.86; g.add(sd); });
 
 export const PROOF_FAULTS: Film = { id: "proof-faults", fps: 30, seconds: shots.length * LEN, range: [0, 999], sky: "#9cc8f0", world, shots, words: [], hook: { text: [], a: 0, b: 0 }, light: dayLight(DAY.from, [0, 1, 0]) };

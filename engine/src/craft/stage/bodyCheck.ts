@@ -431,6 +431,18 @@ export const bodyCheck = (film: Film, opt: { every?: number; shots?: string[] } 
           for (const q of B.parts) { if (own && (!q.P.hand || sides.has(q.P.hand) || sides.size === 0)) continue;
             let worst = 0; for (const p of q.pts) { if (o.aabb.distanceToPoint(p) < q.r && seen(p, q.r)) { const pen = q.r - dist(o, p, q.r); if (pen > worst) worst = pen; } }
             if (worst > q.tol) note(`${s.id}|${a.name}|${q.P.name}|${o.mesh.uuid}`, { shot: s.id, who: a.name, kind: isHeld ? "held" : "solid", what: `${a.name}'s ${q.P.name} is inside ${isHeld ? `the thing in ${o.holder}'s hand, ` : ""}${describe(o)}` }, F, worst); } }
+        // the garment below the pelvis (a robe, a dress, a coat's tails): the card draws it hanging along the spine down to its hem, sitting
+        // too, so a seated man's robe went down through his stool (Jesper, 19 Nov, the doctor in the gladiators: "hans dress går igenom
+        // pallen"). Cloth may lie on a seat and give a little (4 cm); deeper than that it goes through it
+        if (a.D.garment) { const rows = a.D.garment, mpu = realOf(a).mpu, pv = new THREE.Vector3(...a.joint("pelvis")), up = new THREE.Vector3(...a.joint("neck")).sub(pv).normalize(), hr = (a.heading * Math.PI) / 180;
+          const fw = new THREE.Vector3(Math.sin(hr), 0, Math.cos(hr)), lf = new THREE.Vector3().crossVectors(up, fw).normalize(), gpts: THREE.Vector3[] = [];
+          const rowAt = (h: number) => { let i = 0; while (i < rows.length - 2 && rows[i + 1][0] < h) i++; const t = Math.max(0, Math.min(1, (h - rows[i][0]) / (rows[i + 1][0] - rows[i][0]))); return rows[i].map((x, j) => x + (rows[i + 1][j] - x) * t); };
+          const hem = rows[0][0]; if (hem < -20) for (let h = hem; h < -20; h += 25) { const [, w, df, db] = rowAt(h);
+            for (const [l, d] of [[0, df], [0, -db], [w, 0], [-w, 0], [0.7 * w, 0.7 * df], [-0.7 * w, 0.7 * df], [0.7 * w, -0.7 * db], [-0.7 * w, -0.7 * db], [0, 0]] as const)
+              gpts.push(pv.clone().addScaledVector(up, h * mpu).addScaledVector(lf, l * 0.9 * mpu).addScaledVector(fw, d * 0.9 * mpu)); }
+          for (const o of solids.filter((o) => o.aabb.max.y > floor + 0.05)) { let worst = 0, low = Infinity;
+            for (const p of gpts) { if (p.y < floor + 0.02 || o.aabb.distanceToPoint(p) > 0.02 || !seen(p)) continue; const pen = 0.02 - dist(o, p, 0.02); if (pen > worst) worst = pen; low = Math.min(low, p.y); }
+            if (worst > 0.04) note(`${s.id}|${a.name}|garment|${o.mesh.uuid}`, { shot: s.id, who: a.name, kind: "solid", what: `${a.name}'s robe (the garment below his waist, down to its hem) goes through ${describe(o)}, ${(worst * 100).toFixed(0)} cm in` }, F, worst); } }
         // two people in the same space
         for (const B2 of bodies) { if (B2.a.name <= a.name || !B.box.intersectsBox(B2.box)) continue; pairs++;
           // (two hands declared as holding each other, grips.handshake: they meet by design, so those two hands are not "in the same space")

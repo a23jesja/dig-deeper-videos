@@ -17,7 +17,10 @@ export type Design = { id: string; name: string; ol: number; faceW?: number; pro
   /** the closed fingers of the named hands by themselves (the layer that lies in front of a thing held) */
   fingers?: (k: Ink, sk: Sk, sides: ("L" | "R")[], whole?: Partial<Record<"L" | "R", HandKind>>) => void;
   /** the figure's hat by itself (lying or flying), its middle at the origin, seen from the angle phi */
-  hat?: (k: Ink, phiDeg: number) => void };
+  hat?: (k: Ink, phiDeg: number) => void;
+  /** the garment's torso rows [height above the pelvis, half-width, depth in front, depth behind] (design units), for the body check:
+   *  a robe or a coat tail is drawn hanging along the spine down to its hem, sitting too */
+  garment?: number[][] };
 export const LIGHT: P2 = [0.8, 0.45]; // which way the shadow lies on a part (the light comes from the upper left)
 
 /** the torso's own frame: Q(l, d, a) = a point l to the figure's left, d in front of the spine and a above the pelvis along the spine */

@@ -9,7 +9,7 @@ import { POSES } from "../rig";
 import { SIR_D, DOCTOR_D } from "../looks";
 import { stool, woodSword } from "../world/props";
 import { kneeling } from "../stage/gestures";
-import { WOODSWORD, wield, usePose } from "../stage/grips";
+import { WOODSWORD, wield, usePose, AUDIT } from "../stage/grips";
 import { mesh, box, skyDome, sunRig } from "../world/kit";
 import { dayLight, DAY } from "./gestureSheet";
 import { SIT } from "./gripSheet";
@@ -26,8 +26,8 @@ const TURN = 55, FW: [number, number] = [Math.sin((V.toward(0, 0, TURN) * Math.P
  *  feet on the floor: sitting, his hips are where his legs put them, about 0.46 m up) */
 const seatAt = (turn: number, back: number, high = 0.42) => (g: THREE.Group) => { const hd = (V.toward(0, 0, turn) * Math.PI) / 180, fw = [Math.sin(hd), Math.cos(hd)], m = mesh(box(1.0, high, 0.4), "#7a5a36", { at: [0, high / 2, 0] }), h = new THREE.Group(); h.add(m); h.position.set(-fw[0] * back, 0, -fw[1] * back); h.rotation.y = hd; g.add(h); };
 const seat = (back: number, high = 0.42) => seatAt(TURN, back, high);
-const add = (id: string, cast: Actor | Actor[], things?: (g: THREE.Group, c: Record<string, Staged>, cam: Cam) => void, more: Partial<Shot> = {}) => { const a = shots.length * LEN;
-  shots.push({ id, a, b: a + LEN, still: 1, cam: () => V.cam, sun: { target: [0, 0.8, 0], reach: 5 }, cast: () => (Array.isArray(cast) ? cast : [cast]), things: things ? (g, c, _t, _T, cam) => things(g, c, cam) : undefined, ...more }); };
+const add = (id: string, cast: Actor | Actor[] | ((t: number) => Actor[]), things?: (g: THREE.Group, c: Record<string, Staged>, cam: Cam, t: number) => void, more: Partial<Shot> = {}) => { const a = shots.length * LEN;
+  shots.push({ id, a, b: a + LEN, still: 1, cam: () => V.cam, sun: { target: [0, 0.8, 0], reach: 5 }, cast: (t) => (typeof cast === "function" ? cast(t) : Array.isArray(cast) ? cast : [cast]), things: things ? (g, c, t, _T, cam) => things(g, c, cam, t) : undefined, ...more }); };
 
 // A. sitting in the air ABOVE a seat: a low seat (0.22 m) right under his hips, its front edge 8 cm before them: his hips 24 cm above it
 add("A-sits-in-the-air", sir({ ...SIT, armL: [[18, 8], [50, 4]], armR: [[18, 8], [50, 4]] }, TURN), seat(0.12, 0.22));
@@ -78,5 +78,28 @@ add("O-control-robe-profile", sitter("doc", DOCTOR_D, 1.72, 90, true), seatAt(90
 // P. THE HEM'S LENGTH: the doctor standing at three quarters, so that the robe's length seated (L, O) can be held against it (the review,
 //    20 Nov: "Tyget blir inte kortare av att man sätter sig")
 add("P-robe-standing", { name: "doc", D: DOCTOR_D, h: 1.72, at: [0, 0, 0], heading: V.toward(0, 0, TURN), pose: { ...POSES.stand }, o: { handL: "relaxed", handR: "relaxed" } });
+
+// Q-X. WHAT HAPPENS BETWEEN FRAMES (the shot library review, 20 Nov: eight new tests, each shown stopping a fault made on purpose;
+//    src/craft/stage/motionCheck.ts, and grips.ts / bodyCheck.ts for the door). `film_info proof-faults motion` (and grips, body) must FAIL each
+const at1 = (t: number) => Math.round(t * 30);
+// Q. A POSE THAT STANDS FOR ONE FRAME: his arms hang, on one frame (the 30th) they are at his chest, then they hang again
+add("Q-pose-for-one-frame", (t) => [sir(at1(t) === 30 ? { armL: [[40, 30], [120, -40]], armR: [[40, 30], [120, -40]] } : {})]);
+// R. THE HEAD REDRAWN BETWEEN TWO FRAMES: the head facing the lens, and from the 30th frame turned 40 degrees, at once
+add("R-head-turns-in-one-frame", (t) => [sir({ head: [at1(t) < 30 ? 0 : -40, 2, 0] })]);
+// S. SHAKING: the body rolled 2 degrees one way and the other on every other frame from the 15th
+add("S-shakes-every-other-frame", (t) => [sir({ roll: at1(t) < 15 ? 0 : Math.floor(at1(t) / 2) % 2 ? 2 : -2 })]);
+// T. THE PIPE IN AN OPEN MOUTH: Sir talking with his mouth wide open, the pipe as it was drawn before 20 Nov (pipeHold: false)
+add("T-pipe-in-open-mouth", { ...sir({}), o: { handL: "relaxed", handR: "relaxed", pipeHold: false, face: { mouth: 0.6 } } });
+// U. NOT LOOKING AT WHAT HE LOOKS AT: the shot says he looks at a point behind him on his left; he faces the lens
+add("U-looks-at-the-lens", sir({}), undefined, { look: { sir: { at: [-2, 1.5, -3], what: "a point behind him" } } });
+// V. CUT BY THE EDGE: he stands with half of himself out of the picture, still, from the first frame
+add("V-cut-by-the-edge", { ...sir({}), at: [-0.95, 0, 0] });
+// W. A HAND THROUGH A DOOR: he holds a door's leaf that swings through his forearm, his hand 20 cm off its ring
+const LEAF = new THREE.Group(); LEAF.add(mesh(box(0.05, 1.9, 0.8), "#5a3a22", { at: [0, 0.95, -0.4] })); LEAF.name = "door";
+add("W-hand-through-a-door", sir({ armR: [[30, 10], [70, 8]] }), (g, c, _cam, t) => { const w = c.sir.joint("wrR"), e = c.sir.joint("elR"); LEAF.position.set((w[0] + e[0]) / 2, 0, (w[2] + e[2]) / 2 + 0.4 - 0.2 * t); LEAF.rotation.y = 0.3 * t; g.add(LEAF);
+  if (AUDIT.on) AUDIT.rows.push({ id: LEAF.uuid, prop: "door", use: "pull", holder: "sir R", err: null, at: w, o: LEAF, grip: [w[0], w[1] + 0.2, w[2]], arm: true }); });
+// X. A THING THAT GOES WITHOUT ANYONE TAKING IT: a lantern on a box beside him, there until the 30th frame and then not
+const BOXL = mesh(box(0.4, 0.5, 0.4), "#6a4a2a", { at: [0.7, 0.25, -0.2] }), LANT = mesh(box(0.15, 0.25, 0.15), "#ffd27a", { at: [0.7, 0.62, -0.2] }); LANT.name = "lantern";
+add("X-lantern-gone", sir({}), (g, _c, _cam, t) => { g.add(BOXL); if (at1(t) < 30) g.add(LANT); });
 
 export const PROOF_FAULTS: Film = { id: "proof-faults", fps: 30, seconds: shots.length * LEN, range: [0, 999], sky: "#9cc8f0", world, shots, words: [], hook: { text: [], a: 0, b: 0 }, light: dayLight(DAY.from, [0, 1, 0]) };

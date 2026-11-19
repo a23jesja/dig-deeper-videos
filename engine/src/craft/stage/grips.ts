@@ -153,7 +153,9 @@ export const GAVEL: Prop = { name: "gavel", uses: { raised: { arm: A(130, 24, 16
   strike: { arm: A(46, 16, 80, 8), level: -25, ok: within(-75, 10, "a gavel that strikes points down at the table") } } };
 
 /** what the script check has seen in the frame it is reading: one row per thing in a hand, falling or set down */
-export const AUDIT: { on: boolean; rows: { id: string; prop: string; use: string; holder: string; err: string | null; at?: V3; /** the thing itself: the script check sees that a hand named in `holder` is on it */ o?: THREE.Object3D }[] } = { on: false, rows: [] };
+export const AUDIT: { on: boolean; rows: { id: string; prop: string; use: string; holder: string; err: string | null; at?: V3; /** the thing itself: the script check sees that a hand named in `holder` is on it */ o?: THREE.Object3D;
+  /** where on the thing the hand must be (a door's ring, a lid's knob): auditGrips holds the palm to it within 5 cm */ grip?: V3;
+  /** the thing moves on its own hinge or track (a door, a lid): the holder's arm is tried against it, only the hand may be in it (bodyCheck) */ arm?: boolean }[] } = { on: false, rows: [] };
 const pic = (cam: Cam) => { const fx = cam.look[0] - cam.pos[0], fz = cam.look[2] - cam.pos[2], n = Math.hypot(fx, fz) || 1; return (p: V3, q: V3): [number, number] => [((q[0] - p[0]) * -fz + (q[2] - p[2]) * fx) / n, q[1] - p[1]]; };
 const unit = (v: [number, number]): [number, number] => { const n = Math.hypot(v[0], v[1]) || 1; return [v[0] / n, v[1] / n]; };
 const chest = (a: Staged) => mix3(a.joint("pelvis"), a.joint("neck"), 0.75);
@@ -623,6 +625,10 @@ export const auditGrips = (film: Film, step?: number) => {
       const offPic = (p?: V3) => { if (!p) return false; const q = new THREE.Vector3(...p).project(lensOf); return q.z > 1 || Math.abs(q.x) > 1.08 || Math.abs(q.y) > 1.05; };
       for (const r of AUDIT.rows) { now.set(r.id, { holder: r.holder, prop: r.prop }); if (r.holder) held++; const gone = offPic(r.at) && (!r.o || (r.o.updateWorldMatrix(true, false), offPic(new THREE.Vector3().setFromMatrixPosition(r.o.matrixWorld).toArray() as V3)));
         if (r.err && !gone) bad.push(`${at}: ${r.holder}'s ${r.prop} (${r.use}): ${r.err}`);
+        // (a door or a lid pulled or pushed: the hand is on its handle, which the shot names; the shot library review: "Handen är aldrig på handtaget")
+        if (r.holder && /^(pull|push|open|shut|lift)$/.test(r.use)) { const [who, hs] = r.holder.split(" "), a = staged[who];
+          if (!r.grip) bad.push(`${at}: the ${r.prop} (${r.use}) is held without naming its handle (grip): a hand on a door or a lid goes on its handle`);
+          else if (a && hs) { const off = Math.min(...(hs.split("+") as Side[]).map((sd) => Math.hypot(...pic(cam)(palm(a, sd), r.grip!)))); if (off > 0.05) bad.push(`${at}: ${r.holder}'s hand is ${(off * 100).toFixed(0)} cm from the ${r.prop}'s handle in the picture: it is not on the handle`); } }
         // a thing that stands on nothing has a hand on it in every frame: one of the hands its holder names touches it in the picture
         else if (r.o && r.holder && !RESTS.has(r.use)) { let off = Infinity; for (const part of r.holder.split(" & ")) { const [who, hands] = part.split(" "), a = staged[who]; if (a && hands) off = Math.min(off, offThing(r.o, a, hands.split("+") as Side[], cam)); }
           if (off > 0.01 && off < Infinity) bad.push(`${at}: the ${r.prop} (${r.use}) has no hand on it: the nearest of ${r.holder} is ${(off * 100).toFixed(0)} cm off it (a thing that rests on nothing is in a hand in every frame)`); }

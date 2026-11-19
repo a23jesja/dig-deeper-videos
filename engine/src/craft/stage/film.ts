@@ -31,6 +31,9 @@ export type Shot = {
    *  not be in their hands here; the reason is said. Without it, a figure keeps what it held from its last shot in the same hands
    *  (grips.ts auditGrips, the continuity between shots: the independent review of gladiators v5) */
   newScene?: Record<string, string>;
+  /** where a figure looks in this shot (by name): a point, from and to (seconds into the shot); motionCheck.ts holds his head to it
+   *  within 25 degrees (the shot library review: a man pointing at a window looked at the lens) */
+  look?: Record<string, { at: V3; from?: number; to?: number; what?: string }>;
   cam: (t: number, u: number) => Cam;
   /** the middle and half the size of the area that gets sharp shadows; default: 9 m round what the camera looks at */
   sun?: { target: V3; reach: number };

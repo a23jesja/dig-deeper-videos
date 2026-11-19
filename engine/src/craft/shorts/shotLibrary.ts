@@ -30,8 +30,8 @@ const FRONT = lens(CABIN.at[0] + 0.3, Y + EYE, CABIN.at[2] + 3.6, 0, -1, -6, FOV
 const P = (o: Partial<Pose>) => o;
 /** every clip is a scene of its own: what Sir held in the clip before is not his here (grips.ts, the continuity between shots) */
 const OWN = { sir: "a clip of its own in the shot library: another place in the cabin, another moment" };
-const add = (id: string, m: MM, cam: (t: number, u: number) => Cam, things?: Shot["things"], o: { talk?: Word[]; rays?: boolean } = {}) => { const a = shots.length * LEN;
-  shots.push({ id, a, b: a + LEN, still: LEN / 2, newScene: OWN, cam, sun: { target: inCabin([0, 0, 0]), reach: 4 }, capsTop: 1500,
+const add = (id: string, m: MM, cam: (t: number, u: number) => Cam, things?: Shot["things"], o: { talk?: Word[]; rays?: boolean; look?: Shot["look"] } = {}) => { const a = shots.length * LEN;
+  shots.push({ id, a, b: a + LEN, still: LEN / 2, newScene: OWN, look: o.look, cam, sun: { target: inCabin([0, 0, 0]), reach: 4 }, capsTop: 1500,
     cast: (t, T) => [{ ...on("sir", SIR_D, m, t, Y, o.talk ? { talk: talk(o.talk, T) } : {}), noShade: true }],
     // (the door in the right-hand wall stands shut in every clip but its own, so that the doorway is never an empty hole)
     things: (g, c, t, T, cm) => { air(g, T, cm, { rays: o.rays }); if (id !== "open-a-door") g.add(SHUT()); things?.(g, c, t, T, cm); } }); };
@@ -65,7 +65,9 @@ const stand = (p: V3, heading: number, pose: Partial<Pose> = {}, cam = FRONT.cam
   //  card's drawing slid a planted foot 2-5 px a frame as the body came round, the body check's slide test)
   m.actAt(0.7, { head: [-40, 0, 0] }, 9, { in: 0.25, antic: 0.1, face: { brow: 0.9, lid: 0, wide: 0.6, mouth: 0.1 } });
   m.actAt(1.0, { twist: -30, head: [-40, -4, 0], armL: [[-6, 10], [4, 6]], armR: [[8, 10], [14, 6]] }, 9, { in: 0.6, antic: 0, over: 1.05, face: { brow: 0.9, lid: 0.05, wide: 0.4 } });
-  add("turn-and-look", m, (_t, u) => FRONT.push(0.1 * u)); }
+  // (what he looks at: the stern window on the left, from the moment he has turned)
+  const WIN: V3 = inCabin([-1.25, CABIN.winY + CABIN.winH / 2, -CABIN.d / 2]);
+  add("turn-and-look", m, (_t, u) => FRONT.push(0.1 * u), undefined, { look: { sir: { at: WIN, from: 1.6, what: "the stern window" } } }); }
 
 // 4. HOLD WITH BOTH HANDS. He holds an open book before his belly by its outer edges and reads, his head moving a little along the lines
 //    (held before his chest, the book's top edge came up over his chin and the bowl of his pipe)
@@ -83,7 +85,8 @@ const stand = (p: V3, heading: number, pose: Partial<Pose> = {}, cam = FRONT.cam
   const pt = GESTURES.point;
   m.actAt(-1, { head: [-20, 0, 0] }, 10, { in: 0.01, handL: "relaxed", handR: "relaxed", face: { brow: 0.4, lid: 0.15 } });
   m.actAt(0.7, upper(pt.pose("side", 0)), 9, { in: 0.4, antic: 0.1, over: 1.1, handL: "relaxed", handR: "point", face: { brow: 0.8, lid: 0.05, mouth: 0.25 } });
-  add("point", m, (_t, u) => FRONT.push(0.1 * u)); }
+  const WIN: V3 = inCabin([-1.25, CABIN.winY + CABIN.winH / 2, -CABIN.d / 2]);
+  add("point", m, (_t, u) => FRONT.push(0.1 * u), undefined, { look: { sir: { at: WIN, from: 1.4, what: "the window he points at" } } }); }
 
 // 6. REACT. He stands at ease; at a crash off to the side his hands fly to his head (the library's "oh no"), the eyes wide, the body
 //    jolting back a little
@@ -113,7 +116,7 @@ const stand = (p: V3, heading: number, pose: Partial<Pose> = {}, cam = FRONT.cam
   // (seen across the room, the cabin's open front showed the night beyond it at the picture's right edge: here a planked bulkhead closes it)
   const FRONT_WALL = once(() => { const w = mesh(box(CABIN.w + 0.24, CABIN.h, 0.12), "#6a4428", { at: inCabin([0, CABIN.h / 2, CABIN.d / 2 + 0.06]) }); return w; });
   add("open-a-door", m, (_t, u) => V.push(0.08 * u), (g, c, t) => { g.add(FRONT_WALL()); const d = cabinDoor(DZ, ang(t), true), o = DOOR_O(); o.position.copy(d.g.position); o.rotation.copy(d.g.rotation); o.children[0].scale.copy(d.g.children[0].scale); g.add(o);
-    if (AUDIT.on) AUDIT.rows.push({ id: o.uuid, prop: "door", use: "pull", holder: `${c.sir.name} R`, err: null, at: palm(c.sir, "R"), o }); }); }
+    if (AUDIT.on) AUDIT.rows.push({ id: o.uuid, prop: "door", use: "pull", holder: `${c.sir.name} R`, err: null, at: palm(c.sir, "R"), o, grip: d.handle, arm: true }); }); }
 
 export const SHOT_LIBRARY: Film = { id: "shot-library", fps: 30, seconds: shots.length * LEN, range: [20, 40], sky: "#0b1530", world: () => cabinNight(CABIN_SKY, { door: DZ }), shots, words: [], hook: { text: [], a: 0, b: 0 },
   grade: () => NIGHT_GRADE, light };

@@ -200,6 +200,9 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
   const queue = () => { const q = at(h, 180, 1.0), dx = -0.16 * b * h.sin; piece(k, seg([q.x, -0.3 * H], [q.x + dx, 0.2 * H], 0.11 * a, 0.045 * a), L.hair!.col); piece(k, seg([q.x + dx * 0.1, -0.27 * H], [q.x + dx * 0.24, -0.19 * H], 0.13 * a, 0.13 * a, 0, 0.3, true), "#2a2220"); };
   if (L.hair?.kind === "queue" && h.cos > -0.3) queue();
   piece(k, skull, skin);
+  // (the head's outline at its widest, a hat's brim further out, for the checks: motionCheck.ts holds the whole drawn head inside the
+  //  picture; round the joints alone, the back of a head in profile was cut by the edge and passed)
+  { const xs = skull.map((p) => p[0]), brim = HAT === "none" ? 0 : 0.16 * H; k.mark("headMin", Math.min(...xs) - brim, -0.6 * H); k.mark("headMax", Math.max(...xs) + brim, -0.6 * H); }
   if (L.hair) {
     // the hairline runs from the top of the brow back behind the ear down to the nape, so the hair follows the head in every view
     const tailed = L.hair.kind === "queue", kind = tailed || (o.hatOff && L.hair.kind === "back") || L.hair.kind === "messy" ? "short" : L.hair.kind, y0 = kind === "bald" ? -0.72 * H : -1.03 * H, patches: P2[][] = [];
@@ -313,7 +316,7 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
       const shut = lid > 0.86 || one, bow = (f.smile ?? 0) > 0.4 && !one ? -1 : 1;
       if (shut) k.line(spline([[q.x - rx * 0.86, yEye - bow * ry * 0.14], [q.x, yEye + bow * ry * 0.34], [q.x + rx * 0.86, yEye - bow * ry * 0.14]], false, 8), 6.4 * u);
       else { k.shape(ball, "#fffdf6"); k.clip(ball, () => {
-        const px = q.x + clamp(gz[0] * 0.5 + h.sin * 0.22 + ahead * 0.5, -0.56, 0.56) * rx, py = yEye + gz[1] * ry * 0.5; k.shape(ellPts(px, py, rx * 0.5, ry * 0.5), "#2a1f1a", 0); k.dot(px - rx * 0.17, py - ry * 0.2, r * 0.13, "#ffffff");
+        const px = q.x + clamp(gz[0] * 0.5 + h.sin * 0.22 + ahead * 0.5, -0.56, 0.56) * rx, py = yEye + gz[1] * ry * 0.5; k.mark(s < 0 ? "pupilA" : "pupilB", px, py); k.shape(ellPts(px, py, rx * 0.5, ry * 0.5), "#2a1f1a", 0); k.dot(px - rx * 0.17, py - ry * 0.2, r * 0.13, "#ffffff");
         if (lid > (STYLE.simple ? 0.35 : 0.01)) { const y = yEye - ry + 2 * ry * lid; k.shape([[q.x - rx - 2, yEye - ry - 2], [q.x + rx + 2, yEye - ry - 2], [q.x + rx + 2, y], [q.x - rx - 2, y]], STYLE.simple ? skin : shade(skin, 0.86), 0); if (!STYLE.simple) k.line([[q.x - rx - 2, y], [q.x + rx + 2, y]], 4.6 * u, LINE, "butt"); }
       });
       k.shape(ball, null); }

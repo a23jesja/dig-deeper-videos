@@ -433,10 +433,14 @@ export const bodyCheck = (film: Film, opt: { every?: number; shots?: string[] } 
         const mine = (o: Ob) => !!o.holder && o.holder.split(" & ").some((part) => part.split(" ")[0] === a.name);
         const holdSides = (o: Ob) => { const sides = new Set<string>(); for (const part of (o.holder ?? "").split(" & ")) { const [who, hands] = part.split(" "); if (who === a.name && hands) for (const h of hands.split("+")) sides.add(h); } return sides; };
         const list = [...solids.filter((o) => near(o) && o.aabb.max.y > floor + 0.05), ...held.filter(near)];
-        for (const o of list) { const isHeld = !!o.holder, own = isHeld && mine(o), sides = own ? holdSides(o) : new Set<string>(); pairs++;
+        // (a thing held that moves on its own hinge or track, a door or a lid, grips.ts `arm`: only the hand on its handle may be in it;
+        //  the arm that pulls it is tried against it like any solid. The shot library review: the door's leaf cut through the forearm)
+        const armObjs = new Set(th.rows.filter((r) => r.arm && r.o).map((r) => r.o!));
+        for (const o of list) { const isHeld = !!o.holder, own = isHeld && mine(o), sides = own ? holdSides(o) : new Set<string>(), armTest = own && !!o.root && armObjs.has(o.root); pairs++;
           // a soft thing held (a bundle, a sack) may be hugged by the holder's other arm; a hard or flat one (a sheet, a shield) may not
           if (own && (o.kind === "ball" || o.kind === "lathe")) continue;
-          for (const q of B.parts) { if (own && (!q.P.hand || sides.has(q.P.hand) || sides.size === 0)) continue;
+          for (const q of B.parts) { if (own && !armTest && (!q.P.hand || sides.has(q.P.hand) || sides.size === 0)) continue;
+            if (armTest && q.P.hand && sides.has(q.P.hand) && q.P.name.endsWith("hand")) continue;
             let worst = 0; for (const p of q.pts) { if (o.aabb.distanceToPoint(p) < q.r && seen(p, q.r)) { const pen = q.r - dist(o, p, q.r); if (pen > worst) worst = pen; } }
             if (worst > q.tol) note(`${s.id}|${a.name}|${q.P.name}|${o.mesh.uuid}`, { shot: s.id, who: a.name, kind: isHeld ? "held" : "solid", what: `${a.name}'s ${q.P.name} is inside ${isHeld ? `the thing in ${o.holder}'s hand, ` : ""}${describe(o)}` }, F, worst); } }
         // the garment below the pelvis (a robe, a dress, a coat's tails): the card draws it hanging along the spine down to its hem, sitting

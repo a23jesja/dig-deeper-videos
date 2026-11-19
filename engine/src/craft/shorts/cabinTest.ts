@@ -57,7 +57,7 @@ export const cabin3d = (sea?: TexImageSource): Film => { const x = CABIN.at[0] +
   const light: CardLight = { amb: "#7d7378", rim: 1.0, lights: [{ at: lampAt, color: "#ffa95e", power: 1.1, reach: 2.4 }, { at: winAt, color: "#8fb0ff", power: 0.6, reach: 4 }, { at: [winL[0], winAt[1], winL[2]], color: "#8fb0ff", power: 0.45, reach: 4 }] };
   return film("cabin-test-3d", () => cabinNight(CABIN_SKY, { sea }), V, x, y, z, (g, T, cam) => {
     const toL = Math.atan2(cam.pos[0] - lampAt[0], cam.pos[2] - lampAt[2]); glow(g, lampAt, 1.1, 1.1, T, toL, 2); glow(g, lampAt, 0.45, 0.45, T, toL, 5);
-    // the lantern's rays in the dusty air, spreading down and out over the dark beams and wall above their heads
+    // the lantern's rays in the dusty air, spreading down and out over the dark beams and the wall behind them (never over them)
     lampRays(g, lampAt, cam, 1.9, "#ffb268", 0.55, 2, 0.55);
     // (the dust round the lamp hangs above the heads, so that no mote lies on a face)
     dust(g, [lampAt[0], lampAt[1] + 0.02, lampAt[2] - 0.1], 0.42, 55, "#ffc890", T, 1);
@@ -65,4 +65,5 @@ export const cabin3d = (sea?: TexImageSource): Film => { const x = CABIN.at[0] +
     dust(g, [cam.pos[0] + 0.25, cam.pos[1] + 0.35, cam.pos[2] - 0.9], 0.35, 5, "#ffd2a0", T, 9, 0.05);
     // the moon pooled and gleaming on the polished floor behind their feet
     floorGlint(g, [inCabin([0.75, 0, -0.55])[0], y, inCabin([0.75, 0, -0.55])[2]], cam, "#9fb8ff", 0.8, 0.4);
-    foreBeam(g, cam, 0.7, 0.07); }, light); };
+    // (a thin band at the very top: thicker, the lantern rose into it as the lens went in and went dark)
+    foreBeam(g, cam, 0.7, 0.03); }, light); };

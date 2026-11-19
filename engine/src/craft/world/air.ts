@@ -61,15 +61,17 @@ export const foreBeam = (into: THREE.Object3D, cam: Cam, d: number, drop: number
 
 const RAYS = new Map<string, THREE.Texture>();
 /** Rays from a lamp: soft streaks of light spreading from it (the light you see falling through the bars of a lantern into dusty air),
- *  on a sheet facing the lens a little behind the lamp, `size` metres across, added onto what lies behind. `down` = how much the rays
+ *  on a sheet facing the lens, `size` metres across as seen at the lamp, added onto what lies behind. The sheet stands `behind` times as
+ *  far from the lens as the lamp, on the line through it (so that the rays still spread from the lamp in the picture): behind the
+ *  figures, whose dark clothes the added light would wash grey (the night cabin: Blackbeard's hat). `down` = how much the rays
  *  lean downward (0 = all round, 1 = only down and to the sides); they fade out with the distance from the lamp, so that they lie over
  *  the dark air round it and are faint by the time they reach a head below it */
-export const lampRays = (into: THREE.Object3D, at: V3, cam: Cam, size: number, color: string, alpha: number, seed = 0, down = 0.6) => {
+export const lampRays = (into: THREE.Object3D, at: V3, cam: Cam, size: number, color: string, alpha: number, seed = 0, down = 0.6, behind = 1.8) => {
   const key = `${seed}:${down}`; let t = RAYS.get(key);
   if (!t) { t = paint(`lamprays${key}`, 512, 512, (g, r) => { g.translate(256, 256); for (let i = 0; i < 26; i++) { const a = (i / 26) * Math.PI * 2 + r() * 0.2, dn = Math.max(0, Math.sin(a)), keep = 1 - down + down * dn;
       if (keep < 0.15) continue; const w = 0.03 + r() * 0.06, L = 170 + r() * 80, q = g.createLinearGradient(0, 0, Math.cos(a) * L, Math.sin(a) * L); q.addColorStop(0, `rgba(255,255,255,${0.55 * keep})`); q.addColorStop(1, "rgba(255,255,255,0)");
       g.fillStyle = q; g.beginPath(); g.moveTo(0, 0); g.lineTo(Math.cos(a - w) * L, Math.sin(a - w) * L); g.lineTo(Math.cos(a + w) * L, Math.sin(a + w) * L); g.closePath(); g.fill(); } }); RAYS.set(key, t); }
-  const m = new THREE.Mesh(new THREE.PlaneGeometry(size, size), new THREE.MeshBasicMaterial({ map: t, color, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, opacity: alpha }));
-  const toCam = new THREE.Vector3(...sub(cam.pos, at)).normalize(); m.position.set(at[0] - toCam.x * 0.15, at[1] - toCam.y * 0.15, at[2] - toCam.z * 0.15); m.lookAt(new THREE.Vector3(...cam.pos));
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(size * behind, size * behind), new THREE.MeshBasicMaterial({ map: t, color, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, opacity: alpha }));
+  const C = new THREE.Vector3(...cam.pos), p = new THREE.Vector3(...at).sub(C).multiplyScalar(behind).add(C); m.position.copy(p); m.lookAt(C);
   m.renderOrder = 5; m.userData.own = true; m.name = "lamp rays"; into.add(m); return m;
 };

@@ -241,6 +241,36 @@ however short, in the background as much as in front. "It is only in the backgro
 - **When in doubt it fails.** If the reviewer cannot tell whether a figure is behind or inside something, it is
   inside, and it fails.
 
+## Human bodies move like humans (Jesper 2026-11-19, after the gladiator Short)
+Arms, hands and legs were posed in ways no person moves: locked straight arms at shoulder height, hands turned the
+wrong way, gestures pointing at the speaker's own body, people sitting or squatting on nothing.
+**Built into the skeleton (code, every frame):**
+- **Joint limits.** Elbows and knees bend one way only, 0-150 degrees, and are never fully straight unless the
+  action needs it (reaching to the limit, a punch, a push). Shoulders, hips, wrists and the neck have real ranges;
+  a pose outside them fails the render.
+- **No T-pose.** An arm held straight out near shoulder height for more than half a second fails, unless the
+  character is pointing at or reaching for something it looks at.
+- **Weight and support.** Every standing figure has its weight on at least one foot under its hips. Sitting needs
+  a seat under the hips; kneeling puts a knee on the ground; crouching low needs a hand on the ground or a lean.
+**Gesture library (built once, approved as a sheet, then reused):** each gesture is written as a real person does
+it, with hand shape, palm direction, elbow bend, body turn and eye direction, for example:
+- **Point:** body turns toward the target, arm raised toward it with the elbow slightly bent, index finger out,
+  other fingers curled, eyes on the target.
+- **Explain:** both hands in front of the chest at waist height, palms up and open, moving outward on the stressed
+  words.
+- **Shrug:** shoulders up, elbows bent close to the body, palms up, head tilted.
+- **Arms crossed:** forearms over each other at the lower chest, hands tucked, never at shoulder height.
+- **Stop:** one arm forward with the elbow bent, palm out facing the other person, fingers up.
+- **Hand on shoulder, handshake, pull up, give and take:** both hands meet at the same point, elbows bent, bodies
+  close enough that no arm is locked straight.
+- **Kneel, sit, fall, get up, hold the head, cover the eyes, cheer, flex.**
+Every gesture fits the word it goes with; a character never gestures toward its own body when it talks about
+something else.
+**Review:** the reviewer checks every arm and hand in every shot: would a real person hold it like that? If you
+would have to twist your own arm to copy the pose, it fails.
+**Option, if the library still looks stiff:** Jesper records himself doing the gestures once on his phone, and a
+free pose-estimation model on the computer (licence read first) turns the video into skeleton motion.
+
 ## Held objects (Jesper 2026-11-17: the telescope and the pistol were held the wrong way round)
 An object in a hand must look held and used the way a person would, in every frame.
 - **Every prop has a grip and a direction in the shared code:** where the hand holds it (handle, stock, shaft),

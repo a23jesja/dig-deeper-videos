@@ -56,8 +56,8 @@ Black flag, Nero, the plank and Rome were built before the zero-tolerance body c
 | 26.90-27.47 | pull | mur | straight arm near shoulder height > 0.5 s | the right arm is held straight out near shoulder height for more than half a second (bent 3 degrees, the upper arm 60 degrees from hanging) |
 | 26.90-27.40 | pull | mur | elbow locked straight, arm lifted > 0.5 s | the right elbow is locked straight with the arm lifted for more than half a second |
 | 26.90-28.00 | pull | ret | straight arm near shoulder height > 0.5 s | the left arm is held straight out near shoulder height for more than half a second (bent 18 degrees, the upper arm 109 degrees from hanging) |
-| 27.47-28.00 | pull | ret | ? | the left upper arm is 68 degrees across the chest (at most 60) |
-| 27.77-28.00 | pull | mur | ? | the right upper arm is 63 degrees across the chest (at most 60) |
+| 27.47-28.00 | pull | ret | joint limit | the left upper arm is 68 degrees across the chest (at most 60) |
+| 27.77-28.00 | pull | mur | joint limit | the right upper arm is 63 degrees across the chest (at most 60) |
 | 27.47-28.00 | pull | a spectator (clap) at 0.6, 3.1, -12.8 | arm toward the lens, drawn over its own body | the left arm reaches toward the lens (0.54 leg lengths) and is drawn over its own body: the hand reads as on its own body |
 | 27.47-28.00 | pull | a spectator (clap) at 0.6, 3.1, -12.8 | arm toward the lens, drawn over its own body | the right arm reaches toward the lens (0.54 leg lengths) and is drawn over its own body: the hand reads as on its own body |
 | 28.00-30.33 | out | ret | a hand put on someone cannot be seen there | the left hand that is put on someone lies behind mur's right upper arm in the picture: the touch cannot be seen |
@@ -86,7 +86,7 @@ Black flag, Nero, the plank and Rome were built before the zero-tolerance body c
 | Time (s) | Shot | Figure | Test | What |
 |---|---|---|---|---|
 | 0.00-2.07 | complaint | v | straight arm near shoulder height > 0.5 s | the right arm is held straight out near shoulder height for more than half a second (bent 13 degrees, the upper arm 84 degrees from hanging) |
-| 3.67-5.53 | yes | old | ? | the right upper arm is 70 degrees across the chest (at most 60) |
+| 3.67-5.53 | yes | old | joint limit | the right upper arm is 70 degrees across the chest (at most 60) |
 | 3.67-5.53 | yes | old | low with nothing under him (seat, knee or hand) | he is as low as one who sits or squats (hips at 55 % of standing) with nothing under him: no seat, no knee or hand on the ground |
 | 3.67-5.17 | yes | sir | arm toward the lens, drawn over its own body | the right arm reaches toward the lens (0.55 leg lengths) and is drawn over his own body: its elbow cannot be seen and the hand reads as on his own body |
 | 3.67-4.93 | yes | sir | straight arm near shoulder height > 0.5 s | the right arm is held straight out near shoulder height for more than half a second (bent 9 degrees, the upper arm 83 degrees from hanging) |
@@ -203,7 +203,7 @@ Black flag, Nero, the plank and Rome were built before the zero-tolerance body c
 | 4.07-4.60 | flames2 | man | hand hovering beside another | the left hand is raised beside gran's hand 16 cm off it, for more than half a second: it neither touches him nor is away from him |
 | 4.27-5.53 | flames2 | sir | straight arm near shoulder height > 0.5 s | the left arm is held straight out near shoulder height for more than half a second (bent 28 degrees, the upper arm 110 degrees from hanging) |
 | 5.53-6.97 | notso | sir | hand hovering beside another | the right hand is raised beside nero's hand 15 cm off it, for more than half a second: it neither touches him nor is away from him |
-| 7.27-9.40 | tacitus | tac | ? | the right upper arm is 61 degrees across the chest (at most 60) |
+| 7.27-9.40 | tacitus | tac | joint limit | the right upper arm is 61 degrees across the chest (at most 60) |
 | 7.40-9.40 | tacitus | tac | straight arm near shoulder height > 0.5 s | the right arm is held straight out near shoulder height for more than half a second (bent 0 degrees, the upper arm 77 degrees from hanging) |
 | 8.27-9.40 | tacitus | tac | elbow locked straight, arm lifted > 0.5 s | the right elbow is locked straight with the arm lifted for more than half a second |
 | 9.90-9.93 | away | msg | joint limit | the left forearm bends the wrong way: its elbow's plane is turned 154 degrees (at most 120) |
@@ -223,14 +223,14 @@ Black flag, Nero, the plank and Rome were built before the zero-tolerance body c
 | 16.33-17.67 | six | run4 | low with nothing under him (seat, knee or hand) | he is as low as one who sits or squats (hips at 80 % of standing) with nothing under him: no seat, no knee or hand on the ground |
 | 17.67-18.87 | rumour | a | arm toward the lens, drawn over its own body | the left arm reaches toward the lens (0.49 leg lengths) and is drawn over his own body: its elbow cannot be seen and the hand reads as on his own body |
 | 18.73-20.30 | rumour | b | arm toward the lens, drawn over its own body | the left arm reaches toward the lens (0.42 leg lengths) and is drawn over his own body: its elbow cannot be seen and the hand reads as on his own body |
-| 22.23-23.67 | never | nero | ? | the right upper arm is 76 degrees across the chest (at most 60) |
+| 22.23-23.67 | never | nero | joint limit | the right upper arm is 76 degrees across the chest (at most 60) |
 | 24.00-24.70 | never | sir | straight arm near shoulder height > 0.5 s | the right arm is held straight out near shoulder height for more than half a second (bent 27 degrees, the upper arm 76 degrees from hanging) |
 | 24.70-25.43 | later | sir | straight arm near shoulder height > 0.5 s | the right arm is held straight out near shoulder height for more than half a second (bent 27 degrees, the upper arm 76 degrees from hanging) |
 | 25.60-27.37 | later | sir | arm toward the lens, drawn over its own body | the right arm reaches toward the lens (0.49 leg lengths) and is drawn over his own body: its elbow cannot be seen and the hand reads as on his own body |
 | 27.37-28.37 | cithara | nero | arm toward the lens, drawn over its own body | the right arm reaches toward the lens (0.62 leg lengths) and is drawn over his own body: its elbow cannot be seen and the hand reads as on his own body |
 | 27.37-27.90 | cithara | nero | straight arm near shoulder height > 0.5 s | the left arm is held straight out near shoulder height for more than half a second (bent 23 degrees, the upper arm 68 degrees from hanging) |
 | 27.37-27.90 | cithara | nero | straight arm near shoulder height > 0.5 s | the right arm is held straight out near shoulder height for more than half a second (bent 23 degrees, the upper arm 68 degrees from hanging) |
-| 29.27-30.20 | strings | nero | ? | the right upper arm is 71 degrees across the chest (at most 60) |
+| 29.27-30.20 | strings | nero | joint limit | the right upper arm is 71 degrees across the chest (at most 60) |
 | 29.90-30.03 | strings | nero | joint limit | the right forearm bends the wrong way: its elbow's plane is turned 130 degrees (at most 120) |
 
 ## pirate-plank

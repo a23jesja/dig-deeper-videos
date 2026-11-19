@@ -613,7 +613,7 @@ export const auditGrips = (film: Film, step?: number) => {
     for (const r of AUDIT.rows) if (r.holder && r.use !== "on" && r.use !== "joined") for (const part of r.holder.split(" & ")) { const [who, hands] = part.split(" "); m.get(who)?.set(r.prop, hands ?? ""); }
     return m; };
   const handName = (h: string) => h.split("+").map((x) => (x === "L" ? "left" : "right")).join(" and ");
-  try { for (const s of film.shots) { let prev = new Map<string, { holder: string; prop: string }>(); const ends: { first?: Map<string, Map<string, string>>; last?: Map<string, Map<string, string>>; staged?: Record<string, Staged> } = {};
+  try { for (const s of film.shots) { let prev = new Map<string, { holder: string; prop: string }>(); const headX = new Map<string, number>(); const ends: { first?: Map<string, Map<string, string>>; last?: Map<string, Map<string, string>>; staged?: Record<string, Staged> } = {};
     const times: number[] = []; if (step) for (let t = 0; t < s.b - s.a - 1e-6; t += step) times.push(t); else for (let F = Math.ceil(s.a * film.fps - 1e-6); F < s.b * film.fps - 1e-6; F++) times.push(Math.max(0, F / film.fps - s.a));
     for (const t of times) {
       AUDIT.rows = []; UNSEEN.length = 0; CROWD_LOG.on = true; CROWD_LOG.heads.length = 0; const cam = s.cam(t, t / (s.b - s.a)), g = new THREE.Group(), staged: Record<string, Staged> = {};
@@ -667,6 +667,8 @@ export const auditGrips = (film: Film, step?: number) => {
       for (const X of figs) { const H = heads.get(X.name)!, pts: [number, number][] = []; for (const [f, k] of [[0, 1], [0.5, 8], [0.95, 8]] as [number, number][]) for (let i = 0; i < k; i++) pts.push([H.c[0] + f * H.R * Math.cos((i * 2 * Math.PI) / k), H.c[1] + f * H.R * Math.sin((i * 2 * Math.PI) / k)]);
         if (H.away) continue;      // (a figure seen from behind shows no face)
         const outN = pts.filter(([x, y]) => x < 0 || x > 1080 || y < 0 || y > 1920).length;
+        // (a figure walking in or out through the side of the picture crosses it face and all: motionCheck.ts lets it, moving 2 px a frame or more)
+        const hx0 = headX.get(X.name), walking = hx0 !== undefined && Math.abs(H.c[0] - hx0) > 2 * (step ? step * film.fps : 1); headX.set(X.name, H.c[0]); if (walking && outN < pts.length) continue;
         if (outN === pts.length) continue;
         if (outN / pts.length >= 0.25) { const key = `${s.id}:${X.name}:edge`; if (!faceFlag.has(key)) { faceFlag.add(key); bad.push(`${at}: ${X.name}'s face is ${Math.round((100 * outN) / pts.length)} % outside the picture (the whole face in it, or the whole figure out)`); } continue; }
         let cov = 0, by = "";

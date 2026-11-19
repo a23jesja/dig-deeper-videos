@@ -160,8 +160,10 @@ export type CardLight = { amb: string; lights: { at: [number, number, number]; c
 let CARD_LIGHT: CardLight | null = null;
 export const setCardLight = (l: CardLight | null) => { CARD_LIGHT = l; };
 const rgb = (hex: string) => { const n = parseInt(hex.replace("#", ""), 16); return new THREE.Vector3(((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255); };
-const LIGHT_VS = `varying vec2 vUv; varying vec3 vW; varying vec3 vR; varying vec3 vN;
-  void main() { vUv = uv; vec4 w = modelMatrix * vec4(position, 1.0); vW = w.xyz; vR = normalize((modelMatrix * vec4(1.0, 0.0, 0.0, 0.0)).xyz);
+// (lookBack: where the light is looked up, moved back from where the card is drawn: a layer of fingers drawn in front of what the hand
+//  holds takes the light of the hand on its figure; looked up in front, the cabin's lamps lit it darker, a grey fist: the shot library review)
+const LIGHT_VS = `uniform vec3 lookBack; varying vec2 vUv; varying vec3 vW; varying vec3 vR; varying vec3 vN;
+  void main() { vUv = uv; vec4 w = modelMatrix * vec4(position, 1.0); vW = w.xyz + lookBack; vR = normalize((modelMatrix * vec4(1.0, 0.0, 0.0, 0.0)).xyz);
     vN = normalize((modelMatrix * vec4(0.0, 0.0, 1.0, 0.0)).xyz); gl_Position = projectionMatrix * viewMatrix * w; }`;
 const LIGHT_HEAD = `uniform sampler2D cardMap; uniform vec2 texel; uniform vec3 lp[3]; uniform vec3 lc[3]; uniform float lk[3]; uniform float lr[3]; uniform float lb[3]; uniform float lq[3]; uniform int ln;
   varying vec2 vUv; varying vec3 vW; varying vec3 vR; varying vec3 vN;
@@ -169,7 +171,7 @@ const LIGHT_HEAD = `uniform sampler2D cardMap; uniform vec2 texel; uniform vec3 
   float att(int i) { vec3 d = lp[i] - vW; float r = length(d); return 1.0 / (1.0 + (r * r) / (lr[i] * lr[i])); }`;
 const cardLight = (map: THREE.Texture, cw: number, ch: number, L: CardLight) => {
   const P = L.lights.slice(0, 3), pad = <T,>(a: T[], z: T) => [...a, z, z, z].slice(0, 3);
-  const u = () => ({ cardMap: { value: map }, texel: { value: new THREE.Vector2(1 / cw, 1 / ch) }, ln: { value: P.length }, amb: { value: rgb(L.amb) }, rimK: { value: L.rim ?? 0.8 },
+  const u = () => ({ lookBack: { value: new THREE.Vector3() }, cardMap: { value: map }, texel: { value: new THREE.Vector2(1 / cw, 1 / ch) }, ln: { value: P.length }, amb: { value: rgb(L.amb) }, rimK: { value: L.rim ?? 0.8 },
     lp: { value: pad(P.map((l) => new THREE.Vector3(...l.at)), new THREE.Vector3()) }, lc: { value: pad(P.map((l) => rgb(l.color)), new THREE.Vector3()) },
     lk: { value: pad(P.map((l) => l.power), 0) }, lr: { value: pad(P.map((l) => l.reach), 1) }, lb: { value: pad(P.map((l) => l.body ?? 1), 0) }, lq: { value: pad(P.map((l) => l.rimK ?? 1), 0) } });
   const common = { transparent: true, depthWrite: false, side: THREE.DoubleSide, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -6 };

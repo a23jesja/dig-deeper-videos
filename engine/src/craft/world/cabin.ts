@@ -48,7 +48,12 @@ export const cabin = (o: { rich?: boolean; door?: number } = {}) => {
       g.add(mesh(box(t, h, z0 + d / 2), wood, { at: [x, h / 2, (z0 - d / 2) / 2] }), mesh(box(t, h, d / 2 - z1), wood, { at: [x, h / 2, (z1 + d / 2) / 2] }), mesh(box(t, h - DOOR.h, DOOR.w), wood, { at: [x, (h + DOOR.h) / 2, dz] }));
       for (const zz of [z0, z1]) g.add(mesh(box(t + 0.04, DOOR.h + 0.06, 0.07), woodD, { at: [x, (DOOR.h + 0.06) / 2, zz], line: 0.5 }));
       g.add(mesh(box(t + 0.04, 0.07, DOOR.w + 0.14), woodD, { at: [x, DOOR.h + 0.035, dz], line: 0.5 }));
-      g.add(mesh(box(1.2, DOOR.h + 0.2, DOOR.w + 0.6), "#120b07", { at: [x + t / 2 + 0.62, (DOOR.h + 0.2) / 2, dz], line: 0, shadow: false })); }
+      // the passage beyond: a hollow of dark planks (floor, ceiling, far wall and side walls), deep enough for the leaf to swing out into
+      //  it (the shot library review: the door must open wide enough that the passage shows)
+      { const px = x + t / 2, D = 1.4, Wd = DOOR.w + 0.9, Hh = DOOR.h + 0.25, dark = "#2a1a10";
+        g.add(mesh(box(D, 0.06, Wd), dark, { at: [px + D / 2, -0.03, dz], line: 0, shadow: false }), mesh(box(D, 0.06, Wd), dark, { at: [px + D / 2, Hh, dz], line: 0, shadow: false }),
+          mesh(box(0.06, Hh, Wd), "#1c120b", { at: [px + D, Hh / 2, dz], line: 0, shadow: false }), mesh(box(D, Hh, 0.06), dark, { at: [px + D / 2, Hh / 2, dz - Wd / 2], line: 0, shadow: false }), mesh(box(D, Hh, 0.06), dark, { at: [px + D / 2, Hh / 2, dz + Wd / 2], line: 0, shadow: false })); }
+    }
     // (no panel strips beside a door: a figure stands there, and a thin strip behind him seemed to go through him)
     for (let z = -d / 2 + 0.55; z < d / 2; z += 0.8) { if (dz !== undefined && Math.abs(z - dz) < DOOR.w / 2 + 0.9) continue; g.add(mesh(box(0.02, h - 0.3, 0.05), woodD, { at: [s * (w / 2 - 0.07), h / 2, z], line: 0.3, shadow: false })); } }
   for (let z = -d / 2 + 0.35; z < d / 2; z += 0.78) g.add(mesh(box(w, 0.17, 0.2), woodD, { at: [0, h, z], line: 0.5 }));

@@ -73,7 +73,7 @@ export const fingers = (into: THREE.Group, a: Staged, sides: ("L" | "R")[], cam:
   const dist = Math.hypot(cam.pos[0] - m.position.x, cam.pos[1] - m.position.y, cam.pos[2] - m.position.z) || 1, k = 1 - d / dist, p0 = m.position.clone();
   m.position.set(cam.pos[0] + (m.position.x - cam.pos[0]) * k, cam.pos[1] + (m.position.y - cam.pos[1]) * k, cam.pos[2] + (m.position.z - cam.pos[2]) * k); m.scale.multiplyScalar(k);
   // the hand's shade is looked up where the hand is on its figure, not where it is drawn (in front): else the figure shades its own fist
-  const back = p0.sub(m.position); m.traverse((c) => { const L = ((c as THREE.Mesh).material as THREE.Material | undefined)?.userData?.lookBack as { value: THREE.Vector3 } | undefined; if (L) L.value.copy(back); });
+  const back = p0.sub(m.position); m.traverse((c) => { const mat = (c as THREE.Mesh).material as (THREE.Material & { uniforms?: Record<string, { value: unknown }> }) | undefined, L = mat?.userData?.lookBack as { value: THREE.Vector3 } | undefined; if (L) L.value.copy(back); const U = mat?.uniforms?.lookBack?.value; if (U instanceof THREE.Vector3) U.copy(back); });
   // the fingers take the light the way their figure does: a figure drawn without shade has fingers without shade (no grey glove)
   if (a.noShade) m.traverse((c) => { if ((c as THREE.Mesh).receiveShadow) c.visible = false; });
   m.userData.own = true; m.traverse((c) => { c.userData.own = true; }); into.add(m); return m;

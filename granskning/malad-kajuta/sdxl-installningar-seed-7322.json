@@ -1,0 +1,14 @@
+{
+  "prompt": "interior of a pirate captain's great cabin on an old wooden sailing ship at night, straight-on view at standing eye level from the open front of the room, dark wooden plank walls and heavy ceiling beams, three square stern windows in the back wall showing a deep blue moonlit sea and stars, a wooden table on the right with a glowing oil lantern, a rolled sea chart and a bottle, a wooden sea chest, warm orange lantern glow and cool blue moonlight, open empty plank floor in the middle of the room, hand-painted cartoon animation background, flat colours with soft painted shading, clean bold shapes, storybook painterly style, no people",
+  "negative": "people, person, figure, character, man, woman, face, hands, text, letters, writing, words, numbers, watermark, signature, logo, frame, border, photo, photorealistic, 3d render, blurry, noisy, grainy, cluttered floor, fisheye, distorted perspective",
+  "width": 768,
+  "height": 1344,
+  "steps": 32,
+  "cfg": 6.0,
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras",
+  "seed": 7322,
+  "checkpoint": "sd_xl_base_1.0.safetensors",
+  "denoise": 1.0,
+  "comfyui": "local, port 8188"
+}

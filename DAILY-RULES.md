@@ -309,6 +309,34 @@ and reactions make the viewer feel they are watching a show, not a list of facts
   that no [OWN] line carries a fact. The reviewer also asks: is it funny or alive enough, or does it read like a
   list?
 
+## Lessons from the best reference Shorts (Jesper 2026-11-19) - these override older rules where they differ
+Jesper studied a channel whose Shorts get hundreds of thousands of likes. Not one frame looked wrong. The reason is
+not better character animation: it is choosing what to animate. Learn the craft, copy nothing (no designs, scenes,
+lines or topics of theirs).
+**1. Simple acting, rich picture.** Characters do one simple, clear thing at a time: stand, sit on a seat, walk,
+hold a prop with both hands, look, turn, a small gesture. Avoid actions that need two bodies to fit together
+(handshakes, bandaging, carrying a person, pulling someone up, a hand on another's shoulder) unless the story is
+that action; then show it in a cut-away close-up of the hands or let it happen just off screen. Fewer characters
+per shot. If an action is hard to make look right, show its result instead.
+**2. The camera carries the motion.** Every shot moves: a slow push-in, a dolly along a corridor, a crane down
+from above into the street, a slow pan across a scene, a pull-back reveal. Smooth eased curves, no jerks. The
+characters may stand almost still while the camera moves.
+**3. Light tells the mood and picks out the subject.** One motivated light per shot (a lamp, a window, a fire, a
+sign) falls on the person who matters; the rest is darker. Visible light beams with dust in them, glow around lamps
+and signs, reflections on wet or polished floors, soft depth of field. One colour theme per scene (night blue with
+neon, warm amber inside, brown and gold underground), changing when the story turns. Night and interiors are
+encouraged: they make light work.
+**4. Every prop tells the story.** Readable signs and labels that name the place and the trick, objects of the
+trade, a small living detail (a cat, a bird, steam). Nothing generic.
+**5. Open on the strange action, as a statement.** Frame one shows someone doing the odd thing while the voice says
+it in the past tense: "He loaded the shotgun with gold." "He rolled the bomb into the enemy camp." Then the turn:
+"You see, ..." and the explanation. The question goes in the title, not in the first frame. This is hook type (d)
+in the hook lab and the default to test first.
+**6. Even pace.** Captions one word at a time, large, in the middle of the lower half, timed to the voice. The voice
+keeps one steady speed; add a short pause at every comma (about 0.15 s) and a longer one at every full stop (about
+0.35 s). Short sentences, no clauses inside clauses. Loudness normalised so the level never jumps.
+**7. The format is confirmed:** how a trick, loophole or scheme worked, told through one person doing it.
+
 ## The hook lab (Jesper 2026-11-17): most of the polish goes into the first five seconds
 The numbers so far: half the viewers swipe away in the first second, and a third of those who stay leave in the
 first quarter of the video. Those who get past it stay to the end. So the first five seconds get most of the work.

@@ -408,6 +408,15 @@ export const drawFingers = (L: Look) => (k: Ink, sk0: Sk, sides: Side[], whole?:
     const kind = whole?.[s0]; hand(k, W, len(sub(T, W)) > 6 ? angle(W, T) : angle(E, W), sk.P.hand, kind ?? "fist", L.skin, thumbFlip(sk, s), false, k.ol, "all"); }
   if (mir) k.g.restore();
 };
+/** the convex hull of points (Andrew's monotone chain), counter-clockwise */
+const convexHull = (p: P2[]): P2[] => { const q = [...p].sort((a, b) => a[0] - b[0] || a[1] - b[1]), cr = (o: P2, a: P2, b: P2) => (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]);
+  const lo: P2[] = [], hi: P2[] = []; for (const x of q) { while (lo.length >= 2 && cr(lo[lo.length - 2], lo[lo.length - 1], x) <= 0) lo.pop(); lo.push(x); }
+  for (const x of q.reverse()) { while (hi.length >= 2 && cr(hi[hi.length - 2], hi[hi.length - 1], x) <= 0) hi.pop(); hi.push(x); }
+  return [...lo.slice(0, -1), ...hi.slice(0, -1)]; };
+/** a clip region that is everything but the convex polygon `h`: a large frame round it, joined to `h` gone round the other way */
+const outside = (h: P2[]): P2[] => { const ar = h.reduce((s, p, i) => { const q = h[(i + 1) % h.length]; return s + p[0] * q[1] - q[0] * p[1]; }, 0), hh = ar > 0 ? [...h].reverse() : h, B = 1e5;
+  const frame: P2[] = [[-B, -B], [-B, B], [B, B], [B, -B]], fa = frame.reduce((s, p, i) => { const q = frame[(i + 1) % 4]; return s + p[0] * q[1] - q[0] * p[1]; }, 0), fr = fa > 0 ? frame : [...frame].reverse();      // (hh always goes round the negative way, the frame the positive)
+  return [...fr, fr[0], hh[0], ...hh.slice(1), hh[0], fr[0]]; };
 /** is p inside the closed outline `poly` */
 const within = (poly: P2[], p: P2) => { let i = false; for (let a = 0, b = poly.length - 1; a < poly.length; b = a++) { const [xa, ya] = poly[a], [xb, yb] = poly[b]; if (ya > p[1] !== yb > p[1] && p[0] < ((xb - xa) * (p[1] - ya)) / (yb - ya) + xa) i = !i; } return i; };
 export const drawCast = (L: Look) => {
@@ -430,10 +439,16 @@ const drawTrue = (L: Look) => (k: Ink, sk: Sk, o: FigOpts) => {
   const S = (l: number, a: number, onBack = false) => { const r = row(a), u = clamp(l / r[1], -1, 1); return F.Q(l, (onBack ? -r[3] : r[2]) * Math.sqrt(1 - u * u), a); };
   // the hem trails behind the move and swings past when it stops: the lower rows are pushed back along the way the figure faces
   const sw = (o.sway ?? 0) * sk.sin, hemAt = (i: number) => -sw * (i === 0 ? (L.skirt ? 46 : 26) : i === 1 ? (L.skirt ? 26 : 10) : L.skirt && i === 2 ? 10 : 0);
-  // (seated, the garment below the waist lies over the thighs: its depth there is the thigh's own, the cloth on the lap above and on the
-  //  seat below it, not the hanging robe's)
-  const lapRow = (r: number[]) => { if (r[0] >= 0 || !F.drape) return r; const t = L.leg[0] + 8; return [r[0], r[1], lerp(r[2], t, F.drape), lerp(r[3], t, F.drape)]; };
-  const outline = () => { const c = Math.abs(sk.cos), s = Math.abs(sk.sin), fr = sk.sin >= 0; return spline([...L.rows.map(lapRow).map(([a, w, df, db], i) => F.T(Math.hypot(w * c, (fr ? df : db) * s) + hemAt(i), a)), ...L.rows.map(lapRow).map(([a, w, df, db], i) => F.T(-Math.hypot(w * c, (fr ? db : df) * s) + hemAt(i), a)).reverse()], true, 5); };
+  // THE KNEE DRAPE (seated: frame's drape at half or more, and a garment that reaches below the waist): the torso is drawn down to the
+  // pelvis only, and below it the garment is one piece of cloth laid over both thighs and, past the knees, hanging down the shins, as far
+  // along the legs as the hem hangs below the pelvis standing (the same cloth: it does not get shorter for sitting down). Drawn as the hull
+  // round both legs' cloth (each a tube a little wider than the leg, flaring at the hem) and the waist; from the waist down it is laid over
+  // the torso's lower edge, so that there is no seam. (The review of the first drape sheet, 20 Nov: a white cushion on the near thigh with a
+  // notch at the waist, the far thigh bare, skin under the robe at the seat, the hem at the knee)
+  const lapOn = F.drape >= 0.5 && -L.rows[0][0] > 8 && !L.bare;
+  const rowsUp = (): number[][] => { if (!lapOn) return L.rows; const up = L.rows.filter((r) => r[0] > 0); return [[0, ...row(0).slice(1)], ...up]; };
+  /** the torso's outline; `open` = without its bottom edge (seated with the knee drape, where the lap's cloth goes on below it) */
+  const outline = (open = false) => { const c = Math.abs(sk.cos), s = Math.abs(sk.sin), fr = sk.sin >= 0, R = rowsUp(); return spline([...R.map(([a, w, df, db], i) => F.T(Math.hypot(w * c, (fr ? df : db) * s) + hemAt(i), a)), ...R.map(([a, w, df, db], i) => F.T(-Math.hypot(w * c, (fr ? db : df) * s) + hemAt(i), a)).reverse()], !open, 5); };
   // stripes down a piece of the trouser leg from p to q (its half-widths w0, w1), clipped to the piece
   const stripesOn = (p: P2, q: P2, w0: number, w1: number, colS: string) => { const poly = seg(p, q, w0, w1), d = unit(sub(q, p)), n: P2 = [-d[1], d[0]];
     k.clip(poly, () => { for (const f of [-0.62, -0.1, 0.42]) k.line([add(add(p, n, w0 * f), d, -20), add(add(q, n, w1 * f), d, 20)], Math.max(5, 0.24 * w0), colS, "butt"); }); k.shape(poly, null); };
@@ -482,11 +497,29 @@ const drawTrue = (L: Look) => (k: Ink, sk: Sk, o: FigOpts) => {
     pin(k, Sh, 8); pin(k, E, 7);
   };
   let chainEnds: { start: P2; bow: P2 } | null = null;
+  /** the knee drape (see lapOn): the cloth over the lap, from the waist down, in one piece */
+  const lapDrape = () => {
+    const hemLen = -L.rows[0][0], pts: P2[] = [], ring = (c: P2, r: number) => { for (let i = 0; i < 16; i++) { const q = (i / 16) * 2 * Math.PI; pts.push([c[0] + r * Math.cos(q), c[1] + r * Math.sin(q)]); } };
+    for (const sd of ["L", "R"] as Side[]) { const H = J("hip", sd), K = J("kn", sd), A = J("an", sd);
+      // (round the hip only the leg's own width and a little: wider, the cloth went down past the seat's top)
+      ring(H, L.leg[0] + 8);
+      if (hemLen > P.thigh) { ring(K, L.leg[1] + 12); ring(mid(K, A, Math.min(1, (hemLen - P.thigh) / P.shin)), L.leg[2] + 18); }
+      else ring(mid(H, K, hemLen / P.thigh), L.leg[1] + 14); }
+    // the waist, where the torso's piece ends: both its sides at the pelvis
+    const r0 = row(0), c = Math.abs(sk.cos), s2 = Math.abs(sk.sin), fr = sk.sin >= 0, lf = Math.hypot(r0[1] * c, (fr ? r0[2] : r0[3]) * s2), lb = Math.hypot(r0[1] * c, (fr ? r0[3] : r0[2]) * s2);
+    pts.push(F.T(lf, 0), F.T(-lb, 0));
+    const hull = convexHull(pts); piece(k, hull, L.coat, weave, F.tilt); return hull;
+  };
   const torso = () => {
     const top = L.rows[L.rows.length - 1][0], t = outline();
     piece(k, seg(F.T(0, top - 12), sk.j.skull, P.head * 0.12, P.head * 0.115, 0, 0.3, true), L.skin);
     if (L.cloak && back) piece(k, spline([S(-L.rows[3][1] * 0.9, top - 10, true), S(L.rows[3][1] * 0.9, top - 10, true), S(L.rows[1][1] * 1.05, L.rows[0][0] + 40, true), S(-L.rows[1][1] * 1.05, L.rows[0][0] + 40, true)], true, 4), L.cloak);
-    piece(k, t, L.bare ? L.skin : L.coat, weave, F.tilt);
+    // (seated with the knee drape: the lap's cloth first, then the torso over it with no shadow and no line along its bottom edge, so that
+    //  the cloth runs on from the waist without a seam)
+    // (and the torso's own side lines stop where they come onto the lap's cloth: inside it they read as a seam down the lap)
+    let offLap = (f: () => void) => f();
+    if (lapOn) { const hull = lapDrape(); offLap = (f) => k.clip(outside(hull), f); k.shape(t, L.coat, 0); if (weave) k.tweed(t, WEAVE, weave, F.tilt, 14, 2.4); offLap(() => k.line(outline(true), k.ol)); }
+    else piece(k, t, L.bare ? L.skin : L.coat, weave, F.tilt);
     k.clip(t, () => {
       // a striped (or checked) shirt: bands across the body, level in the figure's own frame; a check adds bands down it, on the
       // surface of the body so that they close up toward its sides
@@ -522,7 +555,7 @@ const drawTrue = (L: Look) => (k: Ink, sk: Sk, o: FigOpts) => {
         if (!back) for (const u of [0.42, 0.66, 0.9]) { const c = on(u, 0); for (const sx of [-1, 1]) { k.shape([[c[0] + sx * 15 - 9, c[1] - 2], [c[0] + sx * 15 + 9, c[1] - 2], [c[0] + sx * 20 + 9, c[1] - 42], [c[0] + sx * 20 - 9, c[1] - 42]], "#6a4428", k.ol * 0.6); k.dot(c[0] + sx * 20, c[1] - 45, 11, BRASS); }
           k.shape([[c[0] - 32, c[1] - 8], [c[0] + 32, c[1] - 8], [c[0] + 27, c[1] + 50], [c[0] - 27, c[1] + 50]], "#2e2016", k.ol * 0.7); } }
     });
-    k.shape(t, null);
+    if (lapOn) offLap(() => k.line(outline(true), k.ol)); else k.shape(t, null);
     // the neckerchief: a band round the throat, and in front its knot with two short ends hanging from it (seen from behind, its point
     // hangs down his back)
     if (L.scarf) { const nw = P.head * 0.14;

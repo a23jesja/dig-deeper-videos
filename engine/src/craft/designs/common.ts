@@ -30,20 +30,12 @@ export const LIGHT: P2 = [0.8, 0.45]; // which way the shadow lies on a part (th
  *  one thigh up and one down, is not a sitter) */
 export const seated = (sk: Sk) => { const lift = (sd: Side) => { const h = sk.v[`hip${sd}`], k = sk.v[`kn${sd}`], L = Math.hypot(k[0] - h[0], k[1] - h[1], k[2] - h[2]) || 1; return (Math.acos(clamp((h[1] - k[1]) / L, -1, 1)) * 180) / Math.PI; };
   return clamp((Math.min(lift("L"), lift("R")) - 35) / 40, 0, 1); };
-/** `drape` (default on): seated, the garment below the waist lies over the lap (the knee drape). A point below the pelvis is laid along
- *  the thighs, as foreshortened as the thighs are drawn, and past the knees down the shins, instead of hanging along the spine: a seated
- *  card that drew every coat tail and robe straight down drew it through the seat (Jesper, gladiators v5: "hans dress går igenom
- *  pallen"; proof control E). `drape: false` draws it as before (the proof's planted fault) */
+/** the torso's frame. `drape` (default on): the frame also says how far the figure sits (`drape`, 0..1), for the knee drape that
+ *  cast.ts draws over the lap; `drape: false` = never (the proof's planted fault, the garment straight down through the seat) */
 export const frame = (sk: Sk, drape = true) => {
-  const o = sk.j.pelvis, s = unit(sub(sk.j.neck, o)), n: P2 = [-s[1], s[0]], w = drape ? seated(sk) : 0, P = sk.P;
-  const mj = (a: string): P2 => { const l = sk.j[(a + "L") as Joint], r = sk.j[(a + "R") as Joint]; return [(l[0] + r[0]) / 2, (l[1] + r[1]) / 2]; };
-  const H = mj("hip"), K = mj("kn"), A = mj("an"), down: P2 = [-s[0], -s[1]];
-  /** the point `d` (design units) down the lap from the hips: along the thighs to the knee, then down the shins, and the way it runs there */
-  const lap = (d: number): { p: P2; dir: P2 } => { const [p0, p1, L0, d0] = d <= P.thigh ? [H, K, P.thigh, d] : [K, A, P.shin, d - P.thigh];
-    const v = sub(p1, p0), l = len(v), dir: P2 = l > 0.25 * L0 ? [v[0] / l, v[1] / l] : down; return { p: add(p0, v, Math.min(d0, L0 * 1.2) / L0), dir }; };
-  const T = (l: number, a: number): P2 => { const b: P2 = [o[0] + n[0] * l + s[0] * a, o[1] + n[1] * l + s[1] * a]; if (a >= 0 || w === 0) return b;
-    const { p, dir } = lap(-a), n2: P2 = [dir[1], -dir[0]], q: P2 = [p[0] + n2[0] * l, p[1] + n2[1] * l]; return [lerp(b[0], q[0], w), lerp(b[1], q[1], w)]; };
-  return { T, Q: (l: number, d: number, a: number) => T(l * sk.cos + d * sk.sin, a), tilt: Math.atan2(s[0], -s[1]) / (Math.PI / 180), o, s, n, drape: w };
+  const o = sk.j.pelvis, s = unit(sub(sk.j.neck, o)), n: P2 = [-s[1], s[0]];
+  const T = (l: number, a: number): P2 => [o[0] + n[0] * l + s[0] * a, o[1] + n[1] * l + s[1] * a];
+  return { T, Q: (l: number, d: number, a: number) => T(l * sk.cos + d * sk.sin, a), tilt: Math.atan2(s[0], -s[1]) / (Math.PI / 180), o, s, n, drape: drape ? seated(sk) : 0 };
 };
 /** the outline of a torso from rows [height above the pelvis, half-width seen from the front, depth in front of the spine, depth behind] */
 export const torsoPts = (sk: Sk, rows: number[][], smooth = true): P2[] => {

@@ -75,5 +75,8 @@ add("M-robe-through-the-seat", sitter("doc", DOCTOR_D, 1.72, TURN, false), seat(
 // N and O. CONTROLS in profile: Sir in his coat and the doctor in his robe, seated right, the drape on. The checks must pass them
 add("N-control-coat-profile", sitter("sir", SIR_D, 1.75, 90, true), seatAt(90, 0.1, 0.36));
 add("O-control-robe-profile", sitter("doc", DOCTOR_D, 1.72, 90, true), seatAt(90, 0.1, 0.35));
+// P. THE HEM'S LENGTH: the doctor standing at three quarters, so that the robe's length seated (L, O) can be held against it (the review,
+//    20 Nov: "Tyget blir inte kortare av att man sätter sig")
+add("P-robe-standing", { name: "doc", D: DOCTOR_D, h: 1.72, at: [0, 0, 0], heading: V.toward(0, 0, TURN), pose: { ...POSES.stand }, o: { handL: "relaxed", handR: "relaxed" } });
 
 export const PROOF_FAULTS: Film = { id: "proof-faults", fps: 30, seconds: shots.length * LEN, range: [0, 999], sky: "#9cc8f0", world, shots, words: [], hook: { text: [], a: 0, b: 0 }, light: dayLight(DAY.from, [0, 1, 0]) };

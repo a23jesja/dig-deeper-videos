@@ -21,7 +21,10 @@ export const inCabin = (p: V3): V3 => [CABIN.at[0] + p[0], CABIN.at[1] + p[1], C
 /** the cabin; `rich` = its wood with grain and shifting colour, and the floor, the table and the chest polished so that they catch
  *  the light (the night cabin, Jesper 19 Nov: "Trä med struktur och färgskiftningar i stället för slät brun yta, och blanka ytor som
  *  speglar ljuset"). Without it the cabin is as the Blackbeard Short has it */
-export const cabin = (o: { rich?: boolean } = {}) => {
+/** `door` = a doorway in the right-hand wall (+x), its middle this far along z: an opening 0.82 m wide and 1.92 m high in a frame, a dark
+ *  passage beyond it; the leaf itself is the shot's (cabinDoor), so that it can swing (the shot library's "open a door") */
+export const DOOR = { w: 0.82, h: 1.92 };
+export const cabin = (o: { rich?: boolean; door?: number } = {}) => {
   const { w, d, h, win, winW, winH, winY } = CABIN, g = new THREE.Group(), wood = "#6a4428", woodD = "#4a2e1c", t = 0.12, z0 = -d / 2;
   // the floor of broad planks
   const floor = mesh(box(w, 0.1, d), "#8a5a36", { at: [0, -0.05, 0] }); floor.userData.gloss = true; g.add(floor);
@@ -38,7 +41,16 @@ export const cabin = (o: { rich?: boolean } = {}) => {
   // a bench seat under the windows
   g.add(mesh(box(w - 0.3, 0.08, 0.42), woodD, { at: [0, 0.46, z0 + 0.27] }), mesh(box(w - 0.3, 0.42, 0.06), woodD, { at: [0, 0.21, z0 + 0.46], line: 0.5 }));
   // the side walls, panelled, and the beams overhead
-  for (const s of [-1, 1]) { g.add(mesh(box(t, h, d), wood, { at: [(s * w) / 2, h / 2, 0] })); for (let z = -d / 2 + 0.55; z < d / 2; z += 0.8) g.add(mesh(box(0.02, h - 0.3, 0.05), woodD, { at: [s * (w / 2 - 0.07), h / 2, z], line: 0.3, shadow: false })); }
+  for (const s of [-1, 1]) { const dz = s > 0 ? o.door : undefined;
+    if (dz === undefined) g.add(mesh(box(t, h, d), wood, { at: [(s * w) / 2, h / 2, 0] }));
+    else { const z0 = dz - DOOR.w / 2, z1 = dz + DOOR.w / 2, x = (s * w) / 2;
+      // the wall round the opening, its frame, and the dark passage beyond (a box closed on every side but the opening)
+      g.add(mesh(box(t, h, z0 + d / 2), wood, { at: [x, h / 2, (z0 - d / 2) / 2] }), mesh(box(t, h, d / 2 - z1), wood, { at: [x, h / 2, (z1 + d / 2) / 2] }), mesh(box(t, h - DOOR.h, DOOR.w), wood, { at: [x, (h + DOOR.h) / 2, dz] }));
+      for (const zz of [z0, z1]) g.add(mesh(box(t + 0.04, DOOR.h + 0.06, 0.07), woodD, { at: [x, (DOOR.h + 0.06) / 2, zz], line: 0.5 }));
+      g.add(mesh(box(t + 0.04, 0.07, DOOR.w + 0.14), woodD, { at: [x, DOOR.h + 0.035, dz], line: 0.5 }));
+      g.add(mesh(box(1.2, DOOR.h + 0.2, DOOR.w + 0.6), "#120b07", { at: [x + t / 2 + 0.62, (DOOR.h + 0.2) / 2, dz], line: 0, shadow: false })); }
+    // (no panel strips beside a door: a figure stands there, and a thin strip behind him seemed to go through him)
+    for (let z = -d / 2 + 0.55; z < d / 2; z += 0.8) { if (dz !== undefined && Math.abs(z - dz) < DOOR.w / 2 + 0.9) continue; g.add(mesh(box(0.02, h - 0.3, 0.05), woodD, { at: [s * (w / 2 - 0.07), h / 2, z], line: 0.3, shadow: false })); } }
   for (let z = -d / 2 + 0.35; z < d / 2; z += 0.78) g.add(mesh(box(w, 0.17, 0.2), woodD, { at: [0, h, z], line: 0.5 }));
   // the deck overhead, its underside level with the tops of the walls, a little wider and deeper than the room so that no seam shows
   g.add(mesh(box(w + t, 0.08, d + t), "#5a3a22", { at: [0, h + 0.04, -t / 2], line: 0.4, shadow: false }));
@@ -92,8 +104,8 @@ export const CABIN_NIGHT = { hang: [0.24, 2.02, 0.99] as V3, moon: [-1.5, 3.6, -
 //   just behind the two who stand before the table; slanted, the middle one crosses the gap between them and the outer ones show at the sides)
 //   (the moon stands high over the stern, so that its shafts fall steeply and reach the floor at the table's front edge, behind whoever
 //   stands before it: lower, they slanted over the figures and laid a blue haze on them; higher, the table hid them)
-export const cabinNight = (light: Sun, o: { sea?: TexImageSource } = {}) => {
-  const root = new THREE.Group(), c = cabin({ rich: true }); c.position.set(...CABIN.at); root.add(c);
+export const cabinNight = (light: Sun, o: { sea?: TexImageSource; door?: number } = {}) => {
+  const root = new THREE.Group(), c = cabin({ rich: true, door: o.door }); c.position.set(...CABIN.at); root.add(c);
   const W = (p: V3) => inCabin(p) as V3, y = CABIN.at[1], zb = CABIN.at[2] - CABIN.d / 2 - 2.6;
   // beyond the windows: the painted night sea (or a plain night blue without a picture)
   const sea = new THREE.MeshBasicMaterial({ color: o.sea ? "#ffffff" : "#16305e", toneMapped: false });
@@ -124,3 +136,20 @@ export const cabinNight = (light: Sun, o: { sea?: TexImageSource } = {}) => {
 };
 /** flagSea with the cabin beside it */
 export const cabinSea = () => { const root = flagSea(), c = cabin(); c.position.set(...CABIN.at); root.add(c); return root; };
+
+/** the door's leaf for the doorway in the right-hand wall (cabin `door`): planks in a frame with an iron ring handle, hinged on its front
+ *  edge (the +z side) and swung `open` degrees into the room. Returned with where its handle is now (in the world), for the hand */
+export const cabinDoor = (doorZ: number, open: number, /** hinged on the back edge (-z) instead of the front: it opens toward the room's open front */ back = false) => { const g = new THREE.Group(), { w, h } = { w: DOOR.w - 0.04, h: DOOR.h - 0.03 }, th = 0.05;
+  const leaf = new THREE.Group(); leaf.add(mesh(box(th, h, w), "#5a3a22", { at: [0, h / 2, -w / 2], line: 0.6 }));
+  for (const k of [0.25, 0.5, 0.75]) leaf.add(mesh(box(th + 0.006, h - 0.1, 0.012), "#3e2716", { at: [0, h / 2, -w * k], line: 0, shadow: false }));
+  for (const yy of [0.35, h - 0.35]) leaf.add(mesh(box(th + 0.01, 0.06, w - 0.06), "#3e2716", { at: [0, yy, -w / 2], line: 0.3, shadow: false }));
+  const HX = -th / 2 - 0.035, HY = 1.0, HZ = -w + 0.09;
+  leaf.add(mesh(box(0.05, 0.05, 0.012), "#2b2a33", { at: [HX + 0.01, HY, HZ], line: 0.3, shadow: false }));
+  leaf.name = "door"; g.add(leaf);
+  const hx = CABIN.w / 2 - 0.06 - th / 2, hz = back ? doorZ - DOOR.w / 2 + 0.02 : doorZ + DOOR.w / 2 - 0.02;
+  // (hinged at the back, the leaf is the same one turned half round: it reaches toward +z from its hinge and swings into the room the other way)
+  const turn = back ? Math.PI : 0; g.position.set(...inCabin([hx, 0, hz])); g.rotation.y = turn + (back ? -1 : 1) * (open * Math.PI) / 180;
+  if (back) leaf.scale.x = -1;
+  const a = g.rotation.y, hx2 = back ? -HX : HX, handle: V3 = [g.position.x + hx2 * Math.cos(a) + HZ * Math.sin(a), CABIN.at[1] + HY, g.position.z - hx2 * Math.sin(a) + HZ * Math.cos(a)];
+  return { g, handle };
+};

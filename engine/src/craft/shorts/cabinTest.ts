@@ -51,17 +51,20 @@ export const CABIN_SKY: Sun = { from: [-3, 1.75, 5], color: "#ffd9b0", power: 0.
  *  table, the lantern hung between and behind them as the room's light, the moon through the windows. On the figures: warm from the
  *  lantern's side, cold from the windows', a thin rim. In the air: dust in the lantern's light and in the moon's shafts, the lantern's
  *  glow, its gleam in the polished floor, and a beam close over the lens, out of focus */
-export const cabin3d = (sea?: TexImageSource): Film => { const x = CABIN.at[0] + 0.3, y = CABIN.at[1], z = CABIN.at[2] + 3.6, V = lens(x, y + EYE, z, 0, -1, 0, FOV);
+/** the night cabin's light and air as the approved cabin v5 has them (Jesper 19 Nov: the light standard for every scene): the card light
+ *  on the figures, and the air (the lantern's glow and rays, dust in its light and the moon's shafts, the moon on the floor, a beam over
+ *  the lens). Shared by the cabin test and the shot library */
+export const cabinV5 = () => { const y = CABIN.at[1];
   const hang = inCabin(CABIN_NIGHT.hang), lampAt: [number, number, number] = [hang[0], y + CABIN_NIGHT.hang[1], hang[2]];
   const win = inCabin([0.9, 0, -CABIN.d / 2]), winAt: [number, number, number] = [win[0], y + CABIN.winY + CABIN.winH / 2, win[2]], winL = inCabin([-1.25, 0, -CABIN.d / 2]);
   // (Jesper 19 Nov: "lika mörka som rummet där lyktan inte når, med varmt sken på lyktans sida och en tunn kall kant från fönstret": a
   // dark ground light like the room's shadows, the lamp warm on its side and falling off with the distance, the windows an edge only)
   const light: CardLight = { amb: "#3f3a45", rim: 1.0, lights: [{ at: lampAt, color: "#ffa95e", power: 1.25, reach: 1.7, rimK: 0.6 }, { at: winAt, color: "#8fb0ff", power: 0.75, reach: 4, body: 0 }, { at: [winL[0], winAt[1], winL[2]], color: "#8fb0ff", power: 0.6, reach: 4, body: 0 }] };
-  return film("cabin-test-3d", () => cabinNight(CABIN_SKY, { sea }), V, x, y, z, (g, T, cam) => {
+  const air = (g: THREE.Group, T: number, cam: Cam, o: { beam?: boolean; rays?: boolean } = {}) => {
     // (the halo 0.8 m across: at 1.1 its outer light reached Blackbeard's face, and dust and light never cross a face)
     const toL = Math.atan2(cam.pos[0] - lampAt[0], cam.pos[2] - lampAt[2]); glow(g, lampAt, 0.8, 0.8, T, toL, 2); glow(g, lampAt, 0.45, 0.45, T, toL, 5);
     // the lantern's rays in the dusty air, spreading down and out over the dark beams and the wall behind them (never over them)
-    lampRays(g, lampAt, cam, 1.9, "#ffb268", 0.55, 2, 0.55);
+    if (o.rays !== false) lampRays(g, lampAt, cam, 1.9, "#ffb268", 0.55, 2, 0.55);
     // (the dust round the lamp hangs above the heads, so that no mote lies on a face)
     dust(g, [lampAt[0], lampAt[1] + 0.02, lampAt[2] - 0.1], 0.42, 55, "#ffc890", T, 1);
     for (const wx of CABIN.win) { const w0 = inCabin([wx, 0, -CABIN.d / 2 + 0.5]); dust(g, [w0[0], y + 0.9, w0[2]], 0.45, 26, "#b6c8ff", T, 3 + wx, 0.014); }
@@ -69,6 +72,9 @@ export const cabin3d = (sea?: TexImageSource): Film => { const x = CABIN.at[0] +
     // the moon pooled and gleaming on the polished floor behind their feet
     floorGlint(g, [inCabin([0.75, 0, -0.55])[0], y, inCabin([0.75, 0, -0.55])[2]], cam, "#9fb8ff", 0.8, 0.4);
     // (a thin band at the very top: thicker, the lantern rose into it as the lens went in and went dark)
-    foreBeam(g, cam, 0.7, 0.03); }, light, true); };
+    if (o.beam !== false) foreBeam(g, cam, 0.7, 0.03); };
+  return { lampAt, light, air }; };
+export const cabin3d = (sea?: TexImageSource): Film => { const x = CABIN.at[0] + 0.3, y = CABIN.at[1], z = CABIN.at[2] + 3.6, V = lens(x, y + EYE, z, 0, -1, 0, FOV), { light, air } = cabinV5();
+  return film("cabin-test-3d", () => cabinNight(CABIN_SKY, { sea }), V, x, y, z, (g, T, cam) => air(g, T, cam), light, true); };
 //   (noShade: the figures take their light from the card light alone. The world's hard shadows on them drew the moon's window as a red
 //   square on Blackbeard's coat and hard edges of their own hats over Sir's cheek and Blackbeard's beard)

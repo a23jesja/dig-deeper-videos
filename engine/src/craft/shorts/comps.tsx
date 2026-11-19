@@ -79,3 +79,6 @@ export const GESTURE_SHEET_FRAMES = Math.round(GESTURE_SHEET.seconds * GESTURE_S
 import { PROOF_FAULTS } from "./proofFaults";
 export const ProofFaults: React.FC = () => <Stage film={PROOF_FAULTS} />;
 export const PROOF_FAULTS_FRAMES = Math.round(PROOF_FAULTS.seconds * PROOF_FAULTS.fps);
+import { SHOT_LIBRARY } from "./shotLibrary";
+export const ShotLibrary: React.FC = () => <Stage film={SHOT_LIBRARY} />;
+export const SHOT_LIBRARY_FRAMES = Math.round(SHOT_LIBRARY.seconds * SHOT_LIBRARY.fps);

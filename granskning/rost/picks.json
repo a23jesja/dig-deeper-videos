@@ -1,0 +1,800 @@
+{
+ "A": [
+  {
+   "sentence": "Why did pirates fly black flags?",
+   "take": 0,
+   "heard": "Why did pirates fly black flags?",
+   "wer": 0.0,
+   "inner_silence_s": 0.05,
+   "commas_set": 0,
+   "others": [
+    {
+     "take": 1,
+     "heard": "Why did pirates fly black flags?",
+     "wer": 0.0,
+     "clip": false,
+     "inner_silence_s": 0.05
+    },
+    {
+     "take": 2,
+     "heard": "Why did pirates fly black flags?",
+     "wer": 0.0,
+     "clip": false,
+     "inner_silence_s": 0.05
+    }
+   ]
+  },
+  {
+   "sentence": "To say: we will kill you all?",
+   "take": 0,
+   "heard": "to say we will kill you all.",
+   "wer": 0.0,
+   "inner_silence_s": 0.11,
+   "commas_set": 1,
+   "others": [
+    {
+     "take": 1,
+     "heard": "to say we will kill you all.",
+     "wer": 0.0,
+     "clip": false,
+     "inner_silence_s": 0.11
+    },
+    {
+     "take": 2,
+     "heard": "to say we will kill you all.",
+     "wer": 0.0,
+     "clip": false,
+     "inner_silence_s": 0.11
+    }
+   ]
+  },
+  {
+   "sentence": "No.",
+   "take": 0,
+   "heard": "No!",
+   "wer": 0.0,
+   "inner_silence_s": 0.04,
+   "commas_set": 0,
+   "others": [
+    {
+     "take": 1,
+     "heard": "No!",
+     "wer": 0.0,
+     "clip": false,
+     "inner_silence_s": 0.04
+    },
+    {
+     "take": 2,
+     "heard": "No!",
+     "wer": 0.0,
+     "clip": false,
+     "inner_silence_s": 0.04
+    }
+   ]
+  },
+  {
+   "sentence": "It was an offer.",
+   "take": 0,
+   "heard": "It was an offer.",
+   "wer": 0.0,
+   "inner_silence_s": 0.06,
+   "commas_set": 0,
+   "others": [
+    {
+     "take": 1,
+     "heard": "It was an offer.",
+     "wer": 0.0,
+     "clip": false,
+     "inner_silence_s": 0.06
+    },
+    {
+     "take": 2,
+     "heard": "It was an offer.",
+     "wer": 0.0,
+     "clip": false,
+     "inner_silence_s": 0.06
+    }
+   ]
+  },
+  {
+   "sentence": "Pirates often crept close under a friendly flag, then ran up the black one.",
+   "take": 0,
+   "heard": "Pirates often crept close under a friendly flag, then ran up the black one.",
+   "wer": 0.0,
+   "inner_silence_s": 0.38,
+   "commas_set": 1,
+   "others": [
+    {
+     "take": 1,
+     "heard": "Pirates often crept close under a friendly flag, then ran up the black one.",
+     "wer": 0.0,
+     "clip": false,
+     "inner_silence_s": 0.38
+    },
+    {
+     "take": 2,
+     "heard": "Pirates often crept close under a friendly flag, then ran up the black one.",
+     "wer": 0.0,
+     "clip": false,
+     "inner_silence_s": 0.38
+    }
+   ]
+  },
+  {
+   "sentence": "It meant: give up now, and we show mercy.",
+   "take": 0,
+   "heard": "It meant give up now and we show mercy.",
+   "wer": 0.0,
+   "inner_silence_s": 0.24,
+   "commas_set": 2,
+   "others": [
+    {
+     "take": 1,
+     "heard": "It meant give up now and we show mercy.",
+     "wer": 0.0,
+     "clip": false,
+     "inner_silence_s": 0.24
+    },
+    {
+     "take": 2,
+     "heard": "It meant give up now and we show mercy.",
+     "wer": 0.0,
+     "clip": false,
+     "inner_silence_s": 0.24
+    }
+   ]
+  },
+  {
+   "sentence": "Some ships gave up at the very sight.",
+   "take": 0,
+   "heard": "Some ships gave up at the very site.",
+   "wer": 0.125,
+   "inner_silence_s": 0.27,
+   "commas_set": 0,
+   "others": [
+    {
+     "take": 1,
+     "heard": "Some ships gave up at the very site.",
+     "wer": 0.125,
+     "clip": false,
+     "inner_silence_s": 0.27
+    },
+    {
+     "take": 2,
+     "heard": "Some ships gave up at the very site.",
+     "wer": 0.125,
+     "clip": false,
+     "inner_silence_s": 0.27
+    }
+   ]
+  },
+  {
+   "sentence": "Fight back, and a red flag might follow: no mercy.",
+   "take": 0,
+   "heard": "Fight back and a red flag might follow, no mercy.",
+   "wer": 0.0,
+   "inner_silence_s": 0.28,
+   "commas_set": 2,
+   "others": [
+    {
+     "take": 1,
+     "heard": "Fight back and a red flag might follow, no mercy.",
+     "wer": 0.0,
+     "clip": false,
+     "inner_silence_s": 0.28
+    },
+    {
+     "take": 2,
+     "heard": "Fight back and a red flag might follow, no mercy.",
+     "wer": 0.0,
+     "clip": false,
+     "inner_silence_s": 0.28
+    }
+   ]
+  },
+  {
+   "sentence": "The black flag was meant to win the treasure without a fight.",
+   "take": 0,
+   "heard": "The black flag was meant to win the treasure without a fight.",
+   "wer": 0.0,
+   "inner_silence_s": 0.28,
+   "commas_set": 0,
+   "others": [
+    {
+     "take": 1,
+     "heard": "The black flag was meant to win the treasure without a fight.",
+     "wer": 0.0,
+     "clip": false,
+     "inner_silence_s": 0.28
+    },
+    {
+     "take": 2,
+     "heard": "The black flag was meant to win the treasure without a fight.",
+     "wer": 0.0,
+     "clip": false,
+     "inner_silence_s": 0.28
+    }
+   ]
+  },
+  {
+   "sentence": "One crew had no black flag, so they hoisted a dirty tarpaulin and fired a gun.",
+   "take": 0,
+   "heard": "One crew had no black flag, so they hoisted a dirty tarpaulin and fired a gun.",
+   "wer": 0.0,
+   "inner_silence_s": 0.32,
+   "commas_set": 1,
+   "others": [
+    {
+     "take": 1,
+     "heard": "One crew had no black flag, so they hoisted a dirty tarpaulin and fired a gun.",
+     "wer": 0.0,
+     "clip": false,
+     "inner_silence_s": 0.32
+    },
+    {
+     "take": 2,
+     "heard": "One crew had no black flag, so they hoisted a dirty tarpaulin and fired a gun.",
+     "wer": 0.0,
+     "clip": false,
+     "inner_silence_s": 0.32
+    }
+   ]
+  },
+  {
+   "sentence": "It worked.",
+   "take": 0,
+   "heard": "It worked.",
+   "wer": 0.0,
+   "inner_silence_s": 0.02,
+   "commas_set": 0,
+   "others": [
+    {
+     "take": 1,
+     "heard": "It worked.",
+     "wer": 0.0,
+     "clip": false,
+     "inner_silence_s": 0.02
+    },
+    {
+     "take": 2,
+     "heard": "It worked.",
+     "wer": 0.0,
+     "clip": false,
+     "inner_silence_s": 0.02
+    }
+   ]
+  }
+ ],
+ "B": [
+  {
+   "sentence": "Why did pirates fly black flags?",
+   "take": 2,
+   "heard": "Why did pirates fly black flags?",
+   "wer": 0.0,
+   "inner_silence_s": 0.12,
+   "commas_set": 0,
+   "others": [
+    {
+     "take": 0,
+     "heard": "Why did pirates fly black flags?",
+     "wer": 0.0,
+     "clip": false,
+     "inner_silence_s": 0.09
+    },
+    {
+     "take": 1,
+     "heard": "Why did pirates fly black flags?",
+     "wer": 0.0,
+     "clip": false,
+     "inner_silence_s": 0.87
+    }
+   ]
+  },
+  {
+   "sentence": "To say: we will kill you all?",
+   "take": 2,
+   "heard": "to say we will kill you all?",
+   "wer": 0.0,
+   "inner_silence_s": 0.09,
+   "commas_set": 1,
+   "others": [
+    {
+     "take": 0,
+     "heard": "to say, we will kill you all.",
+     "wer": 0.0,
+     "clip": false,
+     "inner_silence_s": 0.81
+    },
+    {
+     "take": 1,
+     "heard": "to say, we will kill you all.",
+     "wer": 0.0,
+     "clip": false,
+     "inner_silence_s": 0.59
+    }
+   ]
+  },
+  {
+   "sentence": "No.",
+   "take": 0,
+   "heard": "No.",
+   "wer": 0.0,
+   "inner_silence_s": 0.05,
+   "commas_set": 0,
+   "others": [
+    {
+     "take": 1,
+     "heard": "No.",
+     "wer": 0.0,
+     "clip": false,
+     "inner_silence_s": 0.08
+    },
+    {
+     "take": 2,
+     "heard": "No.",
+     "wer": 0.0,
+     "clip": false,
+     "inner_silence_s": 0.06
+    }
+   ]
+  },
+  {
+   "sentence": "It was an offer.",
+   "take": 2,
+   "heard": "It was an offer.",
+   "wer": 0.0,
+   "inner_silence_s": 0.07,
+   "commas_set": 0,
+   "others": [
+    {
+     "take": 0,
+     "heard": "It was an offer.",
+     "wer": 0.0,
+     "clip": false,
+     "inner_silence_s": 0.1
+    },
+    {
+     "take": 1,
+     "heard": "It was an offer.",
+     "wer": 0.0,
+     "clip": false,
+     "inner_silence_s": 0.24
+    }
+   ]
+  },
+  {
+   "sentence": "Pirates often crept close under a friendly flag, then ran up the black one.",
+   "take": 1,
+   "heard": "Pirates often crept close under a friendly flag, then ran up the black one.",
+   "wer": 0.0,
+   "inner_silence_s": 0.41,
+   "commas_set": 1,
+   "others": [
+    {
+     "take": 0,
+     "heard": "Pirates often crept close under a friendly flag, then ran up the black one.",
+     "wer": 0.0,
+     "clip": false,
+     "inner_silence_s": 0.54
+    },
+    {
+     "take": 2,
+     "heard": "Pirates often crept close under a friendly flag, then ran up the black one.",
+     "wer": 0.0,
+     "clip": false,
+     "inner_silence_s": 0.67
+    }
+   ]
+  },
+  {
+   "sentence": "It meant: give up now, and we show mercy.",
+   "take": 0,
+   "heard": "It meant, give up now and we show mercy.",
+   "wer": 0.0,
+   "inner_silence_s": 0.59,
+   "commas_set": 2,
+   "others": [
+    {
+     "take": 1,
+     "heard": "It meant, give up now and we show mercy.",
+     "wer": 0.0,
+     "clip": false,
+     "inner_silence_s": 1.17
+    },
+    {
+     "take": 2,
+     "heard": "It meant, give up now and we show mercy.",
+     "wer": 0.0,
+     "clip": false,
+     "inner_silence_s": 0.79
+    }
+   ]
+  },
+  {
+   "sentence": "Some ships gave up at the very sight.",
+   "take": 1,
+   "heard": "Some ships gave up at the very sight.",
+   "wer": 0.0,
+   "inner_silence_s": 0.09,
+   "commas_set": 0,
+   "others": [
+    {
+     "take": 0,
+     "heard": "Some ships gave up at the very sight.",
+     "wer": 0.0,
+     "clip": false,
+     "inner_silence_s": 0.06
+    },
+    {
+     "take": 2,
+     "heard": "Some ships gave up at the very sight.",
+     "wer": 0.0,
+     "clip": false,
+     "inner_silence_s": 0.05
+    }
+   ]
+  },
+  {
+   "sentence": "Fight back, and a red flag might follow: no mercy.",
+   "take": 2,
+   "heard": "Fight back, and a red flag might follow. No mercy.",
+   "wer": 0.0,
+   "inner_silence_s": 0.43,
+   "commas_set": 2,
+   "others": [
+    {
+     "take": 0,
+     "heard": "Fight back, and a red flag might follow. No mercy.",
+     "wer": 0.0,
+     "clip": false,
+     "inner_silence_s": 0.76
+    },
+    {
+     "take": 1,
+     "heard": "Fight back, and a red flag might follow. No mercy.",
+     "wer": 0.0,
+     "clip": false,
+     "inner_silence_s": 0.61
+    }
+   ]
+  },
+  {
+   "sentence": "The black flag was meant to win the treasure without a fight.",
+   "take": 2,
+   "heard": "The Black Flag was meant to win the treasure without a fight.",
+   "wer": 0.0,
+   "inner_silence_s": 0.16,
+   "commas_set": 0,
+   "others": [
+    {
+     "take": 0,
+     "heard": "The Black Flag was meant to win the treasure without a fight.",
+     "wer": 0.0,
+     "clip": false,
+     "inner_silence_s": 0.13
+    },
+    {
+     "take": 1,
+     "heard": "The Black Flag was meant to win the treasure without a fight.",
+     "wer": 0.0,
+     "clip": false,
+     "inner_silence_s": 0.05
+    }
+   ]
+  },
+  {
+   "sentence": "One crew had no black flag, so they hoisted a dirty tarpaulin and fired a gun.",
+   "take": 0,
+   "heard": "One crew had no black flag, so they hoisted a dirty tarpaulin and fired a gun.",
+   "wer": 0.0,
+   "inner_silence_s": 0.23,
+   "commas_set": 1,
+   "others": [
+    {
+     "take": 1,
+     "heard": "One crew had no black flag, so they hoisted a dirty tarpaulin and fired a gun.",
+     "wer": 0.0,
+     "clip": false,
+     "inner_silence_s": 0.58
+    },
+    {
+     "take": 2,
+     "heard": "One crew had no black flag, so they hoisted a dirty tarpaulin and fired a gun.",
+     "wer": 0.0,
+     "clip": false,
+     "inner_silence_s": 0.07
+    }
+   ]
+  },
+  {
+   "sentence": "It worked.",
+   "take": 0,
+   "heard": "It worked.",
+   "wer": 0.0,
+   "inner_silence_s": 0.11,
+   "commas_set": 0,
+   "others": [
+    {
+     "take": 1,
+     "heard": "It worked.",
+     "wer": 0.0,
+     "clip": false,
+     "inner_silence_s": 0.07
+    },
+    {
+     "take": 2,
+     "heard": "It worked.",
+     "wer": 0.0,
+     "clip": false,
+     "inner_silence_s": 0.04
+    }
+   ]
+  }
+ ],
+ "C": [
+  {
+   "sentence": "Why did pirates fly black flags?",
+   "take": 2,
+   "heard": "Why did pirates fly black flags?",
+   "wer": 0.0,
+   "inner_silence_s": 0.04,
+   "commas_set": 0,
+   "others": [
+    {
+     "take": 0,
+     "heard": "Why did pirates fly black flags?",
+     "wer": 0.0,
+     "clip": false,
+     "inner_silence_s": 0.05
+    },
+    {
+     "take": 1,
+     "heard": "Why did pirates fly black flags?",
+     "wer": 0.0,
+     "clip": false,
+     "inner_silence_s": 0.02
+    }
+   ]
+  },
+  {
+   "sentence": "To say: we will kill you all?",
+   "take": 2,
+   "heard": "to say, we will kill you all?",
+   "wer": 0.0,
+   "inner_silence_s": 0.23,
+   "commas_set": 1,
+   "others": [
+    {
+     "take": 0,
+     "heard": "to say, we will kill you all?",
+     "wer": 0.0,
+     "clip": false,
+     "inner_silence_s": 0.33
+    },
+    {
+     "take": 1,
+     "heard": "to say, we will kill you all?",
+     "wer": 0.0,
+     "clip": false,
+     "inner_silence_s": 0.21
+    }
+   ]
+  },
+  {
+   "sentence": "No.",
+   "take": 0,
+   "heard": "No.",
+   "wer": 0.0,
+   "inner_silence_s": 0.15,
+   "commas_set": 0,
+   "others": [
+    {
+     "take": 1,
+     "heard": "No. That.",
+     "wer": 1.0,
+     "clip": true,
+     "inner_silence_s": 0.13
+    },
+    {
+     "take": 2,
+     "heard": "No, but like.",
+     "wer": 2.0,
+     "clip": false,
+     "inner_silence_s": 0.13
+    }
+   ]
+  },
+  {
+   "sentence": "It was an offer.",
+   "take": 2,
+   "heard": "It was an offer.",
+   "wer": 0.0,
+   "inner_silence_s": 0.0,
+   "commas_set": 0,
+   "others": [
+    {
+     "take": 0,
+     "heard": "It was an offer.",
+     "wer": 0.0,
+     "clip": false,
+     "inner_silence_s": 0.01
+    },
+    {
+     "take": 1,
+     "heard": "It was an offer.",
+     "wer": 0.0,
+     "clip": false,
+     "inner_silence_s": 0.01
+    }
+   ]
+  },
+  {
+   "sentence": "Pirates often crept close under a friendly flag, then ran up the black one.",
+   "take": 0,
+   "heard": "Pirates often crept close under a friendly flag, then ran at the black one.",
+   "wer": 0.071,
+   "inner_silence_s": 0.05,
+   "commas_set": 1,
+   "others": [
+    {
+     "take": 1,
+     "heard": "Pirates often crept close under a friendly flag, then ran up the black one.",
+     "wer": 0.0,
+     "clip": true,
+     "inner_silence_s": 0.12
+    },
+    {
+     "take": 2,
+     "heard": "Pirates often crept close under a friendly flag, then ran up the black one.",
+     "wer": 0.0,
+     "clip": true,
+     "inner_silence_s": 0.26
+    }
+   ]
+  },
+  {
+   "sentence": "It meant: give up now, and we show mercy.",
+   "take": 0,
+   "heard": "It meant, give up now, and we show mercy.",
+   "wer": 0.0,
+   "inner_silence_s": 0.19,
+   "commas_set": 2,
+   "others": [
+    {
+     "take": 1,
+     "heard": "It meant, give up now, and we show mercy.",
+     "wer": 0.0,
+     "clip": true,
+     "inner_silence_s": 0.16
+    },
+    {
+     "take": 2,
+     "heard": "It meant give up now and we show mercy.",
+     "wer": 0.0,
+     "clip": false,
+     "inner_silence_s": 0.08
+    }
+   ]
+  },
+  {
+   "sentence": "Some ships gave up at the very sight.",
+   "take": 2,
+   "heard": "Some ships gave up at the very sight.",
+   "wer": 0.0,
+   "inner_silence_s": 0.09,
+   "commas_set": 0,
+   "others": [
+    {
+     "take": 0,
+     "heard": "Some ships gave up at the very site.",
+     "wer": 0.125,
+     "clip": false,
+     "inner_silence_s": 0.05
+    },
+    {
+     "take": 1,
+     "heard": "Some ships gave up at the very site.",
+     "wer": 0.125,
+     "clip": false,
+     "inner_silence_s": 0.11
+    }
+   ]
+  },
+  {
+   "sentence": "Fight back, and a red flag might follow: no mercy.",
+   "take": 1,
+   "heard": "Fight back and a red flag might follow, no mercy.",
+   "wer": 0.0,
+   "inner_silence_s": 0.17,
+   "commas_set": 2,
+   "others": [
+    {
+     "take": 0,
+     "heard": "Fight back, and a red flag might follow. No mercy.",
+     "wer": 0.0,
+     "clip": true,
+     "inner_silence_s": 0.16
+    },
+    {
+     "take": 2,
+     "heard": "Fight back, and a red flag might follow. No mercy.",
+     "wer": 0.0,
+     "clip": false,
+     "inner_silence_s": 0.13
+    }
+   ]
+  },
+  {
+   "sentence": "The black flag was meant to win the treasure without a fight.",
+   "take": 0,
+   "heard": "The Black Flag was meant to win the treasure without a fight.",
+   "wer": 0.0,
+   "inner_silence_s": 0.05,
+   "commas_set": 0,
+   "others": [
+    {
+     "take": 1,
+     "heard": "The Black Flag was meant to win the treasure without a fight.",
+     "wer": 0.0,
+     "clip": true,
+     "inner_silence_s": 0.06
+    },
+    {
+     "take": 2,
+     "heard": "The Black Flag was meant to win the treasure without a fight.",
+     "wer": 0.0,
+     "clip": false,
+     "inner_silence_s": 0.07
+    }
+   ]
+  },
+  {
+   "sentence": "One crew had no black flag, so they hoisted a dirty tarpaulin and fired a gun.",
+   "take": 0,
+   "heard": "One crew had no black flag, so they hoisted a dirty tarpaulin and fired a gun.",
+   "wer": 0.0,
+   "inner_silence_s": 0.01,
+   "commas_set": 1,
+   "others": [
+    {
+     "take": 1,
+     "heard": "One crew had no black flag, so they hoisted a dirty tarpaulin and fired a gun.",
+     "wer": 0.0,
+     "clip": false,
+     "inner_silence_s": 0.11
+    },
+    {
+     "take": 2,
+     "heard": "One crew had no black flag, so they hoisted a dirty tarpaulin and fired a gun.",
+     "wer": 0.0,
+     "clip": false,
+     "inner_silence_s": 0.21
+    }
+   ]
+  },
+  {
+   "sentence": "It worked.",
+   "take": 1,
+   "heard": "It worked.",
+   "wer": 0.0,
+   "inner_silence_s": 0.06,
+   "commas_set": 0,
+   "others": [
+    {
+     "take": 0,
+     "heard": "It worked.",
+     "wer": 0.0,
+     "clip": false,
+     "inner_silence_s": 0.12
+    },
+    {
+     "take": 2,
+     "heard": "It worked!",
+     "wer": 0.0,
+     "clip": false,
+     "inner_silence_s": 0.04
+    }
+   ]
+  }
+ ]
+}

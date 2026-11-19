@@ -1,0 +1,61 @@
+{
+ "sentences": [
+  {
+   "i": 0,
+   "text": "Why did pirates fly black flags?",
+   "line": "hook"
+  },
+  {
+   "i": 1,
+   "text": "To say: we will kill you all?",
+   "line": "guess"
+  },
+  {
+   "i": 2,
+   "text": "No.",
+   "line": "offer"
+  },
+  {
+   "i": 3,
+   "text": "It was an offer.",
+   "line": "offer"
+  },
+  {
+   "i": 4,
+   "text": "Pirates often crept close under a friendly flag, then ran up the black one.",
+   "line": "creep"
+  },
+  {
+   "i": 5,
+   "text": "It meant: give up now, and we show mercy.",
+   "line": "meant"
+  },
+  {
+   "i": 6,
+   "text": "Some ships gave up at the very sight.",
+   "line": "sight"
+  },
+  {
+   "i": 7,
+   "text": "Fight back, and a red flag might follow: no mercy.",
+   "line": "red"
+  },
+  {
+   "i": 8,
+   "text": "The black flag was meant to win the treasure without a fight.",
+   "line": "answer"
+  },
+  {
+   "i": 9,
+   "text": "One crew had no black flag, so they hoisted a dirty tarpaulin and fired a gun.",
+   "line": "tarp"
+  },
+  {
+   "i": 10,
+   "text": "It worked.",
+   "line": "worked"
+  }
+ ],
+ "takes": 3,
+ "describe": "A warm, dry, slightly smug English gentleman in his fifties, telling a strange true story to a friend. Clear, unhurried, natural pauses, a hint of amusement."
+}

@@ -44,7 +44,7 @@ title.py (19 November, on version 5), the title "Did gladiators really fight to 
 - ONE FINGER UP: 80/100, no word repeated from the title.
 
 ## Phone copy
-`gladiators-death-v5-telefon.mp4` (md5 PHONE_MD5): 1080x1920, H.264 High, AAC 320 kbit/s, under 29 MB.
+`gladiators-death-v5-telefon.mp4` (md5 a28e920e): 1080x1920, H.264 High, AAC 320 kbit/s, under 29 MB.
 
 ## What changed from version 4 (Jesper's list, 19 November)
 The voice, the story, the timing and the captions are as in version 4.

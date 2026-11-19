@@ -3,6 +3,30 @@
 Applies to every production session for the Sir Digsworth channel, on top of README.md and GROWTH.md.
 This replaces the earlier "2 Shorts per day about news and trends" rule.
 
+## THE QUALITY GATE (Jesper 2026-11-19) - read this first, it overrides everything below
+Jesper scrapped the animal-trials Short: characters sat in the air beside the bench, hand movements were wrong
+again, and the topic (weevils) meant nothing to most people. Rules alone have not stopped the same faults, so the
+way of working changes. Nothing is built or sent that does not pass all six gates.
+1. **Topic gate.** Jesper approves the topic before any script. A topic passes only if a 12-year-old understands
+   in one sentence why it is surprising, using words everyone knows (pirates, Romans, Vikings, samurai, knights,
+   Egypt, the Wild West, famous prisons, spies, famous con men). No specialist words (weevil, quartermaster,
+   prize counter) in the title, the hook or the first ten seconds.
+2. **Shot library gate.** Videos may only use shot types Jesper has approved as a short test clip: for example
+   stand and talk, walk across, turn and look, hold a prop with both hands, point, react, sit on a seat, push a
+   door. A shot type that is not approved is not used, and the script is written around what is approved. Sitting
+   is not approved until its test clip is.
+3. **Proof gate.** Before the checks may approve anything, the build deliberately makes three faults (a figure
+   sitting in the air above a seat, an arm locked straight out, a foot inside a sofa) and shows that the checks
+   stop every one. This is repeated whenever a check or a set changes.
+4. **Risk sheet gate.** Before the full render, Jesper gets one image with every moment where a figure touches
+   something: sits, leans, holds, gives, points, stands next to furniture. Built only after his yes.
+5. **Voice gate.** The voice chosen in the voice test, one sentence at a time, with pauses, plain short sentences
+   a listener understands the first time.
+6. **Review gate.** The reviewer approves only what it can prove: per shot it lists every figure and every contact
+   and the check result. Every fault Jesper finds after an approval goes into granskning/regressions.md and gets
+   a code check before the next video.
+Until gates 2, 3 and 5 exist, no new Short is built. A few days without videos is better than more of these.
+
 ## Goal
 Within one year: about 1 million long-video views a month, enough for at least 50,000 SEK a month from ads and
 memberships. (Estimate: 0.6-1.6 million views at 3-8 USD per 1,000. Shorts alone would need 60-150 million.)

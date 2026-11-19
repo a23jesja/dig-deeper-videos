@@ -48,3 +48,24 @@ DAILY-RULES "The look: the emu Short". Characters are drawn in code by `src/vide
 - Test film: composition `Titanic3Test` (`Titanic3Test.tsx`, `titanic3Scenes.ts`, set in `deckset.ts`), layout check
   `scripts/kit_check.mjs` (a standing figure measures 1.7 m to the top of the head, face centre at 1.42 m).
 - toon.ts fixes for Sir Digsworth: monocle on the eye to the left as the viewer sees him, cap peak as wide as the cap.
+
+## Painted images: where they may be used (Jesper's decision, 19 November 2026)
+After the painted-cabin test (granskning/malad-kajuta/), Jesper chose 3D for the films. Locally painted images may be used in three places only:
+- opening shots where the camera only glides in;
+- thumbnails;
+- sky and sea outside windows and openings.
+
+The images come from SDXL base 1.0 (CreativeML Open RAIL++-M) in the local ComfyUI. The depth layers come from Depth Anything V2 **Small** (Apache-2.0). Base and Large are CC-BY-NC and are never used.
+
+The rules for making them:
+- everything runs locally, with no credits and no cloud;
+- read the licence before any download;
+- record the prompt, seed and settings beside each picture (`scripts/comfy_paint.py` writes them);
+- no text and no figures in a painting.
+
+The tools:
+- `scripts/comfy_paint.py`: paints from a job file in `scripts/paint-jobs/`.
+- `scripts/depth_layers.py`: splits a painting into three depth layers.
+- `world/painted.ts`: places the layers in front of the lens.
+
+The checks cannot see what is painted, so painted parts are reviewed by eye against the foreground and nothing-through-anything rules.

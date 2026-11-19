@@ -13,7 +13,8 @@ import { POSES, type Pose } from "../rig";
 import { SIR_D, BLACKBEARD_D } from "../looks";
 import type { Design } from "../designs/common";
 
-const SECONDS = 5, FOV = 50, EYE = 1.35, PUSH = 0.45;
+// (the push of 0.3 m keeps both whole with a hand's width or more to each edge at its end: at 0.45 Blackbeard's hat came 30 px from it)
+const SECONDS = 5, FOV = 50, EYE = 1.35, PUSH = 0.3;
 /** the night: a warm light from the front left (the lantern's side, high), a blue night sky light, a dark floor */
 //   (low, 17 degrees: in the 3D cabin a higher light falls on them through the beams and their faces go grey, so that the two versions
 //   would not light them alike)
@@ -28,7 +29,7 @@ const two = (x: number, y: number, z: number, V: ReturnType<typeof lens>, t: num
     // standing at ease, the head turned to the other and back a little as he listens (no gesture: the gesture library is not approved yet)
     const pose: Pose = { ...POSES.stand, head: [look + 4 * Math.sin(t * 1.3 + off), 2, 0] };
     return { name, D, h, at: p, heading: V.toward(p[0], p[2], off), pose, o: {} }; };
-  return [fig("sir", SIR_D, 1.75, at(-0.4, 0), 22, 12), fig("bb", BLACKBEARD_D, 1.92, at(0.36, -0.1), -18, -10)];
+  return [fig("sir", SIR_D, 1.75, at(-0.44, 0), 22, 12), fig("bb", BLACKBEARD_D, 1.92, at(0.32, -0.1), -18, -10)];
 };
 const film = (id: string, world: () => THREE.Group, V: ReturnType<typeof lens>, x: number, y: number, z: number, extra?: (g: THREE.Group, T: number, cam: Cam) => void): Film => ({
   id, fps: 30, seconds: SECONDS, range: [4, 6], sky: "#0b1530", world, words: [], hook: { text: [], a: 0, b: 0 },

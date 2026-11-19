@@ -32,7 +32,8 @@ const P = (o: Partial<Pose>) => o;
 const OWN = { sir: "a clip of its own in the shot library: another place in the cabin, another moment" };
 const add = (id: string, m: MM, cam: (t: number, u: number) => Cam, things?: Shot["things"], o: { talk?: Word[]; rays?: boolean; look?: Shot["look"] } = {}) => { const a = shots.length * LEN;
   shots.push({ id, a, b: a + LEN, still: LEN / 2, newScene: OWN, look: o.look, cam, sun: { target: inCabin([0, 0, 0]), reach: 4 }, capsTop: 1500,
-    cast: (t, T) => [{ ...on("sir", SIR_D, m, t, Y, o.talk ? { talk: talk(o.talk, T) } : {}), noShade: true }],
+    // (the words' times are the clip's own: read against the film's time, every clip after the first kept its mouth shut)
+    cast: (t) => [{ ...on("sir", SIR_D, m, t, Y, o.talk ? { talk: talk(o.talk, t) } : {}), noShade: true }],
     // (the door in the right-hand wall stands shut in every clip but its own, so that the doorway is never an empty hole)
     things: (g, c, t, T, cm) => { air(g, T, cm, { rays: o.rays }); if (id !== "open-a-door") g.add(SHUT()); things?.(g, c, t, T, cm); } }); };
 const SHUT = once(() => noShade(cabinDoor(DZ, 0, true).g));
@@ -171,7 +172,7 @@ const onStool = (g: THREE.Group) => { const b = BOTTLE(); b.position.set(STOOL_A
   const a = shots.length * LEN;
   shots.push({ id: "sit", a, b: a + LEN, still: LEN / 2, newScene: OWN, cam: (_t, u) => FRONT.push(0.1 * u), sun: { target: inCabin([0, 0, 0]), reach: 4 }, capsTop: 1500,
     cast: (t, T) => { const k = gest(t); return [{ name: "sir", D: SIR_D, h: H, at: p, heading: hd, noShade: true, pose: { ...POSES.stand, ...SIT, armL: LAP, armR: mixA(LAP, UPR, k), head: [-6 + 4 * Math.sin(t * 1.3), 3 + 2 * Math.sin(t * 0.9), 0] },
-      o: { handL: "relaxed", handR: k > 0.4 ? "open" : "relaxed", face: { mouth: talk(W, T), brow: 0.4 + 0.3 * k, lid: 0.15, smile: 0.4 } } }]; },
+      o: { handL: "relaxed", handR: k > 0.4 ? "open" : "relaxed", face: { mouth: talk(W, t), brow: 0.4 + 0.3 * k, lid: 0.15, smile: 0.4 } } }]; },
     things: (g, _c, _t, T, cm) => { air(g, T, cm); g.add(SHUT()); g.add(SEAT()); } }); }
 
 export const SHOT_LIBRARY: Film = { id: "shot-library", fps: 30, seconds: shots.length * LEN, range: [20, 40], sky: "#0b1530", world: () => cabinNight(CABIN_SKY, { door: DZ }), shots, words: [], hook: { text: [], a: 0, b: 0 },

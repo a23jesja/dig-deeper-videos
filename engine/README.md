@@ -93,3 +93,13 @@ What every new scene has:
 - **In the air:** visible beams with dust in them (`world/air.ts`).
 
 **Dust and light never cross a face.** The body check fails if a dust mote, or a patch of added light (a glow, rays, a shaft, a gleam), lies nearer the lens than a face and is drawn over it, on any frame. A glow is measured as drawn: a round out to three quarters of its half-size.
+
+## The gesture library is approved (Jesper, 19 November 2026: "Ja till gestbladet")
+`stage/gestures.ts` and the sheet (`shorts/gestureSheet.ts`, granskning/gestblad, commit df9573f) are approved. Films use these gestures.
+
+The limits written on the sheet hold:
+- the hand over the eyes is shown only from the side or obliquely from the side, 65 degrees or more;
+- the flex is shown from the front or obliquely, 55 degrees, never straight side-on;
+- kneeling, kneeling with a hand on the ground, and getting up read best three-quarter from the front;
+- the stick on the shoulder is shown only from the front; from the side the stick points down;
+- the handshake, pulling someone up and the hand on a shoulder are avoided. When the story is that action, it is shown as a close-up of the hands or as its result (lessons from the reference Shorts, 1).

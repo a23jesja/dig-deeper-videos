@@ -154,14 +154,16 @@ const shadeMat = (map: THREE.Texture, toSun: THREE.Vector3) => {
  *    - the second adds a thin edge of light along the outline on the side that faces each light (a rim).
  *  `reach` = metres at which a light has fallen to half; `rim` = how strong the edges are (0 = none). Colours as on the screen.
  *  The Stage sets it per shot (film.light / shot.light); without it the cards are as they always were */
-export type CardLight = { amb: string; lights: { at: [number, number, number]; color: string; power: number; reach: number }[]; rim?: number };
+/** (per light: `body` = how much it lights the figure's side turned to it, `rimK` = how strong its edge is; 1 when left out. A window's
+ *  moonlight is a thin cold edge only: body 0) */
+export type CardLight = { amb: string; lights: { at: [number, number, number]; color: string; power: number; reach: number; body?: number; rimK?: number }[]; rim?: number };
 let CARD_LIGHT: CardLight | null = null;
 export const setCardLight = (l: CardLight | null) => { CARD_LIGHT = l; };
 const rgb = (hex: string) => { const n = parseInt(hex.replace("#", ""), 16); return new THREE.Vector3(((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255); };
 const LIGHT_VS = `varying vec2 vUv; varying vec3 vW; varying vec3 vR; varying vec3 vN;
   void main() { vUv = uv; vec4 w = modelMatrix * vec4(position, 1.0); vW = w.xyz; vR = normalize((modelMatrix * vec4(1.0, 0.0, 0.0, 0.0)).xyz);
     vN = normalize((modelMatrix * vec4(0.0, 0.0, 1.0, 0.0)).xyz); gl_Position = projectionMatrix * viewMatrix * w; }`;
-const LIGHT_HEAD = `uniform sampler2D cardMap; uniform vec2 texel; uniform vec3 lp[3]; uniform vec3 lc[3]; uniform float lk[3]; uniform float lr[3]; uniform int ln;
+const LIGHT_HEAD = `uniform sampler2D cardMap; uniform vec2 texel; uniform vec3 lp[3]; uniform vec3 lc[3]; uniform float lk[3]; uniform float lr[3]; uniform float lb[3]; uniform float lq[3]; uniform int ln;
   varying vec2 vUv; varying vec3 vW; varying vec3 vR; varying vec3 vN;
   float A(vec2 o) { return texture2D(cardMap, vUv + o * texel).a; }
   float att(int i) { vec3 d = lp[i] - vW; float r = length(d); return 1.0 / (1.0 + (r * r) / (lr[i] * lr[i])); }`;
@@ -169,20 +171,20 @@ const cardLight = (map: THREE.Texture, cw: number, ch: number, L: CardLight) => 
   const P = L.lights.slice(0, 3), pad = <T,>(a: T[], z: T) => [...a, z, z, z].slice(0, 3);
   const u = () => ({ cardMap: { value: map }, texel: { value: new THREE.Vector2(1 / cw, 1 / ch) }, ln: { value: P.length }, amb: { value: rgb(L.amb) }, rimK: { value: L.rim ?? 0.8 },
     lp: { value: pad(P.map((l) => new THREE.Vector3(...l.at)), new THREE.Vector3()) }, lc: { value: pad(P.map((l) => rgb(l.color)), new THREE.Vector3()) },
-    lk: { value: pad(P.map((l) => l.power), 0) }, lr: { value: pad(P.map((l) => l.reach), 1) } });
+    lk: { value: pad(P.map((l) => l.power), 0) }, lr: { value: pad(P.map((l) => l.reach), 1) }, lb: { value: pad(P.map((l) => l.body ?? 1), 0) }, lq: { value: pad(P.map((l) => l.rimK ?? 1), 0) } });
   const common = { transparent: true, depthWrite: false, side: THREE.DoubleSide, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -6 };
   // the light that reaches the card, multiplied over it
   const mul = new THREE.ShaderMaterial({ ...common, uniforms: u(), vertexShader: LIGHT_VS, blending: THREE.CustomBlending, blendEquation: THREE.AddEquation, blendSrc: THREE.DstColorFactor, blendDst: THREE.ZeroFactor,
     fragmentShader: `${LIGHT_HEAD} uniform vec3 amb;
       void main() { if (texture2D(cardMap, vUv).a < 0.5) discard; float sx = (vUv.x - 0.5) * 2.6; vec3 n = normalize(vN * 0.8 + vR * sx + vec3(0.0, 0.2, 0.0)); vec3 c = amb;
-        for (int i = 0; i < 3; i++) { if (i >= ln) break; vec3 d = normalize(lp[i] - vW); c += lc[i] * lk[i] * max(0.0, dot(n, d)) * att(i); }
+        for (int i = 0; i < 3; i++) { if (i >= ln) break; vec3 d = normalize(lp[i] - vW); c += lc[i] * lk[i] * lb[i] * max(0.0, dot(n, d)) * att(i); }
         gl_FragColor = vec4(min(c, vec3(1.0)), 1.0); }` });
   // the rim: a thin edge of each light along the outline, on the side that faces it
   const rim = new THREE.ShaderMaterial({ ...common, uniforms: u(), vertexShader: LIGHT_VS, blending: THREE.AdditiveBlending,
     fragmentShader: `${LIGHT_HEAD} uniform float rimK;
       void main() { if (texture2D(cardMap, vUv).a < 0.5) discard; float w = 5.0; float e = 1.0 - min(min(A(vec2(w, 0.0)), A(vec2(-w, 0.0))), min(A(vec2(0.0, w)), A(vec2(0.0, -w))));
         if (e < 0.5) discard; vec2 g = vec2(A(vec2(-w, 0.0)) - A(vec2(w, 0.0)), A(vec2(0.0, -w)) - A(vec2(0.0, w))); if (length(g) < 0.01) discard; vec2 o = normalize(g); vec3 c = vec3(0.0);
-        for (int i = 0; i < 3; i++) { if (i >= ln) break; vec3 d = normalize(lp[i] - vW); vec2 dl = normalize(vec2(dot(d, vR), d.y) + 1e-5); float s = max(0.0, dot(o, dl)); c += lc[i] * lk[i] * s * s * att(i); }
+        for (int i = 0; i < 3; i++) { if (i >= ln) break; vec3 d = normalize(lp[i] - vW); vec2 dl = normalize(vec2(dot(d, vR), d.y) + 1e-5); float s = max(0.0, dot(o, dl)); c += lc[i] * lk[i] * lq[i] * s * s * att(i); }
         gl_FragColor = vec4(c * rimK, 1.0); }` });
   return { mul, rim };
 };

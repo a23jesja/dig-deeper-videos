@@ -24,3 +24,14 @@ export const CabinTest: React.FC = () => {
       <Sequence from={150} durationInFrames={150}><Stage film={solid} /><Label text="NY 3D-KAJUTA" /></Sequence>
     </AbsoluteFill>);
 };
+
+/** the night cabin alone, the 3D version's five seconds (the STOPP of its corrections, Jesper 19 Nov: the painted version is not shown
+ *  again, Blackbeard stood in its sofa) */
+export const CABIN_NIGHT_FRAMES = 150;
+export const CabinNight: React.FC = () => {
+  const [handle] = useState(() => delayRender("the painted sea"));
+  const [sea, setSea] = useState<HTMLImageElement | null>(null);
+  useEffect(() => { load(staticFile("craft/cabin-test/night-sea.png")).then((s) => { setSea(s); continueRender(handle); }); }, [handle]);
+  const solid = useMemo(() => (sea ? cabin3d(sea) : null), [sea]);
+  return solid ? <AbsoluteFill style={{ background: "#0b1530" }}><Stage film={solid} /></AbsoluteFill> : null;
+};

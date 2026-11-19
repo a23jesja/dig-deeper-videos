@@ -166,6 +166,10 @@ export const bodyCheck = (film: Film, opt: { every?: number; shots?: string[] } 
         const parts = PARTS.map((P) => { const A = J(P.a), B = J(P.b), r = P.r < 0 ? -P.r * headL : P.r * sc, n = Math.max(2, Math.ceil(A.distanceTo(B) / 0.035)), pts: THREE.Vector3[] = []; for (let i = 0; i <= n; i++) pts.push(A.clone().lerp(B, i / n)); return { P, r, pts, tol: P.tol * Math.max(1, sc) }; });
         const box = new THREE.Box3(); for (const q of parts) for (const p of q.pts) box.expandByPoint(p); box.expandByScalar(0.15); return { a, parts, box }; });
       figuresTried += bodies.length;
+      // the dust and the added light of the shot (world/air.ts, world/fire.ts glows): motes as points, light as the meshes that add
+      const air = { pts: [] as THREE.Vector3[], glows: [] as THREE.Mesh[] };
+      th.g.traverse((o) => { const pt = o as THREE.Points; if (pt.isPoints) { pt.updateMatrixWorld(true); const P = pt.geometry.getAttribute("position"); for (let i = 0; i < P.count; i++) air.pts.push(new THREE.Vector3(P.getX(i), P.getY(i), P.getZ(i)).applyMatrix4(pt.matrixWorld)); return; }
+        const m = o as THREE.Mesh; if (m.isMesh && (m.material as THREE.Material)?.blending === THREE.AdditiveBlending && m.visible) air.glows.push(m); });
       /** the human tests of one figure on this frame (humanBody.ts): the joint limits on every frame; a straight arm held out near
        *  shoulder height for more than half a second; a hand gesturing at his own body; the weight on a foot under the hips; and
        *  something to sit or kneel on, or a hand on the ground, for a figure as low as one who sits */
@@ -344,6 +348,18 @@ export const bodyCheck = (film: Film, opt: { every?: number; shots?: string[] } 
             const x = hc.x + u * R, y = hc.y + v * R, ndc = new THREE.Vector3((x / 540) - 1, 1 - y / 960, 0.5).unproject(lens).sub(C).normalize(); rc.set(C, ndc); rc.near = 0.05; rc.far = hc.d - 0.02;
             for (const o of things2) { if (o.geo.type === "PlaneGeometry") continue; const h = rc.intersectObject(o.mesh, false)[0]; if (h) { n++; by = nameOf(o.root ?? o.mesh) || describe(o); break; } } }
           if (n / tot > 0.2) note(`${s.id}|${a.name}|thingface`, { shot: s.id, who: a.name, kind: "held", what: `${a.name}'s face is covered by a thing held or carried (${by}), ${Math.round((100 * n) / tot)} % of it` }, F, n / tot); } }
+        // (p) dust and light never cross a face (Jesper 19 Nov, after the night cabin: "Dammpartiklar och ljusfläckar får aldrig korsa
+        //     ett ansikte"): a mote of dust, or a patch of added light (a glow, rays, a shaft, a gleam), nearer the lens than his face and
+        //     drawn inside its round
+        if (inFrame(hc) && R > 7) { for (const q of air.pts) { const p2 = scr(q); if (p2.d < hc.d && Math.hypot(p2.x - hc.x, p2.y - hc.y) < R) { note(`${s.id}|${a.name}|dustface`, { shot: s.id, who: a.name, kind: "pose", what: `${a.name}: a mote of dust crosses his face` }, F, 0.01); break; } }
+          //     (a glow, rays or a gleam is a round soft patch that fades to nothing at its edge: it is measured as drawn, a round out to
+          //     three quarters of its half-size, where its light can still be seen; a shaft by its box)
+          for (const m of air.glows) { const b = new THREE.Box3().setFromObject(m), z = b.getSize(new THREE.Vector3()), c = scr(m.getWorldPosition(new THREE.Vector3())); let over = false;
+            if ((m.geometry as THREE.BufferGeometry).type === "PlaneGeometry") { const r = (0.75 * 0.5 * Math.max(z.x, z.y, z.z) * foc) / Math.max(0.1, c.d); over = c.d < hc.d - 0.05 && Math.hypot(c.x - hc.x, c.y - hc.y) < r + 0.6 * R; }
+            else { let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity, dn = Infinity;
+              for (const cx of [b.min.x, b.max.x]) for (const cy of [b.min.y, b.max.y]) for (const cz of [b.min.z, b.max.z]) { const q = scr(new THREE.Vector3(cx, cy, cz)); x0 = Math.min(x0, q.x); x1 = Math.max(x1, q.x); y0 = Math.min(y0, q.y); y1 = Math.max(y1, q.y); dn = Math.min(dn, q.d); }
+              over = dn < hc.d - 0.05 && hc.x > x0 && hc.x < x1 && hc.y > y0 && hc.y < y1; }
+            if (over) { note(`${s.id}|${a.name}|lightface|${m.name || "glow"}`, { shot: s.id, who: a.name, kind: "pose", what: `${a.name}: a patch of light (${m.name || "a glow"}) lies over his face` }, F, 0.01); } } }
         // (c) a thing in someone else's hand drawn over his head, chest or legs
         //     (up to 3 m behind it: a match near the lens drawn across the men hauling behind is as wrong as a blade across the man beside
         //     him; a fiddle bow in front of people running 15 m down the street is only in front of them, as it would be)

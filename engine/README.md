@@ -83,3 +83,13 @@ There are no foot sounds in any film, Short or long video. That means no steps w
 - The mixer (`audio/craft_sfx.py`) refuses the kinds `step` and `scuff`.
 - The film check fails on any shot that schedules one.
 - The delivered films that still have them are listed in granskning/stegljud/stegljud-i-levererade-filmer.md. They are remade only on Jesper's word.
+
+## The light standard and dust over faces (Jesper's decisions, 19 November 2026)
+The night cabin's light (granskning/malad-kajuta/kajuta-3d-v5.mp4, approved) is the standard for every new scene. It must work just as well in daylight and outdoors, with the sun as the light source and the sky as fill.
+
+What every new scene has:
+- **On the figures:** the scene's light (`CardLight`, film.light / shot.light). Warm from the light's side, as dark as the room where the light does not reach, and a thin cool edge from the other side.
+- **The light source:** a real light with a glow.
+- **In the air:** visible beams with dust in them (`world/air.ts`).
+
+**Dust and light never cross a face.** The body check fails if a dust mote, or a patch of added light (a glow, rays, a shaft, a gleam), lies nearer the lens than a face and is drawn over it, on any frame. A glow is measured as drawn: a round out to three quarters of its half-size.

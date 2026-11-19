@@ -58,7 +58,8 @@ export const cabin3d = (sea?: TexImageSource): Film => { const x = CABIN.at[0] +
   // dark ground light like the room's shadows, the lamp warm on its side and falling off with the distance, the windows an edge only)
   const light: CardLight = { amb: "#3f3a45", rim: 1.0, lights: [{ at: lampAt, color: "#ffa95e", power: 1.25, reach: 1.7, rimK: 0.6 }, { at: winAt, color: "#8fb0ff", power: 0.75, reach: 4, body: 0 }, { at: [winL[0], winAt[1], winL[2]], color: "#8fb0ff", power: 0.6, reach: 4, body: 0 }] };
   return film("cabin-test-3d", () => cabinNight(CABIN_SKY, { sea }), V, x, y, z, (g, T, cam) => {
-    const toL = Math.atan2(cam.pos[0] - lampAt[0], cam.pos[2] - lampAt[2]); glow(g, lampAt, 1.1, 1.1, T, toL, 2); glow(g, lampAt, 0.45, 0.45, T, toL, 5);
+    // (the halo 0.8 m across: at 1.1 its outer light reached Blackbeard's face, and dust and light never cross a face)
+    const toL = Math.atan2(cam.pos[0] - lampAt[0], cam.pos[2] - lampAt[2]); glow(g, lampAt, 0.8, 0.8, T, toL, 2); glow(g, lampAt, 0.45, 0.45, T, toL, 5);
     // the lantern's rays in the dusty air, spreading down and out over the dark beams and the wall behind them (never over them)
     lampRays(g, lampAt, cam, 1.9, "#ffb268", 0.55, 2, 0.55);
     // (the dust round the lamp hangs above the heads, so that no mote lies on a face)

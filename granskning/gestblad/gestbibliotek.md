@@ -35,8 +35,10 @@ Bladets bilder är 0,4 s långa. Testet för raka armar kräver 0,5 s och kan d�
 - **Undvik:** handslag, dra upp någon och hand på axel är byggda, men markerade (undvik). Det är punkt 1 i "Lessons from the best reference Shorts": de visas bara när berättelsen är just den handlingen, och då som närbild på händerna.
   - I gladiatorerna v5 ersätts de av närbilder och resultat, enligt Jesper.
 - **Stav mot axeln** läses bara framifrån. Från sidan syns staven ovanför och nedanför huvudet bakom det, så den ser ut att gå genom huvudet. Snett framifrån ligger den över bröstet. Från sidan bär domaren därför staven nedåt.
-- **Handen för ögonen** läses i profil, där huvudet böjs ned i handen. Framifrån och snett framifrån ligger handen över munnen och näsan, som "handen för munnen", en chock. Kortet kan inte visa att huvudet böjs mot linsen.
-- **Knäböja, på ett knä, resa sig och handen för ögonen** visas snett framifrån, 35°, i stället för rakt framifrån. Rakt framifrån pekar det upplyfta knät och händerna mot linsen och ritas över kroppen.
+- **Handen för ögonen får bara användas från sidan eller snett från sidan** (65° eller mer, markerat på bladet).
+  - Huvudet böjs ned i handen, så handen ligger över ögonen och munnen är fri.
+  - Framifrån och snett framifrån (35°) låg handen över munnen och näsan, och lästes som chock. Kortet kan inte visa ett huvud som böjs mot linsen.
+- **Knäböja, på ett knä och resa sig** visas snett framifrån, 35°, i stället för rakt framifrån. Rakt framifrån pekar det upplyfta knät och händerna mot linsen och ritas över kroppen.
 - **Stopp:** handen är öppen och vänd mot den andre, men ritas längs armen. Fingrarna pekar inte rakt upp.
 - **Hand på axel:** Sirs arm räcker långt tvärs över till bybons axel.
 
@@ -75,3 +77,13 @@ Formen och färgerna är desamma. Ändringen gäller alla med trekantig hatt i n
 - **Spänna musklerna** (`flex`): Both upper arms out to the sides at shoulder height, the forearms straight up, bent 90 degrees at the elbow, the fists tight, the chest out, a grin.
 - **Stav mot axeln (domaren)** (`stickShoulder`): A stick in one hand, the hand up at the front of the shoulder, the elbow bent and forward, the stick leaning back against the shoulder. The other arm hangs. (The referee's stick: never level across the body in two hands.)
 - **Stav nedåt (domaren)** (`stickDown`): A stick in one hand at the side, the arm hanging with the elbow a little bent, the stick pointing down and a little forward.
+
+## Omgång 2 (granskningens fyra punkter, 19 november)
+
+1. **Jubla, från sidan:** armarna går upp och bakåt, bakom huvudet, så att hela ansiktet syns.
+   - Riggens svängning vänder när armen lyfts över vågrätt, så "bakåt" är en positiv svängning där.
+2. **Spänna musklerna** läses framifrån och snett, 55°, men inte rakt från sidan.
+   - Rakt från sidan pekar armarna mot linsen, och den närmaste underarmen reser sig framför ansiktet.
+   - Armbågar bakåt med nävarna bakom huvudet vore att böja armbågarna åt fel håll, och ledgränsen stoppar det.
+3. **Sitta:** framifrån visas den snett, 30°, så att pallen syns också under bybons långa rock. Händerna vilar längre bak på låren.
+4. **Hand på axel:** handen ligger på axelns ovansida, ut från halsen och långt från ansiktet.

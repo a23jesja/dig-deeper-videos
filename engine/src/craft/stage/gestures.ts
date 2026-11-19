@@ -63,7 +63,7 @@ export const GESTURES: Record<string, Gesture> = {
   kneelhand: { how: "The beaten man: down on one knee with one hand on the ground beside him, the body leaning over it, the head down.",
     pose: () => ({ ...KNEEL, lean: 24, armR: [[12, 22], [8, 18]], armL: [[30, 8], [60, 4]], head: [0, 14, 0] }), hands: { handL: "relaxed", handR: "open" }, needs: "ground" },
   sit: { how: "Sitting on the front half of a seat, the thighs level, the shins down, the feet flat. The hands rest on the thighs, the back upright.",
-    pose: () => ({ py: -0.36, legL: { th: [86, 6], sh: [4, 4] } as LegFK, legR: { th: [86, 6], sh: [4, 4] } as LegFK, armL: [[18, 8], [62, 4]], armR: [[18, 8], [62, 4]], lean: 2 }), hands: { handL: "relaxed", handR: "relaxed" }, needs: "seat" },
+    pose: () => ({ py: -0.36, legL: { th: [86, 6], sh: [4, 4] } as LegFK, legR: { th: [86, 6], sh: [4, 4] } as LegFK, armL: [[14, 8], [50, 4]], armR: [[14, 8], [50, 4]], lean: 2 }), hands: { handL: "relaxed", handR: "relaxed" }, needs: "seat" },
   fallen: { how: "Fallen on his back side: sitting on the ground, the legs out in front, the body leaning back on both hands planted behind him, the head up.",
     pose: () => ({ legL: { th: [84, 10], sh: [82, 8] } as LegFK, legR: { th: [80, 4], sh: [74, 2] } as LegFK, lean: -28, armL: [[-38, 18], [-30, 14]], armR: [[-38, 18], [-30, 14]], head: [0, -10, 0] }), hands: { handL: "open", handR: "open" }, needs: "ground" },
   getup: { how: "Getting up from one knee: the front foot planted, the body leaning forward over it, both hands pushing on the raised knee, the eyes ahead.",
@@ -73,8 +73,12 @@ export const GESTURES: Record<string, Gesture> = {
   eyes: { how: "One hand over the eyes, palm in, the elbow bent and forward, the head bowed down into the hand (the eyes come to the hand); the other arm hangs.",
     pose: () => ({ ...STAND, armR: [[72, 18], [176, -46]], armL: REST, head: [0, 34, 0], lean: 8 }), hands: { handR: "open", handL: "relaxed" } },
   cheer: { how: "Both arms up over the head in a V, the elbows almost straight (bent about 20 degrees), the hands open or in fists, the head up.",
-    pose: () => ({ ...STAND, armL: [[12, 142], [8, 162]], armR: [[12, 142], [8, 162]], head: [0, -10, 0] }), hands: { handL: "fist", handR: "fist" } },
+    // (in profile, "ahead", the arms go up a little behind the head: raised forward, the near arm lay over the face. With the arm raised past
+    // level, a positive swing takes it back: the rig's swing turns over with the arm)
+    pose: (aim) => { const [sw, fw] = aim === "ahead" ? [42, 44] : [12, 8]; return { ...STAND, armL: [[sw, 142], [fw, 160]], armR: [[sw, 142], [fw, 160]], head: [0, -10, 0] }; }, hands: { handL: "fist", handR: "fist" } },
   flex: { how: "Both upper arms out to the sides at shoulder height, the forearms straight up, bent 90 degrees at the elbow, the fists tight, the chest out, a grin.",
+    // (the flex reads from the front and from three-quarter, not side-on: in profile the arms out to the sides point at the lens and the near
+    // forearm rises in front of the face, and elbows back with the fists behind the head would bend the elbows the wrong way)
     pose: () => ({ ...STAND, armL: [[0, 86], [0, 176]], armR: [[0, 86], [0, 176]], lean: -3 }), hands: { handL: "fist", handR: "fist" } },
   stickShoulder: { how: "A stick in one hand, the hand up at the front of the shoulder, the elbow bent and forward, the stick leaning back against the shoulder. The other arm hangs. (The referee's stick: never level across the body in two hands.)",
     pose: () => ({ ...STAND, armR: [[35, 15], [160, 10]], armL: REST }), hands: { handR: "grip", handL: "relaxed" } },

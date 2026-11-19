@@ -42,10 +42,13 @@ const SINGLE = ["point", "explain", "shrug", "crossed", "head", "eyes", "cheer",
 for (const name of SINGLE) { const G = GESTURES[name];
   // (a kneeling figure is seen from the front three-quarter, 35 degrees: straight on, the raised knee and the hands on it point at the lens)
   // (and the hand over the eyes: straight on, the head bowed into the hand bows toward the lens and the hand lies at the mouth)
-  const front = (G.needs === "ground" && name !== "fallen") || name === "eyes" ? 35 : 0;
+  // (the hand over the eyes reads only near profile: from the front and three-quarter it lies over the mouth and nose; its first view is
+  // 65 degrees. A seated man in a long coat hides the stool from the front: 30 degrees, so that the seat shows)
+  const front = name === "eyes" ? 65 : name === "sit" ? 30 : G.needs === "ground" && name !== "fallen" ? 35 : 0;
   // (a stick on the shoulder reads only from the front: side-on, behind the head, it shows above and below it, through it in the
   // picture; three-quarter, the hand is before the chest and the stick lies across it. From the side the stick is carried down, stickDown)
-  const views = ([["front", "side", front], ["side", "ahead", 90]] as [string, Aim, number][]).filter((v) => name !== "stickShoulder" || v[0] === "front");
+  // (the flex's second view is three-quarter, 55 degrees: side-on the near forearm rises before the face)
+  const views = ([["front", "side", front], ["side", name === "flex" ? "side" : "ahead", name === "flex" ? 55 : 90]] as [string, Aim, number][]).filter((v) => name !== "stickShoulder" || v[0] === "front");
   for (const [who, D, h] of WHO) for (const [view, aim, turn] of views) {
     const fig: Fig = { name: who, D, h, at: [0, 0, 0], heading: ONE.toward(0, 0, turn), pose: G.pose(aim, 0.3), hands: G.hands };
     add(`${name}-${who}-${view}`, ONE.cam, [fig], (g, c, cam) => {
@@ -74,7 +77,9 @@ const palmOf = (s: ReturnType<typeof stand>, side: "L" | "R"): V3 => { const j =
 { // the hand on a shoulder: side by side facing the lens, Sir's left hand on the villager's right shoulder
   // (Sir a little nearer the lens, so that his hand on the villager's shoulder lies in front of it: level with him, it was drawn behind his arm)
   const sb = stand(VILLAGER_D, [0.3, 0, 0], PAIR.toward(0.3, 0, -10), 1.74, {}), shR = (jointsOf(sb) as (n: string) => V3)("shR"), sa = stand(SIR_D, [-0.3, 0, 0.1], PAIR.toward(-0.3, 0.1, 10), 1.75, GESTURES.shoulder.pose("side", 0));
-  const armA = reach(sa, "L", [shR[0], shR[1] + 0.02, shR[2]]); add("shoulder-pair-front", PAIR.cam, [{ name: "sir", D: SIR_D, h: 1.75, at: sa.at, heading: sa.heading, pose: { ...GESTURES.shoulder.pose("side", 0), ...armA }, hands: GESTURES.shoulder.hands },
+  // (the hand on the top of the shoulder, out from the neck, far from the face: at the joint itself it lay by the villager's jaw)
+  const nk = (jointsOf(sb) as (n: string) => V3)("neck"), top: V3 = [shR[0] + (shR[0] - nk[0]) * 0.3, shR[1] - 0.01, shR[2] + (shR[2] - nk[2]) * 0.3];
+  const armA = reach(sa, "L", top); add("shoulder-pair-front", PAIR.cam, [{ name: "sir", D: SIR_D, h: 1.75, at: sa.at, heading: sa.heading, pose: { ...GESTURES.shoulder.pose("side", 0), ...armA }, hands: GESTURES.shoulder.hands },
     { name: "villager", D: VILLAGER_D, h: 1.74, at: sb.at, heading: sb.heading, pose: { head: [-20, 0, 0] }, hands: {} }], (gg, c, cam) => handOn(c.sir, "L", c.villager, "shR", cam)); }
 { // pulling up: Sir leans back and holds the hand of the villager sitting on the ground, who reaches up to it
   // (the one on the ground sits up with his knees bent and his feet drawn in, so that he sits close to Sir's feet without touching them,

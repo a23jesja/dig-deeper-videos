@@ -6,9 +6,10 @@ import * as THREE from "three";
 import type { Film, Actor, Cam } from "../stage/film";
 import { lens } from "../stage/staging";
 import { paintedSet, type Layers } from "../world/painted";
-import { CABIN, cabinNight } from "../world/cabin";
+import { CABIN, CABIN_NIGHT, cabinNight, inCabin } from "../world/cabin";
+import { dust, floorGlint, foreBeam, lampRays } from "../world/air";
 import { glow } from "../world/fire";
-import type { Sun } from "../world/kit";
+import type { Sun, CardLight } from "../world/kit";
 import { POSES, type Pose } from "../rig";
 import { SIR_D, BLACKBEARD_D } from "../looks";
 import type { Design } from "../designs/common";
@@ -31,17 +32,37 @@ const two = (x: number, y: number, z: number, V: ReturnType<typeof lens>, t: num
     return { name, D, h, at: p, heading: V.toward(p[0], p[2], off), pose, o: {} }; };
   return [fig("sir", SIR_D, 1.75, at(-0.44, 0), 22, 12), fig("bb", BLACKBEARD_D, 1.92, at(0.32, -0.1), -18, -10)];
 };
-const film = (id: string, world: () => THREE.Group, V: ReturnType<typeof lens>, x: number, y: number, z: number, extra?: (g: THREE.Group, T: number, cam: Cam) => void): Film => ({
+const film = (id: string, world: () => THREE.Group, V: ReturnType<typeof lens>, x: number, y: number, z: number, extra?: (g: THREE.Group, T: number, cam: Cam) => void, light?: CardLight): Film => ({
   id, fps: 30, seconds: SECONDS, range: [4, 6], sky: "#0b1530", world, words: [], hook: { text: [], a: 0, b: 0 },
-  grade: () => NIGHT_GRADE,
+  grade: () => NIGHT_GRADE, light,
   shots: [{ id: "push", a: 0, b: SECONDS, cam: (_t, u) => V.push(PUSH * u), sun: { target: [x, y, z - 3.4], reach: 4 }, capsTop: 1500,
     cast: (t) => two(x, y, z, V, t), things: extra ? (g, _c, _t, T, cam) => extra(g, T, cam) : undefined }],
 });
 
-/** the painted version: the lens at the origin, the layers 2.4, 3.9 and 7 m before it */
+/** the painted version: the lens at the origin, the layers 2.4, 3.9 and 7 m before it. The figures take the painting's own light:
+ *  its lantern high on the left (on the middle layer, 3.9 m off), its moonlit window behind on the right (on the far layer, 7 m) */
 export const cabinPainted = (L: Layers): Film => { const V = lens(0, EYE, 0, 0, -1, 0, FOV);
-  return film("cabin-test-painted", () => paintedSet(L, [0, EYE, 0], FOV, { near: 2.4, mid: 3.9, far: 7 }, NIGHT), V, 0, 0, 0); };
-/** the 3D version: the same lens at the cabin's open front, the two in front of the table, the stool behind Sir, the lantern lit */
-export const cabin3d = (): Film => { const x = CABIN.at[0] + 0.3, y = CABIN.at[1], z = CABIN.at[2] + 3.6, V = lens(x, y + EYE, z, 0, -1, 0, FOV);
-  const flame: [number, number, number] = [CABIN.at[0] + CABIN.flame[0], y + CABIN.flame[1], CABIN.at[2] + CABIN.flame[2]];
-  return film("cabin-test-3d", () => cabinNight(NIGHT), V, x, y, z, (g, T, cam) => glow(g, flame, 0.5, 0.5, T, Math.atan2(cam.pos[0] - flame[0], cam.pos[2] - flame[2]), 2)); };
+  const light: CardLight = { amb: "#8a7f86", rim: 0.9, lights: [{ at: [-0.88, 1.86, -3.6], color: "#ffb36a", power: 0.75, reach: 3.2 }, { at: [0.92, 2.0, -7], color: "#8fb0ff", power: 0.55, reach: 6 }] };
+  return film("cabin-test-painted", () => paintedSet(L, [0, EYE, 0], FOV, { near: 2.4, mid: 3.9, far: 7 }, NIGHT), V, 0, 0, 0, undefined, light); };
+
+/** the night cabin's weak sky light (the lantern and the moon do the lighting; world/cabin.ts cabinNight) */
+export const CABIN_SKY: Sun = { from: [-3, 1.75, 5], color: "#ffd9b0", power: 0.25, sky: "#55649e", ground: "#2a1e18", fill: 0.42, reach: 5 };
+/** The 3D version, built to match the painted cabin (Jesper 19 Nov): the same lens at the cabin's open front, the two before the
+ *  table, the lantern hung between and behind them as the room's light, the moon through the windows. On the figures: warm from the
+ *  lantern's side, cold from the windows', a thin rim. In the air: dust in the lantern's light and in the moon's shafts, the lantern's
+ *  glow, its gleam in the polished floor, and a beam close over the lens, out of focus */
+export const cabin3d = (sea?: TexImageSource): Film => { const x = CABIN.at[0] + 0.3, y = CABIN.at[1], z = CABIN.at[2] + 3.6, V = lens(x, y + EYE, z, 0, -1, 0, FOV);
+  const hang = inCabin(CABIN_NIGHT.hang), lampAt: [number, number, number] = [hang[0], y + CABIN_NIGHT.hang[1], hang[2]];
+  const win = inCabin([0.9, 0, -CABIN.d / 2]), winAt: [number, number, number] = [win[0], y + CABIN.winY + CABIN.winH / 2, win[2]], winL = inCabin([-1.25, 0, -CABIN.d / 2]);
+  const light: CardLight = { amb: "#7d7378", rim: 1.0, lights: [{ at: lampAt, color: "#ffa95e", power: 1.1, reach: 2.4 }, { at: winAt, color: "#8fb0ff", power: 0.6, reach: 4 }, { at: [winL[0], winAt[1], winL[2]], color: "#8fb0ff", power: 0.45, reach: 4 }] };
+  return film("cabin-test-3d", () => cabinNight(CABIN_SKY, { sea }), V, x, y, z, (g, T, cam) => {
+    const toL = Math.atan2(cam.pos[0] - lampAt[0], cam.pos[2] - lampAt[2]); glow(g, lampAt, 1.1, 1.1, T, toL, 2); glow(g, lampAt, 0.45, 0.45, T, toL, 5);
+    // the lantern's rays in the dusty air, spreading down and out over the dark beams and wall above their heads
+    lampRays(g, lampAt, cam, 1.9, "#ffb268", 0.55, 2, 0.55);
+    // (the dust round the lamp hangs above the heads, so that no mote lies on a face)
+    dust(g, [lampAt[0], lampAt[1] + 0.02, lampAt[2] - 0.1], 0.42, 55, "#ffc890", T, 1);
+    for (const wx of CABIN.win) { const w0 = inCabin([wx, 0, -CABIN.d / 2 + 0.5]); dust(g, [w0[0], y + 0.9, w0[2]], 0.45, 26, "#b6c8ff", T, 3 + wx, 0.014); }
+    dust(g, [cam.pos[0] + 0.25, cam.pos[1] + 0.35, cam.pos[2] - 0.9], 0.35, 5, "#ffd2a0", T, 9, 0.05);
+    // the moon pooled and gleaming on the polished floor behind their feet
+    floorGlint(g, [inCabin([0.75, 0, -0.55])[0], y, inCabin([0.75, 0, -0.55])[2]], cam, "#9fb8ff", 0.8, 0.4);
+    foreBeam(g, cam, 0.7, 0.07); }, light); };

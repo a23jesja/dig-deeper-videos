@@ -1,0 +1,15 @@
+{
+  "name": "night-sea",
+  "prompt": "a wide open seascape at night, a large bright full moon low over the horizon, a long silver moonlight path shimmering on gentle dark blue waves, a deep blue starry sky with soft clouds lit by the moon, nothing but sky and sea, hand-painted cartoon animation background, flat colours with soft painted shading, clean bold shapes, storybook painterly style",
+  "negative": "interior, room, window, window frame, curtains, furniture, ship, boat, land, island, people, person, figure, birds, text, letters, writing, words, watermark, signature, logo, frame, border, photo, photorealistic, 3d render, blurry, noisy, grainy",
+  "seeds": [
+    3301,
+    5207
+  ],
+  "width": 1344,
+  "height": 768,
+  "steps": 32,
+  "cfg": 6.0,
+  "sampler": "dpmpp_2m",
+  "scheduler": "karras"
+}

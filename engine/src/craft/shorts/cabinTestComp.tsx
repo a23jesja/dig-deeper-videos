@@ -14,12 +14,13 @@ const Label: React.FC<{ text: string }> = ({ text }) => (
 export const CabinTest: React.FC = () => {
   const [handle] = useState(() => delayRender("the painted layers"));
   const [L, setL] = useState<Layers | null>(null);
-  useEffect(() => { Promise.all(["far", "mid", "near"].map((k) => load(staticFile(`craft/cabin-test/${k}.png`)))).then(([far, mid, near]) => { setL({ far, mid, near }); continueRender(handle); }); }, [handle]);
-  const painted = useMemo(() => (L ? cabinPainted(L) : null), [L]), solid = useMemo(() => cabin3d(), []);
-  if (!painted) return null;
+  const [sea, setSea] = useState<HTMLImageElement | null>(null);
+  useEffect(() => { Promise.all(["far", "mid", "near", "night-sea"].map((k) => load(staticFile(`craft/cabin-test/${k}.png`)))).then(([far, mid, near, s]) => { setL({ far, mid, near }); setSea(s); continueRender(handle); }); }, [handle]);
+  const painted = useMemo(() => (L ? cabinPainted(L) : null), [L]), solid = useMemo(() => (sea ? cabin3d(sea) : null), [sea]);
+  if (!painted || !solid) return null;
   return (
     <AbsoluteFill style={{ background: "#0b1530" }}>
       <Sequence durationInFrames={150}><Stage film={painted} /><Label text="MÅLAD: SDXL + TRE DJUPLAGER" /></Sequence>
-      <Sequence from={150} durationInFrames={150}><Stage film={solid} /><Label text="VÅR VANLIGA 3D" /></Sequence>
+      <Sequence from={150} durationInFrames={150}><Stage film={solid} /><Label text="NY 3D-KAJUTA" /></Sequence>
     </AbsoluteFill>);
 };

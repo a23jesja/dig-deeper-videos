@@ -145,6 +145,47 @@ const shadeMat = (map: THREE.Texture, toSun: THREE.Vector3) => {
   };
   return m;
 };
+/** The scene's light on the figures (Jesper 19 Nov, after the painted-cabin test: "Figurerna får scenens ljus: varmt från lyktans
+ *  sida, kallt från fönstrets sida, och en tunn ljuskant runt konturen. De får inte vara ljusare än rummet runt dem"). A card is
+ *  drawn at full strength; with a light set, two layers go over it through its own outline:
+ *    - the first multiplies it by the light that reaches it: `amb` everywhere, and each light by how much the card's side turns toward
+ *      it (the card is read as rounded across its width) and how near it is. It can only darken and tint, never make the figure brighter
+ *      than its drawing;
+ *    - the second adds a thin edge of light along the outline on the side that faces each light (a rim).
+ *  `reach` = metres at which a light has fallen to half; `rim` = how strong the edges are (0 = none). Colours as on the screen.
+ *  The Stage sets it per shot (film.light / shot.light); without it the cards are as they always were */
+export type CardLight = { amb: string; lights: { at: [number, number, number]; color: string; power: number; reach: number }[]; rim?: number };
+let CARD_LIGHT: CardLight | null = null;
+export const setCardLight = (l: CardLight | null) => { CARD_LIGHT = l; };
+const rgb = (hex: string) => { const n = parseInt(hex.replace("#", ""), 16); return new THREE.Vector3(((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255); };
+const LIGHT_VS = `varying vec2 vUv; varying vec3 vW; varying vec3 vR; varying vec3 vN;
+  void main() { vUv = uv; vec4 w = modelMatrix * vec4(position, 1.0); vW = w.xyz; vR = normalize((modelMatrix * vec4(1.0, 0.0, 0.0, 0.0)).xyz);
+    vN = normalize((modelMatrix * vec4(0.0, 0.0, 1.0, 0.0)).xyz); gl_Position = projectionMatrix * viewMatrix * w; }`;
+const LIGHT_HEAD = `uniform sampler2D cardMap; uniform vec2 texel; uniform vec3 lp[3]; uniform vec3 lc[3]; uniform float lk[3]; uniform float lr[3]; uniform int ln;
+  varying vec2 vUv; varying vec3 vW; varying vec3 vR; varying vec3 vN;
+  float A(vec2 o) { return texture2D(cardMap, vUv + o * texel).a; }
+  float att(int i) { vec3 d = lp[i] - vW; float r = length(d); return 1.0 / (1.0 + (r * r) / (lr[i] * lr[i])); }`;
+const cardLight = (map: THREE.Texture, cw: number, ch: number, L: CardLight) => {
+  const P = L.lights.slice(0, 3), pad = <T,>(a: T[], z: T) => [...a, z, z, z].slice(0, 3);
+  const u = () => ({ cardMap: { value: map }, texel: { value: new THREE.Vector2(1 / cw, 1 / ch) }, ln: { value: P.length }, amb: { value: rgb(L.amb) }, rimK: { value: L.rim ?? 0.8 },
+    lp: { value: pad(P.map((l) => new THREE.Vector3(...l.at)), new THREE.Vector3()) }, lc: { value: pad(P.map((l) => rgb(l.color)), new THREE.Vector3()) },
+    lk: { value: pad(P.map((l) => l.power), 0) }, lr: { value: pad(P.map((l) => l.reach), 1) } });
+  const common = { transparent: true, depthWrite: false, side: THREE.DoubleSide, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -6 };
+  // the light that reaches the card, multiplied over it
+  const mul = new THREE.ShaderMaterial({ ...common, uniforms: u(), vertexShader: LIGHT_VS, blending: THREE.CustomBlending, blendEquation: THREE.AddEquation, blendSrc: THREE.DstColorFactor, blendDst: THREE.ZeroFactor,
+    fragmentShader: `${LIGHT_HEAD} uniform vec3 amb;
+      void main() { if (texture2D(cardMap, vUv).a < 0.5) discard; float sx = (vUv.x - 0.5) * 2.6; vec3 n = normalize(vN * 0.8 + vR * sx + vec3(0.0, 0.2, 0.0)); vec3 c = amb;
+        for (int i = 0; i < 3; i++) { if (i >= ln) break; vec3 d = normalize(lp[i] - vW); c += lc[i] * lk[i] * max(0.0, dot(n, d)) * att(i); }
+        gl_FragColor = vec4(min(c, vec3(1.0)), 1.0); }` });
+  // the rim: a thin edge of each light along the outline, on the side that faces it
+  const rim = new THREE.ShaderMaterial({ ...common, uniforms: u(), vertexShader: LIGHT_VS, blending: THREE.AdditiveBlending,
+    fragmentShader: `${LIGHT_HEAD} uniform float rimK;
+      void main() { if (texture2D(cardMap, vUv).a < 0.5) discard; float w = 5.0; float e = 1.0 - min(min(A(vec2(w, 0.0)), A(vec2(-w, 0.0))), min(A(vec2(0.0, w)), A(vec2(0.0, -w))));
+        if (e < 0.5) discard; vec2 g = vec2(A(vec2(-w, 0.0)) - A(vec2(w, 0.0)), A(vec2(0.0, -w)) - A(vec2(0.0, w))); if (length(g) < 0.01) discard; vec2 o = normalize(g); vec3 c = vec3(0.0);
+        for (int i = 0; i < 3; i++) { if (i >= ln) break; vec3 d = normalize(lp[i] - vW); vec2 dl = normalize(vec2(dot(d, vR), d.y) + 1e-5); float s = max(0.0, dot(o, dl)); c += lc[i] * lk[i] * s * s * att(i); }
+        gl_FragColor = vec4(c * rimK, 1.0); }` });
+  return { mul, rim };
+};
 /** a figure drawn in code on a card that stands in the world, faces the lens, casts its own shadow and takes the shade of the world.
  *  w, h = size of the card in metres, feet = where the soles are on the canvas (0..1 from the top), draw paints the canvas;
  *  toSun = the direction toward the sun (kit.sunDir), without it the card takes no shade */
@@ -156,6 +197,8 @@ export const card = (key: string, cw: number, ch: number, w: number, h: number, 
   m.customDepthMaterial = new THREE.MeshDepthMaterial({ depthPacking: THREE.RGBADepthPacking, map: t, alphaTest: 0.5 });
   m.castShadow = true; m.receiveShadow = false;
   if (toSun) { const sh = new THREE.Mesh(geo, shadeMat(t, toSun)); sh.receiveShadow = true; sh.castShadow = false; sh.renderOrder = 2; m.add(sh); }
+  if (CARD_LIGHT) { const L = cardLight(t, cw, ch, CARD_LIGHT), a = new THREE.Mesh(geo, L.mul), b = new THREE.Mesh(geo, L.rim);
+    for (const [k, o] of [a, b].entries()) { o.castShadow = false; o.receiveShadow = false; o.renderOrder = 3 + k; o.userData.own = true; m.add(o); } }
   return m;
 };
 /** turn a card to face the camera (about the vertical axis only, so the feet stay on the ground) */

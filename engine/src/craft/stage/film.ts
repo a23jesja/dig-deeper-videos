@@ -1,6 +1,7 @@
 // A film as data: shots with a camera, the cast of each shot played from the motion library, and the things they hold. One stage
 // (Stage.tsx) plays any film in any world of the kit, so a Short is a script of shots and never its own engine.
 // Time: T = seconds from the start of the film, t = seconds from the start of the shot.
+import type { CardLight } from "../world/kit";
 import type * as THREE from "three";
 import type { Design, FigOpts } from "../designs/common";
 import type { Pose, Props, Joint } from "../rig";
@@ -29,6 +30,8 @@ export type Shot = {
   cam: (t: number, u: number) => Cam;
   /** the middle and half the size of the area that gets sharp shadows; default: 9 m round what the camera looks at */
   sun?: { target: V3; reach: number };
+  /** the scene's light on the figures in this shot (kit.CardLight), instead of the film's */
+  light?: CardLight;
   /** named things of the world that are not there in this shot (the world lists them in userData.named) */
   hide?: string[];
   cast: (t: number, T: number) => Actor[];
@@ -80,6 +83,8 @@ export type Film = {
   /** a tint laid over the whole picture at the film time T, under the words: a CSS background (a gradient) that is multiplied with
    *  the picture, so that the world and the figures take the same light (a night with a fire in it, a red evening). null = none */
   grade?: (T: number) => string | null;
+  /** the scene's light on the figures (kit.CardLight): warm from a lamp's side, cold from a window's, a thin rim; none = unlit cards */
+  light?: CardLight;
   /** what a figure may not stand in or walk through (scripts/film_info.mjs check): boxes on the ground of the world, with the height
    *  of their top (a figure whose feet are above the top is on it, not in it). named = the box belongs to a named thing of the world
    *  and does not count in a shot that hides that thing */

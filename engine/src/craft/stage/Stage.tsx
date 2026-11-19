@@ -6,7 +6,7 @@ import * as THREE from "three";
 import { AbsoluteFill, Audio, getInputProps, staticFile, useCurrentFrame } from "remotion";
 import { ThreeCanvas } from "@remotion/three";
 import { useThree } from "@react-three/fiber";
-import { setOutline, aimSun, sunDir } from "../world/kit";
+import { setOutline, aimSun, sunDir, setCardLight } from "../world/kit";
 import { figureCard } from "../world/people";
 import { shake } from "../motion";
 import { Film, Cam, Staged, shotAt, captions, capWidth, hookTop, CAP_TOP } from "./film";
@@ -22,13 +22,15 @@ const Scene: React.FC<{ film: Film; at?: number; view?: Cam; res?: number }> = (
   const frame = useMemo(() => {
     if (last.current) dispose(last.current);
     const g = new THREE.Group(), seen = { fov: cam.fov, toSun: sunDir(rig) }, staged: Record<string, Staged> = {};
+    // the scene's light on the figures, for this shot (kit.CardLight); none = the cards as they always were
+    setCardLight(shot.light ?? film.light ?? null);
     for (const a of shot.cast(t, T)) {
       const p = figureCard(a.D, a.pose, a.o, { at: a.at, heading: a.heading, h: a.h, land: a.land }, cam.pos, 0, seen);
       if (a.spin !== undefined) { const th = (a.spin * Math.PI) / 180, az = p.mesh.rotation.y, hh = a.h / 2; p.mesh.rotation.z = th; p.mesh.position.set(a.at[0] + Math.sin(th) * hh * Math.cos(az), a.at[1] - Math.cos(th) * hh, a.at[2] - Math.sin(th) * hh * Math.sin(az)); }
       if (a.noShade) for (const k of p.mesh.children) if ((k as THREE.Mesh).receiveShadow) k.visible = false;
       p.mesh.userData.own = true; p.mesh.traverse((o) => { o.userData.own = true; }); g.add(p.mesh); staged[a.name] = { ...a, joint: p.joint, mesh: p.mesh, mark: p.mark, seen };
     }
-    shot.things?.(g, staged, t, T, cam);
+    shot.things?.(g, staged, t, T, cam); setCardLight(null);
     last.current = g; return g;
   }, [fr, film, at]);
   const c = camera as THREE.PerspectiveCamera, sk = film.hits && at === undefined ? shake(T, film.hits, 1) : [0, 0];

@@ -76,3 +76,6 @@ export const GLAD_HOOK_FRAMES = Math.round(GLAD_HOOK_A.seconds * GLAD_HOOK_A.fps
 import { GESTURE_SHEET } from "./gestureSheet";
 export const GestureSheet: React.FC = () => <Stage film={GESTURE_SHEET} />;
 export const GESTURE_SHEET_FRAMES = Math.round(GESTURE_SHEET.seconds * GESTURE_SHEET.fps);
+import { PROOF_FAULTS } from "./proofFaults";
+export const ProofFaults: React.FC = () => <Stage film={PROOF_FAULTS} />;
+export const PROOF_FAULTS_FRAMES = Math.round(PROOF_FAULTS.seconds * PROOF_FAULTS.fps);

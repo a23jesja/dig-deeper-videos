@@ -254,15 +254,20 @@ export const bodyCheck = (film: Film, opt: { every?: number; shots?: string[] } 
         //     under 65 % anyhow): a seat under the real pelvis or the buttocks behind it (within 0.35 m below), or sitting on the ground, or a knee on the
         //     ground, or a hand on it, or (crouching, not squatting deep) the body leaning in over the feet by 30 degrees
         if ((lw.low < 0.8 && lw.thigh > 50) || lw.low < 0.65) { const pel = W(v.pelvis), floor = a.at[1]; let seat = pel.y - floor < 0.22;
-          const under = [0, 0.08, 0.16].map((b) => W([v.pelvis[0], v.pelvis[1], v.pelvis[2] - b / mpu]));
+          // (the seat must reach under the hip joint, or to within 4 cm behind it: the sitting bones are there. Until 19 Nov the test also
+          //  took a seat 8-16 cm behind the hips, and so passed Sir in the animal trials, whose hips were 8 cm in front of the bench's edge:
+          //  "Figurerna satt i luften bredvid bänken" (Jesper). A seat only further back is reported as sitting off its edge.)
+          const under = [0, 0.04].map((b) => W([v.pelvis[0], v.pelvis[1], v.pelvis[2] - b / mpu])), behind = [0.08, 0.16, 0.24].map((b) => W([v.pelvis[0], v.pelvis[1], v.pelvis[2] - b / mpu]));
+          let off = Infinity;
           // (how far his hip joint is above the seat's top: sitting, it is 8-12 cm; more than 20 cm and he sits in the air above the seat, not on it.
           //  Jesper, 19 Nov, the animal trials: "satt inte ens på träsoffan utan i luften")
           let above = Infinity;
-          if (!seat) for (const o of [...solids, ...held.filter((h) => !h.holder!.split(" & ").some((p) => p.split(" ")[0] === a.name))]) { for (const q of under) { if (o.aabb.min.x > q.x + 0.05 || o.aabb.max.x < q.x - 0.05 || o.aabb.min.z > q.z + 0.05 || o.aabb.max.z < q.z - 0.05) continue;
-            rc.set(new THREE.Vector3(q.x, q.y + 0.05, q.z), DIRS[3]); rc.near = 0; rc.far = 0.4; const hit = rc.intersectObject(o.mesh, false)[0]; if (hit) { seat = true; above = Math.min(above, hit.distance - 0.05); } } }
+          if (!seat) for (const o of [...solids, ...held.filter((h) => !h.holder!.split(" & ").some((p) => p.split(" ")[0] === a.name))]) { for (const q of [...under, ...behind]) { const strict = under.includes(q), m = strict ? 0.01 : 0.05; if (o.aabb.min.x > q.x + m || o.aabb.max.x < q.x - m || o.aabb.min.z > q.z + m || o.aabb.max.z < q.z - m) continue;
+            rc.set(new THREE.Vector3(q.x, q.y + 0.05, q.z), DIRS[3]); rc.near = 0; rc.far = 0.4; const hit = rc.intersectObject(o.mesh, false)[0];
+            if (hit && strict) { seat = true; above = Math.min(above, hit.distance - 0.05); } else if (hit) off = Math.min(off, Math.hypot(q.x - pel.x, q.z - pel.z)); } }
           const knee = Math.min(W(v.knL).y, W(v.knR).y) - floor < 0.1, hand = Math.min(W(v.tipL).y, W(v.tipR).y) - floor < 0.08, lean = lw.low > 0.6 && (a.pose.lean ?? 0) > 30;
           run("hover", seat && above > 0.2 && above < Infinity && !knee && !hand, F, 4, () => pose("hover", `he sits in the air: his hips are ${(above * 100).toFixed(0)} cm above the seat under him (sitting, 8-12 cm)`, 1));
-          run("support", !seat && !knee && !hand && !lean, F, 8, () => pose("support", `he is as low as one who sits or squats (hips at ${(lw.low * 100).toFixed(0)} % of standing) with nothing under him: no seat, no knee or hand on the ground`, 1)); }
+          run("support", !seat && !knee && !hand && !lean, F, 8, () => pose("support", `he is as low as one who sits or squats (hips at ${(lw.low * 100).toFixed(0)} % of standing) with nothing under him: ${off < Infinity ? `he sits off the seat's edge, the seat begins ${(off * 100).toFixed(0)} cm behind his hips` : "no seat"}, no knee or hand on the ground`, 1)); }
       };
       // ---- in the picture (rule 5: what cannot be told from being inside is inside) ----
       const foc = 960 / Math.tan((cam.fov * Math.PI) / 360), scr = (p: THREE.Vector3) => { const q = p.clone().project(lens); return { x: (q.x + 1) * 540, y: (1 - q.y) * 960, d: p.distanceTo(C) }; };

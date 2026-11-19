@@ -162,7 +162,7 @@ const T13 = cut("picky", "experts");
 const T14 = cut("experts", "verdict");
 // (the review of v1: in the roped field with the hills behind, not before the village; one sets his rod down in the earth and leans on it,
 // the other watches. Their places are clear of the field's stones and bushes, by world/stjulien.ts's own throw)
-{ const V = lens(4.8, 1.5, 3.6, 0.92, -0.39, -3, 54), e0: V3 = [7.6, 0, 1.76], e1: V3 = [7.79, 0, 2.98];
+{ const V = lens(4.8 - 0.06, 1.5, 3.6 - 0.14, 0.92, -0.39, -3, 72), e0: V3 = [7.6, 0, 1.76], e1: V3 = [7.79, 0, 2.98];
   const mid = (a: V3, b: V3): number => { const h1 = toward(a, b), h2 = toward(a, V.cam.pos); return h1 + ((((h2 - h1) % 360) + 540) % 360 - 180) * 0.6; };
   const H0 = mid(e0, e1), H1 = mid(e1, e0), m0 = mover(EXPERT_D, 1.78, e0[0], e0[2], H0), m1 = mover(EXPERT2_D, 1.74, e1[0], e1[2], H1); m0.stand(9); m1.stand(9);
   m0.actAt(-1, { ...usePose(ROD, "staff", "R"), armL: arm(14, 8, 26, 6), head: [0, 14, 0] }, 10, { in: 0.01, handR: "grip", handL: "relaxed", face: { brow: 0.4, lid: 0.3 } });

@@ -34,7 +34,7 @@ export type MotionFault = { shot: string; who: string; what: string; f0: number;
 /** for setting the limits: MOTION_DEBUG.on = true keeps the largest value of each measure (film_info <film> motion with MOTION_DEBUG=1) */
 export const MOTION_DEBUG = { on: false, top: new Map<string, { v: number; F: number }>(), max(k: string, v: number, F: number) { const e = this.top.get(k); if (!e || v > e.v) this.top.set(k, { v, F }); } };
 const JOINTS: Joint[] = ["pelvis", "neck", "skull", "crown", "shL", "elL", "wrL", "tipL", "shR", "elR", "wrR", "tipR", "hipL", "knL", "anL", "hipR", "knR", "anR"];
-const WING_UP = 50;      // (the elbow-wing test: 52 degrees in trick at v1j was a wing, 47 in the fixed verdict is not)
+const WING_UP = 50, FACE_M = 0.045;      // (face cut, measured from the head's width with its band: 3.9-4.2 % were clipped eyes in the eye patch Short v1p, the mate's face turned to the lens measures about 5 %)      // (the elbow-wing test: 52 degrees in trick at v1j was a wing, 47 in the fixed verdict is not)
 const faceTurn = (phi: number) => { const y = ((((phi + 180) % 360) + 360) % 360) - 180, a = Math.abs(y), s = y < 0 ? -1 : 1; return s * (a <= 45 ? a : a <= 90 ? 45 + (a - 45) * (11 / 45) : a <= 110 ? 56 + (a - 90) * (54 / 20) : a); };
 
 export const motionCheck = (film: Film, opt: { shots?: string[] } = {}) => {
@@ -188,6 +188,14 @@ export const motionCheck = (film: Film, opt: { shots?: string[] } = {}) => {
         //  verdict and trick in v1f-v1j, three independent reviews; the stiff test above lets a bent arm pass)
         //  (every film: the review, 20 Nov: the approved library clip 04 shows the same elbow at 86 degrees and fails it; its file stays as it
         //   is, but where its pose is used in a film the elbow is to be down)
+        // face cut: an eye drawn within FACE_M of its head's outline (the head's width in the picture, its band or hat brim taken off) for
+        //  0.2 s: the head turned further than its face fits, the far eye, nose and moustache cut by the outline (the eye patch Short v1p, the
+        //  mate turned 48-60 degrees, the independent reviewer)
+        if (sd === "L") { let fc: number[] = [], worst = 1;
+          for (let i = 0; i < frames.length; i++) { const B = frames[i].figs.get(name) as any; if (!B || !B.eyes || B.eyes.length < 2 || !B.hx) { fc = []; continue; }
+            const m = Math.min(...B.eyes.map((q: { e: [number, number] }) => Math.min(q.e[0] - B.hx[0], B.hx[1] - q.e[0]))) / B.H;
+            if (m >= FACE_M) { fc = []; continue; } worst = Math.min(worst, m);
+            fc.push(i); if (fc.length >= 6) note(`${s.id}|${name}|facecut`, { shot: s.id, who: name, what: `${name}'s far eye lies ${(m * 100).toFixed(1)} % of his height from his head's outline (at least ${(FACE_M * 100).toFixed(1)} %): the head is turned further than the face fits, the eye, nose and moustache cut by the outline` }, frames[i].F); } }
         // fore-short: the forearm drawn to almost nothing (under 30 % of the upper arm as the picture shows them) for 0.3 s: the hand comes
         //  toward the lens and sits on the elbow (the shot library round 4, 01 and 06, the review, 20 Nov: the forearm test saw a forearm hid
         //  behind the upper arm, not one shrunk toward the lens)

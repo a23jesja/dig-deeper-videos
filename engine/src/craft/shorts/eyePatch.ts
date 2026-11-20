@@ -40,10 +40,10 @@ const SQUINT: Face = { brow: -0.6, lid: 0.62, smile: -0.1 }, SMUG: Face = { brow
 // ---------------- v1c (the review of v1b, 20 Nov): below deck dark behind shut shutters, the patch's move shown in two close-ups (deck,
 // a whoosh, the dark), the same open book in his hands in every shot, the mate searching with his eyes and hands, no shot still for more
 // than 2.5 s, no jump cut, no picture twice, and the last shot the first one again so that the film loops ----------------
-const KK = 0.52, FF = 0.36, HW = 0.31;      // (HW: half the hands' spacing, the book's grips apart (0.54 wide, 4 cm out each side): at 0.27 the book sat centred between hands closer than its grips, so each fist hid behind its edge at some lenses, the independent review of v1g)
+const BF = 0.12, GO = 0.04, KK = 0.52, FF = 0.36, HW = 0.31;      // (v1q: the book turned cover out has its edges further back than its spine, and with the halves folded 0.25 rad the fists stood off its edges; folded 0.12 its edges come forward to them)      // (HW: half the hands' spacing, the book's grips apart (0.54 wide, 4 cm out each side): at 0.27 the book sat centred between hands closer than its grips, so each fist hid behind its edge at some lenses, the independent review of v1g)
 //      // (the shot library 04's grip; 0.55-0.6 high turned an elbow the wrong way at some lenses)
 // (held 4 cm out past its edges: the fists show at its sides and the thumbs come over the edge, as at 750 in v1d; held at the edge, the fists hid behind it and the thumbs lay on the page like two blobs, the reviews of v1d and v1f)
-const BOOK = once(() => noShade(logBook(0.54, 0.36, 0.25, 0.04))), T0H = { handL: "thumb" as const, handR: "thumb" as const };
+const BOOK = once(() => noShade(logBook(0.54, 0.36, BF, GO))), T0H = { handL: "thumb" as const, handR: "thumb" as const };
 const READ: Face = { brow: 0.6, lid: 0.42, smile: 0.6, gaze: [-0.1, 0.9] };      // (gaze y: + is down)
 /** the book turned round on its upright middle line: its cover to the lens and its pages to him, as a book is held to be read (the review
  *  of v1k: with its pages to the lens he read the back of it). The grips lie either side of that line, so the hands stay on them; his
@@ -109,22 +109,25 @@ const SEARCH = (g: number): Face => ({ brow: 1, lid: 0.12, wide: 0.35, mouth: 0.
 const SHOUT: Face = { brow: 1, lid: 0, wide: 0.9, mouth: 0.85, smile: -0.8, gaze: [0.4, -0.2] };      // (eyes wide open, brows up: the v1e look showed him calm, lids half down)
 // (the review of v1d: he "presented", forearms out and palms up, the same in every shot. Now his forearms reach forward low, where a loose hand
 //  is drawn edge on, each shot its own way; a stumble now and then; one hand feeling along the table's edge)
+const MT = Number(process.env.MT ?? 0.5), HS = Number(process.env.HS ?? 0.3);      // (the mate's body turned half and his head a third as far as asked: further, his far eye, nose and moustache were cut by his head's outline, the face test after the independent reviewer of v1p)
 const FEEL: [[Seg, Seg], [Seg, Seg]][] = [
   [[[16, 6], [26, 4]], [[6, 8], [16, 6]]],
   [[[8, 8], [16, 6]], [[16, 6], [26, 4]]],
   [[[14, 4], [22, 2]], [[10, 10], [18, 8]]]];      // (low and a little out from the body, the hands loose: further out or forward, the hand was drawn palm up, "presenting", the independent review of v1f)
 const mate = (at: V3, V: Lens, turn: number, v: number, len: number, o: { hang?: boolean; shout?: boolean; stumble?: number; heads?: number } = {}) => {
-  const m = mover(MATE_SHORT_D, HM, at[0], at[2], V.toward(at[0], at[2], turn)); m.w = 0.09; m.stand(9);
+  // (his body turned MT of the asked turn from the lens: at full turn his far eye, nose and moustache were cut by the head's outline, the
+  //  face test after the independent reviewer of v1p)
+  const m = mover(MATE_SHORT_D, HM, at[0], at[2], V.toward(at[0], at[2], turn * MT)); m.w = 0.09; m.stand(9);
   const [A, B] = o.hang ? [REST.armL as [Seg, Seg], REST.armR as [Seg, Seg]] : FEEL[v % 3], R2 = { handL: "relaxed" as const, handR: "relaxed" as const }, sw = (q: [Seg, Seg], k: number): [Seg, Seg] => [[q[0][0] + 8 * k, q[0][1] + 4], [q[1][0] + 8 * k, q[1][1] + 6]];
   const F0 = o.shout ? SHOUT : SEARCH(0.8), F1 = o.shout ? { ...SHOUT, gaze: [-0.4, -0.2] as [number, number] } : SEARCH(-0.8);
-  ease(m, -1, { armL: A, armR: B, head: [18, -4, 0], lean: 6 }, 0.01, { ...R2, face: F0 });
+  const hs = o.heads ?? (o.shout ? 0.3 : HS);      // (at full swing his far eye was cut by the head's outline, the independent review of v1m)
+  ease(m, -1, { armL: A, armR: B, head: [18 * hs, -4, 0], lean: 6 }, 0.01, { ...R2, face: F0 });
   // (always moving: the head round from side to side with the eyes, the hands searching; a period that never stops for long)
-  const hs = o.heads ?? (o.shout ? 0.4 : 0.7);      // (at full swing his far eye was cut by the head's outline, the independent review of v1m)
   wag(m, 0.0, len + 0.5, P({ armL: A, armR: B, head: [24 * hs, -5, 5 * hs], lean: 6, px: 0.014 }), P({ armL: sw(A, 1), armR: sw(B, -1), head: [-22 * hs, -2, -5 * hs], lean: 8, px: -0.014 }), 0.95 + 0.12 * v, { ...R2, face: F1, glide: true });
-  if (o.stumble !== undefined) { ease(m, o.stumble, { armL: sw(A, 1.5), armR: sw(B, 1.5), lean: 11, px: 0.035, py: -0.02, head: [10, 8, 6] }, 0.32, { ...R2, face: { ...F0, wide: 0.7, lid: 0, mouth: 0.4 } });
-    ease(m, o.stumble + 0.55, { armL: A, armR: B, lean: 6, px: 0, py: 0, head: [-14, -3, 0] }, 0.4, { ...R2, face: F1 });
+  if (o.stumble !== undefined) { ease(m, o.stumble, { armL: sw(A, 1.5), armR: sw(B, 1.5), lean: 11, px: 0.035, py: -0.02, head: [10 * hs, 8, 6] }, 0.32, { ...R2, face: { ...F0, wide: 0.7, lid: 0, mouth: 0.4 } });
+    ease(m, o.stumble + 0.55, { armL: A, armR: B, lean: 6, px: 0, py: 0, head: [-14 * hs, -3, 0] }, 0.4, { ...R2, face: F1 });
     // (searching again after he has caught himself: the pose above held him still to the end of the shot, the still-figure test, v1k)
-    if (o.stumble + 1.0 < len) wag(m, o.stumble + 1.0, len - o.stumble - 0.5, P({ armL: A, armR: B, head: [-14 + 20 * hs, -5, 5 * hs], lean: 6, px: 0.012 }), P({ armL: sw(A, 1), armR: sw(B, -1), head: [-14 - 18 * hs, -2, -5 * hs], lean: 8, px: -0.012 }), 0.95 + 0.12 * v, { ...R2, face: F1, glide: true }); }
+    if (o.stumble + 1.0 < len) wag(m, o.stumble + 1.0, len - o.stumble - 0.5, P({ armL: A, armR: B, head: [20 * hs, -5, 5 * hs], lean: 6, px: 0.012 }), P({ armL: sw(A, 1), armR: sw(B, -1), head: [-18 * hs, -2, -5 * hs], lean: 8, px: -0.012 }), 0.95 + 0.12 * v, { ...R2, face: F1, glide: true }); }
   return { cast: (t: number) => on("mate", MATE_SHORT_D, m, t, FL, {}, 5) };
 };
 /** the mate at the table's front edge, his right hand on it, feeling along it from one end toward the other, his left hand searching the air */
@@ -132,12 +135,12 @@ const TABLE_EDGE = (x: number): V3 => inCabin([x, 0.76 + 0.025, CABIN.table[2] +
 const mateTable = (at: V3, V: Lens, turn: number, len: number) => {
   const hd = V.toward(at[0], at[2], turn), m = mover(MATE_SHORT_D, HM, at[0], at[2], hd); m.w = 0.09; m.stand(9);
   const st: Stand = { D: MATE_SHORT_D, at: [at[0], FL, at[2]], heading: hd, h: HM, cam: V.cam, pose: {} };
-  const onEdge = (x: number) => { const q = TABLE_EDGE(x); return reach(st, "R", [q[0], FL + 0.76 + 0.035 + 0.07, q[2]]); };      // (the fist resting on the top: 7.5 cm, where the hand just meets it (4.5 cm put it 7 cm into the top); 10 cm up it hovered, the independent review of v1o)      // (the fist on the top just in from the edge: at the edge it sank into it, the independent review of v1i)      // (the palm on the top, the hand lying on it)
+  const onEdge = (x: number) => { const q = TABLE_EDGE(x); return reach(st, "R", [q[0], FL + 0.76 + 0.035 + 0.085, q[2]]); };      // (the fist resting on the top: 7.5 cm, where the hand just meets it (4.5 cm put it 7 cm into the top); 10 cm up it hovered, the independent review of v1o)      // (the fist on the top just in from the edge: at the edge it sank into it, the independent review of v1i)      // (the palm on the top, the hand lying on it)
   const R2 = { handL: "relaxed" as const, handR: "fist" as const }, L0: [Seg, Seg] = [[8, 14], [22, 6]];      // (the hanging hand a little out from his hip: in at the front it read as on his groin, the independent review of v1i)      // (the hand curled over the table's edge: laid open, it was drawn palm up)
-  ease(m, -1, { ...onEdge(0.3), armL: L0, head: [-16, 6, 0], lean: 8 }, 0.01, { ...R2, face: SEARCH(0.6) });
-  ease(m, 0.15, { ...onEdge(0.33), armL: [[12, 8], [30, -4]], head: [12, 7, 3], lean: 9 }, 0.8, { ...R2, face: SEARCH(-0.7) });
-  ease(m, 1.05, { ...onEdge(0.36), armL: [[6, 12], [24, -10]], head: [-10, 6, -3], lean: 8 }, 0.8, { ...R2, face: SEARCH(0.7) });
-  ease(m, 1.95, { ...onEdge(0.39), armL: L0, head: [16, 5, 4], lean: 9 }, 0.8, { ...R2, face: SEARCH(-0.6) });
+  ease(m, -1, { ...onEdge(0.3), armL: L0, head: [-8, 6, 0], lean: 8 }, 0.01, { ...R2, face: SEARCH(0.6) });
+  ease(m, 0.15, { ...onEdge(0.33), armL: [[12, 8], [30, -4]], head: [6, 7, 3], lean: 9 }, 0.8, { ...R2, face: SEARCH(-0.7) });
+  ease(m, 1.05, { ...onEdge(0.36), armL: [[6, 12], [24, -10]], head: [-5, 6, -3], lean: 8 }, 0.8, { ...R2, face: SEARCH(0.7) });
+  ease(m, 1.95, { ...onEdge(0.39), armL: L0, head: [8, 5, 4], lean: 9 }, 0.8, { ...R2, face: SEARCH(-0.6) });
   return { cast: (t: number) => on("mate", MATE_SHORT_D, m, t, FL, {}, 5) };
 };
 
@@ -199,7 +202,7 @@ const opening = (id: string, a: number, b: number) => { const r = reader(PIR_AT,
   add({ id, a, b, V: WIDE, cast: [r.cast, mt.cast], things: r.book, sun: false, patch: "B", look: r.look, sounds: [{ t: 0, k: "creak", g: 0.8 }, { t: 0.4, k: "thud", g: 0.3 }], ...(id === "hook" ? {} : { newScene: { pirate: "the same moment below as the opening: the film loops" } }) }); };
 opening("hook", 0, S.s2);
 // 2. ONE IDEA: SO THEY NEVER FOUGHT BLIND. The mate at the table, his hand feeling along its edge, his eyes screwed up
-const TBL_AT = inCabin([0.5, 0, -0.18]), YW = 70, TN = -40;
+const TBL_AT = inCabin([0.5, 0, -0.18]), YW = 70, TN = -20;
 { const V = frameOn(TBL_AT, FL, YW, "two", 50, 1), mt = mateTable(TBL_AT, V, TN, S.s3 - S.s2); add({ id: "dark", a: S.s2, b: S.s3, V, cast: [mt.cast], sun: false, hide: ["cabin stool"] }); }      // (the stool hidden: it stood before his feet, cutting one, in seconds 2-5: the independent review of v1f)
 // 3. UP ON DECK, THE SUN IS BLINDING. On deck in the sun: the pirate reads (the patch on his right eye), the mate squints
 //    (the lens tipped 4 degrees up and the two half a step further off: tipped down, the merchant's hatch stood cut by the bottom right
@@ -209,14 +212,16 @@ const TBL_AT = inCabin([0.5, 0, -0.18]), YW = 70, TN = -40;
   ease(mm, -1, { ...REST, head: [8, -6, 0], lean: 3 }, 0.01, { ...LOOSE, face: SQUINT }); ease(mm, 0.5, { ...REST, head: [-6, -9, 0], lean: 5, py: -0.01 }, 1.0, { ...LOOSE, face: { ...SQUINT, lid: 0.75 } });
   add({ id: "sun", a: S.s3, b: S.s4, V: SV, push: 0.08, cast: [r.cast, (t) => on("mate", MATE_SHORT_D, mm, t, MD, {}, 5)], things: r.book, sun: true, patch: "A", look: r.look, newScene: { pirate: "up on deck in the sun: another place than below" } }); }
 // 4. GO BELOW, AND YOU CAN'T SEE A THING. Below, wide and dark, the mate small in the room, feeling his way, stumbling
-{ const V = frameOn(MAT_AT2, FL, -32, "full", 50, 1.4), mt = mate(MAT_AT2, V, 60, 1, S.s4b - S.s4, { stumble: 1.0 }); add({ id: "below", a: S.s4, b: S.s4b, V, cast: [mt.cast], sun: false, sounds: [{ t: 0.05, k: "creak", g: 0.6 }, { t: 1.05, k: "thud", g: 0.35 }] }); }
+{ const V = frameOn(MAT_AT2, FL, -32, "full", 50, 1.4), mt = mate(MAT_AT2, V, 60, 0, S.s4b - S.s4, { stumble: 1.0 }); add({ id: "below", a: S.s4, b: S.s4b, V, cast: [mt.cast], sun: false, sounds: [{ t: 0.05, k: "creak", g: 0.6 }, { t: 1.05, k: "thud", g: 0.35 }] }); }
 // 5. "Who blew out the sun?!" Close on the mate's face in the dark, shouting, his head high in the picture
 { const V = frameOn(MAT_AT2, FL, -12, "close", 36, 1, 1.62), mt = mate(MAT_AT2, V, 8, 0, S.s5 - S.s4b, { hang: true, shout: true }); add({ id: "who", a: S.s4b, b: S.s5, V, push: 0.03, cast: [mt.cast], sun: false, close: true }); }  // (turned less: the far eye was pressed against the head's outline in the close-up, the independent review of v1o)
 // 6. EYES NEED TWENTY TO THIRTY MINUTES... The pirate reading, seen from his left at three quarters, the book tipped up to him, his head
 //    following the lines
 { const V = frameOn(PIR_AT, FL, -38, "full", 80, C1[0], 1.74, C1[1]), r = reader(PIR_AT, FL, V, 24, false, S.s5b - S.s5, { lines: true, tilt: TLT }); add({ id: "calm", a: S.s5, b: S.s5b, V, cast: [r.cast], things: r.book, sun: false, patch: "B", look: r.look }); }
 // 7. ...TO GET USED TO THE DARK. The mate from behind his right shoulder, his hands low and searching
-{ const V = frameOn(MAT_AT, FL, 46, "full", 50, 1.55, 1.74, MA), mt = mate(MAT_AT, V, 60, 2, S.s6 - S.s5b); add({ id: "mins", a: S.s5b, b: S.s6, V, cast: [mt.cast], sun: false }); }
+// (the mate in mins 30 cm further from the table: turned less, so that his face fits his head, his forearm swung into its top)
+const MAT_M: V3 = [MAT_AT[0], MAT_AT[1], MAT_AT[2] + 0.3];
+{ const V = frameOn(MAT_M, FL, 46, "full", 50, 1.55, 1.74, MA), mt = mate(MAT_M, V, 40, 1, S.s6 - S.s5b); add({ id: "mins", a: S.s5b, b: S.s6, V, cast: [mt.cast], sun: false }); }
 // 8. BUT AN EYE UNDER A PATCH... On deck, the pirate reading in the sun, from low at his side
 { const V = lens(PIR_DECK[0] - 2.6 + D2X, MD + D2Y, PIR_DECK[1] - 1.75, 0.83, 0.56, D2P, 52), r = reader(PIR_DECK3, MD, V, 20, true, S.s6b - S.s6); add({ id: "deck2", a: S.s6, b: S.s6b, V, hide: ["brigcask", "brigcoil"], cast: [r.cast], things: r.book, sun: true, patch: "A", look: r.look, newScene: { pirate: "up on deck in the sun: another place than below" } }); }
 // 9. ...IS ALREADY USED TO IT. Close on his face in the sun: the patch over his right eye (the first of the pair)

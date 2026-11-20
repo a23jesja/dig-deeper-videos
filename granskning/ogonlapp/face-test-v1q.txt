@@ -1,0 +1,18 @@
+== planted: the mate turned as in v1p (MT 1, HS 0.7)
+hook frames 5-66 (film 0.17-2.23 s): mate's far eye lies 4.1 % of his height from his head's outline (at least 4.5 %): the head is turned further than the face 
+below frames 235-297 (film 7.83-9.93 s): mate's far eye lies 4.0 % of his height from his head's outline (at least 4.5 %): the head is turned further than the f
+mins frames 399-438 (film 13.30-14.63 s): mate's far eye lies 4.1 % of his height from his head's outline (at least 4.5 %): the head is turned further than the 
+test frames 667-717 (film 22.23-23.93 s): mate's far eye lies 4.2 % of his height from his head's outline (at least 4.5 %): the head is turned further than the 
+verdict frames 723-777 (film 24.10-25.93 s): mate's far eye lies 4.5 % of his height from his head's outline (at least 4.5 %): the head is turned further than t
+end frames 1036-1083 (film 34.53-36.13 s): mate's far eye lies 4.1 % of his height from his head's outline (at least 4.5 %): the head is turned further than the
+MOTION CHECK FAILED for eye-patch: 6 faults
+== control: v1q (MT 0.5, HS 0.3)
+MOTION CHECK OK for eye-patch: 0 faults
+== shot-library (Sir, all clips)
+stand-and-talk frames 24-103 (film 0.80-3.47 s): sir's right forearm is drawn almost to nothing (17 % of the upper arm) for 0.3 s: the hand sits on the elbow
+hold-with-both-hands frames 371-479 (film 12.37-16.00 s): sir's right elbow juts out: the upper arm 86 degrees up from hanging while the forearm drops back to t
+react frames 689-689 (film 22.97-23.00 s): sir's left forearm is drawn almost to nothing (29 % of the upper arm) for 0.3 s: the hand sits on the elbow
+sit frames 890-911 (film 29.67-30.40 s): sir's right forearm is drawn almost to nothing (8 % of the upper arm) for 0.3 s: the hand sits on the elbow
+MOTION CHECK FAILED for shot-library: 4 faults
+== shot-library-r3d (approved 04 and 08 as rendered)
+MOTION CHECK FAILED for shot-library-r3d: 12 faults

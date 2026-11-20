@@ -1,0 +1,4 @@
+body check: 1084 frames, 1243 figure-frames, 6645 pairs tried, 0 faults
+motion check: 0 faults
+FILM CHECK OK for eye-patch: 19 shots, 36.1 s, no figure seen from more than 35 degrees above, none standing in another or in a solid, none jumping, no face covered and no figure cut by a thing in the foreground
+grips ok: 638 readings of a thing in a hand, every grip in the hand, a hand on every held thing and every working end where its use allows; every face whole in every frame (not a quarter of it outside the picture, behind another figure's head, body or arm, or behind a held thing)

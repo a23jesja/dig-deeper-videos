@@ -341,7 +341,10 @@ export const motionCheck = (film: Film, opt: { shots?: string[] } = {}) => {
     // (sharpened after the eye patch Short v1k, where four cabin shots of him in the middle, whole, the book at his chest, passed: a card
     //  figure is drawn the same from any side, so the lens's turn does not count; the same figures, each within 30 % as big, within 0.18 of
     //  the picture's width and height of where it stood in it, its face turned within 20 degrees of the other's)
-    if (!same && dp < 4) { let comp = true;      // (in the same place: on deck and below deck are not the same picture)
+    // (in the same place: every figure within 3 m of where it stood in the other shot. The lenses' distance let two shots of the mate in
+    //  one dark room pass, the lenses 4.4 m apart, the eye patch Short v1n, the independent reviewer; on deck and below deck are 50 m apart)
+    const near3 = [...fa.figs].every(([name, ga]) => { const gb = fb.figs.get(name); return !!gb && Math.hypot(ga.at[0] - gb.at[0], ga.at[2] - gb.at[2]) < 3; });
+    if (!same && near3) { let comp = true;
       for (const [name, ga] of fa.figs) { const gb = fb.figs.get(name) as any; if (!gb) { comp = false; break; } const r2 = gb.H / ga.H, fA2 = (ga as any).face ?? 0, fB2 = gb.face ?? 0;
       if (r2 < 0.77 || r2 > 1.3 || Math.abs(gb.pic.skull[0] - ga.pic.skull[0]) > 0.18 * 1080 || Math.abs(gb.pic.skull[1] - ga.pic.skull[1]) > 0.18 * 1920 || Math.abs(fA2 - fB2) > 20) comp = false; } same = comp; }
     if (same) note(`${B.s.id}|twice|${A.s.id}`, { shot: B.s.id, who: "", what: `${B.s.id} is the same picture as ${A.s.id} again: the same figures in the same places, the lens ${dp.toFixed(2)} m and ${angleBetween(ca, cb).toFixed(0)} degrees from where it was` }, fb.F); }

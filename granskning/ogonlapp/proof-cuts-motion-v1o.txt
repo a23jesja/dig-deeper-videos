@@ -1,0 +1,6 @@
+C1-b-jump-cut frames 60-60 (film 2.00-2.03 s): a jump cut into C1-b-jump-cut: sir stays about as big (101 %) and in the same place, the lens turned 2 degrees: change the size or the angle clearly, or leave the cut out
+C3-still-three-seconds frames 314-314 (film 10.47-10.50 s): C3-still-three-seconds stands still for 2.5 s: no figure moves more than 0.0 % of its height and the lens hardly moves
+C3-still-three-seconds frames 269-269 (film 8.97-9.00 s): C3-still-three-seconds stands still for 1.0 s: no figure moves more than 0.0 % of its height and the lens hardly moves
+C3-still-three-seconds frames 269-269 (film 8.97-9.00 s): sir stands still for 1 s: no joint moves more than 0.0 cm and his head turns under 3 degrees (the lens may glide, he does not move)
+C5-z-the-same-again frames 570-570 (film 19.00-19.03 s): C5-z-the-same-again is the same picture as C5-x again: the same figures in the same places, the lens 0.00 m and 0 degrees from where it was
+MOTION CHECK FAILED for proof-cuts: 5 faults

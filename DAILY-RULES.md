@@ -527,6 +527,10 @@ natural pauses at commas and full stops. Three candidates read the same script a
   and Hugging Face pages before download): a designed voice from a text description of Sir Digsworth, no cloning.
 - **C. Chatterbox** (MIT per Resemble AI; read the LICENSE on GitHub first; every output carries an inaudible
   watermark): its default voice, or cloned only from audio we own (a bm_george sample or Jesper's own voice).
+- **D. ElevenLabs** (Jesper 2026-11-20: paid Starter plan, approved for the voice only): three or four British
+  narrator voices from their voice library, no cloning. The API key lives only in the environment variable
+  ELEVENLABS_API_KEY on the computer; never print it, log it, write it to a file or commit it. Report credits used
+  after every run. Starter covers about 20-25 Shorts a month with retakes; move to Creator when long videos start.
 Never clone or imitate a real person or another channel's narrator. Non-commercial models are never used
 (F5-TTS weights, XTTS-v2, Voxtral, Fish Speech without a paid licence). The chosen voice is then fixed for Sir
 Digsworth; side characters keep short lines in other free voices.

@@ -605,7 +605,7 @@ export const piratePrint = (w = 0.44, h = 0.34) => { const map = paint("piratepr
     // the deck in front
     g.fillStyle = "#cdb88c"; F([[32, 392], [628, 392], [628, 482], [32, 482]]); g.fillStyle = ink; L([[32, 392], [628, 392]], 3); for (let x = 40; x < 628; x += 26) L([[x, 396], [x - 14, 480]], 1.4);
     // three pirates
-    const pirate = (cx: number, base: number, sword: number, beard: boolean) => { const top = base - 250;
+    const pirate = (cx: number, base: number, sword: number, beard: boolean, bend = 1) => { const top = base - 250;
       g.fillStyle = "#ead9b0"; F([[cx - 44, top + 92], [cx + 44, top + 92], [cx + 54, base - 70], [cx - 54, base - 70]]); g.fillStyle = ink;
       L([[cx - 44, top + 92], [cx + 44, top + 92], [cx + 54, base - 70], [cx - 54, base - 70], [cx - 44, top + 92]], 3);       // the coat
       for (let y = top + 100; y < base - 74; y += 8) L([[cx - 46 + (y - top - 92) * 0.06, y], [cx - 22, y]], 1);                // its shading
@@ -631,10 +631,11 @@ export const piratePrint = (w = 0.44, h = 0.34) => { const map = paint("piratepr
       const sx = cx + sword * 40, hx = cx + sword * 78, hy = top + 66;
       L([[sx, top + 102], [cx + sword * 66, top + 100], [hx, hy]], 18); g.strokeStyle = "#ead9b0"; L([[sx, top + 102], [cx + sword * 66, top + 100], [hx, hy]], 11); g.strokeStyle = ink;
       g.fillStyle = "#ead9b0"; g.beginPath(); g.arc(hx, hy, 9, 0, 7); g.fill(); g.fillStyle = ink; g.lineWidth = 2.5; g.stroke();
-      g.lineWidth = 4; g.beginPath(); g.moveTo(hx, hy - 8); g.quadraticCurveTo(hx + sword * 30, hy - 40, hx + sword * 16, hy - 88); g.stroke(); L([[hx - 12, hy - 6], [hx + 12, hy - 10]], 5);
+      g.lineWidth = 4; g.beginPath(); g.moveTo(hx, hy - 8); g.quadraticCurveTo(hx + sword * 30 * bend, hy - 40, hx + sword * 16 * bend, hy - 88); g.stroke(); L([[hx - 12, hy - 6], [hx + 12, hy - 10]], 5);
       const ox = cx - sword * 46; L([[ox, top + 102], [ox - sword * 6, top + 150], [ox - sword * 4, top + 190]], 16); g.strokeStyle = "#ead9b0"; L([[ox, top + 102], [ox - sword * 6, top + 150], [ox - sword * 4, top + 190]], 9); g.strokeStyle = ink;
       g.fillStyle = "#ead9b0"; g.beginPath(); g.arc(ox - sword * 4, top + 194, 8, 0, 7); g.fill(); g.fillStyle = ink; g.lineWidth = 2.5; g.stroke(); };
-    pirate(150, 470, -1, true); pirate(300, 466, 1, false); pirate(440, 472, 1, true); });
+    pirate(150, 470, -1, true); pirate(300, 466, 1, false, -0.5);      // (his blade curved back over his own head: curved out it ran through his neighbour's hat brim, the independent review of v1g)
+    pirate(440, 472, 1, true); });
   // (no shadow falls on it: the daylight from the cabin's open side laid a beam's shadow edge across it, a band of light from nowhere)
   return group([mesh(box(w + 0.05, h + 0.05, 0.025), "#3a2416", { at: [0, 0, -0.012], receive: false }), mesh(box(w, h, 0.01), "#ffffff", { map, line: 0.4, shadow: false, receive: false })]); };
 /** a ship's log held open the same way: both pages ruled with lines of handwriting (no words to read), a small sketch of a ship on the left */

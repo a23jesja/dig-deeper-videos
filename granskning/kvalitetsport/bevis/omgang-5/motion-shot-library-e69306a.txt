@@ -1,0 +1,13 @@
+stand-and-talk frames 17-36 (film 0.57-1.23 s): sir's left arm is held straight out at shoulder height (bent 36 degrees, 48 up from hanging) for half a second while he does not look at his hand
+stand-and-talk frames 11-97 (film 0.37-3.27 s): sir's hand jerks: his wrL's movement changes by 2.7 % of his height in one frame from a standstill or to one, with no easing in or out
+walk-across frames 200-239 (film 6.67-8.00 s): sir's head is drawn 63 degrees turned from the lens: in profile or from behind, an angle the rig must not draw (the face turned toward us within 60 degrees)
+walk-across frames 123-170 (film 4.10-5.70 s): sir's pipe stands half see-through (the head held at the angle where it goes out of sight behind the face)
+turn-and-look frames 309-359 (film 10.30-12.00 s): sir looks straight out while what he looks at (the bottle on the stool) is 31 degrees below his eyes
+hold-with-both-hands frames 376-376 (film 12.53-12.57 s): sir's hand jerks: his wrL's movement changes by 2.5 % of his height in one frame from a standstill or to one, with no easing in or out
+hold-with-both-hands frames 376-377 (film 12.53-12.60 s): the chest in the hand jerks: its turn changes by 5.5 degrees in one frame
+point frames 483-492 (film 16.10-16.43 s): sir's pipe stands half see-through (the head held at the angle where it goes out of sight behind the face)
+point frames 504-599 (film 16.80-20.00 s): sir looks straight out while what he looks at (the bottle he points at) is 30 degrees below his eyes
+react frames 634-634 (film 21.13-21.17 s): sir's body jerks: his neck's movement changes by 0.4 % of his height in one frame from a standstill or to one, with no easing in or out
+open-a-door frames 720-749 (film 24.00-25.00 s): sir's right arm is held straight out at shoulder height (bent 16 degrees, 48 up from hanging) for half a second while he does not look at his hand
+sit frames 884-920 (film 29.47-30.70 s): sir's right hand rests on nothing: open and still for 0.7 s, 15 cm off his thighs, above the seat, holding nothing
+MOTION CHECK FAILED for shot-library: 12 faults

@@ -102,4 +102,31 @@ add("W-hand-through-a-door", sir({ armR: [[30, 10], [70, 8]] }), (g, c, _cam, t)
 const BOXL = mesh(box(0.4, 0.5, 0.4), "#6a4a2a", { at: [0.7, 0.25, -0.2] }), LANT = mesh(box(0.15, 0.25, 0.15), "#ffd27a", { at: [0.7, 0.62, -0.2] }); LANT.name = "lantern";
 add("X-lantern-gone", sir({}), (g, _c, _cam, t) => { g.add(BOXL); if (at1(t) < 30) g.add(LANT); });
 
+// Y-AF. THE TESTS MENDED AFTER THE SHOT LIBRARY'S ROUND 2 (the review, 20 Nov: "Varje lagat test ska visas mot den ruta i e69306a som det
+//    missade"). Each a fault made on purpose that `film_info proof-faults motion` must stop, and two controls it must pass
+// Y. BARE PROFILE: he stands turned 100 degrees from the lens, the head drawn in profile (02 frame 80)
+add("Y-head-in-bare-profile", sir({}, 100));
+// Z. A HAND IN THE AIR: seated right (E), his right arm hanging off the seat's side, the hand open beside his hip, on nothing (08 frame 45)
+add("Z-hand-in-the-air", { ...sitter("sir", SIR_D, 1.75, TURN, true), pose: { ...POSES.stand, ...SEATED, armR: [[22, 30], [74, 58]] } }, seat(0.1, 0.36));
+// AA. AN ARM HELD STRAIGHT OUT AT A THING HE DOES NOT LOOK AT: the right arm out to his side a little under shoulder height, nearly
+//     straight, for the whole shot, his eyes on the lens (07 0-1.3 s)
+add("AA-arm-out-eyes-elsewhere", sir({ armR: [[-6, 52], [-4, 50]] }));
+// AB. A THING IN THE HAND THAT JERKS: he holds the wooden sword lowered (I), and on the 30th frame it turns 5 degrees in the hand at once
+//     and stays so (04 frames 15-16, the book)
+const SWORD2 = woodSword();
+add("AB-thing-jerks-in-the-hand", { ...sir({ ...usePose(WOODSWORD, "lowered", "R") }), o: { handL: "relaxed", handR: "grip" } }, (g, c, cam, t) => { wield(g, SWORD2, WOODSWORD, "lowered", c.sir, "R", cam); if (at1(t) >= 30) SWORD2.rotateX((5 * Math.PI) / 180); });
+// AC. A START WITH NO EASING IN: he stands still, and on the 30th frame throws both hands up and leans back, at full speed from the first
+//     frame (a straight blend over 0.4 s from a standstill, as the react clip did: 06 frames 33-34)
+const UPA: [[number, number], [number, number]] = [[26, 12], [128, 18]], lin = (t: number) => Math.min(1, Math.max(0, (t - 1) / 0.4));
+const mixS = (a: [[number, number], [number, number]], b: [[number, number], [number, number]], k: number) => a.map((q, i) => q.map((v, n) => v + (b[i][n] - v) * k)) as [[number, number], [number, number]];
+add("AC-start-with-no-easing", (t) => [sir({ lean: -8 * lin(t), armL: mixS(POSES.stand.armL as [[number, number], [number, number]], UPA, lin(t)), armR: mixS(POSES.stand.armR as [[number, number], [number, number]], UPA, lin(t)) })], undefined, { newScene: { sir: "another proof case: the sword of AB is not his here (the empty field shows it)" } });
+// AD. LOOKING STRAIGHT OUT AT A THING ON THE FLOOR: the shot says he looks at a box on the floor right in front of him; his eyes look
+//     straight out (03 and 05: the bottle on the stool)
+const BOXF = mesh(box(0.3, 0.2, 0.3), "#6a4a2a", { at: [0, 0.1, 1.0] });
+add("AD-looks-out-not-down", sir({}), (g) => { g.add(BOXF); }, { look: { sir: { at: [0, 0.1, 1.0], what: "the box on the floor in front of him" } } });
+// AE. A PIPE LEFT HALF SEE-THROUGH: he stands turned 70 degrees, where the pipe on the far side of his face fades out
+add("AE-pipe-half-faded", sir({}, 70));
+// AF. CONTROL for AA: the same arm out, and his eyes on his hand. The checks must pass it
+add("AF-control-arm-out-looks-at-it", { ...sir({ armR: [[-6, 52], [-4, 50]] }), o: { handL: "relaxed", handR: "point", face: { gaze: [-1, 0] } } });
+
 export const PROOF_FAULTS: Film = { id: "proof-faults", fps: 30, seconds: shots.length * LEN, range: [0, 999], sky: "#9cc8f0", world, shots, words: [], hook: { text: [], a: 0, b: 0 }, light: dayLight(DAY.from, [0, 1, 0]) };

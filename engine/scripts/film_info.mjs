@@ -26,7 +26,7 @@ if (typeof globalThis.document === "undefined") {
   globalThis.document = { createElement: () => { const g = context(); return { width: 300, height: 150, style: {}, getContext: () => g, toDataURL: () => "", addEventListener() {} }; }, createElementNS: () => ({ style: {} }) };
   globalThis.Path2D = class { constructor() { return quiet({}); } };
 }
-const { FILMS, captions, auditGrips, occlusions, textOver, bodyCheck, bodyLines, pickAt, stageAt, motionCheck, motionLines } = await import(pathToFileURL(tmp).href); fs.rmSync(tmp, { force: true });
+const { FILMS, captions, auditGrips, occlusions, textOver, bodyCheck, bodyLines, pickAt, stageAt, motionCheck, motionLines, MOTION_DEBUG } = await import(pathToFileURL(tmp).href); fs.rmSync(tmp, { force: true });
 if (!FILMS[name]) { console.error(`no film named ${name}; there are: ${Object.keys(FILMS).join(", ")}`); process.exit(1); }
 const { film, comp } = FILMS[name], f = (t) => Math.round(t * film.fps);
 const rows = film.shots.map((s) => ({ id: s.id, a: f(s.a), b: f(s.b), still: Math.min(f(s.b) - 1, f(s.a + (s.still ?? (s.b - s.a) / 2))), seconds: +(s.b - s.a).toFixed(2) }));
@@ -97,7 +97,7 @@ else if (what === "joints") { const F = Number(process.argv[4]), who = process.a
   for (const a of s.cast(t, s.a + t)) { if (who && a.name !== who) continue; const st = stageAt(a, cam); console.log(`${s.id} ${a.name} at ${a.at.map((x) => x.toFixed(2))} heading ${a.heading.toFixed(0)}`);
     for (const j of ["pelvis", "hipL", "knL", "anL", "heelL", "toeL", "hipR", "knR", "anR", "heelR", "toeR", "wrL", "tipL", "wrR", "tipR", "neck"]) { try { console.log(`  ${j.padEnd(6)} ${st.joint(j).map((x) => x.toFixed(3)).join(" ")}`); } catch { /* no such joint */ } } } }
 // motion [shot,shot] = the frame-to-frame check alone
-else if (what === "motion") { const only = process.argv[4]?.split(","), r = motionCheck(film, only ? { shots: only } : {}), lines = motionLines(film, r); for (const l of lines) console.log(l); console.log(`${lines.length ? "MOTION CHECK FAILED" : "MOTION CHECK OK"} for ${name}: ${lines.length} faults`); process.exit(lines.length ? 1 : 0); }
+else if (what === "motion") { const only = process.argv[4]?.split(","); MOTION_DEBUG.on = !!process.env.MOTION_DEBUG; const r = motionCheck(film, only ? { shots: only } : {}), lines = motionLines(film, r); for (const l of lines) console.log(l); if (MOTION_DEBUG.on) for (const [k, e] of [...MOTION_DEBUG.top].sort()) console.log(`  max ${k}: ${e.v.toFixed(2)} at ${e.F}`); console.log(`${lines.length ? "MOTION CHECK FAILED" : "MOTION CHECK OK"} for ${name}: ${lines.length} faults`); process.exit(lines.length ? 1 : 0); }
 // pose <frame,frame,...> [name] = each figure's heading, view angle and the pose's head, twist and lean on those frames
 else if (what === "pose") { const who = process.argv[5]; for (const F of process.argv[4].split(",").map(Number)) { const T = F / film.fps, s = film.shots.find((q) => T >= q.a - 1e-6 && T < q.b) ?? film.shots.at(-1), t = Math.max(0, T - s.a), cam = s.cam(t, t / (s.b - s.a));
   for (const a of s.cast(t, s.a + t)) { if (who && a.name !== who) continue; const az = (Math.atan2(cam.pos[0] - a.at[0], cam.pos[2] - a.at[2]) * 180) / Math.PI; console.log(`${F} ${s.id} ${a.name} heading ${a.heading.toFixed(1)} yaw ${(a.heading - az).toFixed(1)} head ${JSON.stringify(a.pose.head?.map((x) => +x.toFixed(1)))} twist ${(a.pose.twist ?? 0).toFixed(1)} lean ${(a.pose.lean ?? 0).toFixed(1)} roll ${(a.pose.roll ?? 0).toFixed(2)} mouth ${(a.o.face?.mouth ?? 0).toFixed(2)}`); } } }

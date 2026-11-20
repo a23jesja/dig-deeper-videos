@@ -190,8 +190,15 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
     //  instead of its bowl hanging beside the face with the stem hidden by the head; the review of round 2)
     const fade = old || phiDeg <= 0 ? 1 : Math.max(0, Math.min(1, (54 - phiDeg) / 5)); if (fade <= 0) return t.d;      // (near profile on its far side: drawn 49-54 degrees, the head truly 62-84 turned)
     const a0 = k.g.globalAlpha; k.g.globalAlpha = a0 * fade;
-    piece(k, seg([r0.x, y0], [t.x, y1], 5 * u, 5 * u, 0, 0.3, true), "#3a2618");
-    piece(k, [[t.x - 15 * u, y1 - 34 * u], [t.x + 15 * u, y1 - 34 * u], [t.x + 12 * u, y1 + 7 * u], [t.x - 12 * u, y1 + 7 * u]], "#8a4f2a");
+    if (old) { piece(k, seg([r0.x, y0], [t.x, y1], 5 * u, 5 * u, 0, 0.3, true), "#3a2618"); piece(k, [[t.x - 15 * u, y1 - 34 * u], [t.x + 15 * u, y1 - 34 * u], [t.x + 12 * u, y1 + 7 * u], [t.x - 12 * u, y1 + 7 * u]], "#8a4f2a"); }
+    else {
+      // (a pipe, not a block: the stem dips from the lips and rises into the bowl's lower side; the bowl round at the bottom, its dark
+      //  mouth showing at the top, a streak of shine. The upright brown trapezoid read as a tooth or a block under the moustache, round 2)
+      const sx = Math.sign(t.x - r0.x) || 1, end: P2 = [t.x - sx * 8 * u, y1 + 1 * u], midP: P2 = [(r0.x + end[0]) / 2, Math.max(y0, end[1]) + 4 * u];
+      k.line(spline([[r0.x, y0], midP, end], false, 6), 7 * u, "#2a1a10", "round"); k.line(spline([[r0.x, y0], midP, end], false, 6), 4 * u, "#4a3020", "round");
+      const bowl = spline([[t.x - 13 * u, y1 - 30 * u], [t.x + 13 * u, y1 - 30 * u], [t.x + 13 * u, y1 - 8 * u], [t.x + 7 * u, y1 + 5 * u], [t.x, y1 + 8 * u], [t.x - 7 * u, y1 + 5 * u], [t.x - 13 * u, y1 - 8 * u]], true, 5);
+      piece(k, bowl, "#8a4f2a"); k.shape(ellPts(t.x, y1 - 30 * u, 12 * u, 4 * u), "#2a1810", k.ol * 0.6);
+      k.line([[t.x - sx * 7 * u, y1 - 22 * u], [t.x - sx * 7 * u, y1 - 6 * u]], 2.5 * u, "rgba(255,220,170,0.55)", "round"); }
     k.g.globalAlpha = a0; if (fade > 0.5) k.mark("pipeTip", t.x, y1); if (fade < 1) k.mark("pipeFade", t.x, y1);
     return t.d;
   };

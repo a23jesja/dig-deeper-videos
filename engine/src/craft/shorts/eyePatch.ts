@@ -85,9 +85,9 @@ const reader = (at: V3, y: number, V: Lens, turn: number, sun: boolean, len: num
   //   to the page, the lids low)
   // (the swing 4.5 degrees each way and the way back 0.4 s: at 6 degrees and 0.28 s the face slid up to 17 px a frame in the two-shot and the
   //  outlines strobed, the flicker check of 20 Nov)
-  if (o.lines) { const LT = 1.15, LB = 0.6, R0 = P({ ...hold(KK, FF, 0.015), head: [hy - 3.5, 27, 0] }), R1 = P({ ...hold(KK, FF, 0.015), head: [hy + 3.5, 28, 0] });      // (3.5 degrees and 0.6 s back: at 4.5 and 0.4 s his eyes still moved 15 px a frame in myth)
-    for (let t = 0.0; t < len + 0.3; t += LT) { m.actAt(t, R0, LB, { in: 0.4, out: 0.3, antic: 0, over: 1, ...T0H, face: face({ ...READ, lid: 0.56, gaze: [-0.4, 1] }) });
-      m.actAt(t + LB, R1, LT - LB - 0.02, { in: 0.5, out: 0.4, antic: 0, over: 1, ...T0H, face: face({ ...READ, lid: 0.56, gaze: [0.4, 1] }) }); } }
+  if (o.lines) { const LT = 1.15, LB = 0.45, R0 = P({ ...hold(KK, FF, 0.015), head: [hy - 2.5, 27, 0] }), R1 = P({ ...hold(KK, FF, 0.015), head: [hy + 2.5, 28, 0] });      // (3.5 degrees and 0.6 s back: at 4.5 and 0.4 s his eyes still moved 15 px a frame in myth)
+    for (let t = 0.0; t < len + 0.3; t += LT) { m.actAt(t, R0, LB, { in: 0.35, out: 0.3, antic: 0, over: 1, ...T0H, face: face({ ...READ, lid: 0.56, gaze: [-0.4, 1] }) });
+      m.actAt(t + LB, R1, LT - LB - 0.02, { in: 0.55, out: 0.45, antic: 0, over: 1, ...T0H, face: face({ ...READ, lid: 0.56, gaze: [0.4, 1] }) }); } }
   // (after he looks up he keeps moving: a small nod and sway, pleased with himself; holding still he read as a frozen picture for a second,
   //  the independent review of v1g)
   const hl = -(o.lookFace ?? 0.7) * turn;      // (his head toward the lens when he looks up: see below)
@@ -96,7 +96,7 @@ const reader = (at: V3, y: number, V: Lens, turn: number, sun: boolean, len: num
   // (in a close-up the look-up takes 0.8 s and the nod after it is a third as big: at 0.5 s and full size his face slid 22 px a frame and
   //  its outlines strobed, the flicker check of 20 Nov)
   const ck = o.closeUp ? 0.35 : 1;
-  if (o.looks !== undefined) ease(m, o.looks, { ...hold(KK, FF, 0.015), head: [hl + 2, 3, 0], px: 0 }, o.closeUp ? 0.8 : 0.5, { ...T0H, face: face({ brow: 0.9, lid: 0.15, smile: 0.9 }) });
+  if (o.looks !== undefined) ease(m, o.looks, { ...hold(KK, FF, 0.015), head: [hl + 2, 3, 0], px: 0 }, o.closeUp ? 1.0 : 0.5, { ...T0H, face: face({ brow: 0.9, lid: 0.15, smile: 0.9 }) });
   // (the nod laid after the look-up pose: laid before it, the later pose held him still to the end of the shot, the still-figure test, v1k)
   if (o.looks !== undefined && o.looks + 0.6 < len) wag(m, o.looks + 0.6, len - o.looks - 0.4, P({ ...hold(KK, FF, 0.015), head: [hl + 4 * ck, 3 + 2 * ck, 3 * ck], px: 0.012 * ck }), P({ ...hold(KK, FF, 0.015), head: [hl - 3 * ck, 3 - 2 * ck, -3 * ck], px: -0.01 * ck }), 1.0, { ...T0H, face: face({ brow: 0.9, lid: 0.15, smile: 0.9 }), glide: true });
   // (puzzled: from `puzzled` on he looks up from the book, brows up and askew, eyes up and to the side, his head cocked: "Arr. Which eye was
@@ -128,11 +128,11 @@ const mate = (at: V3, V: Lens, turn: number, v: number, len: number, o: { hang?:
   const hs = o.heads ?? (o.shout ? 0.12 : HS), pk = o.shout ? 0.35 : 1;      // (shouting in the close-up: the swing smaller, at 0.3 his face slid 23 px a frame and strobed, the flicker check of 20 Nov)      // (at full swing his far eye was cut by the head's outline, the independent review of v1m)
   ease(m, -1, { armL: A, armR: B, head: [18 * hs, -4, 0], lean: 6 }, 0.01, { ...R2, face: F0 });
   // (always moving: the head round from side to side with the eyes, the hands searching; a period that never stops for long)
-  wag(m, 0.0, len + 0.5, P({ armL: A, armR: B, head: [24 * hs, -5, 5 * hs], lean: 6, px: 0.014 * pk }), P({ armL: sw(A, 1), armR: sw(B, -1), head: [-22 * hs, -2, -5 * hs], lean: 8, px: -0.014 * pk }), 0.95 + 0.12 * v, { ...R2, face: F1, glide: true });
-  if (o.stumble !== undefined) { ease(m, o.stumble, { armL: sw(A, 1.5), armR: sw(B, 1.5), lean: 11, px: 0.035, py: -0.02, head: [10 * hs, 8, 6] }, 0.32, { ...R2, face: { ...F0, wide: 0.7, lid: 0, mouth: 0.4 } });
-    ease(m, o.stumble + 0.55, { armL: A, armR: B, lean: 6, px: 0, py: 0, head: [-14 * hs, -3, 0] }, 0.4, { ...R2, face: F1 });
+  wag(m, 0.0, len + 0.5, P({ armL: A, armR: B, head: [24 * hs, -5, 5 * hs], lean: 6, px: 0.01 * pk }), P({ armL: sw(A, 1), armR: sw(B, -1), head: [-22 * hs, -2, -5 * hs], lean: 8, px: -0.01 * pk }), 1.35 + 0.12 * v, { ...R2, face: F1, glide: true });
+  if (o.stumble !== undefined) { ease(m, o.stumble, { armL: sw(A, 1.5), armR: sw(B, 1.5), lean: 11, px: 0.02, py: -0.02, head: [4 * hs, 5, 2] }, 0.6, { ...R2, face: { ...F0, wide: 0.7, lid: 0, mouth: 0.4 } });
+    ease(m, o.stumble + 0.7, { armL: A, armR: B, lean: 6, px: 0, py: 0, head: [-10 * hs, -3, 0] }, 0.8, { ...R2, face: F1 });
     // (searching again after he has caught himself: the pose above held him still to the end of the shot, the still-figure test, v1k)
-    if (o.stumble + 1.0 < len) wag(m, o.stumble + 1.0, len - o.stumble - 0.5, P({ armL: A, armR: B, head: [20 * hs, -5, 5 * hs], lean: 6, px: 0.012 }), P({ armL: sw(A, 1), armR: sw(B, -1), head: [-18 * hs, -2, -5 * hs], lean: 8, px: -0.012 }), 0.95 + 0.12 * v, { ...R2, face: F1, glide: true }); }
+    if (o.stumble + 1.0 < len) wag(m, o.stumble + 1.0, len - o.stumble - 0.5, P({ armL: A, armR: B, head: [20 * hs, -5, 5 * hs], lean: 6, px: 0.009 }), P({ armL: sw(A, 1), armR: sw(B, -1), head: [-18 * hs, -2, -5 * hs], lean: 8, px: -0.009 }), 1.35 + 0.12 * v, { ...R2, face: F1, glide: true }); }
   return { cast: (t: number) => on("mate", MATE_SHORT_D, m, t, FL, {}, 5) };
 };
 /** the mate at the table's front edge, his right hand on it, feeling along it from one end toward the other, his left hand searching the air */
@@ -203,7 +203,7 @@ const S = {
   s2: T.s2, s3: T.s3, s4: T.s4, s4b: L.below.b, s5: L.mins.a + 0.8, s5b: L.mins.a + 2.3, s6: T.s6, s6b: L.patch.a + 1.4, s7: FLIP_AT, s8: T.s8, s8b: L.myth.a + 2.0, s9: T.s8b, s10: T.s9, s10b: L.but.b + 0.15, s11: T.s10, s11b: L.proof.a + 1.6, s12: T.s11, s12b: L.trick.b - 0.25, end: T.end };
 // 1. (0 - 2.4) WHY DID PIRATES WEAR EYE PATCHES? In the dark below, the pirate reads calmly, his head following the lines from the first
 //    frame, while his shipmate behind him feels the air and stumbles. A creak on the first frame. The last shot is this one again
-const opening = (id: string, a: number, b: number) => { const r = reader(PIR_AT, FL, WIDE, 22, false, b - a, { lines: true, ...(id === "end" ? { puzzled: 0.45 } : {}) }), mt = mate(MAT_AT, WIDE, 48, 2, b - a, { stumble: 0.35, heads: 0.32 });      // (heads 0.32: at 0.5 his eyes moved 12 px a frame and his pupils slid across them, the flicker check of 20 Nov)      // (turned 65 with his head swinging 24 more, he stood in bare profile on frame one, the independent review of v1f)
+const opening = (id: string, a: number, b: number) => { const r = reader(PIR_AT, FL, WIDE, 22, false, b - a, { lines: true, ...(id === "end" ? { puzzled: 0.45 } : {}) }), mt = mate(MAT_AT, WIDE, 48, 2, b - a, { stumble: 0.35, heads: 0.16 });      // (heads 0.32: at 0.5 his eyes moved 12 px a frame and his pupils slid across them, the flicker check of 20 Nov)      // (turned 65 with his head swinging 24 more, he stood in bare profile on frame one, the independent review of v1f)
   add({ id, a, b, V: WIDE, cast: [r.cast, mt.cast], things: r.book, sun: false, patch: "B", look: r.look, sounds: [{ t: 0, k: "creak", g: 0.8 }, { t: 0.4, k: "thud", g: 0.3 }], ...(id === "hook" ? {} : { newScene: { pirate: "the same moment below as the opening: the film loops" } }) }); };
 opening("hook", 0, S.s2);
 // 2. ONE IDEA: SO THEY NEVER FOUGHT BLIND. The mate at the table, his hand feeling along its edge, his eyes screwed up
@@ -280,7 +280,7 @@ add({ id: "record2", a: S.s11b, b: S.s12, V: lens(PRINT_AT[0] + 0.07, FL + 1.39,
 opening("end", S.s12b, S.end);
 // (the loop: over the last 0.55 s he looks back down to his book and the mate is back where he started, so that the last frame runs on
 //  into the first; at v1q the pirate's head jumped at the loop from tilted and frowning to straight and smiling, the review's fault 2)
-loopShot(shots.find((x) => x.id === "end")!, shots.find((x) => x.id === "hook")!, 0.55);
+loopShot(shots.find((x) => x.id === "end")!, shots.find((x) => x.id === "hook")!, 0.8);
 for (const s of shots) s.capsTop = 160;
 
 /** below deck is dark (the shutters shut); the deck in the sun. The opening is a little lighter than the rest below, so that it reads on a phone */

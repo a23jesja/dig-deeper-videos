@@ -1,20 +1,29 @@
-# The flicker check's proof: faults planted in a copy of a clean render, each on frames where the check found nothing, then the check
-# run on the copy. Six must fail and one must pass (the review, 20 Nov):
-#   a  an empty eye ring on one frame (the eye filled with the skin below it, inside a dark ring)
-#   b  a speech bubble 3 px out on one frame and back
-#   c  in a close-up, the face's outline 3 px out on one frame and back (a 360 x 360 square round the eyes moved)
-#   d  a caption with one letter changed on one frame (a letter-wide slice in the middle of the line, mirrored)
-#   e  a pupil 6 px out on one frame and back (the inner half of the eye moved, within the 8 px pupil step)
-#   g  in a close-up, the face's outline 11 px out on one frame and back (within the 12 px movement step: still a jump there and back)
-#   f  must PASS: the whole close-up sliding steadily 5 px a frame for 12 frames, as a fast steady head turn moves it
+# The flicker check's proof: faults planted in a copy of a render, each where the check found nothing, then the check run on the copy
+# (the review, 20 Nov). What must FAIL:
+#   a   an empty eye ring on one frame (the eye filled with the skin below it, inside a dark ring)
+#   b   a speech bubble 3 px out on one frame and back (a caption where no bubble stands still)
+#   c   in a close-up, the face 3 px out on one frame and back (a 360 x 360 square round the eyes moved)
+#   d   a caption with one letter changed on one frame (the 60 px of the line with the most ink replaced by 60 px two letters along)
+#   e   a pupil 6 px out on one frame and back (the inner half of the eye moved)
+#   g   in a close-up, the face 11 px out on one frame and back (inside the 12 px movement step: still a jump there and back)
+#   h1-h6  a face 2 px or 3 px out on one frame and back ON TOP OF a movement already going on at 3, 6 or 9 px a frame (the whole
+#       picture sliding; the face square moved the extra 2 or 3 px on the middle frame): the weakness case c showed in v1q
+#   f2b the whole picture speeding up from 7 to 14 px a frame, 1 px more each frame (it goes over the 12 px step: it strobes)
+# What must PASS:
+#   f   the whole picture sliding steadily 5 px a frame for 12 frames, as a fast steady turn moves it
+#   f2  the whole picture speeding up from 6 to 12 px a frame, 1 px more each frame (an accelerating turn inside the 12 px step)
+# Every slide holds two frames where it ends and then glides back at BACK (6) px a frame (a steady movement), so no jump is planted by the
+# slide itself; the eyes and the texts the check watches are moved with the picture. Planted frames lie inside one shot, away from the
+# film's own fails.
 #
-#   usage: python scripts/flicker_proof.py <clean.mp4> <regions.jsonl> <clean flicker report.txt> <planted.mp4> <proof report.txt>
-import json, subprocess, sys
+#   usage: python scripts/flicker_proof.py <render.mp4> <regions.jsonl> <its flicker report.txt> <planted.mp4> <proof report.txt>
+import json, math, subprocess, sys
 import numpy as np
 sys.path.insert(0, __file__.rsplit("\\", 1)[0].rsplit("/", 1)[0])
 import flicker as fl
 
 W, H = fl.W, fl.H
+BACK = 6      # (px a frame the picture glides back after a slide: a steady movement inside the 12 px step)
 
 def main():
     src, regp, rep, dst, outp = sys.argv[1:6]
@@ -25,24 +34,60 @@ def main():
     for line in open(rep, encoding="utf-8"):
         p = line.rstrip("\n").split("\t")
         if len(p) == 7 and p[0].isdigit(): rows[int(p[0])] = [int(x) for x in p[1:]]
-    quiet = {t for t, r in rows.items() if r[0] < 300 and r[1] == 0 and r[2] == 0 and r[3] < 2000 and r[4] <= 40 and r[5] == 0}
-    used = set()
-    def pick(ok, span=1):
-        for t in sorted(quiet):
-            if t < 15 or any(abs(t - u) < 25 for u in used): continue
-            sh = {regions.get(k, {}).get('shot') for k in range(t - 2, t + span + 2)}      # (all in one shot: no cut beside a planted frame)
-            if len(sh) == 1 and all(k in quiet for k in range(t - 2, t + span + 2)) and ok(t): used.add(t); return t
-        raise SystemExit("no quiet frame for a case")
+    N = max(regions) + 1
+    quiet = {t for t, r in rows.items() if r[0] < 300 and r[1] == 0 and r[2] == 0 and r[3] < 2000 and r[4] <= 40 and r[5] == 0}      # (both measures quiet)
+    calm = {t for t, r in rows.items() if r[0] < 500 and r[1] <= 20 and r[2] == 0}      # (the corrected measure well under its limits: for the long slides)
+    shot = lambda t: regions.get(t, {}).get("shot")
     big = lambda t, rmin: [e for e in regions.get(t, {}).get("eyes", []) if e[2] >= rmin]
+    taken = set()
+    def free(a, b): return all(k not in taken for k in range(a - 4, b + 5))
+    def pick(ok, span=1, pool=None, order=None):
+        pool = quiet if pool is None else pool
+        for t in (order or sorted(pool)):
+            if t < 15 or t + span + 2 >= N or not free(t, t + span): continue
+            if len({shot(k) for k in range(t - 2, t + span + 2)}) == 1 and all(k in pool for k in range(t - 2, t + span + 2)) and ok(t):
+                taken.update(range(t - 2, t + span + 2)); return t
+        return None
+    # the point cases
     A = pick(lambda t: big(t, 20))
-    try: B = pick(lambda t: regions.get(t, {}).get("bub") and regions.get(t - 1, {}).get("bub") and regions.get(t + 1, {}).get("bub")); BOX = "bub"
-    except SystemExit: B = pick(lambda t: regions.get(t, {}).get("text")); BOX = "text"      # (no quiet frame with a bubble: a caption moved instead)
-    C = pick(lambda t: big(t, 60)); D = pick(lambda t: regions.get(t, {}).get("text") and not regions.get(t, {}).get("bub") and regions.get(t - 1, {}).get("text") == regions[t]["text"] and regions.get(t + 1, {}).get("text") == regions[t]["text"])
-    E = pick(lambda t: big(t, 20)); G = pick(lambda t: big(t, 60)); Fs = pick(lambda t: all(big(k, 25) for k in range(t, t + 12)) and all(regions.get(k, {}).get("text") == regions[t].get("text") and not regions.get(k, {}).get("bub") for k in range(t - 1, t + 13)), 12)
-    cases = {"a": A, "b": B, "c": C, "d": D, "e": E, "g": G, "f": Fs}
+    B = pick(lambda t: regions.get(t, {}).get("bub") and regions.get(t - 1, {}).get("bub") and regions.get(t + 1, {}).get("bub")); BOX = "bub"
+    if B is None: B = pick(lambda t: regions.get(t, {}).get("text")); BOX = "text"
+    C = pick(lambda t: big(t, 60)) or pick(lambda t: big(t, 35))
+    D = pick(lambda t: regions.get(t, {}).get("text") and not regions.get(t, {}).get("bub") and regions.get(t - 1, {}).get("text") == regions[t]["text"] and regions.get(t + 1, {}).get("text") == regions[t]["text"])
+    E = pick(lambda t: big(t, 20))
+    G = pick(lambda t: big(t, 60)) or pick(lambda t: big(t, 35))
+    # the slides: (name, steps a frame, the frame of the extra jump in the slide or None, the jump in px, must fail)
+    slides = [("f", [5] * 12, None, 0, False), ("f2", list(range(6, 13)), None, 0, False), ("f2b", list(range(7, 15)), None, 0, True)]
+    for s in (3, 6, 9):
+        for j in (2, 3): slides.append((f"h{len(slides) - 2}", [s] * 9, 4, j, True))
+    # (h first in the shot with the fastest real head turn of the film, as the review asked; then wherever there is room)
+    def eyestep(t):
+        a, b = regions.get(t, {}).get("eyes", []), regions.get(t + 1, {}).get("eyes", [])
+        return max((min(math.hypot(p[0] - q[0], p[1] - q[1]) for q in b) for p in a), default=0) if a and b and shot(t) == shot(t + 1) else 0
+    fast = max(range(N - 1), key=eyestep); fastShot = shot(fast)
+    plan = {}
+    for name, steps, jat, j, bad in slides:
+        total = sum(steps); L = len(steps) + 2 + math.ceil(total / BACK)
+        need = (lambda t, jat=jat: big(t + jat, 25)) if jat is not None else (lambda t, steps=steps: all(big(k, 15) for k in range(t, t + len(steps))))      # (faces in the picture all through the slide)
+        order = sorted(calm, key=lambda t: (0 if name.startswith("h") and shot(t) == fastShot else 1, t))
+        t0 = pick(lambda t: need(t) and not any(regions.get(k, {}).get("bub") for k in range(t, t + L)), L, calm, order)
+        if t0 is None: raise SystemExit(f"no room for {name}")
+        off, k = [], 0
+        for st in steps: k += st; off.append(k)
+        off += [k, k]
+        while k > 0: k = max(0, k - BACK); off.append(k)
+        plan[name] = (t0, off, jat, j, bad, steps)
+    offAt, jumpAt = {}, {}
+    for name, (t0, off, jat, j, bad, steps) in plan.items():
+        for i, o in enumerate(off): offAt[t0 + i] = o
+        if jat is not None: jumpAt[t0 + jat] = j
+    # the planted copy
     out = subprocess.Popen(["ffmpeg", "-nostdin", "-v", "error", "-y", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}", "-r", "30", "-i", "-",
                             "-c:v", "libx264", "-preset", "slow", "-crf", "17", "-pix_fmt", "yuv420p", dst], stdin=subprocess.PIPE)
     YY, XX = fl.YY, fl.XX
+    face = lambda t, rmin: (lambda es: (int(np.mean([e[0] for e in es])), int(np.mean([e[1] for e in es]))))(big(t, rmin))
+    def moveSquare(fr, cx, cy, dx):
+        x0, y0, x1, y1 = max(0, cx - 180), max(0, cy - 180), min(W - dx, cx + 180), min(H, cy + 180); fr[y0:y1, x0 + dx:x1 + dx] = fr[y0:y1, x0:x1].copy()
     for F, fr in enumerate(fl.frames(src)):
         fr = fr.copy()
         if F == A:
@@ -50,45 +95,60 @@ def main():
             fr[d <= r * r] = skin; fr[(d <= r * r) & (d >= (r - 4) ** 2)] = (20, 16, 18)
         if F == B:
             x0, y0, x1, y1 = regions[B][BOX][0]; x0, y0, x1, y1 = max(0, x0), max(0, y0), min(W - 3, x1), min(H, y1); fr[y0:y1, x0 + 3:x1 + 3] = fr[y0:y1, x0:x1].copy()
-        if F == C:
-            es = big(C, 60); cx, cy = int(np.mean([e[0] for e in es])), int(np.mean([e[1] for e in es]))
-            x0, y0, x1, y1 = max(0, cx - 180), max(0, cy - 180), min(W - 3, cx + 180), min(H, cy + 180); fr[y0:y1, x0 + 3:x1 + 3] = fr[y0:y1, x0:x1].copy()
+        if F == C: moveSquare(fr, *face(C, 35), 3)
         if F == D:
-            # (one letter changed: the 60 px of the line with the most ink in it is replaced by another 60 px of the same line, two letters
-            #  along. Mirroring a slice in v1 left a symmetric letter or a space as it was)
             x0, y0, x1, y1 = regions[D]["text"][0]; x0, x1, y0, y1 = max(0, x0), min(W, x1), max(0, y0), min(H, y1); g = fl.gray(fr[y0:y1, x0:x1])
             ink = np.array([(g[:, i:i + 60] < 60).sum() for i in range(0, max(1, x1 - x0 - 200), 10)]); i0 = x0 + 10 * int(ink.argmax()); j0 = i0 + 130 if i0 + 190 < x1 else i0 - 130
             fr[y0:y1, i0:i0 + 60] = fr[y0:y1, j0:j0 + 60].copy()
         if F == E:
             x, y, r = big(E, 20)[0]; r2 = max(4, int(r * 0.5)); m = (XX - x) ** 2 + (YY - y) ** 2 <= r2 * r2; sh = np.roll(fr, 6, axis=1); fr[m] = sh[m]
-        if F == G:
-            es = big(G, 60); cx, cy = int(np.mean([e[0] for e in es])), int(np.mean([e[1] for e in es]))
-            x0, y0, x1, y1 = max(0, cx - 180), max(0, cy - 180), min(W - 11, cx + 180), min(H, cy + 180); fr[y0:y1, x0 + 11:x1 + 11] = fr[y0:y1, x0:x1].copy()
-        if Fs <= F < Fs + 12:
-            k = 5 * (F - Fs + 1); fr = np.concatenate([fr[:, k:], np.repeat(fr[:, -1:], k, axis=1)], axis=1)
-        elif F >= Fs + 12 and regions.get(F, {}).get("shot") == regions.get(Fs, {}).get("shot"):
-            # (after the slide the picture stays where it slid to, to the end of the shot: snapping back would be a jump of 60 px)
-            fr = np.concatenate([fr[:, 60:], np.repeat(fr[:, -1:], 60, axis=1)], axis=1)
+        if F == G: moveSquare(fr, *face(G, 35), 11)
+        o = offAt.get(F, 0)
+        if o: fr = np.concatenate([fr[:, o:], np.repeat(fr[:, -1:], o, axis=1)], axis=1)      # (the picture slid o px to the left)
+        if F in jumpAt:      # (the face the extra j px on, the way the picture moves, on this one frame)
+            cx, cy = face(F, 25)
+            x0, y0, x1, y1 = max(0, cx - o - 180), max(0, cy - 180), min(W, cx - o + 180), min(H, cy + 180); jj = jumpAt[F]
+            fr[y0:y1, x0:x1 - jj] = fr[y0:y1, x0 + jj:x1].copy()
         out.stdin.write(fr.tobytes())
     out.stdin.close(); out.wait()
-    rowsP, fails = fl.check(dst, regions)
-    failAt = {t: why for t, why in fails}
-    raw = {r[0]: r for r in rowsP}
-    L = [f"flicker proof: faults planted in {src} -> {dst}", ""]
-    desc = {"a": "an empty eye ring on one frame", "b": ("a speech bubble" if BOX == "bub" else "a caption (no quiet frame with a bubble)") + " 3 px out on one frame and back", "c": "a close-up's face outline 3 px out on one frame and back",
-            "d": "a caption with one letter changed on one frame", "e": "a pupil 6 px out on one frame and back",
-            "g": "a close-up's face outline 11 px out on one frame and back (within the 12 px movement step)", "f": "the whole picture, faces in it, sliding steadily 5 px a frame for 12 frames as a fast steady turn moves them, then staying there (must pass)"}
+    # the check, with the eyes and texts moved with the picture
+    regP = {}
+    for F, r in regions.items():
+        o = offAt.get(F, 0); r2 = dict(r)
+        r2["eyes"] = [[e[0] - o, e[1], e[2]] for e in r.get("eyes", [])]; r2["text"] = [[b[0] - o, b[1], b[2] - o, b[3]] for b in r.get("text", [])]
+        regP[F] = r2
+    rowsP, fails = fl.check(dst, regP)
+    failAt = {t: why for t, why in fails}; raw = {r[0]: r for r in rowsP}
+    def report(name, frames, want_fail, desc):
+        hit = [(u, failAt[u]) for u in frames if u in failAt]
+        rawover = [u for u in frames if u in raw and (raw[u][4] > fl.FRAME_MAX or raw[u][5] > fl.EYE_MAX or raw[u][6] > fl.TEXT_MAX)]
+        ok = bool(hit) == want_fail
+        lines = [f"{name}) {desc}: frames {frames[0] + 1}-{frames[-1] - 1} ({(frames[0] + 1) / 30:.2f}-{(frames[-1] - 1) / 30:.2f} s, shot {shot(frames[0] + 1)}): {'FAILED' if hit else 'passed'} by the check, it must {'fail' if want_fail else 'pass'} ({'right' if ok else 'WRONG'})"]
+        lines += [f"     frame {u} ({u / 30:.2f} s): " + "; ".join(why) for u, why in hit[:4]] + ([f"     ... and {len(hit) - 4} frames more"] if len(hit) > 4 else [])
+        lines.append(f"     the raw measure (no movement taken out) is over its limits on frames: {rawover or 'none'}")
+        return ok, lines
+    L = [f"flicker proof: faults planted in {src} -> {dst}",
+         f"parameters: DIFF {fl.DIFF}, SAME {fl.SAME}, picture {fl.FRAME_MAX}, eye {fl.EYE_MAX}, text {fl.TEXT_MAX} pixels; movement step at most {fl.STEP} px, 5 x 5 patch match under {fl.MATCH} grey levels, flat patch under {fl.TEX}, step before and after differ by at most {fl.ACCEL_PART:.2f} of the longer or {fl.ACCEL} px; the fastest real head turn of the film: frame {fast} (shot {fastShot}, {eyestep(fast):.0f} px a frame)", ""]
     allok = True
-    for k, t in cases.items():
-        span = range(t - 1, t + 13) if k == "f" else range(t - 1, t + 2)
-        hit = [(u, failAt[u]) for u in span if u in failAt]
-        rawover = [u for u in span if u in raw and (raw[u][4] > fl.FRAME_MAX or raw[u][5] > fl.EYE_MAX or raw[u][6] > fl.TEXT_MAX)]
-        want = k != "f"; ok = bool(hit) == want; allok &= ok
-        L.append(f"{k}) {desc[k]}: frame {t} ({t / 30:.2f} s){'-' + str(t + 11) if k == 'f' else ''}: {'FAILED' if hit else 'passed'} by the check ({'as it must' if ok else 'WRONG'})")
-        for u, why in hit: L.append(f"     frame {u} ({u / 30:.2f} s): " + "; ".join(why))
-        L.append(f"     the raw measure (no movement taken out) is over its limits on frames: {rawover or 'none'}")
-    other = sorted(u for u in failAt if not any((u in (range(t - 1, t + 13) if k == 'f' else range(t - 1, t + 2))) for k, t in cases.items()))
-    L += ["", f"fails outside the planted frames (the film's own): {other or 'none'}", f"RESULT: the seven planted cases {'all as they must be' if allok else 'NOT as they must be'}"]
+    point = {"a": (A, "an empty eye ring on one frame"), "b": (B, ("a speech bubble" if BOX == "bub" else "a caption (no quiet frame with a bubble)") + " 3 px out on one frame and back"),
+             "c": (C, "a close-up's face 3 px out on one frame and back"), "d": (D, "a caption with one letter changed on one frame"), "e": (E, "a pupil 6 px out on one frame and back"),
+             "g": (G, "a close-up's face 11 px out on one frame and back (inside the 12 px movement step)")}
+    for name, (t, desc) in point.items():
+        if t is None: L.append(f"{name}) {desc}: NO ROOM in this film (not run)"); allok = False; continue
+        ok, lines = report(name, list(range(t - 1, t + 2)), True, desc); allok &= ok; L += lines
+    descS = {"f": "the whole picture sliding steadily 5 px a frame for 12 frames", "f2": "the whole picture speeding up from 6 to 12 px a frame, 1 px more each frame",
+             "f2b": "the whole picture speeding up from 7 to 14 px a frame (over the 12 px step)"}
+    for name, (t0, off, jat, j, bad, steps) in plan.items():
+        desc = descS.get(name) or f"a face {j} px out on one frame and back on top of the whole picture moving {steps[0]} px a frame"
+        frames = list(range(t0 - 1, t0 + len(off) + 1)) if jat is None else list(range(t0 + jat - 1, t0 + jat + 2))
+        ok, lines = report(name, frames, bad, desc); allok &= ok; L += lines
+    inPlan = set()
+    for t in [A, B, C, D, E, G]:
+        if t is not None: inPlan.update(range(t - 1, t + 2))
+    for name, (t0, off, *_r) in plan.items(): inPlan.update(range(t0 - 1, t0 + len(off) + 1))
+    other = sorted(u for u in failAt if u not in inPlan)
+    L += ["", f"fails outside the planted frames (the film's own): {other or 'none'}",
+          f"RESULT: the planted cases {'all as they must be' if allok else 'NOT all as they must be'}"]
     open(outp, "w", encoding="utf-8").write("\n".join(L) + "\n"); print("\n".join(L))
 
 if __name__ == "__main__":

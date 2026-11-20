@@ -327,11 +327,11 @@ export const shake = (t: number, hits: { t: number; amp: number; dur?: number }[
   return [x, y];
 };
 /** eyes that blink by themselves: the upper lid's extra closing at time t (0..1); seed gives each figure its own rhythm.
- *  One blink is five frames at 30 a second: half lid, shut, shut, half lid, then open again (BLINK). The lid never stops between half
+ *  One blink is six frames at 30 a second: half lid, half lid, shut, shut, half lid, half lid, then open again (BLINK). The lid never stops between half
  *  and shut, where the eye was drawn as an empty ring, and the shut eye is held for two frames, so that no frame of a blink differs
  *  from both its neighbours while they are alike (Jesper 2026-11-20: the eye patch Short flickered at its blinks, an empty ring between
  *  two arcs; DAILY-RULES, Impossible things 9, and the flicker check scripts/flicker.py) */
-export const BLINK = [0.5, 1, 1, 0.5];
+export const BLINK = [0.5, 0.5, 1, 1, 0.5, 0.5];      // (each step held two frames: with one half-lid frame between open and shut, a close-up's shut arc lay where the open pupil had been and that frame differed from both its neighbours, the flicker check of 20 Nov)
 export const blink = (t: number, seed = 0) => {
   const period = 2.6 + (Math.abs(Math.sin(seed * 12.9898)) * 1.8), u = (t + seed * 0.77) % period, k = Math.floor(u * 30 + 1e-6);
   return k < BLINK.length ? BLINK[k] : 0;

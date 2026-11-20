@@ -1,117 +1,148 @@
 flicker check: ../leverans/eye-patch/eye-patch-v1q.mp4
 frames checked: 1081 (1 to 1081; the first and last have no neighbour on one side)
 a pixel flickers when it differs by more than 40 (of 255, in R, G or B) from the frame before and the frame after, while those two differ by less than 16
-fails: more than 2000 flickering pixels in a frame, more than 40 (or 2 % of a large eye's circle) in an eye, more than 150 in a box of text
+fails: more than 2000 flickering pixels in a frame, more than 40 in an eye's circle, more than 150 in a box of text
 eye circles per frame: 2474 in all; text boxes: 1045
-largest: picture 27477 pixels (frame 308), eye 7282 (frame 592), text 7529 (frame 300)
-movement taken out: a pixel is movement when steps v0 and v1 of at most 12 px explain it (the frame before v0 behind and the frame after v1 ahead both match its 5 x 5 patch, mean grey difference under 14; v0 and v1 point the same way and differ by at most half the longer, or 2 px) and its patch is not flat (grey levels vary by 10 or more)
+largest: picture 27538 pixels (frame 308), eye 7282 (frame 592), text 7653 (frame 300)
+movement taken out: a pixel is movement when steps v0 and v1 of at most 12 px explain it (the frame before v0 behind and the frame after v1 ahead both match its 5 x 5 patch, mean grey difference under 14; v0 and v1 point the same way and differ by at most 0.25 of the longer, or 2 px) and its patch is not flat (grey levels vary by 10 or more)
 raw (before movement is taken out): largest picture 27961, eye 7497, text 8364; frames over the limits raw: 262
 median picture count: 6
 the loop (last frame to first): 10.3 % of the picture changes; inside the shots the median frame change is 0.7 % and 95 % are 4.6 % or less (a pixel changes by more than 24)
 
-FAIL: 105 frames
-  frame 9 (0.30 s): 79 pixels flicker in an eye (at most 49)
+FAIL: 136 frames
+  frame 8 (0.27 s): 65 pixels flicker in an eye (at most 40)
+  frame 9 (0.30 s): 81 pixels flicker in an eye (at most 40)
   frame 10 (0.33 s): 79 pixels flicker in an eye (at most 40)
   frame 11 (0.37 s): 144 pixels flicker in an eye (at most 40)
-  frame 12 (0.40 s): 56 pixels flicker in an eye (at most 40)
-  frame 28 (0.93 s): 68 pixels flicker in an eye (at most 40)
-  frame 34 (1.13 s): 67 pixels flicker in an eye (at most 49)
-  frame 38 (1.27 s): 55 pixels flicker in an eye (at most 40)
-  frame 42 (1.40 s): 58 pixels flicker in an eye (at most 49)
-  frame 43 (1.43 s): 122 pixels flicker in an eye (at most 49)
-  frame 44 (1.47 s): 66 pixels flicker in an eye (at most 49)
-  frame 82 (2.73 s): 92 pixels flicker in an eye (at most 86)
-  frame 105 (3.50 s): 93 pixels flicker in an eye (at most 86)
-  frame 168 (5.60 s): 350 pixels flicker in an eye (at most 40)
+  frame 12 (0.40 s): 78 pixels flicker in an eye (at most 40)
+  frame 28 (0.93 s): 119 pixels flicker in an eye (at most 40)
+  frame 33 (1.10 s): 75 pixels flicker in an eye (at most 40)
+  frame 34 (1.13 s): 95 pixels flicker in an eye (at most 40)
+  frame 38 (1.27 s): 141 pixels flicker in an eye (at most 40)
+  frame 42 (1.40 s): 58 pixels flicker in an eye (at most 40)
+  frame 43 (1.43 s): 124 pixels flicker in an eye (at most 40)
+  frame 44 (1.47 s): 68 pixels flicker in an eye (at most 40)
+  frame 62 (2.07 s): 47 pixels flicker in an eye (at most 40)
+  frame 82 (2.73 s): 92 pixels flicker in an eye (at most 40)
+  frame 105 (3.50 s): 93 pixels flicker in an eye (at most 40)
+  frame 168 (5.60 s): 364 pixels flicker in an eye (at most 40)
   frame 169 (5.63 s): 44 pixels flicker in an eye (at most 40)
-  frame 219 (7.30 s): 87 pixels flicker in an eye (at most 56)
-  frame 220 (7.33 s): 587 pixels flicker in an eye (at most 56)
-  frame 221 (7.37 s): 77 pixels flicker in an eye (at most 56)
-  frame 259 (8.63 s): 125 pixels flicker in an eye (at most 52)
-  frame 260 (8.67 s): 91 pixels flicker in an eye (at most 52)
-  frame 277 (9.23 s): 56 pixels flicker in an eye (at most 52)
-  frame 287 (9.57 s): 89 pixels flicker in an eye (at most 56)
+  frame 219 (7.30 s): 95 pixels flicker in an eye (at most 40)
+  frame 220 (7.33 s): 587 pixels flicker in an eye (at most 40)
+  frame 221 (7.37 s): 81 pixels flicker in an eye (at most 40)
+  frame 259 (8.63 s): 138 pixels flicker in an eye (at most 40)
+  frame 260 (8.67 s): 92 pixels flicker in an eye (at most 40)
+  frame 277 (9.23 s): 98 pixels flicker in an eye (at most 40)
+  frame 287 (9.57 s): 180 pixels flicker in an eye (at most 40)
+  frame 288 (9.60 s): 67 pixels flicker in an eye (at most 40)
   frame 299 (9.97 s): 4160 pixels flicker in the picture (at most 2000); 4160 pixels flicker in a text or bubble (at most 150)
-  frame 300 (10.00 s): 7529 pixels flicker in the picture (at most 2000); 7529 pixels flicker in a text or bubble (at most 150)
-  frame 301 (10.03 s): 6781 pixels flicker in the picture (at most 2000); 6525 pixels flicker in a text or bubble (at most 150)
-  frame 302 (10.07 s): 761 pixels flicker in a text or bubble (at most 150)
-  frame 303 (10.10 s): 1696 pixels flicker in a text or bubble (at most 150)
-  frame 307 (10.23 s): 2319 pixels flicker in the picture (at most 2000); 1209 pixels flicker in an eye (at most 432)
-  frame 308 (10.27 s): 27477 pixels flicker in the picture (at most 2000); 6533 pixels flicker in an eye (at most 432)
-  frame 309 (10.30 s): 2436 pixels flicker in the picture (at most 2000); 1285 pixels flicker in an eye (at most 432)
-  frame 313 (10.43 s): 478 pixels flicker in an eye (at most 432)
-  frame 314 (10.47 s): 5033 pixels flicker in the picture (at most 2000); 1138 pixels flicker in an eye (at most 432)
-  frame 315 (10.50 s): 6399 pixels flicker in the picture (at most 2000); 1084 pixels flicker in an eye (at most 432)
-  frame 316 (10.53 s): 5622 pixels flicker in the picture (at most 2000); 1050 pixels flicker in an eye (at most 432)
-  frame 317 (10.57 s): 4681 pixels flicker in the picture (at most 2000); 981 pixels flicker in an eye (at most 432)
-  frame 324 (10.80 s): 3414 pixels flicker in the picture (at most 2000); 703 pixels flicker in an eye (at most 432)
-  frame 325 (10.83 s): 4415 pixels flicker in the picture (at most 2000); 1160 pixels flicker in an eye (at most 432)
-  frame 326 (10.87 s): 4570 pixels flicker in the picture (at most 2000); 1166 pixels flicker in an eye (at most 432)
-  frame 327 (10.90 s): 2880 pixels flicker in the picture (at most 2000); 488 pixels flicker in an eye (at most 443)
-  frame 342 (11.40 s): 3557 pixels flicker in the picture (at most 2000); 674 pixels flicker in an eye (at most 443)
-  frame 343 (11.43 s): 5326 pixels flicker in the picture (at most 2000); 1253 pixels flicker in an eye (at most 443)
-  frame 344 (11.47 s): 6650 pixels flicker in the picture (at most 2000); 1247 pixels flicker in an eye (at most 443); 1150 pixels flicker in a text or bubble (at most 150)
-  frame 345 (11.50 s): 9174 pixels flicker in the picture (at most 2000); 1148 pixels flicker in an eye (at most 443); 4239 pixels flicker in a text or bubble (at most 150)
-  frame 346 (11.53 s): 9069 pixels flicker in the picture (at most 2000); 7195 pixels flicker in a text or bubble (at most 150)
-  frame 357 (11.90 s): 57 pixels flicker in an eye (at most 40)
-  frame 382 (12.73 s): 46 pixels flicker in an eye (at most 40)
-  frame 392 (13.07 s): 46 pixels flicker in an eye (at most 40)
-  frame 403 (13.43 s): 148 pixels flicker in an eye (at most 45)
-  frame 404 (13.47 s): 615 pixels flicker in an eye (at most 45)
-  frame 405 (13.50 s): 147 pixels flicker in an eye (at most 45)
-  frame 507 (16.90 s): 533 pixels flicker in an eye (at most 443)
-  frame 525 (17.50 s): 820 pixels flicker in an eye (at most 453)
-  frame 526 (17.53 s): 3010 pixels flicker in the picture (at most 2000); 1248 pixels flicker in an eye (at most 453)
-  frame 527 (17.57 s): 3301 pixels flicker in the picture (at most 2000); 1291 pixels flicker in an eye (at most 453)
-  frame 528 (17.60 s): 2833 pixels flicker in the picture (at most 2000); 1231 pixels flicker in an eye (at most 453)
-  frame 551 (18.37 s): 2309 pixels flicker in the picture (at most 2000)
-  frame 592 (19.73 s): 14281 pixels flicker in the picture (at most 2000); 7282 pixels flicker in an eye (at most 453)
-  frame 604 (20.13 s): 97 pixels flicker in an eye (at most 95)
-  frame 605 (20.17 s): 204 pixels flicker in an eye (at most 95)
-  frame 606 (20.20 s): 258 pixels flicker in an eye (at most 95)
-  frame 630 (21.00 s): 106 pixels flicker in an eye (at most 95)
-  frame 639 (21.30 s): 229 pixels flicker in an eye (at most 95)
-  frame 640 (21.33 s): 265 pixels flicker in an eye (at most 95)
-  frame 671 (22.37 s): 187 pixels flicker in an eye (at most 81)
-  frame 672 (22.40 s): 4066 pixels flicker in the picture (at most 2000); 1293 pixels flicker in an eye (at most 81)
-  frame 673 (22.43 s): 181 pixels flicker in an eye (at most 81)
-  frame 680 (22.67 s): 137 pixels flicker in an eye (at most 81)
-  frame 821 (27.37 s): 42 pixels flicker in an eye (at most 40)
-  frame 855 (28.50 s): 105 pixels flicker in an eye (at most 56)
-  frame 856 (28.53 s): 92 pixels flicker in an eye (at most 56)
-  frame 861 (28.70 s): 83 pixels flicker in an eye (at most 56)
-  frame 862 (28.73 s): 87 pixels flicker in an eye (at most 56)
-  frame 873 (29.10 s): 90 pixels flicker in an eye (at most 56)
-  frame 874 (29.13 s): 78 pixels flicker in an eye (at most 56)
-  frame 879 (29.30 s): 86 pixels flicker in an eye (at most 56)
-  frame 880 (29.33 s): 87 pixels flicker in an eye (at most 56)
-  frame 883 (29.43 s): 11566 pixels flicker in the picture (at most 2000)
+  frame 300 (10.00 s): 7653 pixels flicker in the picture (at most 2000); 7653 pixels flicker in a text or bubble (at most 150)
+  frame 301 (10.03 s): 6864 pixels flicker in the picture (at most 2000); 6608 pixels flicker in a text or bubble (at most 150)
+  frame 302 (10.07 s): 838 pixels flicker in a text or bubble (at most 150)
+  frame 303 (10.10 s): 1834 pixels flicker in a text or bubble (at most 150)
+  frame 307 (10.23 s): 2319 pixels flicker in the picture (at most 2000); 1209 pixels flicker in an eye (at most 40)
+  frame 308 (10.27 s): 27538 pixels flicker in the picture (at most 2000); 7236 pixels flicker in an eye (at most 40)
+  frame 309 (10.30 s): 2436 pixels flicker in the picture (at most 2000); 1285 pixels flicker in an eye (at most 40)
+  frame 313 (10.43 s): 2100 pixels flicker in the picture (at most 2000); 478 pixels flicker in an eye (at most 40)
+  frame 314 (10.47 s): 5149 pixels flicker in the picture (at most 2000); 1161 pixels flicker in an eye (at most 40)
+  frame 315 (10.50 s): 6643 pixels flicker in the picture (at most 2000); 1182 pixels flicker in an eye (at most 40)
+  frame 316 (10.53 s): 5885 pixels flicker in the picture (at most 2000); 1143 pixels flicker in an eye (at most 40)
+  frame 317 (10.57 s): 4827 pixels flicker in the picture (at most 2000); 1018 pixels flicker in an eye (at most 40)
+  frame 318 (10.60 s): 111 pixels flicker in an eye (at most 40)
+  frame 322 (10.73 s): 103 pixels flicker in an eye (at most 40)
+  frame 323 (10.77 s): 89 pixels flicker in an eye (at most 40)
+  frame 324 (10.80 s): 3545 pixels flicker in the picture (at most 2000); 977 pixels flicker in an eye (at most 40)
+  frame 325 (10.83 s): 4532 pixels flicker in the picture (at most 2000); 1185 pixels flicker in an eye (at most 40)
+  frame 326 (10.87 s): 4679 pixels flicker in the picture (at most 2000); 1210 pixels flicker in an eye (at most 40)
+  frame 327 (10.90 s): 3037 pixels flicker in the picture (at most 2000); 835 pixels flicker in an eye (at most 40)
+  frame 329 (10.97 s): 397 pixels flicker in an eye (at most 40)
+  frame 341 (11.37 s): 75 pixels flicker in an eye (at most 40)
+  frame 342 (11.40 s): 3668 pixels flicker in the picture (at most 2000); 967 pixels flicker in an eye (at most 40)
+  frame 343 (11.43 s): 5494 pixels flicker in the picture (at most 2000); 1310 pixels flicker in an eye (at most 40)
+  frame 344 (11.47 s): 6878 pixels flicker in the picture (at most 2000); 1315 pixels flicker in an eye (at most 40); 1150 pixels flicker in a text or bubble (at most 150)
+  frame 345 (11.50 s): 9268 pixels flicker in the picture (at most 2000); 1181 pixels flicker in an eye (at most 40); 4239 pixels flicker in a text or bubble (at most 150)
+  frame 346 (11.53 s): 9218 pixels flicker in the picture (at most 2000); 429 pixels flicker in an eye (at most 40); 7195 pixels flicker in a text or bubble (at most 150)
+  frame 357 (11.90 s): 70 pixels flicker in an eye (at most 40)
+  frame 382 (12.73 s): 47 pixels flicker in an eye (at most 40)
+  frame 392 (13.07 s): 49 pixels flicker in an eye (at most 40)
+  frame 403 (13.43 s): 148 pixels flicker in an eye (at most 40)
+  frame 404 (13.47 s): 619 pixels flicker in an eye (at most 40)
+  frame 405 (13.50 s): 147 pixels flicker in an eye (at most 40)
+  frame 505 (16.83 s): 3475 pixels flicker in the picture (at most 2000); 313 pixels flicker in an eye (at most 40)
+  frame 506 (16.87 s): 126 pixels flicker in an eye (at most 40)
+  frame 507 (16.90 s): 533 pixels flicker in an eye (at most 40)
+  frame 508 (16.93 s): 232 pixels flicker in an eye (at most 40)
+  frame 509 (16.97 s): 2667 pixels flicker in the picture (at most 2000); 236 pixels flicker in an eye (at most 40)
+  frame 524 (17.47 s): 129 pixels flicker in an eye (at most 40)
+  frame 525 (17.50 s): 829 pixels flicker in an eye (at most 40)
+  frame 526 (17.53 s): 3116 pixels flicker in the picture (at most 2000); 1252 pixels flicker in an eye (at most 40)
+  frame 527 (17.57 s): 3373 pixels flicker in the picture (at most 2000); 1295 pixels flicker in an eye (at most 40)
+  frame 528 (17.60 s): 2877 pixels flicker in the picture (at most 2000); 1234 pixels flicker in an eye (at most 40)
+  frame 549 (18.30 s): 120 pixels flicker in an eye (at most 40)
+  frame 550 (18.33 s): 85 pixels flicker in an eye (at most 40)
+  frame 551 (18.37 s): 2342 pixels flicker in the picture (at most 2000); 423 pixels flicker in an eye (at most 40)
+  frame 552 (18.40 s): 147 pixels flicker in an eye (at most 40)
+  frame 591 (19.70 s): 393 pixels flicker in an eye (at most 40)
+  frame 592 (19.73 s): 14283 pixels flicker in the picture (at most 2000); 7282 pixels flicker in an eye (at most 40)
+  frame 593 (19.77 s): 405 pixels flicker in an eye (at most 40)
+  frame 604 (20.13 s): 120 pixels flicker in an eye (at most 40)
+  frame 605 (20.17 s): 205 pixels flicker in an eye (at most 40)
+  frame 606 (20.20 s): 260 pixels flicker in an eye (at most 40)
+  frame 625 (20.83 s): 49 pixels flicker in an eye (at most 40)
+  frame 626 (20.87 s): 68 pixels flicker in an eye (at most 40)
+  frame 627 (20.90 s): 59 pixels flicker in an eye (at most 40)
+  frame 629 (20.97 s): 109 pixels flicker in an eye (at most 40)
+  frame 630 (21.00 s): 156 pixels flicker in an eye (at most 40)
+  frame 638 (21.27 s): 97 pixels flicker in an eye (at most 40)
+  frame 639 (21.30 s): 255 pixels flicker in an eye (at most 40)
+  frame 640 (21.33 s): 265 pixels flicker in an eye (at most 40)
+  frame 641 (21.37 s): 82 pixels flicker in an eye (at most 40)
+  frame 658 (21.93 s): 83 pixels flicker in an eye (at most 40)
+  frame 660 (22.00 s): 61 pixels flicker in an eye (at most 40)
+  frame 671 (22.37 s): 251 pixels flicker in an eye (at most 40)
+  frame 672 (22.40 s): 4159 pixels flicker in the picture (at most 2000); 1312 pixels flicker in an eye (at most 40)
+  frame 673 (22.43 s): 257 pixels flicker in an eye (at most 40)
+  frame 680 (22.67 s): 313 pixels flicker in an eye (at most 40)
+  frame 821 (27.37 s): 44 pixels flicker in an eye (at most 40)
+  frame 855 (28.50 s): 111 pixels flicker in an eye (at most 40)
+  frame 856 (28.53 s): 100 pixels flicker in an eye (at most 40)
+  frame 857 (28.57 s): 42 pixels flicker in an eye (at most 40)
+  frame 861 (28.70 s): 85 pixels flicker in an eye (at most 40)
+  frame 862 (28.73 s): 97 pixels flicker in an eye (at most 40)
+  frame 863 (28.77 s): 44 pixels flicker in an eye (at most 40)
+  frame 872 (29.07 s): 41 pixels flicker in an eye (at most 40)
+  frame 873 (29.10 s): 94 pixels flicker in an eye (at most 40)
+  frame 874 (29.13 s): 94 pixels flicker in an eye (at most 40)
+  frame 879 (29.30 s): 90 pixels flicker in an eye (at most 40)
+  frame 880 (29.33 s): 90 pixels flicker in an eye (at most 40)
+  frame 883 (29.43 s): 11577 pixels flicker in the picture (at most 2000)
   frame 884 (29.47 s): 13821 pixels flicker in the picture (at most 2000)
   frame 888 (29.60 s): 6359 pixels flicker in the picture (at most 2000)
-  frame 890 (29.67 s): 6291 pixels flicker in the picture (at most 2000)
-  frame 893 (29.77 s): 7689 pixels flicker in the picture (at most 2000)
-  frame 894 (29.80 s): 5267 pixels flicker in the picture (at most 2000)
-  frame 895 (29.83 s): 8149 pixels flicker in the picture (at most 2000)
-  frame 898 (29.93 s): 5655 pixels flicker in the picture (at most 2000)
+  frame 890 (29.67 s): 6356 pixels flicker in the picture (at most 2000)
+  frame 893 (29.77 s): 7708 pixels flicker in the picture (at most 2000)
+  frame 894 (29.80 s): 5300 pixels flicker in the picture (at most 2000)
+  frame 895 (29.83 s): 8158 pixels flicker in the picture (at most 2000)
+  frame 898 (29.93 s): 5660 pixels flicker in the picture (at most 2000)
   frame 899 (29.97 s): 2331 pixels flicker in the picture (at most 2000)
-  frame 900 (30.00 s): 11075 pixels flicker in the picture (at most 2000)
-  frame 901 (30.03 s): 2766 pixels flicker in the picture (at most 2000)
-  frame 902 (30.07 s): 5385 pixels flicker in the picture (at most 2000)
-  frame 905 (30.17 s): 12197 pixels flicker in the picture (at most 2000)
-  frame 915 (30.50 s): 3573 pixels flicker in the picture (at most 2000)
-  frame 918 (30.60 s): 7495 pixels flicker in the picture (at most 2000)
+  frame 900 (30.00 s): 11103 pixels flicker in the picture (at most 2000)
+  frame 901 (30.03 s): 2767 pixels flicker in the picture (at most 2000)
+  frame 902 (30.07 s): 5425 pixels flicker in the picture (at most 2000)
+  frame 905 (30.17 s): 12216 pixels flicker in the picture (at most 2000)
+  frame 915 (30.50 s): 3623 pixels flicker in the picture (at most 2000)
+  frame 918 (30.60 s): 7512 pixels flicker in the picture (at most 2000)
   frame 919 (30.63 s): 9214 pixels flicker in the picture (at most 2000)
-  frame 920 (30.67 s): 7398 pixels flicker in the picture (at most 2000)
-  frame 924 (30.80 s): 8823 pixels flicker in the picture (at most 2000)
-  frame 927 (30.90 s): 4368 pixels flicker in the picture (at most 2000)
-  frame 928 (30.93 s): 5222 pixels flicker in the picture (at most 2000)
-  frame 1039 (34.63 s): 100 pixels flicker in an eye (at most 49)
-  frame 1040 (34.67 s): 72 pixels flicker in an eye (at most 49)
-  frame 1042 (34.73 s): 4404 pixels flicker in the picture (at most 2000); 4370 pixels flicker in a text or bubble (at most 150)
-  frame 1043 (34.77 s): 78 pixels flicker in an eye (at most 40); 600 pixels flicker in a text or bubble (at most 150)
-  frame 1044 (34.80 s): 992 pixels flicker in a text or bubble (at most 150)
+  frame 920 (30.67 s): 7422 pixels flicker in the picture (at most 2000)
+  frame 924 (30.80 s): 8839 pixels flicker in the picture (at most 2000)
+  frame 927 (30.90 s): 4389 pixels flicker in the picture (at most 2000)
+  frame 928 (30.93 s): 5300 pixels flicker in the picture (at most 2000)
+  frame 1039 (34.63 s): 133 pixels flicker in an eye (at most 40)
+  frame 1040 (34.67 s): 72 pixels flicker in an eye (at most 40)
+  frame 1041 (34.70 s): 55 pixels flicker in an eye (at most 40)
+  frame 1042 (34.73 s): 4464 pixels flicker in the picture (at most 2000); 4370 pixels flicker in a text or bubble (at most 150)
+  frame 1043 (34.77 s): 100 pixels flicker in an eye (at most 40); 601 pixels flicker in a text or bubble (at most 150)
+  frame 1044 (34.80 s): 996 pixels flicker in a text or bubble (at most 150)
   frame 1045 (34.83 s): 267 pixels flicker in a text or bubble (at most 150)
-  frame 1058 (35.27 s): 56 pixels flicker in an eye (at most 40)
+  frame 1058 (35.27 s): 68 pixels flicker in an eye (at most 40)
   frame 1080 (36.00 s): 3139 pixels flicker in the picture (at most 2000); 3136 pixels flicker in a text or bubble (at most 150)
   frame 1081 (36.03 s): 6951 pixels flicker in the picture (at most 2000); 6948 pixels flicker in a text or bubble (at most 150)
   frame 1082 (36.07 s): the loop: 10.3 % of the picture changes from the last frame to the first (95 % of frame changes inside the shots are 4.6 % or less)
@@ -381,52 +412,52 @@ RAW (Jesper's rule as written, no movement taken out; at most 2000 in the pictur
   frame 1081 (36.03 s): picture 6958, eye 0, text 6949
 
 every frame: frame, picture, eye, text, then the raw picture, eye, text
-1	21	14	0	37	21	0
+1	22	15	0	37	21	0
 2	4	0	0	10	0	0
 3	2	0	0	5	0	0
 4	0	0	0	5	0	0
 5	3	0	0	5	0	0
 6	3	0	0	4	1	0
 7	0	0	0	3	0	0
-8	60	45	0	105	83	0
-9	288	79	0	815	103	0
-10	333	79	0	994	146	0
-11	526	144	0	992	144	0
-12	261	58	0	446	94	0
-13	35	6	0	383	38	0
-14	8	0	0	453	31	0
+8	80	65	0	105	83	0
+9	309	81	0	815	103	0
+10	401	79	0	994	146	0
+11	684	144	0	992	144	0
+12	287	78	0	446	94	0
+13	47	10	0	383	38	0
+14	10	0	0	453	31	0
 15	14	0	0	512	28	0
-16	36	5	0	509	25	0
-17	21	0	0	364	13	0
-18	7	0	0	213	13	0
-19	30	0	0	83	2	0
-20	21	0	0	116	9	0
+16	42	5	0	509	25	0
+17	25	0	0	364	13	0
+18	14	0	0	213	13	0
+19	43	0	0	83	2	0
+20	24	0	0	116	9	0
 21	3	0	0	8	0	0
 22	3	0	0	8	0	0
 23	4	0	0	12	0	0
 24	1	0	0	12	0	0
 25	4	0	0	14	0	0
 26	4	0	0	13	0	0
-27	16	0	0	143	0	16
-28	220	94	0	814	155	0
-29	71	16	0	987	88	0
-30	119	9	0	1165	96	0
-31	102	7	3	1136	85	32
-32	71	12	3	1122	68	32
-33	105	29	3	1044	103	32
-34	109	67	0	875	111	0
+27	28	0	0	143	0	16
+28	280	119	0	814	155	0
+29	75	16	0	987	88	0
+30	128	9	0	1165	96	0
+31	106	9	3	1136	85	32
+32	74	13	3	1122	68	32
+33	151	75	3	1044	103	32
+34	144	95	0	875	111	0
 35	64	19	0	700	38	0
-36	39	0	0	548	43	0
-37	43	10	3	287	37	32
-38	632	111	0	1238	236	0
-39	172	3	0	517	35	0
-40	212	4	0	653	61	0
-41	55	12	0	118	13	0
-42	71	58	0	155	61	0
-43	145	122	0	194	152	0
-44	401	66	0	1245	172	0
-45	44	8	0	504	77	0
-46	17	0	0	134	6	0
+36	43	0	0	548	43	0
+37	75	25	3	287	37	32
+38	801	141	0	1238	236	0
+39	246	8	0	517	35	0
+40	223	10	0	653	61	0
+41	92	13	0	118	13	0
+42	72	58	0	155	61	0
+43	157	124	0	194	152	0
+44	415	68	0	1245	172	0
+45	167	40	0	504	77	0
+46	36	1	0	134	6	0
 47	12	0	0	36	0	0
 48	5	0	0	48	0	32
 49	0	0	0	1	0	0
@@ -440,17 +471,17 @@ every frame: frame, picture, eye, text, then the raw picture, eye, text
 57	0	0	0	9	0	0
 58	7	0	0	31	0	0
 59	4	0	0	24	0	0
-60	19	7	0	163	13	0
+60	20	7	0	163	13	0
 61	49	8	0	443	31	0
-62	118	44	0	664	57	0
-63	128	32	0	758	57	0
-64	246	31	0	970	52	0
-65	42	8	0	665	60	0
-66	35	12	0	411	40	0
-67	34	3	0	164	9	0
-68	32	14	0	143	30	0
-69	42	32	0	61	38	0
-70	35	29	0	60	41	0
+62	125	47	0	664	57	0
+63	136	37	0	758	57	0
+64	279	31	0	970	52	0
+65	54	9	0	665	60	0
+66	41	12	0	411	40	0
+67	36	3	0	164	9	0
+68	37	16	0	143	30	0
+69	45	35	0	61	38	0
+70	45	39	0	60	41	0
 71	17	1	0	67	2	0
 72	0	0	0	0	0	0
 73	0	0	0	0	0	0
@@ -458,15 +489,15 @@ every frame: frame, picture, eye, text, then the raw picture, eye, text
 75	0	0	0	9	0	0
 76	1	0	0	2	0	0
 77	1	0	0	1	0	0
-78	11	6	0	21	6	0
-79	1	0	0	46	0	0
+78	12	6	0	21	6	0
+79	2	0	0	46	0	0
 80	0	0	0	32	0	0
-81	28	3	0	105	7	0
-82	213	92	0	372	92	0
-83	11	4	0	174	8	0
+81	29	4	0	105	7	0
+82	235	92	0	372	92	0
+83	13	5	0	174	8	0
 84	6	0	0	180	0	0
-85	80	12	0	350	12	0
-86	20	3	0	319	10	0
+85	105	12	0	350	12	0
+86	23	5	0	319	10	0
 87	18	0	0	305	0	0
 88	8	0	0	296	0	0
 89	5	0	0	302	0	0
@@ -484,8 +515,8 @@ every frame: frame, picture, eye, text, then the raw picture, eye, text
 101	6	0	3	31	0	9
 102	4	0	0	24	5	0
 103	3	0	0	24	3	0
-104	40	23	0	78	28	0
-105	159	93	0	200	93	0
+104	56	28	0	78	28	0
+105	176	93	0	200	93	0
 106	3	0	0	56	3	0
 107	2	0	0	94	12	0
 108	3	0	0	93	22	0
@@ -512,7 +543,7 @@ every frame: frame, picture, eye, text, then the raw picture, eye, text
 129	2	0	0	15	0	0
 130	1	0	0	10	0	0
 131	2	0	0	8	0	0
-132	32	26	0	51	28	0
+132	39	28	0	51	28	0
 133	0	0	0	15	0	0
 134	1	0	0	67	6	0
 135	0	0	0	130	8	0
@@ -522,14 +553,14 @@ every frame: frame, picture, eye, text, then the raw picture, eye, text
 139	8	0	0	578	48	0
 140	8	0	0	653	74	0
 141	9	0	0	732	71	0
-142	11	2	0	656	73	0
-143	4	1	0	697	73	0
-144	12	1	0	705	100	0
-145	10	0	0	672	110	0
-146	12	0	0	635	97	0
-147	17	1	0	639	92	0
-148	40	0	0	672	88	0
-149	2	0	0	501	93	0
+142	12	2	0	656	73	0
+143	5	1	0	697	73	0
+144	15	1	0	705	100	0
+145	11	0	0	672	110	0
+146	14	0	0	635	97	0
+147	18	1	0	639	92	0
+148	43	0	0	672	88	0
+149	15	0	0	501	93	0
 150	0	0	0	311	65	0
 151	3	0	0	207	46	0
 152	6	0	0	100	17	0
@@ -548,7 +579,7 @@ every frame: frame, picture, eye, text, then the raw picture, eye, text
 165	1	0	0	16	0	0
 166	2	0	0	6	0	0
 167	8	6	0	19	6	0
-168	1269	350	0	1378	367	0
+168	1309	364	0	1378	367	0
 169	75	44	0	85	44	0
 170	2	0	0	9	0	0
 171	3	1	0	8	1	0
@@ -569,7 +600,7 @@ every frame: frame, picture, eye, text, then the raw picture, eye, text
 186	4	0	0	23	1	0
 187	6	1	0	20	1	0
 188	5	0	0	24	2	0
-189	11	0	0	25	0	0
+189	12	0	0	25	0	0
 190	3	0	0	29	0	0
 191	1	0	0	13	1	0
 192	9	0	0	19	1	0
@@ -596,12 +627,12 @@ every frame: frame, picture, eye, text, then the raw picture, eye, text
 213	4	4	0	23	4	0
 214	5	2	0	25	5	0
 215	8	5	0	32	9	0
-216	4	3	0	29	7	0
+216	5	3	0	29	7	0
 217	4	3	0	29	5	0
 218	11	10	0	30	10	0
-219	108	87	0	134	105	0
+219	116	95	0	134	105	0
 220	691	587	0	703	587	0
-221	82	77	0	101	87	0
+221	86	81	0	101	87	0
 222	8	8	0	19	8	0
 223	2	0	0	13	0	0
 224	7	2	0	13	2	0
@@ -617,39 +648,39 @@ every frame: frame, picture, eye, text, then the raw picture, eye, text
 234	3	0	1	12	0	9
 235	1	0	0	2	0	0
 236	1	0	0	2	0	0
-237	641	0	0	901	0	0
-238	727	0	0	947	0	0
-239	661	1	0	920	2	0
+237	663	0	0	901	0	0
+238	751	0	0	947	0	0
+239	686	2	0	920	2	0
 240	1	0	0	10	0	0
 241	0	0	0	11	0	0
 242	0	0	0	6	0	0
 243	0	0	0	1	0	0
-244	18	0	0	69	0	0
-245	11	0	0	286	3	0
-246	6	0	0	1060	39	0
-247	60	0	0	1311	71	0
-248	168	0	0	1416	97	0
-249	106	0	0	1237	87	0
-250	28	0	0	503	51	0
-251	4	0	0	45	1	2
+244	22	0	0	69	0	0
+245	33	0	0	286	3	0
+246	19	0	0	1060	39	0
+247	62	0	0	1311	71	0
+248	170	0	0	1416	97	0
+249	112	0	0	1237	87	0
+250	38	0	0	503	51	0
+251	7	0	0	45	1	2
 252	1	0	0	34	0	0
 253	2	0	0	4	0	0
 254	17	0	0	56	2	0
-255	15	0	0	66	0	2
-256	28	0	0	475	36	0
-257	72	1	0	923	56	0
-258	98	0	0	1214	85	0
-259	228	125	0	1374	253	0
-260	175	91	0	1059	122	0
-261	72	0	0	601	31	0
-262	15	0	0	710	45	0
-263	27	0	0	1050	56	8
-264	48	2	0	1207	60	0
-265	163	1	0	1314	67	0
-266	42	3	0	1029	65	0
-267	26	1	0	730	37	0
-268	20	2	0	202	18	0
-269	3	0	0	47	0	0
+255	19	0	0	66	0	2
+256	49	0	0	475	36	0
+257	75	1	0	923	56	0
+258	103	0	0	1214	85	0
+259	259	138	0	1374	253	0
+260	229	92	0	1059	122	0
+261	101	0	0	601	31	0
+262	43	1	0	710	45	0
+263	36	0	0	1050	56	8
+264	52	2	0	1207	60	0
+265	178	1	0	1314	67	0
+266	50	3	0	1029	65	0
+267	39	1	0	730	37	0
+268	56	4	0	202	18	0
+269	5	0	0	47	0	0
 270	7	0	0	45	0	0
 271	1	0	0	4	0	0
 272	3	0	0	6	0	0
@@ -657,21 +688,21 @@ every frame: frame, picture, eye, text, then the raw picture, eye, text
 274	3	0	0	7	0	0
 275	1	0	0	16	0	11
 276	4	0	0	37	0	0
-277	174	78	0	286	134	0
-278	8	0	0	480	61	0
-279	16	1	0	1141	83	0
-280	102	13	0	1478	105	0
-281	58	24	0	1539	106	0
-282	75	18	0	1510	101	0
-283	72	20	0	1509	98	0
-284	36	1	0	1282	91	0
-285	61	5	0	932	108	0
-286	90	1	0	564	47	0
-287	886	148	0	2295	224	0
-288	296	23	0	925	73	0
-289	165	2	0	791	112	0
-290	631	2	0	1071	52	0
-291	396	0	0	629	0	0
+277	228	98	0	286	134	0
+278	21	4	0	480	61	0
+279	26	1	0	1141	83	0
+280	115	13	0	1478	105	0
+281	60	24	0	1539	106	0
+282	79	18	0	1510	101	0
+283	89	20	0	1509	98	0
+284	47	1	0	1282	91	0
+285	76	5	0	932	108	0
+286	102	2	0	564	47	0
+287	1400	180	0	2295	224	0
+288	503	67	0	925	73	0
+289	190	2	0	791	112	0
+290	729	18	0	1071	52	0
+291	415	0	0	629	0	0
 292	2	0	0	6	0	0
 293	2	0	0	4	0	0
 294	0	0	0	4	0	0
@@ -680,36 +711,36 @@ every frame: frame, picture, eye, text, then the raw picture, eye, text
 297	0	0	0	0	0	0
 298	0	0	0	0	0	0
 299	4160	0	4160	4160	0	4160
-300	7529	0	7529	8364	0	8364
-301	6781	0	6525	7341	0	7085
-302	761	0	761	1513	0	1513
-303	1696	0	1696	2026	0	2026
+300	7653	0	7653	8364	0	8364
+301	6864	0	6608	7341	0	7085
+302	838	0	838	1513	0	1513
+303	1834	0	1834	2026	0	2026
 304	0	0	0	8	0	0
 305	0	0	0	11	0	0
-306	1	0	0	14	0	0
+306	2	0	0	14	0	0
 307	2319	1209	0	2325	1209	0
-308	27477	7232	0	27961	7497	0
+308	27538	7236	0	27961	7497	0
 309	2436	1285	0	2437	1285	0
 310	29	10	0	33	10	0
 311	1	0	0	6	0	0
-312	83	11	0	147	21	0
-313	1972	478	0	3424	616	0
-314	5033	1138	0	7056	1205	0
-315	6399	1084	0	8458	1219	0
-316	5622	1050	0	8052	1211	0
-317	4681	981	0	6528	1124	0
-318	648	108	0	1532	174	0
-319	1	0	0	13	1	0
+312	114	17	0	147	21	0
+313	2100	478	0	3424	616	0
+314	5149	1161	0	7056	1205	0
+315	6643	1182	0	8458	1219	0
+316	5885	1143	0	8052	1211	0
+317	4827	1018	0	6528	1124	0
+318	844	111	0	1532	174	0
+319	7	0	0	13	1	0
 320	1	0	0	1	0	0
 321	1	0	0	1	0	0
-322	507	92	0	2189	103	0
-323	687	87	0	1478	155	0
-324	3414	949	0	4832	1090	0
-325	4415	1160	4	6053	1250	9
-326	4570	1166	4	6382	1268	9
-327	2880	820	4	4309	975	9
-328	213	27	0	534	42	0
-329	162	49	0	1827	457	0
+322	1522	103	0	2189	103	0
+323	849	89	0	1478	155	0
+324	3545	977	0	4832	1090	0
+325	4532	1185	4	6053	1250	9
+326	4679	1210	4	6382	1268	9
+327	3037	835	4	4309	975	9
+328	291	31	0	534	42	0
+329	1095	397	0	1827	457	0
 330	5	0	4	11	0	9
 331	0	0	0	1	0	0
 332	0	0	0	0	0	0
@@ -721,13 +752,13 @@ every frame: frame, picture, eye, text, then the raw picture, eye, text
 338	0	0	0	0	0	0
 339	0	0	0	0	0	0
 340	0	0	0	3	0	0
-341	478	64	0	1130	130	0
-342	3557	957	0	5108	1061	0
-343	5326	1253	0	7147	1348	0
-344	6650	1247	1150	8685	1359	1150
-345	9174	1148	4239	10882	1259	4249
-346	9069	429	7195	10210	546	7195
-347	8	0	0	19	0	0
+341	633	75	0	1130	130	0
+342	3668	967	0	5108	1061	0
+343	5494	1310	0	7147	1348	0
+344	6878	1315	1150	8685	1359	1150
+345	9268	1181	4239	10882	1259	4249
+346	9218	429	7195	10210	546	7195
+347	15	0	0	19	0	0
 348	0	0	0	0	0	0
 349	0	0	0	0	0	0
 350	0	0	0	0	0	0
@@ -737,9 +768,9 @@ every frame: frame, picture, eye, text, then the raw picture, eye, text
 354	0	0	0	0	0	0
 355	1	0	0	3	2	0
 356	38	36	0	40	36	0
-357	91	57	0	443	80	0
-358	74	7	0	731	112	0
-359	20	0	0	355	49	0
+357	180	70	0	443	80	0
+358	99	19	0	731	112	0
+359	62	22	0	355	49	0
 360	5	0	0	62	7	0
 361	1	0	0	1	0	0
 362	12	0	0	20	0	4
@@ -748,7 +779,7 @@ every frame: frame, picture, eye, text, then the raw picture, eye, text
 365	2	0	0	13	0	0
 366	1	0	0	6	0	0
 367	3	0	0	15	0	0
-368	3	0	0	12	0	0
+368	4	0	0	12	0	0
 369	2	0	0	6	0	0
 370	1	0	0	3	0	0
 371	0	0	0	4	0	0
@@ -756,13 +787,13 @@ every frame: frame, picture, eye, text, then the raw picture, eye, text
 373	0	0	0	0	0	0
 374	0	0	0	0	0	0
 375	1	0	0	9	0	0
-376	22	0	0	257	16	0
+376	23	1	0	257	16	0
 377	35	2	0	422	53	0
 378	50	0	0	470	59	0
 379	32	3	0	383	73	0
-380	17	8	0	264	43	0
+380	18	9	0	264	43	0
 381	6	2	0	108	28	0
-382	51	46	0	66	47	8
+382	52	47	0	66	47	8
 383	28	27	0	36	27	0
 384	1	0	0	2	0	0
 385	2	0	0	2	0	0
@@ -771,8 +802,8 @@ every frame: frame, picture, eye, text, then the raw picture, eye, text
 388	0	0	0	3	0	0
 389	2	1	0	7	4	0
 390	2	0	0	5	2	0
-391	70	32	0	145	78	0
-392	150	46	0	729	94	2
+391	87	34	0	145	78	0
+392	153	49	0	729	94	2
 393	0	0	0	0	0	0
 394	0	0	0	0	0	0
 395	4	0	0	17	0	0
@@ -783,32 +814,32 @@ every frame: frame, picture, eye, text, then the raw picture, eye, text
 400	3	0	0	4	0	0
 401	1	0	0	1	0	0
 402	1	0	0	3	0	0
-403	246	148	0	248	148	0
-404	1886	615	0	2173	675	0
+403	247	148	0	248	148	0
+404	1959	619	0	2173	675	0
 405	251	147	0	255	147	0
 406	2	0	0	5	0	0
 407	1	0	0	2	0	0
 408	0	0	0	1	0	0
 409	8	0	0	41	0	0
-410	3	0	0	52	10	1
-411	57	2	0	713	48	0
-412	35	0	0	1119	56	0
-413	55	0	0	1193	73	0
-414	43	0	0	1076	78	0
-415	28	0	0	807	49	0
-416	22	0	0	414	40	0
+410	6	0	0	52	10	1
+411	59	2	0	713	48	0
+412	36	0	0	1119	56	0
+413	58	0	0	1193	73	0
+414	48	0	0	1076	78	0
+415	29	0	0	807	49	0
+416	26	0	0	414	40	0
 417	13	0	0	72	15	0
 418	5	0	0	31	0	0
 419	2	0	0	8	0	0
 420	1	0	0	4	0	0
-421	29	1	0	154	35	0
-422	5	0	0	49	1	0
+421	31	1	0	154	35	0
+422	7	0	0	49	1	0
 423	20	0	0	391	51	0
-424	31	0	0	609	56	0
-425	21	0	0	777	48	0
+424	37	0	0	609	56	0
+425	23	0	0	777	48	0
 426	16	0	0	781	62	0
-427	4	0	0	559	29	0
-428	26	0	0	72	0	0
+427	7	0	0	559	29	0
+428	31	0	0	72	0	0
 429	5	0	0	85	4	0
 430	1	0	0	1	0	0
 431	1	0	0	1	0	0
@@ -821,7 +852,7 @@ every frame: frame, picture, eye, text, then the raw picture, eye, text
 438	0	0	0	0	0	0
 439	0	0	0	0	0	0
 440	5	1	0	23	1	0
-441	7	0	0	18	0	0
+441	8	0	0	18	0	0
 442	2	0	0	15	0	0
 443	6	0	2	19	0	8
 444	4	0	0	11	0	0
@@ -830,14 +861,14 @@ every frame: frame, picture, eye, text, then the raw picture, eye, text
 447	2	0	0	15	0	0
 448	16	1	0	30	1	0
 449	6	0	0	22	0	0
-450	2	0	0	26	0	0
+450	3	0	0	26	0	0
 451	2	1	0	11	1	0
 452	4	1	0	10	1	0
 453	4	1	0	9	2	0
 454	6	4	0	15	4	0
 455	3	0	0	6	0	0
-456	6	3	0	9	3	0
-457	20	1	0	37	1	0
+456	7	3	0	9	3	0
+457	22	1	0	37	1	0
 458	6	2	0	21	3	0
 459	10	2	2	24	2	2
 460	10	3	0	28	4	0
@@ -845,12 +876,12 @@ every frame: frame, picture, eye, text, then the raw picture, eye, text
 462	7	1	0	11	1	0
 463	4	2	0	11	2	0
 464	9	3	0	16	3	0
-465	5	1	0	10	1	0
+465	6	1	0	10	1	0
 466	1	0	0	8	0	0
 467	3	0	0	19	0	0
 468	3	0	0	14	0	0
 469	4	0	0	16	1	0
-470	1	0	0	9	0	0
+470	2	0	0	9	0	0
 471	6	0	0	13	0	0
 472	2	0	0	4	0	0
 473	2	0	0	7	0	0
@@ -876,25 +907,25 @@ every frame: frame, picture, eye, text, then the raw picture, eye, text
 493	2	0	0	33	0	0
 494	5	4	0	30	4	0
 495	24	6	0	81	7	0
-496	15	1	0	102	8	0
-497	12	4	0	178	11	0
-498	8	0	0	206	12	0
+496	20	5	0	102	8	0
+497	13	5	0	178	11	0
+498	12	4	0	206	12	0
 499	5	1	0	227	16	0
-500	4	0	0	161	4	0
-501	21	0	0	161	6	0
+500	5	1	0	161	4	0
+501	22	1	0	161	6	0
 502	22	4	0	115	6	0
 503	16	5	0	58	6	3
 504	11	3	0	43	3	0
-505	1703	287	0	4903	313	0
-506	314	109	0	819	141	0
-507	1200	533	0	3586	727	0
-508	531	219	0	1522	310	0
-509	1763	228	0	3236	236	0
+505	3475	313	0	4903	313	0
+506	472	126	0	819	141	0
+507	1215	533	0	3586	727	0
+508	886	232	0	1522	310	0
+509	2667	236	0	3236	236	0
 510	5	0	0	25	0	0
 511	5	0	0	29	0	0
 512	5	0	0	21	0	0
 513	1	0	0	23	0	0
-514	6	0	0	43	0	0
+514	7	0	0	43	0	0
 515	2	0	0	36	0	0
 516	4	0	0	34	0	0
 517	2	0	0	14	0	0
@@ -903,12 +934,12 @@ every frame: frame, picture, eye, text, then the raw picture, eye, text
 520	1	0	0	8	0	0
 521	1	0	0	7	0	0
 522	2	0	0	11	0	0
-523	12	0	0	44	1	0
-524	385	113	0	1066	143	0
-525	1807	820	0	3848	978	0
-526	3010	1248	0	5369	1284	0
-527	3301	1291	0	5665	1323	0
-528	2833	1231	0	5043	1253	0
+523	20	1	0	44	1	0
+524	647	129	0	1066	143	0
+525	1849	829	0	3848	978	0
+526	3116	1252	0	5369	1284	0
+527	3373	1295	0	5665	1323	0
+528	2877	1234	0	5043	1253	0
 529	0	0	0	0	0	0
 530	0	0	0	0	0	0
 531	1	0	0	10	2	0
@@ -916,7 +947,7 @@ every frame: frame, picture, eye, text, then the raw picture, eye, text
 533	0	0	0	5	0	0
 534	0	0	0	17	1	16
 535	0	0	0	3	0	0
-536	7	0	0	205	0	0
+536	14	0	0	205	0	0
 537	2	0	0	4	2	0
 538	2	0	0	42	14	16
 539	1	1	0	52	21	0
@@ -925,15 +956,15 @@ every frame: frame, picture, eye, text, then the raw picture, eye, text
 542	6	3	0	154	39	16
 543	6	4	0	126	38	0
 544	5	4	0	96	26	0
-545	0	0	0	59	20	0
+545	1	0	0	59	20	0
 546	3	0	0	58	9	16
 547	0	0	0	13	3	0
 548	0	0	0	9	0	0
-549	622	61	0	1909	125	0
-550	213	62	0	830	107	16
-551	2309	415	0	4120	576	0
-552	833	136	0	2220	251	0
-553	705	19	0	1197	20	0
+549	1415	120	0	1909	125	0
+550	414	85	0	830	107	16
+551	2342	423	0	4120	576	0
+552	1136	147	0	2220	251	0
+553	1128	20	0	1197	20	0
 554	0	0	0	18	0	16
 555	2	0	0	3	0	0
 556	0	0	0	3	0	0
@@ -946,15 +977,15 @@ every frame: frame, picture, eye, text, then the raw picture, eye, text
 563	2	0	0	2	0	0
 564	0	0	0	2	0	0
 565	0	0	0	5	0	0
-566	14	0	0	101	0	0
-567	248	0	0	831	0	0
-568	1417	7	0	2602	14	0
-569	1869	7	0	3268	34	0
-570	1175	0	1	1943	0	9
-571	90	6	0	769	12	0
+566	17	0	0	101	0	0
+567	362	0	0	831	0	0
+568	1476	9	0	2602	14	0
+569	1873	7	0	3268	34	0
+570	1237	0	1	1943	0	9
+571	523	11	0	769	12	0
 572	54	0	0	199	0	0
-573	8	0	0	58	0	0
-574	7	0	0	77	0	0
+573	13	0	0	58	0	0
+574	8	0	0	77	0	0
 575	0	0	0	13	0	0
 576	3	0	0	17	0	0
 577	1	0	0	30	0	0
@@ -972,75 +1003,75 @@ every frame: frame, picture, eye, text, then the raw picture, eye, text
 589	1	0	0	9	0	0
 590	8	0	0	10	0	0
 591	420	393	0	421	393	0
-592	14281	7282	0	14464	7282	0
+592	14283	7282	0	14464	7282	0
 593	452	405	0	460	405	0
 594	15	3	0	28	4	0
 595	1	0	0	4	0	0
 596	0	0	0	0	0	0
 597	0	0	0	0	0	0
-598	746	0	0	759	0	0
+598	747	0	0	759	0	0
 599	2	0	0	13	0	0
 600	2	0	0	11	0	0
-601	759	0	0	763	0	0
+601	760	0	0	763	0	0
 602	2	0	0	3	1	0
 603	2	1	0	4	2	0
-604	872	97	0	911	133	0
-605	1762	204	0	2860	266	0
-606	1130	258	0	2277	306	0
-607	23	11	0	938	108	0
-608	908	0	0	1040	1	0
-609	857	0	0	868	0	0
+604	897	120	0	911	133	0
+605	1800	205	0	2860	266	0
+606	1164	260	0	2277	306	0
+607	240	32	0	938	108	0
+608	921	0	0	1040	1	0
+609	861	0	0	868	0	0
 610	2	0	0	5	0	0
 611	0	0	0	4	0	0
 612	0	0	0	1	0	0
 613	2	0	0	5	0	0
 614	0	0	0	3	0	0
 615	0	0	0	3	0	0
-616	941	0	0	948	0	0
+616	944	0	0	948	0	0
 617	1	0	0	9	0	0
 618	2	0	0	11	0	0
-619	968	0	0	989	0	0
-620	844	0	0	865	0	0
-621	1010	0	0	1054	0	0
+619	974	0	0	989	0	0
+620	845	0	0	865	0	0
+621	1018	0	0	1054	0	0
 622	6	0	0	65	0	0
-623	17	0	0	193	1	0
-624	1092	13	0	2033	86	0
+623	26	0	0	193	1	0
+624	1105	13	0	2033	86	0
 625	128	49	0	1404	178	0
-626	215	68	0	1476	217	0
-627	1206	59	0	2307	199	0
-628	910	20	0	1673	148	0
-629	88	70	0	504	218	0
-630	118	106	0	293	183	0
-631	971	26	0	1084	45	0
-632	1113	0	0	1193	0	0
+626	218	68	0	1476	217	0
+627	1217	59	0	2307	199	0
+628	913	22	0	1673	148	0
+629	127	109	0	504	218	0
+630	168	156	0	293	183	0
+631	975	30	0	1084	45	0
+632	1118	0	0	1193	0	0
 633	11	0	0	89	0	0
 634	5	0	0	80	0	0
-635	1093	0	0	1158	0	0
+635	1095	0	0	1158	0	0
 636	1000	0	0	1050	1	0
 637	7	4	0	44	7	0
-638	92	90	0	124	100	0
-639	1309	229	0	1388	298	0
-640	1388	265	0	2621	324	0
-641	390	77	0	1368	193	0
-642	1150	0	0	1515	8	0
-643	1215	0	0	1231	0	0
+638	99	97	0	124	100	0
+639	1336	255	0	1388	298	0
+640	1434	265	0	2621	324	0
+641	419	82	0	1368	193	0
+642	1182	0	0	1515	8	0
+643	1228	0	0	1231	0	0
 644	1230	0	0	1247	0	0
 645	0	0	0	2	0	0
 646	1	0	0	2	0	0
-647	1293	0	0	1304	0	0
-648	1359	0	0	1381	0	0
+647	1299	0	0	1304	0	0
+648	1375	0	0	1381	0	0
 649	1	0	0	1	0	0
 650	1	0	0	6	0	0
-651	1367	0	0	1396	0	0
+651	1382	0	0	1396	0	0
 652	1	0	0	1	0	0
 653	1	0	0	1	0	0
-654	1264	0	0	1276	0	0
-655	1067	0	0	1075	0	0
-656	1186	0	0	1197	0	0
+654	1275	0	0	1276	0	0
+655	1070	0	0	1075	0	0
+656	1196	0	0	1197	0	0
 657	1015	0	0	1058	0	0
-658	78	69	0	235	151	0
-659	43	26	0	431	101	0
-660	540	56	0	1064	93	0
+658	92	83	0	235	151	0
+659	47	30	0	431	101	0
+660	563	61	0	1064	93	0
 661	0	0	0	0	0	0
 662	0	0	0	0	0	0
 663	0	0	0	3	0	0
@@ -1052,45 +1083,45 @@ every frame: frame, picture, eye, text, then the raw picture, eye, text
 669	0	0	0	4	0	0
 670	0	0	0	9	0	0
 671	464	251	0	480	251	0
-672	4066	1293	0	4423	1405	0
-673	457	257	0	484	258	1
+672	4159	1312	0	4423	1405	0
+673	460	257	0	484	258	1
 674	3	0	0	32	0	0
 675	0	0	0	16	0	0
 676	2	0	0	21	0	0
-677	13	0	12	57	0	43
+677	14	0	12	57	0	43
 678	4	0	0	38	0	16
 679	1	0	0	17	0	0
-680	461	312	0	754	366	0
-681	40	4	0	1319	186	0
-682	224	15	0	1727	219	0
-683	167	20	0	1585	168	0
-684	39	5	0	657	104	0
-685	37	1	0	294	33	0
-686	14	0	0	253	34	0
-687	32	2	0	155	10	0
-688	7	0	0	78	0	0
+680	529	313	0	754	366	0
+681	59	4	0	1319	186	0
+682	228	15	0	1727	219	0
+683	169	20	0	1585	168	0
+684	55	16	0	657	104	0
+685	39	2	0	294	33	0
+686	16	0	0	253	34	0
+687	36	2	0	155	10	0
+688	16	0	0	78	0	0
 689	11	0	0	62	3	0
 690	0	0	0	8	0	0
 691	0	0	0	11	0	0
-692	0	0	0	13	0	0
+692	1	0	0	13	0	0
 693	0	0	0	9	0	0
 694	5	0	0	9	0	0
 695	0	0	0	14	5	0
-696	17	4	0	75	6	0
-697	5	0	0	48	2	0
+696	19	6	0	75	6	0
+697	9	0	0	48	2	0
 698	8	0	0	105	3	0
 699	28	0	0	149	3	0
-700	9	0	0	130	3	0
+700	10	0	0	130	3	0
 701	3	0	0	160	2	0
 702	11	0	0	132	0	0
 703	7	0	0	204	0	0
 704	9	0	0	123	0	0
 705	2	0	0	108	0	0
-706	11	0	0	220	8	0
-707	27	6	0	413	8	0
-708	219	14	0	1197	97	0
-709	490	9	0	1383	114	0
-710	46	2	0	82	3	0
+706	60	0	0	220	8	0
+707	47	6	0	413	8	0
+708	224	14	0	1197	97	0
+709	510	9	0	1383	114	0
+710	63	2	0	82	3	0
 711	0	0	0	6	0	0
 712	1	0	0	7	0	0
 713	0	0	0	4	0	0
@@ -1109,31 +1140,31 @@ every frame: frame, picture, eye, text, then the raw picture, eye, text
 726	1	0	0	3	0	0
 727	2	1	0	6	2	0
 728	6	0	0	12	0	0
-729	1	0	0	9	0	0
+729	2	0	0	9	0	0
 730	26	9	0	49	13	0
 731	4	0	0	17	2	0
 732	4	0	0	15	1	0
 733	10	1	0	35	6	0
 734	11	2	0	80	7	0
-735	30	3	0	335	15	0
-736	55	3	0	695	50	0
-737	167	19	0	852	60	0
-738	225	10	0	1001	53	0
-739	290	21	0	943	51	0
-740	33	5	0	636	45	0
-741	10	0	0	284	20	0
+735	49	3	0	335	15	0
+736	61	3	0	695	50	0
+737	183	19	0	852	60	0
+738	238	10	0	1001	53	0
+739	298	21	0	943	51	0
+740	61	5	0	636	45	0
+741	26	6	0	284	20	0
 742	4	2	0	36	3	0
 743	5	1	0	14	1	0
 744	4	0	0	12	0	0
-745	89	11	0	271	12	0
-746	22	5	0	130	15	0
-747	32	3	0	560	35	0
-748	49	8	0	667	41	0
-749	321	19	0	1086	61	0
-750	238	9	0	920	57	0
-751	121	18	0	771	64	0
-752	24	0	0	399	35	0
-753	2	0	0	3	1	0
+745	96	11	0	271	12	0
+746	24	5	0	130	15	0
+747	47	3	0	560	35	0
+748	87	8	0	667	41	0
+749	342	19	0	1086	61	0
+750	253	9	0	920	57	0
+751	135	18	0	771	64	0
+752	68	11	0	399	35	0
+753	3	1	0	3	1	0
 754	12	0	0	32	0	0
 755	1	0	0	3	0	0
 756	2	0	0	4	0	0
@@ -1144,31 +1175,31 @@ every frame: frame, picture, eye, text, then the raw picture, eye, text
 761	3	0	0	5	0	0
 762	3	0	0	10	0	0
 763	3	0	0	16	0	0
-764	20	3	0	95	9	0
-765	35	10	0	418	61	0
-766	37	3	0	607	74	0
-767	39	2	0	669	88	0
-768	63	2	0	933	73	0
-769	164	19	0	968	66	0
-770	226	5	0	917	66	0
-771	293	20	0	937	54	0
-772	26	8	0	578	43	0
-773	3	0	0	253	15	0
-774	8	0	0	44	0	0
-775	21	7	0	178	34	0
-776	33	3	0	534	70	0
+764	23	3	0	95	9	0
+765	38	13	0	418	61	0
+766	38	3	0	607	74	0
+767	60	4	0	669	88	0
+768	67	2	0	933	73	0
+769	176	19	0	968	66	0
+770	241	5	0	917	66	0
+771	299	20	0	937	54	0
+772	62	8	0	578	43	0
+773	11	4	0	253	15	0
+774	9	0	0	44	0	0
+775	22	7	0	178	34	0
+776	34	3	0	534	70	0
 777	0	0	0	0	0	0
 778	0	0	0	0	0	0
 779	7	0	0	7	0	0
 780	8	0	0	12	0	0
 781	0	0	0	0	0	0
 782	11	1	0	13	1	0
-783	2	0	0	10	0	0
+783	4	0	0	10	0	0
 784	7	0	0	18	0	0
 785	12	4	0	15	4	0
-786	231	31	0	282	48	0
-787	48	21	0	214	46	0
-788	40	18	0	151	30	0
+786	254	32	0	282	48	0
+787	58	22	0	214	46	0
+788	56	20	0	151	30	0
 789	8	7	0	24	11	0
 790	1	0	0	9	0	0
 791	10	0	0	13	0	0
@@ -1188,32 +1219,32 @@ every frame: frame, picture, eye, text, then the raw picture, eye, text
 805	122	11	0	164	16	3
 806	53	15	3	182	33	26
 807	39	19	0	164	31	0
-808	37	22	0	136	31	0
+808	39	22	0	136	31	0
 809	67	25	0	135	31	0
 810	34	12	0	54	13	0
-811	37	28	0	59	33	10
+811	41	32	0	59	33	10
 812	38	1	0	52	1	10
 813	7	0	0	21	0	10
 814	4	1	0	6	1	0
 815	109	0	0	114	0	3
-816	34	1	0	41	1	3
+816	37	1	0	41	1	3
 817	32	0	0	36	0	3
-818	52	1	0	64	2	5
+818	56	1	0	64	2	5
 819	36	0	0	44	1	4
-820	67	17	0	95	25	0
-821	90	42	0	283	60	10
-822	36	11	0	187	27	0
-823	12	7	0	40	15	0
-824	9	1	0	13	1	0
+820	76	25	0	95	25	0
+821	92	44	0	283	60	10
+822	50	11	0	187	27	0
+823	15	9	0	40	15	0
+824	10	1	0	13	1	0
 825	43	14	0	70	18	0
 826	1	0	0	6	0	4
 827	0	0	0	4	0	2
 828	24	0	0	27	0	2
-829	7	0	0	15	0	2
+829	8	0	0	15	0	2
 830	13	0	0	14	0	1
-831	16	0	0	22	0	0
-832	16	0	0	20	0	0
-833	14	0	0	29	0	0
+831	19	0	0	22	0	0
+832	17	0	0	20	0	0
+833	15	0	0	29	0	0
 834	15	0	0	16	0	0
 835	2	0	0	16	0	0
 836	0	0	0	1	0	0
@@ -1221,11 +1252,11 @@ every frame: frame, picture, eye, text, then the raw picture, eye, text
 838	1	0	0	3	0	0
 839	0	0	0	0	0	0
 840	0	0	0	0	0	0
-841	13	1	0	40	4	0
-842	115	7	0	310	15	0
-843	345	11	0	606	29	0
-844	138	5	1	310	24	5
-845	8	0	0	18	0	0
+841	18	4	0	40	4	0
+842	156	7	0	310	15	0
+843	354	11	0	606	29	0
+844	163	9	1	310	24	5
+845	10	0	0	18	0	0
 846	0	0	0	3	0	0
 847	5	0	0	9	0	0
 848	0	0	0	4	0	0
@@ -1233,85 +1264,85 @@ every frame: frame, picture, eye, text, then the raw picture, eye, text
 850	0	0	0	4	0	0
 851	1	0	0	8	0	0
 852	0	0	0	1	0	0
-853	2	0	0	11	2	0
-854	336	31	0	545	42	0
-855	922	105	0	1226	115	0
-856	915	92	0	1265	106	0
-857	222	42	0	364	46	0
-858	8	0	0	23	0	0
-859	17	4	0	115	9	0
-860	62	1	0	127	1	0
-861	565	83	0	937	98	0
-862	929	87	0	1267	112	0
-863	597	42	0	875	69	0
-864	81	7	0	434	18	0
+853	4	2	0	11	2	0
+854	376	33	0	545	42	0
+855	992	111	0	1226	115	0
+856	992	100	0	1265	106	0
+857	240	42	0	364	46	0
+858	11	0	0	23	0	0
+859	20	4	0	115	9	0
+860	63	1	0	127	1	0
+861	604	85	0	937	98	0
+862	1006	97	0	1267	112	0
+863	652	44	0	875	69	0
+864	93	16	0	434	18	0
 865	7	0	0	11	0	0
 866	0	0	0	8	0	0
-867	5	0	0	19	0	0
+867	6	0	0	19	0	0
 868	0	0	0	5	0	0
 869	0	0	0	7	0	0
 870	3	0	0	10	0	0
-871	35	3	0	53	4	0
-872	373	39	0	597	47	0
-873	930	90	0	1262	99	0
-874	900	78	0	1326	101	0
-875	221	31	0	400	40	0
-876	10	0	0	25	0	0
+871	39	4	0	53	4	0
+872	412	41	0	597	47	0
+873	999	94	0	1262	99	0
+874	993	94	0	1326	101	0
+875	243	31	0	400	40	0
+876	20	0	0	25	0	0
 877	22	7	0	157	16	0
-878	53	2	0	128	2	0
-879	600	86	0	1025	106	0
-880	904	87	0	1264	90	0
+878	55	2	0	128	2	0
+879	659	90	0	1025	106	0
+880	985	90	0	1264	90	0
 881	0	0	0	0	0	0
 882	0	0	0	0	0	0
-883	11566	0	0	11911	0	0
+883	11577	0	0	11911	0	0
 884	13821	0	0	13827	0	0
 885	137	0	0	154	0	0
-886	1	0	0	40	0	0
+886	3	0	0	40	0	0
 887	525	0	0	553	0	0
 888	6359	0	0	6498	0	0
-889	1779	0	0	1799	0	0
-890	6291	0	0	6867	0	0
-891	96	0	0	138	0	0
+889	1782	0	0	1799	0	0
+890	6356	0	0	6867	0	0
+891	99	0	0	138	0	0
 892	182	0	0	213	0	0
-893	7689	0	0	7845	0	0
-894	5267	0	0	5322	0	0
-895	8149	0	0	8353	0	0
-896	949	0	0	975	0	0
-897	190	0	0	277	0	0
-898	5655	0	0	5711	0	0
+893	7708	0	0	7845	0	0
+894	5300	0	0	5322	0	0
+895	8158	0	0	8353	0	0
+896	952	0	0	975	0	0
+897	208	0	0	277	0	0
+898	5660	0	0	5711	0	0
 899	2331	0	0	2362	0	0
-900	11075	0	0	11406	0	0
-901	2766	0	0	2784	0	0
-902	5385	0	0	5629	0	0
-903	77	0	0	127	0	0
-904	431	0	0	459	0	0
-905	12197	0	0	12334	0	0
-906	406	0	0	443	0	0
+900	11103	0	0	11406	0	0
+901	2767	0	0	2784	0	0
+902	5425	0	0	5629	0	0
+903	81	0	0	127	0	0
+904	432	0	0	459	0	0
+905	12216	0	0	12334	0	0
+906	408	0	0	443	0	0
 907	3	0	0	74	0	10
 908	94	0	0	157	0	0
-909	303	0	0	495	0	0
+909	304	0	0	495	0	0
 910	162	0	0	189	0	0
-911	229	0	0	268	0	0
-912	1889	0	0	1947	0	0
-913	456	0	0	484	0	0
+911	230	0	0	268	0	0
+912	1893	0	0	1947	0	0
+913	457	0	0	484	0	0
 914	235	0	0	253	0	0
-915	3573	0	0	3791	0	0
+915	3623	0	0	3791	0	0
 916	1493	0	0	1525	0	0
 917	320	0	0	371	0	0
-918	7495	0	0	7685	0	0
+918	7512	0	0	7685	0	0
 919	9214	0	0	9244	0	0
-920	7398	0	0	7553	0	0
-921	523	0	0	564	0	0
-922	1487	0	0	2300	0	0
-923	508	0	0	584	0	0
-924	8823	0	0	8941	0	0
-925	306	0	0	340	0	0
-926	166	0	0	330	0	0
-927	4368	0	0	4589	0	0
-928	5222	0	0	5405	0	0
-929	1550	0	0	1632	0	0
-930	65	0	0	131	0	0
-931	362	0	0	433	0	2
+920	7422	0	0	7553	0	0
+921	525	0	0	564	0	0
+922	1489	0	0	2300	0	0
+923	512	0	0	584	0	0
+924	8839	0	0	8941	0	0
+925	307	0	0	340	0	0
+926	172	0	0	330	0	0
+927	4389	0	0	4589	0	0
+928	5300	0	0	5405	0	0
+929	1562	0	0	1632	0	0
+930	67	0	0	131	0	0
+931	363	0	0	433	0	2
 932	0	0	0	0	0	0
 933	0	0	0	0	0	0
 934	0	0	0	929	0	0
@@ -1321,12 +1352,12 @@ every frame: frame, picture, eye, text, then the raw picture, eye, text
 938	1	0	0	796	0	0
 939	0	0	0	887	0	4
 940	2	0	0	856	0	0
-941	5	0	0	1017	0	0
+941	7	0	0	1017	0	0
 942	0	0	0	897	0	0
-943	11	0	0	981	0	6
+943	13	0	0	981	0	6
 944	32	0	0	1046	0	0
 945	28	0	0	1100	0	14
-946	24	0	0	1001	0	8
+946	27	0	0	1001	0	8
 947	8	0	0	1088	0	19
 948	1	0	0	912	0	5
 949	0	0	0	877	0	7
@@ -1342,11 +1373,11 @@ every frame: frame, picture, eye, text, then the raw picture, eye, text
 959	0	0	0	1122	0	0
 960	1	0	0	1043	0	0
 961	3	0	0	1155	0	0
-962	14	0	0	1151	0	0
+962	17	0	0	1151	0	0
 963	24	0	0	1153	0	0
 964	23	0	0	1138	0	0
 965	3	0	0	1225	0	0
-966	9	0	0	1088	0	0
+966	10	0	0	1088	0	0
 967	1	0	1	1213	0	1
 968	0	0	0	1228	0	0
 969	0	0	0	1365	0	0
@@ -1372,17 +1403,17 @@ every frame: frame, picture, eye, text, then the raw picture, eye, text
 989	7	1	0	436	49	0
 990	9	1	0	454	37	0
 991	7	2	0	408	59	0
-992	28	1	0	378	32	0
-993	14	1	0	353	33	0
-994	0	0	0	120	13	0
+992	47	1	0	378	32	0
+993	40	1	0	353	33	0
+994	1	0	0	120	13	0
 995	6	0	0	57	4	0
 996	3	0	0	21	2	0
 997	1	0	0	6	1	0
-998	38	8	0	287	25	0
-999	18	3	0	114	4	0
+998	43	8	0	287	25	0
+999	33	3	0	114	4	0
 1000	15	4	0	412	62	0
-1001	18	0	9	248	18	9
-1002	19	0	0	70	0	0
+1001	19	0	9	248	18	9
+1002	28	0	0	70	0	0
 1003	0	0	0	3	0	0
 1004	0	0	0	0	0	0
 1005	0	0	0	0	0	0
@@ -1397,18 +1428,18 @@ every frame: frame, picture, eye, text, then the raw picture, eye, text
 1014	0	0	0	0	0	0
 1015	0	0	0	0	0	0
 1016	5	0	0	21	0	0
-1017	20	7	0	114	8	0
-1018	25	10	0	447	72	0
-1019	38	19	0	782	114	0
+1017	22	7	0	114	8	0
+1018	27	10	0	447	72	0
+1019	39	19	0	782	114	0
 1020	55	17	0	924	128	0
-1021	23	6	0	709	104	0
-1022	11	1	0	431	69	0
+1021	24	6	0	709	104	0
+1022	20	6	0	431	69	0
 1023	8	2	0	72	12	0
 1024	4	0	0	30	0	0
 1025	0	0	0	5	0	0
 1026	2	0	0	5	0	0
 1027	1	0	0	5	0	0
-1028	15	6	0	114	17	0
+1028	21	9	0	114	17	0
 1029	11	2	0	462	68	0
 1030	0	0	0	0	0	0
 1031	0	0	0	0	0	0
@@ -1418,46 +1449,46 @@ every frame: frame, picture, eye, text, then the raw picture, eye, text
 1035	5	0	0	6	0	0
 1036	1	0	0	2	0	0
 1037	2	0	0	3	1	0
-1038	34	31	0	38	33	0
-1039	112	100	0	168	151	0
-1040	462	72	0	1155	131	0
-1041	101	5	0	710	103	0
-1042	4404	1	4370	4616	12	4370
-1043	843	78	600	1043	109	609
-1044	1133	11	992	1606	31	1000
-1045	279	0	267	765	27	267
+1038	35	32	0	38	33	0
+1039	147	133	0	168	151	0
+1040	480	72	0	1155	131	0
+1041	261	55	0	710	103	0
+1042	4464	8	4370	4616	12	4370
+1043	871	100	601	1043	109	609
+1044	1148	14	996	1606	31	1000
+1045	285	0	267	765	27	267
 1046	40	0	1	580	29	1
-1047	23	2	0	438	19	0
-1048	17	0	0	336	9	0
-1049	23	0	0	170	8	0
-1050	15	0	0	64	0	0
+1047	25	2	0	438	19	0
+1048	29	0	0	336	9	0
+1049	27	0	0	170	8	0
+1050	19	0	0	64	0	0
 1051	22	0	0	100	0	0
-1052	10	0	0	48	0	0
+1052	11	0	0	48	0	0
 1053	5	0	0	32	0	0
 1054	6	0	0	22	0	0
 1055	6	0	1	14	0	3
 1056	1	0	0	3	0	0
-1057	3	0	0	13	0	0
-1058	129	56	0	197	76	0
-1059	19	2	0	301	39	1
-1060	40	1	0	515	43	0
-1061	51	4	0	620	53	0
-1062	54	14	0	721	68	0
-1063	34	7	0	821	61	0
-1064	57	10	0	709	52	0
-1065	48	6	0	764	53	0
-1066	47	1	0	616	37	0
-1067	41	0	0	460	36	0
-1068	189	19	0	443	20	0
-1069	132	7	3	503	7	8
-1070	182	18	0	631	61	0
-1071	110	4	0	512	61	0
-1072	3	0	0	20	0	0
+1057	4	0	0	13	0	0
+1058	159	68	0	197	76	0
+1059	31	2	0	301	39	1
+1060	47	2	0	515	43	0
+1061	53	4	0	620	53	0
+1062	58	14	0	721	68	0
+1063	36	7	0	821	61	0
+1064	61	10	0	709	52	0
+1065	52	6	0	764	53	0
+1066	52	1	0	616	37	0
+1067	42	0	0	460	36	0
+1068	266	19	0	443	20	0
+1069	154	7	3	503	7	8
+1070	192	18	0	631	61	0
+1071	238	35	0	512	61	0
+1072	4	0	0	20	0	0
 1073	4	0	0	5	0	0
 1074	8	0	0	14	0	0
 1075	3	0	0	15	0	0
 1076	4	0	0	12	0	1
-1077	5	0	0	16	0	1
+1077	6	0	0	16	0	1
 1078	3	0	0	10	0	1
 1079	5	0	0	8	0	0
 1080	3139	0	3136	3157	0	3149

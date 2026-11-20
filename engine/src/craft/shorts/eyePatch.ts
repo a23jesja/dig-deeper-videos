@@ -46,6 +46,9 @@ const deckAt = (d: number, l: number): [number, number] => DECK.spot(d, l);
 /** where the chest is held: this far up from his hips toward his neck, this far toward the lens */
 const KH = 0.28, FH = 0.26;      // (tried 0.24-0.32 and 0.2-0.32: lower, the elbow bent the wrong way; higher, the arms went straight out)
 const PIR_DECK = deckAt(3.2, 0.08), CHEST_S = once(() => noShade(chest(false, false, 0.3, 0.22, 0.24)));
+// (the chest close before him: held 10 cm nearer the lens than his hands, it looked wider than his hands' span and its ring handles stood
+//  out past his fists, so that the fists seemed to miss them; v1 at full size)
+const CHEST_D = Number(process.env.CHEST_D ?? 0.03);
 const FLAG = once(() => clothFlag("pirate", 1.1, 0.75)), POLE_AT = deckAt(4.7, 0.7);
 const flagpole = (g: THREE.Group, T2: number) => { g.add(rod([POLE_AT[0], MD, POLE_AT[1]], [POLE_AT[0], MD + 3.3, POLE_AT[1]], 0.035, "#5a3a22"));
   const f = FLAG(); f.wave(T2, 1); put(g, f.obj, [POLE_AT[0], MD + 3.25, POLE_AT[1]], Math.PI / 2); };
@@ -71,7 +74,7 @@ const pirateDeck = (id: string, a: number, b: number, V: Lens, push: number, fac
   return { id, a, b, still: (b - a) * 0.6, patchEye: { pirate: "A" }, ...(o.close ? { closeUp: { pirate: "close on the patch, as the script says" } } : {}),
     newScene: { pirate: "up on deck in the sun: another place than below" }, sounds: [], beds: deckBeds(b - a), cam: (_t, u) => V.push(push * u), sun: { target: [x, MD, z], reach: 6 },
     cast: (t) => [on("pirate", PIRATE_D, m, t, MD, { patch: "A", ...(o.close ? LOOSE : G) }, 3), ...(mate ? [on("mate", MATE_D, mate, t, MD, {}, 5)] : [])],
-    things: (g, c, _t, T2, cam) => { flagpole(g, T2); if (!o.close) carryBy(g, CHEST_S(), c.pirate, "L", c.pirate, "R", cam, 0.1); } } as Shot; };
+    things: (g, c, _t, T2, cam) => { flagpole(g, T2); if (!o.close) carryBy(g, CHEST_S(), c.pirate, "L", c.pirate, "R", cam, CHEST_D); } } as Shot; };
 const FACE = lens(-10.9 + 0.25, 1.45, 2.2 + 0.02, 1, -0.01, -3, 50);
 
 // ---------------- below deck: the great cabin, dark ----------------
@@ -169,7 +172,9 @@ for (const s of shots) s.capsTop = 160;
 const BRIGHT = "radial-gradient(ellipse 72% 58% at 50% 55%, rgba(255,250,246,1) 0%, rgba(190,192,226,1) 100%)";
 const DARK = "radial-gradient(ellipse 65% 50% at 50% 50%, rgba(120,122,160,1) 0%, rgba(48,50,84,1) 100%)";
 const SEEN = "radial-gradient(ellipse 70% 55% at 50% 50%, rgba(232,226,236,1) 0%, rgba(150,154,196,1) 100%)";
-const gradeAt = (T2: number) => { const s = shots.find((q) => T2 >= q.a && T2 < q.b); return !s ? null : s.id === "hook" ? BRIGHT : ["dark", "below", "mins"].includes(s.id) ? DARK : ["flip", "sit", "verdict", "record"].includes(s.id) ? SEEN : null; };
+// (the low shot looks up across the sunlit deck: the boards in the lower half went white; a light veil keeps them wood)
+const SUNLOW = "linear-gradient(to bottom, rgba(255,255,255,1) 0%, rgba(255,255,255,1) 55%, rgba(222,214,200,1) 100%)";
+const gradeAt = (T2: number) => { const s = shots.find((q) => T2 >= q.a && T2 < q.b); return !s ? null : s.id === "nobody" ? SUNLOW : s.id === "hook" ? BRIGHT : ["dark", "below", "mins"].includes(s.id) ? DARK : ["flip", "sit", "verdict", "record"].includes(s.id) ? SEEN : null; };
 
 export const EYE_PATCH: Film = {
   id: "eye-patch", fps: 30, seconds: T.end, music: "shanty", audio: "craft/eye-patch.wav", sky: "#a9dcff", world: cabinSea, shots, words: W, solids: FLAGSEA_SOLIDS, grade: gradeAt,

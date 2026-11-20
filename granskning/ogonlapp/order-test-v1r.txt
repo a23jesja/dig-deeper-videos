@@ -1,0 +1,7 @@
+# Ordningstestet (motionCheck 'order'): planterat fel = tröskeln tillbaka på exakt 0.5 (som i v1r-kandidaten)
+below frames 237-291 (film 7.90-9.73 s): mate's drawing order changes for one frame and back (1 -> 0 -> 1: side on, from behind or an arm drawn late): a part appears or vanishes for a frame
+myth frames 598-657 (film 19.93-21.93 s): pirate's drawing order changes for one frame and back (12 -> 13 -> 12: side on, from behind or an arm drawn late): a part appears or vanishes for a frame
+MOTION CHECK FAILED for eye-patch: 2 faults
+
+# Rättat (SIDE_ON 0.513)
+MOTION CHECK OK for eye-patch: 0 faults

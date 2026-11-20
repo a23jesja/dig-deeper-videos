@@ -26,7 +26,10 @@ if [ "$WHAT" = all ] || [ "$WHAT" = film ]; then
   test -s "$CAND"
   # the flicker check stops the delivery (exit 1) and names the times
   node scripts/film_info.mjs $FILM regions > out/craft/qa-$FILM/regions.jsonl
-  python scripts/flicker.py "$CAND" out/craft/qa-$FILM/regions.jsonl --out out/craft/qa-$FILM/flicker$V.txt
+  # (FLICKER_INFO=1: the measure is shown and does not stop the delivery; the reviewers decide from full-size crops of every flagged frame.
+  #  Jesper for the eye patch v1r, 20 Nov: "Granskarnas ögon". Without it the check stops the delivery, as DAILY-RULES point 9 says)
+  if [ -n "$FLICKER_INFO" ]; then python scripts/flicker.py "$CAND" out/craft/qa-$FILM/regions.jsonl --out out/craft/qa-$FILM/flicker$V.txt || echo "flicker: frames flagged (shown, not a stop: FLICKER_INFO)"
+  else python scripts/flicker.py "$CAND" out/craft/qa-$FILM/regions.jsonl --out out/craft/qa-$FILM/flicker$V.txt; fi
   # only a film that passed comes into the delivery folder
   cp "$CAND" "$OUT/$FILM$V.mp4"
   # the phone copy for review is the only low-bitrate file (under 29 MB: the 30 MB send limit); YouTube gets the full one

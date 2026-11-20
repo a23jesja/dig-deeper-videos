@@ -7,6 +7,10 @@ import { STYLE, Ink, P2, R, sym, spline, ellPts, seg, mid, shade, shift, clamp, 
 import { Sk, Side, Props, Joint, Pose, solve } from "./rig";
 import { FigOpts, Face, frame, shoePts, thumbFlip, loaf, cane } from "./designs/common";
 
+/** the body is drawn side on (the far arm behind the torso) when |sin| of its turn is over this. Not 0.5: a turn of a round 30 degrees sat
+ *  exactly on 0.5 and the order flipped from frame to frame with the rounding, so the far arm and the shoulder button came and went (the
+ *  eye patch Short v1r, frames 288-292 and 632, the review of 20 Nov) */
+export const SIDE_ON = 0.513;
 export type Look = {
   id: string; P: Props;
   /** the head: half-width across the ears, half-depth nose to nape, height chin to crown */
@@ -514,7 +518,7 @@ export const drawCast = (L: Look) => {
 };
 const drawTrue = (L: Look) => (k: Ink, sk: Sk, o: FigOpts) => {
   const ink0 = k.ink; k.ink = LINE;
-  const F = frame(sk, o.drape !== false), P = sk.P, f = o.face ?? {}, front = sk.cos > 0.12, back = sk.cos < -0.12, sideOn = Math.abs(sk.sin) > 0.5, d = Math.sign(sk.sin) || 1, jk = L.top === "jacket";
+  const F = frame(sk, o.drape !== false), P = sk.P, f = o.face ?? {}, front = sk.cos > 0.12, back = sk.cos < -0.12, sideOn = Math.abs(sk.sin) > SIDE_ON, d = Math.sign(sk.sin) || 1, jk = L.top === "jacket";
   const J = (n: string, s: Side) => sk.j[(n + s) as Joint], coatD = shade(L.coat, 0.76), weave = L.weave ? F.o : undefined;
   /** the torso's surface: a point l to the figure's left at height a, on the front (or the back) of the body */
   const row = (a: number) => { const r = L.rows; let i = 0; while (i < r.length - 2 && r[i + 1][0] < a) i++; const t = clamp((a - r[i][0]) / (r[i + 1][0] - r[i][0]), 0, 1); return [0, 1, 2, 3].map((j) => lerp(r[i][j], r[i + 1][j], t)); };
@@ -673,10 +677,13 @@ const drawTrue = (L: Look) => (k: Ink, sk: Sk, o: FigOpts) => {
   const hc = mid(sk.j.skull, sk.j.crown, 0.5), hw = Math.hypot(L.head.a * sk.cos, L.head.b * sk.sin), hh = L.head.H / 2, tor = outline();
   const inHead = (p: P2) => ((p[0] - hc[0]) / hw) ** 2 + ((p[1] - hc[1]) / hh) ** 2 < 1, inTorso = (p: P2) => within(tor, p), inBody = (p: P2) => inHead(p) || inTorso(p);
   const hid = (s: Side, by: (p: P2) => boolean) => { const W = sk.j[`wr${s}`]; if (by(W) && by(mid(sk.j[`el${s}`], W, 0.5))) k.mark(`hid${s}`, W[0], W[1]); };
+  // (the order the body is drawn in, noted for motionCheck's order test: a part that changes order for one frame appears or vanishes, as the
+  //  mate's far arm and the pirate's shoulder button did at a turn of exactly 30 degrees, the review of v1r)
+  const late = (s: Side) => sk.z[`wr${s}`] - sk.z[`sh${s}`] > P.upper * 0.6, atFace = (s: Side) => !back && inHead(sk.j[`wr${s}`]);
+  k.val("order", (sideOn ? 1 : 0) + (back ? 2 : 0) + (late("L") ? 4 : 0) + (late("R") ? 8 : 0) + (atFace("L") ? 16 : 0) + (atFace("R") ? 32 : 0));
   if (sideOn) { hid(far, inBody); arm(far); leg(far); leg(near); torso(); head(); chainDraw(); arm(near); }
   else {
     // seen from the front, a hand at the face is in front of the face: its arm is drawn after the head, never behind it
-    const late = (s: Side) => sk.z[`wr${s}`] - sk.z[`sh${s}`] > P.upper * 0.6, atFace = (s: Side) => !back && inHead(sk.j[`wr${s}`]);
     leg(far); leg(near);
     if (back) { for (const s of [far, near]) if (late(s)) { hid(s, inBody); arm(s); } torso(); for (const s of [far, near]) if (!late(s)) { hid(s, inHead); arm(s); } head(); }
     else { torso(); for (const s of [far, near]) if (!late(s) && !atFace(s)) { hid(s, inHead); arm(s); } head(); chainDraw(); for (const s of [far, near]) if (late(s) || atFace(s)) arm(s); }

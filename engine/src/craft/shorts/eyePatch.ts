@@ -119,7 +119,7 @@ const mate = (at: V3, V: Lens, turn: number, v: number, len: number, o: { hang?:
   const F0 = o.shout ? SHOUT : SEARCH(0.8), F1 = o.shout ? { ...SHOUT, gaze: [-0.4, -0.2] as [number, number] } : SEARCH(-0.8);
   ease(m, -1, { armL: A, armR: B, head: [18, -4, 0], lean: 6 }, 0.01, { ...R2, face: F0 });
   // (always moving: the head round from side to side with the eyes, the hands searching; a period that never stops for long)
-  const hs = o.heads ?? (o.shout ? 0.4 : 1);
+  const hs = o.heads ?? (o.shout ? 0.4 : 0.7);      // (at full swing his far eye was cut by the head's outline, the independent review of v1m)
   wag(m, 0.0, len + 0.5, P({ armL: A, armR: B, head: [24 * hs, -5, 5 * hs], lean: 6, px: 0.014 }), P({ armL: sw(A, 1), armR: sw(B, -1), head: [-22 * hs, -2, -5 * hs], lean: 8, px: -0.014 }), 0.95 + 0.12 * v, { ...R2, face: F1, glide: true });
   if (o.stumble !== undefined) { ease(m, o.stumble, { armL: sw(A, 1.5), armR: sw(B, 1.5), lean: 11, px: 0.035, py: -0.02, head: [10, 8, 6] }, 0.32, { ...R2, face: { ...F0, wide: 0.7, lid: 0, mouth: 0.4 } });
     ease(m, o.stumble + 0.55, { armL: A, armR: B, lean: 6, px: 0, py: 0, head: [-14, -3, 0] }, 0.4, { ...R2, face: F1 });
@@ -163,7 +163,7 @@ const below = (g: THREE.Group, T2: number, cam: Cam, noGlow = false) => { g.add(
 const BELOW = (len: number) => [{ k: "lap", a: 0, b: len, g: 0.7 }];
 type ShotO = { id: string; a: number; b: number; V: Lens; push?: number; cast: ((t: number) => Actor)[]; things?: (g: THREE.Group, c: Record<string, any>, cam: Cam) => void; sun: boolean; patch?: "A" | "B"; look?: Shot["look"]; close?: boolean; sounds?: Shot["sounds"]; hide?: string[]; newScene?: Shot["newScene"]; matchCut?: string; noPole?: boolean };
 const add = (o: ShotO) => shots.push({ id: o.id, a: o.a, b: o.b, still: (o.b - o.a) * 0.5, cam: (_t, u) => o.V.push((o.push ?? 0.06) * u), sun: { target: o.sun ? [PIR_DECK[0], MD, PIR_DECK[1]] : inCabin([0, 0, 0]), reach: o.sun ? 6 : 4 },
-  ...(o.patch ? { patchEye: { pirate: o.patch } } : {}), ...(o.close ? { closeUp: { pirate: "close on his face and the patch", mate: "close on his face in the dark" } } : {}), look: o.look, hide: [...(o.hide ?? []), ...(o.sun ? [] : ["table bottle", "cabin mirror"])], newScene: o.newScene, matchCut: o.matchCut,
+  ...(o.patch ? { patchEye: { pirate: o.patch } } : {}), ...(o.close ? { closeUp: { pirate: "close on his face and the patch", mate: "close on his face in the dark" } } : {}), look: o.look, hide: [...(o.hide ?? []), ...(o.sun ? ["cabin room"] : ["table bottle", "cabin mirror"])], newScene: o.newScene, matchCut: o.matchCut,
   ...(o.sun ? {} : { light: DARK_LIGHT }), sounds: o.sounds ?? [], beds: o.sun ? deckBeds(o.b - o.a) : BELOW(o.b - o.a),
   cast: (t) => o.cast.map((f) => f(t)), things: (g, c, _t, T2, cam) => { if (o.sun) { if (!o.noPole) flagpole(g, T2); } else below(g, T2, cam, o.id.startsWith("record")); o.things?.(g, c, cam); } } as Shot);
 
@@ -183,9 +183,9 @@ const MATE_SHORT_DECK = deckAt(5.0, -0.78);
 const PIR_AT = inCabin([-0.3, 0, 0.25]), MAT_AT = inCabin([0.32, 0, -0.42]), MAT_AT2 = inCabin([0.1, 0, 0.25]);
 const WIDE = cabinLens(0.02, 1.3, 3.6, 0.0, -1, -3, 54);
 const TLT = 0.6;      // (the book's top tipped away from the lens: its pages turned up toward his face, as one reads)
-const NH = 1.85, NF = 3.6, NL = -0.55, RY = 118, VY = 0, VM = -50, VT = 20, NY = 100, NT = 8, NB = [1.6, 1.4, 8];
-const CF = 1.38, C1 = [1.75, -3], C2 = [0.95, 0], C3 = [1.55, 0], C4 = [1.35, 7], C5 = [2.0, 0];      // (far, aim of calm, myth, verdict, trick and real: four cabin shots of him alike and real like deck2 in v1k, the review's independent reviewer)      // (calm's lens 1.38 back: at 1.5 a blue thing on the floor was cut by the corner, the independent review of v1i)
-const SUNZ = 2.0, SUNH = 2.0, SUNP = -3, D2X = 0, D2Y = 0.75;      // (sun: the lens higher, so the boom stands clear above both heads; deck2: lower, so the deck lantern hides behind him, not at his jaw: the independent review of v1k)
+const NH = 1.85, NF = 3.6, NL = -0.55, RY = 118, RD = 5.6, RH = 2.6, RP = -14, VY = 0, VM = -50, VT = 20, NY = 100, NT = 8, NB = [1.6, 1.4, 8];
+const CF = 1.38, C1 = [1.75, -3], C2 = [0.95, 0], C3 = [1.55, 0], C4 = [1.35, -7], C5 = [2.0, 0];      // (far, aim of calm, myth, verdict, trick and real: four cabin shots of him alike and real like deck2 in v1k, the review's independent reviewer)      // (calm's lens 1.38 back: at 1.5 a blue thing on the floor was cut by the corner, the independent review of v1i)
+const SUNZ = 2.0, SUNH = 2.0, SUNP = -3, D2X = 0, D2Y = 0.55;      // (sun: the lens higher, so the boom stands clear above both heads; deck2: lower, so the deck lantern hides behind him, not at his jaw: the independent review of v1k)
 const PY = 90, PH = 1.68;      // (the deck close-up from 90 degrees at 1.68 m: the boom and the sail above his head with sea between; from 50 two shrouds, from 110 the flag's pole and from 25 the flag ended on his head, the independent reviews of v1g and v1i)      // (the deck close-up from 50 degrees, the sails behind him: from 90 the flag's corner sat on his head (the independent review of v1g), from 110 and 140 a pole ran down into his head (our own look at v1h))
 const NR = 15;      // (the close-up in 'nobody' from 15 degrees: from 40-62 the flag's pole stood up out of his head)
 const CAN_AT = W.find((w) => w.line === "flip" && /^can/i.test(w.w))!.a - 0.1;      // ("...and you CAN see": his eye goes wide)
@@ -217,7 +217,7 @@ const TBL_AT = inCabin([0.5, 0, -0.18]), YW = 70, TN = -40;
 // 7. ...TO GET USED TO THE DARK. The mate from behind his right shoulder, his hands low and searching
 { const V = frameOn(MAT_AT, FL, 46, "full", 50, 1.55), mt = mate(MAT_AT, V, 60, 2, S.s6 - S.s5b); add({ id: "mins", a: S.s5b, b: S.s6, V, cast: [mt.cast], sun: false }); }
 // 8. BUT AN EYE UNDER A PATCH... On deck, the pirate reading in the sun, from low at his side
-{ const V = lens(PIR_DECK[0] - 2.6 + D2X, MD + D2Y, PIR_DECK[1] - 1.75, 0.83, 0.56, 5, 52), r = reader(PIR_DECK3, MD, V, 20, true, S.s6b - S.s6); add({ id: "deck2", a: S.s6, b: S.s6b, V, cast: [r.cast], things: r.book, sun: true, patch: "A", look: r.look, newScene: { pirate: "up on deck in the sun: another place than below" } }); }
+{ const V = lens(PIR_DECK[0] - 2.6 + D2X, MD + D2Y, PIR_DECK[1] - 1.75, 0.83, 0.56, 5, 52), r = reader(PIR_DECK3, MD, V, 20, true, S.s6b - S.s6); add({ id: "deck2", a: S.s6, b: S.s6b, V, hide: ["brigcask", "brigcoil"], cast: [r.cast], things: r.book, sun: true, patch: "A", look: r.look, newScene: { pirate: "up on deck in the sun: another place than below" } }); }
 // 9. ...IS ALREADY USED TO IT. Close on his face in the sun: the patch over his right eye (the first of the pair)
 { const V = frameOn(PIR_DECK3, MD, PY, "close", undefined, 1, PH), r = reader(PIR_DECK3, MD, V, 8, true, S.s7 - S.s6b, { looks: 0.2, closeUp: true }); add({ id: "patch", a: S.s6b, b: S.s7, V, push: 0.05, cast: [r.cast], things: r.book, sun: true, patch: "A", close: true }); }
 // 10. FLIP THE PATCH, AND YOU CAN SEE. On "Flip", a whoosh and close on his face in the dark: the patch over his LEFT eye now, his right eye
@@ -230,11 +230,11 @@ const TBL_AT = inCabin([0.5, 0, -0.18]), YW = 70, TN = -40;
 // 13. THEIR VERDICT: PLAUSIBLE. From his right, further off, the room round him: he looks up from the book at us, pleased
 // (waist up from his left, he looks at us with his eyes, his head still turned a little with his body: front on he was the same picture as
 //  calm, myth and trick, and a reverse angle stood behind the back wall, the review's independent reviewer of v1k)
-{ const V = frameOn(PIR_AT, FL, VY, "full", 50, C3[0], 1.74, C3[1]), r = reader(PIR_AT, FL, V, VT, false, S.s10 - S.s9, { looks: 0.4 }), vm = mateTable(TBL_AT, V, VM, S.s10 - S.s9);
+{ const V = frameOn(PIR_AT, FL, VY, "full", 50, C3[0], 1.74, C3[1]), r = reader(PIR_AT, FL, V, VT, false, S.s10 - S.s9, { looks: 0.4 }), vm = mate(TBL_AT, V, VM, 1, S.s10 - S.s9, { heads: 0.5 });      // (searching with his hands low behind the pirate: his hand on the table swung over the pirate's fist and its forearm vanished, the independent review of v1m)
   add({ id: "verdict", a: S.s9, b: S.s10, V, cast: [r.cast, vm.cast], things: r.book, sun: false, patch: "B", hide: ["cabin stool"] }); }
 // 14. BUT DID REAL PIRATES DO IT? On deck in the sun, seen from his other side, reading
-{ const V = frameOn(PIR_DECK3, MD, RY, "full", 50, C5[0], 1.74, C5[1]), r = reader(PIR_DECK3, MD, V, 18, true, S.s10b - S.s10, { moves: true });
-  add({ id: "real", a: S.s10, b: S.s10b, V, cast: [r.cast], things: r.book, sun: true, patch: "A", look: r.look, newScene: { pirate: "up on deck in the sun: another place than below" } }); }
+{ const V = (() => { const r0 = (RY * Math.PI) / 180, fx = Math.sin(r0), fz = -Math.cos(r0); return lens(PIR_DECK3[0] - fx * RD, MD + RH, PIR_DECK3[2] - fz * RD, fx, fz, RP, 50); })(), r = reader(PIR_DECK3, MD, V, 18, true, S.s10b - S.s10, { lines: true });      // (reading line by line: he stood still for 1.8 s, the independent review of v1m)
+  add({ id: "real", a: S.s10, b: S.s10b, V, hide: ["brigcask", "brigcoil"], cast: [r.cast], things: r.book, sun: true, patch: "A", look: r.look, newScene: { pirate: "up on deck in the sun: another place than below" } }); }
 // 15. NOBODY KNOWS. (now the mate, see below) Close, from low down against the sky and the sail: he looks up from the book (after 'real', which showed him whole
 //     from the same size and pose, the cut jumped: the independent review of v1f)
 // (the mate on deck in the sun, squinting, shaking his head: "nobody knows". Him, not the pirate: the pirate's close-up here was the same

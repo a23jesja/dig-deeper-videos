@@ -148,7 +148,9 @@ export const cabinNight = (light: Sun, o: { sea?: TexImageSource; door?: number 
   return root;
 };
 /** flagSea with the cabin beside it */
-export const cabinSea = () => { const root = flagSea(), c = cabin(); c.position.set(...CABIN.at); root.add(c); root.userData.named = [...((root.userData.named as THREE.Object3D[]) ?? []), ...((c.userData.named as THREE.Object3D[]) ?? [])]; return root; };
+// (the cabin room is named too: it stands 42 m off along the sea, and from the deck it showed as a brown block floating over the water, the
+//  eye patch Short v1m; a deck shot hides "cabin room")
+export const cabinSea = () => { const root = flagSea(), c = cabin(); c.position.set(...CABIN.at); c.name = "cabin room"; root.add(c); root.userData.named = [...((root.userData.named as THREE.Object3D[]) ?? []), ...((c.userData.named as THREE.Object3D[]) ?? []), c]; return root; };
 
 /** the door's leaf for the doorway in the right-hand wall (cabin `door`): planks in a frame with an iron ring handle, hinged on its front
  *  edge (the +z side) and swung `open` degrees into the room. Returned with where its handle is now (in the world), for the hand */

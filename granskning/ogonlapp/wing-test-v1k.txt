@@ -1,0 +1,13 @@
+Armbågstestet (wing), motionCheck.ts, 20 november 2026
+
+Fäller: en figur som håller en sak, där överarmen i bilden står 50° eller mer upp från lodrätt och underarmen faller tillbaka från armbågen till handen, i 0,4 s (12 rutor).
+
+Körning på eye-patch med de gamla vinklarna:
+- trick med vridningen från v1j (14): fälls. "trick frames 992-1030: pirate's right elbow juts out: the upper arm 52 degrees up from hanging while the forearm drops back to the held thing, for 0.4 s"
+- verdict med vridningen från v1i (-24): fälls. "verdict frames 729-777: pirate's left elbow juts out: the upper arm 89 degrees up" (vid 55° som gräns)
+
+Körning på v1k (trick 30, verdict -34): 0 fel. Det närmaste är verdict med 47°, som i full storlek har armbågen nere.
+
+Marginalen är liten: 52° är en vinge och 47° är inte det.
+
+Testet gäller Shorts (filmer som inte är märkta cases). Det godkända och låsta biblioteksklippet 04 (hold-with-both-hands, rutorna 371-479 i shot-library) har samma armbåge, med överarmen 86° upp. 04-filen är orörd. Det är en fråga till granskningen om det ska räknas som fel.

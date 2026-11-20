@@ -242,7 +242,7 @@ add({ id: "record2", a: S.s11b, b: S.s12, V: lens(PRINT_AT[0] + 0.02, FL + 1.39,
 // 18. STILL. A VERY CLEVER TRICK. Below, from low down at his right, the whole of him against the beams: he looks up from the book at us,
 //     smug (in v1d this was a close-up like the flip one: the review, "the same close-up twice")
 { const V = frameOn(PIR_AT, FL, -15, "two", 44, 1.0);      // (closer than myth and the end: at 54 degrees and 1.0 it was the same picture as myth, the independent review of v1i)
-  const r = reader(PIR_AT, FL, V, 14, false, S.s12b - S.s12, { looks: 0.1 }); add({ id: "trick", a: S.s12, b: S.s12b, V, push: 0.04, cast: [r.cast], things: r.book, sun: false, patch: "B" }); }
+  const r = reader(PIR_AT, FL, V, 30, false, S.s12b - S.s12, { looks: 0.1 }); add({ id: "trick", a: S.s12, b: S.s12b, V, push: 0.04, cast: [r.cast], things: r.book, sun: false, patch: "B" }); }
 // 19. The opening again, and the bubble: "Arr. Which eye was it?"
 opening("end", S.s12b, S.end);
 for (const s of shots) s.capsTop = 160;

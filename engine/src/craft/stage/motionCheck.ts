@@ -34,6 +34,7 @@ export type MotionFault = { shot: string; who: string; what: string; f0: number;
 /** for setting the limits: MOTION_DEBUG.on = true keeps the largest value of each measure (film_info <film> motion with MOTION_DEBUG=1) */
 export const MOTION_DEBUG = { on: false, top: new Map<string, { v: number; F: number }>(), max(k: string, v: number, F: number) { const e = this.top.get(k); if (!e || v > e.v) this.top.set(k, { v, F }); } };
 const JOINTS: Joint[] = ["pelvis", "neck", "skull", "crown", "shL", "elL", "wrL", "tipL", "shR", "elR", "wrR", "tipR", "hipL", "knL", "anL", "hipR", "knR", "anR"];
+const WING_UP = 50;      // (the elbow-wing test: 52 degrees in trick at v1j was a wing, 47 in the fixed verdict is not)
 const faceTurn = (phi: number) => { const y = ((((phi + 180) % 360) + 360) % 360) - 180, a = Math.abs(y), s = y < 0 ? -1 : 1; return s * (a <= 45 ? a : a <= 90 ? 45 + (a - 45) * (11 / 45) : a <= 110 ? 56 + (a - 90) * (54 / 20) : a); };
 
 export const motionCheck = (film: Film, opt: { shots?: string[] } = {}) => {
@@ -182,6 +183,15 @@ export const motionCheck = (film: Film, opt: { shots?: string[] } = {}) => {
           if (Math.hypot(P2[wr][0] - A0.pic[wr][0], P2[wr][1] - A0.pic[wr][1]) > 0.03 * B.H) { run = [i]; continue; }
           if (run.length === 15) note(`${s.id}|${name}|stiff|${sd}`, { shot: s.id, who: name, what: "" }, frames[run[0]].F);
           if (run.length >= 15) note(`${s.id}|${name}|stiff|${sd}`, { shot: s.id, who: name, what: `${name}'s ${sd === "L" ? "left" : "right"} arm is held straight out at shoulder height (bent ${bend.toFixed(0)} degrees, ${elev.toFixed(0)} up from hanging) for half a second while he does not look at his hand` }, frames[i].F); }
+        // wing: holding a thing, the upper arm drawn out near or above shoulder height (65 degrees or more up from hanging in the picture) and the
+        //  forearm dropping back from the elbow to the hand, for 0.4 s: the elbow juts out like a chicken's wing (the eye patch Short, calm,
+        //  verdict and trick in v1f-v1j, three independent reviews; the stiff test above lets a bent arm pass)
+        //  (Shorts only for now: the approved library clip 04 shows the same elbow at 86 degrees, a question for the review, 20 Nov)
+        let wing: number[] = [];
+        for (let i = 0; i < frames.length && !film.cases; i++) { const B = frames[i].figs.get(name); if (!B || !B.held[sd]) { wing = []; continue; }
+          const P2 = B.pic, upU = ang(sub3(P2[el], P2[sh]), [0, 1, 0]), drops = P2[wr][1] - P2[el][1] > 0;
+          if (upU < WING_UP || !drops) { wing = []; continue; }
+          wing.push(i); if (wing.length >= 12) note(`${s.id}|${name}|wing|${sd}`, { shot: s.id, who: name, what: `${name}'s ${sd === "L" ? "left" : "right"} elbow juts out: the upper arm ${upU.toFixed(0)} degrees up from hanging while the forearm drops back to the held thing, for 0.4 s` }, frames[i].F); }
       }
       // jerk, the body: the pelvis, neck or skull whose step in the picture changes by more than 2.5 % of the height in one frame
       for (let i = 2; i < frames.length; i++) { const A = frames[i - 2].figs.get(name), B = frames[i - 1].figs.get(name), C = frames[i].figs.get(name); if (!A || !B || !C) continue;

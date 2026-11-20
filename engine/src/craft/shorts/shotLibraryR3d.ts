@@ -220,7 +220,7 @@ const bottleAt = (g: THREE.Group, t: number) => { const b = BOTTLE(); if (t < FA
       o: { earPop: true, foreUnder: true, handL: "relaxed", handR: k > 0.5 ? "open" : "relaxed", face: { mouth: talk(W, t), brow: 0.4 + 0.3 * k, lid: 0.15, smile: 0.4 } } }]; },
     things: (g, _c, _t, T, cm) => { air(g, T, cm); g.add(SHUT()); g.add(SEAT()); } }); }
 
-export const SHOT_LIBRARY_R3D: Film = { id: "shot-library-r3d", fps: 30, seconds: shots.length * LEN, range: [20, 40], sky: "#0b1530", world: () => cabinNight(CABIN_SKY, { door: DZ }), shots, words: [], hook: { text: [], a: 0, b: 0 },
+export const SHOT_LIBRARY_R3D: Film = { cases: true, id: "shot-library-r3d", fps: 30, seconds: shots.length * LEN, range: [20, 40], sky: "#0b1530", world: () => cabinNight(CABIN_SKY, { door: DZ }), shots, words: [], hook: { text: [], a: 0, b: 0 },
   grade: () => NIGHT_GRADE, light };
 export const SHOT_LIBRARY_R3D_TYPES = shots.map((s) => ({ id: s.id, a: s.a, b: s.b }));
 void THREE; void arm;

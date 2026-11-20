@@ -352,7 +352,7 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
       const shut = lid > 0.86 || one, bow = (f.smile ?? 0) > 0.4 && !one ? -1 : 1;
       if (shut) k.line(spline([[q.x - rx * 0.86, yEye - bow * ry * 0.14], [q.x, yEye + bow * ry * 0.34], [q.x + rx * 0.86, yEye - bow * ry * 0.14]], false, 8), 6.4 * u);
       else { k.shape(ball, "#fffdf6"); k.clip(ball, () => {
-        const px = q.x + clamp(gz[0] * 0.5 + h.sin * 0.22 + ahead * 0.5, -0.56, 0.56) * rx, py = yEye + gz[1] * ry * 0.5; k.mark(s < 0 ? "pupilA" : "pupilB", px, py); k.shape(ellPts(px, py, rx * 0.5, ry * 0.5), "#2a1f1a", 0); k.dot(px - rx * 0.17, py - ry * 0.2, r * 0.13, "#ffffff");
+        const px = q.x + clamp(gz[0] * 0.5 + h.sin * 0.22 + ahead * 0.5, -0.56, 0.56) * rx, py = yEye + gz[1] * ry * 0.5; k.mark(s < 0 ? "pupilA" : "pupilB", px, py); const pu = Math.max(0.5, Math.min(1.6, f.pupil ?? 1)); k.shape(ellPts(px, py, rx * 0.5 * pu, ry * 0.5 * pu), "#2a1f1a", 0); k.dot(px - rx * 0.17, py - ry * 0.2, r * 0.13, "#ffffff");
         if (lid > (STYLE.simple ? 0.35 : 0.01)) { const y = yEye - ry + 2 * ry * lid; k.shape([[q.x - rx - 2, yEye - ry - 2], [q.x + rx + 2, yEye - ry - 2], [q.x + rx + 2, y], [q.x - rx - 2, y]], STYLE.simple ? skin : shade(skin, 0.86), 0); if (!STYLE.simple) k.line([[q.x - rx - 2, y], [q.x + rx + 2, y]], 4.6 * u, LINE, "butt"); }
       });
       k.shape(ball, null); }

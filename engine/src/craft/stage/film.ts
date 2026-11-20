@@ -104,6 +104,9 @@ export type Film = {
    *  of their top (a figure whose feet are above the top is on it, not in it). named = the box belongs to a named thing of the world
    *  and does not count in a shot that hides that thing */
   solids?: Solid[];
+  /** a test film whose shots are separate cases side by side (a proof, a sheet, the shot library), never cut together: the tests that read
+   *  across cuts (a jump cut, the same picture twice) and the still test leave it alone */
+  cases?: boolean;
   /** thumbnail proposals, clearly different from each other */
   thumbs?: Thumb[];
   audio?: string;

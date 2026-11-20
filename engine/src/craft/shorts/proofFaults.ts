@@ -195,4 +195,33 @@ add("AV-close-up-cuts-the-head", sir({}), undefined, { closeUp: { sir: "planted:
 add("AW-close-up-cuts-an-arm", sir({ armR: [[60, 40], [120, 30]] }), undefined, { closeUp: { sir: "planted: an arm cut" }, ...CL(1.58, 1.55, 36) });
 add("AX-control-close-up-on-the-face", sir({}), undefined, { closeUp: { sir: "control" }, ...CL(1.58, 1.55, 36) });
 
-export const PROOF_FAULTS: Film = { id: "proof-faults", fps: 30, seconds: shots.length * LEN, range: [0, 999], sky: "#9cc8f0", world, shots, words: [], hook: { text: [], a: 0, b: 0 }, light: dayLight(DAY.from, [0, 1, 0]) };
+// AY-BB. AFTER THE EYE PATCH SHORT'S v1b (the review, 20 Nov: the testers missed a stool behind his back and a shoe cut by the edge).
+// AY: a flat board 20 cm behind his hips, sticking out on both sides of him: it seems to go through him. AZ: CONTROL, the same board a metre
+// behind. BA: he stands with his front shoe past the picture's right edge, his ankles inside it. BB: CONTROL, a step further in
+const STRIDE: Partial<typeof POSES.stand> = { legR: { th: [-30, 0], sh: [-12, 0] }, legL: { th: [22, 0], sh: [10, 0] } };
+const BOARD = mesh(box(0.7, 0.04, 0.3), "#8a6a44", { at: [0, 0, 0] });
+add("AY-board-behind-his-hips", sir({}), (g) => { BOARD.position.set(0, 0.95, -0.25); g.add(BOARD); });
+add("AZ-control-board-far-behind", sir({}), (g) => { BOARD.position.set(0, 0.95, -1.2); g.add(BOARD); });
+add("BA-shoe-past-the-edge", { ...sir(STRIDE, 70), at: [0.45, 0, 0] });      // (ankles, joints and head all inside the edge: only the front shoe crosses it)
+add("BB-control-shoe-inside", { ...sir(STRIDE, 70), at: [0.3, 0, 0] });
+
+export const PROOF_FAULTS: Film = { cases: true, id: "proof-faults", fps: 30, seconds: shots.length * LEN, range: [0, 999], sky: "#9cc8f0", world, shots, words: [], hook: { text: [], a: 0, b: 0 }, light: dayLight(DAY.from, [0, 1, 0]) };
+
+// THE CUT TESTS (the eye patch Short's v1b, 20 Nov: a jump cut, a shot standing still, the same picture twice). A film of its own, cut
+// together as a Short is (not cases side by side): C1-b must fail as a jump cut from C1-a; C2-b (a close-up after the wide C2-a) must not.
+// C3 (3 s, nothing moves) must fail as still; C4 (3 s, his head turning) must not. C5-z must fail as the same picture as C5-x; C6 ends it
+const cutShots: Shot[] = []; let at0 = 0;
+const addC = (id: string, len: number, cast: (t: number) => Actor[], cam: () => Cam, more: Partial<Shot> = {}) => { cutShots.push({ id, a: at0, b: at0 + len, still: len / 2, cam, sun: { target: [0, 0.8, 0], reach: 5 }, cast, ...more }); at0 += len; };
+const sirAt = (x: number, z: number, pose: Partial<typeof POSES.stand> = {}): Actor => ({ ...sir(pose), at: [x, 0, z], heading: V.toward(x, z, 0) });
+const V5 = lens(0.06, 1.0, 3.7, 0.04, -1, 0, 46), VW = lens(-0.2, 1.1, 3.9, 0.05, -1, -2, 50), VC = lens(0.6, 1.6, 1.6, 0, -1, 0, 34);
+addC("C1-a-wide", 2, () => [sirAt(-0.25, 0)], () => V.cam);
+addC("C1-b-jump-cut", 2, () => [sirAt(-0.25, 0)], () => V5.cam);
+addC("C2-a-wide", 2, () => [sirAt(0.6, 0)], () => VW.cam);
+addC("C2-b-control-close-up", 2, () => [sirAt(0.6, 0)], () => VC.cam, { closeUp: { sir: "control: a close-up after the wide" } });
+addC("C3-still-three-seconds", 3, () => [sirAt(0, -0.5)], () => V.cam);
+addC("C4-control-head-turning", 3, (t) => [sirAt(0.6, -0.7, { head: [30 * Math.sin(t * 2.2), 2, 0] })], () => V.cam);
+addC("C5-x", 2, () => [sirAt(-0.3, -1.1)], () => V.cam);
+addC("C5-y", 2, () => [sirAt(0.3, 0.7)], () => VW.cam);
+addC("C5-z-the-same-again", 2, () => [sirAt(-0.3, -1.1)], () => V.cam);
+addC("C6-end", 2, () => [sirAt(-0.45, 0.6)], () => VW.cam);
+export const PROOF_CUTS: Film = { id: "proof-cuts", fps: 30, seconds: at0, range: [0, 999], sky: "#9cc8f0", world, shots: cutShots, words: [], hook: { text: [], a: 0, b: 0 }, light: dayLight(DAY.from, [0, 1, 0]) };

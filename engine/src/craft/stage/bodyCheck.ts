@@ -325,6 +325,17 @@ export const bodyCheck = (film: Film, opt: { every?: number; shots?: string[] } 
           if (back > 1.0) continue;
           const i0 = st.indexOf("seen"), i1 = st.lastIndexOf("seen"), mid = st.slice(i0 + 1, i1);
           if (i0 >= 0 && i1 > i0 && mid.filter((x) => x === "hid").length >= 3) note(`${s.id}|${a.name}|through|${o.mesh.uuid}`, { shot: s.id, who: a.name, kind: "solid", what: `${describe(o)} stands ${Math.max(0, back).toFixed(2)} m behind ${a.name}, hidden by his body and showing on both sides of it: it seems to go through him` }, F, mid.filter((x) => x === "hid").length / 100); }
+        // (a2) a flat or lying thing close behind him (within 35 cm) at his hips or chest, a seat's edge, a shelf, a rail, sticking out on
+        //      both sides of his body: it seems to go through him (the eye patch Short v1b: the stool behind his back as he sat). Read along
+        //      the picture's horizontal through the thing's middle, across its own width
+        { const rv = new THREE.Vector3().setFromMatrixColumn(lens.matrixWorld, 0).setY(0).normalize();
+          for (const o of solids) { const z = o.aabb.getSize(new THREE.Vector3()); if (z.y > 0.25 || Math.max(z.x, z.z) < 0.3 || !o.aabb.clone().expandByScalar(0.6).intersectsBox(f.B.box)) continue;
+            const c = o.aabb.getCenter(new THREE.Vector3()), hip = f.B.a.joint("pelvis"), nk = f.B.a.joint("neck"); if (c.y < hip[1] - 0.15 || c.y > nk[1]) continue;
+            const half = Math.abs(rv.x) * z.x / 2 + Math.abs(rv.z) * z.z / 2, st: string[] = []; let back = Infinity;
+            for (let i = 0; i <= 30; i++) { const p = c.clone().addScaledVector(rv, -half + (2 * half * i) / 30); if (!o.aabb.clone().expandByScalar(0.01).containsPoint(p)) { st.push("out"); continue; }
+              const s2 = scr(p); if (!inFrame(s2)) { st.push("out"); continue; } const hb = bodyAt(f, s2.x, s2.y, CORE), hid = !!hb && hb.d < s2.d; st.push(hid ? "hid" : "seen"); if (hid) back = Math.min(back, s2.d - hb!.d); }
+            if (back > 0.35) continue; const i0 = st.indexOf("seen"), i1 = st.lastIndexOf("seen"), mid = st.slice(i0 + 1, i1);
+            if (i0 >= 0 && i1 > i0 && mid.filter((x) => x === "hid").length >= 3) note(`${s.id}|${a.name}|through2|${o.mesh.uuid}`, { shot: s.id, who: a.name, kind: "solid", what: `${describe(o)} lies ${Math.max(0, back).toFixed(2)} m behind ${a.name} at his hips or chest, hidden by his body and showing on both sides of it: it seems to go through him` }, F, back); } }
         // (b) his face covered by more than a fifth by someone not clearly behind it (a head, a body, an arm): nearer the lens, or at
         //     the same depth, where the two are drawn into each other (the woman whispering with her head in the bearded man's face)
         const hd = f.caps.find((c) => c.q.P.name === "head")!, hc = hd.A, R = hd.rA * 0.8;

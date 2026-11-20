@@ -589,37 +589,63 @@ export const hangDown = (o: THREE.Object3D) => { const hs = o.userData.hang as T
  *  each side of his face, on the right page lines of print; the pages face +z */
 /** an old picture of pirates, drawn by us in the manner of a woodcut (the eye patch Short: "No picture or record from their time says so"):
  *  three pirates on a deck under a sail, hats, cutlasses, each with both eyes and no patch, in a dark frame; no words on it. Faces +z */
-export const piratePrint = (w = 0.44, h = 0.34) => { const map = paint("pirateprint", 440, 340, (g) => {
-    g.fillStyle = "#efe0bb"; g.fillRect(0, 0, 440, 340); g.strokeStyle = "#2a1a14"; g.lineWidth = 4; g.strokeRect(14, 14, 412, 312); g.lineWidth = 2; g.strokeRect(22, 22, 396, 296);
-    // the deck, a mast and a sail
-    g.lineWidth = 3; g.beginPath(); g.moveTo(22, 262); g.lineTo(418, 262); g.stroke(); g.beginPath(); g.moveTo(330, 262); g.lineTo(330, 40); g.stroke();
-    g.beginPath(); g.moveTo(334, 50); g.quadraticCurveTo(400, 110, 334, 190); g.closePath(); g.stroke(); for (let y = 70; y < 180; y += 12) { g.beginPath(); g.moveTo(338, y); g.lineTo(350 + 25 * Math.sin((y - 50) / 45), y); g.stroke(); }
-    for (let x = 30; x < 418; x += 10) { g.beginPath(); g.moveTo(x, 268); g.lineTo(x - 8, 310); g.stroke(); }
-    // three pirates: hat, a round face with BOTH eyes, a body, a cutlass held up
-    for (const [cx, k] of [[90, 1], [175, -1], [255, 1]] as [number, number][]) { const top = 92;
-      g.fillStyle = "#2a1a14"; g.beginPath(); g.moveTo(cx - 34, top + 6); g.quadraticCurveTo(cx, top - 26, cx + 34, top + 6); g.closePath(); g.fill();
-      g.fillStyle = "#efe0bb"; g.beginPath(); g.arc(cx, top + 28, 22, 0, 7); g.fill(); g.lineWidth = 3; g.stroke();
-      g.fillStyle = "#2a1a14"; for (const ex of [-8, 8]) { g.beginPath(); g.arc(cx + ex, top + 24, 3.4, 0, 7); g.fill(); }
-      g.beginPath(); g.arc(cx, top + 36, 7, 0.2, Math.PI - 0.2); g.stroke();
-      g.beginPath(); g.moveTo(cx - 26, top + 54); g.lineTo(cx + 26, top + 54); g.lineTo(cx + 20, top + 140); g.lineTo(cx - 20, top + 140); g.closePath(); g.stroke();
-      for (let y = top + 62; y < top + 138; y += 9) { g.beginPath(); g.moveTo(cx - 20, y); g.lineTo(cx - 6, y); g.stroke(); }
-      g.beginPath(); g.moveTo(cx - 10, top + 140); g.lineTo(cx - 14, 260); g.moveTo(cx + 10, top + 140); g.lineTo(cx + 14, 260); g.stroke();
-      g.beginPath(); g.moveTo(cx + k * 26, top + 64); g.lineTo(cx + k * 44, top + 40); g.stroke(); g.lineWidth = 4; g.beginPath(); g.moveTo(cx + k * 44, top + 40); g.quadraticCurveTo(cx + k * 60, top + 10, cx + k * 52, top - 14); g.stroke(); } });
+export const piratePrint = (w = 0.44, h = 0.34) => { const map = paint("pirateprint2", 660, 510, (g) => {
+    // (redrawn after the review of v1b: "a child's drawing"; now a woodcut: hatched sky and sea, a ship under sail, three pirates in cocked
+    //  hats and long coats with cutlasses, beards, and both eyes on every face; no words)
+    const ink = "#24160e"; g.fillStyle = "#ead9b0"; g.fillRect(0, 0, 660, 510); g.strokeStyle = ink; g.fillStyle = ink;
+    g.lineWidth = 6; g.strokeRect(16, 16, 628, 478); g.lineWidth = 2; g.strokeRect(28, 28, 604, 454);
+    const L = (pts: number[][], wd = 2.4) => { g.lineWidth = wd; g.beginPath(); pts.forEach(([x, y], k) => (k ? g.lineTo(x, y) : g.moveTo(x, y))); g.stroke(); };
+    const F = (pts: number[][]) => { g.beginPath(); pts.forEach(([x, y], k) => (k ? g.lineTo(x, y) : g.moveTo(x, y))); g.closePath(); g.fill(); };
+    for (let y = 40; y < 200; y += 9) L([[32, y], [628, y]], 0.9);                  // the sky, hatched
+    for (let y = 300; y < 380; y += 8) { g.lineWidth = 1.6; g.beginPath(); for (let x = 32; x < 628; x += 4) g.lineTo(x, y + 3 * Math.sin(x / 11 + y)); g.stroke(); }      // the sea
+    // the ship far off under sail
+    F([[420, 300], [600, 300], [580, 322], [440, 322]]); L([[470, 300], [470, 150]], 3); L([[540, 300], [540, 130]], 3);
+    for (const [mx, top] of [[470, 160], [540, 140]]) { g.fillStyle = "#ead9b0"; F([[mx - 34, top + 8], [mx + 34, top + 8], [mx + 40, top + 70], [mx - 40, top + 70]]); g.fillStyle = ink; L([[mx - 34, top + 8], [mx + 34, top + 8], [mx + 40, top + 70], [mx - 40, top + 70], [mx - 34, top + 8]], 2); for (let k = 1; k < 4; k++) L([[mx - 36 + k * 0, top + 8 + k * 15], [mx + 37, top + 8 + k * 15]], 1); }
+    L([[540, 130], [540, 112]], 2); F([[540, 112], [566, 118], [540, 124]]);
+    // the deck in front
+    g.fillStyle = "#cdb88c"; F([[32, 392], [628, 392], [628, 482], [32, 482]]); g.fillStyle = ink; L([[32, 392], [628, 392]], 3); for (let x = 40; x < 628; x += 26) L([[x, 396], [x - 14, 480]], 1.4);
+    // three pirates
+    const pirate = (cx: number, base: number, sword: number, beard: boolean) => { const top = base - 250;
+      g.fillStyle = "#ead9b0"; F([[cx - 44, top + 92], [cx + 44, top + 92], [cx + 54, base - 70], [cx - 54, base - 70]]); g.fillStyle = ink;
+      L([[cx - 44, top + 92], [cx + 44, top + 92], [cx + 54, base - 70], [cx - 54, base - 70], [cx - 44, top + 92]], 3);       // the coat
+      for (let y = top + 100; y < base - 74; y += 8) L([[cx - 46 + (y - top - 92) * 0.06, y], [cx - 22, y]], 1);                // its shading
+      L([[cx, top + 92], [cx, base - 70]], 2); for (const yy of [top + 115, top + 140, top + 165]) { g.beginPath(); g.arc(cx + 6, yy, 3, 0, 7); g.fill(); }
+      L([[cx - 52, top + 150], [cx + 52, top + 150]], 6);                                                                        // the belt
+      L([[cx - 18, base - 70], [cx - 22, base - 8]], 7); L([[cx + 18, base - 70], [cx + 22, base - 8]], 7); F([[cx - 34, base - 12], [cx - 12, base - 12], [cx - 12, base], [cx - 38, base]]); F([[cx + 12, base - 12], [cx + 34, base - 12], [cx + 38, base], [cx + 12, base]]);
+      // the head: a round face, both eyes, a nose, a beard or a moustache, a cocked hat
+      g.fillStyle = "#ead9b0"; g.beginPath(); g.ellipse(cx, top + 62, 26, 30, 0, 0, 7); g.fill(); g.fillStyle = ink; g.lineWidth = 2.6; g.stroke();
+      for (const ex of [-10, 10]) { g.beginPath(); g.ellipse(cx + ex, top + 56, 4.2, 3.4, 0, 0, 7); g.fill(); L([[cx + ex - 7, top + 48], [cx + ex + 6, top + 47]], 2.2); }
+      L([[cx, top + 58], [cx + 4, top + 70], [cx - 2, top + 71]], 2);
+      if (beard) { F([[cx - 24, top + 70], [cx + 24, top + 70], [cx + 14, top + 104], [cx, top + 112], [cx - 14, top + 104]]); g.fillStyle = "#ead9b0"; F([[cx - 8, top + 78], [cx + 8, top + 78], [cx + 6, top + 82], [cx - 6, top + 82]]); g.fillStyle = ink; }
+      else L([[cx - 16, top + 78], [cx - 4, top + 74], [cx + 4, top + 74], [cx + 16, top + 78]], 3);
+      // the cocked hat seen from the front: a round crown, and the brim turned up into three corners, the front one pointing down at us
+      // (raised clear of the eyes: the front corner of the brim covered them)
+      g.beginPath(); g.ellipse(cx, top + 4, 27, 20, 0, Math.PI, 0); g.fill();
+      F([[cx - 56, top - 4], [cx - 30, top + 12], [cx, top + 30], [cx + 30, top + 12], [cx + 56, top - 4], [cx + 44, top + 12], [cx + 18, top + 22], [cx, top + 34], [cx - 18, top + 22], [cx - 44, top + 12]]);
+      F([[cx - 56, top - 4], [cx - 26, top + 6], [cx, top + 16], [cx + 26, top + 6], [cx + 56, top - 4], [cx + 30, top + 14], [cx, top + 28], [cx - 30, top + 14]]);
+      // an arm up with a cutlass
+      const sx = cx + sword * 44, hx = cx + sword * 76, hy = top + 64; L([[sx, top + 104], [hx, hy]], 9); g.beginPath(); g.arc(hx, hy, 7, 0, 7); g.fill();
+      g.lineWidth = 3; g.beginPath(); g.moveTo(hx, hy); g.quadraticCurveTo(hx + sword * 30, hy - 30, hx + sword * 18, hy - 78); g.stroke(); L([[hx - 10, hy + 2], [hx + 10, hy - 2]], 4); };
+    pirate(150, 470, -1, true); pirate(300, 466, 1, false); pirate(440, 472, 1, true); });
   return group([mesh(box(w + 0.05, h + 0.05, 0.025), "#3a2416", { at: [0, 0, -0.012] }), mesh(box(w, h, 0.01), "#ffffff", { map, line: 0.4, shadow: false })]); };
 /** a ship's log held open the same way: both pages ruled with lines of handwriting (no words to read), a small sketch of a ship on the left */
-export const logBook = (w = 0.52, h = 0.36) => { const map = paint("booklog", 512, 352, (g) => {
-    g.fillStyle = "#f1e3bd"; g.fillRect(0, 0, 512, 352); g.fillStyle = "#cdb98a"; g.fillRect(253, 0, 6, 352);
-    g.strokeStyle = "#3a2c22"; g.lineWidth = 3; for (const x0 of [26, 282]) for (let y = 40; y < 330; y += 22) { if (x0 === 26 && y > 150 && y < 250) continue; g.beginPath(); g.moveTo(x0, y);
-      for (let x = x0; x < x0 + 200 - ((y * 7) % 60); x += 8) g.lineTo(x + 4, y - 3 + ((x * 13 + y) % 7)); g.stroke(); }
-    // the sketch: a hull and a mast with a sail
-    g.lineWidth = 3.5; g.beginPath(); g.moveTo(60, 230); g.lineTo(190, 230); g.lineTo(170, 248); g.lineTo(80, 248); g.closePath(); g.stroke(); g.beginPath(); g.moveTo(125, 230); g.lineTo(125, 160); g.stroke();
-    g.beginPath(); g.moveTo(128, 165); g.quadraticCurveTo(165, 190, 128, 222); g.stroke(); });
-  // its cover (the back, toward -z): dark leather with a gold border and a gold compass rose, so that seen from the front, held to read, it is a book
-  const cover = paint("logcover", 256, 176, (q) => { q.fillStyle = "#5a2e1c"; q.fillRect(0, 0, 256, 176); q.strokeStyle = "#d8b24a"; q.lineWidth = 5; q.strokeRect(12, 12, 232, 152); q.lineWidth = 2; q.strokeRect(20, 20, 216, 136);
-    q.fillStyle = "#d8b24a"; q.beginPath(); for (let k = 0; k < 8; k++) { const r = k % 2 ? 12 : 34, an = (k * Math.PI) / 4; q.lineTo(128 + r * Math.sin(an), 88 - r * Math.cos(an)); } q.closePath(); q.fill(); q.fillStyle = "#5a2e1c"; q.beginPath(); q.arc(128, 88, 6, 0, 7); q.fill(); });
-  const g = group([mesh(box(w + 0.03, h + 0.03, 0.02), "#5a3a22", { at: [0, 0, -0.012] }), mesh(box(w, h, 0.012), "#ffffff", { map, line: 0.5, shadow: false }),
-    mesh(box(w + 0.02, h + 0.02, 0.004), "#ffffff", { at: [0, 0, -0.024], rot: [0, Math.PI, 0], map: cover, line: 0.4, shadow: false })]);
-  g.userData.grips = [[-w / 2 - 0.01, 0, 0], [w / 2 + 0.01, 0, 0]]; g.userData.depth = 0.04; return g; };
+export const logBook = (w = 0.52, h = 0.36, fold = 0.32) => { const page = (side: number) => paint("booklog" + side, 256, 352, (g) => {
+    g.fillStyle = "#f1e3bd"; g.fillRect(0, 0, 256, 352); g.fillStyle = "rgba(120,90,50,0.25)"; g.fillRect(side < 0 ? 236 : 0, 0, 20, 352);
+    g.strokeStyle = "#3a2c22"; g.lineWidth = 3; for (let y = 40; y < 330; y += 22) { if (side < 0 && y > 150 && y < 250) continue; g.beginPath(); g.moveTo(24, y);
+      for (let x = 24; x < 224 - ((y * 7) % 60); x += 8) g.lineTo(x + 4, y - 3 + ((x * 13 + y) % 7)); g.stroke(); }
+    if (side < 0) { g.lineWidth = 3.5; g.beginPath(); g.moveTo(58, 230); g.lineTo(188, 230); g.lineTo(168, 248); g.lineTo(78, 248); g.closePath(); g.stroke(); g.beginPath(); g.moveTo(123, 230); g.lineTo(123, 160); g.stroke();
+      g.beginPath(); g.moveTo(126, 165); g.quadraticCurveTo(163, 190, 126, 222); g.stroke(); } });
+  // (an open book, not a board: the two halves meet at the spine in a shallow V, each with its cover behind it and a thickness of pages,
+  //  so that turned a little it shows as a book; the review of v1b: "the book looks like a board")
+  const half = (side: number) => { const gH = new THREE.Group(); const hw = w / 2;
+    gH.add(mesh(box(hw + 0.015, h + 0.03, 0.012), "#5a2e1c", { at: [side * (hw + 0.015) / 2, 0, -0.014], line: 0.5 }), mesh(box(hw, h, 0.014), "#efe2c0", { at: [side * hw / 2, 0, -0.002], line: 0.4, shadow: false }),
+      mesh(box(hw - 0.004, h - 0.006, 0.002), "#ffffff", { at: [side * hw / 2, 0, 0.0065], map: page(side), line: 0, shadow: false }));
+    gH.rotation.y = -side * fold; return gH; };
+  const spine = mesh(box(0.03, h + 0.03, 0.03), "#4a2416", { at: [0, 0, -0.02], line: 0.5 });
+  const g = group([half(-1), half(1), spine]);
+  // (the grips at the outer edges, where the halves end after the fold)
+  const ex = (w / 2) * Math.cos(fold) + 0.01, ez = (w / 2) * Math.sin(fold);      // (each half turned toward +z at its outer edge: the book opens toward whoever it faces)
+  g.userData.grips = [[-ex, 0, ez], [ex, 0, ez]]; g.userData.depth = 0.04; return g; };
 export const openBook = (w = 0.52, h = 0.36) => { const map = paint("bookwoodcut", 512, 352, (g) => {
     g.fillStyle = "#f3e6c4"; g.fillRect(0, 0, 512, 352); g.fillStyle = "#cdb98a"; g.fillRect(253, 0, 6, 352); g.strokeStyle = "#2a1a14"; g.lineWidth = 3; g.strokeRect(22, 22, 210, 308);
     // the woodcut: hat, face, a beard of tails, a smoking fuse on each side

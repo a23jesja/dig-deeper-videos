@@ -40,6 +40,7 @@ export const motionCheck = (film: Film, opt: { shots?: string[] } = {}) => {
   const faults = new Map<string, MotionFault>();
   const note = (k: string, f: Omit<MotionFault, "f0" | "f1">, F: number) => { const e = faults.get(k); if (e) { e.f1 = F; if (!e.what) e.what = f.what; } else faults.set(k, { ...f, f0: F, f1: F }); };
   const lens = new THREE.PerspectiveCamera(50, 1080 / 1920, 0.05, 3000);
+  const sums: { s: (typeof film.shots)[number]; frames: { F: number; figs: Map<string, { pic: Record<string, [number, number, number]>; H: number; at: V3 }> }[]; cam: { pos: V3; look: V3 }[] }[] = [];
   for (const s of film.shots) { if (opt.shots && !opt.shots.includes(s.id)) continue;
     const F0 = Math.ceil(s.a * film.fps - 1e-6), F1 = Math.ceil(s.b * film.fps - 1e-6);
     type Fig = { pic: Record<string, [number, number, number]>; face: number; mirror: boolean; H: number; box: [number, number, number, number]; heading: number; head: number; at: V3; pipe: boolean; fade: boolean; pipeOn: [number, number] | null; pipeTip: [number, number] | null; pipeRoot: [number, number] | null; W: Record<string, V3>; kind: { L: string; R: string }; held: { L: boolean; R: boolean }; sit: boolean; eyes: { e: [number, number]; p: [number, number] }[]; skullW: V3;
@@ -56,11 +57,13 @@ export const motionCheck = (film: Film, opt: { shots?: string[] } = {}) => {
       const staged: Record<string, Staged> = {}; for (const a of castOf(s)(t, s.a + t)) staged[a.name] = stageAt(a, cam);
       const figs = new Map<string, Fig>();
       for (const a of Object.values(staged)) { const pic: Fig["pic"] = {}; for (const j of JOINTS) pic[j] = P(a.joint(j));
-        const xs = Object.values(pic).map((p) => p[0]), ys = Object.values(pic).map((p) => p[1]), H = Math.max(1, Math.max(...ys) - Math.min(...ys));
+        // (the feet's heels and toes count for the figure's box: from the ankles alone, a shoe cut by the edge passed, the eye patch Short v1b)
+        const feet = (["heelL", "toeL", "heelR", "toeR"] as Joint[]).map((j) => { try { return P(a.joint(j)); } catch { return null; } }).filter((q): q is [number, number, number] => !!q && isFinite(q[0]));
+        const xs = [...Object.values(pic), ...feet].map((p) => p[0]), ys = Object.values(pic).map((p) => p[1]), H = Math.max(1, Math.max(...ys) - Math.min(...ys)), ysB = [...ys, ...feet.map((q) => q[1])];
         const yaw = a.heading - (Math.atan2(cam.pos[0] - a.at[0], cam.pos[2] - a.at[2]) * 180) / Math.PI, sk = solve(a.D.props(a.o.who ?? "sir"), a.pose, yaw);
         // (the drawn figure round its joints: the limbs 3 % of its height wide, the head and its hat 12 % to either side of the skull)
         const r = 0.03 * H, hm = [a.mark?.("headMin"), a.mark?.("headMax")].filter((q): q is V3 => !!q).map((q) => P(q)[0]), hx = hm.length ? hm : [pic.skull[0] - 0.12 * H, pic.skull[0] + 0.12 * H];
-        const box: Fig["box"] = [Math.min(...xs.map((x) => x - r), ...hx), Math.max(...xs.map((x) => x + r), ...hx), Math.min(...ys) - 0.04 * H, Math.max(...ys) + 0.02 * H];
+        const box: Fig["box"] = [Math.min(...xs.map((x) => x - r), ...hx), Math.max(...xs.map((x) => x + r), ...hx), Math.min(...ys) - 0.04 * H, Math.max(...ysB) + 0.02 * H];
         const eyes = (["A", "B"] as const).map((k2) => { const e = a.mark?.(`eye${k2}`), p = a.mark?.(`pupil${k2}`); return e && p ? { e: [P(e)[0], P(e)[1]] as [number, number], p: [P(p)[0], P(p)[1]] as [number, number] } : null; }).filter((q): q is { e: [number, number]; p: [number, number] } => !!q);
         figs.set(a.name, { eyes, skullW: a.joint("skull"), pic, face: faceTurn(sk.faceYaw), mirror: a.o.mirror ?? a.D.mirrorAt?.(yaw) ?? false, H, box, heading: a.heading, head: a.pose.head?.[0] ?? 0, at: a.at, pipe: !!a.mark?.("pipeOpen"), fade: !!a.mark?.("pipeFade"), ...(() => { const m = (n: string) => { const v = a.mark?.(n); return v ? (P(v).slice(0, 2) as [number, number]) : null; }; return { pipeOn: m("pipeOn"), pipeTip: m("pipeTip"), pipeRoot: m("pipeRoot") }; })(), W: Object.fromEntries(JOINTS.map((j) => [j, a.joint(j)])), kind: { L: a.o.handL ?? "relaxed", R: a.o.handR ?? "relaxed" }, held: { L: false, R: false }, sit: seated(sk) > 0.5,
           ears: [a.val?.("earA") ?? null, a.val?.("earB") ?? null], hx: [Math.min(...hx), Math.max(...hx)], patch: (() => { const side = a.o.patch; if (!side) return null; const m = a.mark?.(`patch${side}`), e = a.mark?.(`eye${side}`); if (!m) return { side, at: [NaN, NaN] as [number, number], eye: null, span: 0 }; const A = a.mark?.("eyeA"), B2 = a.mark?.("eyeB"); return { side, at: P(m).slice(0, 2) as [number, number], eye: e ? (P(e).slice(0, 2) as [number, number]) : null, span: A && B2 ? Math.abs(P(A)[0] - P(B2)[0]) : 0 }; })(), foreTop: { L: a.val?.("foreTopL") === 1, R: a.val?.("foreTopR") === 1 }, holds: { L: null, R: null }, card: Object.fromEntries(["shL", "elL", "wrL", "tipL", "shR", "elR", "wrR", "tipR"].map((j) => [j, sk.j[j as Joint] as [number, number]])) }); }
@@ -260,7 +263,34 @@ export const motionCheck = (film: Film, opt: { shots?: string[] } = {}) => {
         for (const m of tB.small) { const prev = tA.small.find((q) => q.key === m.key && Math.hypot(q.x - m.x, q.y - m.y) < 0.05 * fb.H); if (!prev) continue;
           const dA = over(fa, prev.x, prev.y), dB = over(fb, m.x, m.y); if (dA === null || dB === null) continue;
           if ((prev.d < dA - 0.01) !== (m.d < dB - 0.01)) note(`${s.id}|${name}|pop|${m.key}`, { shot: s.id, who: name, what: `a small thing over ${name}'s arm goes from ${prev.d < dA ? "in front of it to behind it" : "behind it to in front of it"} between two frames: it pops up out of nowhere` }, F); } } }
+    sums.push({ s, frames: frames.map((q) => ({ F: q.F, figs: q.figs as unknown as Map<string, { pic: Record<string, [number, number, number]>; H: number; at: V3 }> })), cam: frames.map((q) => { const c = s.cam(Math.max(0, q.F / film.fps - s.a), 0); return { pos: c.pos as V3, look: c.look as V3 }; }) });
   }
+  // ---- added after the eye patch Short's v1b (the review, 20 Nov: a jump cut, a shot standing still, the same picture twice) ----
+  if (film.cases) return [...faults.values()];
+  const dirOf = (c: { pos: V3; look: V3 }) => { const v = [c.look[0] - c.pos[0], c.look[1] - c.pos[1], c.look[2] - c.pos[2]], n = Math.hypot(v[0], v[1], v[2]) || 1; return v.map((x) => x / n); };
+  const angleBetween = (a2: { pos: V3; look: V3 }, b2: { pos: V3; look: V3 }) => { const u = dirOf(a2), v = dirOf(b2); return (Math.acos(Math.max(-1, Math.min(1, u[0] * v[0] + u[1] * v[1] + u[2] * v[2]))) * 180) / Math.PI; };
+  // jump: across a cut, the same figure about as big (within a fifth), in about the same place in the picture, the lens turned less than 15
+  //  degrees: a cut to nearly the same picture, which jumps
+  for (let i = 1; i < sums.length; i++) { const A = sums[i - 1], B = sums[i], fa = A.frames[A.frames.length - 1], fb = B.frames[0]; if (!fa || !fb) continue;
+    for (const [name, gb] of fb.figs) { const ga = fa.figs.get(name); if (!ga) continue; const ratio = gb.H / ga.H, dx = Math.abs(gb.pic.skull[0] - ga.pic.skull[0]) / 1080, turn = angleBetween(A.cam[A.cam.length - 1], B.cam[0]);
+      if (ratio > 0.8 && ratio < 1.25 && dx < 0.15 && turn < 15) note(`${B.s.id}|${name}|jumpcut`, { shot: B.s.id, who: name, what: `a jump cut into ${B.s.id}: ${name} stays about as big (${Math.round(ratio * 100)} %) and in the same place, the lens turned ${turn.toFixed(0)} degrees: change the size or the angle clearly, or leave the cut out` }, fb.F); } }
+  // still: a stretch of 2.5 s in which no figure's joint moves more than 2 % of its height in the picture and the lens hardly moves
+  for (const A of sums) { const N = 75; if (A.frames.length < N) continue;
+    for (let i0 = 0; i0 + N <= A.frames.length; i0 += 15) { let most = 0, any = false;
+      for (const name of A.frames[i0].figs.keys()) { let H = 0; const lo: Record<string, number[]> = {}, hi: Record<string, number[]> = {};
+        // (the joints and the eyes: a head that turns moves its eyes across the face, not its joints)
+        for (let i = i0; i < i0 + N; i++) { const g2 = A.frames[i].figs.get(name); if (!g2) continue; any = true; H = Math.max(H, g2.H); const eyes = ((g2 as unknown as { eyes?: { e: [number, number]; p: [number, number] }[] }).eyes ?? []).flatMap((q, n) => [[`e${n}`, q.e], [`p${n}`, q.p]] as [string, [number, number]][]);
+          for (const [j, q] of [...Object.entries(g2.pic), ...eyes]) { lo[j] = lo[j] ? [Math.min(lo[j][0], q[0]), Math.min(lo[j][1], q[1])] : [q[0], q[1]]; hi[j] = hi[j] ? [Math.max(hi[j][0], q[0]), Math.max(hi[j][1], q[1])] : [q[0], q[1]]; } }
+        for (const j of Object.keys(lo)) most = Math.max(most, Math.hypot(hi[j][0] - lo[j][0], hi[j][1] - lo[j][1]) / (H || 1)); }
+      const c0 = A.cam[i0], c1 = A.cam[i0 + N - 1], camMove = Math.hypot(c1.pos[0] - c0.pos[0], c1.pos[1] - c0.pos[1], c1.pos[2] - c0.pos[2]);
+      if (any && most < 0.02 && camMove < 0.15) { note(`${A.s.id}|still`, { shot: A.s.id, who: "", what: `${A.s.id} stands still for 2.5 s: no figure moves more than ${(most * 100).toFixed(1)} % of its height and the lens hardly moves` }, A.frames[i0 + N - 1].F); break; } } }
+  // twice: two shots that are not side by side, with the same figures, the lens within 35 cm and 12 degrees of the other's and every figure
+  //  within 30 cm of where it stood: the same picture twice. The last shot may be the first again (a film that loops)
+  for (let i = 0; i < sums.length; i++) for (let k = i + 2; k < sums.length; k++) { const A = sums[i], B = sums[k]; if (i === 0 && k === sums.length - 1) continue;
+    const fa = A.frames[Math.floor(A.frames.length / 2)], fb = B.frames[Math.floor(B.frames.length / 2)]; if (!fa || !fb || fa.figs.size === 0 || fa.figs.size !== fb.figs.size) continue;
+    const ca = A.cam[Math.floor(A.cam.length / 2)], cb = B.cam[Math.floor(B.cam.length / 2)], dp = Math.hypot(ca.pos[0] - cb.pos[0], ca.pos[1] - cb.pos[1], ca.pos[2] - cb.pos[2]);
+    let same = dp < 0.35 && angleBetween(ca, cb) < 12; for (const [name, ga] of fa.figs) { const gb = fb.figs.get(name); if (!gb || Math.hypot(ga.at[0] - gb.at[0], ga.at[2] - gb.at[2]) > 0.3) same = false; }
+    if (same) note(`${B.s.id}|twice|${A.s.id}`, { shot: B.s.id, who: "", what: `${B.s.id} is the same picture as ${A.s.id} again: the same figures in the same places, the lens ${dp.toFixed(2)} m and ${angleBetween(ca, cb).toFixed(0)} degrees from where it was` }, fb.F); }
   return [...faults.values()];
 };
 export const motionLines = (film: Film, r: MotionFault[]) => r.map((f) => `${f.shot} frames ${f.f0}-${f.f1} (film ${(f.f0 / film.fps).toFixed(2)}-${((f.f1 + 1) / film.fps).toFixed(2)} s): ${f.what}`);

@@ -60,8 +60,9 @@ const LOOSE = { handL: "relaxed" as const, handR: "relaxed" as const };
   ease(m, -1, { ...REST, head: [-6, 2, 0] }, 0.01, { ...LOOSE, face: F(0.3) });
   ease(m, 0.25, { armR: [[10, 20], [92, 26]], armL: REST.armL, head: [-10, 4, 0], px: 0.03, hipTilt: -3, roll: 1.5 }, 0.5, { handL: "relaxed", handR: "open", face: F(0.6) });
   ease(m, 1.0, { armL: [[14, 30], [74, 40]], armR: [[8, 40], [96, 50]], head: [-3, 0, 0] }, 0.45, { handL: "open", handR: "open", face: F(0.9, 0.55) });
-  ease(m, 1.75, { armL: [[26, 44], [120, 52]], armR: REST.armR, head: [-9, 5, 0], px: -0.03, hipTilt: 3, roll: -1.5 }, 0.5, { handL: "two", handR: "relaxed", face: F(0.7) });      // (the counting hand up and out beside him: forward, it lay on his belly as the picture showed it)
-  ease(m, 2.55, { armR: [[6, 26], [80, 18]], armL: REST.armL, head: [-12, 2, 0] }, 0.45, { handL: "relaxed", handR: "open", face: F(0.6, 0.5) });
+  ease(m, 1.75, { armL: [[26, 44], [120, 52]], armR: [[6, 30], [26, 22]], head: [-9, 5, 0], px: -0.03, hipTilt: 3, roll: -1.5 }, 0.5, { handL: "two", handR: "relaxed", face: F(0.7) });      // (the counting hand up and out beside him: forward, it lay on his belly as the picture showed it)
+  ease(m, 2.55, { armR: [[10, 46], [80, 44]], armL: REST.armL, head: [-12, 2, 0] }, 0.45,      // (out to his side: before him, three quarters on, the hand lay on his belly)
+  { handL: "relaxed", handR: "open", face: F(0.6, 0.5) });
   ease(m, 3.25, { ...REST, head: [-6, 4, 0], px: 0, hipTilt: 0, roll: 0 }, 0.55, { ...LOOSE, face: F(0.4, 0.5) });
   add("stand-and-talk", m, (_t, u) => FRONT.push(0.15 * u), undefined, { talk: syl(0.3, 3.7, [1.8, 2.15]) }); }
 

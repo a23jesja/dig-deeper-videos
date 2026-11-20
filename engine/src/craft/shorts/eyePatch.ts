@@ -171,7 +171,7 @@ const MATE_SHORT_DECK = deckAt(5.0, -0.78);
 const PIR_AT = inCabin([-0.3, 0, 0.25]), MAT_AT = inCabin([0.32, 0, -0.42]), MAT_AT2 = inCabin([0.1, 0, 0.25]);
 const WIDE = cabinLens(0.02, 1.3, 3.6, 0.0, -1, -3, 54);
 const TLT = 0.6;      // (the book's top tipped away from the lens: its pages turned up toward his face, as one reads)
-const PY = 110;      // (the deck close-up from 110 degrees: from 90 the flag's corner sat on his head with no pole in the picture, the independent review of v1g)
+const PY = 50;      // (the deck close-up from 50 degrees, the sails behind him: from 90 the flag's corner sat on his head (the independent review of v1g), from 110 and 140 a pole ran down into his head (our own look at v1h))
 const NR = 15;      // (the close-up in 'nobody' from 15 degrees: from 40-62 the flag's pole stood up out of his head)
 const CAN_AT = W.find((w) => w.line === "flip" && /^can/i.test(w.w))!.a - 0.1;      // ("...and you CAN see": his eye goes wide)
 const FLIP_AT = W.find((w) => w.line === "flip" && /flip/i.test(w.w))!.a - 0.03;      // (the cut on the word "Flip", with the whoosh: the review of v1d)

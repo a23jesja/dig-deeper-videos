@@ -393,6 +393,15 @@ Two seconds instead of ten of talk.
 **11. One palette per video:** three or four main colours plus outline black, used everywhere in that video.
 Thick, even outlines on everything.
 
+**12. "You" in the hook works for Shorts too** (Jesper 2026-11-20, a reference Short with ~30,000 likes): "Rome's
+whole army is running away, and you're the only one guarding the bridge." Frame one is the panic itself, running
+straight at the camera; frame two is "you" seen from behind, facing the danger. This is hook type (e) in the hook
+lab: test it against (d).
+**13. Date and place as objects in the world:** a carved stone reading "508 BC", a sign, a map, never a text
+overlay. One aerial map shot (river, bridge, city, two armies) explains the geography in two seconds.
+**14. Rhythm:** a new shot every 1.5-2.5 seconds in the first 15 seconds, alternating close panic, wide view,
+map and the hero. Crowds are many small simple figures in wide shots; close-ups show only two or three.
+
 **7. The format is confirmed:** how a trick, loophole or scheme worked, told through one person doing it.
 
 ## The hook lab (Jesper 2026-11-17): most of the polish goes into the first five seconds

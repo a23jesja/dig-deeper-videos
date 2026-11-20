@@ -58,12 +58,16 @@ const LOOSE = { handL: "relaxed" as const, handR: "relaxed" as const };
 { const p = at(2.9, 0), hd = FRONT.toward(p[0], p[2], 40), m = mover(SIR_D, H, p[0], p[2], hd); m.w = 0.09; m.stand(9);
   const F = (brow: number, smile = 0.45) => ({ brow, lid: 0.12, smile });
   ease(m, -1, { ...REST, head: [-6, 2, 0] }, 0.01, { ...LOOSE, face: F(0.3) });
-  ease(m, 0.25, { armR: [[10, 42], [90, 46]], armL: REST.armL, head: [-10, 4, 0], px: 0.03, hipTilt: -3, roll: 1.5 }, 0.5, { handL: "relaxed", handR: "open", face: F(0.6) });
-  ease(m, 1.0, { armL: [[14, 30], [74, 40]], armR: [[8, 40], [96, 50]], head: [-3, 0, 0] }, 0.45, { handL: "open", handR: "open", face: F(0.9, 0.55) });
-  ease(m, 1.75, { armL: [[26, 44], [120, 52]], armR: [[6, 30], [26, 22]], head: [-9, 5, 0], px: -0.03, hipTilt: 3, roll: -1.5 }, 0.5, { handL: "two", handR: "relaxed", face: F(0.7) });      // (the counting hand up and out beside him: forward, it lay on his belly as the picture showed it)
-  ease(m, 2.55, { armR: [[10, 46], [80, 44]], armL: REST.armL, head: [-12, 2, 0] }, 0.45,      // (out to his side: before him, three quarters on, the hand lay on his belly)
-  { handL: "relaxed", handR: "open", face: F(0.6, 0.5) });
-  ease(m, 3.25, { ...REST, head: [-6, 4, 0], px: 0, hipTilt: 0, roll: 0 }, 0.55, { ...LOOSE, face: F(0.4, 0.5) });
+  // (round 4, the review of round 3: the far arm held nearly straight out at shoulder height with the palm to the lens, both arms straight
+  //  at the end, gestures alike on both sides. Now each gesture different and asymmetric, the elbows bent, the forearm before the body and
+  //  drawn over the upper arm, the rest arms bent at the end. The near hand out to his side, 40 degrees and more: before him, three
+  //  quarters on, it lay on his belly)
+  const RB: Partial<Pose> = { armL: [[6, 12], [34, 10]], armR: [[5, 13], [30, 9]] };
+  ease(m, 0.2, { armR: [[10, 40], [96, 48]], armL: RB.armL, head: [-10, 4, 0], px: 0.03, hipTilt: -3, roll: 1.5 }, 0.5, { handL: "relaxed", handR: "open", face: F(0.6) });
+  ease(m, 1.0, { armL: [[16, 14], [62, 12]], armR: [[10, 24], [100, 30]], head: [-3, 0, 0] }, 0.45, { handL: "relaxed", handR: "open", face: F(0.9, 0.55) });
+  ease(m, 1.75, { armL: [[18, 16], [106, 10]], armR: [[6, 16], [40, 12]], head: [-9, 5, 0], px: -0.03, hipTilt: 3, roll: -1.5 }, 0.5, { handL: "two", handR: "relaxed", face: F(0.7) });
+  ease(m, 2.55, { armR: [[12, 38], [84, 44]], armL: [[10, 12], [44, 10]], head: [-12, 2, 0] }, 0.45, { handL: "relaxed", handR: "open", face: F(0.6, 0.5) });
+  ease(m, 3.25, { ...RB, head: [-6, 4, 0], px: 0, hipTilt: 0, roll: 0 }, 0.55, { ...LOOSE, face: F(0.4, 0.5) });
   add("stand-and-talk", m, (_t, u) => FRONT.push(0.15 * u), undefined, { talk: syl(0.3, 3.7, [1.8, 2.15]) }); }
 
 // 2. WALK ACROSS. He walks across the cabin before the table at an easy pace, a little toward us, from the left of the picture out
@@ -86,10 +90,14 @@ const LOOSE = { handL: "relaxed" as const, handR: "relaxed" as const };
 const STOOL_AT: V3 = inCabin([CABIN.stool[0], 0, CABIN.stool[2]]), BOTTLE_AT: V3 = [STOOL_AT[0], Y + 0.62, STOOL_AT[2]];
 const BOTTLE = once(() => noShade(bottle(0.3, "#3f8a5c")));
 const onStool = (g: THREE.Group) => { const b = BOTTLE(); b.position.set(STOOL_AT[0], Y + 0.47, STOOL_AT[2]); b.rotation.set(0, 0, 0); g.add(b); };
-{ const p: V3 = inCabin([0.72, 0, CABIN.stool[2]]), hd = FRONT.toward(p[0], p[2], 0), m = mover(SIR_D, H, p[0], p[2], hd); m.w = 0.08; m.stand(1.1).turn(-40, 1.4).stand(9);
-  ease(m, -1, { ...REST, head: [0, 2, 0] }, 0.01, { ...LOOSE, face: { brow: 0.2, lid: 0.2, smile: 0.2 } });
-  ease(m, 0.5, { ...REST, head: [-36, 4, 0] }, 0.6, { ...LOOSE, face: { brow: 0.9, lid: 0, wide: 0.5, gaze: [-0.9, 0.8] } });
-  ease(m, 2.3, { ...REST, head: [-32, 6, 0] }, 0.6, { ...LOOSE, face: { brow: 0.7, lid: 0.05, wide: 0.3, gaze: [-0.8, 0.9] } });
+{ const p: V3 = inCabin([0.72, 0, CABIN.stool[2]]), hd = FRONT.toward(p[0], p[2], 0), m = mover(SIR_D, H, p[0], p[2], hd); m.w = 0.08; m.stand(0.9).turn(-55, 1.4).stand(9);
+  // (round 4: the body turned only 40 degrees while the head turned, and he then stood 2 s with straight arms. Now the body follows further,
+  //  and once round he leans in toward the bottle, one hand coming up a little, curious, and settles with his arms bent)
+  const RB3: Partial<Pose> = { armL: [[6, 12], [36, 10]], armR: [[5, 13], [32, 9]] };
+  ease(m, -1, { ...RB3, head: [0, 2, 0] }, 0.01, { ...LOOSE, face: { brow: 0.2, lid: 0.2, smile: 0.2 } });
+  ease(m, 0.4, { ...RB3, head: [-36, 4, 0] }, 0.6, { ...LOOSE, face: { brow: 0.9, lid: 0, wide: 0.5, gaze: [-0.9, 0.8] } });
+  ease(m, 2.3, { armL: RB3.armL, armR: [[14, 14], [72, 16]], head: [-30, 10, 0], lean: 7 }, 0.6, { handL: "relaxed", handR: "open", face: { brow: 0.85, lid: 0.05, wide: 0.4, gaze: [-0.8, 0.9] } });
+  ease(m, 3.2, { ...RB3, head: [-28, 8, 0], lean: 4 }, 0.6, { ...LOOSE, face: { brow: 0.6, lid: 0.1, wide: 0.2, smile: 0.3, gaze: [-0.8, 0.9] } });
   add("turn-and-look", m, (_t, u) => FRONT.push(0.2 + 0.1 * u), (g) => onStool(g), { look: { sir: { at: BOTTLE_AT, from: 2.6, what: "the bottle on the stool" } } }); }
 
 // 4. HOLD WITH BOTH HANDS. He shows us an open book, its pages toward us and his eyes on us, held by its outer edges: the thumbs over
@@ -118,14 +126,20 @@ const onStool = (g: THREE.Group) => { const b = BOTTLE(); b.position.set(STOOL_A
 { const p: V3 = inCabin([0.42, 0, CABIN.stool[2] - 0.12]), hd = FRONT.toward(p[0], p[2], -45), m = mover(SIR_D, H, p[0], p[2], hd); m.w = 0.08; m.stand(9);
   const C0 = FRONT.push(0.3), fv = new THREE.Vector3(C0.look[0] - C0.pos[0], C0.look[1] - C0.pos[1], C0.look[2] - C0.pos[2]).normalize(), rv = new THREE.Vector3().crossVectors(fv, new THREE.Vector3(0, 1, 0)).normalize(), uv = new THREE.Vector3().crossVectors(rv, fv);
   const ps = stand(p, hd), shL = jointsOf(ps)("shL"), dvec = new THREE.Vector3(BOTTLE_AT[0] - shL[0], BOTTLE_AT[1] - shL[1], BOTTLE_AT[2] - shL[2]), pdir: [number, number] = [dvec.dot(rv), dvec.dot(uv)];
-  const AIM = pointArm(SIR_D, { ...POSES.stand } as Pose, {}, { at: p, heading: hd, h: H }, C0.pos, "L", pdir, 0.45) as [Seg, Seg];
+  const AIM = pointArm(SIR_D, { ...POSES.stand } as Pose, {}, { at: p, heading: hd, h: H }, C0.pos, "L", pdir, 0.75) as [Seg, Seg];      // (round 4: the elbow bent more; nearly straight, the review of round 3)
   const G = { gaze: [-0.9, 0.9] as [number, number] }, hB = Math.max(-34, Math.min(34, ((((Math.atan2(BOTTLE_AT[0] - p[0], BOTTLE_AT[2] - p[2]) * 180) / Math.PI - hd + 540) % 360) - 180)));      // (the head to the bottle from his heading, the face kept within the rig's limit)
+  // (round 4: nothing happened for the first second, the pointing hand swept across the other hand, and the arm then stood still for 2 s.
+  //  Now he looks at once, his other hand stays back by his side, the point comes in from the side, and while he points he glances at us,
+  //  eyebrows up, and back at the bottle, the finger tapping the air)
+  const BACK: [Seg, Seg] = [[-8, 12], [8, 10]];
   ease(m, -1, { ...REST, head: [-10, 2, 0] }, 0.01, { ...LOOSE, face: { brow: 0.3, lid: 0.15 } });
-  ease(m, 0.3, { ...REST, head: [hB, 6, 0] }, 0.45, { ...LOOSE, face: { brow: 0.8, lid: 0.05, wide: 0.3, ...G } });
-  ease(m, 0.75, { armL: [[-12, 12], [24, 8]], armR: REST.armR }, 0.3, { ...LOOSE, face: { brow: 0.8, lid: 0.05, wide: 0.3, ...G } });
-  ease(m, 1.05, { armL: AIM, armR: REST.armR, head: [hB, 8, 0] }, 0.6, { handL: "point", handR: "relaxed", face: { brow: 0.9, lid: 0.05, mouth: 0.25, ...G } });
-  wag(m, 1.9, 2.0, P({ armL: [[AIM[0][0] + 3, AIM[0][1]], [AIM[1][0] + 5, AIM[1][1]]] }), P({ armL: [[AIM[0][0] - 3, AIM[0][1]], [AIM[1][0] - 3, AIM[1][1]]] }), 1.0, { handL: "point", handR: "relaxed", glide: true });
-  add("point", m, (_t, u) => FRONT.push(0.2 + 0.1 * u), (g) => onStool(g), { look: { sir: { at: BOTTLE_AT, from: 0.8, what: "the bottle he points at" } } }); }
+  ease(m, 0.1, { armL: REST.armL, armR: BACK, head: [hB, 6, 0] }, 0.4, { ...LOOSE, face: { brow: 0.8, lid: 0.05, wide: 0.3, ...G } });
+  ease(m, 0.5, { armL: [[-6, 26], [30, 24]], armR: BACK }, 0.3, { ...LOOSE, face: { brow: 0.8, lid: 0.05, wide: 0.3, ...G } });
+  ease(m, 0.8, { armL: AIM, armR: BACK, head: [hB, 8, 0] }, 0.55, { handL: "point", handR: "relaxed", face: { brow: 0.9, lid: 0.05, mouth: 0.25, ...G } });
+  wag(m, 1.45, 0.8, P({ armL: [[AIM[0][0] + 4, AIM[0][1]], [AIM[1][0] + 8, AIM[1][1]]] }), P({ armL: [[AIM[0][0] - 3, AIM[0][1]], [AIM[1][0] - 4, AIM[1][1]]] }), 0.4, { handL: "point", handR: "relaxed", glide: true });
+  ease(m, 2.3, { armL: AIM, armR: BACK, head: [Math.max(-30, hB * 0.2), 4, 0] }, 0.4, { handL: "point", handR: "relaxed", face: { brow: 1, lid: 0, wide: 0.4, smile: 0.5, gaze: [0, 0] } });
+  ease(m, 3.0, { armL: [[AIM[0][0] + 2, AIM[0][1]], [AIM[1][0] + 4, AIM[1][1]]], armR: BACK, head: [hB, 8, 0] }, 0.45, { handL: "point", handR: "relaxed", face: { brow: 0.9, lid: 0.05, smile: 0.4, ...G } });
+  add("point", m, (_t, u) => FRONT.push(0.2 + 0.1 * u), (g) => onStool(g), { look: { sir: { at: BOTTLE_AT, from: 0.5, to: 2.25, what: "the bottle he points at" } } }); }
 
 // 6. REACT. He stands beside the stool humming to himself, a hand at his waistcoat; the bottle on the stool topples off onto the floor.
 //    He tenses for a beat, then jolts back with both hands up before his chest, eyes wide, and stares down at it

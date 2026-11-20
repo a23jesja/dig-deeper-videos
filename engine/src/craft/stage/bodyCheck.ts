@@ -44,8 +44,6 @@ const PARTS: Part[] = [
 /** the length of a figure's hand as drawn, in metres (the design's hand measure at its height; ink.ts hand draws at this size whatever
  *  way the arm points) */
 const handM = (a: Staged) => { const P = a.D.props(a.o?.who ?? "sir"); return (P.hand * a.h) / (P.thigh + P.shin + P.ankle + P.spine + P.neck + P.head); };
-/** how far a drawn hand may press into a solid (a fist resting on a table top touches it) */
-const DRAWN_TOL = 0.012;
 /** how much wider each piece is drawn than it is deep (the card: a chest seen from the front is twice as wide as it is deep) */
 const WIDE: Record<string, number> = { head: 1.25, chest: 1.6, belly: 1.7, "left thigh": 1.25, "right thigh": 1.25, "left shin": 1.2, "right shin": 1.2 };
 const solidMat = (m: THREE.Mesh) => {
@@ -184,11 +182,7 @@ export const bodyCheck = (film: Film, opt: { every?: number; shots?: string[] } 
       const bodies = Object.values(st).map((a) => { const sc = a.h / 1.8, J = (j: Joint | [Joint, Joint, number]) => { if (typeof j === "string") return new THREE.Vector3(...a.joint(j)); const [x, y, k] = j; return new THREE.Vector3(...a.joint(x)).lerp(new THREE.Vector3(...a.joint(y)), k); };
         const headL = new THREE.Vector3(...a.joint("crown")).distanceTo(new THREE.Vector3(...a.joint("skull")));
         const parts = PARTS.map((P) => { const A = J(P.a), B = J(P.b), r = P.r < 0 ? -P.r * headL : P.r * sc, n = Math.max(2, Math.ceil(A.distanceTo(B) / 0.035)), pts: THREE.Vector3[] = []; for (let i = 0; i <= n; i++) pts.push(A.clone().lerp(B, i / n));
-          // the hand as it is DRAWN (ink.ts hand: a fist or mitten reaches 0.33-0.36 of the hand's length to each side of the line from the
-          // wrist to the knuckles, and 0.76-1.0 of it out from the wrist), with its outline: wider than the hand's piece above. A drawn fist
-          // sank 4-5 cm into the table top while the hand's piece was still on it (the eye patch Short v1q, the review's fault 1)
-          const hand = P.name.endsWith("hand"), hm = hand ? handM(a) : 0, hd = B.clone().sub(A).normalize(), drawn = hand ? { r: 0.36 * hm + 0.006 * sc, pts: [0, 0.25, 0.5, 0.7].map((k) => A.clone().addScaledVector(hd, k * hm)) } : null;
-          return { P, r, pts, tol: P.tol * Math.max(1, sc), drawn }; });
+          return { P, r, pts, tol: P.tol * Math.max(1, sc) }; });
         const box = new THREE.Box3(); for (const q of parts) for (const p of q.pts) box.expandByPoint(p); box.expandByScalar(0.15); return { a, parts, box }; });
       figuresTried += bodies.length;
       // the dust and the added light of the shot (world/air.ts, world/fire.ts glows): motes as points, light as the meshes that add
@@ -479,10 +473,7 @@ export const bodyCheck = (film: Film, opt: { every?: number; shots?: string[] } 
           for (const q of B.parts) { if (own && !armTest && (!q.P.hand || sides.has(q.P.hand) || sides.size === 0)) continue;
             if (armTest && q.P.hand && sides.has(q.P.hand) && q.P.name.endsWith("hand")) continue;
             let worst = 0; for (const p of q.pts) { if (o.aabb.distanceToPoint(p) < q.r && seen(p, q.r)) { const pen = q.r - dist(o, p, q.r); if (pen > worst) worst = pen; } }
-            if (worst > q.tol) note(`${s.id}|${a.name}|${q.P.name}|${o.mesh.uuid}`, { shot: s.id, who: a.name, kind: isHeld ? "held" : "solid", what: `${a.name}'s ${q.P.name} is inside ${isHeld ? `the thing in ${o.holder}'s hand, ` : ""}${describe(o)}` }, F, worst);
-            // the drawn hand against what is not held: it may touch (DRAWN_TOL), not sink in
-            if (!isHeld && q.drawn) { let d = 0; for (const p of q.drawn.pts) { if (o.aabb.distanceToPoint(p) < q.drawn.r && seen(p, q.drawn.r)) { const pen = q.drawn.r - dist(o, p, q.drawn.r); if (pen > d) d = pen; } }
-              if (d > DRAWN_TOL) note(`${s.id}|${a.name}|drawn ${q.P.name}|${o.mesh.uuid}`, { shot: s.id, who: a.name, kind: "solid", what: `${a.name}'s ${q.P.name} as drawn (its fist or fingers with the outline) goes ${(d * 100).toFixed(1)} cm into ${describe(o)}` }, F, d); } } }
+            if (worst > q.tol) note(`${s.id}|${a.name}|${q.P.name}|${o.mesh.uuid}`, { shot: s.id, who: a.name, kind: isHeld ? "held" : "solid", what: `${a.name}'s ${q.P.name} is inside ${isHeld ? `the thing in ${o.holder}'s hand, ` : ""}${describe(o)}` }, F, worst); } }
         // (q) a free hand as it is drawn: the card draws the hand on its own plane, at full size even when the arm points toward the lens,
         //     and that plane can pass through a solid beside the figure (the table top beside the mate, whose card stood at a slant through
         //     it). The drawn fist (ink.ts hand: out to 0.76 of the hand's length from the wrist, 0.35 of it to each side, with its outline)

@@ -1,0 +1,5 @@
+react frames 631-632 (film 21.03-21.10 s): the thing goes 1.1 cm into a cylinder (0.39 x 0.06 x 0.40 m at 41.55, 1.04, -0.12), 2 cm
+react frames 641-719 (film 21.37-24.00 s): the thing goes 2.6 cm into a box (4.40 x 0.10 x 3.40 m at 42.00, 0.55, 0.00), 3 cm
+open-a-door frames 720-839 (film 24.00-28.00 s): the door goes 1.5 cm into a box (0.16 x 1.98 x 0.07 m at 44.20, 1.59, 0.09), 3 cm
+open-a-door frames 720-746 (film 24.00-24.90 s): the door goes 1.5 cm into a box (0.16 x 1.98 x 0.07 m at 44.20, 1.59, 0.91), 1 cm
+BODY CHECK FAILED for shot-library-r3d: 960 frames of 960, 960 figure-frames, 1628 pairs tried (a figure against a solid, a held thing or another figure), 4 faults (1 s)

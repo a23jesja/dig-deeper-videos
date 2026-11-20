@@ -45,7 +45,7 @@ export const palmThen = (a: Actor, side: "L" | "R", cam: Cam, slide = 0.45): V3 
 /** A figure as it stands at another moment than the frame being drawn, with its joints (it is drawn once to find them, and let go
  *  again): for working out where a thing in its hand was at that moment (the muzzle when the pistol went off) */
 export const stageAt = (a: Actor, cam: Cam): Staged => {
-  const p = figureCard(a.D, a.pose, a.o, { at: a.at, heading: a.heading, h: a.h, land: a.land }, cam.pos), s = { ...a, joint: p.joint, mesh: p.mesh, mark: p.mark } as Staged;
+  const p = figureCard(a.D, a.pose, a.o, { at: a.at, heading: a.heading, h: a.h, land: a.land }, cam.pos), s = { ...a, joint: p.joint, mesh: p.mesh, mark: p.mark, val: p.val } as Staged;
   p.mesh.traverse((o) => { const m = o as THREE.Mesh; if (!m.isMesh) return; m.geometry?.dispose(); for (const mat of (Array.isArray(m.material) ? m.material : [m.material]) as THREE.MeshBasicMaterial[]) { mat.map?.dispose(); mat.dispose(); } });
   return s;
 };

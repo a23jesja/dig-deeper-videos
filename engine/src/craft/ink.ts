@@ -71,6 +71,9 @@ export class Ink {
   /** places the drawing has noted while it was drawn (an eye, say), in canvas pixels: so that the stage can put a real thing there */
   marks: Record<string, P2> = {};
   mark(name: string, x: number, y: number) { const m = this.g.getTransform(); this.marks[name] = [m.a * x + m.c * y + m.e, m.b * x + m.d * y + m.f]; }
+  /** numbers the drawing has noted (how much of an ear shows, 0..1: "earA", "earB"), for the checks */
+  vals: Record<string, number> = {};
+  val(name: string, v: number) { this.vals[name] = v; }
   trace(pts: P2[], close = true) { const g = this.g; pts.forEach(([x, y], i) => (i ? g.lineTo(x, y) : g.moveTo(x, y))); if (close) g.closePath(); }
   /** a filled shape with an ink line; fill = null draws the line only, ol = 0 the fill only */
   shape(pts: P2[], fill: string | null, ol = this.ol) {

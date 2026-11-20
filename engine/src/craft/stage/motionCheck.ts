@@ -42,8 +42,12 @@ export const motionCheck = (film: Film, opt: { shots?: string[] } = {}) => {
   const lens = new THREE.PerspectiveCamera(50, 1080 / 1920, 0.05, 3000);
   for (const s of film.shots) { if (opt.shots && !opt.shots.includes(s.id)) continue;
     const F0 = Math.ceil(s.a * film.fps - 1e-6), F1 = Math.ceil(s.b * film.fps - 1e-6);
-    type Fig = { pic: Record<string, [number, number, number]>; face: number; mirror: boolean; H: number; box: [number, number, number, number]; heading: number; head: number; at: V3; pipe: boolean; fade: boolean; pipeOn: [number, number] | null; pipeTip: [number, number] | null; pipeRoot: [number, number] | null; W: Record<string, V3>; kind: { L: string; R: string }; held: { L: boolean; R: boolean }; sit: boolean; eyes: { e: [number, number]; p: [number, number] }[]; skullW: V3 };
-    const frames: { F: number; figs: Map<string, Fig>; things: Map<string, { names: Set<string>; small: { key: string; x: number; y: number; d: number }[] }>; downs: Set<string>; held: Map<string, { p: THREE.Vector3; q: THREE.Quaternion }> }[] = [];
+    type Fig = { pic: Record<string, [number, number, number]>; face: number; mirror: boolean; H: number; box: [number, number, number, number]; heading: number; head: number; at: V3; pipe: boolean; fade: boolean; pipeOn: [number, number] | null; pipeTip: [number, number] | null; pipeRoot: [number, number] | null; W: Record<string, V3>; kind: { L: string; R: string }; held: { L: boolean; R: boolean }; sit: boolean; eyes: { e: [number, number]; p: [number, number] }[]; skullW: V3;
+      /** how much of each ear shows (the drawing notes it), the thing each hand holds (its object's id), the arm's joints on the card */
+      ears: [number | null, number | null]; foreTop: { L: boolean; R: boolean }; holds: { L: string | null; R: string | null }; card: Record<string, [number, number]> };
+    const frames: { F: number; figs: Map<string, Fig>; things: Map<string, { names: Set<string>; small: { key: string; x: number; y: number; d: number }[] }>; downs: Set<string>; held: Map<string, { p: THREE.Vector3; q: THREE.Quaternion }>;
+      /** every thing of the shot with a body to it, by its object's id: where it is and how it is turned (the jerk and release tests) */
+      objs: Map<string, { p: THREE.Vector3; q: THREE.Quaternion; M: THREE.Matrix4; name: string; held: boolean }> }[] = [];
     const lenses = new Map<number, THREE.PerspectiveCamera>(), lensOf = (F: number) => lenses.get(F)!;
     for (let F = F0; F < F1; F++) { const t = Math.max(0, F / film.fps - s.a), cam = s.cam(t, t / (s.b - s.a)), C = new THREE.Vector3(...cam.pos);
       { const l2 = new THREE.PerspectiveCamera(cam.fov, 1080 / 1920, 0.05, 3000); l2.position.copy(C); l2.lookAt(...cam.look); l2.updateProjectionMatrix(); l2.updateMatrixWorld(true); lenses.set(F, l2); }
@@ -58,7 +62,8 @@ export const motionCheck = (film: Film, opt: { shots?: string[] } = {}) => {
         const r = 0.03 * H, hm = [a.mark?.("headMin"), a.mark?.("headMax")].filter((q): q is V3 => !!q).map((q) => P(q)[0]), hx = hm.length ? hm : [pic.skull[0] - 0.12 * H, pic.skull[0] + 0.12 * H];
         const box: Fig["box"] = [Math.min(...xs.map((x) => x - r), ...hx), Math.max(...xs.map((x) => x + r), ...hx), Math.min(...ys) - 0.04 * H, Math.max(...ys) + 0.02 * H];
         const eyes = (["A", "B"] as const).map((k2) => { const e = a.mark?.(`eye${k2}`), p = a.mark?.(`pupil${k2}`); return e && p ? { e: [P(e)[0], P(e)[1]] as [number, number], p: [P(p)[0], P(p)[1]] as [number, number] } : null; }).filter((q): q is { e: [number, number]; p: [number, number] } => !!q);
-        figs.set(a.name, { eyes, skullW: a.joint("skull"), pic, face: faceTurn(sk.faceYaw), mirror: a.o.mirror ?? a.D.mirrorAt?.(yaw) ?? false, H, box, heading: a.heading, head: a.pose.head?.[0] ?? 0, at: a.at, pipe: !!a.mark?.("pipeOpen"), fade: !!a.mark?.("pipeFade"), ...(() => { const m = (n: string) => { const v = a.mark?.(n); return v ? (P(v).slice(0, 2) as [number, number]) : null; }; return { pipeOn: m("pipeOn"), pipeTip: m("pipeTip"), pipeRoot: m("pipeRoot") }; })(), W: Object.fromEntries(JOINTS.map((j) => [j, a.joint(j)])), kind: { L: a.o.handL ?? "relaxed", R: a.o.handR ?? "relaxed" }, held: { L: false, R: false }, sit: seated(sk) > 0.5 }); }
+        figs.set(a.name, { eyes, skullW: a.joint("skull"), pic, face: faceTurn(sk.faceYaw), mirror: a.o.mirror ?? a.D.mirrorAt?.(yaw) ?? false, H, box, heading: a.heading, head: a.pose.head?.[0] ?? 0, at: a.at, pipe: !!a.mark?.("pipeOpen"), fade: !!a.mark?.("pipeFade"), ...(() => { const m = (n: string) => { const v = a.mark?.(n); return v ? (P(v).slice(0, 2) as [number, number]) : null; }; return { pipeOn: m("pipeOn"), pipeTip: m("pipeTip"), pipeRoot: m("pipeRoot") }; })(), W: Object.fromEntries(JOINTS.map((j) => [j, a.joint(j)])), kind: { L: a.o.handL ?? "relaxed", R: a.o.handR ?? "relaxed" }, held: { L: false, R: false }, sit: seated(sk) > 0.5,
+          ears: [a.val?.("earA") ?? null, a.val?.("earB") ?? null], foreTop: { L: a.val?.("foreTopL") === 1, R: a.val?.("foreTopR") === 1 }, holds: { L: null, R: null }, card: Object.fromEntries(["shL", "elL", "wrL", "tipL", "shR", "elR", "wrR", "tipR"].map((j) => [j, sk.j[j as Joint] as [number, number]])) }); }
       // the shot's things: their names, and the small things with where they are in the picture (for the pop test)
       const g = new THREE.Group(); AUDIT.rows = []; AUDIT.on = true; CROWD_LOG.on = false;
       try { s.things?.(g, staged, t, s.a + t, cam); } finally { AUDIT.on = false; } g.updateMatrixWorld(true);
@@ -66,13 +71,20 @@ export const motionCheck = (film: Film, opt: { shots?: string[] } = {}) => {
       // (who holds what: a hand named in a row holds a thing; and where each held thing is, and how it is turned, for the jerk test)
       const held = new Map<string, { p: THREE.Vector3; q: THREE.Quaternion }>();
       for (const r of AUDIT.rows) { if (!r.holder || /^(down|landed|falling|vanish)/.test(r.use)) continue;
-        for (const part of r.holder.split(/\s*[,&]\s*/)) { const [hn, hs] = part.trim().split(" "), f = figs.get(hn); if (f && hs) for (const sd of hs.split("+")) if (sd === "L" || sd === "R") f.held[sd] = true; }
+        for (const part of r.holder.split(/\s*[,&]\s*/)) { const [hn, hs] = part.trim().split(" "), f = figs.get(hn); if (f && hs) for (const sd of hs.split("+")) if (sd === "L" || sd === "R") { f.held[sd] = true; if (r.o) f.holds[sd] = r.o.uuid; } }
         if (r.o && !held.has(r.prop)) held.set(r.prop, { p: r.o.getWorldPosition(new THREE.Vector3()), q: r.o.getWorldQuaternion(new THREE.Quaternion()) }); }
       const names = new Set<string>(), small: { key: string; x: number; y: number; d: number }[] = [];
       g.traverse((o) => { if (o.name) names.add(o.name); const m = o as THREE.Mesh; if (!m.isMesh || !m.visible || (m as unknown as THREE.Points).isPoints) return;
         if (!m.geometry.boundingBox) m.geometry.computeBoundingBox(); const bb = m.geometry.boundingBox!.clone().applyMatrix4(m.matrixWorld), z = bb.getSize(new THREE.Vector3());
         if (Math.max(z.x, z.y, z.z) > 0.25 || Math.max(z.x, z.y, z.z) < 0.01) return; const c = bb.getCenter(new THREE.Vector3()), p = P([c.x, c.y, c.z]); small.push({ key: `${m.geometry.uuid}:${(m.material as THREE.Material)?.uuid}`, x: p[0], y: p[1], d: p[2] }); });
-      frames.push({ F, figs, things: new Map([["", { names, small }]]), downs, held }); }
+      // (every thing with a body to it, whoever moves it: a door swinging on after it is let go, a bottle falling. Dust, glows and light
+      //  are left out: a group with points in it, or with no solid shape)
+      const objs: (typeof frames)[number]["objs"] = new Map(), rowOf = new Map<THREE.Object3D, string>(), heldO = new Set<THREE.Object3D>();
+      for (const r of AUDIT.rows) if (r.o) { rowOf.set(r.o, r.prop); if (r.holder && !/^(down|landed|falling|vanish)/.test(r.use)) heldO.add(r.o); }
+      for (const o of [...g.children, ...rowOf.keys()]) { if (objs.has(o.uuid)) continue; let solid = false, pts = false;
+        o.traverse((x) => { const m = x as THREE.Mesh; if ((x as THREE.Points).isPoints) pts = true; else if (m.isMesh && /^(Box|Cylinder|Sphere|Lathe|Extrude|Torus|Cone|Capsule)Geometry$/.test(m.geometry?.type ?? "")) solid = true; });
+        if (!solid || pts) continue; objs.set(o.uuid, { p: o.getWorldPosition(new THREE.Vector3()), q: o.getWorldQuaternion(new THREE.Quaternion()), M: o.matrixWorld.clone(), name: rowOf.get(o) ?? (o.name || "thing"), held: heldO.has(o) }); }
+      frames.push({ F, figs, things: new Map([["", { names, small }]]), downs, held, objs }); }
 
     // ---- barred angles (the frozen look: "head never in bare profile"; the review of round 2): a head drawn turned more than 60 degrees
     //      from the lens is in profile or seen from behind. A shot names a figure it shows from behind on purpose, walking away (Shot.away) ----
@@ -174,13 +186,49 @@ export const motionCheck = (film: Film, opt: { shots?: string[] } = {}) => {
         const span = B.eyes.length === 2 ? Math.abs(B.eyes[0].e[0] - B.eyes[1].e[0]) || 0.1 * B.H : 0.1 * B.H, dy = B.eyes.reduce((t2, e) => t2 + (e.p[1] - e.e[1]), 0) / B.eyes.length;
         if (Math.abs(pitch) >= 15 && (Math.sign(dy) !== (pitch < 0 ? 1 : -1) || Math.abs(dy) < 0.05 * span)) note(`${s.id}|${name}|gazeY`, { shot: s.id, who: name, what: `${name} looks straight out while what he looks at (${L.what ?? "the target"}) is ${Math.abs(pitch).toFixed(0)} degrees ${pitch < 0 ? "below" : "above"} his eyes` }, q.F); }
     }
-    // jerk, a thing in a hand: its turn from one frame to the next changing by more than 2.5 degrees, or its step by more than 2.5 cm
-    { const names = new Set(frames.flatMap((q) => [...q.held.keys()]));
-      for (const n of names) for (let i = 2; i < frames.length; i++) { const A = frames[i - 2].held.get(n), B = frames[i - 1].held.get(n), C = frames[i].held.get(n); if (!A || !B || !C) continue;
+    // jerk, a thing: its turn from one frame to the next changing by more than 2.5 degrees, or its step by more than 2.5 cm. Every thing with a
+    // body to it, held or not (the shot library's round 3: the door let go stood still and was swinging at full speed on the next frame, 07
+    // frames 42-43; before, only things in a hand were tried). A falling thing that lands may stop at once: it hits what it lands on
+    { const ids = new Set(frames.flatMap((q) => [...q.objs.keys()]));
+      for (const n of ids) for (let i = 2; i < frames.length; i++) { const A = frames[i - 2].objs.get(n), B = frames[i - 1].objs.get(n), C = frames[i].objs.get(n); if (!A || !B || !C) continue;
         const r1 = B.q.clone().multiply(A.q.clone().invert()), r2 = C.q.clone().multiply(B.q.clone().invert()), dTurn = (2 * Math.acos(Math.min(1, Math.abs(r2.clone().multiply(r1.clone().invert()).w))) * 180) / Math.PI;
-        const dStep = C.p.clone().sub(B.p).sub(B.p.clone().sub(A.p)).length();
-        if (MOTION_DEBUG.on) { MOTION_DEBUG.max(`${s.id} thing ${n} turn`, dTurn, frames[i].F); MOTION_DEBUG.max(`${s.id} thing ${n} step`, dStep * 100, frames[i].F); }
-        if (dTurn > 2.5 || dStep > 0.025) note(`${s.id}|jerk|${n}`, { shot: s.id, who: n, what: `the ${n} in the hand jerks: ${dTurn > 2.5 ? `its turn changes by ${dTurn.toFixed(1)} degrees` : `its movement changes by ${(dStep * 100).toFixed(1)} cm`} in one frame` }, frames[i].F); } }
+        const v1 = B.p.clone().sub(A.p), v2 = C.p.clone().sub(B.p), dStep = v2.clone().sub(v1).length(), lands = v1.y < -0.005 && v2.length() < 0.5 * v1.length();
+        if (MOTION_DEBUG.on) { MOTION_DEBUG.max(`${s.id} thing ${B.name} turn`, dTurn, frames[i].F); MOTION_DEBUG.max(`${s.id} thing ${B.name} step`, dStep * 100, frames[i].F); }
+        if (!lands && (dTurn > 2.5 || dStep > 0.025)) note(`${s.id}|jerk|${n}`, { shot: s.id, who: B.name, what: `the ${B.name}${B.held && C.held ? " in the hand" : B.held ? " he lets go of" : ""} jerks: ${dTurn > 2.5 ? `its turn changes by ${dTurn.toFixed(1)} degrees` : `its movement changes by ${(dStep * 100).toFixed(1)} cm`} in one frame${!B.held && !C.held ? ", with no hand on it" : ""}` }, frames[i].F); } }
+    // ---- added after the shot library's round 3 (the review, 20 Nov 2026) ----
+    // ear: an ear that goes from hidden to showing (or back) by more than half of it in one frame while the head turns less than a head may
+    //  in a frame: the drawing switched it from behind the head to on top (03 frame 31)
+    for (const name of who) for (let i = 1; i < frames.length; i++) { const A = frames[i - 1].figs.get(name), B = frames[i].figs.get(name); if (!A || !B) continue;
+      const dTurn = Math.abs(((B.face - A.face + 540) % 360) - 180);
+      for (const e of [0, 1]) { const va = A.ears[e], vb = B.ears[e]; if (va === null || vb === null) continue; if (MOTION_DEBUG.on) MOTION_DEBUG.max(`${s.id} ear change`, Math.abs(vb - va), frames[i].F);
+        if (Math.abs(vb - va) > 0.5 && dTurn <= 12) note(`${s.id}|${name}|ear|${e}`, { shot: s.id, who: name, what: `${name}'s ${e ? "second" : "first"} ear goes from ${va < vb ? "hidden" : "showing"} (${Math.round(va * 100)} % of it) to ${va < vb ? "showing" : "hidden"} (${Math.round(vb * 100)} %) in one frame while his head turns ${dTurn.toFixed(1)} degrees: it pops ${va < vb ? "in" : "out"}` }, frames[i].F); } }
+    // release: a hand lets go of a thing that goes on moving. Where the hand was on it then is a point of the thing; for a second after, while
+    //  the hand is still on that point in the picture (within 4 % of his height), the two may part only gently: their speeds apart grow by
+    //  no more than 0.25 % of his height a frame each frame (the door in r3d: 0.4 % a frame; a hand dropping back from a door it pushed: 0.1) (the hand and the thing were moving together; the thing slows or the hand drops
+    //  back). The door's ring slid out from under the fist at full speed the frame he let go (07 frames 42-47)
+    for (const name of who) for (const sd of ["L", "R"] as const) for (let i = 1; i < frames.length; i++) {
+      const A = frames[i - 1].figs.get(name), B = frames[i].figs.get(name), u = A?.holds[sd]; if (!A || !B || !u || B.holds[sd] === u) continue;
+      const O0 = frames[i - 1].objs.get(u); if (!O0) continue;
+      const palm = (f: Fig) => new THREE.Vector3(...f.W[`wr${sd}`]).lerp(new THREE.Vector3(...f.W[`tip${sd}`]), 0.45), Lp = palm(A).applyMatrix4(O0.M.clone().invert());
+      const pic = (F: number, v: THREE.Vector3) => { const q = v.clone().project(lensOf(F)); return new THREE.Vector2((q.x + 1) * 540, (1 - q.y) * 960); };
+      let g0 = pic(frames[i - 1].F, Lp.clone().applyMatrix4(O0.M)), h0 = pic(frames[i - 1].F, palm(A));
+      for (let k = i; k < Math.min(frames.length, i + 30); k++) { const Bk = frames[k].figs.get(name), Ok = frames[k].objs.get(u); if (!Bk || !Ok) break;
+        const g1 = pic(frames[k].F, Lp.clone().applyMatrix4(Ok.M)), h1 = pic(frames[k].F, palm(Bk)), near0 = g0.distanceTo(h0) < 0.04 * Bk.H, rel = g1.clone().sub(g0).sub(h1.clone().sub(h0)).length(), lim = 0.0025 * Bk.H * (k - i + 1);
+        if (MOTION_DEBUG.on && near0) MOTION_DEBUG.max(`${s.id} release ${Ok.name} parting/limit`, rel / lim, frames[k].F);
+        if (near0 && rel > lim) note(`${s.id}|${name}|release|${u}`, { shot: s.id, who: name, what: `the ${Ok.name} slides out from under ${name}'s ${sd === "L" ? "left" : "right"} hand as he lets go: ${k - i + 1} frame${k > i ? "s" : ""} after, it moves ${((100 * rel) / Bk.H).toFixed(1)} % of his height a frame against the hand still on it (a thing let go parts from the hand gently)` }, frames[k].F);
+        if (!near0) break; g0 = g1; h0 = h1; } }
+    // forearm: the card draws the forearm and the hand first and the upper arm over them (unless the forearm comes toward the lens: cast.ts arm). A forearm that lies inside the upper arm's width on
+    //  the card for 0.2 s (6 frames), two thirds of it or more hidden, puts the hand on the shoulder: it seems to grow out of it (06 frames 44-119)
+    for (const name of who) for (const sd of ["L", "R"] as const) { let run: number[] = [];
+      for (let i = 0; i < frames.length; i++) { const B = frames[i].figs.get(name); if (!B || B.foreTop[sd]) { run = []; continue; }
+        const c = B.card, S = c[`sh${sd}`], E = c[`el${sd}`], W = c[`wr${sd}`], T = c[`tip${sd}`], wU = 27, wF = 20, L2 = (E[0] - S[0]) ** 2 + (E[1] - S[1]) ** 2 || 1;
+        const dUp = (x: number, y: number) => { const k = Math.max(0, Math.min(1, ((x - S[0]) * (E[0] - S[0]) + (y - S[1]) * (E[1] - S[1])) / L2)); return Math.hypot(x - S[0] - k * (E[0] - S[0]), y - S[1] - k * (E[1] - S[1])); };
+        let hid = 0, all = 0; for (let k = 0.2; k <= 1.001; k += 0.1) { all++; if (dUp(E[0] + k * (W[0] - E[0]), E[1] + k * (W[1] - E[1])) < wU - 0.5 * wF) hid++; }
+        all++; if (dUp((W[0] + T[0]) / 2, (W[1] + T[1]) / 2) < wU - 0.5 * wF) hid++;
+        if (MOTION_DEBUG.on) MOTION_DEBUG.max(`${s.id} forearm hidden ${sd}`, hid / all, frames[i].F);
+        if (hid / all < 0.66) { run = []; continue; } run.push(i);
+        if (run.length === 6) note(`${s.id}|${name}|forearm|${sd}`, { shot: s.id, who: name, what: "" }, frames[run[0]].F);
+        if (run.length >= 6) note(`${s.id}|${name}|forearm|${sd}`, { shot: s.id, who: name, what: `${name}'s ${sd === "L" ? "left" : "right"} forearm lies hidden behind his upper arm (${Math.round((100 * hid) / all)} % of it): the hand seems to grow out of his shoulder` }, frames[i].F); } }
     // ---- the things ----
     for (let i = 1; i < frames.length; i++) { const A = frames[i - 1], B = frames[i], F = B.F, tA = A.things.get("")!, tB = B.things.get("")!;
       for (const n of tA.names) if (!tB.names.has(n) && !B.downs.has(n) && !A.downs.has(n)) note(`${s.id}|gone|${n}`, { shot: s.id, who: n, what: `the ${n} is there on one frame and gone on the next, with nobody taking it` }, F);

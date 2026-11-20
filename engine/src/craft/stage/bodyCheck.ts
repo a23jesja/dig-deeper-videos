@@ -111,7 +111,7 @@ export const pickAt = (film: Film, frame: number, x: number, y: number) => {
     return { d: +h.distance.toFixed(2), colour: mat?.color ? `#${mat.color.getHexString()}` : "?", geo: m.geometry?.type, size: [z.x, z.y, z.z].map((v) => +v.toFixed(2)), at: [c.x, c.y, c.z].map((v) => +v.toFixed(2)), names, inThings: (() => { for (let p: THREE.Object3D | null = m; p; p = p.parent) if (p === g) return true; return false; })() }; }) };
 };
 
-export type BodyFault = { shot: string; who: string; what: string; f0: number; f1: number; deep: number; kind: "solid" | "held" | "figure" | "floor" | "slide" | "pose" };
+export type BodyFault = { shot: string; who: string; what: string; f0: number; f1: number; deep: number; kind: "solid" | "held" | "figure" | "floor" | "slide" | "pose" | "thing" };
 
 /** the faults of a film (all of them, every frame unless `every` > 1), and how much was tried */
 export const bodyCheck = (film: Film, opt: { every?: number; shots?: string[] } = {}) => {
@@ -162,6 +162,19 @@ export const bodyCheck = (film: Film, opt: { every?: number; shots?: string[] } 
         if (m.geometry.type === "PlaneGeometry" || m.geometry.type === "ShapeGeometry" || m.geometry.type === "BufferGeometry") return;
         const b = obOf(m); if (b && Math.max(...b.aabb.getSize(new THREE.Vector3()).toArray()) >= 0.4) moving.push(b); });
       const solids = [...base, ...fixed, ...moving].filter((o) => !o.aabb.containsPoint(C));
+      // ---- a thing against a solid (the review of the shot library's round 3: the falling bottle's corner sank into the stool's rim, 06
+      //      frames 32-34; only figures were tried against things). Every thing of the shot that moves, held or not, small too, against the
+      //      set, what the shot leaves standing and the other things that move: a point of it more than 1 cm inside one, where the lens sees ----
+      { const inside = (o: THREE.Object3D, r: THREE.Object3D) => { for (let p: THREE.Object3D | null = o; p; p = p.parent) if (p === r) return true; return false; };
+        const loose: { m: THREE.Mesh; root: THREE.Object3D; name: string; held: boolean }[] = [];
+        th.g.traverse((o) => { const m = o as THREE.Mesh; if (!m.isMesh || carried.has(m.uuid) || !/^(Box|Cylinder|Sphere|Lathe|Extrude|Capsule|Cone)Geometry$/.test(m.geometry.type) || !obOf(m)) return;
+          const { g: gu, c } = placeOf(m); if (fixed.some((f) => f.geo.uuid === gu && f.aabb.getCenter(new THREE.Vector3()).distanceTo(c) < 0.05)) return;
+          let r: THREE.Object3D = m; while (r.parent && r.parent !== th.g) r = r.parent; const h = holderOf(m, th.heldBy);
+          loose.push({ m, root: r, name: nameOf(m) || r.name || "thing", held: !!h && h !== "worn" }); });
+        for (const L of loose) { const bb = new THREE.Box3().setFromObject(L.m).expandByScalar(0.01), pos = L.m.geometry.getAttribute("position"), step = Math.max(1, Math.floor(pos.count / 400));
+          for (const o of [...base, ...fixed, ...moving].filter((q) => q.aabb.intersectsBox(bb) && !inside(q.mesh, L.root) && !q.aabb.containsPoint(C))) { let deep = 0;
+            for (let i = 0; i < pos.count; i += step) { const p = new THREE.Vector3(pos.getX(i), pos.getY(i), pos.getZ(i)).applyMatrix4(L.m.matrixWorld); if (!o.aabb.containsPoint(p) || !seen(p)) continue; deep = Math.max(deep, -dist(o, p, 0.02)); }
+            if (deep > 0.01) note(`${s.id}|thing|${L.root.uuid}|${o.mesh.uuid}`, { shot: s.id, who: L.name, kind: "thing", what: `the ${L.name}${L.held ? " in a hand" : ""} goes ${(deep * 100).toFixed(1)} cm into ${describe(o)}` }, F, deep); } } }
       const carriedNow: Ob[] = []; th.g.traverse((o) => { const m = o as THREE.Mesh; if (!m.isMesh || !carried.has(m.uuid)) return; const b = obOf(m); if (b) carriedNow.push(b); });
       const bodies = Object.values(st).map((a) => { const sc = a.h / 1.8, J = (j: Joint | [Joint, Joint, number]) => { if (typeof j === "string") return new THREE.Vector3(...a.joint(j)); const [x, y, k] = j; return new THREE.Vector3(...a.joint(x)).lerp(new THREE.Vector3(...a.joint(y)), k); };
         const headL = new THREE.Vector3(...a.joint("crown")).distanceTo(new THREE.Vector3(...a.joint("skull")));

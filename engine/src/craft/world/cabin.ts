@@ -65,7 +65,9 @@ export const cabin = (o: { rich?: boolean; door?: number } = {}) => {
   // the table with a chart, a bottle and the lantern
   const tb = table(1.3, 0.8, 0.76); tb.position.set(...CABIN.table); tb.userData.gloss = true; g.add(tb);
   g.add(mesh(box(0.6, 0.006, 0.42), "#efe2bc", { at: [CABIN.table[0] - 0.2, 0.765, CABIN.table[2] + 0.05], rot: [0, 0.2, 0], line: 0.4, shadow: false }));
-  g.add(mesh(cyl(0.035, 0.045, 0.22, 10), "#3f6a3a", { at: [CABIN.table[0] - 0.45, 0.87, CABIN.table[2] - 0.15], line: 0.5 }));
+  // (named: seen past a head it shows as a thin green sliver standing up behind the chin, the shot library's 08; a shot whose lens puts it
+  //  behind a head leaves it out, Shot.hide "table bottle")
+  const bottle = mesh(cyl(0.035, 0.045, 0.22, 10), "#3f6a3a", { at: [CABIN.table[0] - 0.45, 0.87, CABIN.table[2] - 0.15], line: 0.5 }); bottle.name = "table bottle"; g.add(bottle); g.userData.named = [bottle];
   const [fx, fy, fz] = CABIN.flame;
   g.add(mesh(box(0.16, 0.02, 0.16), "#2b2a33", { at: [fx, 0.77, fz], line: 0.5 }), mesh(box(0.14, 0.2, 0.14), "#ffe7a8", { at: [fx, 0.88, fz], line: 0.6, shadow: false }), mesh(box(0.17, 0.03, 0.17), "#2b2a33", { at: [fx, 0.99, fz], line: 0.5 }),
     mesh(cyl(0.012, 0.012, 0.05, 8), "#fbf3df", { at: [fx, fy - 0.08, fz], line: 0, shadow: false }), mesh(ball(0.02, 8), "#ffb040", { at: [fx, fy - 0.04, fz], line: 0, shadow: false }));
@@ -110,7 +112,7 @@ export const CABIN_NIGHT = { hang: [0.24, 2.02, 0.99] as V3, moon: [-1.5, 3.6, -
 //   (the moon stands high over the stern, so that its shafts fall steeply and reach the floor at the table's front edge, behind whoever
 //   stands before it: lower, they slanted over the figures and laid a blue haze on them; higher, the table hid them)
 export const cabinNight = (light: Sun, o: { sea?: TexImageSource; door?: number } = {}) => {
-  const root = new THREE.Group(), c = cabin({ rich: true, door: o.door }); c.position.set(...CABIN.at); root.add(c);
+  const root = new THREE.Group(), c = cabin({ rich: true, door: o.door }); c.position.set(...CABIN.at); root.add(c); root.userData.named = [...((c.userData.named as THREE.Object3D[]) ?? [])];
   const W = (p: V3) => inCabin(p) as V3, y = CABIN.at[1], zb = CABIN.at[2] - CABIN.d / 2 - 2.6;
   // beyond the windows: the painted night sea (or a plain night blue without a picture)
   const sea = new THREE.MeshBasicMaterial({ color: o.sea ? "#ffffff" : "#16305e", toneMapped: false });

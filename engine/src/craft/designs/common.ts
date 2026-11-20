@@ -18,6 +18,12 @@ export type FigOpts = { who?: Who; face?: Face; handL?: HandKind; handR?: HandKi
   pipeHold?: boolean;
   /** proof cases only: a pipe drawn wrong on purpose ("gone" not drawn, "loose" its bowl beside the cheek with no stem, "fade" half see-through) */
   pipeFault?: "gone" | "loose" | "fade";
+  /** true = the ears as they were drawn before 20 Nov: each ear behind the head or on top of it, switched in one frame as the head turns,
+   *  so that the near ear hid and then showed whole from one frame to the next (the shot library's 03 frame 31; the proof's planted fault) */
+  earPop?: boolean;
+  /** true = the upper arm drawn over the forearm always, as before 20 Nov (the shot library's 06: the forearm raised before the chest hid
+   *  behind the upper arm; the proof's planted fault) */
+  foreUnder?: boolean;
   /** the figure drawn as its mirror image or not, fixed for the whole shot (film.ts castOf): turning across the angle where the mirror
    *  changes, the head was redrawn the other way round between two frames */
   mirror?: boolean };

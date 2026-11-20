@@ -73,14 +73,16 @@ const plantFix = (P: Props, pose: Pose, sp: Spot, cam: number[], mpu: number): {
 };
 /** a figure of the cast. tilt (0..1) leans the card back toward a camera that looks down on it */
 export const figureCard = (D: Design, pose0: Pose, o: FigOpts, sp0: Spot, cam: number[], tilt = 0, seen?: Seen): Placed & { /** where a joint of the skeleton is in the world (to put a real thing in a hand) */ joint: (j: Joint) => [number, number, number];
-  /** where a place the drawing noted ("eyeA", "eyeB": the two eyes) is in the world; null if it is not in this view */ mark: (name: string) => [number, number, number] | null } => {
+  /** where a place the drawing noted ("eyeA", "eyeB": the two eyes) is in the world; null if it is not in this view */ mark: (name: string) => [number, number, number] | null;
+  /** a number the drawing noted ("earA", "earB": how much of each ear shows, 0..1) */ val: (name: string) => number | null } => {
   const P = D.props(o.who ?? "sir"), T = bodyH(P), s = 1.15, cw = Math.round(T * 1.9 * s), ch = Math.round(T * 1.42 * s), mpu0 = (sp0.h ?? 1.75) / T;
   const fx = plantFix(P, pose0, sp0, cam, mpu0), pose = fx.pose, mpu = fx.mpu, sp: Spot = { ...sp0, at: fx.at };
   const sk0 = solve(P, pose, sp.heading - Math.atan2(cam[0] - sp.at[0], cam[2] - sp.at[2]) / D2R);
   let ink: Ink | null = null;
   const pl = place(`${D.id}:${sp.at.join()}:${cam.join()}`, cw, ch, 0.93, s, mpu, sp, cam, tilt, (g, yaw) => { ink = new Ink(g, lineFor(D.ol, mpu0, sp0.at, cam, seen)); D.draw(ink, solve(P, pose, yaw), o); }, seen);
   const marks = (ink as Ink | null)?.marks ?? {}; lightRef(pl.mesh, pl.world(sk0.j.skull[0] + 0.22 * (sk0.j.crown[0] - sk0.j.skull[0]), sk0.j.skull[1] + 0.22 * (sk0.j.crown[1] - sk0.j.skull[1])));      // (low in the face, a fifth of the way from the jaw to the crown: there the light at the face is the cabin v5 tone, measured)
-  return { ...pl, joint: (j) => pl.world(sk0.j[j][0], sk0.j[j][1]), mark: (name) => { const m = marks[name]; return m ? pl.world((m[0] - cw / 2) / s, (m[1] - ch * 0.93) / s) : null; } };
+  const vals = (ink as Ink | null)?.vals ?? {};
+  return { ...pl, joint: (j) => pl.world(sk0.j[j][0], sk0.j[j][1]), mark: (name) => { const m = marks[name]; return m ? pl.world((m[0] - cw / 2) / s, (m[1] - ch * 0.93) / s) : null; }, val: (name) => vals[name] ?? null };
 };
 /** The closed fingers of a figure's hands (`sides`) on a card of their own, exactly where the figure's hands are. The stage puts it a
  *  little nearer the lens than the thing the hand holds, so that the thing lies between the palm (on the figure's card) and the

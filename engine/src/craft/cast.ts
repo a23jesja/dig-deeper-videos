@@ -209,7 +209,23 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
   const tipBehind = L.pipe && o.pipeHold === false ? p3(h, a * 1.12, b * 0.86 + a * 0.5).d < -0.15 * b : false;      // (the pipe now always in front: see pipe)
   if (tipBehind) pipe();
   if (away) { mousHalf(-1); mousHalf(1); }
-  for (const e of ears) if (Math.abs(e.e.d) < 0.55 * a) e.draw();
+  // (the ears: each behind the skull, where only what sticks out past its outline shows. The near ear comes round onto the side of the head
+  //  as it turns, shown on top from its outer edge inward over 9-33 degrees of turn, so that it glides out from behind the outline. Before,
+  //  it was switched from behind the head to on top in one frame at 33 degrees, hidden on one frame and whole on the next: the shot
+  //  library's 03, frame 31. How much of each ear shows is noted for the checks, "earA" and "earB": motionCheck's ear test)
+  type Ear = (typeof ears)[number];
+  const sstep = (e0: number, e1: number, x: number) => { const q = Math.max(0, Math.min(1, (x - e0) / (e1 - e0))); return q * q * (3 - 2 * q); };
+  /** how far the ear has come round on top (0 = all behind the skull, 1 = whole on top) */
+  const earGrow = (e: Ear) => (o.earPop ? (Math.abs(e.e.d) >= 0.55 * a && e.e.d > 0 ? 1 : 0) : e.e.d > 0 ? sstep(0.15, 0.55, Math.abs(h.sin)) : 0);
+  const earBehind = (e: Ear) => (o.earPop ? Math.abs(e.e.d) < 0.55 * a : earGrow(e) < 1 && (e.e.d > 0 || Math.abs(e.e.d) < 0.55 * a));
+  /** the part of the ear on top: an ellipse from its outer edge inward, as wide as the turn has brought it round */
+  const earTop = (e: Ear) => { const k2 = earGrow(e), ox = Math.sign(e.e.x) || 1, rx = 0.17 * a * k2; return { k2, cx: e.e.x + ox * (0.17 * a - rx), rx }; };
+  ears.forEach((e, n) => { const T = earTop(e), behind = earBehind(e); let seen = 0, all = 0;
+    for (let i = -3; i <= 3; i++) for (let j = -2; j <= 2; j++) { if ((i / 3.5) ** 2 + (j / 2.5) ** 2 > 1) continue; const p: P2 = [e.e.x + (i / 3) * 0.17 * a, -0.5 * H + (j / 2) * 0.12 * H]; all++;
+      const onTop = T.k2 >= 1 || (T.rx > 0 && ((p[0] - T.cx) / T.rx) ** 2 + ((p[1] + 0.5 * H) / (0.12 * H)) ** 2 <= 1);
+      if (onTop || (behind && !within(skull, p))) seen++; }
+    k.val(n ? "earB" : "earA", seen / all); });
+  for (const e of ears) if (earBehind(e)) e.draw();
   // the peak of the cap hides behind the head when he faces away
   if (HAT === "cap") capDraw(k, L, h, o.capLift ?? 0, away, "behind");
   // --- the skull, the hair on it ---
@@ -365,7 +381,7 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
       monocle();
     }
   }
-  for (const e of ears) if (Math.abs(e.e.d) >= 0.55 * a && e.e.d > 0 && !STYLE.simple) e.draw();
+  for (const e of ears) { const T = earTop(e); if (STYLE.simple || T.k2 <= 0) continue; if (T.k2 >= 1) e.draw(); else if (T.rx > 0.01 * a) piece(k, ellPts(T.cx, -0.5 * H, T.rx, 0.12 * H), skinD); }
   // --- what sits on the head ---
   if (HAT === "cap") {
     capDraw(k, L, h, o.capLift ?? 0, away, "front");
@@ -527,14 +543,21 @@ const drawTrue = (L: Look) => (k: Ink, sk: Sk, o: FigOpts) => {
     const hs = () => hand(k, W, len(sub(T, W)) > 6 ? angle(W, T) : angle(E, W), P.hand, kind, L.skin, thumbFlip(sk, s), false, k.ol);
     if (o.prop === "loaf" && s === "L") loaf(k, mid(W, T, 0.9), P.hand * 0.62);
     if (o.prop === "cane" && s === "R") { const g = mid(W, T, 0.45); cane(k, g, W[1] < sk.j.pelvis[1] ? add(g, unit(sub(W, E)), P.fore * 1.4) : [g[0] + 14 * d, 0], 9); }
+    // (the upper arm is drawn over the forearm, except where the forearm comes toward the lens from the elbow: then the forearm and the
+    //  hand lie over the upper arm. Drawn under it always, a forearm raised before the chest or a hand on the chest vanished behind the
+    //  upper arm and the hand seemed to grow out of the shoulder: the shot library's 06 frames 44-119. foreUnder = as before, the proof's
+    //  planted fault)
+    const foreTop = !o.foreUnder && sk.z[`wr${s}`] - sk.z[`el${s}`] > 0.25 * P.fore; k.val(`foreTop${s}`, foreTop ? 1 : 0);
+    const up = () => { const upper = seg(Sh, E, L.arm[0], L.arm[1]); piece(k, upper, col, long && L.weave ? Sh : undefined); if (long) woven(Sh, E, L.arm[0], L.arm[1], upper);
+      if (!long) piece(k, seg(Sh, mid(Sh, E, 0.5), L.arm[0] + 6, L.arm[0] + 4), L.coat);
+      if (L.armour) piece(k, seg(add(Sh, [0, -6]), mid(Sh, E, 0.32), L.arm[0] + 12, L.arm[0] + 10), "#b9c3cd"); };
+    if (foreTop) up();
     if (long && !L.armCol) piece(k, seg(mid(E, W, 0.84), mid(E, W, 1.05), L.arm[2] * 0.84, L.arm[2] * 0.84, 0, 0.3, true), CREAM);
     const cuff = () => { if (long && L.cuffs && !STYLE.simple) piece(k, seg(mid(E, W, 0.6), mid(E, W, 0.9), L.arm[2] + 7, L.arm[2] + 9, 0, 0.3, true), L.cuffs); };
     hs();
     const fore = seg(E, W, L.arm[1], L.arm[2], long ? 2 : 5); piece(k, fore, col, long && L.weave ? E : undefined); if (long) woven(E, W, L.arm[1], L.arm[2], fore);
     cuff();
-    const upper = seg(Sh, E, L.arm[0], L.arm[1]); piece(k, upper, col, long && L.weave ? Sh : undefined); if (long) woven(Sh, E, L.arm[0], L.arm[1], upper);
-    if (!long) piece(k, seg(Sh, mid(Sh, E, 0.5), L.arm[0] + 6, L.arm[0] + 4), L.coat);
-    if (L.armour) piece(k, seg(add(Sh, [0, -6]), mid(Sh, E, 0.32), L.arm[0] + 12, L.arm[0] + 10), "#b9c3cd");
+    if (!foreTop) up();
     if (L.wrap === s) { const wc = "#f6f2e6"; piece(k, seg(mid(E, W, 0.12), mid(E, W, 0.82), L.arm[1] + 4, L.arm[2] + 4, 2), wc); const dv = unit(sub(W, E)), pp: P2 = [-dv[1], dv[0]]; for (const u of [0.25, 0.4, 0.55, 0.7]) { const m = mid(E, W, u), w0 = L.arm[1] + 3; k.line([add(add(m, pp, -w0), dv, -4), add(add(m, pp, w0), dv, 4)], k.ol * 0.45, "#bdb5a2"); } }
     if (L.manica === s) { const mc = "#efe6cf", band = (A0: P2, B0: P2, wa: number, wb: number) => { piece(k, seg(A0, B0, wa, wb, 2), mc); const dv = unit(sub(B0, A0)), pp: P2 = [-dv[1], dv[0]]; for (const u of [0.2, 0.4, 0.6, 0.8]) { const m = mid(A0, B0, u), w0 = (wa + (wb - wa) * u) * 0.95; k.line([add(m, pp, -w0), add(m, pp, w0)], k.ol * 0.55); } };
       band(mid(E, W, 0.02), mid(E, W, 0.9), L.arm[1] + 5, L.arm[2] + 5); band(Sh, E, L.arm[0] + 5, L.arm[1] + 5); }

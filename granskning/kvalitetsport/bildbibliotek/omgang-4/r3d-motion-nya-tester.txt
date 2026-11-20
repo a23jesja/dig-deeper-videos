@@ -1,0 +1,10 @@
+stand-and-talk frames 12-111 (film 0.40-3.73 s): sir's first ear goes from showing (100 % of it) to hidden (0 %) in one frame while his head turns 0.3 degrees: it pops out
+stand-and-talk frames 19-98 (film 0.63-3.30 s): sir's right forearm lies hidden behind his upper arm (90 % of it): the hand seems to grow out of his shoulder
+turn-and-look frames 271-271 (film 9.03-9.07 s): sir's second ear goes from hidden (0 % of it) to showing (100 %) in one frame while his head turns 1.4 degrees: it pops in
+react frames 630-640 (film 21.00-21.37 s): the thing jerks: its turn changes by 34.4 degrees in one frame, with no hand on it
+react frames 636-636 (film 21.20-21.23 s): sir's second ear goes from hidden (3 % of it) to showing (100 %) in one frame while his head turns 4.3 degrees: it pops in
+react frames 645-719 (film 21.50-24.00 s): sir's left forearm lies hidden behind his upper arm (100 % of it): the hand seems to grow out of his shoulder
+open-a-door frames 763-763 (film 25.43-25.47 s): the door he lets go of jerks: its turn changes by 4.8 degrees in one frame
+open-a-door frames 763-766 (film 25.43-25.57 s): the door slides out from under sir's right hand as he lets go: 1 frame after, it moves 0.4 % of his height a frame against the hand still on it (a thing let go parts from the hand gently)
+sit frames 885-909 (film 29.50-30.33 s): sir's right forearm lies hidden behind his upper arm (100 % of it): the hand seems to grow out of his shoulder
+MOTION CHECK FAILED for shot-library-r3d: 9 faults

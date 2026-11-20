@@ -39,7 +39,7 @@ Enligt "Impossible things: zero tolerance" i DAILY-RULES.md (Jesper 18 november 
 | 32 | Bildbiblioteket omgång 2 (e69306a) | 04 ruta 15–16 | Boken rycker 4 grader på en ruta | granskningen | 5 | motionCheck `jerk` för saker; proof AB |
 | 33 | Bildbiblioteket omgång 2 (e69306a) | 06 ruta 33–34 | Kroppen rycks igång utan mjuk ingång | granskningen | 5 | motionCheck `jerk` för kropp och händer; proof AC |
 | 34 | Bildbiblioteket omgång 2 (e69306a) | 03, 05 | Blicken rakt ut fast målet ligger lågt | granskningen | 5 | motionCheck `gazeY`; proof AD |
-| 35 | Bildbiblioteket omgång 2 (e69306a) | 02, 05 | Pipans huvud svävar bredvid ansiktet nära profil | den oberoende agenten | 5 | pipan tonas ut; motionCheck `pipefade` om huvudet hålls där; proof AE |
+| 35 | Bildbiblioteket omgång 2 (e69306a) | 02, 05 | Pipans huvud svävar bredvid ansiktet nära profil | den oberoende agenten | 5 | pipan ritas alltid från mungipan, framför hakan nära profil; motionCheck `pipe-held` (borta, utan skaft, halvgenomskinlig); proof AE, AG, AH |
 
 ## Kodkontrollen mot listan (18 november, kroppskontrollen `film_info.mjs <film> body`)
 Kontrollen körd på de levererade filernas kod (9eeae2b; öppning a omgång 2 på 5f36d8a). Utskriften rad för rad finns i `granskning/body-check/`, med en tabell i README.md där.

@@ -1,0 +1,37 @@
+B-arm-locked-straight-out frames 61-119 (film 2.03-4.00 s): sir is cut by the picture's edge while he is not walking in or out (the figure in the picture from the first frame)
+B-arm-locked-straight-out frames 60-60 (film 2.00-2.03 s): sir is cut by the picture's edge on the shot's first frame
+B-arm-locked-straight-out frames 60-119 (film 2.00-4.00 s): sir's right arm is held straight out at shoulder height (bent 0 degrees, 90 up from hanging) for half a second while he does not look at his hand
+Q-pose-for-one-frame frames 990-990 (film 33.00-33.03 s): sir's elL goes 72 px and comes back the next frame: a pose that stands for one frame
+Q-pose-for-one-frame frames 990-991 (film 33.00-33.07 s): sir's elL leaps 72 px in one frame (7 % of his height)
+Q-pose-for-one-frame frames 990-990 (film 33.00-33.03 s): sir's wrL goes 256 px and comes back the next frame: a pose that stands for one frame
+Q-pose-for-one-frame frames 990-991 (film 33.00-33.07 s): sir's wrL leaps 256 px in one frame (25 % of his height)
+Q-pose-for-one-frame frames 990-990 (film 33.00-33.03 s): sir's tipL goes 389 px and comes back the next frame: a pose that stands for one frame
+Q-pose-for-one-frame frames 990-991 (film 33.00-33.07 s): sir's tipL leaps 389 px in one frame (37 % of his height)
+Q-pose-for-one-frame frames 990-990 (film 33.00-33.03 s): sir's elR goes 72 px and comes back the next frame: a pose that stands for one frame
+Q-pose-for-one-frame frames 990-991 (film 33.00-33.07 s): sir's elR leaps 72 px in one frame (7 % of his height)
+Q-pose-for-one-frame frames 990-990 (film 33.00-33.03 s): sir's wrR goes 256 px and comes back the next frame: a pose that stands for one frame
+Q-pose-for-one-frame frames 990-991 (film 33.00-33.07 s): sir's wrR leaps 256 px in one frame (25 % of his height)
+Q-pose-for-one-frame frames 990-990 (film 33.00-33.03 s): sir's tipR goes 389 px and comes back the next frame: a pose that stands for one frame
+Q-pose-for-one-frame frames 990-991 (film 33.00-33.07 s): sir's tipR leaps 389 px in one frame (37 % of his height)
+Q-pose-for-one-frame frames 990-992 (film 33.00-33.10 s): sir's hand jerks: his wrL's movement changes by 24.6 % of his height in one frame from a standstill or to one, with no easing in or out
+R-head-turns-in-one-frame frames 1050-1050 (film 35.00-35.03 s): sir's head is drawn 40 degrees turned from one frame to the next (a head turns 12 or less a frame)
+S-shakes-every-other-frame frames 1102-1139 (film 36.73-38.00 s): sir shakes: his head goes back and forth every frame or two (4 turns in ten frames)
+S-shakes-every-other-frame frames 1095-1139 (film 36.50-38.00 s): sir's body jerks: his neck's movement changes by 0.9 % of his height in one frame from a standstill or to one, with no easing in or out
+T-pipe-in-open-mouth frames 1140-1199 (film 38.00-40.00 s): sir's pipe has its bowl beside his face with no stem to the corner of his mouth
+T-pipe-in-open-mouth frames 1141-1199 (film 38.03-40.00 s): sir's pipe hangs in an open mouth
+U-looks-at-the-lens frames 1201-1259 (film 40.03-42.00 s): sir looks 146 degrees away from what he looks at (a point behind him)
+U-looks-at-the-lens frames 1201-1259 (film 40.03-42.00 s): sir's eyes do not turn toward what he looks at (a point behind him): in the picture they look straight out, at the lens
+V-cut-by-the-edge frames 1261-1319 (film 42.03-44.00 s): sir is cut by the picture's edge while he is not walking in or out (the figure in the picture from the first frame)
+V-cut-by-the-edge frames 1260-1260 (film 42.00-42.03 s): sir is cut by the picture's edge on the shot's first frame
+X-lantern-gone frames 1410-1410 (film 47.00-47.03 s): the lantern is there on one frame and gone on the next, with nobody taking it
+Y-head-in-bare-profile frames 1440-1499 (film 48.00-50.00 s): sir's head is drawn 83 degrees turned from the lens: in profile or from behind, an angle the rig must not draw (the face turned toward us within 60 degrees)
+Z-hand-in-the-air frames 1500-1559 (film 50.00-52.00 s): sir's right hand rests on nothing: open and still for 0.7 s, 15 cm off his thighs, above the seat, holding nothing
+AA-arm-out-eyes-elsewhere frames 1560-1619 (film 52.00-54.00 s): sir's right arm is held straight out at shoulder height (bent 2 degrees, 51 up from hanging) for half a second while he does not look at his hand
+AB-thing-jerks-in-the-hand frames 1650-1651 (film 55.00-55.07 s): the wooden sword in the hand jerks: its turn changes by 5.0 degrees in one frame
+AC-start-with-no-easing frames 1723-1723 (film 57.43-57.47 s): sir's hand jerks: his wrL's movement changes by 2.1 % of his height in one frame from a standstill or to one, with no easing in or out
+AD-looks-out-not-down frames 1740-1799 (film 58.00-60.00 s): sir looks straight out while what he looks at (the box on the floor in front of him) is 51 degrees below his eyes
+AE-pipe-half-faded frames 1800-1859 (film 60.00-62.00 s): sir's pipe stands half see-through
+AG-pipe-gone-at-90 frames 1920-1979 (film 64.00-66.00 s): sir's pipe is gone from his mouth
+AH-bowl-without-stem frames 1980-2039 (film 66.00-68.00 s): sir's pipe has its bowl beside his face with no stem to the corner of his mouth
+AC2-hard-start-soft-stop frames 2071-2071 (film 69.03-69.07 s): sir's body jerks: his skull's movement changes by 0.4 % of his height in one frame from a standstill or to one, with no easing in or out
+MOTION CHECK FAILED for proof-faults: 36 faults

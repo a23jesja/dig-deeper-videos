@@ -124,9 +124,20 @@ add("AC-start-with-no-easing", (t) => [sir({ lean: -8 * lin(t), armL: mixS(POSES
 //     straight out (03 and 05: the bottle on the stool)
 const BOXF = mesh(box(0.3, 0.2, 0.3), "#6a4a2a", { at: [0, 0.1, 1.0] });
 add("AD-looks-out-not-down", sir({}), (g) => { g.add(BOXF); }, { look: { sir: { at: [0, 0.1, 1.0], what: "the box on the floor in front of him" } } });
-// AE. A PIPE LEFT HALF SEE-THROUGH: he stands turned 70 degrees, where the pipe on the far side of his face fades out
-add("AE-pipe-half-faded", sir({}, 70));
+// AE. A PIPE LEFT HALF SEE-THROUGH: he stands turned 70 degrees with the pipe drawn half see-through (as step 1 faded it near profile)
+add("AE-pipe-half-faded", { ...sir({}, 70), o: { handL: "relaxed", handR: "relaxed", pipeFault: "fade" } });
 // AF. CONTROL for AA: the same arm out, and his eyes on his hand. The checks must pass it
 add("AF-control-arm-out-looks-at-it", { ...sir({ armR: [[-6, 52], [-4, 50]] }), o: { handL: "relaxed", handR: "point", face: { gaze: [-1, 0] } } });
+
+// AG-AH and AC2 (the review of step 1). AG. THE PIPE GONE: he stands turned 90 degrees (drawn 56, the most the rig may hold), the pipe
+//     not drawn, as step 1 faded it out there. AH. A BOWL WITH NO STEM: three quarters, the bowl beside his cheek and no stem to his mouth
+//     (08 frame 45 of e69306a)
+add("AG-pipe-gone-at-90", { ...sir({}, 90), o: { handL: "relaxed", handR: "relaxed", pipeFault: "gone" } });
+add("AH-bowl-without-stem", { ...sir({}, 40), o: { handL: "relaxed", handR: "relaxed", pipeFault: "loose" } });
+// AC2. A START AT FULL SPEED THAT STOPS SOFTLY: still, then from the 30th frame both hands up and the body back, fastest on the first frame
+//     and easing out over 0.6 s, seen from three quarters (60 degrees: facing the lens, hands raised forward and a lean back go toward the
+//     lens and hardly move in the picture). The jerk test must stop it on the frame it starts
+const easeOut = (t: number) => { const u = Math.min(1, Math.max(0, (t - 1) / 0.6)); return 1 - (1 - u) * (1 - u); };
+add("AC2-hard-start-soft-stop", (t) => [sir({ lean: -8 * easeOut(t), armL: mixS(POSES.stand.armL as [[number, number], [number, number]], UPA, easeOut(t)), armR: mixS(POSES.stand.armR as [[number, number], [number, number]], UPA, easeOut(t)) }, 60)]);
 
 export const PROOF_FAULTS: Film = { id: "proof-faults", fps: 30, seconds: shots.length * LEN, range: [0, 999], sky: "#9cc8f0", world, shots, words: [], hook: { text: [], a: 0, b: 0 }, light: dayLight(DAY.from, [0, 1, 0]) };

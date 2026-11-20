@@ -82,6 +82,8 @@ export const PROOF_FAULTS_FRAMES = Math.round(PROOF_FAULTS.seconds * PROOF_FAULT
 import { SHOT_LIBRARY } from "./shotLibrary";
 export const ShotLibrary: React.FC = () => <Stage film={SHOT_LIBRARY} />;
 export const SHOT_LIBRARY_FRAMES = Math.round(SHOT_LIBRARY.seconds * SHOT_LIBRARY.fps);
-import { HEAD_SHEET } from "./headSheet";
+import { HEAD_SHEET, HEAD_TURN } from "./headSheet";
 export const HeadSheet: React.FC = () => <Stage film={HEAD_SHEET} />;
 export const HEAD_SHEET_FRAMES = Math.round(HEAD_SHEET.seconds * HEAD_SHEET.fps);
+export const HeadTurn: React.FC = () => <Stage film={HEAD_TURN} />;
+export const HEAD_TURN_FRAMES = Math.round(HEAD_TURN.seconds * HEAD_TURN.fps);

@@ -26,7 +26,7 @@ if (typeof globalThis.document === "undefined") {
   globalThis.document = { createElement: () => { const g = context(); return { width: 300, height: 150, style: {}, getContext: () => g, toDataURL: () => "", addEventListener() {} }; }, createElementNS: () => ({ style: {} }) };
   globalThis.Path2D = class { constructor() { return quiet({}); } };
 }
-const { FILMS, captions, auditGrips, occlusions, textOver, bodyCheck, bodyLines, pickAt, stageAt, motionCheck, motionLines, MOTION_DEBUG } = await import(pathToFileURL(tmp).href); fs.rmSync(tmp, { force: true });
+const { FILMS, captions, auditGrips, occlusions, textOver, bodyCheck, bodyLines, pickAt, stageAt, motionCheck, motionLines, MOTION_DEBUG, picsAt } = await import(pathToFileURL(tmp).href); fs.rmSync(tmp, { force: true });
 if (!FILMS[name]) { console.error(`no film named ${name}; there are: ${Object.keys(FILMS).join(", ")}`); process.exit(1); }
 const { film, comp } = FILMS[name], f = (t) => Math.round(t * film.fps);
 const rows = film.shots.map((s) => ({ id: s.id, a: f(s.a), b: f(s.b), still: Math.min(f(s.b) - 1, f(s.a + (s.still ?? (s.b - s.a) / 2))), seconds: +(s.b - s.a).toFixed(2) }));
@@ -101,6 +101,7 @@ else if (what === "motion") { const only = process.argv[4]?.split(","); MOTION_D
 // pose <frame,frame,...> [name] = each figure's heading, view angle and the pose's head, twist and lean on those frames
 else if (what === "pose") { const who = process.argv[5]; for (const F of process.argv[4].split(",").map(Number)) { const T = F / film.fps, s = film.shots.find((q) => T >= q.a - 1e-6 && T < q.b) ?? film.shots.at(-1), t = Math.max(0, T - s.a), cam = s.cam(t, t / (s.b - s.a));
   for (const a of s.cast(t, s.a + t)) { if (who && a.name !== who) continue; const az = (Math.atan2(cam.pos[0] - a.at[0], cam.pos[2] - a.at[2]) * 180) / Math.PI; console.log(`${F} ${s.id} ${a.name} heading ${a.heading.toFixed(1)} yaw ${(a.heading - az).toFixed(1)} head ${JSON.stringify(a.pose.head?.map((x) => +x.toFixed(1)))} twist ${(a.pose.twist ?? 0).toFixed(1)} lean ${(a.pose.lean ?? 0).toFixed(1)} roll ${(a.pose.roll ?? 0).toFixed(2)} mouth ${(a.o.face?.mouth ?? 0).toFixed(2)}`); } } }
+else if (what === "pics") { for (const F of process.argv[4].split(",").map(Number)) console.log(JSON.stringify({ F, figs: picsAt(film, F) })); }
 else if (what === "pick") { const [F, x, y] = process.argv.slice(4).map(Number); console.log(JSON.stringify(pickAt(film, F, x, y), null, 1)); }
 else if (what === "grips") {
   const { bad, held, spots } = auditGrips(film, process.argv[4] === "tenths" ? 0.1 : undefined);

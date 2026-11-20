@@ -2,7 +2,7 @@
 // shadow. The card is drawn for the angle it is seen from: `heading` is the way the figure faces in the world, so a figure walking
 // away from the camera is drawn from behind and one crossing the picture from the side.
 import * as THREE from "three";
-import { card, outlinePx } from "./kit";
+import { card, outlinePx, lightRef } from "./kit";
 import { Ink } from "../ink";
 import { solve, Pose, Props, Joint } from "../rig";
 import type { Design, FigOpts } from "../designs/common";
@@ -79,7 +79,7 @@ export const figureCard = (D: Design, pose0: Pose, o: FigOpts, sp0: Spot, cam: n
   const sk0 = solve(P, pose, sp.heading - Math.atan2(cam[0] - sp.at[0], cam[2] - sp.at[2]) / D2R);
   let ink: Ink | null = null;
   const pl = place(`${D.id}:${sp.at.join()}:${cam.join()}`, cw, ch, 0.93, s, mpu, sp, cam, tilt, (g, yaw) => { ink = new Ink(g, lineFor(D.ol, mpu0, sp0.at, cam, seen)); D.draw(ink, solve(P, pose, yaw), o); }, seen);
-  const marks = (ink as Ink | null)?.marks ?? {};
+  const marks = (ink as Ink | null)?.marks ?? {}; lightRef(pl.mesh, pl.world(sk0.j.skull[0] + 0.22 * (sk0.j.crown[0] - sk0.j.skull[0]), sk0.j.skull[1] + 0.22 * (sk0.j.crown[1] - sk0.j.skull[1])));      // (low in the face, a fifth of the way from the jaw to the crown: there the light at the face is the cabin v5 tone, measured)
   return { ...pl, joint: (j) => pl.world(sk0.j[j][0], sk0.j[j][1]), mark: (name) => { const m = marks[name]; return m ? pl.world((m[0] - cw / 2) / s, (m[1] - ch * 0.93) / s) : null; } };
 };
 /** The closed fingers of a figure's hands (`sides`) on a card of their own, exactly where the figure's hands are. The stage puts it a
@@ -92,6 +92,7 @@ export const fingersCard = (D: Design, pose0: Pose, o: FigOpts, sp0: Spot, cam: 
   const fx = plantFix(P, pose0, sp0, cam, mpu0), pose = fx.pose, mpu = fx.mpu, sp: Spot = { ...sp0, at: fx.at };
   const kinds = whole ? { L: o.handL ?? "relaxed", R: o.handR ?? "relaxed" } : undefined;
   const pl = place(`${D.id}:fingers:${sides.join()}:${whole ? `${kinds!.L},${kinds!.R}` : ""}:${sp.at.join()}:${cam.join()}`, cw, ch, 0.93, s, mpu, sp, cam, 0, (g, yaw) => D.fingers!(new Ink(g, lineFor(D.ol, mpu, sp.at, cam, seen), 1.1), solve(P, pose, yaw), sides, kinds), seen);
+  { const skF = solve(P, pose, sp.heading - Math.atan2(cam[0] - sp.at[0], cam[2] - sp.at[2]) / D2R); lightRef(pl.mesh, pl.world(skF.j.skull[0] + 0.22 * (skF.j.crown[0] - skF.j.skull[0]), skF.j.skull[1] + 0.22 * (skF.j.crown[1] - skF.j.skull[1]))); }
   pl.mesh.castShadow = false; return pl.mesh;
 };
 /** a four-legged animal; h = height at the shoulder in metres. `collar` = where a chain meets its collar, in the world */

@@ -16,6 +16,8 @@ export type FigOpts = { who?: Who; face?: Face; handL?: HandKind; handR?: HandKi
   drape?: boolean;
   /** false = the pipe as it was before 20 Nov: its stem dropping with the jaw into an open mouth (the proof's planted fault) */
   pipeHold?: boolean;
+  /** proof cases only: a pipe drawn wrong on purpose ("gone" not drawn, "loose" its bowl beside the cheek with no stem, "fade" half see-through) */
+  pipeFault?: "gone" | "loose" | "fade";
   /** the figure drawn as its mirror image or not, fixed for the whole shot (film.ts castOf): turning across the angle where the mirror
    *  changes, the head was redrawn the other way round between two frames */
   mirror?: boolean };

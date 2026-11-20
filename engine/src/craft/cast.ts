@@ -183,28 +183,30 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
     //  false = as before, the stem dropping with the jaw in the open mouth (the proof's planted fault)
     if (!L.pipe) return; const old = o.pipeHold === false, r0 = at(h, 34, 0.72), t = old ? p3(h, a * 0.5 + a * 0.62, b * 0.86 + a * 0.5) : p3(h, a * 1.22, b * 0.6 + a * 0.14), y0 = yJaw - 0.01 * H + (old ? drop * 0.6 : 0), y1 = y0 + 0.11 * H;
     if (old && m > 0.04 && t.d > -0.15 * b) k.mark("pipeOpen", r0.x, y0);
-    // (the stem at least half a head wide in the picture, out the way it points: near profile, the turned head foreshortened it to a stub at
-    //  the face's edge and the bowl seemed to float beside the face, the review of round 2)
-    if (!old) { const dx = t.x - r0.x, need = 0.5 * a; if (Math.abs(dx) < need) t.x = r0.x + (dx === 0 ? 1 : Math.sign(dx)) * need; }
-    // (near profile, with the pipe on the far side of the face, it goes out of sight as the head turns: it fades out over a few degrees,
-    //  instead of its bowl hanging beside the face with the stem hidden by the head; the review of round 2)
-    const fade = old || phiDeg <= 0 ? 1 : Math.max(0, Math.min(1, (54 - phiDeg) / 5)); if (fade <= 0) return t.d;      // (near profile on its far side: drawn 49-54 degrees, the head truly 62-84 turned)
+    // (seen as the picture shows it, the stem always runs out from the corner of the mouth away from the face's middle, and at least half a
+    //  head wide: in the far corner near profile it sticks out in front of the chin, as a pipe does, instead of going behind the head. The
+    //  pipe faded out there in step 1, and before that its bowl floated beside the cheek with no stem: the review of step 1. It is drawn on
+    //  top, so it is held in the mouth at every angle the rig may draw, the same corner of the mouth all the way round)
+    if (!old) { const sx = Math.sign(r0.x - at(h, 0, 0.72).x) || 1, dx = t.x - r0.x, need = 0.55 * a; t.x = r0.x + sx * Math.max(need, Math.sign(dx) === sx ? Math.abs(dx) : 0); }
+    k.mark("pipeOn", r0.x, y0); const fault = o.pipeFault; if (fault === "gone") return t.d;
+    const fade = fault === "fade" ? 0.45 : 1;
     const a0 = k.g.globalAlpha; k.g.globalAlpha = a0 * fade;
     if (old) { piece(k, seg([r0.x, y0], [t.x, y1], 5 * u, 5 * u, 0, 0.3, true), "#3a2618"); piece(k, [[t.x - 15 * u, y1 - 34 * u], [t.x + 15 * u, y1 - 34 * u], [t.x + 12 * u, y1 + 7 * u], [t.x - 12 * u, y1 + 7 * u]], "#8a4f2a"); }
     else {
       // (a pipe, not a block: the stem dips from the lips and rises into the bowl's lower side; the bowl round at the bottom, its dark
       //  mouth showing at the top, a streak of shine. The upright brown trapezoid read as a tooth or a block under the moustache, round 2)
       const sx = Math.sign(t.x - r0.x) || 1, end: P2 = [t.x - sx * 8 * u, y1 + 1 * u], midP: P2 = [(r0.x + end[0]) / 2, Math.max(y0, end[1]) + 4 * u];
-      k.line(spline([[r0.x, y0], midP, end], false, 6), 7 * u, "#2a1a10", "round"); k.line(spline([[r0.x, y0], midP, end], false, 6), 4 * u, "#4a3020", "round");
+      if (fault === "loose") t.x = r0.x + sx * 0.9 * a;      // (the planted fault: the bowl beside the cheek, no stem)
+      else { k.line(spline([[r0.x, y0], midP, end], false, 6), 7 * u, "#2a1a10", "round"); k.line(spline([[r0.x, y0], midP, end], false, 6), 4 * u, "#4a3020", "round"); k.mark("pipeRoot", r0.x, y0); }
       const bowl = spline([[t.x - 13 * u, y1 - 30 * u], [t.x + 13 * u, y1 - 30 * u], [t.x + 13 * u, y1 - 8 * u], [t.x + 7 * u, y1 + 5 * u], [t.x, y1 + 8 * u], [t.x - 7 * u, y1 + 5 * u], [t.x - 13 * u, y1 - 8 * u]], true, 5);
       piece(k, bowl, "#8a4f2a"); k.shape(ellPts(t.x, y1 - 30 * u, 12 * u, 4 * u), "#2a1810", k.ol * 0.6);
       k.line([[t.x - sx * 7 * u, y1 - 22 * u], [t.x - sx * 7 * u, y1 - 6 * u]], 2.5 * u, "rgba(255,220,170,0.55)", "round"); }
-    k.g.globalAlpha = a0; if (fade > 0.5) k.mark("pipeTip", t.x, y1); if (fade < 1) k.mark("pipeFade", t.x, y1);
+    k.g.globalAlpha = a0; k.mark("pipeTip", t.x, y1); if (fade < 1) k.mark("pipeFade", t.x, y1);
     return t.d;
   };
   const ear = (s: number) => { const e = at(h, s * 90); return { e, draw: () => piece(k, ellPts(e.x, -0.5 * H, 0.17 * a, 0.12 * H), skinD) }; };
   const ears = [ear(-1), ear(1)];
-  const tipBehind = L.pipe ? (o.pipeHold === false ? p3(h, a * 1.12, b * 0.86 + a * 0.5) : p3(h, a * 1.22, b * 0.6 + a * 0.14)).d < -0.15 * b : false;
+  const tipBehind = L.pipe && o.pipeHold === false ? p3(h, a * 1.12, b * 0.86 + a * 0.5).d < -0.15 * b : false;      // (the pipe now always in front: see pipe)
   if (tipBehind) pipe();
   if (away) { mousHalf(-1); mousHalf(1); }
   for (const e of ears) if (Math.abs(e.e.d) < 0.55 * a) e.draw();
@@ -355,7 +357,7 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
     if (!away) { mousHalf(far); mousHalf(-far); if (L.mous && h.cos > 0.5) pin(k, [nose0.x * 0.9, yM + 1], 4); }
     // (the pipe after the moustache: drawn before it, the moustache hid the stem and left only the bowl under it, a tooth or a block,
     //  with the head turned toward the pipe's side; or a bowl floating off the face near profile. The review of round 2)
-    if (!tipBehind) pipe();
+    if (!tipBehind && !away) pipe();
     if (vis) {
       eye(-far);
       const t0 = at(h, 0, 0.9), n1 = at(h, -7, 0.9), n2 = at(h, 7, 0.9), c1 = at(h, -13, 0.9), c2 = at(h, 13, 0.9), out = 0.5 * a * h.sin;

@@ -14,7 +14,7 @@
 //   gone   a named thing of the shot there in one frame and not in the next, or the other way, with nobody setting it down or taking it.
 // Added after the shot library's round 2 (the review, 20 Nov 2026), each for a fault the tests above let through:
 //   barred   a head drawn more than 60 degrees from the lens: bare profile or the back of the head (02 frame 80);
-//   pipefade a pipe left half see-through: the head held where the pipe goes out of sight behind the face;
+//   pipe-held wherever the face is drawn: the pipe gone, its bowl with no stem from the corner of the mouth, or half see-through;
 //   float    a hand that rests on nothing: still for 0.7 s, open, holding nothing, beside a sitting body off the thigh, or hanging bent
 //            in the air (08 frame 45);
 //   stiff    an arm held straight out near shoulder height, still for half a second, while the eyes look elsewhere (07 0-1.3 s);
@@ -42,7 +42,7 @@ export const motionCheck = (film: Film, opt: { shots?: string[] } = {}) => {
   const lens = new THREE.PerspectiveCamera(50, 1080 / 1920, 0.05, 3000);
   for (const s of film.shots) { if (opt.shots && !opt.shots.includes(s.id)) continue;
     const F0 = Math.ceil(s.a * film.fps - 1e-6), F1 = Math.ceil(s.b * film.fps - 1e-6);
-    type Fig = { pic: Record<string, [number, number, number]>; face: number; mirror: boolean; H: number; box: [number, number, number, number]; heading: number; head: number; at: V3; pipe: boolean; fade: boolean; W: Record<string, V3>; kind: { L: string; R: string }; held: { L: boolean; R: boolean }; sit: boolean; eyes: { e: [number, number]; p: [number, number] }[]; skullW: V3 };
+    type Fig = { pic: Record<string, [number, number, number]>; face: number; mirror: boolean; H: number; box: [number, number, number, number]; heading: number; head: number; at: V3; pipe: boolean; fade: boolean; pipeOn: [number, number] | null; pipeTip: [number, number] | null; pipeRoot: [number, number] | null; W: Record<string, V3>; kind: { L: string; R: string }; held: { L: boolean; R: boolean }; sit: boolean; eyes: { e: [number, number]; p: [number, number] }[]; skullW: V3 };
     const frames: { F: number; figs: Map<string, Fig>; things: Map<string, { names: Set<string>; small: { key: string; x: number; y: number; d: number }[] }>; downs: Set<string>; held: Map<string, { p: THREE.Vector3; q: THREE.Quaternion }> }[] = [];
     const lenses = new Map<number, THREE.PerspectiveCamera>(), lensOf = (F: number) => lenses.get(F)!;
     for (let F = F0; F < F1; F++) { const t = Math.max(0, F / film.fps - s.a), cam = s.cam(t, t / (s.b - s.a)), C = new THREE.Vector3(...cam.pos);
@@ -58,7 +58,7 @@ export const motionCheck = (film: Film, opt: { shots?: string[] } = {}) => {
         const r = 0.03 * H, hm = [a.mark?.("headMin"), a.mark?.("headMax")].filter((q): q is V3 => !!q).map((q) => P(q)[0]), hx = hm.length ? hm : [pic.skull[0] - 0.12 * H, pic.skull[0] + 0.12 * H];
         const box: Fig["box"] = [Math.min(...xs.map((x) => x - r), ...hx), Math.max(...xs.map((x) => x + r), ...hx), Math.min(...ys) - 0.04 * H, Math.max(...ys) + 0.02 * H];
         const eyes = (["A", "B"] as const).map((k2) => { const e = a.mark?.(`eye${k2}`), p = a.mark?.(`pupil${k2}`); return e && p ? { e: [P(e)[0], P(e)[1]] as [number, number], p: [P(p)[0], P(p)[1]] as [number, number] } : null; }).filter((q): q is { e: [number, number]; p: [number, number] } => !!q);
-        figs.set(a.name, { eyes, skullW: a.joint("skull"), pic, face: faceTurn(sk.faceYaw), mirror: a.o.mirror ?? a.D.mirrorAt?.(yaw) ?? false, H, box, heading: a.heading, head: a.pose.head?.[0] ?? 0, at: a.at, pipe: !!a.mark?.("pipeOpen"), fade: !!a.mark?.("pipeFade"), W: Object.fromEntries(JOINTS.map((j) => [j, a.joint(j)])), kind: { L: a.o.handL ?? "relaxed", R: a.o.handR ?? "relaxed" }, held: { L: false, R: false }, sit: seated(sk) > 0.5 }); }
+        figs.set(a.name, { eyes, skullW: a.joint("skull"), pic, face: faceTurn(sk.faceYaw), mirror: a.o.mirror ?? a.D.mirrorAt?.(yaw) ?? false, H, box, heading: a.heading, head: a.pose.head?.[0] ?? 0, at: a.at, pipe: !!a.mark?.("pipeOpen"), fade: !!a.mark?.("pipeFade"), ...(() => { const m = (n: string) => { const v = a.mark?.(n); return v ? (P(v).slice(0, 2) as [number, number]) : null; }; return { pipeOn: m("pipeOn"), pipeTip: m("pipeTip"), pipeRoot: m("pipeRoot") }; })(), W: Object.fromEntries(JOINTS.map((j) => [j, a.joint(j)])), kind: { L: a.o.handL ?? "relaxed", R: a.o.handR ?? "relaxed" }, held: { L: false, R: false }, sit: seated(sk) > 0.5 }); }
       // the shot's things: their names, and the small things with where they are in the picture (for the pop test)
       const g = new THREE.Group(); AUDIT.rows = []; AUDIT.on = true; CROWD_LOG.on = false;
       try { s.things?.(g, staged, t, s.a + t, cam); } finally { AUDIT.on = false; } g.updateMatrixWorld(true);
@@ -77,10 +77,11 @@ export const motionCheck = (film: Film, opt: { shots?: string[] } = {}) => {
     // ---- barred angles (the frozen look: "head never in bare profile"; the review of round 2): a head drawn turned more than 60 degrees
     //      from the lens is in profile or seen from behind. A shot names a figure it shows from behind on purpose, walking away (Shot.away) ----
     for (const q of frames) for (const [name, f] of q.figs) if (Math.abs(f.face) > 60 && !s.away?.[name]) note(`${s.id}|${name}|barred`, { shot: s.id, who: name, what: `${name}'s head is drawn ${Math.abs(f.face).toFixed(0)} degrees turned from the lens: in profile or from behind, an angle the rig must not draw (the face turned toward us within 60 degrees)` }, q.F);
-    // ---- a pipe half faded (cast.ts: near profile, on the face's far side, it fades out as the head turns): only while the head turns
-    //      through; held four frames or more (or a whole shot shorter than that) it is a ghost of a pipe ----
-    { const run: Record<string, number> = {}; for (const q of frames) for (const [name, f] of q.figs) { run[name] = f.fade ? (run[name] ?? 0) + 1 : 0;
-        if (run[name] >= Math.min(4, frames.length)) note(`${s.id}|${name}|pipefade`, { shot: s.id, who: name, what: `${name}'s pipe stands half see-through (the head held at the angle where it goes out of sight behind the face)` }, q.F); } }
+    // ---- the pipe held in the mouth (the review of step 1): wherever the face is drawn, a pipe that is gone, a bowl with no stem from the
+    //      corner of the mouth, or a pipe half see-through ----
+    for (const q of frames) for (const [name, f] of q.figs) { if (!f.pipeOn || Math.abs(f.face) > 60) continue;
+      const P = f.pipeTip, Rt = f.pipeRoot, why = !P ? "is gone from his mouth" : !Rt ? "has its bowl beside his face with no stem to the corner of his mouth" : Math.hypot(Rt[0] - f.pipeOn[0], Rt[1] - f.pipeOn[1]) > 0.02 * f.H ? "has its stem off the corner of his mouth" : Math.hypot(P[0] - Rt[0], P[1] - Rt[1]) < 0.025 * f.H ? "is seen end on, a stub" : f.fade ? "stands half see-through" : null;
+      if (why) note(`${s.id}|${name}|pipe-held`, { shot: s.id, who: name, what: `${name}'s pipe ${why}` }, q.F); }
     // ---- per figure, frame to frame ----
     const who = new Set(frames.flatMap((q) => [...q.figs.keys()]));
     for (const name of who) {
@@ -195,3 +196,13 @@ export const motionCheck = (film: Film, opt: { shots?: string[] } = {}) => {
   return [...faults.values()];
 };
 export const motionLines = (film: Film, r: MotionFault[]) => r.map((f) => `${f.shot} frames ${f.f0}-${f.f1} (film ${(f.f0 / film.fps).toFixed(2)}-${((f.f1 + 1) / film.fps).toFixed(2)} s): ${f.what}`);
+/** where each figure's joints and marks are in the picture on frame F (film_info <film> pics <frames>: for measuring colours in a frame) */
+export const picsAt = (film: Film, F: number) => {
+  const T = F / film.fps, s = film.shots.find((q) => T >= q.a - 1e-6 && T < q.b) ?? film.shots[film.shots.length - 1], t = Math.max(0, T - s.a), cam = s.cam(t, t / (s.b - s.a));
+  const l = new THREE.PerspectiveCamera(cam.fov, 1080 / 1920, 0.05, 3000); l.position.set(...cam.pos); l.lookAt(...cam.look); l.updateProjectionMatrix(); l.updateMatrixWorld(true);
+  const P = (p: V3) => { const q = new THREE.Vector3(...p).project(l); return [Math.round((q.x + 1) * 540), Math.round((1 - q.y) * 960)]; };
+  const out: Record<string, Record<string, number[]>> = {};
+  for (const a of castOf(s)(t, s.a + t)) { const st = stageAt(a, cam), r: Record<string, number[]> = {};
+    for (const j of JOINTS) r[j] = P(st.joint(j)); for (const m of ["headMin", "headMax", "eyeA", "eyeB", "pipeTip", "pipeRoot"]) { const v = st.mark?.(m); if (v) r[m] = P(v); } out[a.name] = r; }
+  return out;
+};

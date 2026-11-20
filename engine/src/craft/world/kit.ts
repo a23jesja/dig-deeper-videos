@@ -162,39 +162,46 @@ export const setCardLight = (l: CardLight | null) => { CARD_LIGHT = l; };
 const rgb = (hex: string) => { const n = parseInt(hex.replace("#", ""), 16); return new THREE.Vector3(((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255); };
 // (lookBack: where the light is looked up, moved back from where the card is drawn: a layer of fingers drawn in front of what the hand
 //  holds takes the light of the hand on its figure; looked up in front, the cabin's lamps lit it darker, a grey fist: the shot library review)
-const LIGHT_VS = `uniform vec3 lookBack; varying vec2 vUv; varying vec3 vW; varying vec3 vR; varying vec3 vN;
-  void main() { vUv = uv; vec4 w = modelMatrix * vec4(position, 1.0); vec3 wc = (modelMatrix * vec4(0.0, position.y, 0.0, 1.0)).xyz; vW = mix(wc, w.xyz, 0.35) + lookBack; vR = normalize((modelMatrix * vec4(1.0, 0.0, 0.0, 0.0)).xyz);
+const LIGHT_VS = `uniform vec3 lookBack; varying vec2 vUv; varying vec3 vW; varying vec3 vW0; varying vec3 vR; varying vec3 vN;
+  void main() { vUv = uv; vec4 w = modelMatrix * vec4(position, 1.0); vec3 wc = (modelMatrix * vec4(0.0, position.y, 0.0, 1.0)).xyz; vW = mix(wc, w.xyz, 0.35) + lookBack; vW0 = w.xyz + lookBack; vR = normalize((modelMatrix * vec4(1.0, 0.0, 0.0, 0.0)).xyz);
     vN = normalize((modelMatrix * vec4(0.0, 0.0, 1.0, 0.0)).xyz); gl_Position = projectionMatrix * viewMatrix * w; }`;
 const LIGHT_HEAD = `uniform sampler2D cardMap; uniform vec2 texel; uniform vec3 lp[3]; uniform vec3 lc[3]; uniform float lk[3]; uniform float lr[3]; uniform float lb[3]; uniform float lq[3]; uniform int ln;
-  varying vec2 vUv; varying vec3 vW; varying vec3 vR; varying vec3 vN;
+  varying vec2 vUv; varying vec3 vW; varying vec3 vW0; varying vec3 vR; varying vec3 vN;
   float A(vec2 o) { return texture2D(cardMap, vUv + o * texel).a; }
-  vec3 toL(int i) { vec3 d = lp[i] - vW; d.y *= 0.4; return d; }
-  float att(int i) { float r = length(toL(i)); return 1.0 / (1.0 + (r * r) / (lr[i] * lr[i])); }`;
+  float att0(int i) { vec3 d = lp[i] - vW0; float r = length(d); return 1.0 / (1.0 + (r * r) / (lr[i] * lr[i])); }
+  // the lamps' light at p on a card turned to n, the height of the way to each lamp squeezed by sq (1 = as it is)
+  vec3 lightAt(vec3 p, vec3 n, float sq) { vec3 c = vec3(0.0); for (int i = 0; i < 3; i++) { if (i >= ln) break; vec3 d = lp[i] - p; d.y *= sq; float r = length(d);
+    c += lc[i] * lk[i] * lb[i] * max(0.0, dot(n, normalize(d))) / (1.0 + (r * r) / (lr[i] * lr[i])); } return c; }`;
 // (toL: the way to a lamp with its height squeezed: one figure takes nearly the same light from head to hands, as a body under one lamp
 //  does; reckoned in full, the hands a metre under the face got far less of the lamp than the face, and the cool ambient made them grey
 //  beside its warm skin: the shot library review, round 2. For the same reason the light is looked up near the card's middle line
 //  (vW: a third of the way out to the pixel): a hand held out to the side, half a metre from the body, went dark brown beside the face)
 const cardLight = (map: THREE.Texture, cw: number, ch: number, L: CardLight) => {
   const P = L.lights.slice(0, 3), pad = <T,>(a: T[], z: T) => [...a, z, z, z].slice(0, 3);
-  const u = () => ({ lookBack: { value: new THREE.Vector3() }, cardMap: { value: map }, texel: { value: new THREE.Vector2(1 / cw, 1 / ch) }, ln: { value: P.length }, amb: { value: rgb(L.amb) }, rimK: { value: L.rim ?? 0.8 },
+  const u = () => ({ refW: { value: new THREE.Vector3() }, refOn: { value: 0 }, lookBack: { value: new THREE.Vector3() }, cardMap: { value: map }, texel: { value: new THREE.Vector2(1 / cw, 1 / ch) }, ln: { value: P.length }, amb: { value: rgb(L.amb) }, rimK: { value: L.rim ?? 0.8 },
     lp: { value: pad(P.map((l) => new THREE.Vector3(...l.at)), new THREE.Vector3()) }, lc: { value: pad(P.map((l) => rgb(l.color)), new THREE.Vector3()) },
     lk: { value: pad(P.map((l) => l.power), 0) }, lr: { value: pad(P.map((l) => l.reach), 1) }, lb: { value: pad(P.map((l) => l.body ?? 1), 0) }, lq: { value: pad(P.map((l) => l.rimK ?? 1), 0) } });
   const common = { transparent: true, depthWrite: false, side: THREE.DoubleSide, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -6 };
   // the light that reaches the card, multiplied over it
   const mul = new THREE.ShaderMaterial({ ...common, uniforms: u(), vertexShader: LIGHT_VS, blending: THREE.CustomBlending, blendEquation: THREE.AddEquation, blendSrc: THREE.DstColorFactor, blendDst: THREE.ZeroFactor,
-    fragmentShader: `${LIGHT_HEAD} uniform vec3 amb;
-      void main() { if (texture2D(cardMap, vUv).a < 0.5) discard; float sx = clamp((vUv.x - 0.5) * 2.6, -0.2, 0.2); vec3 n = normalize(vN * 0.8 + vR * sx + vec3(0.0, 0.2, 0.0)); vec3 c = amb;
-        for (int i = 0; i < 3; i++) { if (i >= ln) break; vec3 d = normalize(toL(i)); c += lc[i] * lk[i] * lb[i] * max(0.0, dot(n, d)) * att(i); }
+    fragmentShader: `${LIGHT_HEAD} uniform vec3 amb; uniform vec3 refW; uniform float refOn;
+      void main() { if (texture2D(cardMap, vUv).a < 0.5) discard; float sx = clamp((vUv.x - 0.5) * 2.6, -0.2, 0.2); vec3 n = normalize(vN * 0.8 + vR * sx + vec3(0.0, 0.2, 0.0));
+        // (one light for the whole figure, as for a body under one lamp: every pixel takes the lamps' light as it falls at the figure's face
+        //  (refW), turned by its own place across the card. The face so keeps the cabin v5 tone exactly, and the hands, held out or low,
+        //  come up to it instead of going grey or brown: the reviews of round 2 and of step 1. Without a face (props, beasts) as before)
+        vec3 c = amb + (refOn > 0.5 ? lightAt(refW, n, 1.0) : lightAt(vW0, n, 1.0));
         gl_FragColor = vec4(min(c, vec3(1.0)), 1.0); }` });
   // the rim: a thin edge of each light along the outline, on the side that faces it
   const rim = new THREE.ShaderMaterial({ ...common, uniforms: u(), vertexShader: LIGHT_VS, blending: THREE.AdditiveBlending,
     fragmentShader: `${LIGHT_HEAD} uniform float rimK;
       void main() { if (texture2D(cardMap, vUv).a < 0.5) discard; float w = 5.0; float e = 1.0 - min(min(A(vec2(w, 0.0)), A(vec2(-w, 0.0))), min(A(vec2(0.0, w)), A(vec2(0.0, -w))));
         if (e < 0.5) discard; vec2 g = vec2(A(vec2(-w, 0.0)) - A(vec2(w, 0.0)), A(vec2(0.0, -w)) - A(vec2(0.0, w))); if (length(g) < 0.01) discard; vec2 o = normalize(g); vec3 c = vec3(0.0);
-        for (int i = 0; i < 3; i++) { if (i >= ln) break; vec3 d = normalize(lp[i] - vW); vec2 dl = normalize(vec2(dot(d, vR), d.y) + 1e-5); float s = max(0.0, dot(o, dl)); c += lc[i] * lk[i] * lq[i] * s * s * att(i); }
+        for (int i = 0; i < 3; i++) { if (i >= ln) break; vec3 d = normalize(lp[i] - vW0); vec2 dl = normalize(vec2(dot(d, vR), d.y) + 1e-5); float s = max(0.0, dot(o, dl)); c += lc[i] * lk[i] * lq[i] * s * s * att0(i); }
         gl_FragColor = vec4(c * rimK, 1.0); }` });
   return { mul, rim };
 };
+/** where the card light matches the cabin v5 standard exactly: the figure's face (people.ts figureCard sets it to the skull) */
+export const lightRef = (m: THREE.Object3D, p: [number, number, number]) => m.traverse((c) => { const U = ((c as THREE.Mesh).material as THREE.ShaderMaterial | undefined)?.uniforms; if (U?.refW) { (U.refW.value as THREE.Vector3).set(...p); U.refOn.value = 1; } });
 /** a figure drawn in code on a card that stands in the world, faces the lens, casts its own shadow and takes the shade of the world.
  *  w, h = size of the card in metres, feet = where the soles are on the canvas (0..1 from the top), draw paints the canvas;
  *  toSun = the direction toward the sun (kit.sunDir), without it the card takes no shade */

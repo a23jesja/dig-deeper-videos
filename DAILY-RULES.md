@@ -382,6 +382,17 @@ in the hook lab and the default to test first.
 **6. Even pace.** Captions one word at a time, large, in the middle of the lower half, timed to the voice. The voice
 keeps one steady speed; add a short pause at every comma (about 0.15 s) and a longer one at every full stop (about
 0.35 s). Short sentences, no clauses inside clauses. Loudness normalised so the level never jumps.
+**8. Faces tell the joke** (Jesper 2026-11-20, from a flat 2D Shorts channel he liked): big, simple, unmistakable
+expressions (eyes squeezed shut, a tear, a wince, a smug half-lid, a bandage over the eyes). A viewer with the
+sound off should get the joke from the face. Close framing: characters fill most of the picture, a row of three
+reads as an army.
+**9. Gags live in props, not in hard motion:** a blindfold, a symbol on a shield, a too-big coat, a sign. The prop
+makes the joke while the body stays simple.
+**10. Explain with a map or object on a table:** a hand-drawn map with a candle, tokens moving across it, one label.
+Two seconds instead of ten of talk.
+**11. One palette per video:** three or four main colours plus outline black, used everywhere in that video.
+Thick, even outlines on everything.
+
 **7. The format is confirmed:** how a trick, loophole or scheme worked, told through one person doing it.
 
 ## The hook lab (Jesper 2026-11-17): most of the polish goes into the first five seconds

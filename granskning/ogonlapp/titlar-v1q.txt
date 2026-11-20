@@ -1,0 +1,38 @@
+Titelförslag för ögonlappen v1q (inga frågor). Granskade med .claude/skills/yt-package/title.py mot miniatyrtexten "WHO BLEW OUT THE SUN?", 20 november 2026.
+
+
+  "The Pirate Eye Patch Trick"
+  26 chars   score 80/100
+    x  no-number    no number, date or name - the most reliable single fix
+    x  thumb-length 5 words on the thumbnail - three is the ceiling at feed size
+    ok              26 characters, inside the 60-character desktop cut
+    ok              thumbnail and title carry different words
+
+  43 chars   score 66/100
+    x  no-number    no number, date or name - the most reliable single fix
+    x  thumb-length 5 words on the thumbnail - three is the ceiling at feed size
+    ok              43 characters, inside the 60-character desktop cut
+    ok              thumbnail and title carry different words
+
+  "MythBusters Tested the Pirate Eye Patch Trick"
+  45 chars   score 66/100
+    x  mobile       a mobile feed shows about "MythBusters Tested the Pirate Eye Patch..." - check the subject survives
+    x  no-number    no number, date or name - the most reliable single fix
+    x  thumb-length 5 words on the thumbnail - three is the ceiling at feed size
+    ok              45 characters, inside the 60-character desktop cut
+    ok              thumbnail and title carry different words
+
+  "The Real Reason Pirates Might Have Worn Eye Patches"
+  51 chars   score 66/100
+    x  mobile       a mobile feed shows about "The Real Reason Pirates Might Have Worn..." - check the subject survives
+    x  no-number    no number, date or name - the most reliable single fix
+    x  thumb-length 5 words on the thumbnail - three is the ceiling at feed size
+    ok              51 characters, inside the 60-character desktop cut
+    ok              thumbnail and title carry different words
+
+  43 chars   score 66/100
+    x  no-number    no number, date or name - the most reliable single fix
+    x  thumb-length 5 words on the thumbnail - three is the ceiling at feed size
+    ok              43 characters, inside the 60-character desktop cut
+    ok              thumbnail and title carry different words
+

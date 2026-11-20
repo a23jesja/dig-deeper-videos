@@ -280,7 +280,11 @@ export const motionCheck = (film: Film, opt: { shots?: string[] } = {}) => {
   //  degrees: a cut to nearly the same picture, which jumps
   for (let i = 1; i < sums.length; i++) { const A = sums[i - 1], B = sums[i], fa = A.frames[A.frames.length - 1], fb = B.frames[0]; if (!fa || !fb) continue;
     for (const [name, gb] of fb.figs) { const ga = fa.figs.get(name); if (!ga) continue; const ratio = gb.H / ga.H, dx = Math.abs(gb.pic.skull[0] - ga.pic.skull[0]) / 1080, turn = angleBetween(A.cam[A.cam.length - 1], B.cam[0]);
-      if (ratio > 0.8 && ratio < 1.25 && dx < 0.15 && turn < 15) note(`${B.s.id}|${name}|jumpcut`, { shot: B.s.id, who: name, what: `a jump cut into ${B.s.id}: ${name} stays about as big (${Math.round(ratio * 100)} %) and in the same place, the lens turned ${turn.toFixed(0)} degrees: change the size or the angle clearly, or leave the cut out` }, fb.F); } }
+      // (or the lens turned further but the figure drawn the same: a card figure turns to the lens, so a new angle alone can leave him the same
+      //  picture, his face turned the same way within 12 degrees and not mirrored; the eye patch Short v1f, 'real' to 'nobody', the
+      //  independent review)
+      const fA = (ga as any).face as number | undefined, fB = (gb as any).face as number | undefined, same = fA !== undefined && fB !== undefined && Math.abs(fA - fB) < 12 && (ga as any).mirror === (gb as any).mirror;
+      if (!B.s.matchCut && ratio > 0.8 && ratio < 1.25 && dx < 0.15 && (turn < 15 || same)) note(`${B.s.id}|${name}|jumpcut`, { shot: B.s.id, who: name, what: `a jump cut into ${B.s.id}: ${name} stays about as big (${Math.round(ratio * 100)} %) and in the same place, the lens turned ${turn.toFixed(0)} degrees: change the size or the angle clearly, or leave the cut out` }, fb.F); } }
   // still: a stretch of 2.5 s in which no figure's joint moves more than 2 % of its height in the picture and the lens hardly moves
   // (two windows: 2.5 s under 2 % of his height, and 1 s under 0.6 %: the eye patch Short v1d stood dead still for 0.7-0.8 s at a time,
   //  which the 2.5 s window let through)

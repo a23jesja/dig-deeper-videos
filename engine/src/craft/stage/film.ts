@@ -47,6 +47,8 @@ export type Shot = {
   /** a figure framed close on purpose (a close-up on his face): the edge test then holds only his head whole in the picture, and lets his
    *  body go past the edge. The value says why */
   closeUp?: Record<string, string>;
+  /** a cut into this shot to nearly the same picture on purpose (a match cut), and why: the jump cut test lets it pass */
+  matchCut?: string;
   /** named things of the world that are not there in this shot (the world lists them in userData.named) */
   hide?: string[];
   cast: (t: number, T: number) => Actor[];

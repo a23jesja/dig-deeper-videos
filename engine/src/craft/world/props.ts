@@ -638,7 +638,7 @@ export const piratePrint = (w = 0.44, h = 0.34) => { const map = paint("piratepr
   // (no shadow falls on it: the daylight from the cabin's open side laid a beam's shadow edge across it, a band of light from nowhere)
   return group([mesh(box(w + 0.05, h + 0.05, 0.025), "#3a2416", { at: [0, 0, -0.012], receive: false }), mesh(box(w, h, 0.01), "#ffffff", { map, line: 0.4, shadow: false, receive: false })]); };
 /** a ship's log held open the same way: both pages ruled with lines of handwriting (no words to read), a small sketch of a ship on the left */
-export const logBook = (w = 0.52, h = 0.36, fold = 0.32) => { const page = (side: number) => paint("booklog" + side, 256, 352, (g) => {
+export const logBook = (w = 0.52, h = 0.36, fold = 0.32, /** how far out past its edge the hands hold it */ out = 0.01) => { const page = (side: number) => paint("booklog" + side, 256, 352, (g) => {
     g.fillStyle = "#f1e3bd"; g.fillRect(0, 0, 256, 352); g.fillStyle = "rgba(120,90,50,0.25)"; g.fillRect(side < 0 ? 236 : 0, 0, 20, 352);
     g.strokeStyle = "#3a2c22"; g.lineWidth = 3; for (let y = 40; y < 330; y += 22) { if (side < 0 && y > 150 && y < 250) continue; g.beginPath(); g.moveTo(24, y);
       for (let x = 24; x < 224 - ((y * 7) % 60); x += 8) g.lineTo(x + 4, y - 3 + ((x * 13 + y) % 7)); g.stroke(); }
@@ -653,7 +653,7 @@ export const logBook = (w = 0.52, h = 0.36, fold = 0.32) => { const page = (side
   const spine = mesh(box(0.03, h + 0.03, 0.03), "#4a2416", { at: [0, 0, -0.02], line: 0.5 });
   const g = group([half(-1), half(1), spine]);
   // (the grips at the outer edges, where the halves end after the fold)
-  const ex = (w / 2) * Math.cos(fold) + 0.01, ez = (w / 2) * Math.sin(fold);      // (each half turned toward +z at its outer edge: the book opens toward whoever it faces)
+  const ex = (w / 2) * Math.cos(fold) + out, ez = (w / 2) * Math.sin(fold);      // (each half turned toward +z at its outer edge: the book opens toward whoever it faces)
   g.userData.grips = [[-ex, 0, ez], [ex, 0, ez]]; g.userData.depth = 0.04; return g; };
 export const openBook = (w = 0.52, h = 0.36) => { const map = paint("bookwoodcut", 512, 352, (g) => {
     g.fillStyle = "#f3e6c4"; g.fillRect(0, 0, 512, 352); g.fillStyle = "#cdb98a"; g.fillRect(253, 0, 6, 352); g.strokeStyle = "#2a1a14"; g.lineWidth = 3; g.strokeRect(22, 22, 210, 308);

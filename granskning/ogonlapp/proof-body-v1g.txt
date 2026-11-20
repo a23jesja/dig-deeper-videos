@@ -1,0 +1,20 @@
+A-sits-in-the-air frames 0-59 (film 0.00-2.00 s): sir: he sits in the air: his hips are 24 cm above the seat under him (sitting, 8-12 cm)
+B-arm-locked-straight-out frames 60-119 (film 2.00-4.00 s): sir: the right arm is held straight out near shoulder height for more than half a second (bent 0 degrees, the upper arm 90 degrees from hanging)
+B-arm-locked-straight-out frames 60-119 (film 2.00-4.00 s): sir: the right elbow is locked straight with the arm lifted for more than half a second
+C-foot-inside-a-sofa frames 120-179 (film 4.00-6.00 s): a box (1.40 x 0.42 x 0.80 m at 0.75, 0.21, -0.10) stands before sir and covers his left leg while the other is in sight: a thing in the foreground cutting a figure, 33 cm
+C-foot-inside-a-sofa frames 120-179 (film 4.00-6.00 s): sir's left thigh is inside a box (1.40 x 0.42 x 0.80 m at 0.75, 0.21, -0.10), 5 cm
+C-foot-inside-a-sofa frames 120-179 (film 4.00-6.00 s): sir's left shin is inside a box (1.40 x 0.42 x 0.80 m at 0.75, 0.21, -0.10), 11 cm
+C-foot-inside-a-sofa frames 120-179 (film 4.00-6.00 s): sir's left foot is inside a box (1.40 x 0.42 x 0.80 m at 0.75, 0.21, -0.10), 3 cm
+D-sits-beside-the-seat frames 180-239 (film 6.00-8.00 s): sir: he is as low as one who sits or squats (hips at 55 % of standing) with nothing under him: he sits off the seat's edge, the seat begins 16 cm behind his hips, no knee or hand on the ground
+F-robe-through-the-stool frames 300-359 (film 10.00-12.00 s): doc's belly is inside a cylinder (0.39 x 0.05 x 0.40 m at -0.12, 0.38, -0.09), 7 cm
+F-robe-through-the-stool frames 300-359 (film 10.00-12.00 s): doc's left thigh is inside a cylinder (0.39 x 0.05 x 0.40 m at -0.12, 0.38, -0.09), 5 cm
+F-robe-through-the-stool frames 300-359 (film 10.00-12.00 s): doc's right thigh is inside a cylinder (0.39 x 0.05 x 0.40 m at -0.12, 0.38, -0.09), 6 cm
+G-knee-hangs-in-the-air frames 360-419 (film 12.00-14.00 s): sir: the left knee hangs 22 cm above the ground with no foot under it: its shin slants back to a foot 34 cm behind the knee
+K-coat-through-the-seat frames 600-659 (film 20.00-22.00 s): sir's robe (the garment below his waist, down to its hem) goes through a box (0.90 x 0.36 x 1.05 m at -0.08, 0.18, -0.06), 6 cm in, 6 cm
+M-robe-through-the-seat frames 720-779 (film 24.00-26.00 s): doc's robe (the garment below his waist, down to its hem) goes through a box (0.90 x 0.35 x 1.05 m at -0.08, 0.17, -0.06), 19 cm in, 19 cm
+W-hand-through-a-door frames 1320-1379 (film 44.00-46.00 s): sir's right upper arm is inside the thing in sir R's hand, door (0.05 x 1.90 x 0.80 m at -0.23, 0.95, 0.00), 5 cm
+W-hand-through-a-door frames 1320-1379 (film 44.00-46.00 s): sir's right forearm is inside the thing in sir R's hand, door (0.05 x 1.90 x 0.80 m at -0.23, 0.95, 0.00), 6 cm
+AA-arm-out-eyes-elsewhere frames 1560-1619 (film 52.00-54.00 s): sir: the right elbow is locked straight with the arm lifted for more than half a second
+AM-crate-into-a-block frames 2381-2399 (film 79.37-80.00 s): the crate goes 1.7 cm into a box (0.40 x 0.60 x 0.60 m at 1.00, 0.30, -1.00), 13 cm
+AY-board-behind-his-hips frames 3060-3119 (film 102.00-104.00 s): a box (0.70 x 0.04 x 0.30 m at 0.00, 0.95, -0.25) lies 0.25 m behind sir at his hips or chest, hidden by his body and showing on both sides of it: it seems to go through him, 25 cm
+BODY CHECK FAILED for proof-faults: 3420 frames of 3420, 3420 figure-frames, 1530 pairs tried (a figure against a solid, a held thing or another figure), 19 faults (3 s)

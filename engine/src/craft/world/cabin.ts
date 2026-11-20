@@ -73,7 +73,7 @@ export const cabin = (o: { rich?: boolean; door?: number } = {}) => {
   g.add(mesh(box(0.16, 0.02, 0.16), "#2b2a33", { at: [fx, 0.77, fz], line: 0.5 }), mesh(box(0.14, 0.2, 0.14), "#ffe7a8", { at: [fx, 0.88, fz], line: 0.6, shadow: false }), mesh(box(0.17, 0.03, 0.17), "#2b2a33", { at: [fx, 0.99, fz], line: 0.5 }),
     mesh(cyl(0.012, 0.012, 0.05, 8), "#fbf3df", { at: [fx, fy - 0.08, fz], line: 0, shadow: false }), mesh(ball(0.02, 8), "#ffb040", { at: [fx, fy - 0.04, fz], line: 0, shadow: false }));
   for (const sx of [-1, 1]) for (const sz of [-1, 1]) g.add(mesh(box(0.012, 0.2, 0.012), "#2b2a33", { at: [fx + sx * 0.07, 0.88, fz + sz * 0.07], line: 0, shadow: false }));
-  const st = stool(); st.position.set(...CABIN.stool); g.add(st);
+  const st = stool(); st.position.set(...CABIN.stool); st.name = "cabin stool"; g.add(st); g.userData.named = [...((g.userData.named as THREE.Object3D[]) ?? []), st];      // (named: Shot.hide "cabin stool", a lens that has it before a figure's feet)
   const ch = chest(false, false, 0.7, 0.42, 0.44); ch.position.set(1.65, 0, -1.15); ch.rotation.y = -0.35; ch.userData.gloss = true; g.add(ch);
   if (o.rich) richWood(g);
   return g;

@@ -1,0 +1,1483 @@
+flicker check: ../leverans/eye-patch/eye-patch-v1q.mp4
+frames checked: 1081 (1 to 1081; the first and last have no neighbour on one side)
+a pixel flickers when it differs by more than 40 (of 255, in R, G or B) from the frame before and the frame after, while those two differ by less than 16
+fails: more than 2000 flickering pixels in a frame, more than 40 (or 2 % of a large eye's circle) in an eye, more than 150 in a box of text
+eye circles per frame: 2474 in all; text boxes: 1045
+largest: picture 27726 pixels (frame 308), eye 7282 (frame 592), text 7870 (frame 300)
+movement taken out: in an eye, the eye's own step from the engine (within 1 px); elsewhere a steady step of up to 6 px (5 x 5 patch, mean difference under 14)
+raw (before movement is taken out): largest picture 27961, eye 7497, text 8364; frames over the limits raw: 267
+median picture count: 9
+the loop (last frame to first): 10.3 % of the picture changes; inside the shots the median frame change is 0.7 % and 95 % are 4.6 % or less (a pixel changes by more than 24)
+
+FAIL: 119 frames
+  frame 8 (0.27 s): 81 pixels flicker in an eye (at most 49)
+  frame 9 (0.30 s): 87 pixels flicker in an eye (at most 49)
+  frame 10 (0.33 s): 84 pixels flicker in an eye (at most 49)
+  frame 11 (0.37 s): 144 pixels flicker in an eye (at most 40)
+  frame 12 (0.40 s): 56 pixels flicker in an eye (at most 40)
+  frame 28 (0.93 s): 84 pixels flicker in an eye (at most 40)
+  frame 33 (1.10 s): 73 pixels flicker in an eye (at most 49)
+  frame 34 (1.13 s): 95 pixels flicker in an eye (at most 49)
+  frame 42 (1.40 s): 59 pixels flicker in an eye (at most 49)
+  frame 43 (1.43 s): 124 pixels flicker in an eye (at most 49)
+  frame 44 (1.47 s): 106 pixels flicker in an eye (at most 49)
+  frame 82 (2.73 s): 92 pixels flicker in an eye (at most 86)
+  frame 105 (3.50 s): 90 pixels flicker in an eye (at most 86)
+  frame 168 (5.60 s): 354 pixels flicker in an eye (at most 40)
+  frame 219 (7.30 s): 70 pixels flicker in an eye (at most 56)
+  frame 220 (7.33 s): 575 pixels flicker in an eye (at most 56)
+  frame 259 (8.63 s): 158 pixels flicker in an eye (at most 52)
+  frame 260 (8.67 s): 93 pixels flicker in an eye (at most 52)
+  frame 277 (9.23 s): 70 pixels flicker in an eye (at most 52)
+  frame 299 (9.97 s): 4160 pixels flicker in the picture (at most 2000); 4160 pixels flicker in a text or bubble (at most 150)
+  frame 300 (10.00 s): 7870 pixels flicker in the picture (at most 2000); 7870 pixels flicker in a text or bubble (at most 150)
+  frame 301 (10.03 s): 7168 pixels flicker in the picture (at most 2000); 6912 pixels flicker in a text or bubble (at most 150)
+  frame 302 (10.07 s): 979 pixels flicker in a text or bubble (at most 150)
+  frame 303 (10.10 s): 2025 pixels flicker in the picture (at most 2000); 2025 pixels flicker in a text or bubble (at most 150)
+  frame 307 (10.23 s): 2320 pixels flicker in the picture (at most 2000); 1209 pixels flicker in an eye (at most 432)
+  frame 308 (10.27 s): 27726 pixels flicker in the picture (at most 2000); 6548 pixels flicker in an eye (at most 432)
+  frame 309 (10.30 s): 2436 pixels flicker in the picture (at most 2000); 1285 pixels flicker in an eye (at most 432)
+  frame 313 (10.43 s): 2255 pixels flicker in the picture (at most 2000)
+  frame 314 (10.47 s): 5517 pixels flicker in the picture (at most 2000); 962 pixels flicker in an eye (at most 432)
+  frame 315 (10.50 s): 6495 pixels flicker in the picture (at most 2000); 1001 pixels flicker in an eye (at most 432)
+  frame 316 (10.53 s): 6380 pixels flicker in the picture (at most 2000); 1006 pixels flicker in an eye (at most 432)
+  frame 317 (10.57 s): 4510 pixels flicker in the picture (at most 2000); 851 pixels flicker in an eye (at most 432)
+  frame 324 (10.80 s): 3590 pixels flicker in the picture (at most 2000); 438 pixels flicker in an eye (at most 432)
+  frame 325 (10.83 s): 4628 pixels flicker in the picture (at most 2000); 1000 pixels flicker in an eye (at most 432)
+  frame 326 (10.87 s): 4992 pixels flicker in the picture (at most 2000); 1012 pixels flicker in an eye (at most 432)
+  frame 327 (10.90 s): 3029 pixels flicker in the picture (at most 2000); 635 pixels flicker in an eye (at most 443)
+  frame 342 (11.40 s): 3695 pixels flicker in the picture (at most 2000); 479 pixels flicker in an eye (at most 443)
+  frame 343 (11.43 s): 5611 pixels flicker in the picture (at most 2000); 1132 pixels flicker in an eye (at most 443)
+  frame 344 (11.47 s): 7096 pixels flicker in the picture (at most 2000); 1145 pixels flicker in an eye (at most 443); 1150 pixels flicker in a text or bubble (at most 150)
+  frame 345 (11.50 s): 9003 pixels flicker in the picture (at most 2000); 1020 pixels flicker in an eye (at most 443); 4238 pixels flicker in a text or bubble (at most 150)
+  frame 346 (11.53 s): 9368 pixels flicker in the picture (at most 2000); 7195 pixels flicker in a text or bubble (at most 150)
+  frame 357 (11.90 s): 53 pixels flicker in an eye (at most 40)
+  frame 358 (11.93 s): 69 pixels flicker in an eye (at most 40)
+  frame 382 (12.73 s): 47 pixels flicker in an eye (at most 40)
+  frame 391 (13.03 s): 67 pixels flicker in an eye (at most 40)
+  frame 392 (13.07 s): 69 pixels flicker in an eye (at most 40)
+  frame 403 (13.43 s): 148 pixels flicker in an eye (at most 45)
+  frame 404 (13.47 s): 614 pixels flicker in an eye (at most 45)
+  frame 405 (13.50 s): 147 pixels flicker in an eye (at most 45)
+  frame 505 (16.83 s): 4674 pixels flicker in the picture (at most 2000)
+  frame 507 (16.90 s): 2059 pixels flicker in the picture (at most 2000); 489 pixels flicker in an eye (at most 443)
+  frame 509 (16.97 s): 2996 pixels flicker in the picture (at most 2000)
+  frame 525 (17.50 s): 2695 pixels flicker in the picture (at most 2000); 742 pixels flicker in an eye (at most 453)
+  frame 526 (17.53 s): 3057 pixels flicker in the picture (at most 2000); 1162 pixels flicker in an eye (at most 453)
+  frame 527 (17.57 s): 3273 pixels flicker in the picture (at most 2000); 1212 pixels flicker in an eye (at most 453)
+  frame 528 (17.60 s): 2952 pixels flicker in the picture (at most 2000); 1105 pixels flicker in an eye (at most 453)
+  frame 529 (17.63 s): 6333 pixels flicker in the picture (at most 2000)
+  frame 551 (18.37 s): 3279 pixels flicker in the picture (at most 2000)
+  frame 569 (18.97 s): 2362 pixels flicker in the picture (at most 2000)
+  frame 592 (19.73 s): 14432 pixels flicker in the picture (at most 2000); 7282 pixels flicker in an eye (at most 453)
+  frame 604 (20.13 s): 114 pixels flicker in an eye (at most 95)
+  frame 605 (20.17 s): 244 pixels flicker in an eye (at most 95)
+  frame 606 (20.20 s): 205 pixels flicker in an eye (at most 95)
+  frame 626 (20.87 s): 103 pixels flicker in an eye (at most 95)
+  frame 629 (20.97 s): 110 pixels flicker in an eye (at most 95)
+  frame 630 (21.00 s): 127 pixels flicker in an eye (at most 95)
+  frame 638 (21.27 s): 96 pixels flicker in an eye (at most 95)
+  frame 639 (21.30 s): 227 pixels flicker in an eye (at most 95)
+  frame 640 (21.33 s): 249 pixels flicker in an eye (at most 95)
+  frame 641 (21.37 s): 100 pixels flicker in an eye (at most 95)
+  frame 658 (21.93 s): 96 pixels flicker in an eye (at most 95)
+  frame 671 (22.37 s): 190 pixels flicker in an eye (at most 81)
+  frame 672 (22.40 s): 2809 pixels flicker in the picture (at most 2000); 1004 pixels flicker in an eye (at most 81)
+  frame 673 (22.43 s): 187 pixels flicker in an eye (at most 81)
+  frame 680 (22.67 s): 171 pixels flicker in an eye (at most 81)
+  frame 821 (27.37 s): 48 pixels flicker in an eye (at most 40)
+  frame 855 (28.50 s): 103 pixels flicker in an eye (at most 56)
+  frame 856 (28.53 s): 97 pixels flicker in an eye (at most 56)
+  frame 861 (28.70 s): 93 pixels flicker in an eye (at most 56)
+  frame 862 (28.73 s): 102 pixels flicker in an eye (at most 56)
+  frame 863 (28.77 s): 57 pixels flicker in an eye (at most 56)
+  frame 873 (29.10 s): 89 pixels flicker in an eye (at most 56)
+  frame 874 (29.13 s): 90 pixels flicker in an eye (at most 56)
+  frame 879 (29.30 s): 99 pixels flicker in an eye (at most 56)
+  frame 880 (29.33 s): 82 pixels flicker in an eye (at most 56)
+  frame 883 (29.43 s): 11628 pixels flicker in the picture (at most 2000)
+  frame 884 (29.47 s): 13821 pixels flicker in the picture (at most 2000)
+  frame 888 (29.60 s): 6285 pixels flicker in the picture (at most 2000)
+  frame 890 (29.67 s): 6828 pixels flicker in the picture (at most 2000)
+  frame 893 (29.77 s): 7780 pixels flicker in the picture (at most 2000)
+  frame 894 (29.80 s): 5288 pixels flicker in the picture (at most 2000)
+  frame 895 (29.83 s): 8227 pixels flicker in the picture (at most 2000)
+  frame 898 (29.93 s): 5685 pixels flicker in the picture (at most 2000)
+  frame 899 (29.97 s): 2329 pixels flicker in the picture (at most 2000)
+  frame 900 (30.00 s): 11286 pixels flicker in the picture (at most 2000)
+  frame 901 (30.03 s): 2766 pixels flicker in the picture (at most 2000)
+  frame 902 (30.07 s): 5544 pixels flicker in the picture (at most 2000)
+  frame 905 (30.17 s): 12283 pixels flicker in the picture (at most 2000)
+  frame 915 (30.50 s): 3752 pixels flicker in the picture (at most 2000)
+  frame 918 (30.60 s): 7309 pixels flicker in the picture (at most 2000)
+  frame 919 (30.63 s): 9214 pixels flicker in the picture (at most 2000)
+  frame 920 (30.67 s): 7457 pixels flicker in the picture (at most 2000)
+  frame 924 (30.80 s): 8789 pixels flicker in the picture (at most 2000)
+  frame 927 (30.90 s): 4500 pixels flicker in the picture (at most 2000)
+  frame 928 (30.93 s): 5355 pixels flicker in the picture (at most 2000)
+  frame 933 (31.10 s): 4243 pixels flicker in the picture (at most 2000)
+  frame 980 (32.67 s): 12511 pixels flicker in the picture (at most 2000)
+  frame 1031 (34.37 s): 70 pixels flicker in an eye (at most 49)
+  frame 1039 (34.63 s): 121 pixels flicker in an eye (at most 49)
+  frame 1040 (34.67 s): 96 pixels flicker in an eye (at most 49)
+  frame 1041 (34.70 s): 52 pixels flicker in an eye (at most 49)
+  frame 1042 (34.73 s): 4564 pixels flicker in the picture (at most 2000); 4370 pixels flicker in a text or bubble (at most 150)
+  frame 1043 (34.77 s): 94 pixels flicker in an eye (at most 40); 609 pixels flicker in a text or bubble (at most 150)
+  frame 1044 (34.80 s): 998 pixels flicker in a text or bubble (at most 150)
+  frame 1045 (34.83 s): 267 pixels flicker in a text or bubble (at most 150)
+  frame 1058 (35.27 s): 71 pixels flicker in an eye (at most 40)
+  frame 1080 (36.00 s): 3138 pixels flicker in the picture (at most 2000); 3135 pixels flicker in a text or bubble (at most 150)
+  frame 1081 (36.03 s): 6950 pixels flicker in the picture (at most 2000); 6948 pixels flicker in a text or bubble (at most 150)
+  frame 1082 (36.07 s): the loop: 10.3 % of the picture changes from the last frame to the first (95 % of frame changes inside the shots are 4.6 % or less)
+
+RAW (Jesper's rule as written, no movement taken out; at most 2000 in the picture, 40 in an eye, 150 in a text): 267 frames over
+  frame 8 (0.27 s): picture 105, eye 83, text 0
+  frame 9 (0.30 s): picture 815, eye 103, text 0
+  frame 10 (0.33 s): picture 994, eye 146, text 0
+  frame 11 (0.37 s): picture 992, eye 144, text 0
+  frame 12 (0.40 s): picture 446, eye 94, text 0
+  frame 28 (0.93 s): picture 814, eye 155, text 0
+  frame 29 (0.97 s): picture 987, eye 88, text 0
+  frame 30 (1.00 s): picture 1165, eye 96, text 0
+  frame 31 (1.03 s): picture 1136, eye 85, text 32
+  frame 32 (1.07 s): picture 1122, eye 68, text 32
+  frame 33 (1.10 s): picture 1044, eye 103, text 32
+  frame 34 (1.13 s): picture 875, eye 111, text 0
+  frame 36 (1.20 s): picture 548, eye 43, text 0
+  frame 38 (1.27 s): picture 1238, eye 236, text 0
+  frame 40 (1.33 s): picture 653, eye 61, text 0
+  frame 42 (1.40 s): picture 155, eye 61, text 0
+  frame 43 (1.43 s): picture 194, eye 152, text 0
+  frame 44 (1.47 s): picture 1245, eye 172, text 0
+  frame 45 (1.50 s): picture 504, eye 77, text 0
+  frame 62 (2.07 s): picture 664, eye 57, text 0
+  frame 63 (2.10 s): picture 758, eye 57, text 0
+  frame 64 (2.13 s): picture 970, eye 52, text 0
+  frame 65 (2.17 s): picture 665, eye 60, text 0
+  frame 70 (2.33 s): picture 60, eye 41, text 0
+  frame 82 (2.73 s): picture 372, eye 92, text 0
+  frame 105 (3.50 s): picture 200, eye 93, text 0
+  frame 110 (3.67 s): picture 159, eye 43, text 0
+  frame 111 (3.70 s): picture 194, eye 56, text 0
+  frame 112 (3.73 s): picture 196, eye 61, text 0
+  frame 113 (3.77 s): picture 239, eye 81, text 0
+  frame 114 (3.80 s): picture 208, eye 60, text 0
+  frame 115 (3.83 s): picture 208, eye 58, text 0
+  frame 116 (3.87 s): picture 170, eye 42, text 0
+  frame 117 (3.90 s): picture 162, eye 43, text 0
+  frame 138 (4.60 s): picture 499, eye 46, text 0
+  frame 139 (4.63 s): picture 578, eye 48, text 0
+  frame 140 (4.67 s): picture 653, eye 74, text 0
+  frame 141 (4.70 s): picture 732, eye 71, text 0
+  frame 142 (4.73 s): picture 656, eye 73, text 0
+  frame 143 (4.77 s): picture 697, eye 73, text 0
+  frame 144 (4.80 s): picture 705, eye 100, text 0
+  frame 145 (4.83 s): picture 672, eye 110, text 0
+  frame 146 (4.87 s): picture 635, eye 97, text 0
+  frame 147 (4.90 s): picture 639, eye 92, text 0
+  frame 148 (4.93 s): picture 672, eye 88, text 0
+  frame 149 (4.97 s): picture 501, eye 93, text 0
+  frame 150 (5.00 s): picture 311, eye 65, text 0
+  frame 151 (5.03 s): picture 207, eye 46, text 0
+  frame 168 (5.60 s): picture 1378, eye 367, text 0
+  frame 169 (5.63 s): picture 85, eye 44, text 0
+  frame 219 (7.30 s): picture 134, eye 105, text 0
+  frame 220 (7.33 s): picture 703, eye 587, text 0
+  frame 221 (7.37 s): picture 101, eye 87, text 0
+  frame 247 (8.23 s): picture 1311, eye 71, text 0
+  frame 248 (8.27 s): picture 1416, eye 97, text 0
+  frame 249 (8.30 s): picture 1237, eye 87, text 0
+  frame 250 (8.33 s): picture 503, eye 51, text 0
+  frame 257 (8.57 s): picture 923, eye 56, text 0
+  frame 258 (8.60 s): picture 1214, eye 85, text 0
+  frame 259 (8.63 s): picture 1374, eye 253, text 0
+  frame 260 (8.67 s): picture 1059, eye 122, text 0
+  frame 262 (8.73 s): picture 710, eye 45, text 0
+  frame 263 (8.77 s): picture 1050, eye 56, text 8
+  frame 264 (8.80 s): picture 1207, eye 60, text 0
+  frame 265 (8.83 s): picture 1314, eye 67, text 0
+  frame 266 (8.87 s): picture 1029, eye 65, text 0
+  frame 277 (9.23 s): picture 286, eye 134, text 0
+  frame 278 (9.27 s): picture 480, eye 61, text 0
+  frame 279 (9.30 s): picture 1141, eye 83, text 0
+  frame 280 (9.33 s): picture 1478, eye 105, text 0
+  frame 281 (9.37 s): picture 1539, eye 106, text 0
+  frame 282 (9.40 s): picture 1510, eye 101, text 0
+  frame 283 (9.43 s): picture 1509, eye 98, text 0
+  frame 284 (9.47 s): picture 1282, eye 91, text 0
+  frame 285 (9.50 s): picture 932, eye 108, text 0
+  frame 286 (9.53 s): picture 564, eye 47, text 0
+  frame 287 (9.57 s): picture 2295, eye 224, text 0
+  frame 288 (9.60 s): picture 925, eye 73, text 0
+  frame 289 (9.63 s): picture 791, eye 112, text 0
+  frame 290 (9.67 s): picture 1071, eye 52, text 0
+  frame 299 (9.97 s): picture 4160, eye 0, text 4160
+  frame 300 (10.00 s): picture 8364, eye 0, text 8364
+  frame 301 (10.03 s): picture 7341, eye 0, text 7085
+  frame 302 (10.07 s): picture 1513, eye 0, text 1513
+  frame 303 (10.10 s): picture 2026, eye 0, text 2026
+  frame 307 (10.23 s): picture 2325, eye 1209, text 0
+  frame 308 (10.27 s): picture 27961, eye 7497, text 0
+  frame 309 (10.30 s): picture 2437, eye 1285, text 0
+  frame 313 (10.43 s): picture 3424, eye 616, text 0
+  frame 314 (10.47 s): picture 7056, eye 1205, text 0
+  frame 315 (10.50 s): picture 8458, eye 1219, text 0
+  frame 316 (10.53 s): picture 8052, eye 1211, text 0
+  frame 317 (10.57 s): picture 6528, eye 1124, text 0
+  frame 318 (10.60 s): picture 1532, eye 174, text 0
+  frame 322 (10.73 s): picture 2189, eye 103, text 0
+  frame 323 (10.77 s): picture 1478, eye 155, text 0
+  frame 324 (10.80 s): picture 4832, eye 1090, text 0
+  frame 325 (10.83 s): picture 6053, eye 1250, text 9
+  frame 326 (10.87 s): picture 6382, eye 1268, text 9
+  frame 327 (10.90 s): picture 4309, eye 975, text 9
+  frame 328 (10.93 s): picture 534, eye 42, text 0
+  frame 329 (10.97 s): picture 1827, eye 457, text 0
+  frame 341 (11.37 s): picture 1130, eye 130, text 0
+  frame 342 (11.40 s): picture 5108, eye 1061, text 0
+  frame 343 (11.43 s): picture 7147, eye 1348, text 0
+  frame 344 (11.47 s): picture 8685, eye 1359, text 1150
+  frame 345 (11.50 s): picture 10882, eye 1259, text 4249
+  frame 346 (11.53 s): picture 10210, eye 546, text 7195
+  frame 357 (11.90 s): picture 443, eye 80, text 0
+  frame 358 (11.93 s): picture 731, eye 112, text 0
+  frame 359 (11.97 s): picture 355, eye 49, text 0
+  frame 377 (12.57 s): picture 422, eye 53, text 0
+  frame 378 (12.60 s): picture 470, eye 59, text 0
+  frame 379 (12.63 s): picture 383, eye 73, text 0
+  frame 380 (12.67 s): picture 264, eye 43, text 0
+  frame 382 (12.73 s): picture 66, eye 47, text 8
+  frame 391 (13.03 s): picture 145, eye 78, text 0
+  frame 392 (13.07 s): picture 729, eye 94, text 2
+  frame 403 (13.43 s): picture 248, eye 148, text 0
+  frame 404 (13.47 s): picture 2173, eye 675, text 0
+  frame 405 (13.50 s): picture 255, eye 147, text 0
+  frame 411 (13.70 s): picture 713, eye 48, text 0
+  frame 412 (13.73 s): picture 1119, eye 56, text 0
+  frame 413 (13.77 s): picture 1193, eye 73, text 0
+  frame 414 (13.80 s): picture 1076, eye 78, text 0
+  frame 415 (13.83 s): picture 807, eye 49, text 0
+  frame 423 (14.10 s): picture 391, eye 51, text 0
+  frame 424 (14.13 s): picture 609, eye 56, text 0
+  frame 425 (14.17 s): picture 777, eye 48, text 0
+  frame 426 (14.20 s): picture 781, eye 62, text 0
+  frame 439 (14.63 s): picture 758, eye 43, text 0
+  frame 505 (16.83 s): picture 4903, eye 313, text 0
+  frame 506 (16.87 s): picture 819, eye 141, text 0
+  frame 507 (16.90 s): picture 3586, eye 727, text 0
+  frame 508 (16.93 s): picture 1522, eye 310, text 0
+  frame 509 (16.97 s): picture 3236, eye 236, text 0
+  frame 524 (17.47 s): picture 1066, eye 143, text 0
+  frame 525 (17.50 s): picture 3848, eye 978, text 0
+  frame 526 (17.53 s): picture 5369, eye 1284, text 0
+  frame 527 (17.57 s): picture 5665, eye 1323, text 0
+  frame 528 (17.60 s): picture 5043, eye 1253, text 0
+  frame 529 (17.63 s): picture 6346, eye 213, text 0
+  frame 549 (18.30 s): picture 1909, eye 125, text 0
+  frame 550 (18.33 s): picture 830, eye 107, text 16
+  frame 551 (18.37 s): picture 4120, eye 576, text 0
+  frame 552 (18.40 s): picture 2220, eye 251, text 0
+  frame 568 (18.93 s): picture 2602, eye 14, text 0
+  frame 569 (18.97 s): picture 3268, eye 34, text 0
+  frame 591 (19.70 s): picture 421, eye 393, text 0
+  frame 592 (19.73 s): picture 14464, eye 7282, text 0
+  frame 593 (19.77 s): picture 460, eye 405, text 0
+  frame 604 (20.13 s): picture 911, eye 133, text 0
+  frame 605 (20.17 s): picture 2860, eye 266, text 0
+  frame 606 (20.20 s): picture 2277, eye 306, text 0
+  frame 607 (20.23 s): picture 938, eye 108, text 0
+  frame 624 (20.80 s): picture 2033, eye 86, text 0
+  frame 625 (20.83 s): picture 1404, eye 178, text 0
+  frame 626 (20.87 s): picture 1476, eye 217, text 0
+  frame 627 (20.90 s): picture 2307, eye 199, text 0
+  frame 628 (20.93 s): picture 1673, eye 148, text 0
+  frame 629 (20.97 s): picture 504, eye 218, text 0
+  frame 630 (21.00 s): picture 293, eye 183, text 0
+  frame 631 (21.03 s): picture 1084, eye 45, text 0
+  frame 638 (21.27 s): picture 124, eye 100, text 0
+  frame 639 (21.30 s): picture 1388, eye 298, text 0
+  frame 640 (21.33 s): picture 2621, eye 324, text 0
+  frame 641 (21.37 s): picture 1368, eye 193, text 0
+  frame 658 (21.93 s): picture 235, eye 151, text 0
+  frame 659 (21.97 s): picture 431, eye 101, text 0
+  frame 660 (22.00 s): picture 1064, eye 93, text 0
+  frame 671 (22.37 s): picture 480, eye 251, text 0
+  frame 672 (22.40 s): picture 4423, eye 1405, text 0
+  frame 673 (22.43 s): picture 484, eye 258, text 1
+  frame 680 (22.67 s): picture 754, eye 366, text 0
+  frame 681 (22.70 s): picture 1319, eye 186, text 0
+  frame 682 (22.73 s): picture 1727, eye 219, text 0
+  frame 683 (22.77 s): picture 1585, eye 168, text 0
+  frame 684 (22.80 s): picture 657, eye 104, text 0
+  frame 708 (23.60 s): picture 1197, eye 97, text 0
+  frame 709 (23.63 s): picture 1383, eye 114, text 0
+  frame 736 (24.53 s): picture 695, eye 50, text 0
+  frame 737 (24.57 s): picture 852, eye 60, text 0
+  frame 738 (24.60 s): picture 1001, eye 53, text 0
+  frame 739 (24.63 s): picture 943, eye 51, text 0
+  frame 740 (24.67 s): picture 636, eye 45, text 0
+  frame 748 (24.93 s): picture 667, eye 41, text 0
+  frame 749 (24.97 s): picture 1086, eye 61, text 0
+  frame 750 (25.00 s): picture 920, eye 57, text 0
+  frame 751 (25.03 s): picture 771, eye 64, text 0
+  frame 765 (25.50 s): picture 418, eye 61, text 0
+  frame 766 (25.53 s): picture 607, eye 74, text 0
+  frame 767 (25.57 s): picture 669, eye 88, text 0
+  frame 768 (25.60 s): picture 933, eye 73, text 0
+  frame 769 (25.63 s): picture 968, eye 66, text 0
+  frame 770 (25.67 s): picture 917, eye 66, text 0
+  frame 771 (25.70 s): picture 937, eye 54, text 0
+  frame 772 (25.73 s): picture 578, eye 43, text 0
+  frame 776 (25.87 s): picture 534, eye 70, text 0
+  frame 786 (26.20 s): picture 282, eye 48, text 0
+  frame 787 (26.23 s): picture 214, eye 46, text 0
+  frame 821 (27.37 s): picture 283, eye 60, text 10
+  frame 854 (28.47 s): picture 545, eye 42, text 0
+  frame 855 (28.50 s): picture 1226, eye 115, text 0
+  frame 856 (28.53 s): picture 1265, eye 106, text 0
+  frame 857 (28.57 s): picture 364, eye 46, text 0
+  frame 861 (28.70 s): picture 937, eye 98, text 0
+  frame 862 (28.73 s): picture 1267, eye 112, text 0
+  frame 863 (28.77 s): picture 875, eye 69, text 0
+  frame 872 (29.07 s): picture 597, eye 47, text 0
+  frame 873 (29.10 s): picture 1262, eye 99, text 0
+  frame 874 (29.13 s): picture 1326, eye 101, text 0
+  frame 879 (29.30 s): picture 1025, eye 106, text 0
+  frame 880 (29.33 s): picture 1264, eye 90, text 0
+  frame 883 (29.43 s): picture 11911, eye 0, text 0
+  frame 884 (29.47 s): picture 13827, eye 0, text 0
+  frame 888 (29.60 s): picture 6498, eye 0, text 0
+  frame 890 (29.67 s): picture 6867, eye 0, text 0
+  frame 893 (29.77 s): picture 7845, eye 0, text 0
+  frame 894 (29.80 s): picture 5322, eye 0, text 0
+  frame 895 (29.83 s): picture 8353, eye 0, text 0
+  frame 898 (29.93 s): picture 5711, eye 0, text 0
+  frame 899 (29.97 s): picture 2362, eye 0, text 0
+  frame 900 (30.00 s): picture 11406, eye 0, text 0
+  frame 901 (30.03 s): picture 2784, eye 0, text 0
+  frame 902 (30.07 s): picture 5629, eye 0, text 0
+  frame 905 (30.17 s): picture 12334, eye 0, text 0
+  frame 915 (30.50 s): picture 3791, eye 0, text 0
+  frame 918 (30.60 s): picture 7685, eye 0, text 0
+  frame 919 (30.63 s): picture 9244, eye 0, text 0
+  frame 920 (30.67 s): picture 7553, eye 0, text 0
+  frame 922 (30.73 s): picture 2300, eye 0, text 0
+  frame 924 (30.80 s): picture 8941, eye 0, text 0
+  frame 927 (30.90 s): picture 4589, eye 0, text 0
+  frame 928 (30.93 s): picture 5405, eye 0, text 0
+  frame 933 (31.10 s): picture 4264, eye 0, text 0
+  frame 975 (32.50 s): picture 1277, eye 0, text 184
+  frame 976 (32.53 s): picture 1357, eye 0, text 492
+  frame 977 (32.57 s): picture 2483, eye 0, text 0
+  frame 980 (32.67 s): picture 12687, eye 0, text 0
+  frame 989 (32.97 s): picture 436, eye 49, text 0
+  frame 991 (33.03 s): picture 408, eye 59, text 0
+  frame 1000 (33.33 s): picture 412, eye 62, text 0
+  frame 1018 (33.93 s): picture 447, eye 72, text 0
+  frame 1019 (33.97 s): picture 782, eye 114, text 0
+  frame 1020 (34.00 s): picture 924, eye 128, text 0
+  frame 1021 (34.03 s): picture 709, eye 104, text 0
+  frame 1022 (34.07 s): picture 431, eye 69, text 0
+  frame 1029 (34.30 s): picture 462, eye 68, text 0
+  frame 1031 (34.37 s): picture 377, eye 70, text 0
+  frame 1039 (34.63 s): picture 168, eye 151, text 0
+  frame 1040 (34.67 s): picture 1155, eye 131, text 0
+  frame 1041 (34.70 s): picture 710, eye 103, text 0
+  frame 1042 (34.73 s): picture 4616, eye 12, text 4370
+  frame 1043 (34.77 s): picture 1043, eye 109, text 609
+  frame 1044 (34.80 s): picture 1606, eye 31, text 1000
+  frame 1045 (34.83 s): picture 765, eye 27, text 267
+  frame 1058 (35.27 s): picture 197, eye 76, text 0
+  frame 1060 (35.33 s): picture 515, eye 43, text 0
+  frame 1061 (35.37 s): picture 620, eye 53, text 0
+  frame 1062 (35.40 s): picture 721, eye 68, text 0
+  frame 1063 (35.43 s): picture 821, eye 61, text 0
+  frame 1064 (35.47 s): picture 709, eye 52, text 0
+  frame 1065 (35.50 s): picture 764, eye 53, text 0
+  frame 1070 (35.67 s): picture 631, eye 61, text 0
+  frame 1071 (35.70 s): picture 512, eye 61, text 0
+  frame 1080 (36.00 s): picture 3157, eye 0, text 3149
+  frame 1081 (36.03 s): picture 6958, eye 0, text 6949
+
+every frame: frame, picture, eye, text, then the raw picture, eye, text
+1	25	18	0	37	21	0
+2	5	0	0	10	0	0
+3	2	0	0	5	0	0
+4	2	0	0	5	0	0
+5	2	0	0	5	0	0
+6	2	0	0	4	1	0
+7	1	0	0	3	0	0
+8	97	81	0	105	83	0
+9	477	87	0	815	103	0
+10	568	84	0	994	146	0
+11	580	144	0	992	144	0
+12	378	89	0	446	94	0
+13	120	2	0	383	38	0
+14	41	0	0	453	31	0
+15	69	0	0	512	28	0
+16	101	0	0	509	25	0
+17	89	0	0	364	13	0
+18	84	0	0	213	13	0
+19	72	0	0	83	2	0
+20	86	0	0	116	9	0
+21	3	0	0	8	0	0
+22	3	0	0	8	0	0
+23	1	0	0	12	0	0
+24	0	0	0	12	0	0
+25	2	0	0	14	0	0
+26	3	0	0	13	0	0
+27	79	0	0	143	0	16
+28	505	122	0	814	155	0
+29	305	0	0	987	88	0
+30	284	0	0	1165	96	0
+31	275	5	2	1136	85	32
+32	263	8	2	1122	68	32
+33	284	73	2	1044	103	32
+34	240	95	0	875	111	0
+35	120	21	0	700	38	0
+36	67	0	0	548	43	0
+37	98	0	2	287	37	32
+38	828	0	0	1238	236	0
+39	351	3	0	517	35	0
+40	362	6	0	653	61	0
+41	84	6	0	118	13	0
+42	102	59	0	155	61	0
+43	159	124	0	194	152	0
+44	587	106	0	1245	172	0
+45	264	17	0	504	77	0
+46	100	0	0	134	6	0
+47	25	0	0	36	0	0
+48	10	0	0	48	0	32
+49	0	0	0	1	0	0
+50	3	0	0	7	0	0
+51	1	0	0	3	0	0
+52	4	0	0	5	0	0
+53	3	0	0	7	0	0
+54	3	0	0	4	0	0
+55	4	0	0	6	0	0
+56	1	0	0	6	0	0
+57	1	0	0	9	0	0
+58	5	0	0	31	0	0
+59	7	0	0	24	0	0
+60	64	0	0	163	13	0
+61	149	5	0	443	31	0
+62	222	49	0	664	57	0
+63	186	28	0	758	57	0
+64	389	17	0	970	52	0
+65	105	8	0	665	60	0
+66	169	12	0	411	40	0
+67	113	0	0	164	9	0
+68	75	9	0	143	30	0
+69	42	32	0	61	38	0
+70	44	41	0	60	41	0
+71	38	0	0	67	2	0
+72	460	11	0	490	11	0
+73	154	11	0	167	11	0
+74	0	0	0	11	0	0
+75	0	0	0	9	0	0
+76	1	0	0	2	0	0
+77	1	0	0	1	0	0
+78	12	6	0	21	6	0
+79	16	0	0	46	0	0
+80	0	0	0	32	0	0
+81	33	4	0	105	7	0
+82	277	92	0	372	92	0
+83	5	2	0	174	8	0
+84	3	0	0	180	0	0
+85	117	12	0	350	12	0
+86	14	5	0	319	10	0
+87	2	0	0	305	0	0
+88	1	0	0	296	0	0
+89	2	0	0	302	0	0
+90	4	0	0	306	0	0
+91	0	0	0	317	0	0
+92	5	0	0	269	0	0
+93	4	0	0	270	0	0
+94	2	0	0	276	0	0
+95	1	0	0	230	0	0
+96	2	0	0	174	0	0
+97	3	0	0	150	0	0
+98	7	0	0	83	0	0
+99	13	0	0	46	0	0
+100	5	0	0	27	0	0
+101	4	0	3	31	0	9
+102	4	0	0	24	5	0
+103	3	0	0	24	3	0
+104	52	27	0	78	28	0
+105	171	90	0	200	93	0
+106	3	0	0	56	3	0
+107	3	0	0	94	12	0
+108	2	0	0	93	22	0
+109	3	0	0	202	40	0
+110	6	0	0	159	43	0
+111	1	0	0	194	56	0
+112	2	0	0	196	61	0
+113	0	0	0	239	81	0
+114	0	0	0	208	60	0
+115	1	0	0	208	58	0
+116	0	0	0	170	42	0
+117	2	0	0	162	43	0
+118	0	0	0	135	29	0
+119	1	0	0	140	24	0
+120	2	0	0	83	14	0
+121	1	0	0	57	12	0
+122	1	0	0	28	6	0
+123	1	0	0	11	2	0
+124	0	0	0	2	0	0
+125	1	0	0	6	0	0
+126	1	0	0	4	0	0
+127	7	0	0	23	0	0
+128	1	0	0	5	0	0
+129	0	0	0	15	0	0
+130	1	0	0	10	0	0
+131	2	0	0	8	0	0
+132	46	27	0	51	28	0
+133	0	0	0	15	0	0
+134	1	0	0	67	6	0
+135	0	0	0	130	8	0
+136	0	0	0	242	25	0
+137	1	0	0	376	25	0
+138	3	0	0	499	46	0
+139	1	0	0	578	48	0
+140	0	0	0	653	74	0
+141	1	0	0	732	71	0
+142	2	0	0	656	73	0
+143	1	0	0	697	73	0
+144	5	0	0	705	100	0
+145	2	0	0	672	110	0
+146	2	0	0	635	97	0
+147	3	0	0	639	92	0
+148	3	0	0	672	88	0
+149	1	0	0	501	93	0
+150	4	0	0	311	65	0
+151	1	0	0	207	46	0
+152	2	0	0	100	17	0
+153	2	0	0	60	10	0
+154	1	0	0	15	0	0
+155	1	0	0	9	0	0
+156	0	0	0	9	0	0
+157	28	0	0	32	0	0
+158	608	35	0	610	35	0
+159	1	0	0	25	0	0
+160	2	0	0	22	1	0
+161	4	0	0	17	0	0
+162	7	0	1	26	0	7
+163	2	0	0	15	0	0
+164	3	0	0	13	0	0
+165	2	0	0	16	0	0
+166	2	0	0	6	0	0
+167	6	5	0	19	6	0
+168	1357	354	0	1378	367	0
+169	11	5	0	85	44	0
+170	1	0	0	9	0	0
+171	3	1	0	8	1	0
+172	2	0	0	8	0	0
+173	2	0	0	14	1	0
+174	0	0	0	18	1	0
+175	1	0	0	15	1	0
+176	4	0	0	19	0	0
+177	13	0	0	32	1	0
+178	2	1	0	17	1	0
+179	4	1	0	29	2	0
+180	7	1	0	32	2	0
+181	5	0	0	30	1	0
+182	7	0	0	28	2	0
+183	9	0	0	32	2	0
+184	1	0	0	15	1	0
+185	5	0	0	21	1	0
+186	3	0	0	23	1	0
+187	5	1	0	20	1	0
+188	4	1	0	24	2	0
+189	6	0	0	25	0	0
+190	2	0	0	29	0	0
+191	1	0	0	13	1	0
+192	9	0	0	19	1	0
+193	9	3	0	33	4	0
+194	4	1	0	18	1	0
+195	3	0	0	8	0	0
+196	4	0	0	10	0	0
+197	2	0	0	17	0	0
+198	0	0	0	11	0	0
+199	1	0	0	11	0	0
+200	1	0	0	3	0	0
+201	1	0	0	5	0	0
+202	1	0	0	12	0	9
+203	0	0	0	5	0	0
+204	0	0	0	8	0	0
+205	1	0	0	16	0	0
+206	0	0	0	5	0	0
+207	1	0	0	10	0	0
+208	1	0	0	9	1	0
+209	1	0	0	20	1	0
+210	2	2	0	9	2	0
+211	5	2	0	23	2	0
+212	1	1	0	31	1	0
+213	3	3	0	23	4	0
+214	4	1	0	25	5	0
+215	5	4	0	32	9	0
+216	2	2	0	29	7	0
+217	2	1	0	29	5	0
+218	11	9	0	30	10	0
+219	91	70	0	134	105	0
+220	671	575	0	703	587	0
+221	57	51	0	101	87	0
+222	7	7	0	19	8	0
+223	2	0	0	13	0	0
+224	6	1	0	13	2	0
+225	3	0	0	13	0	0
+226	5	0	0	14	0	0
+227	5	0	0	13	0	0
+228	3	0	0	10	0	0
+229	195	17	0	203	17	0
+230	25	0	0	25	0	0
+231	3	0	0	6	0	0
+232	0	0	0	2	0	0
+233	2	0	0	2	0	0
+234	2	0	1	12	0	9
+235	1	0	0	2	0	0
+236	1	0	0	2	0	0
+237	179	0	0	901	0	0
+238	484	0	0	947	0	0
+239	185	1	0	920	2	0
+240	1	0	0	10	0	0
+241	0	0	0	11	0	0
+242	0	0	0	6	0	0
+243	0	0	0	1	0	0
+244	40	0	0	69	0	0
+245	72	0	0	286	3	0
+246	95	0	0	1060	39	0
+247	369	0	0	1311	71	0
+248	533	0	0	1416	97	0
+249	306	0	0	1237	87	0
+250	214	0	0	503	51	0
+251	37	0	0	45	1	2
+252	10	0	0	34	0	0
+253	2	0	0	4	0	0
+254	30	0	0	56	2	0
+255	39	0	0	66	0	2
+256	216	0	0	475	36	0
+257	200	0	0	923	56	0
+258	329	0	0	1214	85	0
+259	429	158	0	1374	253	0
+260	339	93	0	1059	122	0
+261	190	0	0	601	31	0
+262	205	0	0	710	45	0
+263	181	0	0	1050	56	8
+264	189	0	0	1207	60	0
+265	219	0	0	1314	67	0
+266	192	0	0	1029	65	0
+267	187	0	0	730	37	0
+268	136	0	0	202	18	0
+269	27	0	0	47	0	0
+270	17	0	0	45	0	0
+271	1	0	0	4	0	0
+272	2	0	0	6	0	0
+273	2	0	0	6	0	0
+274	2	0	0	7	0	0
+275	0	0	0	16	0	11
+276	8	0	0	37	0	0
+277	237	93	0	286	134	0
+278	214	0	0	480	61	0
+279	185	0	0	1141	83	0
+280	306	0	0	1478	105	0
+281	434	0	0	1539	106	0
+282	407	0	0	1510	101	0
+283	418	0	0	1509	98	0
+284	286	0	0	1282	91	0
+285	212	0	0	932	108	0
+286	170	0	0	564	47	0
+287	1581	2	0	2295	224	0
+288	756	0	0	925	73	0
+289	387	0	0	791	112	0
+290	770	0	0	1071	52	0
+291	198	0	0	629	0	0
+292	0	0	0	6	0	0
+293	1	0	0	4	0	0
+294	1	0	0	4	0	0
+295	1	0	0	1	0	0
+296	0	0	0	0	0	0
+297	110	0	0	125	0	0
+298	361	10	0	363	10	0
+299	4160	0	4160	4160	0	4160
+300	7870	0	7870	8364	0	8364
+301	7168	0	6912	7341	0	7085
+302	979	0	979	1513	0	1513
+303	2025	0	2025	2026	0	2026
+304	5	0	0	8	0	0
+305	0	0	0	11	0	0
+306	3	0	0	14	0	0
+307	2320	1209	0	2325	1209	0
+308	27726	7272	0	27961	7497	0
+309	2436	1285	0	2437	1285	0
+310	27	6	0	33	10	0
+311	6	0	0	6	0	0
+312	97	0	0	147	21	0
+313	2255	218	0	3424	616	0
+314	5517	962	0	7056	1205	0
+315	6495	1001	0	8458	1219	0
+316	6380	1006	0	8052	1211	0
+317	4510	851	0	6528	1124	0
+318	1144	87	0	1532	174	0
+319	10	0	0	13	1	0
+320	0	0	0	1	0	0
+321	1	0	0	1	0	0
+322	1984	13	0	2189	103	0
+323	1174	60	0	1478	155	0
+324	3590	838	0	4832	1090	0
+325	4628	1000	4	6053	1250	9
+326	4992	1012	4	6382	1268	9
+327	3029	635	4	4309	975	9
+328	445	19	0	534	42	0
+329	1195	0	0	1827	457	0
+330	4	0	4	11	0	9
+331	0	0	0	1	0	0
+332	0	0	0	0	0	0
+333	0	0	0	3	0	0
+334	0	0	0	1	0	0
+335	0	0	0	1	0	0
+336	1	0	0	2	0	0
+337	0	0	0	1	0	0
+338	0	0	0	0	0	0
+339	0	0	0	0	0	0
+340	3	0	0	3	0	0
+341	843	50	0	1130	130	0
+342	3695	750	0	5108	1061	0
+343	5611	1132	0	7147	1348	0
+344	7096	1145	1150	8685	1359	1150
+345	9003	1020	4238	10882	1259	4249
+346	9368	218	7195	10210	546	7195
+347	18	0	0	19	0	0
+348	25	0	0	25	0	0
+349	127	0	0	128	0	0
+350	0	0	0	0	0	0
+351	1	0	0	1	0	0
+352	1	0	0	1	0	0
+353	2	0	0	2	0	0
+354	0	0	0	0	0	0
+355	0	0	0	3	2	0
+356	38	36	0	40	36	0
+357	270	53	0	443	80	0
+358	361	69	0	731	112	0
+359	150	0	0	355	49	0
+360	32	0	0	62	7	0
+361	1	0	0	1	0	0
+362	13	0	0	20	0	4
+363	5	0	0	6	0	0
+364	0	0	0	7	0	0
+365	1	0	0	13	0	0
+366	1	0	0	6	0	0
+367	2	0	0	15	0	0
+368	4	0	0	12	0	0
+369	1	0	0	6	0	0
+370	1	0	0	3	0	0
+371	0	0	0	4	0	0
+372	0	0	0	3	0	0
+373	0	0	0	0	0	0
+374	0	0	0	0	0	0
+375	3	0	0	9	0	0
+376	112	0	0	257	16	0
+377	32	0	0	422	53	0
+378	81	0	0	470	59	0
+379	33	1	0	383	73	0
+380	52	8	0	264	43	0
+381	50	1	0	108	28	0
+382	53	47	0	66	47	8
+383	26	26	0	36	27	0
+384	1	0	0	2	0	0
+385	1	0	0	2	0	0
+386	4	0	0	11	0	0
+387	0	0	0	9	0	0
+388	0	0	0	3	0	0
+389	0	0	0	7	4	0
+390	3	1	0	5	2	0
+391	129	67	0	145	78	0
+392	348	69	0	729	94	2
+393	372	2	0	383	2	2
+394	17	0	0	19	0	2
+395	2	0	0	17	0	0
+396	2	0	0	13	0	0
+397	0	0	0	4	0	0
+398	1	0	0	10	0	0
+399	1	0	0	7	0	0
+400	1	0	0	4	0	0
+401	1	0	0	1	0	0
+402	1	0	0	3	0	0
+403	248	148	0	248	148	0
+404	1343	614	0	2173	675	0
+405	252	147	0	255	147	0
+406	3	0	0	5	0	0
+407	1	0	0	2	0	0
+408	0	0	0	1	0	0
+409	15	0	0	41	0	0
+410	17	0	0	52	10	1
+411	134	0	0	713	48	0
+412	111	0	0	1119	56	0
+413	188	0	0	1193	73	0
+414	93	0	0	1076	78	0
+415	78	0	0	807	49	0
+416	130	0	0	414	40	0
+417	34	0	0	72	15	0
+418	19	0	0	31	0	0
+419	0	0	0	8	0	0
+420	1	0	0	4	0	0
+421	77	0	0	154	35	0
+422	38	0	0	49	1	0
+423	64	0	0	391	51	0
+424	56	0	0	609	56	0
+425	50	0	0	777	48	0
+426	62	0	0	781	62	0
+427	101	0	0	559	29	0
+428	51	0	0	72	0	0
+429	6	0	0	85	4	0
+430	1	0	0	1	0	0
+431	0	0	0	1	0	0
+432	0	0	0	0	0	0
+433	2	0	0	2	0	0
+434	0	0	0	0	0	0
+435	0	0	0	0	0	0
+436	3	0	0	3	0	0
+437	6	0	0	8	0	0
+438	1	0	0	2	0	0
+439	697	43	0	758	43	0
+440	1	1	0	23	1	0
+441	4	0	0	18	0	0
+442	2	0	0	15	0	0
+443	6	0	2	19	0	8
+444	1	0	0	11	0	0
+445	2	0	0	5	0	0
+446	3	0	0	11	0	0
+447	1	0	0	15	0	0
+448	12	1	0	30	1	0
+449	5	0	0	22	0	0
+450	5	0	0	26	0	0
+451	1	1	0	11	1	0
+452	6	0	0	10	1	0
+453	3	1	0	9	2	0
+454	4	3	0	15	4	0
+455	3	0	0	6	0	0
+456	6	3	0	9	3	0
+457	29	1	0	37	1	0
+458	8	2	0	21	3	0
+459	9	2	2	24	2	2
+460	8	3	0	28	4	0
+461	1	1	0	13	2	0
+462	6	0	0	11	1	0
+463	4	2	0	11	2	0
+464	9	3	0	16	3	0
+465	4	0	0	10	1	0
+466	2	0	0	8	0	0
+467	4	0	0	19	0	0
+468	4	0	0	14	0	0
+469	4	0	0	16	1	0
+470	2	0	0	9	0	0
+471	4	0	0	13	0	0
+472	2	0	0	4	0	0
+473	1	0	0	7	0	0
+474	4	0	0	8	0	0
+475	1	0	0	5	0	0
+476	2	1	0	3	1	0
+477	3	0	0	6	0	0
+478	2	0	0	8	0	0
+479	1	0	0	8	0	0
+480	1	1	0	5	1	0
+481	1	0	0	6	0	0
+482	2	0	0	8	0	0
+483	24	1	0	24	1	0
+484	1006	39	0	1041	39	0
+485	35	2	0	145	3	0
+486	6	0	0	95	0	0
+487	3	0	0	87	0	0
+488	12	0	0	80	0	0
+489	23	0	0	58	0	0
+490	14	0	0	43	0	0
+491	15	0	0	38	0	0
+492	142	3	0	287	7	0
+493	9	0	0	33	0	0
+494	12	4	0	30	4	0
+495	18	7	0	81	7	0
+496	19	3	0	102	8	0
+497	6	4	0	178	11	0
+498	16	10	0	206	12	0
+499	11	7	0	227	16	0
+500	4	3	0	161	4	0
+501	27	5	0	161	6	0
+502	17	5	0	115	6	0
+503	14	5	0	58	6	3
+504	12	3	0	43	3	0
+505	4674	179	0	4903	313	0
+506	616	114	0	819	141	0
+507	2059	489	0	3586	727	0
+508	1123	213	0	1522	310	0
+509	2996	112	0	3236	236	0
+510	8	0	0	25	0	0
+511	9	0	0	29	0	0
+512	5	0	0	21	0	0
+513	1	0	0	23	0	0
+514	11	0	0	43	0	0
+515	4	0	0	36	0	0
+516	5	0	0	34	0	0
+517	2	0	0	14	0	0
+518	4	0	0	22	0	0
+519	4	0	0	18	0	0
+520	2	0	0	8	0	0
+521	1	0	0	7	0	0
+522	1	0	0	11	0	0
+523	32	0	0	44	1	0
+524	749	115	0	1066	143	0
+525	2695	742	0	3848	978	0
+526	3057	1162	0	5369	1284	0
+527	3273	1212	0	5665	1323	0
+528	2952	1105	0	5043	1253	0
+529	6333	213	0	6346	213	0
+530	220	2	13	247	2	17
+531	1	0	0	10	2	0
+532	0	0	0	6	1	0
+533	1	0	0	5	0	0
+534	0	0	0	17	1	16
+535	3	0	0	3	0	0
+536	79	0	0	205	0	0
+537	3	1	0	4	2	0
+538	6	0	0	42	14	16
+539	7	1	0	52	21	0
+540	7	1	0	85	29	0
+541	11	5	0	114	39	0
+542	8	0	0	154	39	16
+543	9	0	0	126	38	0
+544	9	0	0	96	26	0
+545	9	0	0	59	20	0
+546	3	0	0	58	9	16
+547	1	0	0	13	3	0
+548	1	0	0	9	0	0
+549	1715	0	0	1909	125	0
+550	439	69	0	830	107	16
+551	3279	411	0	4120	576	0
+552	1420	128	0	2220	251	0
+553	1120	0	0	1197	20	0
+554	0	0	0	18	0	16
+555	2	0	0	3	0	0
+556	0	0	0	3	0	0
+557	2	0	0	7	0	0
+558	4	0	0	7	0	0
+559	4	0	0	9	0	0
+560	0	0	0	1	0	0
+561	0	0	0	0	0	0
+562	5	0	0	6	0	0
+563	2	0	0	2	0	0
+564	1	0	0	2	0	0
+565	3	0	0	5	0	0
+566	95	0	0	101	0	0
+567	321	0	0	831	0	0
+568	1523	1	0	2602	14	0
+569	2362	0	0	3268	34	0
+570	725	0	1	1943	0	9
+571	536	0	0	769	12	0
+572	28	0	0	199	0	0
+573	28	0	0	58	0	0
+574	37	0	0	77	0	0
+575	0	0	0	13	0	0
+576	3	0	0	17	0	0
+577	2	0	0	30	0	0
+578	0	0	0	6	0	0
+579	0	0	0	1	0	0
+580	4	0	0	4	0	0
+581	0	0	0	0	0	0
+582	0	0	0	0	0	0
+583	0	0	0	1	0	0
+584	0	0	0	0	0	0
+585	0	0	0	0	0	0
+586	0	0	0	0	0	0
+587	1	0	0	2	0	0
+588	0	0	0	0	0	0
+589	6	0	0	9	0	0
+590	8	0	0	10	0	0
+591	420	393	0	421	393	0
+592	14432	7282	0	14464	7282	0
+593	453	405	0	460	405	0
+594	20	2	0	28	4	0
+595	1	0	0	4	0	0
+596	352	27	0	358	27	0
+597	188	9	0	216	9	0
+598	742	0	0	759	0	0
+599	2	0	0	13	0	0
+600	2	0	0	11	0	0
+601	759	0	0	763	0	0
+602	2	0	0	3	1	0
+603	1	0	0	4	2	0
+604	889	114	0	911	133	0
+605	1981	244	0	2860	266	0
+606	1196	205	0	2277	306	0
+607	518	28	0	938	108	0
+608	993	0	0	1040	1	0
+609	861	0	0	868	0	0
+610	3	0	0	5	0	0
+611	0	0	0	4	0	0
+612	0	0	0	1	0	0
+613	2	0	0	5	0	0
+614	0	0	0	3	0	0
+615	0	0	0	3	0	0
+616	941	0	0	948	0	0
+617	0	0	0	9	0	0
+618	0	0	0	11	0	0
+619	975	0	0	989	0	0
+620	842	0	0	865	0	0
+621	1016	0	0	1054	0	0
+622	10	0	0	65	0	0
+623	80	0	0	193	1	0
+624	1407	0	0	2033	86	0
+625	667	53	0	1404	178	0
+626	691	103	0	1476	217	0
+627	1585	27	0	2307	199	0
+628	1139	19	0	1673	148	0
+629	210	110	0	504	218	0
+630	138	127	0	293	183	0
+631	969	29	0	1084	45	0
+632	1118	0	0	1193	0	0
+633	12	0	0	89	0	0
+634	7	0	0	80	0	0
+635	1092	0	0	1158	0	0
+636	996	0	0	1050	1	0
+637	4	2	0	44	7	0
+638	105	96	0	124	100	0
+639	1307	227	0	1388	298	0
+640	1471	249	0	2621	324	0
+641	735	100	0	1368	193	0
+642	1326	0	0	1515	8	0
+643	1229	0	0	1231	0	0
+644	1236	0	0	1247	0	0
+645	0	0	0	2	0	0
+646	0	0	0	2	0	0
+647	1301	0	0	1304	0	0
+648	1381	0	0	1381	0	0
+649	1	0	0	1	0	0
+650	3	0	0	6	0	0
+651	1393	0	0	1396	0	0
+652	1	0	0	1	0	0
+653	0	0	0	1	0	0
+654	1276	0	0	1276	0	0
+655	1072	0	0	1075	0	0
+656	1196	0	0	1197	0	0
+657	1036	0	0	1058	0	0
+658	135	96	0	235	151	0
+659	196	34	0	431	101	0
+660	813	41	0	1064	93	0
+661	1467	27	0	1589	27	4
+662	83	5	0	86	5	0
+663	0	0	0	3	0	0
+664	0	0	0	3	0	0
+665	0	0	0	3	0	0
+666	0	0	0	0	0	0
+667	0	0	0	1	0	0
+668	0	0	0	4	0	0
+669	0	0	0	4	0	0
+670	1	0	0	9	0	0
+671	470	251	0	480	251	0
+672	2809	1071	0	4423	1405	0
+673	465	258	0	484	258	1
+674	4	0	0	32	0	0
+675	1	0	0	16	0	0
+676	3	0	0	21	0	0
+677	12	0	11	57	0	43
+678	4	0	0	38	0	16
+679	6	0	0	17	0	0
+680	645	313	0	754	366	0
+681	470	0	0	1319	186	0
+682	539	0	0	1727	219	0
+683	502	0	0	1585	168	0
+684	284	1	0	657	104	0
+685	155	0	0	294	33	0
+686	127	0	0	253	34	0
+687	69	0	0	155	10	0
+688	31	0	0	78	0	0
+689	26	0	0	62	3	0
+690	0	0	0	8	0	0
+691	0	0	0	11	0	0
+692	1	0	0	13	0	0
+693	1	0	0	9	0	0
+694	2	0	0	9	0	0
+695	1	1	0	14	5	0
+696	38	6	0	75	6	0
+697	27	0	0	48	2	0
+698	45	0	0	105	3	0
+699	40	0	0	149	3	0
+700	39	0	0	130	3	0
+701	47	0	0	160	2	0
+702	62	0	0	132	0	0
+703	61	0	0	204	0	0
+704	48	0	0	123	0	0
+705	42	0	0	108	0	0
+706	152	0	0	220	8	0
+707	288	0	0	413	8	0
+708	721	69	0	1197	97	0
+709	1017	54	0	1383	114	0
+710	71	0	0	82	3	0
+711	0	0	0	6	0	0
+712	1	0	0	7	0	0
+713	0	0	0	4	0	0
+714	0	0	0	9	0	0
+715	0	0	0	4	0	0
+716	0	0	0	7	0	0
+717	103	0	0	104	0	0
+718	399	19	0	457	19	0
+719	5	0	0	7	0	0
+720	0	0	0	5	0	0
+721	2	0	0	3	0	0
+722	2	0	0	2	0	0
+723	1	0	0	4	0	0
+724	0	0	0	0	0	0
+725	0	0	0	1	0	0
+726	1	0	0	3	0	0
+727	2	1	0	6	2	0
+728	4	0	0	12	0	0
+729	4	0	0	9	0	0
+730	30	9	0	49	13	0
+731	8	0	0	17	2	0
+732	5	0	0	15	1	0
+733	8	0	0	35	6	0
+734	15	2	0	80	7	0
+735	160	2	0	335	15	0
+736	258	0	0	695	50	0
+737	328	29	0	852	60	0
+738	445	20	0	1001	53	0
+739	452	18	0	943	51	0
+740	337	1	0	636	45	0
+741	161	0	0	284	20	0
+742	20	2	0	36	3	0
+743	0	0	0	14	1	0
+744	3	0	0	12	0	0
+745	232	0	0	271	12	0
+746	77	0	0	130	15	0
+747	192	3	0	560	35	0
+748	389	0	0	667	41	0
+749	574	20	0	1086	61	0
+750	531	24	0	920	57	0
+751	350	18	0	771	64	0
+752	233	0	0	399	35	0
+753	2	0	0	3	1	0
+754	17	0	0	32	0	0
+755	1	0	0	3	0	0
+756	1	0	0	4	0	0
+757	1	0	0	2	0	0
+758	2	0	0	4	0	0
+759	1	0	0	3	0	0
+760	1	0	0	2	0	0
+761	2	0	0	5	0	0
+762	4	0	0	10	0	0
+763	5	0	0	16	0	0
+764	73	0	0	95	9	0
+765	89	6	0	418	61	0
+766	54	0	0	607	74	0
+767	118	0	0	669	88	0
+768	267	0	0	933	73	0
+769	353	15	0	968	66	0
+770	446	23	0	917	66	0
+771	455	20	0	937	54	0
+772	324	0	0	578	43	0
+773	165	0	0	253	15	0
+774	32	0	0	44	0	0
+775	78	4	0	178	34	0
+776	84	0	0	534	70	0
+777	471	0	0	515	0	0
+778	82	1	0	82	1	0
+779	7	0	0	7	0	0
+780	9	0	0	12	0	0
+781	0	0	0	0	0	0
+782	11	1	0	13	1	0
+783	4	0	0	10	0	0
+784	7	0	0	18	0	0
+785	14	4	0	15	4	0
+786	269	40	0	282	48	0
+787	105	13	0	214	46	0
+788	97	18	0	151	30	0
+789	14	4	0	24	11	0
+790	5	0	0	9	0	0
+791	11	0	0	13	0	0
+792	1	0	0	1	0	0
+793	2	0	0	5	0	0
+794	5	0	0	6	0	0
+795	12	0	0	19	0	0
+796	85	0	0	89	0	0
+797	0	0	0	7	0	0
+798	1	0	0	2	0	0
+799	1	0	0	4	0	0
+800	3	0	0	6	0	0
+801	100	0	0	105	0	0
+802	4	1	0	7	1	0
+803	4	1	3	7	1	3
+804	6	2	0	10	3	3
+805	140	8	0	164	16	3
+806	60	15	3	182	33	26
+807	41	17	0	164	31	0
+808	49	22	0	136	31	0
+809	88	24	0	135	31	0
+810	41	10	0	54	13	0
+811	37	27	0	59	33	10
+812	39	1	0	52	1	10
+813	5	0	0	21	0	10
+814	4	1	0	6	1	0
+815	109	0	0	114	0	3
+816	37	1	0	41	1	3
+817	32	0	0	36	0	3
+818	51	1	0	64	2	5
+819	36	0	0	44	1	4
+820	72	25	0	95	25	0
+821	142	48	0	283	60	10
+822	109	9	0	187	27	0
+823	25	6	0	40	15	0
+824	12	1	0	13	1	0
+825	46	11	0	70	18	0
+826	1	0	0	6	0	4
+827	0	0	0	4	0	2
+828	25	0	0	27	0	2
+829	9	0	0	15	0	2
+830	13	0	0	14	0	1
+831	19	0	0	22	0	0
+832	16	0	0	20	0	0
+833	17	0	0	29	0	0
+834	15	0	0	16	0	0
+835	2	0	0	16	0	0
+836	0	0	0	1	0	0
+837	23	0	0	29	0	0
+838	2	0	0	3	0	0
+839	89	20	0	89	20	0
+840	171	21	0	174	21	0
+841	22	0	0	40	4	0
+842	212	11	0	310	15	0
+843	454	20	0	606	29	0
+844	214	6	1	310	24	5
+845	11	0	0	18	0	0
+846	0	0	0	3	0	0
+847	5	0	0	9	0	0
+848	0	0	0	4	0	0
+849	4	0	0	12	0	0
+850	0	0	0	4	0	0
+851	1	0	0	8	0	0
+852	0	0	0	1	0	0
+853	4	2	0	11	2	0
+854	425	29	0	545	42	0
+855	1096	103	0	1226	115	0
+856	1089	97	0	1265	106	0
+857	260	39	0	364	46	0
+858	12	0	0	23	0	0
+859	75	1	0	115	9	0
+860	101	1	0	127	1	0
+861	767	93	0	937	98	0
+862	1117	102	0	1267	112	0
+863	662	57	0	875	69	0
+864	234	11	0	434	18	0
+865	8	0	0	11	0	0
+866	0	0	0	8	0	0
+867	4	0	0	19	0	0
+868	1	0	0	5	0	0
+869	0	0	0	7	0	0
+870	3	0	0	10	0	0
+871	37	1	0	53	4	0
+872	471	38	0	597	47	0
+873	1110	89	0	1262	99	0
+874	1100	90	0	1326	101	0
+875	290	33	0	400	40	0
+876	19	0	0	25	0	0
+877	99	2	0	157	16	0
+878	109	2	0	128	2	0
+879	839	99	0	1025	106	0
+880	1111	82	0	1264	90	0
+881	637	0	0	656	0	0
+882	133	0	0	136	0	0
+883	11628	0	0	11911	0	0
+884	13821	0	0	13827	0	0
+885	137	0	0	154	0	0
+886	1	0	0	40	0	0
+887	524	0	0	553	0	0
+888	6285	0	0	6498	0	0
+889	1782	0	0	1799	0	0
+890	6828	0	0	6867	0	0
+891	95	0	0	138	0	0
+892	188	0	0	213	0	0
+893	7780	0	0	7845	0	0
+894	5288	0	0	5322	0	0
+895	8227	0	0	8353	0	0
+896	954	0	0	975	0	0
+897	231	0	0	277	0	0
+898	5685	0	0	5711	0	0
+899	2329	0	0	2362	0	0
+900	11286	0	0	11406	0	0
+901	2766	0	0	2784	0	0
+902	5544	0	0	5629	0	0
+903	81	0	0	127	0	0
+904	432	0	0	459	0	0
+905	12283	0	0	12334	0	0
+906	410	0	0	443	0	0
+907	1	0	0	74	0	10
+908	93	0	0	157	0	0
+909	232	0	0	495	0	0
+910	151	0	0	189	0	0
+911	231	0	0	268	0	0
+912	1911	0	0	1947	0	0
+913	459	0	0	484	0	0
+914	234	0	0	253	0	0
+915	3752	0	0	3791	0	0
+916	1492	0	0	1525	0	0
+917	320	0	0	371	0	0
+918	7309	0	0	7685	0	0
+919	9214	0	0	9244	0	0
+920	7457	0	0	7553	0	0
+921	528	0	0	564	0	0
+922	1509	0	0	2300	0	0
+923	514	0	0	584	0	0
+924	8789	0	0	8941	0	0
+925	308	0	0	340	0	0
+926	210	0	0	330	0	0
+927	4500	0	0	4589	0	0
+928	5355	0	0	5405	0	0
+929	1167	0	0	1632	0	0
+930	64	0	0	131	0	0
+931	368	0	0	433	0	2
+932	974	0	0	1074	0	0
+933	4243	0	0	4264	0	0
+934	1	0	0	929	0	0
+935	1	0	0	934	0	6
+936	1	0	0	800	0	0
+937	1	0	0	848	0	0
+938	0	0	0	796	0	0
+939	0	0	0	887	0	4
+940	1	0	0	856	0	0
+941	5	0	0	1017	0	0
+942	0	0	0	897	0	0
+943	16	0	6	981	0	6
+944	46	0	0	1046	0	0
+945	30	0	0	1100	0	14
+946	26	0	0	1001	0	8
+947	1	0	0	1088	0	19
+948	1	0	0	912	0	5
+949	0	0	0	877	0	7
+950	0	0	0	975	0	7
+951	0	0	0	1025	0	0
+952	0	0	0	1171	0	0
+953	0	0	0	1033	0	0
+954	1	0	0	1051	0	0
+955	0	0	0	1069	0	0
+956	0	0	0	1074	0	0
+957	0	0	0	1088	0	0
+958	0	0	0	1167	0	0
+959	0	0	0	1122	0	0
+960	0	0	0	1043	0	0
+961	0	0	0	1155	0	0
+962	19	0	0	1151	0	0
+963	33	0	0	1153	0	0
+964	0	0	0	1138	0	0
+965	7	0	0	1225	0	0
+966	11	0	0	1088	0	0
+967	1	0	1	1213	0	1
+968	0	0	0	1228	0	0
+969	0	0	0	1365	0	0
+970	0	0	0	1288	0	0
+971	0	0	0	1272	0	0
+972	3	0	0	1263	0	0
+973	0	0	0	1314	0	0
+974	0	0	0	1153	0	0
+975	0	0	0	1277	0	184
+976	2	0	2	1357	0	492
+977	683	0	0	2483	0	0
+978	0	0	0	1173	0	0
+979	0	0	0	1319	0	0
+980	12511	0	0	12687	0	0
+981	233	0	0	246	0	0
+982	0	0	0	3	0	0
+983	0	0	0	1	0	0
+984	26	0	0	54	0	0
+985	13	0	0	30	1	0
+986	15	0	0	134	9	0
+987	12	0	0	273	20	0
+988	3	0	0	366	30	0
+989	7	0	0	436	49	0
+990	2	0	0	454	37	0
+991	3	0	0	408	59	0
+992	18	0	0	378	32	0
+993	32	0	0	353	33	0
+994	7	0	0	120	13	0
+995	2	0	0	57	4	0
+996	3	0	0	21	2	0
+997	2	0	0	6	1	0
+998	174	0	0	287	25	0
+999	102	0	0	114	4	0
+1000	16	0	0	412	62	0
+1001	119	0	9	248	18	9
+1002	63	0	0	70	0	0
+1003	0	0	0	3	0	0
+1004	0	0	0	0	0	0
+1005	0	0	0	0	0	0
+1006	0	0	0	0	0	0
+1007	1	0	0	2	0	0
+1008	0	0	0	1	0	0
+1009	0	0	0	0	0	0
+1010	1	0	0	2	0	0
+1011	1	0	0	1	0	0
+1012	1	0	0	2	0	0
+1013	8	0	8	9	0	8
+1014	0	0	0	0	0	0
+1015	0	0	0	0	0	0
+1016	2	0	0	21	0	0
+1017	88	0	0	114	8	0
+1018	84	3	0	447	72	0
+1019	124	0	0	782	114	0
+1020	128	0	0	924	128	0
+1021	110	0	0	709	104	0
+1022	107	0	0	431	69	0
+1023	53	0	0	72	12	0
+1024	6	0	0	30	0	0
+1025	0	0	0	5	0	0
+1026	1	0	0	5	0	0
+1027	2	0	0	5	0	0
+1028	84	0	0	114	17	0
+1029	89	0	0	462	68	0
+1030	1887	25	0	1989	25	0
+1031	372	70	0	377	70	0
+1032	4	0	0	12	1	0
+1033	0	0	0	2	0	0
+1034	3	0	0	6	0	0
+1035	4	0	0	6	0	0
+1036	1	0	0	2	0	0
+1037	2	0	0	3	1	0
+1038	34	33	0	38	33	0
+1039	132	121	0	168	151	0
+1040	566	96	0	1155	131	0
+1041	340	52	0	710	103	0
+1042	4564	1	4370	4616	12	4370
+1043	913	94	609	1043	109	609
+1044	1236	9	998	1606	31	1000
+1045	337	0	267	765	27	267
+1046	113	0	1	580	29	1
+1047	99	1	0	438	19	0
+1048	100	0	0	336	9	0
+1049	87	0	0	170	8	0
+1050	19	0	0	64	0	0
+1051	40	0	0	100	0	0
+1052	9	0	0	48	0	0
+1053	4	0	0	32	0	0
+1054	3	0	0	22	0	0
+1055	3	0	1	14	0	3
+1056	1	0	0	3	0	0
+1057	6	0	0	13	0	0
+1058	175	71	0	197	76	0
+1059	169	0	0	301	39	1
+1060	144	0	0	515	43	0
+1061	81	1	0	620	53	0
+1062	107	0	0	721	68	0
+1063	149	0	0	821	61	0
+1064	127	0	0	709	52	0
+1065	115	0	0	764	53	0
+1066	73	0	0	616	37	0
+1067	93	0	0	460	36	0
+1068	312	0	0	443	20	0
+1069	378	5	3	503	7	8
+1070	358	7	0	631	61	0
+1071	286	8	0	512	61	0
+1072	11	0	0	20	0	0
+1073	4	0	0	5	0	0
+1074	6	0	0	14	0	0
+1075	3	0	0	15	0	0
+1076	1	0	0	12	0	1
+1077	7	0	0	16	0	1
+1078	2	0	0	10	0	1
+1079	2	0	0	8	0	0
+1080	3138	0	3135	3157	0	3149
+1081	6950	0	6948	6958	0	6949

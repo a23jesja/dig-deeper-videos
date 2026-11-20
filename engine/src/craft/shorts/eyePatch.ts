@@ -256,7 +256,7 @@ const MAT_M: V3 = [MAT_AT[0], MAT_AT[1], MAT_AT[2] + 0.3];
   add({ id: "nobody", a: S.s10b, b: S.s11, V, push: 0.04, cast: [(t) => on("mate", MATE_SHORT_D, mm, t, MD, {}, 5)], sun: true, noPole: true }); }      // (no flagpole: it stood close before the lens at the left edge)
 // 16-17. NO PICTURE OR RECORD FROM THEIR TIME SAYS SO. Below, on the wall by a small lantern that lights it, the old picture of pirates drawn
 //    by us: wide, then close on their faces, every one with both eyes
-const PRINT = once(() => noShade(piratePrint())), PRINT_AT = inCabin([0.62, 0, -CABIN.d / 2 + 0.1]);
+const PRINT = once(() => noShade(piratePrint())), PRINT_AT = inCabin([0.62, 0, -CABIN.d / 2 + 0.13]);      // (3 cm further out from the wall: at 0.1 its frame and paper stood level with the wall board beside it, and the two fought for the same depth along its left edge, a flickering strip 29.7-31.1 s, the flicker check of 20 Nov)
 // (a ship's lantern on an iron bracket beside the picture: a glowing glass between four dark corner posts, a dark base, a four-sided cap and a
 //  ring on top. A plain glowing box above the picture did not read as a lantern and its cap touched the words: the independent review of v1f)
 const LAMP_AT: V3 = [PRINT_AT[0] + 0.36, FL + 1.44, PRINT_AT[2] + 0.12];

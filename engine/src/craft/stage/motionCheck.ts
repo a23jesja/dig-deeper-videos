@@ -375,7 +375,7 @@ export const picsAt = (film: Film, F: number) => {
   const P = (p: V3) => { const q = new THREE.Vector3(...p).project(l); return [Math.round((q.x + 1) * 540), Math.round((1 - q.y) * 960)]; };
   const out: Record<string, Record<string, number[]>> = {};
   for (const a of castOf(s)(t, s.a + t)) { const st = stageAt(a, cam), r: Record<string, number[]> = {};
-    for (const j of JOINTS) r[j] = P(st.joint(j)); for (const m of ["headMin", "headMax", "eyeA", "eyeB", "pipeTip", "pipeRoot", "patchA", "patchB"]) { const v = st.mark?.(m); if (v) r[m] = P(v); }
+    for (const j of JOINTS) r[j] = P(st.joint(j)); for (const m of ["headMin", "headMax", "eyeA", "eyeB", "pupilA", "pupilB", "pipeTip", "pipeRoot", "patchA", "patchB"]) { const v = st.mark?.(m); if (v) r[m] = P(v); }
     for (const v of ["earA", "earB"]) { const q = st.val?.(v); if (q !== null && q !== undefined) r[v] = [q]; } out[a.name] = r; }
   return out;
 };

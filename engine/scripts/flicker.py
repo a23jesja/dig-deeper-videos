@@ -16,12 +16,15 @@
 # Movement: a thin line or a pupil that moves further in one frame than it is wide is also "there on t and not on t-1 or t+1" (the
 # mate's eyes as his head turns 4 px a frame: 80-150 such pixels in an eye on every frame of the turn). That is movement, not
 # flicker, and those pixels are taken out (the count before that is kept in the report as "raw"):
-#   - in an eye: the eye's own movement is known from the engine (regions.jsonl); a pixel is movement when the frame before, moved
-#     on by the eye's step, and the frame after, moved back by its next step, both look like it (within 1 px, a 5 x 5 patch; or with
-#     one steady extra step of up to GAZE px, the pupil moving in the eye);
-#   - elsewhere: when some steady step of up to STEP px (the frame before shifted one way, the frame after the other) explains it.
-#   A jump there and back (a bubble 3 px out and in), an eye drawn as an empty ring, or an outline that comes and goes in place is not
-#   explained by a steady step and still counts. A move of more than STEP px a frame is not explained either: it strobes.
+#   EXPLAINED BY STEADY MOVEMENT: there is one step v (dy, dx), at most STEP px long, such that the 5 x 5 patch round the pixel on frame t
+#   matches the frame before at the place v behind AND the frame after at the place v ahead (the mean grey difference of each under
+#   MATCH levels): the same thing has gone on moving the same way. And the patch on frame t has something in it that can be followed
+#   (its grey levels vary by at least TEX: an edge, a line, a pupil). A flat patch (skin, sky, an eye filled with skin) is never
+#   explained, because a flat patch looks the same wherever it is put.
+#   Frames next to a cut are not compared across it.
+#   Not explained, and so still flicker: a jump there and back (a bubble 3 px out and in: the frame after is not further on, it is back),
+#   an outline that comes and goes in place, a letter changed for one frame, an eye drawn as an empty ring (flat skin where the eye was),
+#   and anything that moves more than STEP px in a frame (it strobes).
 import json, subprocess, sys
 import numpy as np
 
@@ -43,7 +46,7 @@ def flicker_map(a, b, c):
     d1 = np.abs(b - a).max(2); d2 = np.abs(b - c).max(2); d0 = np.abs(a - c).max(2)
     return (d1 > DIFF) & (d2 > DIFF) & (d0 < SAME)
 
-STEP, MATCH, PATCH, GAZE = 6, 14, 2, 8
+STEP, MATCH, PATCH, TEX = 12, 14, 2, 10
 
 def gray(f):
     return f.astype(np.float32) @ np.array([0.299, 0.587, 0.114], np.float32)
@@ -52,18 +55,17 @@ def explained(G0, G1, G2, ys, xs, shifts):
     """for the pixels (ys, xs): True where some step (dy, dx) in shifts makes the frame before shifted by it and the frame after shifted
     back by it look like this frame (the mean difference over a (2 PATCH + 1)^2 patch under MATCH grey levels)"""
     if len(ys) == 0: return np.zeros(0, bool)
-    P = STEP + 3 + PATCH; pads = [np.pad(g, P, mode="edge") for g in (G0, G1, G2)]
+    reach = max(max(abs(v) for v in sh) for sh in shifts); P = reach + PATCH + 1; pads = [np.pad(g, P, mode="edge") for g in (G0, G1, G2)]
     oy, ox = np.mgrid[-PATCH:PATCH + 1, -PATCH:PATCH + 1]; oy, ox = oy.ravel(), ox.ravel()
     Y, X = ys[:, None] + P + oy[None, :], xs[:, None] + P + ox[None, :]
     mid = pads[1][Y, X]; best = np.full(len(ys), np.inf, np.float32)
-    for sh in shifts:
-        # (dy, dx) = one steady step: the frame before is that step behind, the frame after that step ahead; (dy0, dx0, dy1, dx1) = the
-        # step from the frame before and the step to the frame after, each its own (an eye's steps from the engine)
-        ya, xa, yb, xb = (sh[0], sh[1], sh[0], sh[1]) if len(sh) == 2 else sh
-        ya, xa, yb, xb = (max(-STEP - 2, min(STEP + 2, int(v))) for v in (ya, xa, yb, xb))
-        c = (np.abs(mid - pads[0][Y - ya, X - xa]).mean(1) + np.abs(mid - pads[2][Y + yb, X + xb]).mean(1)) / 2
-        best = np.minimum(best, c)
-    return best < MATCH
+    live = (mid.max(1) - mid.min(1)) >= TEX      # (a flat patch is never explained)
+    if not live.any(): return np.zeros(len(ys), bool)
+    Y, X, mid = Y[live], X[live], mid[live]; bl = best[live]
+    for (ya, xa) in shifts:
+        c = (np.abs(mid - pads[0][Y - ya, X - xa]).mean(1) + np.abs(mid - pads[2][Y + ya, X + xa]).mean(1)) / 2
+        bl = np.minimum(bl, c)
+    out = np.zeros(len(ys), bool); out[live] = bl < MATCH; return out
 
 STEADY = [(dy, dx) for dy in range(-STEP, STEP + 1) for dx in range(-STEP, STEP + 1) if (dy or dx) and dy * dy + dx * dx <= STEP * STEP]
 
@@ -97,29 +99,18 @@ def check(path, regions, fps=30):
         seq.append(fr)
         if len(seq) < 3: continue
         if len(seq) > 3: seq.pop(0)
-        t = F - 1; raw = flicker_map(*seq); n0 = int(raw.sum())
+        t = F - 1; raw = flicker_map(*seq)
+        # (a frame next to a cut is not compared across it: there the frames before and after are two different shots, and where both
+        #  happen to be dark they look alike; the cut itself is not flicker. Shots from regions.jsonl)
+        sh = [regions.get(k, {}).get("shot") for k in (t - 1, t, t + 1)]
+        if sh[1] is not None and (sh[0] != sh[1] or sh[2] != sh[1]): raw[:] = False
+        n0 = int(raw.sum())
         reg = regions.get(t, {"eyes": [], "text": []})
         eye0 = max([in_circle(raw, *e) for e in reg["eyes"]] or [0]); txt0 = max([in_box(raw, b) for b in reg["text"]] or [0])
         m = raw.copy()
         if n0:
             G = [gray(x) for x in seq]; ys, xs = np.nonzero(m)
-            # the eyes, by their own steps from the engine
-            inEye = np.zeros(len(ys), bool)
-            for (x, y, r) in reg["eyes"]:
-                k = (xs - x) ** 2 + (ys - y) ** 2 <= r * r
-                if not k.any(): continue
-                inEye |= k
-                pe, ne = near_eye(regions.get(t - 1), x, y), near_eye(regions.get(t + 1), x, y)
-                if pe is None or ne is None: continue
-                vy0, vx0, vy1, vx1 = y - pe[1], x - pe[0], ne[1] - y, ne[0] - x
-                # (the eye's step, each side within 1 px; or the eye's step and one steady extra step of up to GAZE px for the pupil moving
-                #  in the eye as he reads)
-                sh = [(vy0 + a, vx0 + b, vy1 + c, vx1 + d) for a in (-1, 0, 1) for b in (-1, 0, 1) for c in (-1, 0, 1) for d in (-1, 0, 1)]
-                sh += [(vy0 + a, vx0 + b, vy1 + a, vx1 + b) for a in range(-GAZE, GAZE + 1) for b in range(-GAZE, GAZE + 1) if a * a + b * b <= GAZE * GAZE]
-                idx = np.nonzero(k)[0]; ok = explained(*G, ys[idx], xs[idx], sh); m[ys[idx[ok]], xs[idx[ok]]] = False
-            # the rest, by a steady step of up to STEP px
-            idx = np.nonzero(~inEye)[0]
-            if len(idx): ok = explained(*G, ys[idx], xs[idx], STEADY); m[ys[idx[ok]], xs[idx[ok]]] = False
+            ok = explained(*G, ys, xs, STEADY); m[ys[ok], xs[ok]] = False
         n = int(m.sum())
         eye = max([in_circle(m, *e) for e in reg["eyes"]] or [0]); txt = max([in_box(m, b) for b in reg["text"]] or [0])
         rows.append((t, n, eye, txt, n0, eye0, txt0))
@@ -188,7 +179,7 @@ def main():
          f"fails: more than {FRAME_MAX} flickering pixels in a frame, more than {EYE_MAX} (or {EYE_PART * 100:.0f} % of a large eye's circle) in an eye, more than {TEXT_MAX} in a box of text",
          f"eye circles per frame: {sum(len(regions.get(t, {}).get('eyes', [])) for t, *_ in rows)} in all; text boxes: {sum(len(regions.get(t, {}).get('text', [])) for t, *_ in rows)}" if regions else "no regions given: the picture as a whole only",
          f"largest: picture {max(r[1] for r in rows)} pixels (frame {max(rows, key=lambda r: r[1])[0]}), eye {max(r[2] for r in rows)} (frame {max(rows, key=lambda r: r[2])[0]}), text {max(r[3] for r in rows)} (frame {max(rows, key=lambda r: r[3])[0]})",
-         f"movement taken out: in an eye, the eye's own step from the engine (within 1 px); elsewhere a steady step of up to {STEP} px (5 x 5 patch, mean difference under {MATCH})",
+         f"movement taken out: a pixel is movement when one steady step of at most {STEP} px explains it (the frame before {STEP} px or less behind and the frame after the same step ahead both match its 5 x 5 patch, mean grey difference under {MATCH}) and its patch is not flat (grey levels vary by {TEX} or more)",
          f"raw (before movement is taken out): largest picture {max(r[4] for r in rows)}, eye {max(r[5] for r in rows)}, text {max(r[6] for r in rows)}; frames over the limits raw: {sum(1 for r in rows if r[4] > FRAME_MAX or r[5] > EYE_MAX or r[6] > TEXT_MAX)}",
          f"median picture count: {int(np.median([r[1] for r in rows]))}",
          f"the loop (last frame to first): {SEAM['seam'] * 100:.1f} % of the picture changes; inside the shots the median frame change is {SEAM['median'] * 100:.1f} % and 95 % are {SEAM['p95'] * 100:.1f} % or less (a pixel changes by more than {SEAM_DIFF})", ""]

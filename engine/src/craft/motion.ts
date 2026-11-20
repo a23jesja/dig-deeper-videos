@@ -292,7 +292,10 @@ export class Mover {
         else if (key === "legL" || key === "legR") { const base = a as FootIK; P0[key] = { ...base, fk: b as LegFK, fkW: Math.max(base.fkW ?? 0, clamp(w, 0, 1)) }; }
       }
       if (w > 0.5) { if (L.handL) handL = L.handL; if (L.handR) handR = L.handR; }
-      if (L.face) { const ww = clamp(w, 0, 1), F = face as Record<string, unknown>, G = L.face as Record<string, unknown>; for (const key of Object.keys(G)) { const b = G[key]; F[key] = typeof b === "number" ? lerp((F[key] as number) ?? (key === "lid" ? 0.18 : 0), b, ww) : b; } }
+      if (L.face) { const ww = clamp(w, 0, 1), F = face as Record<string, unknown>, G = L.face as Record<string, unknown>; for (const key of Object.keys(G)) { const b = G[key]; F[key] = typeof b === "number" ? lerp((F[key] as number) ?? (key === "lid" ? 0.18 : 0), b, ww)
+        // (a gaze glides with the layer as the numbers do: it was set whole, so the pupils jumped up to 11 px in one frame where one pose
+        //  gave way to the next, which the flicker check of 20 Nov found in every reading shot)
+        : Array.isArray(b) && b.every((v) => typeof v === "number") ? (b as number[]).map((v, i) => lerp(((F[key] as number[] | undefined)?.[i]) ?? 0, v, ww)) : b; } }
     }
     const dt = 1 / 60, vel = (tt: number) => { const a = this.pelAt(tt), b = this.pelAt(tt - dt); return ((a[0] - b[0]) * f[0] + (a[1] - b[1]) * f[1]) / dt; };
     const drag = vel(t - 0.1), now = vel(t), lateLean = this.lean.at(t - 0.12) - this.lean.at(t);

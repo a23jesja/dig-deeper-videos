@@ -65,13 +65,13 @@ def main():
         a, b = regions.get(t, {}).get("eyes", []), regions.get(t + 1, {}).get("eyes", [])
         return max((min(math.hypot(p[0] - q[0], p[1] - q[1]) for q in b) for p in a), default=0) if a and b and shot(t) == shot(t + 1) else 0
     fast = max(range(N - 1), key=eyestep); fastShot = shot(fast)
-    plan = {}
+    plan, noroom = {}, []
     for name, steps, jat, j, bad in slides:
         total = sum(steps); L = len(steps) + 2 + math.ceil(total / BACK)
         need = (lambda t, jat=jat: big(t + jat, 25)) if jat is not None else (lambda t, steps=steps: all(big(k, 15) for k in range(t, t + len(steps))))      # (faces in the picture all through the slide)
         order = sorted(calm, key=lambda t: (0 if name.startswith("h") and shot(t) == fastShot else 1, t))
         t0 = pick(lambda t: need(t) and not any(regions.get(k, {}).get("bub") for k in range(t, t + L)), L, calm, order)
-        if t0 is None: raise SystemExit(f"no room for {name}")
+        if t0 is None: noroom.append(name); continue      # (no quiet window long enough in this film: reported, not run)
         off, k = [], 0
         for st in steps: k += st; off.append(k)
         off += [k, k]
@@ -142,6 +142,7 @@ def main():
         desc = descS.get(name) or f"a face {j} px out on one frame and back on top of the whole picture moving {steps[0]} px a frame"
         frames = list(range(t0 - 1, t0 + len(off) + 1)) if jat is None else list(range(t0 + jat - 1, t0 + jat + 2))
         ok, lines = report(name, frames, bad, desc); allok &= ok; L += lines
+    for name in noroom: L.append(f"{name}) NO ROOM in this film: no quiet window long enough (not run)"); allok = False
     inPlan = set()
     for t in [A, B, C, D, E, G]:
         if t is not None: inPlan.update(range(t - 1, t + 2))

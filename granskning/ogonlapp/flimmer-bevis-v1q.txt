@@ -1,24 +1,64 @@
 flicker proof: faults planted in ../leverans/eye-patch/eye-patch-v1q.mp4 -> out/craft/qa-eye-patch/proof-v1q-planted.mp4
+parameters: DIFF 40, SAME 16, picture 2000, eye 40, text 150 pixels; movement step at most 12 px, 5 x 5 patch match under 14 grey levels, flat patch under 10, step before and after differ by at most 0.25 of the longer or 2 px; the fastest real head turn of the film: frame 315 (shot 4, 23 px a frame)
 
-a) an empty eye ring on one frame: frame 19 (0.63 s): FAILED by the check (as it must)
-     frame 19 (0.63 s): 461 pixels flicker in an eye (at most 49)
+a) an empty eye ring on one frame: frames 19-19 (0.63-0.63 s, shot 0): FAILED by the check, it must fail (right)
+     frame 19 (0.63 s): 476 pixels flicker in an eye (at most 40)
      the raw measure (no movement taken out) is over its limits on frames: [19]
-b) a speech bubble 3 px out on one frame and back: frame 333 (11.10 s): FAILED by the check (as it must)
-     frame 333 (11.10 s): 7007 pixels flicker in the picture (at most 2000); 7007 pixels flicker in a text or bubble (at most 150)
+b) a speech bubble 3 px out on one frame and back: frames 333-333 (11.10-11.10 s, shot 4): FAILED by the check, it must fail (right)
+     frame 333 (11.10 s): 7487 pixels flicker in the picture (at most 2000); 7487 pixels flicker in a text or bubble (at most 150)
      the raw measure (no movement taken out) is over its limits on frames: [333]
-c) a close-up's face outline 3 px out on one frame and back: frame 488 (16.27 s): passed by the check (WRONG)
+c) a close-up's face 3 px out on one frame and back: frames 488-488 (16.27-16.27 s, shot 8): FAILED by the check, it must fail (right)
+     frame 488 (16.27 s): 92 pixels flicker in an eye (at most 40)
+     frame 489 (16.30 s): 274 pixels flicker in an eye (at most 40)
      the raw measure (no movement taken out) is over its limits on frames: [488, 489]
-d) a caption with one letter changed on one frame: frame 51 (1.70 s): FAILED by the check (as it must)
-     frame 51 (1.70 s): 2176 pixels flicker in the picture (at most 2000); 2174 pixels flicker in a text or bubble (at most 150)
+d) a caption with one letter changed on one frame: frames 51-51 (1.70-1.70 s, shot 0): FAILED by the check, it must fail (right)
+     frame 51 (1.70 s): 2213 pixels flicker in the picture (at most 2000); 2211 pixels flicker in a text or bubble (at most 150)
      the raw measure (no movement taken out) is over its limits on frames: [51]
-e) a pupil 6 px out on one frame and back: frame 89 (2.97 s): FAILED by the check (as it must)
-     frame 89 (2.97 s): 169 pixels flicker in an eye (at most 86)
-     the raw measure (no movement taken out) is over its limits on frames: [89]
-g) a close-up's face outline 11 px out on one frame and back (within the 12 px movement step): frame 513 (17.10 s): FAILED by the check (as it must)
-     frame 513 (17.10 s): 7659 pixels flicker in the picture (at most 2000); 2930 pixels flicker in an eye (at most 443)
-     the raw measure (no movement taken out) is over its limits on frames: [512, 513]
-f) the whole picture, faces in it, sliding steadily 5 px a frame for 12 frames as a fast steady turn moves them, then staying there (must pass): frame 574 (19.13 s)-585: passed by the check (as it must)
-     the raw measure (no movement taken out) is over its limits on frames: [573]
+e) a pupil 6 px out on one frame and back: frames 75-75 (2.50-2.50 s, shot 1): FAILED by the check, it must fail (right)
+     frame 75 (2.50 s): 110 pixels flicker in an eye (at most 40)
+     the raw measure (no movement taken out) is over its limits on frames: [75]
+g) a close-up's face 11 px out on one frame and back (inside the 12 px movement step): frames 512-512 (17.07-17.07 s, shot 8): FAILED by the check, it must fail (right)
+     frame 511 (17.03 s): 184 pixels flicker in an eye (at most 40)
+     frame 512 (17.07 s): 8244 pixels flicker in the picture (at most 2000); 2966 pixels flicker in an eye (at most 40)
+     the raw measure (no movement taken out) is over its limits on frames: [511, 512]
+f) the whole picture sliding steadily 5 px a frame for 12 frames: frames 172-195 (5.73-6.50 s, shot 2): FAILED by the check, it must pass (WRONG)
+     frame 172 (5.73 s): 5476 pixels flicker in the picture (at most 2000); 50 pixels flicker in an eye (at most 40); 160 pixels flicker in a text or bubble (at most 150)
+     frame 173 (5.77 s): 5451 pixels flicker in the picture (at most 2000)
+     frame 174 (5.80 s): 5080 pixels flicker in the picture (at most 2000); 151 pixels flicker in a text or bubble (at most 150)
+     frame 175 (5.83 s): 5510 pixels flicker in the picture (at most 2000)
+     ... and 17 frames more
+     the raw measure (no movement taken out) is over its limits on frames: [172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194]
+f2) the whole picture speeding up from 6 to 12 px a frame, 1 px more each frame: frames 108-127 (3.60-4.23 s, shot 1): FAILED by the check, it must pass (WRONG)
+     frame 107 (3.57 s): 44 pixels flicker in an eye (at most 40)
+     frame 109 (3.63 s): 306 pixels flicker in a text or bubble (at most 150)
+     frame 110 (3.67 s): 579 pixels flicker in a text or bubble (at most 150)
+     frame 111 (3.70 s): 57 pixels flicker in an eye (at most 40); 875 pixels flicker in a text or bubble (at most 150)
+     ... and 6 frames more
+     the raw measure (no movement taken out) is over its limits on frames: [107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126]
+f2b) the whole picture speeding up from 7 to 14 px a frame (over the 12 px step): frames 408-431 (13.60-14.37 s, shot 6): FAILED by the check, it must fail (right)
+     frame 408 (13.60 s): 205 pixels flicker in a text or bubble (at most 150)
+     frame 409 (13.63 s): 4430 pixels flicker in the picture (at most 2000); 92 pixels flicker in an eye (at most 40); 4013 pixels flicker in a text or bubble (at most 150)
+     frame 410 (13.67 s): 6493 pixels flicker in the picture (at most 2000); 63 pixels flicker in an eye (at most 40); 5541 pixels flicker in a text or bubble (at most 150)
+     frame 411 (13.70 s): 2534 pixels flicker in the picture (at most 2000); 137 pixels flicker in an eye (at most 40); 873 pixels flicker in a text or bubble (at most 150)
+     ... and 5 frames more
+     the raw measure (no movement taken out) is over its limits on frames: [408, 409, 410, 411, 412, 413, 414, 415, 416, 417, 418, 419, 420, 421, 422, 423, 424, 425, 426, 427, 428, 429, 430]
+h1) a face 2 px out on one frame and back on top of the whole picture moving 3 px a frame: frames 139-139 (4.63-4.63 s, shot 1): FAILED by the check, it must fail (right)
+     frame 139 (4.63 s): 60 pixels flicker in an eye (at most 40)
+     the raw measure (no movement taken out) is over its limits on frames: [139]
+h2) a face 3 px out on one frame and back on top of the whole picture moving 3 px a frame: frames 466-466 (15.53-15.53 s, shot 7): FAILED by the check, it must fail (right)
+     frame 465 (15.50 s): 63 pixels flicker in an eye (at most 40)
+     the raw measure (no movement taken out) is over its limits on frames: [465, 466, 467]
+h3) a face 2 px out on one frame and back on top of the whole picture moving 6 px a frame: frames 687-687 (22.90-22.90 s, shot 11): FAILED by the check, it must fail (right)
+     frame 687 (22.90 s): 58 pixels flicker in an eye (at most 40)
+     frame 688 (22.93 s): 43 pixels flicker in an eye (at most 40)
+     the raw measure (no movement taken out) is over its limits on frames: [686, 687, 688]
+h4) a face 3 px out on one frame and back on top of the whole picture moving 6 px a frame: frames 746-746 (24.87-24.87 s, shot 12): FAILED by the check, it must fail (right)
+     frame 745 (24.83 s): 56 pixels flicker in an eye (at most 40)
+     frame 746 (24.87 s): 53 pixels flicker in an eye (at most 40)
+     frame 747 (24.90 s): 93 pixels flicker in an eye (at most 40)
+     the raw measure (no movement taken out) is over its limits on frames: [745, 746, 747]
+h5) NO ROOM in this film: no quiet window long enough (not run)
+h6) NO ROOM in this film: no quiet window long enough (not run)
 
-fails outside the planted frames (the film's own): [9, 10, 11, 12, 28, 34, 38, 42, 43, 44, 82, 168, 219, 220, 221, 259, 260, 277, 287, 299, 300, 301, 302, 303, 307, 308, 309, 313, 314, 315, 316, 317, 324, 325, 326, 327, 342, 343, 344, 345, 346, 357, 382, 392, 403, 404, 405, 507, 525, 526, 527, 528, 551, 592, 604, 605, 606, 630, 639, 640, 671, 672, 673, 680, 821, 855, 856, 861, 862, 873, 874, 879, 880, 883, 884, 888, 890, 893, 894, 895, 898, 899, 900, 901, 902, 905, 915, 918, 919, 920, 924, 927, 928, 1039, 1040, 1042, 1043, 1044, 1045, 1058, 1080, 1081, 1082]
-RESULT: the seven planted cases NOT as they must be
+fails outside the planted frames (the film's own): [8, 9, 10, 11, 12, 28, 33, 34, 38, 42, 43, 44, 45, 62, 70, 82, 105, 168, 169, 219, 220, 221, 259, 260, 277, 287, 288, 299, 300, 301, 302, 303, 307, 308, 309, 313, 314, 315, 316, 317, 318, 322, 323, 324, 325, 326, 327, 329, 341, 342, 343, 344, 345, 346, 357, 392, 403, 404, 405, 505, 506, 507, 508, 509, 524, 525, 526, 527, 528, 549, 550, 551, 552, 591, 592, 593, 604, 605, 606, 625, 626, 627, 629, 630, 638, 639, 640, 641, 658, 660, 671, 672, 673, 680, 821, 855, 856, 857, 861, 862, 863, 873, 874, 879, 880, 883, 884, 888, 890, 893, 894, 895, 898, 899, 900, 901, 902, 905, 915, 918, 919, 920, 924, 927, 928, 1039, 1040, 1041, 1042, 1043, 1044, 1045, 1058, 1080, 1081, 1082]
+RESULT: the planted cases NOT all as they must be

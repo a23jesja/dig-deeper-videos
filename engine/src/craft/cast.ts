@@ -226,7 +226,10 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
   const sstep = (e0: number, e1: number, x: number) => { const q = Math.max(0, Math.min(1, (x - e0) / (e1 - e0))); return q * q * (3 - 2 * q); };
   /** how far the ear has come round on top (0 = all behind the skull, 1 = whole on top) */
   const earGrow = (e: Ear) => (o.earPop ? (Math.abs(e.e.d) >= 0.55 * a && e.e.d > 0 ? 1 : 0) : e.e.d > 0 ? sstep(0.15, 0.55, Math.abs(h.sin)) : 0);
-  const earBehind = (e: Ear) => (o.earPop ? Math.abs(e.e.d) < 0.55 * a : earGrow(e) < 1 && (e.e.d > 0 || Math.abs(e.e.d) < 0.55 * a));
+  // (an ear not wholly on top is always drawn behind the skull, which hides what of it lies inside the head's outline. It was drawn behind
+  //  only while its depth was under 0.55 of the head's half-width, so the far ear's part past the outline was switched off and on as the
+  //  head turned, the mate's ear at 28.7 s, the independent review of v1r. earPop = the old switch, the proof's planted fault)
+  const earBehind = (e: Ear) => (o.earPop ? Math.abs(e.e.d) < 0.55 * a : earGrow(e) < 1);
   /** the part of the ear on top: an ellipse from its outer edge inward, as wide as the turn has brought it round */
   const earTop = (e: Ear) => { const k2 = earGrow(e), ox = Math.sign(e.e.x) || 1, rx = 0.17 * a * k2; return { k2, cx: e.e.x + ox * (0.17 * a - rx), rx }; };
   ears.forEach((e, n) => { const T = earTop(e), behind = earBehind(e); let seen = 0, all = 0;
@@ -402,7 +405,11 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
       strap();
     }
   }
-  for (const e of ears) { const T = earTop(e); if (STYLE.simple || T.k2 <= 0) continue; if (T.k2 >= 1) e.draw(); else if (T.rx > 0.01 * a) piece(k, ellPts(T.cx, -0.5 * H, T.rx, 0.12 * H), skinD); }
+  // (the part on top grows with its outline: drawn with the full outline from the first sliver, a thin ear stood beside the head as a dark
+  //  stick or ring and came and went in one frame, the eye patch Short v1r at 15.2 s and 19.2 s, the independent review of 20 Nov)
+  for (const e of ears) { const T = earTop(e); if (STYLE.simple || T.k2 <= 0) continue; if (T.k2 >= 1) e.draw();
+    // (and fades in: cut off below a width it vanished whole from in front of the beard to behind it in one frame, the mate at 28.7 s)
+    else if (T.rx > 0.01 * a) { const al = sstep(0.05, 0.65, T.k2), ow = sstep(0.2, 0.7, T.k2); if (al > 0.01) { const a0 = k.g.globalAlpha; k.g.globalAlpha = a0 * al; k.shape(ellPts(T.cx, -0.5 * H, T.rx, 0.12 * H), skinD, k.ol * ow); k.g.globalAlpha = a0; } } }
   // --- what sits on the head ---
   if (HAT === "cap") {
     capDraw(k, L, h, o.capLift ?? 0, away, "front");

@@ -122,6 +122,13 @@ export const sunRig = (o: Sun, target: [number, number, number] = [0, 0, 0]) => 
 /** point the shadow area at what a shot shows: the smaller the area, the sharper the edge of every shadow in it */
 export const aimSun = (rig: THREE.Object3D, target: [number, number, number], reach: number) => {
   const sun = rig.userData.sun as THREE.DirectionalLight, f = rig.userData.from as [number, number, number];
+  // (the shadow's area moves in whole texels of its map: moved smoothly with the lens, its texel grid slid under the world and shadow edges
+  //  crawled, a lit stub of a table leg coming and going from frame to frame, the eye patch Short v1r, the independent review of 20 Nov)
+  const d = new THREE.Vector3(...f).normalize(), up0 = Math.abs(d.y) > 0.99 ? new THREE.Vector3(1, 0, 0) : new THREE.Vector3(0, 1, 0);
+  const rr = new THREE.Vector3().crossVectors(up0, d).normalize(), uu = new THREE.Vector3().crossVectors(d, rr), tx = (2 * reach) / (sun.shadow.mapSize.x || 2048);
+  const T0 = new THREE.Vector3(...target), snap = (v: number) => Math.round(v / tx) * tx;
+  const T1 = rr.clone().multiplyScalar(snap(T0.dot(rr))).add(uu.clone().multiplyScalar(snap(T0.dot(uu)))).add(d.clone().multiplyScalar(T0.dot(d)));
+  target = [T1.x, T1.y, T1.z];
   sun.position.set(target[0] + f[0], target[1] + f[1], target[2] + f[2]); sun.target.position.set(...target); sun.target.updateMatrixWorld();
   const c = sun.shadow.camera; c.left = -reach; c.right = reach; c.top = reach; c.bottom = -reach; c.near = 1; c.far = 160; c.updateProjectionMatrix();
 };

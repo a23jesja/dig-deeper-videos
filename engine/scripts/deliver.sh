@@ -9,7 +9,7 @@ if [ "$WHAT" = all ] || [ "$WHAT" = film ]; then
   node scripts/film_info.mjs $FILM check
   node scripts/no_sheets_check.mjs | tail -1
   # (DAILY-RULES, Impossible things 9, flicker, Jesper 2026-11-20): rendered at twice the size (2160 x 3840, the 3D at twice the pixels
-  # too) and scaled down, so that thin outlines and fine lines are averaged instead of stepping from frame to frame; then encoded at CRF 17,
+  # too) and scaled down, so that thin outlines and fine lines are averaged instead of stepping from frame to frame; then encoded at CRF 16 with aq-mode 3 (at CRF 17 the lantern's glow on the dark walls showed rings, v1r),
   # constant 30 frames a second, yuv420p in the limited (tv) range, BT.709. Before, Remotion's own file was full range (yuvj420p) at
   # about 5 Mbit/s
   # (one tab at a time, the double-size picture written fast (veryfast) so that ffmpeg keeps up instead of holding frames in memory, and
@@ -22,7 +22,7 @@ if [ "$WHAT" = all ] || [ "$WHAT" = film ]; then
   rm -f "$BIG"; bash scripts/mem_guard.sh npx remotion render src/index.ts $COMP "$BIG" --scale 2 --gl=angle --codec h264 --crf 10 --x264-preset veryfast --concurrency 1 --browser-executable "$CHROME" < /dev/null > out/craft/qa-$FILM/render$V.log 2>&1 || { grep -E "mem_guard|rror" out/craft/qa-$FILM/render$V.log | tail -5; exit 1; }
   grep mem_guard out/craft/qa-$FILM/render$V.log; fi; test -s "$BIG"
   # the sound is copied as it is: re-encoding it beside the picture has stalled ffmpeg for hours on this machine; a stall now fails after ten minutes
-  timeout 600 ffmpeg -nostdin -v error -y -i "$BIG" -vf "scale=1080:1920:flags=lanczos:in_range=pc:out_range=tv:in_color_matrix=bt601:out_color_matrix=bt709,format=yuv420p"     -c:v libx264 -preset slow -crf 17 -r 30 -fps_mode cfr -colorspace bt709 -color_primaries bt709 -color_trc bt709 -color_range tv -c:a copy -movflags +faststart "$CAND" < /dev/null
+  timeout 600 ffmpeg -nostdin -v error -y -i "$BIG" -vf "scale=1080:1920:flags=lanczos:in_range=pc:out_range=tv:in_color_matrix=bt601:out_color_matrix=bt709,format=yuv420p"     -c:v libx264 -preset slow -crf 16 -x264-params aq-mode=3 -r 30 -fps_mode cfr -colorspace bt709 -color_primaries bt709 -color_trc bt709 -color_range tv -c:a copy -movflags +faststart "$CAND" < /dev/null
   test -s "$CAND"
   # the flicker check stops the delivery (exit 1) and names the times
   node scripts/film_info.mjs $FILM regions > out/craft/qa-$FILM/regions.jsonl

@@ -255,7 +255,8 @@ const MAT_M: V3 = [MAT_AT[0], MAT_AT[1], MAT_AT[2] + 0.3];
 //  picture as the one at 'patch', whatever its size, the sharpened twice test after the review's independent reviewer of v1k)
 { const MS = DECK.spot(5.1, NL), MS3: V3 = [MS[0], MD, MS[1]], V = (() => { const r = (NY * Math.PI) / 180, fx = Math.sin(r), fz = -Math.cos(r); return lens(MS3[0] - fx * NF, MD + NH, MS3[2] - fz * NF, fx, fz, -10, 48); })(), mm = mover(MATE_SHORT_D, HM, MS[0], MS[1], V.toward(MS[0], MS[1], 20)); mm.w = 0.09; mm.stand(9);
   ease(mm, -1, { ...REST, head: [0, -4, 0], lean: 3 }, 0.01, { ...LOOSE, face: SQUINT });
-  wag(mm, 0.15, S.s11 - S.s10b, P({ ...REST, head: [9, -3, 2], lean: 3, px: 0.005 }), P({ ...REST, head: [-9, -3, -2], lean: 4, px: -0.005 }), 0.8,      // (the shake 9 degrees each way in 0.8 s: at 16 in 0.6 s his eyes moved 22 px a frame, the flicker check of 20 Nov)
+  wag(mm, 0.15, S.s11 - S.s10b, P({ ...REST, head: [6, -3, 2], lean: 3, px: 0.005 }), P({ ...REST, head: [-6, -3, -2], lean: 4, px: -0.005 }), 1.0,      // (6 degrees in 1.0 s: at 9 in 0.8 s his ear went from on top to behind in two frames, the independent review of v1r)
+       // (the shake 9 degrees each way in 0.8 s: at 16 in 0.6 s his eyes moved 22 px a frame, the flicker check of 20 Nov)
   { ...LOOSE, face: { ...SQUINT, lid: 0.6, mouth: 0, smile: -0.5, brow: 0.6 }, glide: true });      // (puzzled, lips pressed: with the mouth open the squint read as a grin)
   add({ id: "nobody", a: S.s10b, b: S.s11, V, push: 0.04, cast: [(t) => on("mate", MATE_SHORT_D, mm, t, MD, {}, 5)], sun: true, noPole: true }); }      // (no flagpole: it stood close before the lens at the left edge)
 // 16-17. NO PICTURE OR RECORD FROM THEIR TIME SAYS SO. Below, on the wall by a small lantern that lights it, the old picture of pirates drawn

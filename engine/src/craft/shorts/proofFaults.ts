@@ -4,7 +4,7 @@
 // on purpose, so that `film_info proof-faults body` must FAIL with each of them named. It is never delivered.
 import * as THREE from "three";
 import type { Film, Shot, Actor, Staged, Cam } from "../stage/film";
-import { lens } from "../stage/staging";
+import { lens, stageAt, palm } from "../stage/staging";
 import { POSES } from "../rig";
 import { SIR_D, DOCTOR_D } from "../looks";
 import { stool, woodSword } from "../world/props";
@@ -139,5 +139,37 @@ add("AH-bowl-without-stem", { ...sir({}, 40), o: { handL: "relaxed", handR: "rel
 //     lens and hardly move in the picture). The jerk test must stop it on the frame it starts
 const easeOut = (t: number) => { const u = Math.min(1, Math.max(0, (t - 1) / 0.6)); return 1 - (1 - u) * (1 - u); };
 add("AC2-hard-start-soft-stop", (t) => [sir({ lean: -8 * easeOut(t), armL: mixS(POSES.stand.armL as [[number, number], [number, number]], UPA, easeOut(t)), armR: mixS(POSES.stand.armR as [[number, number], [number, number]], UPA, easeOut(t)) }, 60)]);
+
+// AI-AO. THE TESTS ADDED AFTER THE SHOT LIBRARY'S ROUND 3 (the review, 20 Nov: "Varje tillägg ska stoppa ett planterat fall och sin ruta
+//    i r3d"). Each a fault made on purpose that `film_info proof-faults motion` or `body` must stop, and two controls they must pass.
+// AI. AN EAR THAT POPS IN: he turns slowly from facing the lens to 40 degrees over the two seconds (under a degree a frame), the ears
+//     drawn as before 20 Nov (earPop): the near ear switches from behind the head to on top in one frame at 33 degrees (03 frame 31)
+add("AI-ear-pops-in", (t) => [{ ...sir({}, 20 * t), o: { handL: "relaxed", handR: "relaxed", earPop: true } }]);
+// AJ. CONTROL for AI: the same turn, the ears as the rig draws them now (the near ear glides out from behind the head). Must pass
+add("AJ-control-ear-glides", (t) => [{ ...sir({}, 20 * t), o: { handL: "relaxed", handR: "relaxed" } }]);
+// AK. A THING NOBODY HOLDS THAT STARTS AT FULL SPEED: a crate on the floor beside him stands still, and on the 30th frame slides away at
+//     5 cm a frame (the door let go in 07 frames 42-43: still, then swinging at full speed)
+const CRATE = mesh(box(0.35, 0.3, 0.35), "#6a4a2a", { at: [0, 0.15, 0] }); CRATE.name = "crate";
+add("AK-crate-starts-at-full-speed", sir({}), (g, _c, _cam, t) => { CRATE.position.set(0.9 + 0.05 * Math.max(0, at1(t) - 30), 0, -0.4); g.add(CRATE); });
+// AL. A THING LET GO THAT SLIDES OUT FROM UNDER THE HAND: he holds a box out in his right hand, the arm rising slowly for a second; on the
+//     30th frame his hand stops and lets go, and the box goes on as it was moving, away from the still hand (07 frames 43-47: the ring
+//     slid out from under the fist)
+const BOXH = mesh(box(0.22, 0.16, 0.16), "#a0703a", { at: [0, 0, 0] }); BOXH.name = "box";
+const armAt = (t: number) => { const k = Math.min(1, t); return sir({ armR: [[0, 10 + 35 * k], [12, 10 + 35 * k]] }, 60); };
+add("AL-thing-slides-out-of-the-hand", (t) => [{ ...armAt(t), o: { handL: "relaxed", handR: "grip" } }], (g, c, cam, t) => {
+  const held = at1(t) < 30, p1 = palm(stageAt(armAt(1), cam), "R"), p0 = palm(stageAt(armAt(1 - 1 / 30), cam), "R"), n = at1(t) - 30;
+  const p = held ? palm(c.sir, "R") : [p1[0] + (p1[0] - p0[0]) * n, p1[1] + (p1[1] - p0[1]) * n, p1[2] + (p1[2] - p0[2]) * n];
+  BOXH.position.set(p[0], p[1], p[2]); g.add(BOXH);
+  if (AUDIT.on) AUDIT.rows.push(held ? { id: BOXH.uuid, prop: "box", use: "carry", holder: "sir R", err: null, at: p as [number, number, number], o: BOXH } : { id: BOXH.uuid, prop: "box", use: "down", holder: "", err: null, at: p as [number, number, number], o: BOXH }); });
+// AM. A THING INTO A SOLID: a crate slides slowly along the floor, from the first frame, into a block standing beside him (06 frames 32-34:
+//     the falling bottle's corner in the stool's rim)
+const CRATE2 = mesh(box(0.35, 0.3, 0.35), "#7a5a3a", { at: [0, 0.15, 0] }); CRATE2.name = "crate"; const BLOCK = mesh(box(0.4, 0.6, 0.6), "#8a8a8a", { at: [1.0, 0.3, -1.0] });
+add("AM-crate-into-a-block", sir({}), (g, _c, _cam, t) => { g.add(BLOCK); CRATE2.position.set(0.3 + 0.25 * t, 0, -1.0); g.add(CRATE2); });
+// AN. A FOREARM HIDDEN BEHIND THE UPPER ARM: turned a little from the lens, both hands raised before his chest (the react clip's UP pose), the upper
+//     arm drawn over the forearm as before 20 Nov (foreUnder), turned 20 degrees as in 06: the far hand seems to grow out of the shoulder (06 frames 44-119)
+const UPF: Partial<typeof POSES.stand> = { armL: [[26, 12], [128, 18]], armR: [[26, 12], [128, 18]] };
+add("AN-forearm-behind-upper-arm", { ...sir(UPF, -20), o: { handL: "open", handR: "open", foreUnder: true } });
+// AO. CONTROL for AN: the same pose, the forearm drawn over the upper arm where it comes toward the lens, as the rig draws it now. Must pass
+add("AO-control-forearm-in-front", { ...sir(UPF, -20), o: { handL: "open", handR: "open" } });
 
 export const PROOF_FAULTS: Film = { id: "proof-faults", fps: 30, seconds: shots.length * LEN, range: [0, 999], sky: "#9cc8f0", world, shots, words: [], hook: { text: [], a: 0, b: 0 }, light: dayLight(DAY.from, [0, 1, 0]) };

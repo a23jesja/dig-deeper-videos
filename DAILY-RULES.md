@@ -249,6 +249,17 @@ however short, in the background as much as in front. "It is only in the backgro
 7. Light, shadow or smoke that does something impossible: a shadow on the wrong side, a fire that lights
    nothing, smoke that cuts off in a straight line.
 8. Words on screen that disagree with the voice, or a caption covering a face.
+9. **Flicker** (Jesper 2026-11-20, eye-patch Short): outlines, eyes, text or light that blink, shimmer or jump
+   between frames. Causes found: a blink drawn as an empty eye ring for one or two frames; thin outlines aliasing
+   while the camera moves slowly; speech bubbles jumping a few pixels per frame as they pop in; heavy compression.
+   Fixes that are required: render at twice the size and scale down (or SMAA/FXAA on the composer), mipmapped and
+   filtered character textures, outlines at least 3 px at 1080 wide, a blink as open, half-lid, closed arc,
+   half-lid, open with no ring frame, bubbles that ease in over 6 frames and then hold still, and export at CRF
+   16-18 (about 12-16 Mbit/s for 1080x1920), constant 30 fps, yuv420p limited range. The phone copy for review is
+   the only low-bitrate file; YouTube always gets the full-quality one.
+   **Check by script:** count pixels that change from frame t-1 to t and back at t+1 (t-1 and t+1 alike, t
+   different); more than 2,000 such pixels in a frame, or any eye or caption region flipping, fails the render and
+   names the time.
 **It applies to every look and every technique** (Jesper 2026-11-19, after Blackbeard stood inside a painted
 sofa): 3D sets, painted or generated backgrounds, depth layers, photos, overlays, anything added later. A new
 look or tool is only allowed in a video once the code checks can see everything in it.

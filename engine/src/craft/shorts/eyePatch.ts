@@ -45,19 +45,22 @@ const BF = 0.12, GO = -0.01, KK = 0.52, FF = 0.36, HW = 0.31;      // (v1q: the 
 // (held 4 cm out past its edges: the fists show at its sides and the thumbs come over the edge, as at 750 in v1d; held at the edge, the fists hid behind it and the thumbs lay on the page like two blobs, the reviews of v1d and v1f)
 const BOOK = once(() => noShade(logBook(0.62, 0.36, BF, GO)))      // (0.62 wide, so that its edges lie inside the fists held 0.31 out: at 0.54 the right fist stood beside the edge in five shots, the review of v1s; the hands closer gave the elbow wing again)
 , T0H = { handL: "thumb" as const, handR: "thumb" as const };
+// (the patch close-up's book 0.54 wide and 4 cm before the card instead of 10 (nearer the lens it spread past the fists): there the hands keep 0.27 so that the arms stay in the picture, and with the 0.62 book the left
+//  fist lay on the cover 5 cm inside its edge, the review of v1t 484-529; the book's far edge is out of the picture, so its width cannot be told)
+const BOOK_CLOSE = once(() => noShade(logBook(0.54, 0.36, BF, GO)));
 const READ: Face = { brow: 0.6, lid: 0.42, smile: 0.6, gaze: [-0.1, 0.9] };      // (gaze y: + is down)
 /** the book turned round on its upright middle line: its cover to the lens and its pages to him, as a book is held to be read (the review
  *  of v1k: with its pages to the lens he read the back of it). The grips lie either side of that line, so the hands stay on them; his
  *  fingers lie on the cover and his thumbs inside on the pages, out of sight, so no thumbs are drawn */
-const turnBook = () => { const o = BOOK(); o.updateMatrixWorld(true); const box = new THREE.Box3().setFromObject(o), mid = box.getCenter(new THREE.Vector3()), up = new THREE.Vector3(0, 1, 0);
+const turnBook = (o: THREE.Object3D) => { o.updateMatrixWorld(true); const box = new THREE.Box3().setFromObject(o), mid = box.getCenter(new THREE.Vector3()), up = new THREE.Vector3(0, 1, 0);
   o.position.sub(mid).applyAxisAngle(up, Math.PI).add(mid); o.quaternion.premultiply(new THREE.Quaternion().setFromAxisAngle(up, Math.PI)); o.updateMatrixWorld(true); };
 /** the book tipped about the line through its two grips (the hands stay on it), its pages turned up toward his face: reading, not showing */
-const tiltBook = (a: number) => { const o = BOOK(), g0 = (o.userData.grips as V3[])[0]; o.updateMatrixWorld(true); const pW = o.localToWorld(new THREE.Vector3(0, g0[1], g0[2])), ax = new THREE.Vector3(1, 0, 0).applyQuaternion(o.quaternion).normalize();
+const tiltBook = (o: THREE.Object3D, a: number) => { const g0 = (o.userData.grips as V3[])[0]; o.updateMatrixWorld(true); const pW = o.localToWorld(new THREE.Vector3(0, g0[1], g0[2])), ax = new THREE.Vector3(1, 0, 0).applyQuaternion(o.quaternion).normalize();
   o.position.sub(pW).applyAxisAngle(ax, a).add(pW); o.quaternion.premultiply(new THREE.Quaternion().setFromAxisAngle(ax, a)); o.updateMatrixWorld(true); };
 /** the pirate reading the open log, held in both hands as in the shot library's 04 (the thumbs over the pages, the fingers behind), turned
  *  a little toward him so that it shows as an open book; his eyes down on it. `sun`: on deck with the patch on his right eye; else below,
  *  the patch on his left eye and the right eye's pupil wide. `looks`: from `looks` on he looks up from the book at the lens, pleased */
-const reader = (at: V3, y: number, V: Lens, turn: number, sun: boolean, len: number, o: { looks?: number; moves?: boolean; gx?: number; lines?: boolean; tilt?: number; reads?: number; puzzled?: number; wide?: number; closeUp?: boolean; lookFace?: number } = {}) => {
+const reader = (at: V3, y: number, V: Lens, turn: number, sun: boolean, len: number, o: { looks?: number; moves?: boolean; gx?: number; lines?: boolean; tilt?: number; reads?: number; puzzled?: number; wide?: number; closeUp?: boolean; lookFace?: number; /** the close-up's book (BOOK_CLOSE, 4 cm before the card): the fists over its edges where they show */ nearBook?: boolean } = {}) => {
   const hd = V.toward(at[0], at[2], turn), m = mover(PIRATE_D, H, at[0], at[2], hd); m.w = 0.09; m.stand(9);
   // (the arms solved once, as the shot library's 04 holds its book, from a lens straight before him: the joint angles are his own and hold
   //  the book the same way in every shot, whatever lens sees it. Solved toward each shot's own lens, the elbows twisted at side views)
@@ -107,7 +110,7 @@ const reader = (at: V3, y: number, V: Lens, turn: number, sun: boolean, len: num
   if (o.puzzled !== undefined) ease(m, o.puzzled, { ...hold(KK, FF, 0.015), head: [hl + 6, -2, 9], px: 0 }, 0.45, { ...T0H, face: face({ brow: 1, lid: 0, wide: 0.4, mouth: 0, smile: -0.3, gaze: [0.6, -0.7] }) });
   if (o.wide !== undefined) ease(m, o.wide, { ...hold(KK, FF, 0.015), head: [2, 0, 0], px: 0 }, o.closeUp ? 0.55 : 0.3, { ...T0H, face: face({ brow: 1, lid: 0, wide: 0.9, mouth: 0.3, smile: 0.9 }) });
   const lookAt = rcOf(KK, FF);
-  return { m, cast: (t: number) => on("pirate", PIRATE_D, m, t, y, { patch: sun ? "A" : "B", ...T0H }, 3), book: (g: THREE.Group, c: Record<string, any>, cam: Cam) => { carryBy(g, BOOK(), c.pirate, "L", c.pirate, "R", o.reads !== undefined ? HC : cam, 0.1, "carry", false); turnBook(); if (o.tilt) tiltBook(o.tilt); },
+  return { m, cast: (t: number) => on("pirate", PIRATE_D, m, t, y, { patch: sun ? "A" : "B", ...T0H }, 3), book: (g: THREE.Group, c: Record<string, any>, cam: Cam) => { const bk = o.nearBook ? BOOK_CLOSE() : BOOK(); carryBy(g, bk, c.pirate, "L", c.pirate, "R", o.reads !== undefined ? HC : cam, o.nearBook ? 0.04 : 0.1, "carry", false); turnBook(bk); if (o.tilt) tiltBook(bk, o.tilt); },
     look: { pirate: { at: lookAt, what: "the log in his hands", to: o.looks ?? o.puzzled ?? 99 } }, len };
 };
 /** the mate below, no patch, blind in the dark: screwing up his eyes, his eyes searching one way and the other, his head turning, one hand
@@ -131,12 +134,12 @@ const mate = (at: V3, V: Lens, turn: number, v: number, len: number, o: { hang?:
   const hs = o.heads ?? (o.shout ? 0.12 : HS), pk = o.shout ? 0.35 : 1;      // (shouting in the close-up: the swing smaller, at 0.3 his face slid 23 px a frame and strobed, the flicker check of 20 Nov)      // (at full swing his far eye was cut by the head's outline, the independent review of v1m)
   ease(m, -1, { armL: A, armR: B, head: [18 * hs, -4, 0], lean: 6 }, 0.01, { ...R2, face: F0 });
   // (always moving: the head round from side to side with the eyes, the hands searching; a period that never stops for long)
-  wag(m, 0.0, len + 0.5, P({ armL: A, armR: B, head: [24 * hs, -5, 5 * hs], lean: 6, px: 0.01 * pk }), P({ armL: sw(A, 1), armR: sw(B, -1), head: [-22 * hs, -2, -5 * hs], lean: 8, px: -0.01 * pk }), 1.35 + 0.12 * v, { ...R2, face: F1, glide: true });
+  wag(m, 0.0, len + 0.5, P({ armL: A, armR: B, head: [24 * hs, -5, 5 * hs], lean: 6, px: 0.01 * pk }), P({ armL: sw(A, 1), armR: sw(B, -1), head: [-22 * hs, -2, -5 * hs], lean: 8, px: -0.01 * pk }), 1.35 + 0.12 * v, { ...R2, face: F1, glide: true, lastBeat: len - 0.35 });      // (lastBeat: no new swing begun in the last 0.35 s, his head set off 6 frames before the cut at 439, the review of v1t)
   if (o.stumble !== undefined) { ease(m, o.stumble, { armL: sw(A, 1.5), armR: sw(B, 1.5), lean: 11, px: 0.02, py: -0.02, head: [4 * hs, 5, 2] }, 0.6, { ...R2, face: { ...F0, wide: 0.7, lid: 0, mouth: 0.4 } });
     ease(m, o.stumble + 0.7, { armL: A, armR: B, lean: 6, px: 0, py: 0, head: [-10 * hs, -3, 0] }, 0.8, { ...R2, face: F1 });
     // (searching again after he has caught himself: the pose above held him still to the end of the shot, the still-figure test, v1k)
     if (o.stumble + 1.5 < len) wag(m, o.stumble + 1.5, len - o.stumble - 1.0,      // (from when the recovery is done: begun at 1.0 its quicker start took his face from wide to searching in six frames, the review of v1r)
-      P({ armL: A, armR: B, head: [20 * hs, -5, 5 * hs], lean: 6, px: 0.009 }), P({ armL: sw(A, 1), armR: sw(B, -1), head: [-18 * hs, -2, -5 * hs], lean: 8, px: -0.009 }), 1.35 + 0.12 * v, { ...R2, face: F1, glide: true }); }
+      P({ armL: A, armR: B, head: [20 * hs, -5, 5 * hs], lean: 6, px: 0.009 }), P({ armL: sw(A, 1), armR: sw(B, -1), head: [-18 * hs, -2, -5 * hs], lean: 8, px: -0.009 }), 1.35 + 0.12 * v, { ...R2, face: F1, glide: true, lastBeat: len - 0.35 }); }
   return { cast: (t: number) => on("mate", MATE_SHORT_D, m, t, FL, {}, 5) };
 };
 /** the mate at the table's front edge, his right hand on it, feeling along it from one end toward the other, his left hand searching the air */
@@ -166,8 +169,10 @@ const frameOn = (at: V3, y: number, yaw: number, kind: "full" | "close" | "two",
 const cabinLens = (x: number, y: number, z: number, fx: number, fz: number, pitch: number, fov: number) => lens(CX + x, FL + y, CZ + z, fx, fz, pitch, fov);
 const LANT_AT = inCabin(CABIN.flame);
 const SHUTTERS = once(() => { const g = new THREE.Group();
-  for (const wx of CABIN.win) { const c = inCabin([wx, CABIN.winY + CABIN.winH / 2, -CABIN.d / 2 + 0.085]); g.add(mesh(box(CABIN.winW + 0.12, CABIN.winH + 0.12, 0.04), "#3a2416", { at: c, line: 0.5 }));
-    for (const dx of [-0.2, 0, 0.2]) g.add(mesh(box(0.012, CABIN.winH + 0.1, 0.045), "#24160c", { at: [c[0] + dx * CABIN.winW, c[1], c[2] + 0.002], line: 0, shadow: false })); }
+  for (const wx of CABIN.win) { const c = inCabin([wx, CABIN.winY + CABIN.winH / 2, -CABIN.d / 2 + 0.085]); g.add(mesh(box(CABIN.winW + 0.11, CABIN.winH + 0.11, 0.04), "#3a2416", { at: c, line: 0.5 }));
+    for (const dx of [-0.2, 0, 0.2]) g.add(mesh(box(0.012, CABIN.winH + 0.09, 0.05), "#24160c", { at: [c[0] + dx * CABIN.winW, c[1], c[2] + 0.008], line: 0, shadow: false })); }
+  // (the shutters 5 mm inside the window frame's ends and the bars 13 mm proud of the shutter, their backs inside it: the frame's ends, the
+  //  shutter's sides and the bars' backs lay in one plane each and fought for depth, the coplanar check of 21 Nov)
   return noShade(g); });
 // (and a weak cool fill from the room's open side, so that a face turned away from the lantern still reads in a close-up)
 const DARK_LIGHT: CardLight = { amb: "#544e5c", rim: 1.0, lights: [{ at: [LANT_AT[0], FL + 1.1, LANT_AT[2]], color: "#ffb468", power: 2.6, reach: 3.6, rimK: 0.8 }, { at: inCabin([-0.2, 1.6, 1.9]), color: "#a8b0d8", power: 0.9, reach: 3.0, rimK: 0 }] };
@@ -243,7 +248,7 @@ const MAT_M: V3 = [MAT_AT[0], MAT_AT[1], MAT_AT[2] + 0.3];
 // 8. BUT AN EYE UNDER A PATCH... On deck, the pirate reading in the sun, from low at his side
 { const V = lens(PIR_DECK[0] - 2.6 + D2X, MD + D2Y, PIR_DECK[1] - 1.75, 0.83, 0.56, D2P, 52), r = reader(PIR_DECK3, MD, V, 20, true, S.s6b - S.s6); add({ id: "deck2", a: S.s6, b: S.s6b, V, hide: ["brigcask", "brigcoil"], cast: [r.cast], things: r.book, sun: true, patch: "A", look: r.look, newScene: { pirate: "up on deck in the sun: another place than below" } }); }
 // 9. ...IS ALREADY USED TO IT. Close on his face in the sun: the patch over his right eye (the first of the pair)
-{ const V = frameOn(PIR_DECK3, MD, PY, "close", undefined, 1, PH), r = reader(PIR_DECK3, MD, V, 8, true, S.s7 - S.s6b, { looks: 0.2, closeUp: true }); add({ id: "patch", a: S.s6b, b: S.s7, V, push: 0.05, cast: [r.cast], things: r.book, sun: true, patch: "A", close: true }); }
+{ const V = frameOn(PIR_DECK3, MD, PY, "close", undefined, 1, PH), r = reader(PIR_DECK3, MD, V, 8, true, S.s7 - S.s6b, { looks: 0.2, closeUp: true, nearBook: true }); add({ id: "patch", a: S.s6b, b: S.s7, V, push: 0.05, cast: [r.cast], things: r.book, sun: true, patch: "A", close: true }); }
 // 10. FLIP THE PATCH, AND YOU CAN SEE. On "Flip", a whoosh and close on his face in the dark: the patch over his LEFT eye now, his right eye
 //     wide open with a big dark pupil (the second of the pair: the move itself is never shown)
 { const V = frameOn(PIR_AT, FL, 0, "close"), r = reader(PIR_AT, FL, V, 14, false, S.s8 - S.s7, { looks: 0.15, wide: CAN_AT - S.s7, closeUp: true }); add({ id: "flip", a: S.s7, b: S.s8, V, push: 0.04, cast: [r.cast], things: r.book, sun: false, patch: "B", close: true, sounds: [{ t: 0, k: "whoosh", g: 0.9 }], newScene: { pirate: "below deck: the patch moved to his other eye between the two close-ups" }, matchCut: "the patch's move: the same close-up on deck and in the dark, the patch on the other eye, with a whoosh (the review of v1c and v1d)" }); }
@@ -267,7 +272,7 @@ const MAT_M: V3 = [MAT_AT[0], MAT_AT[1], MAT_AT[2] + 0.3];
   ease(mm, -1, { ...REST, head: [0, -4, 0], lean: 3 }, 0.01, { ...LOOSE, face: SQUINT });
   wag(mm, 0.15, S.s11 - S.s10b, P({ ...REST, head: [6, -3, 2], lean: 3, px: 0.005 }), P({ ...REST, head: [-6, -3, -2], lean: 4, px: -0.005 }), 1.0,      // (6 degrees in 1.0 s: at 9 in 0.8 s his ear went from on top to behind in two frames, the independent review of v1r)
        // (the shake 9 degrees each way in 0.8 s: at 16 in 0.6 s his eyes moved 22 px a frame, the flicker check of 20 Nov)
-  { ...LOOSE, face: { ...SQUINT, lid: 0.6, mouth: 0, smile: -0.5, brow: 0.6 }, glide: true });      // (puzzled, lips pressed: with the mouth open the squint read as a grin)
+  { ...LOOSE, face: { ...SQUINT, lid: 0.6, mouth: 0, smile: -0.5, brow: 0.6 }, glide: true, lastBeat: S.s11 - S.s10b - 0.35 });      // (puzzled, lips pressed: with the mouth open the squint read as a grin)
   add({ id: "nobody", a: S.s10b, b: S.s11, V, push: 0.04, cast: [(t) => on("mate", MATE_SHORT_D, mm, t, MD, {}, 5)], sun: true, noPole: true }); }      // (no flagpole: it stood close before the lens at the left edge)
 // 16-17. NO PICTURE OR RECORD FROM THEIR TIME SAYS SO. Below, on the wall by a small lantern that lights it, the old picture of pirates drawn
 //    by us: wide, then close on their faces, every one with both eyes
@@ -281,7 +286,7 @@ const WALL_LAMP = once(() => { const gL = new THREE.Group(), [lx, ly, lz] = LAMP
   for (const sx of [-1, 1]) for (const sz of [-1, 1]) gL.add(mesh(box(0.012, 0.13, 0.012), ink, { at: [lx + sx * 0.042, ly, lz + sz * 0.042], line: 0.3 }));
   gL.add(mesh(box(0.11, 0.025, 0.11), ink, { at: [lx, ly - 0.075, lz], line: 0.4 }), mesh(cyl(0.012, 0.075, 0.06, 4), ink, { at: [lx, ly + 0.095, lz], rot: [0, Math.PI / 4, 0], line: 0.4 }));
   const ring = new THREE.Mesh(new THREE.TorusGeometry(0.022, 0.005, 6, 14), new THREE.MeshBasicMaterial({ color: ink })); ring.position.set(lx, ly + 0.14, lz); gL.add(ring);
-  gL.add(mesh(box(0.012, 0.012, 0.13), ink, { at: [lx, ly + 0.16, lz - 0.06], line: 0.3 }), mesh(box(0.012, 0.03, 0.012), ink, { at: [lx, ly + 0.15, lz], line: 0.3 }));      // (the bracket from the wall)
+  gL.add(mesh(box(0.012, 0.012, 0.13), ink, { at: [lx, ly + 0.16, lz - 0.06], line: 0.3 }), mesh(box(0.02, 0.03, 0.02), ink, { at: [lx, ly + 0.15, lz], line: 0.3 }));      // (the bracket from the wall; its upright 4 mm wider each side than the arm: their sides lay in one plane)
   const pl = new THREE.PointLight("#ffb46a", 1.6, 1.4, 1.6); pl.position.set(lx - 0.1, ly, lz + 0.1); gL.add(pl); return gL; });
 const print = (g: THREE.Group, T2: number, cam: Cam) => { PRINT().position.set(PRINT_AT[0], FL + 1.38, PRINT_AT[2]); g.add(PRINT()); g.add(WALL_LAMP()); glow(g, LAMP_AT, 0.3, 0.3, T2, Math.atan2(cam.pos[0] - LAMP_AT[0], cam.pos[2] - LAMP_AT[2]), 4); };
 add({ id: "record", a: S.s11, b: S.s11b, V: lens(PRINT_AT[0] + 0.09, FL + 1.42, PRINT_AT[2] + 1.85, 0.0, -1, 8, 44), push: 0.15, cast: [], things: (g, _c, cam) => print(g, S.s11, cam), sun: false, sounds: [{ t: 0.2, k: "creak", g: 0.4 }], hide: ["cabin stool"] });

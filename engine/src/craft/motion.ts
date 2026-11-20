@@ -332,8 +332,13 @@ export const shake = (t: number, hits: { t: number; amp: number; dur?: number }[
  *  from both its neighbours while they are alike (Jesper 2026-11-20: the eye patch Short flickered at its blinks, an empty ring between
  *  two arcs; DAILY-RULES, Impossible things 9, and the flicker check scripts/flicker.py) */
 export const BLINK = [0.5, 0.5, 1, 1, 0.5, 0.5];      // (each step held two frames: with one half-lid frame between open and shut, a close-up's shut arc lay where the open pupil had been and that frame differed from both its neighbours, the flicker check of 20 Nov)
+/** how long until the shot's cut, set by the stage (film.ts castOf) while it asks a shot for its figures: a blink begun less than BLINK_CUT
+ *  seconds before a cut is not begun at all (the review of v1t: blinks at 590-595 and 659-660 just before the cuts at 597 and 662) */
+export const CUT = { left: Infinity };
+export const BLINK_CUT = 0.4;
 export const blink = (t: number, seed = 0) => {
   const period = 2.6 + (Math.abs(Math.sin(seed * 12.9898)) * 1.8), u = (t + seed * 0.77) % period, k = Math.floor(u * 30 + 1e-6);
+  if (k < BLINK.length && CUT.left + k / 30 < BLINK_CUT) return 0;
   return k < BLINK.length ? BLINK[k] : 0;
 };
 /** the mouth from the caption word timings: opens on each word and closes between words (a = start, b = end in seconds) */

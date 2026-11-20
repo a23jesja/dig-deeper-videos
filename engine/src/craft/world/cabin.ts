@@ -74,7 +74,8 @@ export const cabin = (o: { rich?: boolean; door?: number } = {}) => {
     mesh(cyl(0.012, 0.012, 0.05, 8), "#fbf3df", { at: [fx, fy - 0.08, fz], line: 0, shadow: false }), mesh(ball(0.02, 8), "#ffb040", { at: [fx, fy - 0.04, fz], line: 0, shadow: false }));
   for (const sx of [-1, 1]) for (const sz of [-1, 1]) g.add(mesh(box(0.012, 0.2, 0.012), "#2b2a33", { at: [fx + sx * 0.07, 0.88, fz + sz * 0.07], line: 0, shadow: false }));
   const st = stool(); st.position.set(...CABIN.stool); st.name = "cabin stool"; g.add(st); g.userData.named = [...((g.userData.named as THREE.Object3D[]) ?? []), st];      // (named: Shot.hide "cabin stool", a lens that has it before a figure's feet)
-  const ch = chest(false, false, 0.7, 0.42, 0.44); ch.position.set(1.65, 0, -1.15); ch.rotation.y = -0.35; ch.userData.gloss = true; g.add(ch);
+  // (its lock old dull brass: bright gold, it shone lighter than the lantern in the shade under the table, the review of the eye patch v1t)
+  const ch = chest(false, false, 0.7, 0.42, 0.44, "#8c6c2a"); ch.position.set(1.65, 0, -1.15); ch.rotation.y = -0.35; ch.userData.gloss = true; g.add(ch);
   if (o.rich) richWood(g);
   return g;
 };
@@ -98,7 +99,9 @@ const richWood = (root: THREE.Object3D) => {
     if (hsl.h < 0.03 || hsl.h > 0.12 || hsl.s < 0.2 || hsl.l > 0.45) return;
     if (!m.geometry.boundingBox) m.geometry.computeBoundingBox(); const z = m.geometry.boundingBox!.getSize(new THREE.Vector3()), dims = [z.x, z.y, z.z].sort((p, q) => q - p);
     const map = mapFor(dims[1], dims[0], z.y > z.x && z.y > z.z);
-    m.material = glossy.has(m) ? new THREE.MeshPhongMaterial({ color: c.clone(), map, shininess: 70, specular: new THREE.Color("#8a6a48") }) : new THREE.MeshToonMaterial({ color: c.clone(), map, gradientMap: mt.gradientMap }); });
+    // (dithered like kit.toon: made new here without it, the lamp's light fading across the walls still stepped in rings, the review of v1t
+    //  73-157; three's pattern is fixed on the screen, so it adds no flicker)
+    m.material = glossy.has(m) ? new THREE.MeshPhongMaterial({ color: c.clone(), map, shininess: 70, specular: new THREE.Color("#8a6a48"), dithering: true }) : new THREE.MeshToonMaterial({ color: c.clone(), map, gradientMap: mt.gradientMap, dithering: true }); });
 };
 /** The cabin at night (Jesper 19 Nov, with the painted cabin as the model to match): the rich cabin, a lantern hung from a beam that is
  *  a real light (warm, throwing shadows on the walls, the floor and the figures), the moon behind the windows shining in blue in shafts

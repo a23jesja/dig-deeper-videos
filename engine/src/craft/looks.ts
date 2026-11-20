@@ -3,7 +3,7 @@
 // Heads are a quarter larger than in the first sheets (Jesper, 2026-11-16: so that the faces read at phone size): every Look's head
 // and head bone carry that size in their own numbers.
 import { Props } from "./rig";
-import { Look, drawCast, drawFingers, drawHat, mirrored } from "./cast";
+import { Look, drawCast, drawFingers, drawHat, mirrored, orderFlags } from "./cast";
 import type { Design } from "./designs/common";
 
 const TWEED = "#c2904c", TEAL = "#12a594";
@@ -321,7 +321,7 @@ export const YOU: Look = {
 export const YOU_CHECK: Look = { ...YOU, id: "youcheck", stripes: { col: "#2f5fa0", check: true } };
 /** a look as a design the rig can play. Every look wears the corrected beard and the corrected open mouth (cast.ts beard2, mouth2: their
  *  sheets were approved by the reviewer on 17 Nov 2026); a look that sets either flag itself keeps its own value */
-export const castDesign = (L0: Look, name = L0.id): Design => { const L: Look = { beard2: true, mouth2: true, ...L0 }; return { id: L.id, name, ol: 4.6, faceW: L.head.a * 1.45, props: () => L.P, garment: L.rows, mirrorAt: (yaw: number) => mirrored(L, yaw), draw: drawCast(L), fingers: drawFingers(L), hat: (k, phi) => drawHat(k, L, phi) }; };
+export const castDesign = (L0: Look, name = L0.id): Design => { const L: Look = { beard2: true, mouth2: true, ...L0 }; return { id: L.id, name, ol: 4.6, faceW: L.head.a * 1.45, props: () => L.P, garment: L.rows, mirrorAt: (yaw: number) => mirrored(L, yaw), orderFlags: (sk) => orderFlags(L, sk), draw: drawCast(L), fingers: drawFingers(L), hat: (k, phi) => drawHat(k, L, phi) }; };
 export const SIR_D = castDesign(SIR, "Sir Digsworth"), BAKER_D = castDesign(BAKER), SOLDIER_D = castDesign(SOLDIER), MERCHANT_D = castDesign(MERCHANT);
 export const KNIGHT_D = castDesign(KNIGHT), TOMMY_D = castDesign(TOMMY), LADY_D = castDesign(LADY), DOCKER_D = castDesign(DOCKER), BOY_D = castDesign(BOY), GRANNY_D = castDesign(GRANNY), ROMAN_WOMAN_D = castDesign(ROMAN_WOMAN);
 export const VESPASIAN_D = castDesign(VESPASIAN), TITUS_D = castDesign(TITUS), FULLER_D = castDesign(FULLER), CITIZEN_D = castDesign(CITIZEN), COLLECTOR_D = castDesign(COLLECTOR);

@@ -248,11 +248,11 @@ export const dryingPole = (len = 3, h = 2.1, cloths: [number, number, number, st
   cloths.forEach(([x, w, drop, col], i) => { g.add(mesh(box(w, drop, 0.03), col, { at: [x, h - drop / 2 + 0.02, 0.05], rot: [0.05, 0, 0] }), mesh(box(w, drop * 0.55, 0.03), col, { at: [x, h - drop * 0.275 + 0.02, -0.05], rot: [-0.05, 0, 0] }), mesh(box(w + 0.01, 0.1, 0.035), ["#7a2f8a", "#c8402f", "#3b7fc4"][i % 3], { at: [x, h - drop + 0.14, 0.085], rot: [0.05, 0, 0], line: 0, shadow: false })); });
   return g;
 };
-/** a strongbox bound with iron; open = the lid stands up; coinsIn = gold shows inside */
-export const chest = (open = false, coinsIn = false, w = 0.62, h = 0.36, d = 0.4) => {
+/** a strongbox bound with iron; open = the lid stands up; coinsIn = gold shows inside; lock = the lock's colour */
+export const chest = (open = false, coinsIn = false, w = 0.62, h = 0.36, d = 0.4, lock: string = C.gold) => {
   const g = group([mesh(box(w, h, d), "#8a5a30", { at: [0, h / 2, 0] }), mesh(box(w + 0.03, 0.05, d + 0.03), C.iron, { at: [0, 0.04, 0], line: 0.5 }), mesh(box(w + 0.03, 0.05, d + 0.03), C.iron, { at: [0, h - 0.04, 0], line: 0.5 })]);
   for (const x of [-w * 0.3, w * 0.3]) g.add(mesh(box(0.05, h + 0.02, d + 0.035), C.iron, { at: [x, h / 2, 0], line: 0 }));
-  const lid = group([mesh(box(w + 0.02, 0.07, d + 0.02), "#7a4e28", { at: [0, 0.035, d / 2] }), mesh(box(0.09, 0.09, 0.03), C.gold, { at: [0, 0.02, d + 0.02], line: 0.5 })], [0, h, -d / 2]);
+  const lid = group([mesh(box(w + 0.02, 0.07, d + 0.02), "#7a4e28", { at: [0, 0.035, d / 2] }), mesh(box(0.09, 0.09, 0.03), lock, { at: [0, 0.02, d + 0.02], line: 0.5 })], [0, h, -d / 2]);
   lid.rotation.x = open ? -1.9 : 0; lid.userData.lid = true; g.add(lid);
   // an iron ring at each end, wider than a fist, so that the ring shows round the hand that holds it by its outer bar
   for (const s of [-1, 1]) g.add(mesh(arc(0.08, 0.013, Math.PI, 12), C.iron, { at: [s * (w / 2 + 0.014), h * 0.68, 0], rot: [0, 0, -s * Math.PI / 2], line: 0.4, shadow: false }));

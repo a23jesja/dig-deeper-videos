@@ -1,0 +1,26 @@
+hook frames 19-19 (film 0.63-0.67 s): (the left arm in front of the head or behind it): it jumps
+hook frames 46-46 (film 1.53-1.57 s): (the left arm in front of the head or behind it): it jumps
+hook frames 16-16 (film 0.53-0.57 s): (the right arm in front of the head or behind it): it jumps
+hook frames 50-50 (film 1.67-1.70 s): (the right arm in front of the head or behind it): it jumps
+dark frames 88-88 (film 2.93-2.97 s): (the left arm in front of the head or behind it): it jumps
+dark frames 113-113 (film 3.77-3.80 s): (the left arm in front of the head or behind it): it jumps
+dark frames 89-89 (film 2.97-3.00 s): (the right forearm over or under the upper arm): it jumps
+dark frames 136-136 (film 4.53-4.57 s): (the right forearm over or under the upper arm): it jumps
+below frames 258-258 (film 8.60-8.63 s): (the left arm in front of the head or behind it): it jumps
+below frames 294-294 (film 9.80-9.83 s): (the left arm in front of the head or behind it): it jumps
+below frames 270-270 (film 9.00-9.03 s): (the right arm in front of the head or behind it): it jumps
+below frames 294-294 (film 9.80-9.83 s): (the right arm in front of the head or behind it): it jumps
+who frames 321-321 (film 10.70-10.73 s): (the right forearm over or under the upper arm): it jumps
+who frames 339-339 (film 11.30-11.33 s): (the right forearm over or under the upper arm): it jumps
+mins frames 422-422 (film 14.07-14.10 s): (the right arm in front of the head or behind it): it jumps
+mins frames 437-437 (film 14.57-14.60 s): (the right arm in front of the head or behind it): it jumps
+mins frames 420-420 (film 14.00-14.03 s): (the left forearm over or under the upper arm): it jumps
+test frames 687-687 (film 22.90-22.93 s): (the left arm in front of the head or behind it): it jumps
+test frames 715-715 (film 23.83-23.87 s): (the left arm in front of the head or behind it): it jumps
+verdict frames 746-746 (film 24.87-24.90 s): (the left arm in front of the head or behind it): it jumps
+verdict frames 762-762 (film 25.40-25.43 s): (the left arm in front of the head or behind it): it jumps
+end frames 1049-1049 (film 34.97-35.00 s): (the left arm in front of the head or behind it): it jumps
+end frames 1071-1071 (film 35.70-35.73 s): (the left arm in front of the head or behind it): it jumps
+end frames 1046-1046 (film 34.87-34.90 s): (the right arm in front of the head or behind it): it jumps
+end frames 1075-1075 (film 35.83-35.87 s): (the right arm in front of the head or behind it): it jumps
+MOTION CHECK FAILED for eye-patch: 25 faults

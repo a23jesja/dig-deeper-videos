@@ -12,6 +12,7 @@
 // A thing the figure stands on (its top no higher than his feet) is his floor, not a thing he stands in. A thing that encloses the lens
 // (the sky) is left out. The faults are kept per shot, figure and thing, with the frames they run over and the deepest point.
 import * as THREE from "three";
+import { coplanar, CoplanarPair, seenFrom } from "./coplanar";
 import { castOf } from "./film";
 import type { Film, Staged, V3 } from "./film";
 import { stageAt } from "./staging";
@@ -110,6 +111,23 @@ export const thingsAt = (film: Film, frame: number) => {
   g.traverse((o) => { const m = o as THREE.Mesh; if (!m.isMesh) return; const p = new THREE.Vector3().setFromMatrixPosition(m.matrixWorld), q = p.clone().project(lens);
     out.push({ geo: m.geometry.type, at: p.toArray().map((v) => +v.toFixed(3)), pic: [Math.round((q.x + 1) * 540), Math.round((1 - q.y) * 960)], decal: !!m.userData.decal }); });
   return { shot: s.id, cam: cam.pos, things: out };
+};
+/** the film's surfaces that lie in one plane (stage/coplanar.ts): its world once, then each shot's own things (at the middle of the shot)
+ *  against the world and each other; each pair with the shots whose lens sees it (start, middle and end of the shot, its hidden things left out) */
+export const coplanarFilm = (film: Film) => { const world = film.world(), root = new THREE.Group(); root.add(world);
+  const all: (CoplanarPair & { shot: string })[] = coplanar(root).map((p) => ({ ...p, shot: "world" }));
+  const seen = new Map<CoplanarPair, { shot: string; F: number; pic: [number, number] }[]>();
+  const look = (s: Film["shots"][number], pairs: CoplanarPair[]) => { const hide = new Set(s.hide ?? []), live: THREE.Mesh[] = [];
+    root.updateMatrixWorld(true); root.traverse((o) => { const m = o as THREE.Mesh; if (m.isMesh && !hiddenBy(m, hide) && !m.userData.decal && !(m.material as THREE.ShaderMaterial)?.isShaderMaterial) live.push(m); });
+    for (const u of [0, 0.5, 0.999]) { const t = (s.b - s.a) * u, c = s.cam(t, u);
+      for (const p of pairs) { if (hiddenBy(p.ma, hide) || hiddenBy(p.mb, hide)) continue; const r = seenFrom(p, new THREE.Vector3(...c.pos), new THREE.Vector3(...c.look), c.fov, live);
+        if (r.n) { const l = seen.get(p) ?? []; seen.set(p, l); if (!l.some((x) => x.shot === s.id)) l.push({ shot: s.id, F: Math.round((s.a + t) * film.fps), pic: r.pic[0] }); } } } };
+  for (const s of film.shots) { const t = (s.b - s.a) / 2, cam = s.cam(t, 0.5), st: Record<string, Staged> = {}; for (const a of castOf(s)(t, s.a + t)) st[a.name] = stageAt(a, cam);
+    const g = new THREE.Group(); s.things?.(g, st, t, s.a + t, cam); root.add(g);
+    const own = coplanar(root, g).map((p) => ({ ...p, shot: s.id })); all.push(...own);
+    look(s, [...all.filter((p) => p.shot === "world"), ...own]);
+    root.remove(g); }
+  return all.map((p) => ({ ...p, seen: seen.get(p) ?? [] }));
 };
 export const pickAt = (film: Film, frame: number, x: number, y: number) => {
   const T = frame / film.fps, s = film.shots.find((q) => T >= q.a - 1e-6 && T < q.b) ?? film.shots[film.shots.length - 1], t = Math.max(0, T - s.a), cam = s.cam(t, t / (s.b - s.a));

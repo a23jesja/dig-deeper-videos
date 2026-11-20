@@ -7,7 +7,7 @@ import type { Design, FigOpts } from "../designs/common";
 import type { Pose, Props, Joint } from "../rig";
 import { solve } from "../rig";
 import { FORE_TOP } from "../cast";
-import { Mover, blink, mouthAt } from "../motion";
+import { Mover, blink, mouthAt, CUT } from "../motion";
 
 export type V3 = [number, number, number];
 export type Cam = { pos: V3; look: V3; fov: number };
@@ -214,32 +214,65 @@ export const loopShot = (last: Shot, first: Shot, over: number) => {
 };
 /** a draw-order choice that would last under ORDER_MIN frames keeps the choice before it (motionCheck's order test fails the rest) */
 export const ORDER_MIN = 15;
-/** false = the forearm's order not settled (as before v1t): the order test's planted fault */
-export const SETTLE_ORDER = true;
+/** how the drawing-order choices are settled over a shot: "free" (since the review of v1t) = a choice changes only on a frame where the two parts
+ *  do not overlap in the picture, and through each stretch where they overlap it holds one value; "v1t" = as in v1t (the forearm held for
+ *  ORDER_MIN frames, the arm before or after the head not settled): the order test's planted fault; "raw" = nothing settled */
+export const SETTLE_ORDER: { mode: "free" | "v1t" | "raw" } = { mode: "free" };
 const settle = (raw: boolean[]) => { const out = raw.slice();
   for (let i = 1; i < out.length; ) { if (out[i] === out[i - 1]) { i++; continue; } let j = i; while (j < out.length && raw[j] === raw[i]) j++;
     if (j - i < ORDER_MIN && j < out.length) for (let k = i; k < j; k++) out[k] = out[i - 1]; i = j; }
   return out; };
+/** settled where it shows: a free frame keeps its own choice; each run of frames that are not free holds one choice all through, the one most of
+ *  its frames want (ties: its first frame's), or `must` where any of its frames needs it (a hand at the face drawn behind the head would vanish) */
+const settleFree = (raw: boolean[], free: boolean[], must?: boolean[]) => { const out = raw.slice();
+  for (let i = 0; i < raw.length; ) { if (free[i]) { i++; continue; } let j = i; while (j < raw.length && !free[j]) j++;
+    let n = 0; for (let k = i; k < j; k++) n += raw[k] ? 1 : 0; let v = n * 2 === j - i ? raw[i] : n * 2 > j - i;
+    if (must) for (let k = i; k < j; k++) if (must[k]) { v = true; break; }
+    for (let k = i; k < j; k++) out[k] = v; i = j; }
+  return out; };
+/** a shot's figures asked for at shot time `t`, with the time left to its cut known to the blinks (motion.ts CUT) */
+const atCut = <R,>(s: Shot, t: number, f: () => R): R => { const was = CUT.left; CUT.left = s.b - s.a - t; try { return f(); } finally { CUT.left = was; } };
+/** the figures' poses, places and headings at `t` with the loop's blend into the first shot (Shot.loopInto) laid on, for the order choices */
+const loopPoses = (s: Shot, t: number, own: ReturnType<Shot["cast"]>) => { const L = s.loopInto, len = s.b - s.a; if (!L || t <= len - L.over) return own;
+  const u = Math.min(1, (t - (len - L.over)) / L.over), k = u * u * (3 - 2 * u), into = castOf(L.shot)(0, L.shot.a);
+  return own.map((a) => { const b = into.find((x) => x.name === a.name); if (!b) return a;
+    return { ...a, pose: mix(a.pose, b.pose, k) as Pose, at: mix(a.at, b.at, k) as V3, heading: a.heading + ((((b.heading - a.heading) % 360) + 540) % 360 - 180) * k }; }); };
 export const castOf = (s: Shot): Shot["cast"] => { const had = LOCKED.get(s); if (had) return had;
   let lock: Map<string, boolean> | null = null;
-  // the forearm over or under the upper arm, for each figure and arm, settled over the whole shot (frames at 30 a second)
-  let fore: Map<string, { L: boolean[]; R: boolean[] }> | null = null;
-  const foreOf = () => { if (fore) return fore; fore = new Map(); const n = Math.max(1, Math.round((s.b - s.a) * 30)), raw = new Map<string, { L: boolean[]; R: boolean[] }>();
+  // the forearm over or under the upper arm, and the arm drawn after the head or before it, for each figure and arm, settled over the whole
+  // shot (frames at 30 a second; see SETTLE_ORDER)
+  type Fix = { fore: { L: boolean[]; R: boolean[] }; arm: { L: boolean[]; R: boolean[] } | null };
+  let fore: Map<string, Fix> | null = null;
+  const foreOf = () => { if (fore) return fore; fore = new Map(); const n = Math.max(1, Math.round((s.b - s.a) * 30));
+    type Raw = Record<"fore" | "freeFore" | "after" | "freeArm" | "face", { L: boolean[]; R: boolean[] }> & { has: boolean };
+    const raw = new Map<string, Raw>(), blank = () => ({ L: [] as boolean[], R: [] as boolean[] });
     for (let F = 0; F < n; F++) { const t = F / 30, c = s.cam(t, t / (s.b - s.a));
-      for (const a of s.cast(t, s.a + t)) { const P = a.D.props(a.o.who ?? "sir"), az = Math.atan2(c.pos[0] - a.at[0], c.pos[2] - a.at[2]), sk = solve(P, a.pose, a.heading - (az * 180) / Math.PI);
-        const r = raw.get(a.name) ?? { L: [], R: [] }; raw.set(a.name, r);
-        for (const sd of ["L", "R"] as const) r[sd][F] = sk.z[`wr${sd}`] - sk.z[`el${sd}`] > FORE_TOP * P.fore; } }
-    for (const [k, r] of raw) { const L = Array.from(r.L, (v) => !!v), R = Array.from(r.R, (v) => !!v); fore.set(k, SETTLE_ORDER ? { L: settle(L), R: settle(R) } : { L, R }); }
+      for (const a of loopPoses(s, t, atCut(s, t, () => s.cast(t, s.a + t)))) { const P = a.D.props(a.o.who ?? "sir"), az = Math.atan2(c.pos[0] - a.at[0], c.pos[2] - a.at[2]), sk = solve(P, a.pose, a.heading - (az * 180) / Math.PI);
+        const r = raw.get(a.name) ?? { fore: blank(), freeFore: blank(), after: blank(), freeArm: blank(), face: blank(), has: false }; raw.set(a.name, r);
+        const fl = a.D.orderFlags?.(sk); if (fl) r.has = true;
+        for (const sd of ["L", "R"] as const) { r.fore[sd][F] = fl ? fl.fore[sd] : sk.z[`wr${sd}`] - sk.z[`el${sd}`] > FORE_TOP * P.fore; r.freeFore[sd][F] = fl ? fl.freeFore[sd] : false;
+          r.after[sd][F] = fl ? fl.after[sd] : false; r.freeArm[sd][F] = fl ? fl.freeArm[sd] : true; r.face[sd][F] = fl ? fl.face[sd] : false; } } }
+    const md = SETTLE_ORDER.mode, b = (x: boolean[]) => Array.from(x, (v) => !!v);
+    for (const [k, r] of raw) { const side = (sd: "L" | "R") => ({
+        fore: md === "free" ? settleFree(b(r.fore[sd]), b(r.freeFore[sd])) : md === "v1t" ? settle(b(r.fore[sd])) : b(r.fore[sd]),
+        arm: md === "free" ? settleFree(b(r.after[sd]), b(r.freeArm[sd]), b(r.face[sd])) : null });
+      const L = side("L"), R = side("R"); fore.set(k, { fore: { L: L.fore, R: R.fore }, arm: r.has && L.arm && R.arm ? { L: L.arm, R: R.arm } : null });
+      // (a shot that loops into the first one ends in that shot's first frame: its last stretch where the parts overlap takes the order the
+      //  first frame has, so that nothing changes at the seam; switched with the other options half way through the blend it jumped, 1072)
+      const lp = s.loopInto; if (md === "free" && lp) { const b0 = castOf(lp.shot)(0, lp.shot.a).find((x) => x.name === k), e = fore.get(k)!;
+        const tail = (out: boolean[], free: boolean[], v: boolean | undefined) => { if (v === undefined) return; for (let q = out.length - 1; q >= 0 && !free[q]; q--) out[q] = v; };
+        if (b0) for (const sd of ["L", "R"] as const) { tail(e.fore[sd], b(r.freeFore[sd]), b0.o.foreTopFix?.[sd]); if (e.arm) tail(e.arm[sd], b(r.freeArm[sd]), b0.o.armFix?.[sd]); } } }
     return fore; };
   const f: Shot["cast"] = (t, T) => { if (!lock) { lock = new Map(); const c0 = s.cam(0, 0); for (const a of s.cast(0, s.a)) if (a.D.mirrorAt) lock.set(a.name, a.D.mirrorAt(a.heading - (Math.atan2(c0.pos[0] - a.at[0], c0.pos[2] - a.at[2]) * 180) / Math.PI)); }
     const Fi = Math.max(0, Math.round(t * 30)), fo = foreOf();
-    const own = s.cast(t, T).map((a) => { const b = lock!.has(a.name) && a.o.mirror === undefined ? { ...a, o: { ...a.o, mirror: lock!.get(a.name) } } : a, q = fo.get(a.name);
-      return q && q.L.length ? { ...b, o: { ...b.o, foreTopFix: { L: q.L[Math.min(Fi, q.L.length - 1)], R: q.R[Math.min(Fi, q.R.length - 1)] } } } : b; });
+    const own = atCut(s, t, () => s.cast(t, T)).map((a) => { const b = lock!.has(a.name) && a.o.mirror === undefined ? { ...a, o: { ...a.o, mirror: lock!.get(a.name) } } : a, q = fo.get(a.name);
+      if (!q || !q.fore.L.length) return b; const at = (x: boolean[]) => x[Math.min(Fi, x.length - 1)];
+      return { ...b, o: { ...b.o, foreTopFix: { L: at(q.fore.L), R: at(q.fore.R) }, ...(q.arm ? { armFix: { L: at(q.arm.L), R: at(q.arm.R) } } : {}) } }; });
     const L = s.loopInto, len = s.b - s.a; if (!L || t <= len - L.over) return own;
     // (the loop: eased so that at the end of the shot, one frame past its last, the figures stand exactly as on the first frame)
     const u = Math.min(1, (t - (len - L.over)) / L.over), k = u * u * (3 - 2 * u), into = castOf(L.shot)(0, L.shot.a);
     return own.map((a) => { const b = into.find((x) => x.name === a.name); if (!b) return a;
       return { ...a, pose: mix(a.pose, b.pose, k) as Pose, at: mix(a.at, b.at, k) as V3, heading: a.heading + ((((b.heading - a.heading) % 360) + 540) % 360 - 180) * k,
         // (the face glides with the rest: switched with the other options at half way, it changed in one frame, the review of v1r at 35.7 s)
-        o: { ...(k < 0.5 ? a.o : b.o), ...(a.o.face || b.o.face ? { face: mix(a.o.face ?? {}, b.o.face ?? {}, k) as typeof a.o.face } : {}) } }; }); };
+        o: { ...(k < 0.5 ? a.o : b.o), foreTopFix: a.o.foreTopFix, armFix: a.o.armFix, ...(a.o.face || b.o.face ? { face: mix(a.o.face ?? {}, b.o.face ?? {}, k) as typeof a.o.face } : {}) } }; }); };
   LOCKED.set(s, f); return f; };

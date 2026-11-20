@@ -26,7 +26,9 @@ if (typeof globalThis.document === "undefined") {
   globalThis.document = { createElement: () => { const g = context(); return { width: 300, height: 150, style: {}, getContext: () => g, toDataURL: () => "", addEventListener() {} }; }, createElementNS: () => ({ style: {} }) };
   globalThis.Path2D = class { constructor() { return quiet({}); } };
 }
-const { FILMS, captions, auditGrips, occlusions, textOver, bodyCheck, bodyLines, pickAt, stageAt, motionCheck, motionLines, MOTION_DEBUG, picsAt, bubblesAt, textBoxes, thingsAt } = await import(pathToFileURL(tmp).href); fs.rmSync(tmp, { force: true });
+const { FILMS, captions, auditGrips, occlusions, textOver, bodyCheck, bodyLines, pickAt, stageAt, motionCheck, motionLines, MOTION_DEBUG, picsAt, bubblesAt, textBoxes, thingsAt, SETTLE_ORDER, coplanarFilm, COPLANAR, castOf } = await import(pathToFileURL(tmp).href); fs.rmSync(tmp, { force: true });
+// ORDER_MODE=v1t|raw: the drawing order settled as in v1t, or not at all (the order test's planted faults; film.ts SETTLE_ORDER)
+if (process.env.ORDER_MODE) SETTLE_ORDER.mode = process.env.ORDER_MODE;
 if (!FILMS[name]) { console.error(`no film named ${name}; there are: ${Object.keys(FILMS).join(", ")}`); process.exit(1); }
 const { film, comp } = FILMS[name], f = (t) => Math.round(t * film.fps);
 const rows = film.shots.map((s) => ({ id: s.id, a: f(s.a), b: f(s.b), still: Math.min(f(s.b) - 1, f(s.a + (s.still ?? (s.b - s.a) / 2))), seconds: +(s.b - s.a).toFixed(2) }));
@@ -100,7 +102,7 @@ else if (what === "joints") { const F = Number(process.argv[4]), who = process.a
 else if (what === "motion") { const only = process.argv[4]?.split(","); MOTION_DEBUG.on = !!process.env.MOTION_DEBUG; const r = motionCheck(film, only ? { shots: only } : {}), lines = motionLines(film, r); for (const l of lines) console.log(l); if (MOTION_DEBUG.on) for (const [k, e] of [...MOTION_DEBUG.top].sort()) console.log(`  max ${k}: ${e.v.toFixed(2)} at ${e.F}`); console.log(`${lines.length ? "MOTION CHECK FAILED" : "MOTION CHECK OK"} for ${name}: ${lines.length} faults`); process.exit(lines.length ? 1 : 0); }
 // pose <frame,frame,...> [name] = each figure's heading, view angle and the pose's head, twist and lean on those frames
 else if (what === "pose") { const who = process.argv[5]; for (const F of process.argv[4].split(",").map(Number)) { const T = F / film.fps, s = film.shots.find((q) => T >= q.a - 1e-6 && T < q.b) ?? film.shots.at(-1), t = Math.max(0, T - s.a), cam = s.cam(t, t / (s.b - s.a));
-  for (const a of s.cast(t, s.a + t)) { if (who && a.name !== who) continue; const az = (Math.atan2(cam.pos[0] - a.at[0], cam.pos[2] - a.at[2]) * 180) / Math.PI; console.log(`${F} ${s.id} ${a.name} heading ${a.heading.toFixed(1)} yaw ${(a.heading - az).toFixed(1)} head ${JSON.stringify(a.pose.head?.map((x) => +x.toFixed(1)))} twist ${(a.pose.twist ?? 0).toFixed(1)} lean ${(a.pose.lean ?? 0).toFixed(1)} roll ${(a.pose.roll ?? 0).toFixed(2)} mouth ${(a.o.face?.mouth ?? 0).toFixed(2)} face ${JSON.stringify(a.o.face ?? {}, (k, v) => typeof v === "number" ? +v.toFixed(2) : v)}`); } } }
+  for (const a of castOf(s)(t, s.a + t)) { if (who && a.name !== who) continue; const az = (Math.atan2(cam.pos[0] - a.at[0], cam.pos[2] - a.at[2]) * 180) / Math.PI; console.log(`${F} ${s.id} ${a.name} heading ${a.heading.toFixed(1)} yaw ${(a.heading - az).toFixed(1)} head ${JSON.stringify(a.pose.head?.map((x) => +x.toFixed(1)))} twist ${(a.pose.twist ?? 0).toFixed(1)} lean ${(a.pose.lean ?? 0).toFixed(1)} roll ${(a.pose.roll ?? 0).toFixed(2)} mouth ${(a.o.face?.mouth ?? 0).toFixed(2)} face ${JSON.stringify(a.o.face ?? {}, (k, v) => typeof v === "number" ? +v.toFixed(2) : v)}`); } } }
 else if (what === "pics") { for (const F of process.argv[4].split(",").map(Number)) console.log(JSON.stringify({ F, figs: picsAt(film, F) })); }
 // regions = for the flicker check (scripts/flicker.py), on every frame: each figure's eyes (a circle round each eye, a little larger
 // than the eye drawn) and every box of text on the picture (the hook, the captions, the speech bubbles), as json lines
@@ -112,6 +114,13 @@ else if (what === "regions") { const caps = captions(film.words, (w) => w.b <= f
     const bub = bubblesAt(film, T).map((q) => q.box.map(Math.round));
     const shot = film.shots.findIndex((q) => T >= q.a - 1e-6 && T < q.b);
     console.log(JSON.stringify({ F, shot, eyes, text, bub })); } }
+// coplanar: surfaces of two things in one plane that overlap, which fight for depth as the lens moves (the review of v1t; stage/coplanar.ts)
+else if (what === "coplanar") { const r = coplanarFilm(film), fightAll = r.filter((p) => p.gap <= COPLANAR.fight && p.facing === "same"), fight = fightAll.filter((p) => p.seen.length), near = r.filter((p) => p.gap > COPLANAR.fight && p.facing === "same" && p.seen.length);
+  const line = (p) => `  ${p.a}  |  ${p.b}  at [${p.at.join(", ")}], gap ${(p.gap * 1000).toFixed(1)} mm, overlap ${(p.area * 1e4).toFixed(1)} cm2; seen in ${p.seen.map((q) => `${q.shot} (frame ${q.F}, x ${q.pic[0]} y ${q.pic[1]})`).join(", ")}`;
+  console.log(`Surfaces of two things in one plane (within ${COPLANAR.fight * 1000} mm), facing the same way and overlapping: ${fightAll.length}, of which a lens sees ${fight.length} (the rest lie inside other things or out of every picture)`);
+  console.log(`SEEN, THEY FIGHT FOR DEPTH: ${fight.length}`); for (const p of fight) console.log(line(p));
+  console.log(`SEEN NEAR MISSES, ${COPLANAR.fight * 1000}-${COPLANAR.near * 1000} mm apart (information): ${near.length}`); for (const p of near) console.log(line(p));
+  console.log(fight.length ? `COPLANAR CHECK FAILED for ${film.id}: ${fight.length} pairs seen` : `COPLANAR CHECK OK for ${film.id}`); }
 else if (what === "things") { console.log(JSON.stringify(thingsAt(film, Number(process.argv[4])), null, 1)); }
 else if (what === "pick") { const [F, x, y] = process.argv.slice(4).map(Number); console.log(JSON.stringify(pickAt(film, F, x, y), null, 1)); }
 else if (what === "grips") {

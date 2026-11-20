@@ -31,6 +31,9 @@ export type FigOpts = { who?: Who; face?: Face; handL?: HandKind; handR?: HandKi
   /** the forearm drawn over the upper arm (true) or under it, settled for the shot by the stage (film.ts castOf): a choice that would last
    *  under 15 frames keeps the one before it, so the order does not flip back and forth (the mate's elbow, eye patch v1s, 8.5 s) */
   foreTopFix?: { L: boolean; R: boolean };
+  /** each arm drawn after the head (from behind: before the torso) or not, settled for the shot by the stage (film.ts castOf): it changes only
+   *  on a frame where the arm is clear of the head (cast.ts armOrder; the review of v1t: the shoulder cap jumped over the beard) */
+  armFix?: { L: boolean; R: boolean };
   /** an eye patch over one eye: "A" the figure's right eye, "B" his left (the pirate's patch, moved to the other eye between shots) */
   patch?: "A" | "B";
   /** proof cases only: "off" draws the patch beside the eye instead of over it */
@@ -40,6 +43,8 @@ export type FigOpts = { who?: Who; face?: Face; handL?: HandKind; handR?: HandKi
   mirror?: boolean };
 /** faceW = half the width that must show in a close-up of the face (moustache tips included) */
 export type Design = { id: string; name: string; ol: number; faceW?: number; props: (who: Who) => Props; draw: (k: Ink, sk: Sk, o: FigOpts) => void;
+  /** the arms' drawing-order choices on this skeleton and whether a change would show (cast.ts orderFlags): the stage settles them per shot */
+  orderFlags?: (sk: Sk) => { after: { L: boolean; R: boolean }; face: { L: boolean; R: boolean }; freeArm: { L: boolean; R: boolean }; fore: { L: boolean; R: boolean }; freeFore: { L: boolean; R: boolean } };
   /** the closed fingers of the named hands by themselves (the layer that lies in front of a thing held) */
   fingers?: (k: Ink, sk: Sk, sides: ("L" | "R")[], whole?: Partial<Record<"L" | "R", HandKind>>) => void;
   /** the figure's hat by itself (lying or flying), its middle at the origin, seen from the angle phi */

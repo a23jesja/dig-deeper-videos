@@ -530,18 +530,54 @@ const outside = (h: P2[]): P2[] => { const ar = h.reduce((s, p, i) => { const q 
   return [...fr, fr[0], hh[0], ...hh.slice(1), hh[0], fr[0]]; };
 /** is p inside the closed outline `poly` */
 const within = (poly: P2[], p: P2) => { let i = false; for (let a = 0, b = poly.length - 1; a < poly.length; b = a++) { const [xa, ya] = poly[a], [xb, yb] = poly[b]; if (ya > p[1] !== yb > p[1] && p[0] < ((xb - xa) * (p[1] - ya)) / (yb - ya) + xa) i = !i; } return i; };
+/** the drawing-order choices of each arm, and whether changing them would show (the review of v1t: the mate's upper arm with its shoulder
+ *  cap jumped in front of his beard in one frame and back in one frame, 18/45, 257/293, 1048/1070; his forearm swapped over and under
+ *  the upper arm at 88/135 and 419; an order may change only where the two parts do not overlap in the picture). In the drawing's own
+ *  terms (a mirrored figure: on its mirror skeleton, see orderFlags):
+ *  - after: the arm drawn after the head (from the front: its wrist toward the lens, or at the face) or, from behind, before the torso
+ *  - face: the hand lies over the face (an arm drawn behind the head there would hide the hand in it)
+ *  - freeArm: the arm, its hand and its width clear of the head and the beard below it, with a margin (a change cannot be seen)
+ *  - fore: the forearm drawn over the upper arm (the wrist toward the lens from the elbow)
+ *  - freeFore: never: forearm and upper arm always meet at the elbow, and their round ends there show the swap even with the arm straight
+ *    (v1t 419-420), so the forearm's order holds for the whole shot */
+type LR = { L: boolean; R: boolean };
+export type ArmOrder = { after: LR; face: LR; freeArm: LR; fore: LR; freeFore: LR };
+const armOrder = (L: Look, sk: Sk): ArmOrder => {
+  const P = sk.P, back = sk.cos < -0.12, sideOn = Math.abs(sk.sin) > SIDE_ON;
+  const hc = mid(sk.j.skull, sk.j.crown, 0.5), hw = Math.hypot(L.head.a * sk.cos, L.head.b * sk.sin), hh = L.head.H / 2;
+  const inHead = (p: P2) => ((p[0] - hc[0]) / hw) ** 2 + ((p[1] - hc[1]) / hh) ** 2 < 1;
+  const dn = unit(sub(sk.j.pelvis, hc)), bc = add(hc, [dn[0] * hh * 0.3, dn[1] * hh * 0.3]), A = hw * 1.3, B = hh * 1.6;
+  const r: Record<string, boolean>[] = [{}, {}, {}, {}, {}];
+  for (const s of ["L", "R"] as const) { const Sh = sk.j[`sh${s}`], E = sk.j[`el${s}`], W = sk.j[`wr${s}`], T = sk.j[`tip${s}`];
+    const late = sk.z[`wr${s}`] - sk.z[`sh${s}`] > P.upper * 0.6, face = !back && inHead(W);
+    const near = (p: P2, w: number) => ((p[0] - bc[0]) / (A + w)) ** 2 + ((p[1] - bc[1]) / (B + w)) ** 2 < 1;
+    let clear = true; const wa = L.arm[0] / 2 + 6, o2 = s === "L" ? "R" : "L", oth: P2[] = [sk.j[`sh${o2}`], sk.j[`el${o2}`], sk.j[`wr${o2}`], sk.j[`tip${o2}`]];
+    // (clear of the other arm too: an arm drawn later or earlier also changes its order with the other one where they cross)
+    const dSeg = (p: P2, a: P2, b: P2) => { const ab = sub(b, a), l2 = ab[0] ** 2 + ab[1] ** 2 || 1, t = clamp(((p[0] - a[0]) * ab[0] + (p[1] - a[1]) * ab[1]) / l2, 0, 1); return Math.hypot(p[0] - a[0] - t * ab[0], p[1] - a[1] - t * ab[1]); };
+    const byOther = (p: P2) => dSeg(p, oth[0], oth[1]) < 2 * wa || dSeg(p, oth[1], oth[2]) < 2 * wa || dSeg(p, oth[2], oth[3]) < wa + P.hand * 0.55;
+    for (let i = 0; i <= 8 && clear; i++) { const k = i / 8, p1 = mid(Sh, E, k), p2 = mid(E, W, k); if (near(p1, wa) || near(p2, wa) || byOther(p1) || byOther(p2)) clear = false; }
+    for (let i = 0; i <= 4 && clear; i++) if (near(mid(W, T, i / 4), P.hand * 0.55)) clear = false;
+    r[0][s] = back ? late : late || face; r[1][s] = face; r[2][s] = sideOn || (!back && clear);
+    r[3][s] = sk.z[`wr${s}`] - sk.z[`el${s}`] > FORE_TOP * P.fore; r[4][s] = false; }
+  const lr = (x: Record<string, boolean>): LR => ({ L: !!x.L, R: !!x.R });
+  return { after: lr(r[0]), face: lr(r[1]), freeArm: lr(r[2]), fore: lr(r[3]), freeFore: lr(r[4]) };
+};
+const swapLR = (o: ArmOrder): ArmOrder => { const w = (x: LR): LR => ({ L: x.R, R: x.L }); return { after: w(o.after), face: w(o.face), freeArm: w(o.freeArm), fore: w(o.fore), freeFore: w(o.freeFore) }; };
+/** armOrder for the figure as the stage sees it (`sk0`, the true skeleton): a mirrored figure is drawn from its mirror skeleton with its
+ *  sides swapped, so the choices are made there and given back on the figure's own sides */
+export const orderFlags = (L: Look, sk0: Sk): ArmOrder => { const mir = mirrored(L, sk0.yaw); return mir ? swapLR(armOrder(L, solve(sk0.P, swapPose(sk0.pose), -sk0.yaw))) : armOrder(L, sk0); };
 export const drawCast = (L: Look) => {
   const inner = drawTrue(L);
   return (k: Ink, sk: Sk, o: FigOpts) => {
     if (!(o.mirror ?? mirrored(L, sk.yaw))) return inner(k, sk, o);
     k.g.save(); k.g.scale(-1, 1);
-    inner(k, solve(sk.P, swapPose(sk.pose), -sk.yaw), { ...o, handL: o.handR, handR: o.handL, patch: o.patch === "A" ? "B" : o.patch === "B" ? "A" : undefined, face: o.face ? { ...o.face, gaze: o.face.gaze ? [-o.face.gaze[0], o.face.gaze[1]] : undefined } : undefined });
+    inner(k, solve(sk.P, swapPose(sk.pose), -sk.yaw), { ...o, handL: o.handR, handR: o.handL, foreTopFix: o.foreTopFix ? { L: o.foreTopFix.R, R: o.foreTopFix.L } : undefined, armFix: o.armFix ? { L: o.armFix.R, R: o.armFix.L } : undefined, patch: o.patch === "A" ? "B" : o.patch === "B" ? "A" : undefined, face: o.face ? { ...o.face, gaze: o.face.gaze ? [-o.face.gaze[0], o.face.gaze[1]] : undefined } : undefined });
     k.g.restore();
     // drawn as its mirror image, the drawing's left arm is the figure's right
     const m = k.marks, hl = m.hidL, hr = m.hidR; delete m.hidL; delete m.hidR; if (hl) m.hidR = hl; if (hr) m.hidL = hr;
     // (and its eyes: the eye patch stays on the figure's own eye, never moved by the mirror, the eye patch Short; the marks follow it)
     for (const [x, y] of [["eyeA", "eyeB"], ["pupilA", "pupilB"], ["patchA", "patchB"]]) { const ma = m[x], mb = m[y]; delete m[x]; delete m[y]; if (ma) m[y] = ma; if (mb) m[x] = mb; }
-    { const v = k.vals, l = v.foreTopL, r = v.foreTopR; if (l !== undefined) v.foreTopR = l; if (r !== undefined) v.foreTopL = r; }
+    { const v = k.vals; for (const n of ["foreTop", "freeArm", "freeFore", "armAfter"]) { const l = v[`${n}L`], r = v[`${n}R`]; delete v[`${n}L`]; delete v[`${n}R`]; if (l !== undefined) v[`${n}R`] = l; if (r !== undefined) v[`${n}L`] = r; } }
   };
 };
 const drawTrue = (L: Look) => (k: Ink, sk: Sk, o: FigOpts) => {
@@ -707,14 +743,17 @@ const drawTrue = (L: Look) => (k: Ink, sk: Sk, o: FigOpts) => {
   const hid = (s: Side, by: (p: P2) => boolean) => { const W = sk.j[`wr${s}`]; if (by(W) && by(mid(sk.j[`el${s}`], W, 0.5))) k.mark(`hid${s}`, W[0], W[1]); };
   // (the order the body is drawn in, noted for motionCheck's order test: a part that changes order for one frame appears or vanishes, as the
   //  mate's far arm and the pirate's shoulder button did at a turn of exactly 30 degrees, the review of v1r)
-  const late = (s: Side) => sk.z[`wr${s}`] - sk.z[`sh${s}`] > P.upper * 0.6, atFace = (s: Side) => !back && inHead(sk.j[`wr${s}`]);
-  k.val("order", (sideOn ? 1 : 0) + (back ? 2 : 0) + (late("L") ? 4 : 0) + (late("R") ? 8 : 0) + (atFace("L") ? 16 : 0) + (atFace("R") ? 32 : 0));
+  // (each arm drawn after the head or before it as the stage settled it for the shot, o.armFix: from one frame to the next it may change
+  //  only where the arm is clear of the head, the review of v1t; armOrder for what each choice means)
+  const ao = armOrder(L, sk), after = (s: Side) => (o.armFix ? o.armFix[s] : ao.after[s]);
+  k.val("order", (sideOn ? 1 : 0) + (back ? 2 : 0) + (!sideOn && after("L") ? 4 : 0) + (!sideOn && after("R") ? 8 : 0));
+  for (const s of ["L", "R"] as const) { k.val(`armAfter${s}`, !sideOn && after(s) ? 1 : 0); k.val(`freeArm${s}`, ao.freeArm[s] ? 1 : 0); k.val(`freeFore${s}`, ao.freeFore[s] ? 1 : 0); }
   if (sideOn) { hid(far, inBody); arm(far); leg(far); leg(near); torso(); head(); chainDraw(); arm(near); }
   else {
     // seen from the front, a hand at the face is in front of the face: its arm is drawn after the head, never behind it
     leg(far); leg(near);
-    if (back) { for (const s of [far, near]) if (late(s)) { hid(s, inBody); arm(s); } torso(); for (const s of [far, near]) if (!late(s)) { hid(s, inHead); arm(s); } head(); }
-    else { torso(); for (const s of [far, near]) if (!late(s) && !atFace(s)) { hid(s, inHead); arm(s); } head(); chainDraw(); for (const s of [far, near]) if (late(s) || atFace(s)) arm(s); }
+    if (back) { for (const s of [far, near]) if (after(s)) { hid(s, inBody); arm(s); } torso(); for (const s of [far, near]) if (!after(s)) { hid(s, inHead); arm(s); } head(); }
+    else { torso(); for (const s of [far, near]) if (!after(s)) { hid(s, inHead); arm(s); } head(); chainDraw(); for (const s of [far, near]) if (after(s)) arm(s); }
   }
   k.ink = ink0;
 };

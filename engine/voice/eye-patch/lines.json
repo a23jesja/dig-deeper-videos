@@ -1,0 +1,93 @@
+[
+ {
+  "id": "hook",
+  "a": 0.0,
+  "b": 2.269,
+  "text": "Why did pirates wear eye patches?",
+  "voice": "bm_george"
+ },
+ {
+  "id": "idea",
+  "a": 2.569,
+  "b": 4.661,
+  "text": "One idea: to see in the dark.",
+  "voice": "bm_george"
+ },
+ {
+  "id": "deck",
+  "a": 4.911,
+  "b": 7.097,
+  "text": "Up on deck, the sun is blinding.",
+  "voice": "bm_george"
+ },
+ {
+  "id": "below",
+  "a": 7.297,
+  "b": 9.446,
+  "text": "Go below, and you can't see a thing.",
+  "voice": "bm_george"
+ },
+ {
+  "id": "mins",
+  "a": 10.346,
+  "b": 14.021,
+  "text": "Eyes need twenty to thirty minutes to get used to the dark.",
+  "voice": "bm_george"
+ },
+ {
+  "id": "patch",
+  "a": 14.271,
+  "b": 17.02,
+  "text": "But an eye under a patch is already used to it.",
+  "voice": "bm_george"
+ },
+ {
+  "id": "flip",
+  "a": 17.22,
+  "b": 19.231,
+  "text": "Flip the patch, and you can see.",
+  "voice": "bm_george"
+ },
+ {
+  "id": "myth",
+  "a": 19.581,
+  "b": 23.367,
+  "text": "In 2007, MythBusters tested the idea.",
+  "voice": "bm_george"
+ },
+ {
+  "id": "verdict",
+  "a": 23.567,
+  "b": 25.274,
+  "text": "Their verdict: plausible.",
+  "voice": "bm_george"
+ },
+ {
+  "id": "but",
+  "a": 25.624,
+  "b": 27.374,
+  "text": "But did real pirates do it?",
+  "voice": "bm_george"
+ },
+ {
+  "id": "none",
+  "a": 27.624,
+  "b": 28.815,
+  "text": "Nobody knows.",
+  "voice": "bm_george"
+ },
+ {
+  "id": "proof",
+  "a": 29.015,
+  "b": 32.058,
+  "text": "No picture or record from their time says so.",
+  "voice": "bm_george"
+ },
+ {
+  "id": "trick",
+  "a": 32.358,
+  "b": 34.14,
+  "text": "Still. A very clever trick.",
+  "voice": "bm_george"
+ }
+]

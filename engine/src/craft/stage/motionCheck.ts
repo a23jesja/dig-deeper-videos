@@ -44,7 +44,7 @@ export const motionCheck = (film: Film, opt: { shots?: string[] } = {}) => {
     const F0 = Math.ceil(s.a * film.fps - 1e-6), F1 = Math.ceil(s.b * film.fps - 1e-6);
     type Fig = { pic: Record<string, [number, number, number]>; face: number; mirror: boolean; H: number; box: [number, number, number, number]; heading: number; head: number; at: V3; pipe: boolean; fade: boolean; pipeOn: [number, number] | null; pipeTip: [number, number] | null; pipeRoot: [number, number] | null; W: Record<string, V3>; kind: { L: string; R: string }; held: { L: boolean; R: boolean }; sit: boolean; eyes: { e: [number, number]; p: [number, number] }[]; skullW: V3;
       /** how much of each ear shows (the drawing notes it), the thing each hand holds (its object's id), the arm's joints on the card */
-      ears: [number | null, number | null]; foreTop: { L: boolean; R: boolean }; holds: { L: string | null; R: string | null }; card: Record<string, [number, number]> };
+      ears: [number | null, number | null]; patch: { side: string; at: [number, number]; eye: [number, number] | null; span: number } | null; foreTop: { L: boolean; R: boolean }; holds: { L: string | null; R: string | null }; card: Record<string, [number, number]> };
     const frames: { F: number; figs: Map<string, Fig>; things: Map<string, { names: Set<string>; small: { key: string; x: number; y: number; d: number }[] }>; downs: Set<string>; held: Map<string, { p: THREE.Vector3; q: THREE.Quaternion }>;
       /** every thing of the shot with a body to it, by its object's id: where it is and how it is turned (the jerk and release tests) */
       objs: Map<string, { p: THREE.Vector3; q: THREE.Quaternion; M: THREE.Matrix4; name: string; held: boolean }> }[] = [];
@@ -63,7 +63,7 @@ export const motionCheck = (film: Film, opt: { shots?: string[] } = {}) => {
         const box: Fig["box"] = [Math.min(...xs.map((x) => x - r), ...hx), Math.max(...xs.map((x) => x + r), ...hx), Math.min(...ys) - 0.04 * H, Math.max(...ys) + 0.02 * H];
         const eyes = (["A", "B"] as const).map((k2) => { const e = a.mark?.(`eye${k2}`), p = a.mark?.(`pupil${k2}`); return e && p ? { e: [P(e)[0], P(e)[1]] as [number, number], p: [P(p)[0], P(p)[1]] as [number, number] } : null; }).filter((q): q is { e: [number, number]; p: [number, number] } => !!q);
         figs.set(a.name, { eyes, skullW: a.joint("skull"), pic, face: faceTurn(sk.faceYaw), mirror: a.o.mirror ?? a.D.mirrorAt?.(yaw) ?? false, H, box, heading: a.heading, head: a.pose.head?.[0] ?? 0, at: a.at, pipe: !!a.mark?.("pipeOpen"), fade: !!a.mark?.("pipeFade"), ...(() => { const m = (n: string) => { const v = a.mark?.(n); return v ? (P(v).slice(0, 2) as [number, number]) : null; }; return { pipeOn: m("pipeOn"), pipeTip: m("pipeTip"), pipeRoot: m("pipeRoot") }; })(), W: Object.fromEntries(JOINTS.map((j) => [j, a.joint(j)])), kind: { L: a.o.handL ?? "relaxed", R: a.o.handR ?? "relaxed" }, held: { L: false, R: false }, sit: seated(sk) > 0.5,
-          ears: [a.val?.("earA") ?? null, a.val?.("earB") ?? null], foreTop: { L: a.val?.("foreTopL") === 1, R: a.val?.("foreTopR") === 1 }, holds: { L: null, R: null }, card: Object.fromEntries(["shL", "elL", "wrL", "tipL", "shR", "elR", "wrR", "tipR"].map((j) => [j, sk.j[j as Joint] as [number, number]])) }); }
+          ears: [a.val?.("earA") ?? null, a.val?.("earB") ?? null], patch: (() => { const side = a.o.patch; if (!side) return null; const m = a.mark?.(`patch${side}`), e = a.mark?.(`eye${side}`); if (!m) return { side, at: [NaN, NaN] as [number, number], eye: null, span: 0 }; const A = a.mark?.("eyeA"), B2 = a.mark?.("eyeB"); return { side, at: P(m).slice(0, 2) as [number, number], eye: e ? (P(e).slice(0, 2) as [number, number]) : null, span: A && B2 ? Math.abs(P(A)[0] - P(B2)[0]) : 0 }; })(), foreTop: { L: a.val?.("foreTopL") === 1, R: a.val?.("foreTopR") === 1 }, holds: { L: null, R: null }, card: Object.fromEntries(["shL", "elL", "wrL", "tipL", "shR", "elR", "wrR", "tipR"].map((j) => [j, sk.j[j as Joint] as [number, number]])) }); }
       // the shot's things: their names, and the small things with where they are in the picture (for the pop test)
       const g = new THREE.Group(); AUDIT.rows = []; AUDIT.on = true; CROWD_LOG.on = false;
       try { s.things?.(g, staged, t, s.a + t, cam); } finally { AUDIT.on = false; } g.updateMatrixWorld(true);
@@ -217,6 +217,16 @@ export const motionCheck = (film: Film, opt: { shots?: string[] } = {}) => {
         if (MOTION_DEBUG.on && near0) MOTION_DEBUG.max(`${s.id} release ${Ok.name} parting/limit`, rel / lim, frames[k].F);
         if (near0 && rel > lim) note(`${s.id}|${name}|release|${u}`, { shot: s.id, who: name, what: `the ${Ok.name} slides out from under ${name}'s ${sd === "L" ? "left" : "right"} hand as he lets go: ${k - i + 1} frame${k > i ? "s" : ""} after, it moves ${((100 * rel) / Bk.H).toFixed(1)} % of his height a frame against the hand still on it (a thing let go parts from the hand gently)` }, frames[k].F);
         if (!near0) break; g0 = g1; h0 = h1; } }
+    // patch (the eye patch Short, 20 Nov 2026): the patch over its eye wherever the eye is drawn (off it by a third of the space between
+    //  the eyes or more, it sits on the cheek or the temple), and on the same eye all through a shot: it moves to the other eye only in a cut
+    for (const name of who) for (let i = 0; i < frames.length; i++) { const B = frames[i].figs.get(name), A = i ? frames[i - 1].figs.get(name) : undefined; if (!B?.patch) continue;
+      const pt = B.patch; if (pt.eye && !isNaN(pt.at[0]) && Math.hypot(pt.at[0] - pt.eye[0], pt.at[1] - pt.eye[1]) > Math.max(0.33 * pt.span, 0.02 * B.H)) note(`${s.id}|${name}|patch-off`, { shot: s.id, who: name, what: `${name}'s eye patch is drawn beside his eye, ${Math.round(Math.hypot(pt.at[0] - pt.eye[0], pt.at[1] - pt.eye[1]))} px off it` }, frames[i].F);
+      // (the eye the script says: the figure's own right ("A") or left ("B") eye, read from the picture, the patch on the side of the face
+      //  where that shoulder is, and from the figure's options)
+      const want = s.patchEye?.[name]; if (want) { const ea = frames[i].figs.get(name)!.eyes, sh = Math.sign(B.pic.shR[0] - B.pic.shL[0]);
+        const mid = ea.length === 2 ? (ea[0].e[0] + ea[1].e[0]) / 2 : null, onRight = mid === null || isNaN(pt.at[0]) || Math.abs(pt.at[0] - mid) < 2 ? null : Math.sign(pt.at[0] - mid) === sh;
+        if (pt.side !== want || (onRight !== null && onRight !== (want === "A"))) note(`${s.id}|${name}|patch-eye`, { shot: s.id, who: name, what: `${name}'s eye patch is on his ${(onRight ?? pt.side === "A") ? "right" : "left"} eye; the script has it on his ${want === "A" ? "right" : "left"}` }, frames[i].F); }
+      if (A?.patch && A.patch.side !== pt.side) note(`${s.id}|${name}|patch-swap`, { shot: s.id, who: name, what: `${name}'s eye patch moves to his other eye from one frame to the next inside the shot (it may move only in a cut)` }, frames[i].F); }
     // forearm: the card draws the forearm and the hand first and the upper arm over them (unless the forearm comes toward the lens: cast.ts arm). A forearm that lies inside the upper arm's width on
     //  the card for 0.2 s (6 frames), two thirds of it or more hidden, puts the hand on the shoulder: it seems to grow out of it (06 frames 44-119)
     for (const name of who) for (const sd of ["L", "R"] as const) { let run: number[] = [];
@@ -252,6 +262,6 @@ export const picsAt = (film: Film, F: number) => {
   const P = (p: V3) => { const q = new THREE.Vector3(...p).project(l); return [Math.round((q.x + 1) * 540), Math.round((1 - q.y) * 960)]; };
   const out: Record<string, Record<string, number[]>> = {};
   for (const a of castOf(s)(t, s.a + t)) { const st = stageAt(a, cam), r: Record<string, number[]> = {};
-    for (const j of JOINTS) r[j] = P(st.joint(j)); for (const m of ["headMin", "headMax", "eyeA", "eyeB", "pipeTip", "pipeRoot"]) { const v = st.mark?.(m); if (v) r[m] = P(v); } out[a.name] = r; }
+    for (const j of JOINTS) r[j] = P(st.joint(j)); for (const m of ["headMin", "headMax", "eyeA", "eyeB", "pipeTip", "pipeRoot", "patchA", "patchB"]) { const v = st.mark?.(m); if (v) r[m] = P(v); } out[a.name] = r; }
   return out;
 };

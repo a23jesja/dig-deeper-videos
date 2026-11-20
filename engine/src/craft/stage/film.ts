@@ -41,6 +41,9 @@ export type Shot = {
   sun?: { target: V3; reach: number };
   /** the scene's light on the figures in this shot (kit.CardLight), instead of the film's */
   light?: CardLight;
+  /** which of a figure's own eyes wears the eye patch in this shot, as the script says ("A" his right, "B" his left): motionCheck fails a
+   *  shot where the patch is drawn on the other one */
+  patchEye?: Record<string, "A" | "B">;
   /** named things of the world that are not there in this shot (the world lists them in userData.named) */
   hide?: string[];
   cast: (t: number, T: number) => Actor[];

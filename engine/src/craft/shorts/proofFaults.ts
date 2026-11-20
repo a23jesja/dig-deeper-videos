@@ -6,7 +6,7 @@ import * as THREE from "three";
 import type { Film, Shot, Actor, Staged, Cam } from "../stage/film";
 import { lens, stageAt, palm } from "../stage/staging";
 import { POSES } from "../rig";
-import { SIR_D, DOCTOR_D } from "../looks";
+import { SIR_D, DOCTOR_D, PIRATE_D } from "../looks";
 import { stool, woodSword } from "../world/props";
 import { kneeling } from "../stage/gestures";
 import { WOODSWORD, wield, usePose, AUDIT } from "../stage/grips";
@@ -171,5 +171,20 @@ const UPF: Partial<typeof POSES.stand> = { armL: [[26, 12], [128, 18]], armR: [[
 add("AN-forearm-behind-upper-arm", { ...sir(UPF, -20), o: { handL: "open", handR: "open", foreUnder: true } });
 // AO. CONTROL for AN: the same pose, the forearm drawn over the upper arm where it comes toward the lens, as the rig draws it now. Must pass
 add("AO-control-forearm-in-front", { ...sir(UPF, -20), o: { handL: "open", handR: "open" } });
+
+// AP-AU. THE EYE PATCH (the eye patch Short, 20 Nov 2026: a new thing on the face, and the eye it is on carries the story). Three faults
+//    made on purpose that `film_info proof-faults motion` must stop, and three controls it must pass
+const pirate = (turn: number, o: Record<string, unknown>): Actor => ({ name: "pirate", D: PIRATE_D, h: 1.78, at: [0, 0, 0], heading: V.toward(0, 0, turn), pose: { ...POSES.stand }, o: { handL: "relaxed", handR: "relaxed", ...o } });
+// AP. THE PATCH BESIDE THE EYE: on his cheek by the right eye, the eye itself open
+add("AP-patch-beside-the-eye", pirate(20, { patch: "A", patchFault: "off" }), undefined, { patchEye: { pirate: "A" } });
+// AQ. THE PATCH MOVES INSIDE A SHOT: on his right eye, and from the 30th frame on his left, with no cut
+add("AQ-patch-moves-without-a-cut", (t) => [pirate(20, { patch: at1(t) < 30 ? "A" : "B" })]);
+// AR. THE PATCH ON THE OTHER EYE THAN THE SCRIPT'S: the script has it on his right eye, he wears it on his left
+add("AR-patch-on-the-wrong-eye", pirate(20, { patch: "B" }), undefined, { patchEye: { pirate: "A" } });
+// AS. CONTROL: drawn as his mirror image (as a figure with a monocle is at some angles), the patch stays on his own right eye. Must pass
+add("AS-control-mirrored-keeps-the-eye", pirate(-20, { patch: "A", mirror: true }), undefined, { patchEye: { pirate: "A" } });
+// AT, AU. CONTROLS: he turns slowly from facing the lens to 80 degrees one way and the other, the patch on his right eye. Must pass
+add("AT-control-patch-turn-left", (t) => [pirate(40 * t, { patch: "A" })], undefined, { patchEye: { pirate: "A" } });
+add("AU-control-patch-turn-right", (t) => [pirate(-40 * t, { patch: "A" })], undefined, { patchEye: { pirate: "A" } });
 
 export const PROOF_FAULTS: Film = { id: "proof-faults", fps: 30, seconds: shots.length * LEN, range: [0, 999], sky: "#9cc8f0", world, shots, words: [], hook: { text: [], a: 0, b: 0 }, light: dayLight(DAY.from, [0, 1, 0]) };

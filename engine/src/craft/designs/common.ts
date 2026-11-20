@@ -24,6 +24,10 @@ export type FigOpts = { who?: Who; face?: Face; handL?: HandKind; handR?: HandKi
   /** true = the upper arm drawn over the forearm always, as before 20 Nov (the shot library's 06: the forearm raised before the chest hid
    *  behind the upper arm; the proof's planted fault) */
   foreUnder?: boolean;
+  /** an eye patch over one eye: "A" the figure's right eye, "B" his left (the pirate's patch, moved to the other eye between shots) */
+  patch?: "A" | "B";
+  /** proof cases only: "off" draws the patch beside the eye instead of over it */
+  patchFault?: "off";
   /** the figure drawn as its mirror image or not, fixed for the whole shot (film.ts castOf): turning across the angle where the mirror
    *  changes, the head was redrawn the other way round between two frames */
   mirror?: boolean };

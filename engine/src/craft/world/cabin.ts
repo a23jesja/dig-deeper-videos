@@ -147,18 +147,20 @@ export const cabinNight = (light: Sun, o: { sea?: TexImageSource; door?: number 
   return root;
 };
 /** flagSea with the cabin beside it */
-export const cabinSea = () => { const root = flagSea(), c = cabin(); c.position.set(...CABIN.at); root.add(c); return root; };
+export const cabinSea = () => { const root = flagSea(), c = cabin(); c.position.set(...CABIN.at); root.add(c); root.userData.named = [...((root.userData.named as THREE.Object3D[]) ?? []), ...((c.userData.named as THREE.Object3D[]) ?? [])]; return root; };
 
 /** the door's leaf for the doorway in the right-hand wall (cabin `door`): planks in a frame with an iron ring handle, hinged on its front
  *  edge (the +z side) and swung `open` degrees into the room. Returned with where its handle is now (in the world), for the hand */
-export const cabinDoor = (doorZ: number, open: number, /** hinged on the back edge (-z) instead of the front: it opens toward the room's open front */ back = false) => { const g = new THREE.Group(), { w, h } = { w: DOOR.w - 0.04, h: DOOR.h - 0.03 }, th = 0.05;
+export const cabinDoor = (doorZ: number, open: number, /** hinged on the back edge (-z) instead of the front: it opens toward the room's open front */ back = false) => { const g = new THREE.Group(), th = 0.05, { w, h } = { w: DOOR.w - 0.07 - th / 2 - 0.01, h: DOOR.h - 0.03 };
+  // (the leaf between the jambs' inner faces, and its hinge a half thickness in from the jamb so that it swings clear of it: the leaf was
+  //  as wide as the opening and lay 1.5 cm in both jambs, shut and swinging; bodyCheck's thing test, the shot library's 07)
   const leaf = new THREE.Group(); leaf.add(mesh(box(th, h, w), "#5a3a22", { at: [0, h / 2, -w / 2], line: 0.6 }));
   for (const k of [0.25, 0.5, 0.75]) leaf.add(mesh(box(th + 0.006, h - 0.1, 0.012), "#3e2716", { at: [0, h / 2, -w * k], line: 0, shadow: false }));
   for (const yy of [0.35, h - 0.35]) leaf.add(mesh(box(th + 0.01, 0.06, w - 0.06), "#3e2716", { at: [0, yy, -w / 2], line: 0.3, shadow: false }));
   const HX = -th / 2 - 0.035, HY = 1.0, HZ = -w + 0.09;
   leaf.add(mesh(box(0.05, 0.05, 0.012), "#2b2a33", { at: [HX + 0.01, HY, HZ], line: 0.3, shadow: false }));
   leaf.name = "door"; g.add(leaf);
-  const hx = CABIN.w / 2 - 0.06 - th / 2, hz = back ? doorZ - DOOR.w / 2 + 0.02 : doorZ + DOOR.w / 2 - 0.02;
+  const hx = CABIN.w / 2 - 0.06 - th / 2, hz = back ? doorZ - DOOR.w / 2 + 0.035 + th / 2 + 0.005 : doorZ + DOOR.w / 2 - 0.035 - th / 2 - 0.005;
   // (hinged at the back, the leaf is the same one turned half round: it reaches toward +z from its hinge and swings into the room the other way)
   const turn = back ? Math.PI : 0; g.position.set(...inCabin([hx, 0, hz])); g.rotation.y = turn + (back ? -1 : 1) * (open * Math.PI) / 180;
   if (back) leaf.scale.x = -1;

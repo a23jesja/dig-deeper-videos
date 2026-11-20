@@ -358,6 +358,10 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
       k.shape(ball, null); }
       if (L.lash) for (const j of [0, 1]) k.line([[q.x + s * rx * (0.7 + 0.25 * j) * (h.cos > 0.3 ? 1 : 0.4), yEye - ry * (0.75 - 0.3 * j)], [q.x + s * rx * (1.05 + 0.3 * j) * (h.cos > 0.3 ? 1 : 0.4), yEye - ry * (1.1 - 0.35 * j)]], 3.4);
       if (L.monocle && s < 0) mono = { x: q.x, rx, ry };
+      // an eye patch over this eye (FigOpts.patch: "A" his right eye, "B" his left): black cloth a little larger than the eye, the strap
+      // drawn after both eyes
+      if (o.patch && (o.patch === "A") === s < 0) { const px = q.x + (o.patchFault === "off" ? s * 2.4 * rx : 0);      // (patchFault "off": beside the eye, the proof's planted fault)
+        k.mark(s < 0 ? "patchA" : "patchB", px, yEye); piece(k, spline([[px - rx * 1.3, yEye - ry * 1.05], [px + rx * 1.3, yEye - ry * 1.05], [px + rx * 1.15, yEye + ry * 0.75], [px, yEye + ry * 1.25], [px - rx * 1.15, yEye + ry * 0.75]], true, 6), "#1c1612"); }
       // the brow is its own piece: up for surprise, down toward the nose for a frown
       const bi = at(h, s * 9, 0.8), bo = at(h, s * 46, 0.8), by = yEye - ry - 0.04 * H, bw = f.brow ?? 0, th = 0.04 * H;
       const yi = by - 0.014 * H - 0.055 * H * Math.max(bw, 0) + 0.045 * H * Math.max(-bw, 0), yo = by + 0.008 * H - 0.04 * H * Math.max(bw, 0) - 0.022 * H * Math.max(-bw, 0);
@@ -368,6 +372,12 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
     let mono: { x: number; rx: number; ry: number } | null = null;
     const monocle = () => { if (!mono) return; const { x, rx, ry } = mono, ring = ellPts(x, yEye, Math.max(rx * 1.36, ry * 1.02), ry * 1.34);
       k.clip(skull, () => { k.clip(ring, () => { k.g.globalAlpha = 0.2; k.shape(ring, "#bfe6f2", 0); k.g.globalAlpha = 0.8; k.line([[x - rx * 0.7, yEye + ry * 0.2], [x - rx * 0.1, yEye - ry * 0.8]], rx * 0.2, "#ffffff"); k.g.globalAlpha = 1; }); k.shape(ring, null, 12.5); const i = k.ink; k.ink = BRASS; k.shape(ring, null, 7.5); k.ink = i; }); };
+    // the patch's strap: from the patch round the side of the head above the ear, and up across the brow to the far side of the crown,
+    // on the head's surface as it turns (only what faces the lens is drawn, inside the head's outline)
+    const strap = () => { if (!o.patch) return; const s = o.patch === "A" ? -1 : 1;
+      for (const [az1, y1] of [[s * 100, -0.66 * H], [-s * 80, -0.92 * H]] as [number, number][]) { const pts: P2[] = []; let run: P2[] = [];
+        for (let i = 0; i <= 16; i++) { const az = s * 28 + (az1 - s * 28) * (i / 16), q = at(h, az, 1.0), y = yEye - 0.03 * H + (y1 - yEye + 0.03 * H) * (i / 16); if (q.d > -0.02 * b) run.push([q.x, y]); else if (run.length) break; }
+        pts.push(...run); if (pts.length > 1) k.clip(skull, () => k.line(spline(pts, false, 4), 0.026 * H, "#1c1612", "round")); } };
     const far = h.sin >= 0 ? 1 : -1;
     if (vis) eye(far);
     if (!away) { mousHalf(far); mousHalf(-far); if (L.mous && h.cos > 0.5) pin(k, [nose0.x * 0.9, yM + 1], 4); }
@@ -379,6 +389,7 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
       const t0 = at(h, 0, 0.9), n1 = at(h, -7, 0.9), n2 = at(h, 7, 0.9), c1 = at(h, -13, 0.9), c2 = at(h, 13, 0.9), out = 0.5 * a * h.sin;
       piece(k, hull([[n1.x, -0.49 * H], [n2.x, -0.49 * H], [c1.x + out * 0.5, -0.385 * H], [c2.x + out * 0.5, -0.385 * H], [t0.x + out, -0.385 * H], [t0.x + out * 0.86, -0.35 * H], [t0.x, -0.335 * H]]), shade(skin, 0.9));
       monocle();
+      strap();
     }
   }
   for (const e of ears) { const T = earTop(e); if (STYLE.simple || T.k2 <= 0) continue; if (T.k2 >= 1) e.draw(); else if (T.rx > 0.01 * a) piece(k, ellPts(T.cx, -0.5 * H, T.rx, 0.12 * H), skinD); }
@@ -485,10 +496,13 @@ export const drawCast = (L: Look) => {
   return (k: Ink, sk: Sk, o: FigOpts) => {
     if (!(o.mirror ?? mirrored(L, sk.yaw))) return inner(k, sk, o);
     k.g.save(); k.g.scale(-1, 1);
-    inner(k, solve(sk.P, swapPose(sk.pose), -sk.yaw), { ...o, handL: o.handR, handR: o.handL, face: o.face ? { ...o.face, gaze: o.face.gaze ? [-o.face.gaze[0], o.face.gaze[1]] : undefined } : undefined });
+    inner(k, solve(sk.P, swapPose(sk.pose), -sk.yaw), { ...o, handL: o.handR, handR: o.handL, patch: o.patch === "A" ? "B" : o.patch === "B" ? "A" : undefined, face: o.face ? { ...o.face, gaze: o.face.gaze ? [-o.face.gaze[0], o.face.gaze[1]] : undefined } : undefined });
     k.g.restore();
     // drawn as its mirror image, the drawing's left arm is the figure's right
     const m = k.marks, hl = m.hidL, hr = m.hidR; delete m.hidL; delete m.hidR; if (hl) m.hidR = hl; if (hr) m.hidL = hr;
+    // (and its eyes: the eye patch stays on the figure's own eye, never moved by the mirror, the eye patch Short; the marks follow it)
+    for (const [x, y] of [["eyeA", "eyeB"], ["pupilA", "pupilB"], ["patchA", "patchB"]]) { const ma = m[x], mb = m[y]; delete m[x]; delete m[y]; if (ma) m[y] = ma; if (mb) m[x] = mb; }
+    { const v = k.vals, l = v.foreTopL, r = v.foreTopR; if (l !== undefined) v.foreTopR = l; if (r !== undefined) v.foreTopL = r; }
   };
 };
 const drawTrue = (L: Look) => (k: Ink, sk: Sk, o: FigOpts) => {

@@ -1,0 +1,22 @@
+{
+ "voice": "bm_george",
+ "speed": 1.06,
+ "gap": 0.16,
+ "lead": 0.0,
+ "risk": ["eye patches", "blinding", "a thing", "twenty to thirty minutes", "MythBusters", "plausible", "Nobody knows", "their time"],
+ "lines": [
+  {"id": "hook", "text": "Why did pirates wear eye patches?", "gap": 0.3},
+  {"id": "idea", "text": "One idea: to see in the dark.", "gap": 0.25},
+  {"id": "deck", "text": "Up on deck, the sun is blinding.", "gap": 0.2},
+  {"id": "below", "text": "Go below, and you can't see a thing.", "gap": 0.9},
+  {"id": "mins", "text": "Eyes need twenty to thirty minutes to get used to the dark.", "gap": 0.25},
+  {"id": "patch", "text": "But an eye under a patch is already used to it.", "gap": 0.2},
+  {"id": "flip", "text": "Flip the patch, and you can see.", "gap": 0.35},
+  {"id": "myth", "text": "In 2007, MythBusters tested the idea.", "gap": 0.2},
+  {"id": "verdict", "text": "Their verdict: plausible.", "gap": 0.35},
+  {"id": "but", "text": "But did real pirates do it?", "gap": 0.25},
+  {"id": "none", "text": "Nobody knows.", "gap": 0.2},
+  {"id": "proof", "text": "No picture or record from their time says so.", "gap": 0.3},
+  {"id": "trick", "text": "Still. A very clever trick."}
+ ]
+}

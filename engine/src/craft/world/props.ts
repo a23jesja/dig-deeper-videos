@@ -587,6 +587,16 @@ export const hangDown = (o: THREE.Object3D) => { const hs = o.userData.hang as T
   for (const h of hs) h.rotation.z = phi; o.updateMatrixWorld(true); };
 /** a book held open in two hands by its outer edges (userData.grips): on the left page a woodcut of a bearded man with a fuse smoking on
  *  each side of his face, on the right page lines of print; the pages face +z */
+/** a ship's log held open the same way: both pages ruled with lines of handwriting (no words to read), a small sketch of a ship on the left */
+export const logBook = (w = 0.52, h = 0.36) => { const map = paint("booklog", 512, 352, (g) => {
+    g.fillStyle = "#f1e3bd"; g.fillRect(0, 0, 512, 352); g.fillStyle = "#cdb98a"; g.fillRect(253, 0, 6, 352);
+    g.strokeStyle = "#3a2c22"; g.lineWidth = 3; for (const x0 of [26, 282]) for (let y = 40; y < 330; y += 22) { if (x0 === 26 && y > 150 && y < 250) continue; g.beginPath(); g.moveTo(x0, y);
+      for (let x = x0; x < x0 + 200 - ((y * 7) % 60); x += 8) g.lineTo(x + 4, y - 3 + ((x * 13 + y) % 7)); g.stroke(); }
+    // the sketch: a hull and a mast with a sail
+    g.lineWidth = 3.5; g.beginPath(); g.moveTo(60, 230); g.lineTo(190, 230); g.lineTo(170, 248); g.lineTo(80, 248); g.closePath(); g.stroke(); g.beginPath(); g.moveTo(125, 230); g.lineTo(125, 160); g.stroke();
+    g.beginPath(); g.moveTo(128, 165); g.quadraticCurveTo(165, 190, 128, 222); g.stroke(); });
+  const g = group([mesh(box(w + 0.03, h + 0.03, 0.02), "#5a3a22", { at: [0, 0, -0.012] }), mesh(box(w, h, 0.012), "#ffffff", { map, line: 0.5, shadow: false })]);
+  g.userData.grips = [[-w / 2 - 0.01, 0, 0], [w / 2 + 0.01, 0, 0]]; g.userData.depth = 0.04; return g; };
 export const openBook = (w = 0.52, h = 0.36) => { const map = paint("bookwoodcut", 512, 352, (g) => {
     g.fillStyle = "#f3e6c4"; g.fillRect(0, 0, 512, 352); g.fillStyle = "#cdb98a"; g.fillRect(253, 0, 6, 352); g.strokeStyle = "#2a1a14"; g.lineWidth = 3; g.strokeRect(22, 22, 210, 308);
     // the woodcut: hat, face, a beard of tails, a smoking fuse on each side

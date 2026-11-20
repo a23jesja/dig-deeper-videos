@@ -39,7 +39,7 @@ export const cabin = (o: { rich?: boolean; door?: number } = {}) => {
     g.add(mesh(box(0.03, winH, 0.03), woodD, { at: [x, winY + winH / 2, z0], line: 0.3, shadow: false }), mesh(box(winW, 0.03, 0.03), woodD, { at: [x, winY + winH / 2, z0], line: 0.3, shadow: false }));
   }
   // a bench seat under the windows
-  g.add(mesh(box(w - 0.3, 0.08, 0.42), woodD, { at: [0, 0.46, z0 + 0.27] }), mesh(box(w - 0.3, 0.42, 0.06), woodD, { at: [0, 0.21, z0 + 0.46], line: 0.5 }));
+  g.add(mesh(box(w - 0.3, 0.08, 0.42), woodD, { at: [0, 0.46, z0 + 0.25] }), mesh(box(w - 0.3, 0.42, 0.06), woodD, { at: [0, 0.21, z0 + 0.44], line: 0.5 }));      // (2 cm nearer the wall: its seat's front lay in the same plane as the table's back legs, which run through it, and the two fought for depth as the lens moved, the legs' lower part lit, dark or striped from frame to frame, the reviews of v1r-v1t)
   // the side walls, panelled, and the beams overhead
   for (const s of [-1, 1]) { const dz = s > 0 ? o.door : undefined;
     if (dz === undefined) g.add(mesh(box(t, h, d), wood, { at: [(s * w) / 2, h / 2, 0] }));

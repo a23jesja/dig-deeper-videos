@@ -1,0 +1,25 @@
+Rött (R) per ruta, medel över ytan: v1t-filen mot stillbilder med bänken 2 cm bakåt (samma rutor, linsen glider som vanligt). Växling = två rutbyten i rad åt motsatt håll, båda minst 1,0.
+
+A öppningen, rutor 20-31:
+  v1t:            växlingar 3, störst 10.6: [29.3, 36.8, 26.3, 26.1, 26.5, 29.0, 34.8, 25.9, 25.8, 25.9, 36.5, 26.6]
+  bänken bakåt:   växlingar 0, störst 0.1: [45.9, 45.9, 45.9, 45.9, 46.0, 46.0, 46.0, 46.0, 46.0, 45.9, 45.9, 45.9]
+
+B slutbilden, rutor 1040-1051:
+  v1t:            växlingar 4, störst 12.9: [38.2, 25.3, 27.5, 32.6, 34.7, 25.5, 25.7, 25.8, 26.7, 33.2, 25.7, 27.1]
+  bänken bakåt:   växlingar 0, störst 0.1: [45.6, 45.6, 45.7, 45.8, 45.8, 45.9, 45.9, 45.9, 46.0, 46.0, 46.0, 46.0]
+
+C below, rutor 260-271:
+  v1t:            växlingar 2, störst 11.2: [25.8, 31.7, 38.6, 33.9, 26.8, 26.2, 26.7, 26.7, 37.9, 29.1, 26.1, 26.2]
+  bänken bakåt:   växlingar 0, störst 0.1: [48.1, 48.1, 48.1, 48.2, 48.2, 48.2, 48.2, 48.2, 48.1, 48.1, 48.0, 48.0]
+
+D myth, rutor 620-631:
+  v1t:            växlingar 4, störst 10.6: [22.2, 22.2, 22.3, 22.9, 22.4, 22.3, 32.9, 27.4, 22.4, 27.2, 22.5, 23.9]
+  bänken bakåt:   växlingar 0, störst 0.1: [39.2, 39.2, 39.1, 39.2, 39.2, 39.1, 39.1, 39.2, 39.1, 39.1, 39.2, 39.1]
+
+E verdict, rutor 730-741:
+  v1t:            växlingar 4, störst 4.2: [63.7, 61.0, 62.9, 59.2, 57.7, 56.1, 54.2, 53.9, 49.9, 52.5, 48.3, 46.7]
+  bänken bakåt:   växlingar 0, störst 2.3: [69.4, 69.2, 68.6, 67.6, 65.7, 64.1, 61.8, 59.9, 58.3, 56.7, 55.4, 54.4]
+
+F dark, rutor 100-111:
+  v1t:            växlingar 7, störst 4.5: [30.4, 33.9, 31.1, 35.2, 30.7, 34.0, 33.4, 34.7, 33.0, 35.0, 31.0, 31.0]
+  bänken bakåt:   växlingar 0, störst 0.1: [41.9, 42.0, 42.0, 42.0, 42.1, 42.1, 42.1, 42.2, 42.2, 42.2, 42.3, 42.3]

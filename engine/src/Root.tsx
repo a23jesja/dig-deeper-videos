@@ -19,6 +19,7 @@ import { SirDesigns, SirDesign, SIR_DESIGN_FRAMES, PW, PH } from "./craft/SirDes
 import { MotionTest, MOTION_FRAMES, MW, MH, MFPS } from "./craft/MotionTest";
 import { CastViews, CAST_VIEW_FRAMES, CW, CH } from "./craft/CastViews";
 import { FaceSheet, FACE_SHEET_FRAMES, FW, FH } from "./craft/FaceSheet";
+import { ExpressionSheet, EW, EH } from "./craft/ExpressionSheet";
 import { SirTest, SirMoves, SIR_TEST_FRAMES, TW, TH, TFPS, MVW, MVH } from "./craft/SirMotion";
 import { SetViews, SET_VIEWS } from "./craft/world/SetViews";
 import { CabinTest, CABIN_TEST_FRAMES, CabinNight, CABIN_NIGHT_FRAMES } from "./craft/shorts/cabinTestComp";
@@ -77,6 +78,7 @@ export const Root: React.FC = () => (
     <Composition id="PompeiiStills" component={PompeiiStills} durationInFrames={POMPEII_STILLS} fps={30} width={1080} height={1920} />
     <Composition id="CastViews" component={CastViews} durationInFrames={CAST_VIEW_FRAMES} fps={30} width={CW} height={CH} />
     <Composition id="FaceSheet" component={FaceSheet} durationInFrames={FACE_SHEET_FRAMES} fps={30} width={FW} height={FH} />
+    <Composition id="ExpressionSheet" component={ExpressionSheet} durationInFrames={1} fps={30} width={EW} height={EH} />
     <Composition id="SirTest" component={SirTest} durationInFrames={SIR_TEST_FRAMES} fps={TFPS} width={TW} height={TH} />
     <Composition id="SirMoves" component={SirMoves} durationInFrames={1} fps={30} width={MVW} height={MVH} />
     <Composition id="RomePee" component={RomePee} durationInFrames={ROME_PEE_FRAMES} fps={30} width={1080} height={1920} />

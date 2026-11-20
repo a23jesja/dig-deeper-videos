@@ -315,7 +315,13 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
     const jawO = dy ? skull.map(([x, y]) => [x, y > yJaw ? y + dy : y] as P2) : skull;
     k.clip(jawO, () => { k.shape(shift(low, 0, 6), "rgba(52,32,16,0.2)", 0); k.shape(low, shade(skin, 0.965)); });
     if (m > 0.04) k.clip(low, () => k.shape(jawO, null));
-    if (vis && !(L.mouth2 && isOpen)) { const xl = at(h, -36, 0.72).x, xr = at(h, 36, 0.72).x, ym = yJaw + dy; k.clip(jawO, () => k.line(spline([[xl, ym - sm * 0.075 * H], [lerp(xl, xr, 0.25) + h.sin * 0.05 * a, ym + sm * 0.018 * H], [lerp(xl, xr, 0.75) + h.sin * 0.05 * a, ym + sm * 0.018 * H], [xr, ym - sm * 0.075 * H]], false, 6), 6.4 * u)); }
+    if (vis && !(L.mouth2 && isOpen)) { const xl = at(h, -36, 0.72).x, xr = at(h, 36, 0.72).x, ym = yJaw + dy, smk = f.smirk ?? 0, te = f.teeth ?? 0;
+      // (smirk: one corner up and the other flat, a smug half-smile; teeth: a grimace, the lips drawn back off clenched teeth, Jesper 20 Nov)
+      const yl = ym - sm * 0.075 * H - Math.max(0, -smk) * 0.09 * H + Math.max(0, smk) * 0.02 * H, yr = ym - sm * 0.075 * H - Math.max(0, smk) * 0.09 * H + Math.max(0, -smk) * 0.02 * H;
+      if (te > 0.5) { const tw = (xr - xl) * 0.5, th = 0.045 * H, cx2 = (xl + xr) / 2;
+        k.clip(jawO, () => { k.shape(spline([[cx2 - tw, ym - th], [cx2 + tw, ym - th], [cx2 + tw * 1.08, ym], [cx2 + tw, ym + th], [cx2 - tw, ym + th], [cx2 - tw * 1.08, ym]], true, 4), "#fffdf6", 5.4 * u);
+          k.line([[cx2 - tw * 1.02, ym], [cx2 + tw * 1.02, ym]], 3.4 * u); for (const fx of [-0.5, 0, 0.5]) k.line([[cx2 + fx * tw, ym - th * 0.9], [cx2 + fx * tw, ym + th * 0.9]], 2.6 * u); }); }
+      else k.clip(jawO, () => k.line(spline([[xl, yl], [lerp(xl, xr, 0.25) + h.sin * 0.05 * a, ym + sm * 0.018 * H - smk * 0.012 * H], [lerp(xl, xr, 0.75) + h.sin * 0.05 * a, ym + sm * 0.018 * H + smk * 0.012 * H], [xr, yr]], false, 6), 6.4 * u)); }
     if (L.lips && vis) { const q = at(h, 0, 0.72); piece(k, ellPts(q.x, yJaw - 0.025 * H + drop, 0.2 * a * Math.max(0.35, Math.abs(h.cos)), 0.032 * H), L.lips); }
     if (L.beard && !L.beard2) { const xs: P2[] = []; for (let az = -100; az <= 100; az += 20) { const q = at(h, az, 1.04); if (q.d > -0.1 * b) xs.push([q.x, -0.32 * H + drop * 0.5]); } if (xs.length > 1) { const lo = xs.map(([x], i) => [x * 0.92, 0.2 * H * (1 - Math.abs(i / (xs.length - 1) - 0.5) * 1.2) + drop] as P2).reverse(); piece(k, spline([...xs, ...lo], true, 4), L.beard); } }
     if (L.beard && L.beard2) {
@@ -363,12 +369,20 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
       const cx = (x: number) => { const m = k.g.getTransform(); return m.a * x + m.c * yEye + m.e; }, one = Math.abs(f.shut ?? 0) > 0.5 && Math.sign(cx(q.x) - cx(at(h, 0, 0.8).x)) === Math.sign(f.shut ?? 0);
       const shut = lid > 0.7 || one,      // (a lid lower than this left a ring with no eye in it: drawn shut instead, the flicker of 20 Nov)
       bow = (f.smile ?? 0) > 0.4 && !one ? -1 : 1;
-      if (shut) k.line(spline([[q.x - rx * 0.86, yEye - bow * ry * 0.14], [q.x, yEye + bow * ry * 0.34], [q.x + rx * 0.86, yEye - bow * ry * 0.14]], false, 8), 6.4 * u);
+      // (squeezed hard shut: a chevron pointing at the nose, the lids pressed together, Jesper 20 Nov "eyes squeezed shut")
+      const sq = f.squeeze ?? 0;
+      if (sq > 0.5) { const tip = q.x - s * rx * 0.55, back = q.x + s * rx * 0.9; k.line([[back, yEye - ry * 0.62], [tip, yEye], [back, yEye + ry * 0.62]], 7.2 * u, LINE, "round"); }
+      else if (shut) k.line(spline([[q.x - rx * 0.86, yEye - bow * ry * 0.14], [q.x, yEye + bow * ry * 0.34], [q.x + rx * 0.86, yEye - bow * ry * 0.14]], false, 8), 6.4 * u);
       else { k.shape(ball, "#fffdf6"); k.clip(ball, () => {
         const px = q.x + clamp(gz[0] * 0.5 + h.sin * 0.22 + ahead * 0.5, -0.56, 0.56) * rx, py = yEye + gz[1] * ry * 0.5; k.mark(s < 0 ? "pupilA" : "pupilB", px, py); const pu = Math.max(0.5, Math.min(1.6, f.pupil ?? 1)); k.shape(ellPts(px, py, rx * 0.5 * pu, ry * 0.5 * pu), "#2a1f1a", 0); k.dot(px - rx * 0.17, py - ry * 0.2, r * 0.13, "#ffffff");
         if (lid > (STYLE.simple ? 0.35 : 0.01)) { const y = yEye - ry + 2 * ry * lid; k.shape([[q.x - rx - 2, yEye - ry - 2], [q.x + rx + 2, yEye - ry - 2], [q.x + rx + 2, y], [q.x - rx - 2, y]], STYLE.simple ? skin : shade(skin, 0.86), 0); if (!STYLE.simple) { const lk = clamp((lid - 0.01) / 0.09, 0, 1), lw = 4.6 * u * lk * lk * (3 - 2 * lk); if (lw > 0.05) k.line([[q.x - rx - 2, y], [q.x + rx + 2, y]], lw, LINE, "butt"); } }      // (the lid line grows from nothing at lid 0.01 to its full width at 0.1: it was drawn whole as soon as the lid passed 0.01, and came in one frame, the review of v1r)
       });
       k.shape(ball, null); }
+      // (a tear under the eye on the right of the picture, a pale blue drop with its outline and a glint, and the wet trail to it)
+      if ((f.tear ?? 0) > 0.05 && s > 0) { const tr = r * 0.62 * Math.min(1, f.tear ?? 0), tx = q.x + rx * 0.55, ty = yEye + ry * 1.35 + tr * 1.2;
+        k.line([[q.x + rx * 0.3, yEye + ry * 0.85], [tx, ty - tr * 1.2]], 5 * u, "#8fd3ff", "round");
+        k.shape(spline([[tx, ty - tr * 1.9], [tx + tr * 0.85, ty - tr * 0.1], [tx + tr * 0.6, ty + tr * 0.75], [tx, ty + tr], [tx - tr * 0.6, ty + tr * 0.75], [tx - tr * 0.85, ty - tr * 0.1]], true, 6), "#8fd3ff", 3.6 * u);
+        k.dot(tx - tr * 0.3, ty - tr * 0.25, tr * 0.22, "#ffffff"); }
       if (L.lash) for (const j of [0, 1]) k.line([[q.x + s * rx * (0.7 + 0.25 * j) * (h.cos > 0.3 ? 1 : 0.4), yEye - ry * (0.75 - 0.3 * j)], [q.x + s * rx * (1.05 + 0.3 * j) * (h.cos > 0.3 ? 1 : 0.4), yEye - ry * (1.1 - 0.35 * j)]], 3.4);
       if (L.monocle && s < 0) mono = { x: q.x, rx, ry };
       // an eye patch over this eye (FigOpts.patch: "A" his right eye, "B" his left): black cloth a little larger than the eye, the strap
@@ -377,7 +391,7 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
         k.mark(s < 0 ? "patchA" : "patchB", px, yEye); piece(k, spline([[px - rx * 1.3, yEye - ry * 1.05], [px + rx * 1.3, yEye - ry * 1.05], [px + rx * 1.15, yEye + ry * 0.75], [px, yEye + ry * 1.25], [px - rx * 1.15, yEye + ry * 0.75]], true, 6), "#1c1612"); }
       // the brow is its own piece: up for surprise, down toward the nose for a frown
       const bi = at(h, s * 9, 0.8), bo = at(h, s * 46, 0.8), by = yEye - ry - 0.04 * H, bw = f.brow ?? 0, th = 0.04 * H;
-      const yi = by - 0.014 * H - 0.055 * H * Math.max(bw, 0) + 0.045 * H * Math.max(-bw, 0), yo = by + 0.008 * H - 0.04 * H * Math.max(bw, 0) - 0.022 * H * Math.max(-bw, 0);
+      const sd2 = f.sad ?? 0, yi = by - 0.014 * H - 0.055 * H * Math.max(bw, 0) + 0.045 * H * Math.max(-bw, 0) - 0.06 * H * sd2, yo = by + 0.008 * H - 0.04 * H * Math.max(bw, 0) - 0.022 * H * Math.max(-bw, 0) + 0.035 * H * sd2;      // (sad: the inner end up, the outer down)
       piece(k, [[bi.x, yi], [(bi.x + bo.x) / 2, (yi + yo) / 2 - 0.012 * H], [bo.x, yo], [bo.x, yo + th * 0.8], [(bi.x + bo.x) / 2, (yi + yo) / 2 - 0.012 * H + th], [bi.x, yi + th]], L.brow);
     };
     // (the monocle is drawn after the nose, which lay over its glass, and within the head's outline, which it went past on the far eye

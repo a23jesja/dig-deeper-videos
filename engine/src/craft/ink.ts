@@ -145,7 +145,7 @@ export const eye = (k: Ink, cx: number, cy: number, rx: number, ry: number, o: E
 };
 
 // ---------------- hands ----------------
-export type HandKind = "relaxed" | "open" | "fist" | "point" | "grip" | "two";
+export type HandKind = "relaxed" | "open" | "fist" | "point" | "grip" | "two" | "thumb";
 /** a hand at the wrist, fingers along `deg`; thumbFlip puts the thumb on the other side; cut = straight-edged (woodcut, card) */
 /** layer = "fingers": only the four closed fingers of a hand that holds something, without the heel of the hand and the thumb. The
  *  stage draws them on a card of their own in front of the thing held, so that the thing lies between the palm and the fingers */
@@ -154,7 +154,11 @@ export const hand = (k: Ink, wrist: P2, deg: number, h: number, kind: HandKind, 
   const fin = (x: number, y: number, a: number, l: number, w0 = 0.085, w1 = 0.07) => seg([x * h, y * h], [(x + l * Math.cos(a * R)) * h, (y + l * Math.sin(a * R)) * h], w0 * h, w1 * h, 0, 0.3, cut);
   const g = k.g; g.save(); g.translate(wrist[0], wrist[1]); g.rotate(deg * R); if (thumbFlip) g.scale(1, -1);
   const thin = ol * 0.5;
-  if (layer === "fingers") {
+  if (kind === "thumb" && layer === "fingers") {
+    // showing a flat thing by its edge (a book, a sheet): only the thumb lies over its front, the fingers are behind it (the shot library
+    // review of round 2: the backs of the fists lay over the book's face)
+    k.group([fin(0.3, 0.12, -12, 0.5, 0.115, 0.095)], col, ol);
+  } else if (layer === "fingers") {
     k.group([body([[0.22, -0.33], [0.42, -0.36], [0.62, -0.34], [0.76, -0.12], [0.74, 0.18], [0.52, 0.35], [0.36, 0.35], [0.22, 0.31]])], col, ol);
     for (const y of [-0.16, 0.0, 0.16]) k.line([[0.34 * h, y * h], [0.74 * h, (y + 0.02) * h]], thin);
     k.group([fin(0.26, 0.3, -30, 0.36, 0.105, 0.09)], col, ol * 0.6);      // the thumb, laid over the fingers on the near side

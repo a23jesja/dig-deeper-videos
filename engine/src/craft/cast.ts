@@ -445,7 +445,12 @@ export const drawFingers = (L: Look) => (k: Ink, sk0: Sk, sides: Side[], whole?:
   const mir = mirrored(L, sk0.yaw), sk = mir ? solve(sk0.P, swapPose(sk0.pose), -sk0.yaw) : sk0;
   if (mir) { k.g.save(); k.g.scale(-1, 1); }
   for (const s0 of sides) { const s: Side = mir ? (s0 === "L" ? "R" : "L") : s0, E = sk.j[`el${s}`], W = sk.j[`wr${s}`], T = sk.j[`tip${s}`];
-    const kind = whole?.[s0]; hand(k, W, len(sub(T, W)) > 6 ? angle(W, T) : angle(E, W), sk.P.hand, kind ?? "fist", L.skin, thumbFlip(sk, s), false, k.ol, "all"); }
+    const kind = whole?.[s0];
+    // (a thing shown by its edges: the thumb laid over its front from the hand toward the middle of the body, where the thing is; along
+    //  the hand it pointed out past the edge, beside the book. The fist is on the figure's card, behind the thing)
+    if (kind === "thumb") { const h = sk.P.hand, a0 = (len(sub(T, W)) > 6 ? angle(W, T) : angle(E, W)) * R, B: P2 = [W[0] + Math.cos(a0) * 0.42 * h, W[1] + Math.sin(a0) * 0.42 * h], dir = Math.sign(sk.j.neck[0] - B[0]) || 1;
+      k.group([seg([B[0] + dir * 0.05 * h, B[1] - 0.05 * h], [B[0] + dir * 0.5 * h, B[1] - 0.1 * h], 0.11 * h, 0.09 * h, 0, 0.3, false)], L.skin, k.ol); continue; }      // (from the middle of the fist, which reaches out past the edge)
+    hand(k, W, len(sub(T, W)) > 6 ? angle(W, T) : angle(E, W), sk.P.hand, kind ?? "fist", L.skin, thumbFlip(sk, s), false, k.ol, "all"); }
   if (mir) k.g.restore();
 };
 /** the convex hull of points (Andrew's monotone chain), counter-clockwise */

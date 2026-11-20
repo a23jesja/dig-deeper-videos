@@ -76,7 +76,8 @@ export const motionCheck = (film: Film, opt: { shots?: string[] } = {}) => {
 
     // ---- barred angles (the frozen look: "head never in bare profile"; the review of round 2): a head drawn turned more than 60 degrees
     //      from the lens is in profile or seen from behind. A shot names a figure it shows from behind on purpose, walking away (Shot.away) ----
-    for (const q of frames) for (const [name, f] of q.figs) if (Math.abs(f.face) > 60 && !s.away?.[name]) note(`${s.id}|${name}|barred`, { shot: s.id, who: name, what: `${name}'s head is drawn ${Math.abs(f.face).toFixed(0)} degrees turned from the lens: in profile or from behind, an angle the rig must not draw (the face turned toward us within 60 degrees)` }, q.F);
+    for (const q of frames) for (const [name, f] of q.figs) if (Math.abs(f.face) > 60 && !s.away?.[name] && f.box[1] > 0 && f.box[0] < 1080 && f.box[3] > 0 && f.box[2] < 1920)      // (in the picture)
+      note(`${s.id}|${name}|barred`, { shot: s.id, who: name, what: `${name}'s head is drawn ${Math.abs(f.face).toFixed(0)} degrees turned from the lens: in profile or from behind, an angle the rig must not draw (the face turned toward us within 60 degrees)` }, q.F);
     // ---- the pipe held in the mouth (the review of step 1): wherever the face is drawn, a pipe that is gone, a bowl with no stem from the
     //      corner of the mouth, or a pipe half see-through ----
     for (const q of frames) for (const [name, f] of q.figs) { if (!f.pipeOn || Math.abs(f.face) > 60) continue;

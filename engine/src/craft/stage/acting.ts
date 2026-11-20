@@ -20,3 +20,7 @@ export const wag = (m: Mover, t0: number, dur: number, a: Partial<Pose>, b: Part
   for (let t = t0, i = 0; t < t0 + dur; t += period / 2, i++) m.actAt(t, i % 2 ? b : a, period * 0.62, { in: period * 0.26, out: period * 0.26, antic: 0, over: 1.2, ...o });
 };
 export const arm = (a: number, b: number, c: number, d: number): [Seg, Seg] => [[a, b], [c, d]];
+
+/** a pose laid on at t0 that eases in over `dur` seconds (slow at both ends) and holds until a later one takes over: a body never starts
+ *  or stops a move at full speed (the motion check's jerk test, the shot library review of round 2) */
+export const ease = (m: Mover, t0: number, pose: Partial<Pose>, dur: number, o: Omit<NonNullable<Parameters<Mover["actAt"]>[3]>, "in" | "glide"> = {}) => m.actAt(t0, pose, 30, { ...o, in: dur, glide: true, antic: 0 });

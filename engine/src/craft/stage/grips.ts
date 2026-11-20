@@ -494,12 +494,12 @@ export const haul = (into: THREE.Group, a: Staged, cam: Cam, top: V3, floor: num
 /** A chest carried by its two end handles, by two people or by one with both hands: the handles in the hands, the chest hanging between
  *  them. `o` = props.ts chest (its handles' grips are in o.userData.grips). The figures must stand so that the hands are as far apart
  *  as the handles (the check says when they are not) */
-export const carryBy = (into: THREE.Group, o: THREE.Object3D, a: Staged, sa: Side, b: Staged, sb: Side, cam: Cam, d = 0.1, /** "don" = being put on over the head (it may pass the face) */ use = "carry") => {
+export const carryBy = (into: THREE.Group, o: THREE.Object3D, a: Staged, sa: Side, b: Staged, sb: Side, cam: Cam, d = 0.1, /** "don" = being put on over the head (it may pass the face) */ use = "carry", /** shown by its edges: the thumbs over its front, the fingers behind (hands "thumb") */ show = false) => {
   let pa = palm(a, sa), pb = palm(b, sb); const P2 = pic(cam); if (P2(pa, pb)[0] < 0) [pa, pb] = [pb, pa];
   const g = o.userData.grips as V3[], G = Math.abs(g[1][0] - g[0][0]), hy = g[0][1], v = P2(pa, pb), n = Math.hypot(v[0], v[1]) || 1, dir: [number, number] = [v[0] / n, v[1] / n];
   const origin = aside(mix3(pa, pb, 0.5), cam, hy * dir[1], -hy * dir[0]); span(into, o, origin, aside(origin, cam, dir[0], dir[1]), cam, d); hangDown(o);
   const fd = d + ((o.userData.depth as number) ?? 0.1) / 2 + 0.2;      // the fingers well in front of the whole chest (its corners reach nearer the lens than its face), so that the hand in the ring shows
-  if (a === b) fingers(into, a, [sa, sb], cam, fd); else { fingers(into, a, [sa], cam, fd); fingers(into, b, [sb], cam, fd); }
+  if (a === b) fingers(into, a, [sa, sb], cam, fd, show); else { fingers(into, a, [sa], cam, fd, show); fingers(into, b, [sb], cam, fd, show); }
   if (AUDIT.on) { const err = Math.abs(n - G) > 0.1 ? `the hands are ${(Math.abs(n - G) * 100).toFixed(0)} cm too ${n > G ? "far apart" : "close together"} for the handles` : null;
     if (a === b) AUDIT.rows.push({ id: o.uuid, prop: "chest", use, holder: `${a.name} ${sa}+${sb}`, err, at: pa, o });
     else AUDIT.rows.push({ id: `${o.uuid}:a`, prop: "chest", use: "carry", holder: `${a.name} ${sa}`, err, at: pa, o }, { id: `${o.uuid}:b`, prop: "chest", use: "carry", holder: `${b.name} ${sb}`, err, at: pb, o }); }

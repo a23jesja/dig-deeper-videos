@@ -132,10 +132,15 @@ export const cabinNight = (light: Sun, o: { sea?: TexImageSource; door?: number 
   // the moon: a cold light from beyond the windows, falling in through them onto the floor (the window bars cast their shadows)
   const moon = new THREE.SpotLight("#9bb8ff", 45, 12, 0.62, 0.7, 1.2); moon.position.set(...W(CABIN_NIGHT.moon)); moon.position.y = y + CABIN_NIGHT.moon[1];
   moon.target.position.set(...W(CABIN_NIGHT.moonAim)); moon.target.position.y = y; moon.castShadow = true; moon.shadow.mapSize.set(2048, 2048); moon.shadow.bias = -0.0015; root.add(moon, moon.target);
+  // (named, so that a shot whose lens cannot see the windows may leave it out: Shot.hide "moon")
+  moon.name = "moon"; root.userData.named = [...((root.userData.named as THREE.Object3D[]) ?? []), moon];
   // the shafts you can see: from each window down to the floor along the moon's way, and a soft warm cone under the lantern
   const mp = new THREE.Vector3(...W(CABIN_NIGHT.moon)); mp.y = y + CABIN_NIGHT.moon[1];
+  // (one named group: a shot whose lens cannot see the windows may leave them out, Shot.hide "moon shafts": seen across the room they were
+  //  streaks of light from nowhere, the shot library review of round 2)
+  const shafts = new THREE.Group(); shafts.name = "moon shafts"; root.add(shafts); root.userData.named = [...((root.userData.named as THREE.Object3D[]) ?? []), shafts];
   for (const x of CABIN.win) { const wc = new THREE.Vector3(...W([x, 0, -CABIN.d / 2 + 0.06])); wc.y = y + CABIN.winY + CABIN.winH / 2; const dir = wc.clone().sub(mp).normalize(), k = (wc.y - y) / -dir.y, end = wc.clone().addScaledVector(dir, k);
-    root.add(lightShaft(wc.toArray() as V3, end.toArray() as V3, 0.36, 0.9, "#86a4ee", 1.1)); }
+    shafts.add(lightShaft(wc.toArray() as V3, end.toArray() as V3, 0.36, 0.9, "#86a4ee", 1.1)); }
   const rig = sunRig(light, inCabin([0, 0, 0])); root.add(rig); root.userData.rig = rig;
   return root;
 };

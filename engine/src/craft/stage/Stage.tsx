@@ -54,7 +54,10 @@ const Words: React.FC<{ film: Film }> = ({ film }) => {
       {hook && <div style={{ position: "absolute", left: 40, right: 40, top: hookTop(film), ...big(film.hook.size ?? 108) }}>{film.hook.text.map((l, i) => <div key={i} style={{ color: i === film.hook.text.length - 1 ? "#ffd83a" : "#ffffff" }}>{l}</div>)}</div>}
       {/* (a new element for each group of words: the same one changed in place left a stale piece of the last word's letter beside the
           new words in the rendered video, a "K" beside "THE SUN", the eye patch Short v1d) */}
-      {!hook && c && <div key={`cap${c.a}`} style={{ position: "absolute", left: 30, right: 30, top: film.shots.find((x) => T >= x.a && T < x.b)?.capsTop ?? CAP_TOP, whiteSpace: "nowrap", ...big(Math.round(96 * Math.min(1, 8.9 / capWidth(c.text)))) }}>{c.text}</div>}
+      {/* (each group of words on a layer of its own (will-change), thrown away whole when the words change: a thick text stroke reaches past
+          what the browser counts as the text's ink, so in the shared layer the stroke of the line before's last letter stayed for some
+          frames, a "K" beside "THE SUN", v1d and v1e; a new element alone and a repainted band under it did not clear it) */}
+      {!hook && c && <div key={`cap${c.a}`} style={{ willChange: "transform", padding: "30px 0", position: "absolute", left: 30, right: 30, top: (film.shots.find((x) => T >= x.a && T < x.b)?.capsTop ?? CAP_TOP) - 30, whiteSpace: "nowrap", ...big(Math.round(96 * Math.min(1, 8.9 / capWidth(c.text)))) }}>{c.text}</div>}
       {(film.labels ?? []).filter((q) => T >= q.a && T < q.b).map((q, i) => <div key={`l${i}`} style={{ position: "absolute", left: 30, right: 30, top: q.top ?? 300, whiteSpace: "nowrap", ...big(q.size ?? 110), color: q.col ?? "#ffd83a" }}>{q.text(T)}</div>)}
       {sign && <div style={{ position: "absolute", left: 50, right: 50, top: 296, padding: "12px 24px", background: "rgba(16,16,20,0.8)", color: "#ffffff", font: "700 40px Arial, sans-serif", borderRadius: 12, textAlign: "center", lineHeight: 1.2 }}>{film.sign!.text}</div>}
     </AbsoluteFill>

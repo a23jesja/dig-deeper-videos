@@ -168,10 +168,15 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
     // to its curled tip and the far half shows as a waxed point out in front of the face, so the same moustache reads in profile.
     const G = ([[0, 0, b * 1.0], [0.3 * a, 2, b * 0.98], [0.62 * r, 7, b * 0.74], [0.86 * r, 6, b * 0.5], [0.98 * r, -8 * M.curl, b * 0.38], [0.97 * r, -30 * M.curl, b * 0.36]] as number[][]).map(([X, y, Z]) => [p3(h, s * X, Z).x, yM + y * u] as P2);
     const dirx = h.sin >= 0 ? 1 : -1, nearHalf = s * dirx < 0, k2 = M.span / 1.24;
-    if (!L.mous && !nearHalf && Math.abs(h.sin) > 0.45) return;      // a beard's moustache has no waxed point out in front of the face: from the side its far half is hidden
+    // a beard's moustache has no waxed point out in front of the face: from the side its far half is hidden. It shrinks toward its root as
+    // the head turns from |sin| 0.35 to 0.55 and grows back the same way (it was cut off whole at 0.45 and came and went in one frame,
+    // the eye patch Short v1r at 1.3 s and 23.6 s, the review of 20 Nov)
+    const farK = !L.mous && !nearHalf ? (() => { const c = clamp((0.55 - Math.abs(h.sin)) / 0.2, 0, 1); return c * c * (3 - 2 * c); })() : 1;
+    if (farK <= 0.001) return;
     const S = (nearHalf ? [[0.97, 0], [0.74, 7], [0.42, 10], [0.12, 2], [-0.02, -16 * M.curl], [0.06, -34 * M.curl]] : [[0.97, 0], [1.1, 4], [1.26, 1], [1.38, -9 * M.curl], [1.4, -24 * M.curl], [1.34, -34 * M.curl]]).map(([x, y]) => [dirx * b * (0.97 + (x - 0.97) * k2), yM + y * u] as P2);
     const q = Math.abs(h.sin) ** 2 * (h.cos > -0.3 ? 1 : 0), P = G.map((g, n) => [lerp(g[0], S[n][0], q), lerp(g[1], S[n][1], q)] as P2);
-    piece(k, ribbon(P, [M.w, M.w, M.w * 0.88, M.w * 0.66, M.w * 0.42, M.w * 0.18]), M.col);
+    const P2 = farK < 1 ? P.map(([x, y]) => [P[0][0] + (x - P[0][0]) * farK, P[0][1] + (y - P[0][1]) * farK] as P2) : P;
+    piece(k, ribbon(P2, [M.w, M.w, M.w * 0.88, M.w * 0.66, M.w * 0.42, M.w * 0.18].map((w) => w * farK)), M.col);
   };
   const pipe = () => {
     // (the stem's end in the corner of the mouth, where the mouth line ends (36 degrees round, 0.72 of the way out): rooted on the face's
@@ -354,7 +359,7 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
       if (shut) k.line(spline([[q.x - rx * 0.86, yEye - bow * ry * 0.14], [q.x, yEye + bow * ry * 0.34], [q.x + rx * 0.86, yEye - bow * ry * 0.14]], false, 8), 6.4 * u);
       else { k.shape(ball, "#fffdf6"); k.clip(ball, () => {
         const px = q.x + clamp(gz[0] * 0.5 + h.sin * 0.22 + ahead * 0.5, -0.56, 0.56) * rx, py = yEye + gz[1] * ry * 0.5; k.mark(s < 0 ? "pupilA" : "pupilB", px, py); const pu = Math.max(0.5, Math.min(1.6, f.pupil ?? 1)); k.shape(ellPts(px, py, rx * 0.5 * pu, ry * 0.5 * pu), "#2a1f1a", 0); k.dot(px - rx * 0.17, py - ry * 0.2, r * 0.13, "#ffffff");
-        if (lid > (STYLE.simple ? 0.35 : 0.01)) { const y = yEye - ry + 2 * ry * lid; k.shape([[q.x - rx - 2, yEye - ry - 2], [q.x + rx + 2, yEye - ry - 2], [q.x + rx + 2, y], [q.x - rx - 2, y]], STYLE.simple ? skin : shade(skin, 0.86), 0); if (!STYLE.simple) k.line([[q.x - rx - 2, y], [q.x + rx + 2, y]], 4.6 * u, LINE, "butt"); }
+        if (lid > (STYLE.simple ? 0.35 : 0.01)) { const y = yEye - ry + 2 * ry * lid; k.shape([[q.x - rx - 2, yEye - ry - 2], [q.x + rx + 2, yEye - ry - 2], [q.x + rx + 2, y], [q.x - rx - 2, y]], STYLE.simple ? skin : shade(skin, 0.86), 0); if (!STYLE.simple) { const lk = clamp((lid - 0.01) / 0.09, 0, 1), lw = 4.6 * u * lk * lk * (3 - 2 * lk); if (lw > 0.05) k.line([[q.x - rx - 2, y], [q.x + rx + 2, y]], lw, LINE, "butt"); } }      // (the lid line grows from nothing at lid 0.01 to its full width at 0.1: it was drawn whole as soon as the lid passed 0.01, and came in one frame, the review of v1r)
       });
       k.shape(ball, null); }
       if (L.lash) for (const j of [0, 1]) k.line([[q.x + s * rx * (0.7 + 0.25 * j) * (h.cos > 0.3 ? 1 : 0.4), yEye - ry * (0.75 - 0.3 * j)], [q.x + s * rx * (1.05 + 0.3 * j) * (h.cos > 0.3 ? 1 : 0.4), yEye - ry * (1.1 - 0.35 * j)]], 3.4);

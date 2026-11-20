@@ -86,8 +86,10 @@ const reader = (at: V3, y: number, V: Lens, turn: number, sun: boolean, len: num
   // (the swing 4.5 degrees each way and the way back 0.4 s: at 6 degrees and 0.28 s the face slid up to 17 px a frame in the two-shot and the
   //  outlines strobed, the flicker check of 20 Nov)
   if (o.lines) { const LT = 1.15, LB = 0.45, R0 = P({ ...hold(KK, FF, 0.015), head: [hy - 2.5, 27, 0] }), R1 = P({ ...hold(KK, FF, 0.015), head: [hy + 2.5, 28, 0] });      // (3.5 degrees and 0.6 s back: at 4.5 and 0.4 s his eyes still moved 15 px a frame in myth)
-    for (let t = 0.0; t < len + 0.3; t += LT) { m.actAt(t, R0, LB, { in: 0.35, out: 0.3, antic: 0, over: 1, ...T0H, face: face({ ...READ, lid: 0.56, gaze: [-0.4, 1] }) });
-      m.actAt(t + LB, R1, LT - LB - 0.02, { in: 0.55, out: 0.45, antic: 0, over: 1, ...T0H, face: face({ ...READ, lid: 0.56, gaze: [0.4, 1] }) }); } }
+    // (each line's layer stays whole until the next is fully in: with an out ramp the two met halfway and his head went 0.3 degrees back for a
+    //  frame, the review of v1r at 1.9 s and 21.7 s)
+    for (let t = 0.0; t < len + 0.3; t += LT) { m.actAt(t, R0, LB + 0.6, { in: 0.35, out: 0, antic: 0, over: 1, ...T0H, face: face({ ...READ, lid: 0.56, gaze: [-0.4, 1] }) });
+      m.actAt(t + LB, R1, LT - LB + 0.4, { in: 0.55, out: 0, antic: 0, over: 1, ...T0H, face: face({ ...READ, lid: 0.56, gaze: [0.4, 1] }) }); } }
   // (after he looks up he keeps moving: a small nod and sway, pleased with himself; holding still he read as a frozen picture for a second,
   //  the independent review of v1g)
   const hl = -(o.lookFace ?? 0.7) * turn;      // (his head toward the lens when he looks up: see below)
@@ -132,7 +134,8 @@ const mate = (at: V3, V: Lens, turn: number, v: number, len: number, o: { hang?:
   if (o.stumble !== undefined) { ease(m, o.stumble, { armL: sw(A, 1.5), armR: sw(B, 1.5), lean: 11, px: 0.02, py: -0.02, head: [4 * hs, 5, 2] }, 0.6, { ...R2, face: { ...F0, wide: 0.7, lid: 0, mouth: 0.4 } });
     ease(m, o.stumble + 0.7, { armL: A, armR: B, lean: 6, px: 0, py: 0, head: [-10 * hs, -3, 0] }, 0.8, { ...R2, face: F1 });
     // (searching again after he has caught himself: the pose above held him still to the end of the shot, the still-figure test, v1k)
-    if (o.stumble + 1.0 < len) wag(m, o.stumble + 1.0, len - o.stumble - 0.5, P({ armL: A, armR: B, head: [20 * hs, -5, 5 * hs], lean: 6, px: 0.009 }), P({ armL: sw(A, 1), armR: sw(B, -1), head: [-18 * hs, -2, -5 * hs], lean: 8, px: -0.009 }), 1.35 + 0.12 * v, { ...R2, face: F1, glide: true }); }
+    if (o.stumble + 1.5 < len) wag(m, o.stumble + 1.5, len - o.stumble - 1.0,      // (from when the recovery is done: begun at 1.0 its quicker start took his face from wide to searching in six frames, the review of v1r)
+      P({ armL: A, armR: B, head: [20 * hs, -5, 5 * hs], lean: 6, px: 0.009 }), P({ armL: sw(A, 1), armR: sw(B, -1), head: [-18 * hs, -2, -5 * hs], lean: 8, px: -0.009 }), 1.35 + 0.12 * v, { ...R2, face: F1, glide: true }); }
   return { cast: (t: number) => on("mate", MATE_SHORT_D, m, t, FL, {}, 5) };
 };
 /** the mate at the table's front edge, his right hand on it, feeling along it from one end toward the other, his left hand searching the air */

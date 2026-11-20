@@ -213,5 +213,7 @@ export const castOf = (s: Shot): Shot["cast"] => { const had = LOCKED.get(s); if
     // (the loop: eased so that at the end of the shot, one frame past its last, the figures stand exactly as on the first frame)
     const u = Math.min(1, (t - (len - L.over)) / L.over), k = u * u * (3 - 2 * u), into = castOf(L.shot)(0, L.shot.a);
     return own.map((a) => { const b = into.find((x) => x.name === a.name); if (!b) return a;
-      return { ...a, pose: mix(a.pose, b.pose, k) as Pose, at: mix(a.at, b.at, k) as V3, heading: a.heading + ((((b.heading - a.heading) % 360) + 540) % 360 - 180) * k, o: k < 0.5 ? a.o : b.o }; }); };
+      return { ...a, pose: mix(a.pose, b.pose, k) as Pose, at: mix(a.at, b.at, k) as V3, heading: a.heading + ((((b.heading - a.heading) % 360) + 540) % 360 - 180) * k,
+        // (the face glides with the rest: switched with the other options at half way, it changed in one frame, the review of v1r at 35.7 s)
+        o: { ...(k < 0.5 ? a.o : b.o), ...(a.o.face || b.o.face ? { face: mix(a.o.face ?? {}, b.o.face ?? {}, k) as typeof a.o.face } : {}) } }; }); };
   LOCKED.set(s, f); return f; };

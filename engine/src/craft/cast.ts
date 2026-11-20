@@ -327,7 +327,7 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
           k.line([[cx2 - tw * 1.02, ym], [cx2 + tw * 1.02, ym]], 3.4 * u); for (const fx of [-0.5, 0, 0.5]) k.line([[cx2 + fx * tw, ym - th * 0.9], [cx2 + fx * tw, ym + th * 0.9]], 2.6 * u); }); }
       else k.clip(jawO, () => k.line(spline([[xl, yl], [lerp(xl, xr, 0.25) + h.sin * 0.05 * a, ym + sm * 0.018 * H - smk * 0.012 * H], [lerp(xl, xr, 0.75) + h.sin * 0.05 * a, ym + sm * 0.018 * H + smk * 0.012 * H], [xr, yr]], false, 6), 6.4 * u)); }
     if (L.lips && vis) { const q = at(h, 0, 0.72); piece(k, ellPts(q.x, yJaw - 0.025 * H + drop, 0.2 * a * Math.max(0.35, Math.abs(h.cos)), 0.032 * H), L.lips); }
-    if (L.beard && !L.beard2) { const xs: P2[] = []; for (let az = -100; az <= 100; az += 20) { const q = at(h, az, 1.07); if (q.d > -0.1 * b) xs.push([q.x, -0.32 * H + drop * 0.5]); } if (xs.length > 1) { const wk = 0.92 + 0.1 * Math.min(1, drop / (0.08 * H)), lo = xs.map(([x], i) => [x * wk, 0.2 * H * (1 - Math.abs(i / (xs.length - 1) - 0.5) * 1.2) + drop] as P2).reverse(); /* (its foot as wide as the let-down jaw: at 0.92 the jaw stuck out beside it with its own outline, a notch and a strip of skin) */ piece(k, spline([...xs, ...lo], true, 4), L.beard); } }
+    if (L.beard && !L.beard2) { const xs: P2[] = []; for (let az = -100; az <= 100; az += 20) { const q = at(h, az, 1.04); if (q.d > -0.1 * b) xs.push([q.x, -0.32 * H + drop * 0.5]); } if (xs.length > 1) { const lo = xs.map(([x], i) => [x * 0.92, 0.2 * H * (1 - Math.abs(i / (xs.length - 1) - 0.5) * 1.2) + drop] as P2).reverse(); piece(k, spline([...xs, ...lo], true, 4), L.beard); } }
     if (L.beard && L.beard2) {
       // The corrected beard. Outer edge: from one sideburn down the jaw to a rounded foot under the chin and up to the other sideburn,
       // with tufts along it. Inner edge: from the sideburn across the cheek to the corner of the mouth, under the lower lip, and back.
@@ -336,7 +336,10 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
       // under the lower lip read as a grin whatever the mouth itself did.
       const A = 100, seen = (q: { d: number }) => q.d > -0.12 * b, outer: P2[] = [], inner: P2[] = [], sour = Math.min(1, Math.max(0, -(f.smile ?? 0.25))) * 0.07 * H;
       for (let az = -A; az <= A; az += 4) { const q = at(h, az, 1.05); if (!seen(q)) continue; const t = Math.abs(az) / A, low = Math.max(0, 1 - Math.abs(az) / 72);
-        const y = (t > 0.69 ? lerp(-0.02 * H, -0.5 * H, (t - 0.69) / 0.31) : lerp(0.2 * H, -0.02 * H, (t / 0.69) ** 1.6)) + (Math.abs(az) < 66 ? 0.05 * H * (1 - Math.abs(((az + 132) % 24) - 12) / 12) : 0) + drop * low;      // five tufts along the foot
+        const y0b = (t > 0.69 ? lerp(-0.02 * H, -0.5 * H, (t - 0.69) / 0.31) : lerp(0.2 * H, -0.02 * H, (t / 0.69) ** 1.6)) + (Math.abs(az) < 66 ? 0.05 * H * (1 - Math.abs(((az + 132) % 24) - 12) / 12) : 0);      // five tufts along the foot
+        // (below the hinge the beard goes down with the jaw as the jaw's card does, over the same 0.08 of the head: going down only near the chin,
+        //  it left the jaw card's corner standing out beside it at the hinge, a step and a second outline, the expression sheet, the review of 20 Nov)
+        const y = y0b + drop * Math.max(low, Math.min(1, Math.max(0, (y0b - yJaw) / (0.08 * H))));
         outer.push([q.x * (t > 0.69 ? 1 : lerp(0.9, 1, t / 0.69)), y]); }
       // a high beard rises steeply from the corner of the mouth to just under the eye and stays there to the sideburn
       const cheek = (side: number, u: number): P2 | null => { const q = at(h, side * lerp(40, 96, u), 0.99); return seen(q) ? [q.x, L.beardHigh ? lerp(yJaw - 0.08 * H + sour, -0.47 * H, Math.min(1, u * 1.6) ** 0.5) - 0.09 * H * Math.max(0, u - 0.62) / 0.38 : lerp(yJaw - 0.08 * H + sour, -0.56 * H, u ** 1.3)] : null; };

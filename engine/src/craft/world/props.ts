@@ -647,11 +647,19 @@ export const logBook = (w = 0.52, h = 0.36, fold = 0.32, /** how far out past it
       g.beginPath(); g.moveTo(126, 165); g.quadraticCurveTo(163, 190, 126, 222); g.stroke(); } });
   // (an open book, not a board: the two halves meet at the spine in a shallow V, each with its cover behind it and a thickness of pages,
   //  so that turned a little it shows as a book; the review of v1b: "the book looks like a board")
+  // (the outside of each cover drawn as leather binding: a gold rule round the edge, darker toward the spine, a gold compass rose on the
+  //  front half: held cover out, it was a blank brown board, the review of v1k)
+  const cover = (side: number) => paint("booklogcover" + side, 256, 352, (g) => {
+    g.fillStyle = "#5a2e1c"; g.fillRect(0, 0, 256, 352); const sp = side < 0 ? 236 : 0; g.fillStyle = "rgba(20,8,4,0.45)"; g.fillRect(sp, 0, 20, 352);
+    g.strokeStyle = "#c9a24a"; g.lineWidth = 5; g.strokeRect(22, 22, 212, 308); g.lineWidth = 2; g.strokeRect(32, 32, 192, 288);
+    if (side > 0) { const cx = 128, cy = 176; g.fillStyle = "#c9a24a"; g.lineWidth = 3; g.beginPath(); g.arc(cx, cy, 46, 0, 7); g.stroke();
+      for (let k = 0; k < 8; k++) { const a = (k * Math.PI) / 4, r = k % 2 ? 34 : 62; g.beginPath(); g.moveTo(cx, cy); g.lineTo(cx + Math.cos(a - 0.18) * 12, cy + Math.sin(a - 0.18) * 12); g.lineTo(cx + Math.cos(a) * r, cy + Math.sin(a) * r); g.lineTo(cx + Math.cos(a + 0.18) * 12, cy + Math.sin(a + 0.18) * 12); g.closePath(); g.fill(); } } });
   const half = (side: number) => { const gH = new THREE.Group(); const hw = w / 2;
     gH.add(mesh(box(hw + 0.015, h + 0.03, 0.012), "#5a2e1c", { at: [side * (hw + 0.015) / 2, 0, -0.014], line: 0.5 }), mesh(box(hw, h, 0.014), "#efe2c0", { at: [side * hw / 2, 0, -0.002], line: 0.4, shadow: false }),
-      mesh(box(hw - 0.004, h - 0.006, 0.002), "#ffffff", { at: [side * hw / 2, 0, 0.0065], map: page(side), line: 0, shadow: false }));
+      mesh(box(hw - 0.004, h - 0.006, 0.002), "#ffffff", { at: [side * hw / 2, 0, 0.0065], map: page(side), line: 0, shadow: false }),
+      mesh(box(hw + 0.01, h + 0.025, 0.002), "#ffffff", { at: [side * (hw + 0.015) / 2, 0, -0.0215], map: cover(-side), line: 0, shadow: false }));
     gH.rotation.y = -side * fold; return gH; };
-  const spine = mesh(box(0.03, h + 0.03, 0.03), "#4a2416", { at: [0, 0, -0.02], line: 0.5 });
+  const spine = group([mesh(box(0.03, h + 0.03, 0.03), "#4a2416", { at: [0, 0, -0.02], line: 0.5 }), ...[-0.12, -0.04, 0.04, 0.12].map((y) => mesh(box(0.032, 0.012, 0.032), "#c9a24a", { at: [0, y * h / 0.36, -0.02], line: 0.2, shadow: false }))]);
   const g = group([half(-1), half(1), spine]);
   // (the grips at the outer edges, where the halves end after the fold)
   const ex = (w / 2) * Math.cos(fold) + out, ez = (w / 2) * Math.sin(fold);      // (each half turned toward +z at its outer edge: the book opens toward whoever it faces)

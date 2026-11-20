@@ -1,0 +1,5 @@
+stand-and-talk frames 24-103 (film 0.80-3.47 s): sir's right forearm is drawn almost to nothing (17 % of the upper arm) for 0.3 s: the hand sits on the elbow
+hold-with-both-hands frames 371-479 (film 12.37-16.00 s): sir's right elbow juts out: the upper arm 86 degrees up from hanging while the forearm drops back to the held thing, for 0.4 s
+react frames 689-689 (film 22.97-23.00 s): sir's left forearm is drawn almost to nothing (29 % of the upper arm) for 0.3 s: the hand sits on the elbow
+sit frames 890-911 (film 29.67-30.40 s): sir's right forearm is drawn almost to nothing (8 % of the upper arm) for 0.3 s: the hand sits on the elbow
+MOTION CHECK FAILED for shot-library: 4 faults

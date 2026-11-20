@@ -227,10 +227,10 @@ addC("C1-a-wide", 2, sirMov(-0.25, 0), () => V.cam);
 addC("C1-b-jump-cut", 2, sirMov(-0.25, 0), () => V5.cam);
 addC("C2-a-wide", 2, sirMov(0.6, 0), () => VW.cam);
 addC("C2-b-control-close-up", 2, sirMov(0.6, 0), () => VC.cam, { closeUp: { sir: "control: a close-up after the wide" } });
-addC("C3-still-three-seconds", 3, () => [sirAt(0, -0.5)], () => V.cam);
-addC("C4-control-head-turning", 3, (t) => [sirAt(0.05, 1.0, { head: [30 * Math.sin(t * 2.2), 2, 0] })], () => V.cam);
-addC("C5-x", 2, sirMov(-0.3, -1.1), () => V.cam);
-addC("C5-y", 2, sirMov(0.3, 0.7), () => VW.cam);
-addC("C5-z-the-same-again", 2, sirMov(-0.3, -1.1), () => V.cam);
-addC("C6-end", 2, sirMov(-0.45, 0.6), () => lens(-0.45, 2.6, 5.4, 0, -1, -16, 50).cam);
+addC("C3-still-three-seconds", 3, () => [sirAt(1.0, -2.5)], () => V.cam);      // (each control its own place and size: the twice test reads the composition since the eye patch Short v1k)
+addC("C4-control-head-turning", 3, (t) => [sirAt(-0.6, -1.4, { head: [30 * Math.sin(t * 2.2), 2, 0] })], () => V.cam);
+addC("C5-x", 2, sirMov(0.15, 0.7), () => V.cam);
+addC("C5-y", 2, sirMov(1.1, 1.2), () => VW.cam);
+addC("C5-z-the-same-again", 2, sirMov(0.15, 0.7), () => V.cam);
+addC("C6-end", 2, sirMov(-0.2, -0.6), () => lens(-0.45, 2.6, 5.4, 0, -1, -16, 50).cam);
 export const PROOF_CUTS: Film = { id: "proof-cuts", fps: 30, seconds: at0, range: [0, 999], sky: "#9cc8f0", world, shots: cutShots, words: [], hook: { text: [], a: 0, b: 0 }, light: dayLight(DAY.from, [0, 1, 0]) };

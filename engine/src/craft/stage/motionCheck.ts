@@ -186,9 +186,20 @@ export const motionCheck = (film: Film, opt: { shots?: string[] } = {}) => {
         // wing: holding a thing, the upper arm drawn out near or above shoulder height (65 degrees or more up from hanging in the picture) and the
         //  forearm dropping back from the elbow to the hand, for 0.4 s: the elbow juts out like a chicken's wing (the eye patch Short, calm,
         //  verdict and trick in v1f-v1j, three independent reviews; the stiff test above lets a bent arm pass)
-        //  (Shorts only for now: the approved library clip 04 shows the same elbow at 86 degrees, a question for the review, 20 Nov)
+        //  (every film: the review, 20 Nov: the approved library clip 04 shows the same elbow at 86 degrees and fails it; its file stays as it
+        //   is, but where its pose is used in a film the elbow is to be down)
+        // fore-short: the forearm drawn to almost nothing (under 30 % of the upper arm as the picture shows them) for 0.3 s: the hand comes
+        //  toward the lens and sits on the elbow (the shot library round 4, 01 and 06, the review, 20 Nov: the forearm test saw a forearm hid
+        //  behind the upper arm, not one shrunk toward the lens)
+        let fs: number[] = [];
+        //  (only a free hand: a forearm behind a held thing is hidden by it and its fist sits at the thing's edge, which is right; the review,
+        //   20 Nov, after the test first failed every book shot of the eye patch Short and the approved 04)
+        for (let i = 0; i < frames.length; i++) { const B = frames[i].figs.get(name); if (!B || B.held[sd]) { fs = []; continue; }
+          const P2 = B.pic, upL = Math.hypot(P2[el][0] - P2[sh][0], P2[el][1] - P2[sh][1]), foL = Math.hypot(P2[wr][0] - P2[el][0], P2[wr][1] - P2[el][1]);
+          if (upL < 0.06 * B.H || foL > 0.3 * upL) { fs = []; continue; }
+          fs.push(i); if (fs.length >= 9) note(`${s.id}|${name}|foreshort|${sd}`, { shot: s.id, who: name, what: `${name}'s ${sd === "L" ? "left" : "right"} forearm is drawn almost to nothing (${Math.round((foL / upL) * 100)} % of the upper arm) for 0.3 s: the hand sits on the elbow` }, frames[i].F); }
         let wing: number[] = [];
-        for (let i = 0; i < frames.length && !film.cases; i++) { const B = frames[i].figs.get(name); if (!B || !B.held[sd]) { wing = []; continue; }
+        for (let i = 0; i < frames.length; i++) { const B = frames[i].figs.get(name); if (!B || !B.held[sd]) { wing = []; continue; }
           const P2 = B.pic, upU = ang(sub3(P2[el], P2[sh]), [0, 1, 0]), drops = P2[wr][1] - P2[el][1] > 0;
           if (upU < WING_UP || !drops) { wing = []; continue; }
           wing.push(i); if (wing.length >= 12) note(`${s.id}|${name}|wing|${sd}`, { shot: s.id, who: name, what: `${name}'s ${sd === "L" ? "left" : "right"} elbow juts out: the upper arm ${upU.toFixed(0)} degrees up from hanging while the forearm drops back to the held thing, for 0.4 s` }, frames[i].F); }
@@ -307,6 +318,18 @@ export const motionCheck = (film: Film, opt: { shots?: string[] } = {}) => {
         for (const j of Object.keys(lo)) most = Math.max(most, Math.hypot(hi[j][0] - lo[j][0], hi[j][1] - lo[j][1]) / (H || 1)); }
       const c0 = A.cam[i0], c1 = A.cam[i0 + N - 1], camMove = Math.hypot(c1.pos[0] - c0.pos[0], c1.pos[1] - c0.pos[1], c1.pos[2] - c0.pos[2]);
       if (any && most < LIM && camMove < (N === 75 ? 0.15 : 0.04)) { note(`${A.s.id}|still${N}`, { shot: A.s.id, who: "", what: `${A.s.id} stands still for ${(N / 30).toFixed(1)} s: no figure moves more than ${(most * 100).toFixed(1)} % of its height and the lens hardly moves` }, A.frames[i0 + N - 1].F); break; } } }
+  // still figure: a second (30 frames) in which no figure's body moves more than 1.2 cm in the world, whatever the lens does: a lens that
+  //  glides let a standing figure pass the tests above (the eye patch Short v1k, the mate in mins and the pirate at the end of verdict, the
+  //  review's independent reviewer). The head's turn counts: 3 degrees
+  for (const A of sums) { if (A.frames.length < 30) continue;
+    for (const name of A.frames[0].figs.keys()) for (let i0 = 0; i0 + 30 <= A.frames.length; i0 += 10) { let most = 0, head0 = Infinity, head1 = -Infinity, ok = true;
+      const lo: Record<string, number[]> = {}, hi: Record<string, number[]> = {};
+      for (let i = i0; i < i0 + 30; i++) { const g2 = A.frames[i].figs.get(name) as any; if (!g2 || !g2.W) { ok = false; break; }
+        head0 = Math.min(head0, g2.head ?? 0); head1 = Math.max(head1, g2.head ?? 0);
+        for (const [j, q] of Object.entries(g2.W as Record<string, number[]>)) { lo[j] = lo[j] ? lo[j].map((v, n) => Math.min(v, q[n])) : [...q]; hi[j] = hi[j] ? hi[j].map((v, n) => Math.max(v, q[n])) : [...q]; } }
+      if (!ok) continue;
+      for (const j of Object.keys(lo)) most = Math.max(most, Math.hypot(hi[j][0] - lo[j][0], hi[j][1] - lo[j][1], hi[j][2] - lo[j][2]));
+      if (most < 0.012 && head1 - head0 < 3) { note(`${A.s.id}|${name}|stillfig`, { shot: A.s.id, who: name, what: `${name} stands still for 1 s: no joint moves more than ${(most * 100).toFixed(1)} cm and his head turns under 3 degrees (the lens may glide, he does not move)` }, A.frames[i0 + 29].F); break; } } }
   // twice: two shots that are not side by side, with the same figures, the lens within 35 cm and 12 degrees of the other's and every figure
   //  within 30 cm of where it stood: the same picture twice. The last shot may be the first again (a film that loops)
   for (let i = 0; i < sums.length; i++) for (let k = i + 2; k < sums.length; k++) { const A = sums[i], B = sums[k]; if (i === 0 && k === sums.length - 1) continue;
@@ -315,9 +338,12 @@ export const motionCheck = (film: Film, opt: { shots?: string[] } = {}) => {
     let same = dp < 0.35 && angleBetween(ca, cb) < 12; for (const [name, ga] of fa.figs) { const gb = fb.figs.get(name); if (!gb || Math.hypot(ga.at[0] - gb.at[0], ga.at[2] - gb.at[2]) > 0.3) same = false; }
     // (or the same composition: the same figures, each as big (within 15 %) and in the same place in the picture (within a tenth of it),
     //  the lens turned less than 30 degrees: two close-ups alike in all but the eyes, the eye patch Short v1d)
-    if (!same && dp < 4 && angleBetween(ca, cb) < 30) { let comp = true;      // (in the same place: on deck and below deck are not the same picture)
-      for (const [name, ga] of fa.figs) { const gb = fb.figs.get(name); if (!gb) { comp = false; break; } const r2 = gb.H / ga.H;
-      if (r2 < 0.85 || r2 > 1.18 || Math.hypot(gb.pic.skull[0] - ga.pic.skull[0], gb.pic.skull[1] - ga.pic.skull[1]) > 0.1 * 1080) comp = false; } same = comp; }
+    // (sharpened after the eye patch Short v1k, where four cabin shots of him in the middle, whole, the book at his chest, passed: a card
+    //  figure is drawn the same from any side, so the lens's turn does not count; the same figures, each within 30 % as big, within 0.18 of
+    //  the picture's width and height of where it stood in it, its face turned within 20 degrees of the other's)
+    if (!same && dp < 4) { let comp = true;      // (in the same place: on deck and below deck are not the same picture)
+      for (const [name, ga] of fa.figs) { const gb = fb.figs.get(name) as any; if (!gb) { comp = false; break; } const r2 = gb.H / ga.H, fA2 = (ga as any).face ?? 0, fB2 = gb.face ?? 0;
+      if (r2 < 0.77 || r2 > 1.3 || Math.abs(gb.pic.skull[0] - ga.pic.skull[0]) > 0.18 * 1080 || Math.abs(gb.pic.skull[1] - ga.pic.skull[1]) > 0.18 * 1920 || Math.abs(fA2 - fB2) > 20) comp = false; } same = comp; }
     if (same) note(`${B.s.id}|twice|${A.s.id}`, { shot: B.s.id, who: "", what: `${B.s.id} is the same picture as ${A.s.id} again: the same figures in the same places, the lens ${dp.toFixed(2)} m and ${angleBetween(ca, cb).toFixed(0)} degrees from where it was` }, fb.F); }
   return [...faults.values()];
 };

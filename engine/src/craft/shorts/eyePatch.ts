@@ -132,12 +132,12 @@ const TABLE_EDGE = (x: number): V3 => inCabin([x, 0.76 + 0.025, CABIN.table[2] +
 const mateTable = (at: V3, V: Lens, turn: number, len: number) => {
   const hd = V.toward(at[0], at[2], turn), m = mover(MATE_SHORT_D, HM, at[0], at[2], hd); m.w = 0.09; m.stand(9);
   const st: Stand = { D: MATE_SHORT_D, at: [at[0], FL, at[2]], heading: hd, h: HM, cam: V.cam, pose: {} };
-  const onEdge = (x: number) => { const q = TABLE_EDGE(x); return reach(st, "R", [q[0], FL + 0.76 + 0.035 + 0.1, q[2]]); };      // (the fist on the top just in from the edge: at the edge it sank into it, the independent review of v1i)      // (the palm on the top, the hand lying on it)
+  const onEdge = (x: number) => { const q = TABLE_EDGE(x); return reach(st, "R", [q[0], FL + 0.76 + 0.035 + 0.07, q[2]]); };      // (the fist resting on the top: 7.5 cm, where the hand just meets it (4.5 cm put it 7 cm into the top); 10 cm up it hovered, the independent review of v1o)      // (the fist on the top just in from the edge: at the edge it sank into it, the independent review of v1i)      // (the palm on the top, the hand lying on it)
   const R2 = { handL: "relaxed" as const, handR: "fist" as const }, L0: [Seg, Seg] = [[8, 14], [22, 6]];      // (the hanging hand a little out from his hip: in at the front it read as on his groin, the independent review of v1i)      // (the hand curled over the table's edge: laid open, it was drawn palm up)
   ease(m, -1, { ...onEdge(0.3), armL: L0, head: [-16, 6, 0], lean: 8 }, 0.01, { ...R2, face: SEARCH(0.6) });
-  ease(m, 0.15, { ...onEdge(0.37), armL: [[12, 8], [30, -4]], head: [12, 7, 3], lean: 9 }, 0.8, { ...R2, face: SEARCH(-0.7) });
-  ease(m, 1.05, { ...onEdge(0.44), armL: [[6, 12], [24, -10]], head: [-10, 6, -3], lean: 8 }, 0.8, { ...R2, face: SEARCH(0.7) });
-  ease(m, 1.95, { ...onEdge(0.5), armL: L0, head: [16, 5, 4], lean: 9 }, 0.8, { ...R2, face: SEARCH(-0.6) });
+  ease(m, 0.15, { ...onEdge(0.33), armL: [[12, 8], [30, -4]], head: [12, 7, 3], lean: 9 }, 0.8, { ...R2, face: SEARCH(-0.7) });
+  ease(m, 1.05, { ...onEdge(0.36), armL: [[6, 12], [24, -10]], head: [-10, 6, -3], lean: 8 }, 0.8, { ...R2, face: SEARCH(0.7) });
+  ease(m, 1.95, { ...onEdge(0.39), armL: L0, head: [16, 5, 4], lean: 9 }, 0.8, { ...R2, face: SEARCH(-0.6) });
   return { cast: (t: number) => on("mate", MATE_SHORT_D, m, t, FL, {}, 5) };
 };
 
@@ -211,7 +211,7 @@ const TBL_AT = inCabin([0.5, 0, -0.18]), YW = 70, TN = -40;
 // 4. GO BELOW, AND YOU CAN'T SEE A THING. Below, wide and dark, the mate small in the room, feeling his way, stumbling
 { const V = frameOn(MAT_AT2, FL, -32, "full", 50, 1.4), mt = mate(MAT_AT2, V, 60, 1, S.s4b - S.s4, { stumble: 1.0 }); add({ id: "below", a: S.s4, b: S.s4b, V, cast: [mt.cast], sun: false, sounds: [{ t: 0.05, k: "creak", g: 0.6 }, { t: 1.05, k: "thud", g: 0.35 }] }); }
 // 5. "Who blew out the sun?!" Close on the mate's face in the dark, shouting, his head high in the picture
-{ const V = frameOn(MAT_AT2, FL, -12, "close", 36, 1, 1.62), mt = mate(MAT_AT2, V, 25, 0, S.s5 - S.s4b, { hang: true, shout: true }); add({ id: "who", a: S.s4b, b: S.s5, V, push: 0.03, cast: [mt.cast], sun: false, close: true }); }
+{ const V = frameOn(MAT_AT2, FL, -12, "close", 36, 1, 1.62), mt = mate(MAT_AT2, V, 8, 0, S.s5 - S.s4b, { hang: true, shout: true }); add({ id: "who", a: S.s4b, b: S.s5, V, push: 0.03, cast: [mt.cast], sun: false, close: true }); }  // (turned less: the far eye was pressed against the head's outline in the close-up, the independent review of v1o)
 // 6. EYES NEED TWENTY TO THIRTY MINUTES... The pirate reading, seen from his left at three quarters, the book tipped up to him, his head
 //    following the lines
 { const V = frameOn(PIR_AT, FL, -38, "full", 80, C1[0], 1.74, C1[1]), r = reader(PIR_AT, FL, V, 24, false, S.s5b - S.s5, { lines: true, tilt: TLT }); add({ id: "calm", a: S.s5, b: S.s5b, V, cast: [r.cast], things: r.book, sun: false, patch: "B", look: r.look }); }
@@ -227,7 +227,7 @@ const TBL_AT = inCabin([0.5, 0, -0.18]), YW = 70, TN = -40;
 // 11. IN 2007, MYTHBUSTERS... He reads in the dark at three quarters from his right, the book tipped up to him, his head following the lines
 { const V = frameOn(PIR_AT, FL, 40, "two", 46, C2[0], 1.74, C2[1]), r = reader(PIR_AT, FL, V, 30, false, S.s8b - S.s8, { lines: true, tilt: TLT }); add({ id: "myth", a: S.s8, b: S.s8b, V, cast: [r.cast], things: r.book, sun: false, patch: "B", look: r.look }); }
 // 12. ...TESTED THE IDEA. The mate turned the other way, hands low, a stumble
-{ const V = frameOn(MAT_AT2, FL, -24, "full", 50, 1.15, 1.74, TA), mt = mate(MAT_AT2, V, -60, 2, S.s9 - S.s8b, { stumble: 0.6 }); add({ id: "test", a: S.s8b, b: S.s9, V, cast: [mt.cast], sun: false, hide: ["cabin stool"], sounds: [{ t: 0.65, k: "thud", g: 0.3 }] }); }
+{ const V = frameOn(MAT_AT2, FL, -24, "full", 50, 1.15, 1.74, TA), mt = mate(MAT_AT2, V, -60, 2, S.s9 - S.s8b, { stumble: 0.6, hang: true }); add({ id: "test", a: S.s8b, b: S.s9, V, cast: [mt.cast], sun: false, hide: ["cabin stool"], sounds: [{ t: 0.65, k: "thud", g: 0.3 }] }); }  // (his hands down: held forward they read as palms up, the independent review of v1o)
 // 13. THEIR VERDICT: PLAUSIBLE. From his right, further off, the room round him: he looks up from the book at us, pleased
 // (waist up from his left, he looks at us with his eyes, his head still turned a little with his body: front on he was the same picture as
 //  calm, myth and trick, and a reverse angle stood behind the back wall, the review's independent reviewer of v1k)

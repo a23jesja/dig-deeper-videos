@@ -204,7 +204,7 @@ export const motionCheck = (film: Film, opt: { shots?: string[] } = {}) => {
     { const ids = new Set(frames.flatMap((q) => [...q.objs.keys()]));
       for (const n of ids) for (let i = 2; i < frames.length; i++) { const A = frames[i - 2].objs.get(n), B = frames[i - 1].objs.get(n), C = frames[i].objs.get(n); if (!A || !B || !C) continue;
         const r1 = B.q.clone().multiply(A.q.clone().invert()), r2 = C.q.clone().multiply(B.q.clone().invert()), dTurn = (2 * Math.acos(Math.min(1, Math.abs(r2.clone().multiply(r1.clone().invert()).w))) * 180) / Math.PI;
-        const v1 = B.p.clone().sub(A.p), v2 = C.p.clone().sub(B.p), dStep = v2.clone().sub(v1).length(), lands = v1.y < -0.005 && v2.length() < 0.5 * v1.length();
+        const v1 = B.p.clone().sub(A.p), v2 = C.p.clone().sub(B.p), dStep = v2.clone().sub(v1).length(), lands = v1.y < -0.005 && v2.y > 0.5 * v1.y;      // (its fall stopped by what it lands on: its downward speed at least halved)
         if (MOTION_DEBUG.on) { MOTION_DEBUG.max(`${s.id} thing ${B.name} turn`, dTurn, frames[i].F); MOTION_DEBUG.max(`${s.id} thing ${B.name} step`, dStep * 100, frames[i].F); }
         if (!lands && (dTurn > 2.5 || dStep > 0.025)) note(`${s.id}|jerk|${n}`, { shot: s.id, who: B.name, what: `the ${B.name}${B.held && C.held ? " in the hand" : B.held ? " he lets go of" : ""} jerks: ${dTurn > 2.5 ? `its turn changes by ${dTurn.toFixed(1)} degrees` : `its movement changes by ${(dStep * 100).toFixed(1)} cm`} in one frame${!B.held && !C.held ? ", with no hand on it" : ""}` }, frames[i].F); } }
     // ---- added after the shot library's round 3 (the review, 20 Nov 2026) ----

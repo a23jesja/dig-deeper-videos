@@ -331,6 +331,8 @@ export const bodyCheck = (film: Film, opt: { every?: number; shots?: string[] } 
         { const rv = new THREE.Vector3().setFromMatrixColumn(lens.matrixWorld, 0).setY(0).normalize();
           for (const o of solids) { const z = o.aabb.getSize(new THREE.Vector3()); if (z.y > 0.25 || Math.max(z.x, z.z) < 0.3 || !o.aabb.clone().expandByScalar(0.6).intersectsBox(f.B.box)) continue;
             const c = o.aabb.getCenter(new THREE.Vector3()), hip = f.B.a.joint("pelvis"), nk = f.B.a.joint("neck"); if (c.y < hip[1] - 0.15 || c.y > nk[1]) continue;
+            // (not what he sits on: a seat under his hips, its top just under them, shows on both sides of a sitter; the shot library's 08)
+            if (o.aabb.max.y < hip[1] + 0.05 && o.aabb.max.y > hip[1] - 0.3 && hip[0] > o.aabb.min.x - 0.05 && hip[0] < o.aabb.max.x + 0.05 && hip[2] > o.aabb.min.z - 0.05 && hip[2] < o.aabb.max.z + 0.05) continue;
             const half = Math.abs(rv.x) * z.x / 2 + Math.abs(rv.z) * z.z / 2, st: string[] = []; let back = Infinity;
             for (let i = 0; i <= 30; i++) { const p = c.clone().addScaledVector(rv, -half + (2 * half * i) / 30); if (!o.aabb.clone().expandByScalar(0.01).containsPoint(p)) { st.push("out"); continue; }
               const s2 = scr(p); if (!inFrame(s2)) { st.push("out"); continue; } const hb = bodyAt(f, s2.x, s2.y, CORE), hid = !!hb && hb.d < s2.d; st.push(hid ? "hid" : "seen"); if (hid) back = Math.min(back, s2.d - hb!.d); }

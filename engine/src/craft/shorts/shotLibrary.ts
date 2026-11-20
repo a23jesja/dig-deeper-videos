@@ -132,22 +132,43 @@ const onStool = (g: THREE.Group) => { const b = BOTTLE(); b.position.set(STOOL_A
 // (round 2: nothing happened for 1.1 s; then head and body were thrown round in one frame with no wind-up; the clenched grin read as a
 //  grille; the raised hand was grey; he stared into the lens at nothing. Now something to see and hear: the bottle falls at 1.0 s and he
 //  looks at it; a wind-up (tensing, shoulders up) before the jolt, every move eased; the rig's simpler grimace and skin-toned hands)
-const FALL0 = 1.0, FALL1 = 1.36, FLOOR_AT: V3 = [STOOL_AT[0] + 0.22, Y + 0.04, STOOL_AT[2] + 0.3];
-const bottleAt = (g: THREE.Group, t: number) => { const b = BOTTLE(); if (t < FALL0) { onStool(g); return; }
-  // (it tips off the seat's edge first and only then drops, clear of the stool: dropping as it slid, it passed through the seat's rim)
-  const k = Math.min(1, (t - FALL0) / (FALL1 - FALL0)), hk = Math.min(1, k / 0.4), off = 0.5 - 0.5 * Math.cos(Math.PI * hk), dk = Math.max(0, (k - 0.3) / 0.7), y = Y + 0.47 + (FLOOR_AT[1] - Y - 0.47) * dk * dk;
-  b.position.set(STOOL_AT[0] + (FLOOR_AT[0] - STOOL_AT[0]) * off, y, STOOL_AT[2] + (FLOOR_AT[2] - STOOL_AT[2]) * off); b.rotation.set(0, 0.6, -(Math.PI / 2) * Math.min(1, k * 1.3)); g.add(b); };
+// (round 4, the review of round 3: the bottle's corner sank into the stool's rim and it fell for no reason, and lay 2.6 cm in the floor (the
+//  new thing test). Now it stands near the stool's edge, rocks twice as the ship rolls (a creak), tips over its own base's outer edge with
+//  the speed growing, leaves the rim and falls free, turning on, and lands on its side on the floor, its round side touching it)
+const FLOOR_AT: V3 = [STOOL_AT[0] + 0.22, Y + 0.04, STOOL_AT[2] + 0.3];
+const ROCK0 = 0.5, TIP0 = 0.95, TIPD = 0.5, TIPA = (45 * Math.PI) / 180, BR = 0.066, G9 = 9.8;
+const BDIR = (() => { const dx = FLOOR_AT[0] - STOOL_AT[0], dz = FLOOR_AT[2] - STOOL_AT[2], n = Math.hypot(dx, dz) || 1; return new THREE.Vector3(dx / n, 0, dz / n); })();
+const BAXIS = new THREE.Vector3(0, 1, 0).cross(BDIR).normalize(), SEAT_Y = Y + 0.47;
+const BASE0 = new THREE.Vector3(STOOL_AT[0], SEAT_Y, STOOL_AT[2]).addScaledVector(BDIR, 0.14), PIVOT = BASE0.clone().addScaledVector(BDIR, 0.06);      // (its base's edge on the seat's rim: it tips over the rim itself)
+/** the bottle's base and turn while it rocks and tips about the pivot (the base's outer edge) */
+const tipped = (th: number) => ({ p: BASE0.clone().sub(PIVOT).applyAxisAngle(BAXIS, th).add(PIVOT), th });
+const REL = tipped(TIPA), REL2 = tipped(TIPA - ((2 * TIPA) / TIPD) / 300), V0 = REL.p.clone().sub(REL2.p).multiplyScalar(300).addScaledVector(BDIR, 0.45);      // (and it slides off the rim as it goes: dropping straight from the rim, its base corner grazed the seat's edge)
+const FALLT0 = (() => { const y0 = REL.p.y, yl = Y + BR + 0.002, vy = V0.y; return (vy + Math.sqrt(vy * vy + 2 * G9 * (y0 - yl))) / G9; })(), FALLT = FALLT0, FALL1 = TIP0 + TIPD + FALLT, WF = (Math.PI / 2 - TIPA) / FALLT;      // (turning on at a speed that lays it on its side as it lands)
+const LAND: V3 = (() => { const q = REL.p.clone().addScaledVector(V0, FALLT).addScaledVector(BDIR, 0.13); return [q.x, Y + BR, q.z]; })();
+const bottleAt = (g: THREE.Group, t: number) => { const b = BOTTLE();
+  let st: { p: THREE.Vector3; th: number };
+  if (t < ROCK0) st = { p: BASE0.clone(), th: 0 };
+  else if (t < TIP0) { const k = (t - ROCK0) / (TIP0 - ROCK0), r = (5 * Math.PI) / 180 * (0.5 - 0.5 * Math.cos(4 * Math.PI * k)); st = tipped(r); }
+  else if (t < TIP0 + TIPD) { const k = (t - TIP0) / TIPD; st = tipped(TIPA * k * k); }
+  else if (t < FALL1) { const d = t - TIP0 - TIPD; st = { p: REL.p.clone().addScaledVector(V0, d).add(new THREE.Vector3(0, -0.5 * G9 * d * d, 0)), th: TIPA + WF * d }; }
+  else { const d = FALLT; const q = REL.p.clone().addScaledVector(V0, d); st = { p: new THREE.Vector3(q.x, Y + BR + 0.002, q.z), th: Math.PI / 2 }; }
+  b.position.copy(st.p); b.quaternion.setFromAxisAngle(BAXIS, st.th); g.add(b); };
 { const p: V3 = inCabin([0.35, 0, -0.45]), hd = FRONT.toward(p[0], p[2], -20), m = mover(SIR_D, H, p[0], p[2], hd); m.w = 0.09; m.stand(9);
   // (the head turned to where the bottle lies, from his heading)
   const want = Math.max(-45, Math.min(45, ((((Math.atan2(FLOOR_AT[0] - p[0], FLOOR_AT[2] - p[2]) * 180) / Math.PI - hd + 540) % 360) - 180)));
   const UP: Partial<Pose> = { armL: [[26, 12], [128, 18]], armR: [[26, 12], [128, 18]], lean: -6, head: [want, 8, 0] }, DOWN = { gaze: [-0.8, 0.9] as [number, number] };
   ease(m, -1, { ...REST, head: [-4, 2, 0] }, 0.01, { handL: "relaxed", handR: "relaxed", face: { brow: 0.3, lid: 0.3, smile: 0.4 } });
-  ease(m, 0.3, { head: [2, 4, 0], px: 0.02, hipTilt: -2 }, 0.6, { handL: "relaxed", handR: "relaxed", face: { brow: 0.4, lid: 0.35, smile: 0.5 } });
-  // the wind-up: he tenses, shoulders up, the hands drawn in, the head round to the noise
-  ease(m, 1.05, { ...REST, armR: [[10, 10], [40, 6]], lean: 4, py: -0.015, head: [want * 0.8, 6, 0], px: 0, hipTilt: 0 }, 0.2, { ...LOOSE, face: { brow: 0.8, lid: 0.05, wide: 0.6, mouth: 0.1, ...DOWN } });
-  ease(m, 1.25, UP, 0.42, { handL: "open", handR: "open", face: { brow: 1, lid: 0, wide: 1, mouth: 0.5, smile: -0.5, ...DOWN } });
-  ease(m, 2.3, { ...UP, armL: [[22, 12], [118, 16]], armR: [[22, 12], [118, 16]], lean: -4, head: [want, 10, 0] }, 0.8, { handL: "open", handR: "open", face: { brow: 0.9, lid: 0.05, wide: 0.8, mouth: 0.3, smile: -0.4, ...DOWN } });
-  add("react", m, (_t, u) => FRONT.push(0.2 + 0.1 * u), (g, _c, t) => bottleAt(g, t), { talk: syl(0.2, 0.95), look: { sir: { at: FLOOR_AT, from: 1.3, what: "the bottle on the floor" } } }); }
+  ease(m, 0.3, { head: [2, 4, 0], px: 0.02, hipTilt: -2 }, 0.5, { handL: "relaxed", handR: "relaxed", face: { brow: 0.4, lid: 0.35, smile: 0.5 } });
+  // the bottle rocks (0.5 s, a creak): his head turns to it, his humming stops
+  ease(m, 0.75, { ...REST, head: [want * 0.6, 5, 0], px: 0.01, hipTilt: -1 }, 0.45, { ...LOOSE, face: { brow: 0.7, lid: 0.15, smile: 0.1, ...DOWN } });
+  // it tips (0.95-1.45): he tenses, shoulders up, the hands drawn in
+  ease(m, 1.3, { ...REST, armR: [[10, 10], [40, 6]], lean: 4, py: -0.015, head: [want * 0.85, 6, 0], px: 0, hipTilt: 0 }, 0.3, { ...LOOSE, face: { brow: 0.85, lid: 0.05, wide: 0.6, mouth: 0.1, ...DOWN } });
+  // it hits the floor (1.74): the jolt, both hands up before his chest
+  ease(m, 1.75, UP, 0.38, { handL: "open", handR: "open", face: { brow: 1, lid: 0, wide: 1, mouth: 0.5, smile: -0.5, ...DOWN } });
+  // then the breath out: the hands come down to his waist, he leans to look at it, and shakes his head a little
+  ease(m, 2.45, { armL: [[18, 12], [70, 14]], armR: [[16, 12], [64, 12]], lean: 8, head: [want, 14, 0] }, 0.6, { handL: "relaxed", handR: "relaxed", face: { brow: 0.6, lid: 0.25, wide: 0.2, mouth: 0.1, smile: -0.3, ...DOWN } });
+  wag(m, 3.1, 0.9, P({ head: [want - 7, 14, 0] }), P({ head: [want + 7, 14, 0] }), 0.45, { handL: "relaxed", handR: "relaxed", face: { brow: 0.5, lid: 0.3, smile: -0.2, ...DOWN }, glide: true });
+  add("react", m, (_t, u) => FRONT.push(0.2 + 0.1 * u), (g, _c, t) => bottleAt(g, t), { talk: syl(0.2, 0.7), look: { sir: { at: LAND, from: 1.9, what: "the bottle on the floor" } } }); }
 
 // 7. OPEN A DOOR. The lens inside the cabin looks across it at the door in the right-hand wall, hinged at its back edge. He stands a
 //    step from the door, along the wall toward the room's front, his right side to it. He reaches out, his hand on its ring, looks at it

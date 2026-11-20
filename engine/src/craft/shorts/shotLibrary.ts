@@ -59,8 +59,8 @@ const LOOSE = { handL: "relaxed" as const, handR: "relaxed" as const };
   const F = (brow: number, smile = 0.45) => ({ brow, lid: 0.12, smile });
   ease(m, -1, { ...REST, head: [-6, 2, 0] }, 0.01, { ...LOOSE, face: F(0.3) });
   ease(m, 0.25, { armR: [[10, 20], [92, 26]], armL: REST.armL, head: [-10, 4, 0], px: 0.03, hipTilt: -3, roll: 1.5 }, 0.5, { handL: "relaxed", handR: "open", face: F(0.6) });
-  ease(m, 1.0, { armL: [[14, 30], [74, 40]], armR: [[8, 24], [98, 34]], head: [-3, 0, 0] }, 0.45, { handL: "open", handR: "open", face: F(0.9, 0.55) });
-  ease(m, 1.75, { armL: [[18, 16], [112, 18]], armR: REST.armR, head: [-9, 5, 0], px: -0.03, hipTilt: 3, roll: -1.5 }, 0.5, { handL: "two", handR: "relaxed", face: F(0.7) });
+  ease(m, 1.0, { armL: [[14, 30], [74, 40]], armR: [[8, 40], [96, 50]], head: [-3, 0, 0] }, 0.45, { handL: "open", handR: "open", face: F(0.9, 0.55) });
+  ease(m, 1.75, { armL: [[26, 44], [120, 52]], armR: REST.armR, head: [-9, 5, 0], px: -0.03, hipTilt: 3, roll: -1.5 }, 0.5, { handL: "two", handR: "relaxed", face: F(0.7) });      // (the counting hand up and out beside him: forward, it lay on his belly as the picture showed it)
   ease(m, 2.55, { armR: [[6, 26], [80, 18]], armL: REST.armL, head: [-12, 2, 0] }, 0.45, { handL: "relaxed", handR: "open", face: F(0.6, 0.5) });
   ease(m, 3.25, { ...REST, head: [-6, 4, 0], px: 0, hipTilt: 0, roll: 0 }, 0.55, { ...LOOSE, face: F(0.4, 0.5) });
   add("stand-and-talk", m, (_t, u) => FRONT.push(0.15 * u), undefined, { talk: syl(0.3, 3.7, [1.8, 2.15]) }); }
@@ -131,10 +131,11 @@ const onStool = (g: THREE.Group) => { const b = BOTTLE(); b.position.set(STOOL_A
 // (round 2: nothing happened for 1.1 s; then head and body were thrown round in one frame with no wind-up; the clenched grin read as a
 //  grille; the raised hand was grey; he stared into the lens at nothing. Now something to see and hear: the bottle falls at 1.0 s and he
 //  looks at it; a wind-up (tensing, shoulders up) before the jolt, every move eased; the rig's simpler grimace and skin-toned hands)
-const FALL0 = 1.0, FALL1 = 1.32, FLOOR_AT: V3 = [STOOL_AT[0] + 0.18, Y + 0.04, STOOL_AT[2] + 0.22];
+const FALL0 = 1.0, FALL1 = 1.36, FLOOR_AT: V3 = [STOOL_AT[0] + 0.22, Y + 0.04, STOOL_AT[2] + 0.3];
 const bottleAt = (g: THREE.Group, t: number) => { const b = BOTTLE(); if (t < FALL0) { onStool(g); return; }
-  const k = Math.min(1, (t - FALL0) / (FALL1 - FALL0)), y = Y + 0.47 + (FLOOR_AT[1] - Y - 0.47) * k * k;
-  b.position.set(STOOL_AT[0] + (FLOOR_AT[0] - STOOL_AT[0]) * k, y, STOOL_AT[2] + (FLOOR_AT[2] - STOOL_AT[2]) * k); b.rotation.set(0, 0.6, -(Math.PI / 2) * Math.min(1, k * 1.3)); g.add(b); };
+  // (it tips off the seat's edge first and only then drops, clear of the stool: dropping as it slid, it passed through the seat's rim)
+  const k = Math.min(1, (t - FALL0) / (FALL1 - FALL0)), hk = Math.min(1, k / 0.4), off = 0.5 - 0.5 * Math.cos(Math.PI * hk), dk = Math.max(0, (k - 0.3) / 0.7), y = Y + 0.47 + (FLOOR_AT[1] - Y - 0.47) * dk * dk;
+  b.position.set(STOOL_AT[0] + (FLOOR_AT[0] - STOOL_AT[0]) * off, y, STOOL_AT[2] + (FLOOR_AT[2] - STOOL_AT[2]) * off); b.rotation.set(0, 0.6, -(Math.PI / 2) * Math.min(1, k * 1.3)); g.add(b); };
 { const p: V3 = inCabin([0.35, 0, -0.45]), hd = FRONT.toward(p[0], p[2], -20), m = mover(SIR_D, H, p[0], p[2], hd); m.w = 0.09; m.stand(9);
   // (the head turned to where the bottle lies, from his heading)
   const want = Math.max(-45, Math.min(45, ((((Math.atan2(FLOOR_AT[0] - p[0], FLOOR_AT[2] - p[2]) * 180) / Math.PI - hd + 540) % 360) - 180)));

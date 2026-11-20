@@ -41,6 +41,11 @@ const PARTS: Part[] = [
   { name: "left foot", a: "heelL", b: "toeL", r: 0.035, tol: 0.02, foot: true }, { name: "right foot", a: "heelR", b: "toeR", r: 0.035, tol: 0.02, foot: true },
 ];
 
+/** the length of a figure's hand as drawn, in metres (the design's hand measure at its height; ink.ts hand draws at this size whatever
+ *  way the arm points) */
+const handM = (a: Staged) => { const P = a.D.props(a.o?.who ?? "sir"); return (P.hand * a.h) / (P.thigh + P.shin + P.ankle + P.spine + P.neck + P.head); };
+/** how far a drawn hand may press into a solid (a fist resting on a table top touches it) */
+const DRAWN_TOL = 0.012;
 /** how much wider each piece is drawn than it is deep (the card: a chest seen from the front is twice as wide as it is deep) */
 const WIDE: Record<string, number> = { head: 1.25, chest: 1.6, belly: 1.7, "left thigh": 1.25, "right thigh": 1.25, "left shin": 1.2, "right shin": 1.2 };
 const solidMat = (m: THREE.Mesh) => {
@@ -178,7 +183,12 @@ export const bodyCheck = (film: Film, opt: { every?: number; shots?: string[] } 
       const carriedNow: Ob[] = []; th.g.traverse((o) => { const m = o as THREE.Mesh; if (!m.isMesh || !carried.has(m.uuid)) return; const b = obOf(m); if (b) carriedNow.push(b); });
       const bodies = Object.values(st).map((a) => { const sc = a.h / 1.8, J = (j: Joint | [Joint, Joint, number]) => { if (typeof j === "string") return new THREE.Vector3(...a.joint(j)); const [x, y, k] = j; return new THREE.Vector3(...a.joint(x)).lerp(new THREE.Vector3(...a.joint(y)), k); };
         const headL = new THREE.Vector3(...a.joint("crown")).distanceTo(new THREE.Vector3(...a.joint("skull")));
-        const parts = PARTS.map((P) => { const A = J(P.a), B = J(P.b), r = P.r < 0 ? -P.r * headL : P.r * sc, n = Math.max(2, Math.ceil(A.distanceTo(B) / 0.035)), pts: THREE.Vector3[] = []; for (let i = 0; i <= n; i++) pts.push(A.clone().lerp(B, i / n)); return { P, r, pts, tol: P.tol * Math.max(1, sc) }; });
+        const parts = PARTS.map((P) => { const A = J(P.a), B = J(P.b), r = P.r < 0 ? -P.r * headL : P.r * sc, n = Math.max(2, Math.ceil(A.distanceTo(B) / 0.035)), pts: THREE.Vector3[] = []; for (let i = 0; i <= n; i++) pts.push(A.clone().lerp(B, i / n));
+          // the hand as it is DRAWN (ink.ts hand: a fist or mitten reaches 0.33-0.36 of the hand's length to each side of the line from the
+          // wrist to the knuckles, and 0.76-1.0 of it out from the wrist), with its outline: wider than the hand's piece above. A drawn fist
+          // sank 4-5 cm into the table top while the hand's piece was still on it (the eye patch Short v1q, the review's fault 1)
+          const hand = P.name.endsWith("hand"), hm = hand ? handM(a) : 0, hd = B.clone().sub(A).normalize(), drawn = hand ? { r: 0.36 * hm + 0.006 * sc, pts: [0, 0.25, 0.5, 0.7].map((k) => A.clone().addScaledVector(hd, k * hm)) } : null;
+          return { P, r, pts, tol: P.tol * Math.max(1, sc), drawn }; });
         const box = new THREE.Box3(); for (const q of parts) for (const p of q.pts) box.expandByPoint(p); box.expandByScalar(0.15); return { a, parts, box }; });
       figuresTried += bodies.length;
       // the dust and the added light of the shot (world/air.ts, world/fire.ts glows): motes as points, light as the meshes that add
@@ -457,6 +467,7 @@ export const bodyCheck = (film: Film, opt: { every?: number; shots?: string[] } 
             crun(`lens|${sd}`, over && Math.abs(depth) > 0.4, 12, () => cpose(`lens|${sd}`, `the ${side} arm reaches ${depth > 0 ? "toward" : "away from"} the lens (${Math.abs(depth).toFixed(2)} leg lengths) and is drawn over its own body: the hand reads as on its own body`)); } } }
       for (const B of bodies) { const a = B.a, floor = a.at[1], near = (o: Ob) => o.aabb.intersectsBox(B.box);
         const mine = (o: Ob) => !!o.holder && o.holder.split(" & ").some((part) => part.split(" ")[0] === a.name);
+        const holdSides2 = (nm: string) => { const sides = new Set<string>(); for (const r of th.rows) for (const part of (r.holder ?? "").split(" & ")) { const [who, hands] = part.split(" "); if (who === nm && hands) for (const h of hands.split("+")) sides.add(h); } return sides; };
         const holdSides = (o: Ob) => { const sides = new Set<string>(); for (const part of (o.holder ?? "").split(" & ")) { const [who, hands] = part.split(" "); if (who === a.name && hands) for (const h of hands.split("+")) sides.add(h); } return sides; };
         const list = [...solids.filter((o) => near(o) && o.aabb.max.y > floor + 0.05), ...held.filter(near)];
         // (a thing held that moves on its own hinge or track, a door or a lid, grips.ts `arm`: only the hand on its handle may be in it;
@@ -468,7 +479,30 @@ export const bodyCheck = (film: Film, opt: { every?: number; shots?: string[] } 
           for (const q of B.parts) { if (own && !armTest && (!q.P.hand || sides.has(q.P.hand) || sides.size === 0)) continue;
             if (armTest && q.P.hand && sides.has(q.P.hand) && q.P.name.endsWith("hand")) continue;
             let worst = 0; for (const p of q.pts) { if (o.aabb.distanceToPoint(p) < q.r && seen(p, q.r)) { const pen = q.r - dist(o, p, q.r); if (pen > worst) worst = pen; } }
-            if (worst > q.tol) note(`${s.id}|${a.name}|${q.P.name}|${o.mesh.uuid}`, { shot: s.id, who: a.name, kind: isHeld ? "held" : "solid", what: `${a.name}'s ${q.P.name} is inside ${isHeld ? `the thing in ${o.holder}'s hand, ` : ""}${describe(o)}` }, F, worst); } }
+            if (worst > q.tol) note(`${s.id}|${a.name}|${q.P.name}|${o.mesh.uuid}`, { shot: s.id, who: a.name, kind: isHeld ? "held" : "solid", what: `${a.name}'s ${q.P.name} is inside ${isHeld ? `the thing in ${o.holder}'s hand, ` : ""}${describe(o)}` }, F, worst);
+            // the drawn hand against what is not held: it may touch (DRAWN_TOL), not sink in
+            if (!isHeld && q.drawn) { let d = 0; for (const p of q.drawn.pts) { if (o.aabb.distanceToPoint(p) < q.drawn.r && seen(p, q.drawn.r)) { const pen = q.drawn.r - dist(o, p, q.drawn.r); if (pen > d) d = pen; } }
+              if (d > DRAWN_TOL) note(`${s.id}|${a.name}|drawn ${q.P.name}|${o.mesh.uuid}`, { shot: s.id, who: a.name, kind: "solid", what: `${a.name}'s ${q.P.name} as drawn (its fist or fingers with the outline) goes ${(d * 100).toFixed(1)} cm into ${describe(o)}` }, F, d); } } }
+        // (q) a free hand as it is drawn: the card draws the hand on its own plane, at full size even when the arm points toward the lens,
+        //     and that plane can pass through a solid beside the figure (the table top beside the mate, whose card stood at a slant through
+        //     it). The drawn fist (ink.ts hand: out to 0.76 of the hand's length from the wrist, 0.35 of it to each side, with its outline)
+        //     is sampled on the card's plane; a solid that comes before a sampled point within 20 cm of it covers that part of the fist: in
+        //     the picture the fist sinks into it (the eye patch Short v1q, the review's fault 1: the mate's fist on the table, its underside
+        //     cut off in a straight line, 2.8-4.1 s)
+        { const az = Math.atan2(C.x - a.at[0], C.z - a.at[2]), nrm = new THREE.Vector3(Math.sin(az), 0, Math.cos(az)), at0 = new THREE.Vector3(...a.at);
+          const across = new THREE.Vector3(Math.cos(az), 0, -Math.sin(az)), upW = new THREE.Vector3(0, 1, 0), onCard = (p: THREE.Vector3) => p.clone().addScaledVector(nrm, -nrm.dot(p.clone().sub(at0)));
+          for (const side of ["L", "R"] as const) { if (holdSides2(a.name).has(side)) continue;
+            const wr = onCard(new THREE.Vector3(...a.joint(side === "L" ? "wrL" : "wrR"))), tp = onCard(new THREE.Vector3(...a.joint(side === "L" ? "tipL" : "tipR"))), hm = handM(a);
+            const d2 = tp.clone().sub(wr); if (d2.length() < 1e-5) continue; d2.normalize(); const pp = new THREE.Vector3().crossVectors(nrm, d2).normalize();
+            const Hc = wr.clone().addScaledVector(d2, 0.38 * hm), r = 0.36 * hm + 0.006 * (a.h / 1.8);
+            if (!seen(Hc, r)) continue;
+            const near2 = solids.filter((o) => o.aabb.distanceToPoint(Hc) < 0.6); if (!near2.length) continue;
+            let hid = 0, tot = 0, by = "";
+            for (const [u, v] of [[0, 0], ...[0.55, 1].flatMap((k) => Array.from({ length: 8 }, (_, i) => [k * Math.cos((i * Math.PI) / 4), k * Math.sin((i * Math.PI) / 4)]))] as [number, number][]) {
+              const Pc = Hc.clone().addScaledVector(d2, u * 0.38 * hm).addScaledVector(pp, v * r), dir = Pc.clone().sub(C), dist2 = dir.length(); dir.normalize(); tot++;
+              rc.set(C, dir); rc.near = 0.05; rc.far = dist2 - 0.004;
+              for (const o of near2) { const h = rc.intersectObject(o.mesh, false)[0]; if (h && h.point.distanceTo(Pc) < 0.2) { hid++; by = describe(o); break; } } }
+            if (hid >= 1) note(`${s.id}|${a.name}|cardhand|${side}`, { shot: s.id, who: a.name, kind: "solid", what: `${a.name}'s ${side === "L" ? "left" : "right"} hand as drawn on his card goes into ${by}: it covers ${hid} of ${tot} points of the drawn fist (in the picture the fist sinks into it)` }, F, hid / Math.max(1, tot)); } }
         // the garment below the pelvis (a robe, a dress, a coat's tails): the card draws it hanging along the spine down to its hem, sitting
         // too, so a seated man's robe went down through his stool (Jesper, 19 Nov, the doctor in the gladiators: "hans dress går igenom
         // pallen"). Cloth may lie on a seat and give a little (4 cm); deeper than that it goes through it

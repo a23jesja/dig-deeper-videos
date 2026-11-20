@@ -1,0 +1,8 @@
+# Den ritade handen (bodyCheck): planterat fel = v1q:s nävhöjd (FL + 0.76 + 0.035 + 0.085)
+dark frames 80-157 (film 2.67-5.27 s): mate's right hand as drawn (its fist or fingers with the outline) goes 1.2 cm into cabin room (1.30 x 0.07 x 0.80 m at 42.60, 1.36, -0.95), 7 cm
+dark frames 83-121 (film 2.77-4.07 s): mate's right hand as drawn on his card goes into cabin room (1.30 x 0.07 x 0.80 m at 42.60, 1.36, -0.95): it covers 1 of 17 points of the drawn fist (in the picture the fist sinks into it), 24 cm
+dark frames 85-121 (film 2.83-4.07 s): mate's right hand as drawn (its fist or fingers with the outline) goes 1.7 cm into cabin room (0.67 x 0.01 x 0.53 m at 42.40, 1.36, -0.90), 3 cm
+BODY CHECK FAILED for eye-patch: 1084 frames of 1083, 1243 figure-frames, 6645 pairs tried (a figure against a solid, a held thing or another figure), 3 faults (2 s)
+
+# v1r (+ 0.10)
+BODY CHECK OK for eye-patch: 1084 frames of 1083, 1243 figure-frames, 6645 pairs tried (a figure against a solid, a held thing or another figure), 0 faults (2 s)

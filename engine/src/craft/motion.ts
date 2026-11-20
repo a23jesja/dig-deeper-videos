@@ -323,10 +323,15 @@ export const shake = (t: number, hits: { t: number; amp: number; dur?: number }[
   for (const h of hits) { const u = (t - h.t) / (h.dur ?? 0.5); if (u < 0 || u > 1) continue; const e = (1 - u) ** 2 * h.amp * px; x += Math.sin(t * 91 + h.t * 7) * e; y += Math.cos(t * 77 + h.t * 5) * e * 0.75; }
   return [x, y];
 };
-/** eyes that blink by themselves: the upper lid's extra closing at time t (0..1); seed gives each figure its own rhythm */
+/** eyes that blink by themselves: the upper lid's extra closing at time t (0..1); seed gives each figure its own rhythm.
+ *  One blink is five frames at 30 a second: half lid, shut, shut, half lid, then open again (BLINK). The lid never stops between half
+ *  and shut, where the eye was drawn as an empty ring, and the shut eye is held for two frames, so that no frame of a blink differs
+ *  from both its neighbours while they are alike (Jesper 2026-11-20: the eye patch Short flickered at its blinks, an empty ring between
+ *  two arcs; DAILY-RULES, Impossible things 9, and the flicker check scripts/flicker.py) */
+export const BLINK = [0.5, 1, 1, 0.5];
 export const blink = (t: number, seed = 0) => {
-  const period = 2.6 + (Math.abs(Math.sin(seed * 12.9898)) * 1.8), u = (t + seed * 0.77) % period;
-  return u < 0.14 ? Math.sin((Math.PI * u) / 0.14) : 0;
+  const period = 2.6 + (Math.abs(Math.sin(seed * 12.9898)) * 1.8), u = (t + seed * 0.77) % period, k = Math.floor(u * 30 + 1e-6);
+  return k < BLINK.length ? BLINK[k] : 0;
 };
 /** the mouth from the caption word timings: opens on each word and closes between words (a = start, b = end in seconds) */
 export const mouthAt = (words: { a: number; b: number; w: string }[], t: number) => {

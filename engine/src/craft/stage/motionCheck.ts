@@ -356,6 +356,15 @@ export const motionCheck = (film: Film, opt: { shots?: string[] } = {}) => {
       for (const [name, ga] of fa.figs) { const gb = fb.figs.get(name) as any; if (!gb) { comp = false; break; } const r2 = gb.H / ga.H, fA2 = (ga as any).face ?? 0, fB2 = gb.face ?? 0;
       if (r2 < 0.77 || r2 > 1.3 || Math.abs(gb.pic.skull[0] - ga.pic.skull[0]) > 0.18 * 1080 || Math.abs(gb.pic.skull[1] - ga.pic.skull[1]) > 0.18 * 1920 || Math.abs(fA2 - fB2) > 20) comp = false; } same = comp; }
     if (same) note(`${B.s.id}|twice|${A.s.id}`, { shot: B.s.id, who: "", what: `${B.s.id} is the same picture as ${A.s.id} again: the same figures in the same places, the lens ${dp.toFixed(2)} m and ${angleBetween(ca, cb).toFixed(0)} degrees from where it was` }, fb.F); }
+  // the loop (Shot.loopInto): every joint of every figure, from the last frame to the first, may move no more than the most it moves from
+  // one frame to the next in the last eight frames, and a little (6 px); a figure on the last frame that is not on the first fails too
+  // (the eye patch Short v1q: the pirate's head jumped at the loop, the review's fault 2)
+  for (const s of film.shots) { if (!s.loopInto || (opt.shots && !opt.shots.includes(s.id))) continue;
+    const last = Math.round(s.b * film.fps) - 1, first = Math.round(s.loopInto.shot.a * film.fps), A = picsAt(film, last), B = picsAt(film, first);
+    const step = (p: Record<string, Record<string, number[]>>, q: Record<string, Record<string, number[]>>, who: string) => { let m = 0; for (const k of Object.keys(p[who] ?? {})) { const u = p[who][k], v = q[who]?.[k]; if (u?.length === 2 && v?.length === 2) m = Math.max(m, Math.hypot(u[0] - v[0], u[1] - v[1])); } return m; };
+    for (const who of Object.keys(A)) { if (!B[who]) { note(`${s.id}|loop|${who}`, { shot: s.id, who, what: `the loop: ${who} is on the last frame but not on the first` }, last); continue; }
+      let inner = 0; for (let F = last - 8; F < last; F++) inner = Math.max(inner, step(picsAt(film, F), picsAt(film, F + 1), who));
+      const jump = step(A, B, who); if (jump > inner + 6) note(`${s.id}|loop|${who}`, { shot: s.id, who, what: `the loop: from the last frame to the first ${who} jumps ${jump.toFixed(0)} px (from frame to frame in the last eight he moves ${inner.toFixed(0)} px at most)` }, last); } }
   return [...faults.values()];
 };
 export const motionLines = (film: Film, r: MotionFault[]) => r.map((f) => `${f.shot} frames ${f.f0}-${f.f1} (film ${(f.f0 / film.fps).toFixed(2)}-${((f.f1 + 1) / film.fps).toFixed(2)} s): ${f.what}`);

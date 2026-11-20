@@ -1,0 +1,7 @@
+# Skarvtestet (motionCheck, Shot.loopInto) – planterat fel: loopens tonande avstängd (over 0.001 s)
+end frames 1082-1082 (film 36.07-36.10 s): the loop: from the last frame to the first pirate jumps 29 px (from frame to frame in the last eight he moves 1 px at most)
+end frames 1082-1082 (film 36.07-36.10 s): the loop: from the last frame to the first mate jumps 12 px (from frame to frame in the last eight he moves 1 px at most)
+MOTION CHECK FAILED for eye-patch: 2 faults
+
+# v1r (over 0.55 s)
+MOTION CHECK OK for eye-patch: 0 faults

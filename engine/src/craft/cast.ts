@@ -349,7 +349,8 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
       // a shut eye is one arc and nothing else (no outline of the open eye is left round it, which read as spectacles): it bows upward
       // in a smile and downward otherwise
       const cx = (x: number) => { const m = k.g.getTransform(); return m.a * x + m.c * yEye + m.e; }, one = Math.abs(f.shut ?? 0) > 0.5 && Math.sign(cx(q.x) - cx(at(h, 0, 0.8).x)) === Math.sign(f.shut ?? 0);
-      const shut = lid > 0.86 || one, bow = (f.smile ?? 0) > 0.4 && !one ? -1 : 1;
+      const shut = lid > 0.7 || one,      // (a lid lower than this left a ring with no eye in it: drawn shut instead, the flicker of 20 Nov)
+      bow = (f.smile ?? 0) > 0.4 && !one ? -1 : 1;
       if (shut) k.line(spline([[q.x - rx * 0.86, yEye - bow * ry * 0.14], [q.x, yEye + bow * ry * 0.34], [q.x + rx * 0.86, yEye - bow * ry * 0.14]], false, 8), 6.4 * u);
       else { k.shape(ball, "#fffdf6"); k.clip(ball, () => {
         const px = q.x + clamp(gz[0] * 0.5 + h.sin * 0.22 + ahead * 0.5, -0.56, 0.56) * rx, py = yEye + gz[1] * ry * 0.5; k.mark(s < 0 ? "pupilA" : "pupilB", px, py); const pu = Math.max(0.5, Math.min(1.6, f.pupil ?? 1)); k.shape(ellPts(px, py, rx * 0.5 * pu, ry * 0.5 * pu), "#2a1f1a", 0); k.dot(px - rx * 0.17, py - ry * 0.2, r * 0.13, "#ffffff");

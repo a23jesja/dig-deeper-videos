@@ -8,9 +8,22 @@ CHROME="C:/Program Files/Google/Chrome/Application/chrome.exe"
 if [ "$WHAT" = all ] || [ "$WHAT" = film ]; then
   node scripts/film_info.mjs $FILM check
   node scripts/no_sheets_check.mjs | tail -1
-  npx remotion render src/index.ts $COMP "$OUT/$FILM$V.mp4" --gl=angle --codec h264 --crf 17 --concurrency 2 --browser-executable "$CHROME" < /dev/null 2>&1 | tail -2
+  # (DAILY-RULES, Impossible things 9, flicker, Jesper 2026-11-20): rendered at twice the size (2160 x 3840, the 3D at twice the pixels
+  # too) and scaled down, so that thin outlines and fine lines are averaged instead of stepping from frame to frame; then encoded at CRF 17,
+  # constant 30 frames a second, yuv420p in the limited (tv) range, BT.709. Before, Remotion's own file was full range (yuvj420p) at
+  # about 5 Mbit/s
+  BIG=out/craft/qa-$FILM/render-2x$V.mp4
+  npx remotion render src/index.ts $COMP "$BIG" --scale 2 --gl=angle --codec h264 --crf 10 --concurrency 2 --browser-executable "$CHROME" < /dev/null 2>&1 | tail -2
+  test -s "$BIG"
+  # the sound is copied as it is: re-encoding it beside the picture has stalled ffmpeg for hours on this machine; a stall now fails after ten minutes
+  timeout 600 ffmpeg -nostdin -v error -y -i "$BIG" -vf "scale=1080:1920:flags=lanczos:in_range=pc:out_range=tv:in_color_matrix=bt601:out_color_matrix=bt709,format=yuv420p"     -c:v libx264 -preset slow -crf 17 -r 30 -fps_mode cfr -colorspace bt709 -color_primaries bt709 -color_trc bt709 -color_range tv -c:a copy -movflags +faststart "$OUT/$FILM$V.mp4" < /dev/null
   test -s "$OUT/$FILM$V.mp4"
-  # the sound is copied as it is: re-encoding it beside the picture has stalled ffmpeg for hours on this machine; a stall now fails after five minutes
+  # the flicker check stops the delivery (exit 1) and names the times
+  node scripts/film_info.mjs $FILM regions > out/craft/qa-$FILM/regions.jsonl
+  python scripts/flicker.py "$OUT/$FILM$V.mp4" out/craft/qa-$FILM/regions.jsonl --out out/craft/qa-$FILM/flicker$V.txt
+  # the phone copy for review is the only low-bitrate file (under 29 MB: the 30 MB send limit); YouTube gets the full one
+  timeout 600 ffmpeg -nostdin -v error -y -i "$OUT/$FILM$V.mp4" -c:v libx264 -preset slow -crf 23 -pix_fmt yuv420p -color_range tv -colorspace bt709 -color_primaries bt709 -color_trc bt709 -c:a copy -movflags +faststart "$OUT/$FILM$V-telefon.mp4" < /dev/null
+  test $(stat -c %s "$OUT/$FILM$V-telefon.mp4") -lt 29000000
   timeout 300 ffmpeg -nostdin -v error -y -i "$OUT/$FILM$V.mp4" -vf scale=540:960 -c:v libx264 -crf 25 -preset medium -c:a copy "$OUT/$FILM$V-liten.mp4" < /dev/null
   ls -la "$OUT" | grep mp4
 fi

@@ -40,10 +40,12 @@ const hullOf = (g: THREE.BufferGeometry, w: number) => {
   return h;
 };
 /** glow = a colour the thing gives off by itself, so that it keeps its colour in deep shade (bread under an awning, a lamp) */
-export type MeshO = { at?: [number, number, number]; rot?: [number, number, number]; scale?: [number, number, number] | number; line?: number; shadow?: boolean; receive?: boolean; map?: THREE.Texture; side?: THREE.Side; glow?: string };
+export type MeshO = { at?: [number, number, number]; rot?: [number, number, number]; scale?: [number, number, number] | number; line?: number; shadow?: boolean; receive?: boolean; map?: THREE.Texture; side?: THREE.Side; glow?: string; /** the map on the front face of a box only */ front?: boolean };
 /** a toon mesh with its outline. line = width of its contour (1 = normal, 0 = none) */
 export const mesh = (geo: THREE.BufferGeometry, color: string, o: MeshO = {}) => {
-  const m = new THREE.Mesh(geo, toon(color, o.map, o.side, o.glow));
+  // (front: the map on the box's front face only (+z); on every face, its thin sides showed the whole picture squeezed into a strip
+  //  beside it, the woodcut in the eye patch Short)
+  const m = new THREE.Mesh(geo, o.front && o.map ? (() => { const plain = toon(color, undefined, o.side, o.glow), pic = toon(color, o.map, o.side, o.glow); return [plain, plain, plain, plain, pic, plain]; })() : toon(color, o.map, o.side, o.glow));
   m.castShadow = o.shadow !== false; m.receiveShadow = o.receive !== false;
   if (o.at) m.position.set(...o.at); if (o.rot) m.rotation.set(...o.rot);
   if (o.scale !== undefined) (typeof o.scale === "number" ? m.scale.setScalar(o.scale) : m.scale.set(...o.scale));
@@ -89,13 +91,17 @@ export const rod = (a: [number, number, number], b: [number, number, number], r:
 };
 
 // ---------------- painted flat textures ----------------
+/** every texture painted in code is mipmapped and filtered (trilinear, anisotropic 16): far away or seen at a slant its fine lines are
+ *  averaged instead of picked pixel by pixel, which made them shimmer while the lens moved (the woodcut's ruled lines and frame in the
+ *  eye patch Short, Jesper's flicker of 20 Nov) */
+export const filtered = <T extends THREE.Texture>(t: T): T => { t.generateMipmaps = true; t.minFilter = THREE.LinearMipmapLinearFilter; t.magFilter = THREE.LinearFilter; t.anisotropy = 16; return t; };
 const texs = new Map<string, THREE.CanvasTexture>();
 export const paint = (key: string, w: number, h: number, draw: (g: CanvasRenderingContext2D, r: () => number) => void, repeat?: [number, number]) => {
   let t = texs.get(key);
   if (!t) {
     const cv = document.createElement("canvas"); cv.width = w; cv.height = h; let s = key.length * 7919 + 13;
     draw(cv.getContext("2d")!, () => { s = (s * 16807) % 2147483647; return (s - 1) / 2147483646; });
-    t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 16; t.wrapS = t.wrapT = THREE.RepeatWrapping; texs.set(key, t);
+    t = filtered(new THREE.CanvasTexture(cv)); t.colorSpace = THREE.SRGBColorSpace; t.wrapS = t.wrapT = THREE.RepeatWrapping; texs.set(key, t);
   }
   if (repeat) { t = t.clone(); t.repeat.set(...repeat); t.needsUpdate = true; }
   return t;
@@ -207,9 +213,11 @@ export const lightRef = (m: THREE.Object3D, p: [number, number, number]) => m.tr
  *  toSun = the direction toward the sun (kit.sunDir), without it the card takes no shade */
 export const card = (key: string, cw: number, ch: number, w: number, h: number, feet: number, draw: (g: CanvasRenderingContext2D) => void, toSun?: THREE.Vector3) => {
   const cv = document.createElement("canvas"); cv.width = cw; cv.height = ch; draw(cv.getContext("2d")!);
-  const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 16; t.name = key;
+  const t = filtered(new THREE.CanvasTexture(cv)); t.colorSpace = THREE.SRGBColorSpace; t.name = key;
   const geo = new THREE.PlaneGeometry(w, h); geo.translate(0, h * (feet - 0.5), 0);
-  const m = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ map: t, transparent: true, alphaTest: 0.5, side: THREE.DoubleSide }));
+  // (alphaToCoverage: the card's cut edge is smoothed by the multisampling like any other edge; with the alpha test alone it was cut
+  //  pixel by pixel, and the outline's outer edge stepped and shimmered as the figure or the lens moved, the flicker of 20 Nov)
+  const m = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ map: t, transparent: true, alphaTest: 0.5, alphaToCoverage: true, side: THREE.DoubleSide }));
   m.customDepthMaterial = new THREE.MeshDepthMaterial({ depthPacking: THREE.RGBADepthPacking, map: t, alphaTest: 0.5 });
   m.castShadow = true; m.receiveShadow = false;
   if (toSun) { const sh = new THREE.Mesh(geo, shadeMat(t, toSun)); sh.receiveShadow = true; sh.castShadow = false; sh.renderOrder = 2; m.add(sh); }

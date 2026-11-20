@@ -637,7 +637,7 @@ export const piratePrint = (w = 0.44, h = 0.34) => { const map = paint("piratepr
     pirate(150, 470, -1, true); pirate(300, 466, 1, false, -0.5);      // (his blade curved back over his own head: curved out it ran through his neighbour's hat brim, the independent review of v1g)
     pirate(440, 472, 1, true); });
   // (no shadow falls on it: the daylight from the cabin's open side laid a beam's shadow edge across it, a band of light from nowhere)
-  return group([mesh(box(w + 0.05, h + 0.05, 0.025), "#3a2416", { at: [0, 0, -0.012], receive: false }), mesh(box(w, h, 0.01), "#ffffff", { map, line: 0.4, shadow: false, receive: false })]); };
+  return group([mesh(box(w + 0.05, h + 0.05, 0.025), "#3a2416", { at: [0, 0, -0.012], receive: false }), mesh(box(w, h, 0.01), "#ffffff", { map, front: true, line: 0.4, shadow: false, receive: false })]); };
 /** a ship's log held open the same way: both pages ruled with lines of handwriting (no words to read), a small sketch of a ship on the left */
 export const logBook = (w = 0.52, h = 0.36, fold = 0.32, /** how far out past its edge the hands hold it */ out = 0.01) => { const page = (side: number) => paint("booklog" + side, 256, 352, (g) => {
     g.fillStyle = "#f1e3bd"; g.fillRect(0, 0, 256, 352); g.fillStyle = "rgba(120,90,50,0.25)"; g.fillRect(side < 0 ? 236 : 0, 0, 20, 352);

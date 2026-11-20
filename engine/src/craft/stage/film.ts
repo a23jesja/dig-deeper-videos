@@ -49,6 +49,10 @@ export type Shot = {
   closeUp?: Record<string, string>;
   /** a cut into this shot to nearly the same picture on purpose (a match cut), and why: the jump cut test lets it pass */
   matchCut?: string;
+  /** the film's last shot, which loops into its first: over its last `over` seconds every figure that is in both eases into its pose of
+   *  the first shot's first frame (and its place and turn), so that the cut from the last frame to the first is no bigger than a frame
+   *  of movement (the eye patch Short v1q: at the loop the pirate's head jumped from tilted and frowning to straight and smiling) */
+  loopInto?: { shot: Shot; over: number };
   /** named things of the world that are not there in this shot (the world lists them in userData.named) */
   hide?: string[];
   cast: (t: number, T: number) => Actor[];
@@ -184,8 +188,30 @@ export const shotAt = (film: Film, T: number) => film.shots.find((s) => T >= s.a
  *  drawing is mirrored, so that his monocle shows, and his head was redrawn the other way round between two frames). The mirror is
  *  decided once, by how the figure stands to the lens on the shot's first frame; every caller (the stage, the checks) uses this */
 const LOCKED = new WeakMap<Shot, Shot["cast"]>();
+/** numbers, and arrays and objects of them, part of the way from a to b (anything else is b's from half way) */
+const mix = (a: unknown, b: unknown, k: number): unknown => {
+  if (typeof a === "number" && typeof b === "number") return a + (b - a) * k;
+  if (Array.isArray(a) && Array.isArray(b) && a.length === b.length) return a.map((x, i) => mix(x, b[i], k));
+  if (a && b && typeof a === "object" && typeof b === "object" && !Array.isArray(a) && !Array.isArray(b)) {
+    const o: Record<string, unknown> = {}; for (const key of new Set([...Object.keys(a), ...Object.keys(b)])) { const x = (a as Record<string, unknown>)[key], y = (b as Record<string, unknown>)[key];
+      o[key] = x === undefined ? (k < 0.5 ? undefined : y) : y === undefined ? (k < 0.5 ? x : undefined) : mix(x, y, k); }
+    return o; }
+  return k < 0.5 ? a : b;
+};
+/** the film's last shot loops into its first (Shot.loopInto): over the last `over` seconds the figures ease into their poses of the first
+ *  shot's first frame, and the lens into that frame's lens (a lens that drifts through the shot ended elsewhere than it began) */
+export const loopShot = (last: Shot, first: Shot, over: number) => {
+  last.loopInto = { shot: first, over }; const own = last.cam, len = last.b - last.a;
+  last.cam = (t, u) => { const c = own(t, u); if (t <= len - over) return c; const w = Math.min(1, (t - (len - over)) / over), k = w * w * (3 - 2 * w), d = first.cam(0, 0);
+    return { ...c, pos: mix(c.pos, d.pos, k) as typeof c.pos, look: mix(c.look, d.look, k) as typeof c.look, fov: c.fov + (d.fov - c.fov) * k }; };
+};
 export const castOf = (s: Shot): Shot["cast"] => { const had = LOCKED.get(s); if (had) return had;
   let lock: Map<string, boolean> | null = null;
   const f: Shot["cast"] = (t, T) => { if (!lock) { lock = new Map(); const c0 = s.cam(0, 0); for (const a of s.cast(0, s.a)) if (a.D.mirrorAt) lock.set(a.name, a.D.mirrorAt(a.heading - (Math.atan2(c0.pos[0] - a.at[0], c0.pos[2] - a.at[2]) * 180) / Math.PI)); }
-    return s.cast(t, T).map((a) => (lock!.has(a.name) && a.o.mirror === undefined ? { ...a, o: { ...a.o, mirror: lock!.get(a.name) } } : a)); };
+    const own = s.cast(t, T).map((a) => (lock!.has(a.name) && a.o.mirror === undefined ? { ...a, o: { ...a.o, mirror: lock!.get(a.name) } } : a));
+    const L = s.loopInto, len = s.b - s.a; if (!L || t <= len - L.over) return own;
+    // (the loop: eased so that at the end of the shot, one frame past its last, the figures stand exactly as on the first frame)
+    const u = Math.min(1, (t - (len - L.over)) / L.over), k = u * u * (3 - 2 * u), into = castOf(L.shot)(0, L.shot.a);
+    return own.map((a) => { const b = into.find((x) => x.name === a.name); if (!b) return a;
+      return { ...a, pose: mix(a.pose, b.pose, k) as Pose, at: mix(a.at, b.at, k) as V3, heading: a.heading + ((((b.heading - a.heading) % 360) + 540) % 360 - 180) * k, o: k < 0.5 ? a.o : b.o }; }); };
   LOCKED.set(s, f); return f; };

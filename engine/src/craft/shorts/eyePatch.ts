@@ -5,7 +5,7 @@
 // facts. Only the approved shot types (Jesper, 20 Nov: 04 hold with both hands, 08 sit, standing talk without stiff arms, empty set
 // shots): nobody walks, no door, no hand to the face. The patch's eye is the script's (Shot.patchEye) and the checks hold it there.
 import * as THREE from "three";
-import { Film, Shot, Cam, V3, Word, Actor, play, mix3 } from "../stage/film";
+import { Film, Shot, Cam, V3, Word, Actor, play, mix3, loopShot } from "../stage/film";
 import { mover, wag, ease, type MM } from "../stage/acting";
 import { lens, once, noShade, near, aside, put } from "../stage/staging";
 import { reach, jointsOf, carryBy, type Stand } from "../stage/grips";
@@ -135,7 +135,7 @@ const TABLE_EDGE = (x: number): V3 => inCabin([x, 0.76 + 0.025, CABIN.table[2] +
 const mateTable = (at: V3, V: Lens, turn: number, len: number) => {
   const hd = V.toward(at[0], at[2], turn), m = mover(MATE_SHORT_D, HM, at[0], at[2], hd); m.w = 0.09; m.stand(9);
   const st: Stand = { D: MATE_SHORT_D, at: [at[0], FL, at[2]], heading: hd, h: HM, cam: V.cam, pose: {} };
-  const onEdge = (x: number) => { const q = TABLE_EDGE(x); return reach(st, "R", [q[0], FL + 0.76 + 0.035 + 0.085, q[2]]); };      // (the fist resting on the top: 7.5 cm, where the hand just meets it (4.5 cm put it 7 cm into the top); 10 cm up it hovered, the independent review of v1o)      // (the fist on the top just in from the edge: at the edge it sank into it, the independent review of v1i)      // (the palm on the top, the hand lying on it)
+  const onEdge = (x: number) => { const q = TABLE_EDGE(x); return reach(st, "R", [q[0], FL + 0.76 + 0.035 + 0.10, q[2]]); };      // (the fist resting on the top: 7.5 cm, where the hand just meets it (4.5 cm put it 7 cm into the top); 10 cm up it hovered, the independent review of v1o)      // (the fist on the top just in from the edge: at the edge it sank into it, the independent review of v1i)      // (the palm on the top, the hand lying on it)
   const R2 = { handL: "relaxed" as const, handR: "fist" as const }, L0: [Seg, Seg] = [[8, 14], [22, 6]];      // (the hanging hand a little out from his hip: in at the front it read as on his groin, the independent review of v1i)      // (the hand curled over the table's edge: laid open, it was drawn palm up)
   ease(m, -1, { ...onEdge(0.3), armL: L0, head: [-8, 6, 0], lean: 8 }, 0.01, { ...R2, face: SEARCH(0.6) });
   ease(m, 0.15, { ...onEdge(0.33), armL: [[12, 8], [30, -4]], head: [6, 7, 3], lean: 9 }, 0.8, { ...R2, face: SEARCH(-0.7) });
@@ -189,7 +189,7 @@ const TLT = 0.6;      // (the book's top tipped away from the lens: its pages tu
 const NH = 1.85, NF = 3.6, NL = -0.55, RY = 118, RD = 5.6, RH = 2.6, RP = -14, VY = 0, VM = -50, VT = 20, NY = 100, NT = 8, NB = [1.6, 1.4, 8];
 const MA = 9, TA = -8;      // (mins and test to one side of the picture: centred they were the same picture as below and dark, the independent reviewer of v1n)
 const CF = 1.38, C1 = [1.75, -3], C2 = [0.95, 0], C3 = [1.55, 0], C4 = [1.35, -7], C5 = [2.0, 0];      // (far, aim of calm, myth, verdict, trick and real: four cabin shots of him alike and real like deck2 in v1k, the review's independent reviewer)      // (calm's lens 1.38 back: at 1.5 a blue thing on the floor was cut by the corner, the independent review of v1i)
-const SUNZ = 2.0, SUNH = 2.0, SUNP = -5, D2X = 0, D2Y = 0.55, D2P = 5;      // (sun: the lens higher, so the boom stands clear above both heads; deck2: lower, so the deck lantern hides behind him, not at his jaw: the independent review of v1k)
+const SUNZ = 2.0, SUNH = 2.0, SUNP = -5, D2X = 0, D2Y = 0.55, D2P = 8;      // (sun: the lens higher, so the boom stands clear above both heads; deck2: lower, so the deck lantern hides behind him, not at his jaw: the independent review of v1k)
 const PY = 90, PH = 1.68;      // (the deck close-up from 90 degrees at 1.68 m: the boom and the sail above his head with sea between; from 50 two shrouds, from 110 the flag's pole and from 25 the flag ended on his head, the independent reviews of v1g and v1i)      // (the deck close-up from 50 degrees, the sails behind him: from 90 the flag's corner sat on his head (the independent review of v1g), from 110 and 140 a pole ran down into his head (our own look at v1h))
 const NR = 15;      // (the close-up in 'nobody' from 15 degrees: from 40-62 the flag's pole stood up out of his head)
 const CAN_AT = W.find((w) => w.line === "flip" && /^can/i.test(w.w))!.a - 0.1;      // ("...and you CAN see": his eye goes wide)
@@ -264,7 +264,7 @@ const WALL_LAMP = once(() => { const gL = new THREE.Group(), [lx, ly, lz] = LAMP
   gL.add(mesh(box(0.012, 0.012, 0.13), ink, { at: [lx, ly + 0.16, lz - 0.06], line: 0.3 }), mesh(box(0.012, 0.03, 0.012), ink, { at: [lx, ly + 0.15, lz], line: 0.3 }));      // (the bracket from the wall)
   const pl = new THREE.PointLight("#ffb46a", 1.6, 1.4, 1.6); pl.position.set(lx - 0.1, ly, lz + 0.1); gL.add(pl); return gL; });
 const print = (g: THREE.Group, T2: number, cam: Cam) => { PRINT().position.set(PRINT_AT[0], FL + 1.38, PRINT_AT[2]); g.add(PRINT()); g.add(WALL_LAMP()); glow(g, LAMP_AT, 0.3, 0.3, T2, Math.atan2(cam.pos[0] - LAMP_AT[0], cam.pos[2] - LAMP_AT[2]), 4); };
-add({ id: "record", a: S.s11, b: S.s11b, V: lens(PRINT_AT[0] + 0.09, FL + 1.42, PRINT_AT[2] + 1.85, 0.0, -1, 5, 44), push: 0.15, cast: [], things: (g, _c, cam) => print(g, S.s11, cam), sun: false, sounds: [{ t: 0.2, k: "creak", g: 0.4 }], hide: ["cabin stool"] });
+add({ id: "record", a: S.s11, b: S.s11b, V: lens(PRINT_AT[0] + 0.09, FL + 1.42, PRINT_AT[2] + 1.85, 0.0, -1, 8, 44), push: 0.15, cast: [], things: (g, _c, cam) => print(g, S.s11, cam), sun: false, sounds: [{ t: 0.2, k: "creak", g: 0.4 }], hide: ["cabin stool"] });
 add({ id: "record2", a: S.s11b, b: S.s12, V: lens(PRINT_AT[0] + 0.07, FL + 1.39, PRINT_AT[2] + 0.75, -0.02, -1, 0, 34), push: 0.12, cast: [], things: (g, _c, cam) => print(g, S.s11b, cam), sun: false });
 // 18. STILL. A VERY CLEVER TRICK. Below, from low down at his right, the whole of him against the beams: he looks up from the book at us,
 //     smug (in v1d this was a close-up like the flip one: the review, "the same close-up twice")
@@ -272,6 +272,9 @@ add({ id: "record2", a: S.s11b, b: S.s12, V: lens(PRINT_AT[0] + 0.07, FL + 1.39,
   const r = reader(PIR_AT, FL, V, 30, false, S.s12b - S.s12, { looks: 0.1 }); add({ id: "trick", a: S.s12, b: S.s12b, V, push: 0.04, cast: [r.cast], things: r.book, sun: false, patch: "B" }); }
 // 19. The opening again, and the bubble: "Arr. Which eye was it?"
 opening("end", S.s12b, S.end);
+// (the loop: over the last 0.55 s he looks back down to his book and the mate is back where he started, so that the last frame runs on
+//  into the first; at v1q the pirate's head jumped at the loop from tilted and frowning to straight and smiling, the review's fault 2)
+loopShot(shots.find((x) => x.id === "end")!, shots.find((x) => x.id === "hook")!, 0.55);
 for (const s of shots) s.capsTop = 160;
 
 /** below deck is dark (the shutters shut); the deck in the sun. The opening is a little lighter than the rest below, so that it reads on a phone */

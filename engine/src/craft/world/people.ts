@@ -2,7 +2,7 @@
 // shadow. The card is drawn for the angle it is seen from: `heading` is the way the figure faces in the world, so a figure walking
 // away from the camera is drawn from behind and one crossing the picture from the side.
 import * as THREE from "three";
-import { card, outlinePx, lightRef } from "./kit";
+import { card, outlinePx, lightRef, filtered } from "./kit";
 import { Ink } from "../ink";
 import { solve, Pose, Props, Joint } from "../rig";
 import type { Design, FigOpts } from "../designs/common";
@@ -19,10 +19,14 @@ export type Placed = { mesh: THREE.Mesh; /** a point of the drawing (design unit
 export type Seen = { fov: number; toSun?: THREE.Vector3 };
 /** the width of the figure's ink line in design units that gives the world's contour width on the screen at this distance;
  *  held between 0.8 and 2.2 times the design's own line so that a far figure does not turn into a blot */
+/** the thinnest line of a figure on the screen, in pixels of the 1080 x 1920 picture */
+export const OUTLINE_MIN = 3.2;
 const lineFor = (own: number, mpu: number, at: number[], cam: number[], seen?: Seen) => {
   if (!seen) return own;
   const o = outlinePx(), dist = Math.hypot(cam[0] - at[0], cam[1] - at[1] - 0.9, cam[2] - at[2]), pxPerM = o.res / (2 * dist * Math.tan((seen.fov * D2R) / 2));
-  return Math.max(own * 0.8, Math.min(own * 2.2, (o.px * 1.15) / (pxPerM * mpu)));
+  // (never thinner on the screen than OUTLINE_MIN pixels of a picture 1080 wide (1920 high), however far the figure stands: a thinner line
+  //  aliased on and off as it moved, Jesper's flicker of 20 Nov; DAILY-RULES asks for at least 3 px)
+  return Math.max(own * 0.8, (OUTLINE_MIN * (o.res / 1920)) / (pxPerM * mpu), Math.min(own * 2.2, (o.px * 1.15) / (pxPerM * mpu)));
 };
 const place = (key: string, cw: number, ch: number, feet: number, s: number, mpu: number, sp: Spot, cam: number[], tilt: number, draw: (g: CanvasRenderingContext2D, yaw: number) => void, seen?: Seen): Placed => {
   const [x, y, z] = sp.at, az = Math.atan2(cam[0] - x, cam[2] - z), yaw = sp.heading - az / D2R;
@@ -157,7 +161,7 @@ export const crowdCard = (D: Design, pose: Pose, o: FigOpts, tag: string, sp: Sp
   const [x, y, z] = sp.at, az = Math.atan2(cam[0] - x, cam[2] - z), yaw = Math.round((sp.heading - az / D2R) / 20) * 20, key = `${D.id}:${tag}:${yaw}:${(sp.h ?? 1.7).toFixed(2)}`;
   let c = CROWD.get(key);
   if (!c) { const cv = document.createElement("canvas"); cv.width = cw; cv.height = ch; const g = cv.getContext("2d")!; g.translate(cw / 2, ch * feet); g.scale(s, s); D.draw(new Ink(g, D.ol * 1.7), solve(P, pose, yaw), o);
-    const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; const w = (cw / s) * mpu, h = (ch / s) * mpu, geo = new THREE.PlaneGeometry(w, h); geo.translate(0, h * (feet - 0.5), 0);
-    c = { mat: new THREE.MeshBasicMaterial({ map: t, transparent: true, alphaTest: 0.5, side: THREE.DoubleSide }), geo }; CROWD.set(key, c); }
+    const t = filtered(new THREE.CanvasTexture(cv)); t.colorSpace = THREE.SRGBColorSpace; const w = (cw / s) * mpu, h = (ch / s) * mpu, geo = new THREE.PlaneGeometry(w, h); geo.translate(0, h * (feet - 0.5), 0);
+    c = { mat: new THREE.MeshBasicMaterial({ map: t, transparent: true, alphaTest: 0.5, alphaToCoverage: true, side: THREE.DoubleSide }), geo }; CROWD.set(key, c); }
   const m = new THREE.Mesh(c.geo, c.mat); m.position.set(x, y, z); m.rotation.y = az; return m;
 };

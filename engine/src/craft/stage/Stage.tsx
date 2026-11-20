@@ -11,6 +11,7 @@ import { setOutline, aimSun, sunDir, setCardLight } from "../world/kit";
 import { figureCard } from "../world/people";
 import { shake } from "../motion";
 import { Film, Cam, Staged, shotAt, captions, capWidth, hookTop, CAP_TOP } from "./film";
+import { bubblesAt } from "./bubbles";
 
 export const SW = 1080, SH = 1920;
 const dispose = (g: THREE.Object3D) => g.traverse((o) => { const m = o as THREE.Mesh; if (!m.isMesh || !m.userData.own) return; m.geometry?.dispose(); for (const mat of (Array.isArray(m.material) ? m.material : [m.material]) as THREE.MeshBasicMaterial[]) { mat.map?.dispose(); mat.dispose(); } (m.customDepthMaterial as THREE.Material | undefined)?.dispose(); });
@@ -63,36 +64,21 @@ const Words: React.FC<{ film: Film }> = ({ film }) => {
     </AbsoluteFill>
   );
 };
-/** where a place in the world is on the picture, seen by `cam` (null behind the lens) */
-const toScreen = (cam: Cam, p: [number, number, number]): [number, number] | null => {
-  const c = new THREE.PerspectiveCamera(cam.fov, SW / SH, 0.1, 3000); c.position.set(cam.pos[0], cam.pos[1], cam.pos[2]); c.lookAt(cam.look[0], cam.look[1], cam.look[2]); c.updateMatrixWorld();
-  const v = new THREE.Vector3(p[0], p[1], p[2]).project(c); return v.z > 1 ? null : [((v.x + 1) / 2) * SW, ((1 - v.y) / 2) * SH];
-};
-const backOut = (k: number) => 1 + 2.7 * (k - 1) ** 3 + 1.7 * (k - 1) ** 2;
-/** the film's speech bubbles: a white rounded bubble with the comic outline, above the speaker's head with its tail toward it; it pops
- *  up in 0.14 s with a little overshoot and goes in 0.08 s. Kept inside the picture and above the captions. */
+/** the film's speech bubbles (stage/bubbles.ts): a white rounded bubble with the comic outline, above the speaker's head with its tail
+ *  toward it, placed once where his head is when it starts; it fades in over six frames, holds perfectly still and fades out over four.
+ *  (It popped up with an overshoot and followed the head on every frame to v1q: a few pixels' jump per frame, flicker to Jesper.) */
 const Bubbles: React.FC<{ film: Film }> = ({ film }) => {
-  const T = useCurrentFrame() / film.fps, live = (film.bubbles ?? []).filter((q) => T >= q.a && T < q.b);
+  const live = bubblesAt(film, useCurrentFrame() / film.fps);
   if (!live.length) return null;
-  const shot = shotAt(film, T), t = T - shot.a, cam = shot.cam(t, t / (shot.b - shot.a)), cast = castOf(shot)(t, T);
   return (
     <AbsoluteFill>
-      {live.map((q, i) => {
-        const who = cast.find((x) => x.name === q.who), head = who ? toScreen(cam, [who.at[0], who.at[1] + who.h * 1.03, who.at[2]]) : null, H = head ?? [SW / 2, 760];
-        const px = q.size ?? 72, w = Math.min(SW - 80, q.text.length * px * 0.66 + 80), h = Math.round(px * 1.12 + 44);
-        const x = Math.max(40 + w / 2, Math.min(SW - 40 - w / 2, H[0] + (q.dx ?? 0))), y = Math.max(40 + h, Math.min(1400, H[1] + (q.dy ?? -px * 2.6)));
-        const k = Math.min(1, (T - q.a) / 0.14), out = Math.min(1, Math.max(0, (q.b - T) / 0.08)), s = (k < 1 ? 0.6 + 0.4 * backOut(k) : 1) * (0.7 + 0.3 * out);
-        // the tail: from the bubble's lower edge toward the top of the head, stopping short of it (aimed at the forehead, it ran into the
-        // headband or the hair in a close-up, the eye patch Short v1g)
-        // (its base slides along the bubble's lower edge to above the head, so that a bubble kept inside the picture still points at him)
-        const bx = Math.max(x - w / 2 + 50, Math.min(x + w / 2 - 50, H[0])), dx = H[0] - bx, dy = H[1] - y, far = Math.hypot(dx, dy) || 1, reach = Math.min(110, far * 0.5), tip = [bx + (dx / far) * reach, y + (dy / far) * reach];
-        return (
-          <React.Fragment key={`b${i}`}>
-            <svg width={SW} height={SH} style={{ position: "absolute", left: 0, top: 0, opacity: k * out }}><polygon points={`${bx - 26},${y - 8} ${bx + 26},${y - 8} ${tip[0]},${tip[1]}`} fill="#fffdf5" stroke={STROKE} strokeWidth={7} strokeLinejoin="round" /></svg>
-            <div style={{ position: "absolute", left: x - w / 2, top: y - h, width: w, height: h, boxSizing: "border-box", background: "#fffdf5", border: `7px solid ${STROKE}`, borderRadius: h / 2, display: "flex", alignItems: "center", justifyContent: "center", font: `900 ${px}px 'Arial Black', Arial, sans-serif`, color: STROKE, whiteSpace: "nowrap", transform: `scale(${s})`, transformOrigin: `${bx - (x - w / 2)}px 100%`, opacity: out }}>{q.text}</div>
-          </React.Fragment>
-        );
-      })}
+      {live.map((q, i) => (
+        // (tail and bubble on one layer that fades as a whole, so that the tail's base is not seen through the bubble while it fades)
+        <div key={`b${i}${q.text}`} style={{ position: "absolute", left: 0, top: 0, width: SW, height: SH, opacity: q.op, willChange: "opacity" }}>
+          <svg width={SW} height={SH} style={{ position: "absolute", left: 0, top: 0 }}><polygon points={`${q.bx - 26},${q.y - 8} ${q.bx + 26},${q.y - 8} ${q.tip[0]},${q.tip[1]}`} fill="#fffdf5" stroke={STROKE} strokeWidth={7} strokeLinejoin="round" /></svg>
+          <div style={{ position: "absolute", left: q.x - q.w / 2, top: q.y - q.h, width: q.w, height: q.h, boxSizing: "border-box", background: "#fffdf5", border: `7px solid ${STROKE}`, borderRadius: q.h / 2, display: "flex", alignItems: "center", justifyContent: "center", font: `900 ${q.px}px 'Arial Black', Arial, sans-serif`, color: STROKE, whiteSpace: "nowrap" }}>{q.text}</div>
+        </div>
+      ))}
     </AbsoluteFill>
   );
 };

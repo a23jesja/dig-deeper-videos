@@ -53,6 +53,8 @@ export { occlusions, textOver } from "../stage/occlusion";
 export { bodyCheck, bodyLines, pickAt } from "../stage/bodyCheck";
 export { stageAt } from "../stage/staging";
 export { motionCheck, motionLines, MOTION_DEBUG, picsAt } from "../stage/motionCheck";
+export { bubblesAt } from "../stage/bubbles";
+export { textBoxes } from "../stage/film";
 // the painted-cabin test (not a film): in node the painted layers are empty planes, so that the checks see the set and the figures
 FILMS["cabin-test-painted"] = { film: cabinPainted({}), comp: "CabinTest" };
 FILMS["cabin-test-3d"] = { film: cabin3d(), comp: "CabinTest" };

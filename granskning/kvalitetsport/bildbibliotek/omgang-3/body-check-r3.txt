@@ -1,0 +1,1 @@
+BODY CHECK OK for shot-library: 960 frames of 960, 960 figure-frames, 1628 pairs tried (a figure against a solid, a held thing or another figure), 0 faults (2 s)

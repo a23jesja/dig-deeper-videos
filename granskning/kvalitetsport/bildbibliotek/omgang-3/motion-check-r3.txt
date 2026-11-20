@@ -1,0 +1,1 @@
+MOTION CHECK OK for shot-library: 0 faults

@@ -34,6 +34,8 @@ export type Shot = {
   /** where a figure looks in this shot (by name): a point, from and to (seconds into the shot); motionCheck.ts holds his head to it
    *  within 25 degrees (the shot library review: a man pointing at a window looked at the lens) */
   look?: Record<string, { at: V3; from?: number; to?: number; what?: string }>;
+  /** figures this shot shows from behind on purpose (walking away), with the reason: motionCheck.ts bars a head drawn past 60 degrees otherwise */
+  away?: Record<string, string>;
   cam: (t: number, u: number) => Cam;
   /** the middle and half the size of the area that gets sharp shadows; default: 9 m round what the camera looks at */
   sun?: { target: V3; reach: number };

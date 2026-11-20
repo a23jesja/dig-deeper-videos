@@ -30,7 +30,7 @@ export const motionCheck = (film: Film, opt: { shots?: string[] } = {}) => {
   const lens = new THREE.PerspectiveCamera(50, 1080 / 1920, 0.05, 3000);
   for (const s of film.shots) { if (opt.shots && !opt.shots.includes(s.id)) continue;
     const F0 = Math.ceil(s.a * film.fps - 1e-6), F1 = Math.ceil(s.b * film.fps - 1e-6);
-    type Fig = { pic: Record<string, [number, number, number]>; face: number; mirror: boolean; H: number; box: [number, number, number, number]; heading: number; head: number; at: V3; pipe: boolean; eyes: { e: [number, number]; p: [number, number] }[]; skullW: V3 };
+    type Fig = { pic: Record<string, [number, number, number]>; face: number; mirror: boolean; H: number; box: [number, number, number, number]; heading: number; head: number; at: V3; pipe: boolean; fade: boolean; eyes: { e: [number, number]; p: [number, number] }[]; skullW: V3 };
     const frames: { F: number; figs: Map<string, Fig>; things: Map<string, { names: Set<string>; small: { key: string; x: number; y: number; d: number }[] }>; downs: Set<string> }[] = [];
     const lenses = new Map<number, THREE.PerspectiveCamera>(), lensOf = (F: number) => lenses.get(F)!;
     for (let F = F0; F < F1; F++) { const t = Math.max(0, F / film.fps - s.a), cam = s.cam(t, t / (s.b - s.a)), C = new THREE.Vector3(...cam.pos);
@@ -46,7 +46,7 @@ export const motionCheck = (film: Film, opt: { shots?: string[] } = {}) => {
         const r = 0.03 * H, hm = [a.mark?.("headMin"), a.mark?.("headMax")].filter((q): q is V3 => !!q).map((q) => P(q)[0]), hx = hm.length ? hm : [pic.skull[0] - 0.12 * H, pic.skull[0] + 0.12 * H];
         const box: Fig["box"] = [Math.min(...xs.map((x) => x - r), ...hx), Math.max(...xs.map((x) => x + r), ...hx), Math.min(...ys) - 0.04 * H, Math.max(...ys) + 0.02 * H];
         const eyes = (["A", "B"] as const).map((k2) => { const e = a.mark?.(`eye${k2}`), p = a.mark?.(`pupil${k2}`); return e && p ? { e: [P(e)[0], P(e)[1]] as [number, number], p: [P(p)[0], P(p)[1]] as [number, number] } : null; }).filter((q): q is { e: [number, number]; p: [number, number] } => !!q);
-        figs.set(a.name, { eyes, skullW: a.joint("skull"), pic, face: faceTurn(sk.faceYaw), mirror: a.o.mirror ?? a.D.mirrorAt?.(yaw) ?? false, H, box, heading: a.heading, head: a.pose.head?.[0] ?? 0, at: a.at, pipe: !!a.mark?.("pipeOpen") }); }
+        figs.set(a.name, { eyes, skullW: a.joint("skull"), pic, face: faceTurn(sk.faceYaw), mirror: a.o.mirror ?? a.D.mirrorAt?.(yaw) ?? false, H, box, heading: a.heading, head: a.pose.head?.[0] ?? 0, at: a.at, pipe: !!a.mark?.("pipeOpen"), fade: !!a.mark?.("pipeFade") }); }
       // the shot's things: their names, and the small things with where they are in the picture (for the pop test)
       const g = new THREE.Group(); AUDIT.rows = []; AUDIT.on = true; CROWD_LOG.on = false;
       try { s.things?.(g, staged, t, s.a + t, cam); } finally { AUDIT.on = false; } g.updateMatrixWorld(true);
@@ -57,10 +57,13 @@ export const motionCheck = (film: Film, opt: { shots?: string[] } = {}) => {
         if (Math.max(z.x, z.y, z.z) > 0.25 || Math.max(z.x, z.y, z.z) < 0.01) return; const c = bb.getCenter(new THREE.Vector3()), p = P([c.x, c.y, c.z]); small.push({ key: `${m.geometry.uuid}:${(m.material as THREE.Material)?.uuid}`, x: p[0], y: p[1], d: p[2] }); });
       frames.push({ F, figs, things: new Map([["", { names, small }]]), downs }); }
 
+    // ---- barred angles (the frozen look: "head never in bare profile"; the review of round 2): a head drawn turned more than 60 degrees
+    //      from the lens is in profile or seen from behind. A shot names a figure it shows from behind on purpose, walking away (Shot.away) ----
+    for (const q of frames) for (const [name, f] of q.figs) if (Math.abs(f.face) > 60 && !s.away?.[name]) note(`${s.id}|${name}|barred`, { shot: s.id, who: name, what: `${name}'s head is drawn ${Math.abs(f.face).toFixed(0)} degrees turned from the lens: in profile or from behind, an angle the rig must not draw (the face turned toward us within 60 degrees)` }, q.F);
     // ---- per figure, frame to frame ----
     const who = new Set(frames.flatMap((q) => [...q.figs.keys()]));
     for (const name of who) {
-      const revs: number[] = []; let lastV: number[] | null = null;
+      const revs: number[] = []; let lastV: number[] | null = null; const fadeRun: Record<string, number> = {};
       for (let i = 1; i < frames.length; i++) { const A = frames[i - 1].figs.get(name), B = frames[i].figs.get(name), Cn = frames[i + 1]?.figs.get(name); if (!A || !B) continue; const F = frames[i].F;
         // jump: a joint that goes and comes back in one frame, or leaps in one frame
         for (const j of JOINTS) { const a = A.pic[j], b = B.pic[j], d1 = Math.hypot(b[0] - a[0], b[1] - a[1]), lim = (j.startsWith("wr") || j.startsWith("tip") ? 0.1 : /^(an|kn|hip)/.test(j) ? 0.085 : 0.06) * B.H;      // (a walking foot swings fast: 4-6 % a frame)
@@ -78,6 +81,10 @@ export const motionCheck = (film: Film, opt: { shots?: string[] } = {}) => {
         if (revs.length >= 4) note(`${s.id}|${name}|shake`, { shot: s.id, who: name, what: `${name} shakes: his head goes back and forth every frame or two (${revs.length} turns in ten frames)` }, F);
         // pipe in an open mouth
         if (B.pipe) note(`${s.id}|${name}|pipe`, { shot: s.id, who: name, what: `${name}'s pipe hangs in an open mouth` }, F);
+        // a pipe half faded (cast.ts: near profile, on the face's far side, it fades out as the head turns): only while the head is turning
+        // through; held four frames or more it is a ghost of a pipe
+        fadeRun[name] = B.fade ? (fadeRun[name] ?? 0) + 1 : 0;
+        if (fadeRun[name] >= 4) note(`${s.id}|${name}|pipefade`, { shot: s.id, who: name, what: `${name}'s pipe stands half see-through (the head held at the angle where it goes out of sight behind the face)` }, F);
         // look: the head's way against the target the shot names
         const L = s.look?.[name], tt = F / film.fps - s.a; if (L && tt >= (L.from ?? 0) && tt <= (L.to ?? 1e9)) { const way = B.heading + B.head, to = (Math.atan2(L.at[0] - B.at[0], L.at[2] - B.at[2]) * 180) / Math.PI, off = Math.abs(((way - to + 540) % 360) - 180);
           if (off > 25) note(`${s.id}|${name}|look`, { shot: s.id, who: name, what: `${name} looks ${off.toFixed(0)} degrees away from what he looks at (${L.what ?? "the target"})` }, F);

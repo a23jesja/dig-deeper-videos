@@ -183,8 +183,16 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
     //  false = as before, the stem dropping with the jaw in the open mouth (the proof's planted fault)
     if (!L.pipe) return; const old = o.pipeHold === false, r0 = at(h, 34, 0.72), t = old ? p3(h, a * 0.5 + a * 0.62, b * 0.86 + a * 0.5) : p3(h, a * 1.22, b * 0.6 + a * 0.14), y0 = yJaw - 0.01 * H + (old ? drop * 0.6 : 0), y1 = y0 + 0.11 * H;
     if (old && m > 0.04 && t.d > -0.15 * b) k.mark("pipeOpen", r0.x, y0);
+    // (the stem at least half a head wide in the picture, out the way it points: near profile, the turned head foreshortened it to a stub at
+    //  the face's edge and the bowl seemed to float beside the face, the review of round 2)
+    if (!old) { const dx = t.x - r0.x, need = 0.5 * a; if (Math.abs(dx) < need) t.x = r0.x + (dx === 0 ? 1 : Math.sign(dx)) * need; }
+    // (near profile, with the pipe on the far side of the face, it goes out of sight as the head turns: it fades out over a few degrees,
+    //  instead of its bowl hanging beside the face with the stem hidden by the head; the review of round 2)
+    const fade = old || phiDeg <= 0 ? 1 : Math.max(0, Math.min(1, (54 - phiDeg) / 5)); if (fade <= 0) return t.d;      // (near profile on its far side: drawn 49-54 degrees, the head truly 62-84 turned)
+    const a0 = k.g.globalAlpha; k.g.globalAlpha = a0 * fade;
     piece(k, seg([r0.x, y0], [t.x, y1], 5 * u, 5 * u, 0, 0.3, true), "#3a2618");
     piece(k, [[t.x - 15 * u, y1 - 34 * u], [t.x + 15 * u, y1 - 34 * u], [t.x + 12 * u, y1 + 7 * u], [t.x - 12 * u, y1 + 7 * u]], "#8a4f2a");
+    k.g.globalAlpha = a0; if (fade > 0.5) k.mark("pipeTip", t.x, y1); if (fade < 1) k.mark("pipeFade", t.x, y1);
     return t.d;
   };
   const ear = (s: number) => { const e = at(h, s * 90); return { e, draw: () => piece(k, ellPts(e.x, -0.5 * H, 0.17 * a, 0.12 * H), skinD) }; };
@@ -239,7 +247,8 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
     const sm = f.smile ?? 0.25, mw0 = (0.44 + 0.12 * Math.max(sm, 0)) * w;
     // (a pipe in the corner of the mouth: open, the mouth opens on the other side and the pipe's corner stays shut round the stem)
     const pc = L.pipe && o.pipeHold !== false && !tipBehind && m > 0.04 ? at(h, 34, 0.72).x : null, c00 = at(h, 0, 0.5).x, ps = pc === null ? 0 : Math.sign(pc - c00) || 1;
-    const mw = pc === null ? mw0 : mw0 * 0.62, c0 = pc === null ? c00 : c00 - ps * mw0 * 0.38, isOpen = m > 0.04, clench = !STYLE.simple && !!L.mouth2 && isOpen && sm < -0.3 && m < 0.35, bend = L.mouth2 && isOpen ? (clench ? 1 : sm) : 0;
+    const mw = pc === null ? mw0 : mw0 * 0.45, c0 = pc === null ? c00 : pc - ps * (0.35 * mw0 + mw),      // (the opening ends a third of a mouth's width short of the stem, wherever the stem's corner is: set from the face's middle, it reached the stem with the head turned toward the pipe's side, the review of round 2)
+      isOpen = m > 0.04, clench = !STYLE.simple && !!L.mouth2 && isOpen && sm < -0.3 && m < 0.35, bend = L.mouth2 && isOpen ? (clench ? 1 : sm) : 0;
     // the corrected mouth: the upper edge of the opening and the lower lip (the top of the jaw card) bend with the mood
     const lipY = (x: number) => clench ? 0.055 * H * Math.min(1, Math.max(0, (1 - Math.abs(x - c0) / mw) / 0.25)) : bend * 0.05 * H * Math.max(0, 1 - ((x - c0) / mw) ** 2);      // clenched teeth: the lower lip is drawn straight down off them, so the mouth is an arch on a flat foot
     if (vis && isOpen && L.mouth2) { k.clip(skull, () => {
@@ -248,7 +257,7 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
       k.clip(hole, () => {
         if (clench) {      // a narrow angry mouth: clenched teeth
           k.shape([[c0 - mw, top - 0.1 * H], [c0 + mw, top - 0.1 * H], [c0 + mw, yJaw + drop + 0.14 * H], [c0 - mw, yJaw + drop + 0.14 * H]], "#fffdf6", 0);
-          for (const x of [-0.6, -0.2, 0.2, 0.6]) k.line([[c0 + x * mw, top - 0.1 * H], [c0 + x * mw, yJaw + drop + 0.14 * H]], 3 * u);
+          k.line([[c0 - mw, (top + yJaw + drop + 0.04 * H) / 2], [c0 + mw, (top + yJaw + drop + 0.04 * H) / 2]], 3 * u);      // (one line between the rows: four uprights read as a grille, a skull's teeth, the review of round 2)
         } else {
           k.shape(ellPts(c0, yJaw + drop + 0.03 * H + Math.max(0, sm) * 0.05 * H, mw * 0.56, 0.07 * H), "#e0707a", 0);
           if (sm > 0.3 && m > 0.45) k.shape([[c0 - mw, top - 0.1 * H], [c0 + mw, top - 0.1 * H], [c0 + mw * 0.9, yJaw + 0.02 * H], [c0 - mw * 0.9, yJaw + 0.02 * H]], "#fffdf6", k.ol * 0.6);
@@ -264,9 +273,12 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
     }); }
     const dy = drop, lip: P2[] = bend ? [-1, -0.75, -0.5, -0.25, 0, 0.25, 0.5, 0.75, 1].map((x) => [c0 + x * mw, yJaw + dy + lipY(c0 + x * mw)] as P2) : [];
     const low: P2[] = [[-2 * w, yJaw + dy], ...lip, [2 * w, yJaw + dy], [2 * w, 60 + dy], [-2 * w, 60 + dy]];
-    k.clip(shift(skull, 0, dy), () => { k.shape(shift(low, 0, 6), "rgba(52,32,16,0.2)", 0); k.shape(low, shade(skin, 0.965)); });
-    if (m > 0.04) k.clip(low, () => k.shape(shift(skull, 0, dy), null));
-    if (vis && !(L.mouth2 && isOpen)) { const xl = at(h, -36, 0.72).x, xr = at(h, 36, 0.72).x, ym = yJaw + dy; k.clip(shift(skull, 0, dy), () => k.line(spline([[xl, ym - sm * 0.075 * H], [lerp(xl, xr, 0.25) + h.sin * 0.05 * a, ym + sm * 0.018 * H], [lerp(xl, xr, 0.75) + h.sin * 0.05 * a, ym + sm * 0.018 * H], [xr, ym - sm * 0.075 * H]], false, 6), 6.4 * u)); }
+    // (the jaw's card is the head's outline with only its chin let down, so that its sides go on straight from the face's: the whole outline
+    //  moved down jutted past the face on a turned head, the review of round 2)
+    const jawO = dy ? skull.map(([x, y]) => [x, y > yJaw ? y + dy : y] as P2) : skull;
+    k.clip(jawO, () => { k.shape(shift(low, 0, 6), "rgba(52,32,16,0.2)", 0); k.shape(low, shade(skin, 0.965)); });
+    if (m > 0.04) k.clip(low, () => k.shape(jawO, null));
+    if (vis && !(L.mouth2 && isOpen)) { const xl = at(h, -36, 0.72).x, xr = at(h, 36, 0.72).x, ym = yJaw + dy; k.clip(jawO, () => k.line(spline([[xl, ym - sm * 0.075 * H], [lerp(xl, xr, 0.25) + h.sin * 0.05 * a, ym + sm * 0.018 * H], [lerp(xl, xr, 0.75) + h.sin * 0.05 * a, ym + sm * 0.018 * H], [xr, ym - sm * 0.075 * H]], false, 6), 6.4 * u)); }
     if (L.lips && vis) { const q = at(h, 0, 0.72); piece(k, ellPts(q.x, yJaw - 0.025 * H + drop, 0.2 * a * Math.max(0.35, Math.abs(h.cos)), 0.032 * H), L.lips); }
     if (L.beard && !L.beard2) { const xs: P2[] = []; for (let az = -100; az <= 100; az += 20) { const q = at(h, az, 1.04); if (q.d > -0.1 * b) xs.push([q.x, -0.32 * H + drop * 0.5]); } if (xs.length > 1) { const lo = xs.map(([x], i) => [x * 0.92, 0.2 * H * (1 - Math.abs(i / (xs.length - 1) - 0.5) * 1.2) + drop] as P2).reverse(); piece(k, spline([...xs, ...lo], true, 4), L.beard); } }
     if (L.beard && L.beard2) {
@@ -305,7 +317,6 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
       if (L.fusesUnlit) { piece(k, ellPts(x1, y1, 0.032 * H, 0.036 * H), "#3a2a1c"); k.mark(s < 0 ? "fuseA" : "fuseB", x1, y1); continue; }      // (marked too: a spill is put to it)
       const gr = k.g.createRadialGradient(x1, y1, 0, x1, y1, 0.16 * H); gr.addColorStop(0, "rgba(255,140,40,0.55)"); gr.addColorStop(1, "rgba(255,110,30,0)"); k.g.fillStyle = gr; k.g.beginPath(); k.g.arc(x1, y1, 0.16 * H, 0, 7); k.g.fill();
       piece(k, ellPts(x1, y1, 0.04 * H, 0.046 * H), "#ff6a1a"); k.shape(ellPts(x1, y1 + 0.006 * H, 0.02 * H, 0.024 * H), "#ffe08a", 0); k.mark(s < 0 ? "fuseA" : "fuseB", x1, y1); }
-    if (!tipBehind) pipe();
     const eye = (s: number) => {
       const q = at(h, s * 28, 0.8); if (q.d < 0.1 * b) return;
       k.mark(s < 0 ? "eyeA" : "eyeB", q.x, yEye);
@@ -335,6 +346,9 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
     const far = h.sin >= 0 ? 1 : -1;
     if (vis) eye(far);
     if (!away) { mousHalf(far); mousHalf(-far); if (L.mous && h.cos > 0.5) pin(k, [nose0.x * 0.9, yM + 1], 4); }
+    // (the pipe after the moustache: drawn before it, the moustache hid the stem and left only the bowl under it, a tooth or a block,
+    //  with the head turned toward the pipe's side; or a bowl floating off the face near profile. The review of round 2)
+    if (!tipBehind) pipe();
     if (vis) {
       eye(-far);
       const t0 = at(h, 0, 0.9), n1 = at(h, -7, 0.9), n2 = at(h, 7, 0.9), c1 = at(h, -13, 0.9), c2 = at(h, 13, 0.9), out = 0.5 * a * h.sin;

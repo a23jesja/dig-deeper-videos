@@ -161,6 +161,12 @@ export const hand = (k: Ink, wrist: P2, deg: number, h: number, kind: HandKind, 
   } else if (kind === "open") {
     const palm = body([[0, -0.22], [0.28, -0.33], [0.5, -0.33], [0.56, 0], [0.5, 0.3], [0.28, 0.32], [0, 0.22]]);
     k.group([fin(0.46, -0.25, -20, 0.44), fin(0.5, -0.09, -7, 0.52), fin(0.5, 0.08, 6, 0.48), fin(0.45, 0.23, 20, 0.38, 0.08, 0.065), fin(0.16, 0.22, 62, 0.4, 0.1, 0.085), palm], col, ol);
+  } else if (kind === "relaxed" && Math.abs((((deg - 90) % 360) + 540) % 360 - 180) < 38) {
+    // a hand at rest hanging down: seen edge on, its palm to the thigh, the fingers loosely curled in at the tip and the thumb laid along
+    // the front (the review of round 2: hanging, the mitten showed its palm to the lens with the thumb spread, stiff)
+    const side = body([[0, -0.15], [0.3, -0.19], [0.62, -0.17], [0.8, -0.07], [0.83, 0.07], [0.7, 0.16], [0.34, 0.18], [0, 0.15]]);
+    k.group([side, fin(0.16, 0.12, 26, 0.3, 0.09, 0.075)], col, ol);
+    k.line(spline([[0.58 * h, -0.15 * h], [0.7 * h, -0.02 * h], [0.62 * h, 0.12 * h]], false, 5), thin);
   } else if (kind === "relaxed") {
     const mit = body([[0, -0.22], [0.32, -0.32], [0.72, -0.3], [0.97, -0.17], [1.0, 0.04], [0.86, 0.23], [0.4, 0.3], [0, 0.22]]);
     k.group([fin(0.2, 0.2, 48, 0.36, 0.115, 0.09), mit], col, ol);

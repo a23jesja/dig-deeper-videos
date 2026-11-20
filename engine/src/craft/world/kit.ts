@@ -163,12 +163,17 @@ const rgb = (hex: string) => { const n = parseInt(hex.replace("#", ""), 16); ret
 // (lookBack: where the light is looked up, moved back from where the card is drawn: a layer of fingers drawn in front of what the hand
 //  holds takes the light of the hand on its figure; looked up in front, the cabin's lamps lit it darker, a grey fist: the shot library review)
 const LIGHT_VS = `uniform vec3 lookBack; varying vec2 vUv; varying vec3 vW; varying vec3 vR; varying vec3 vN;
-  void main() { vUv = uv; vec4 w = modelMatrix * vec4(position, 1.0); vW = w.xyz + lookBack; vR = normalize((modelMatrix * vec4(1.0, 0.0, 0.0, 0.0)).xyz);
+  void main() { vUv = uv; vec4 w = modelMatrix * vec4(position, 1.0); vec3 wc = (modelMatrix * vec4(0.0, position.y, 0.0, 1.0)).xyz; vW = mix(wc, w.xyz, 0.35) + lookBack; vR = normalize((modelMatrix * vec4(1.0, 0.0, 0.0, 0.0)).xyz);
     vN = normalize((modelMatrix * vec4(0.0, 0.0, 1.0, 0.0)).xyz); gl_Position = projectionMatrix * viewMatrix * w; }`;
 const LIGHT_HEAD = `uniform sampler2D cardMap; uniform vec2 texel; uniform vec3 lp[3]; uniform vec3 lc[3]; uniform float lk[3]; uniform float lr[3]; uniform float lb[3]; uniform float lq[3]; uniform int ln;
   varying vec2 vUv; varying vec3 vW; varying vec3 vR; varying vec3 vN;
   float A(vec2 o) { return texture2D(cardMap, vUv + o * texel).a; }
-  float att(int i) { vec3 d = lp[i] - vW; float r = length(d); return 1.0 / (1.0 + (r * r) / (lr[i] * lr[i])); }`;
+  vec3 toL(int i) { vec3 d = lp[i] - vW; d.y *= 0.4; return d; }
+  float att(int i) { float r = length(toL(i)); return 1.0 / (1.0 + (r * r) / (lr[i] * lr[i])); }`;
+// (toL: the way to a lamp with its height squeezed: one figure takes nearly the same light from head to hands, as a body under one lamp
+//  does; reckoned in full, the hands a metre under the face got far less of the lamp than the face, and the cool ambient made them grey
+//  beside its warm skin: the shot library review, round 2. For the same reason the light is looked up near the card's middle line
+//  (vW: a third of the way out to the pixel): a hand held out to the side, half a metre from the body, went dark brown beside the face)
 const cardLight = (map: THREE.Texture, cw: number, ch: number, L: CardLight) => {
   const P = L.lights.slice(0, 3), pad = <T,>(a: T[], z: T) => [...a, z, z, z].slice(0, 3);
   const u = () => ({ lookBack: { value: new THREE.Vector3() }, cardMap: { value: map }, texel: { value: new THREE.Vector2(1 / cw, 1 / ch) }, ln: { value: P.length }, amb: { value: rgb(L.amb) }, rimK: { value: L.rim ?? 0.8 },
@@ -178,8 +183,8 @@ const cardLight = (map: THREE.Texture, cw: number, ch: number, L: CardLight) => 
   // the light that reaches the card, multiplied over it
   const mul = new THREE.ShaderMaterial({ ...common, uniforms: u(), vertexShader: LIGHT_VS, blending: THREE.CustomBlending, blendEquation: THREE.AddEquation, blendSrc: THREE.DstColorFactor, blendDst: THREE.ZeroFactor,
     fragmentShader: `${LIGHT_HEAD} uniform vec3 amb;
-      void main() { if (texture2D(cardMap, vUv).a < 0.5) discard; float sx = (vUv.x - 0.5) * 2.6; vec3 n = normalize(vN * 0.8 + vR * sx + vec3(0.0, 0.2, 0.0)); vec3 c = amb;
-        for (int i = 0; i < 3; i++) { if (i >= ln) break; vec3 d = normalize(lp[i] - vW); c += lc[i] * lk[i] * lb[i] * max(0.0, dot(n, d)) * att(i); }
+      void main() { if (texture2D(cardMap, vUv).a < 0.5) discard; float sx = clamp((vUv.x - 0.5) * 2.6, -0.2, 0.2); vec3 n = normalize(vN * 0.8 + vR * sx + vec3(0.0, 0.2, 0.0)); vec3 c = amb;
+        for (int i = 0; i < 3; i++) { if (i >= ln) break; vec3 d = normalize(toL(i)); c += lc[i] * lk[i] * lb[i] * max(0.0, dot(n, d)) * att(i); }
         gl_FragColor = vec4(min(c, vec3(1.0)), 1.0); }` });
   // the rim: a thin edge of each light along the outline, on the side that faces it
   const rim = new THREE.ShaderMaterial({ ...common, uniforms: u(), vertexShader: LIGHT_VS, blending: THREE.AdditiveBlending,

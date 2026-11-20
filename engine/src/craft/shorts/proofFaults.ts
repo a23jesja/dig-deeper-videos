@@ -187,4 +187,12 @@ add("AS-control-mirrored-keeps-the-eye", pirate(-20, { patch: "A", mirror: true 
 add("AT-control-patch-turn-left", (t) => [pirate(40 * t, { patch: "A" })], undefined, { patchEye: { pirate: "A" } });
 add("AU-control-patch-turn-right", (t) => [pirate(-40 * t, { patch: "A" })], undefined, { patchEye: { pirate: "A" } });
 
+// AV-AX. THE CLOSE-UP (the review, 20 Nov: a close-up may cut the body only along a clear line across the chest or the shoulders, the head
+//    always whole with air above it, no arm cut half way by a side). AV: a close-up whose top cuts through his head. AW: a close-up whose
+//    side cuts his raised arm half way. AX: CONTROL, a close-up on his face cut across the chest. AV and AW must fail, AX pass
+const CL = (y: number, d: number, fov: number) => { const L2 = lens(0, y, d, 0, -1, 0, fov); return { cam: () => L2.cam }; };
+add("AV-close-up-cuts-the-head", sir({}), undefined, { closeUp: { sir: "planted: the head cut" }, ...CL(1.78, 1.25, 34) });
+add("AW-close-up-cuts-an-arm", sir({ armR: [[60, 40], [120, 30]] }), undefined, { closeUp: { sir: "planted: an arm cut" }, ...CL(1.58, 1.55, 36) });
+add("AX-control-close-up-on-the-face", sir({}), undefined, { closeUp: { sir: "control" }, ...CL(1.58, 1.55, 36) });
+
 export const PROOF_FAULTS: Film = { id: "proof-faults", fps: 30, seconds: shots.length * LEN, range: [0, 999], sky: "#9cc8f0", world, shots, words: [], hook: { text: [], a: 0, b: 0 }, light: dayLight(DAY.from, [0, 1, 0]) };

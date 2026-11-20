@@ -44,7 +44,7 @@ export const motionCheck = (film: Film, opt: { shots?: string[] } = {}) => {
     const F0 = Math.ceil(s.a * film.fps - 1e-6), F1 = Math.ceil(s.b * film.fps - 1e-6);
     type Fig = { pic: Record<string, [number, number, number]>; face: number; mirror: boolean; H: number; box: [number, number, number, number]; heading: number; head: number; at: V3; pipe: boolean; fade: boolean; pipeOn: [number, number] | null; pipeTip: [number, number] | null; pipeRoot: [number, number] | null; W: Record<string, V3>; kind: { L: string; R: string }; held: { L: boolean; R: boolean }; sit: boolean; eyes: { e: [number, number]; p: [number, number] }[]; skullW: V3;
       /** how much of each ear shows (the drawing notes it), the thing each hand holds (its object's id), the arm's joints on the card */
-      ears: [number | null, number | null]; patch: { side: string; at: [number, number]; eye: [number, number] | null; span: number } | null; foreTop: { L: boolean; R: boolean }; holds: { L: string | null; R: string | null }; card: Record<string, [number, number]> };
+      ears: [number | null, number | null]; hx: [number, number]; patch: { side: string; at: [number, number]; eye: [number, number] | null; span: number } | null; foreTop: { L: boolean; R: boolean }; holds: { L: string | null; R: string | null }; card: Record<string, [number, number]> };
     const frames: { F: number; figs: Map<string, Fig>; things: Map<string, { names: Set<string>; small: { key: string; x: number; y: number; d: number }[] }>; downs: Set<string>; held: Map<string, { p: THREE.Vector3; q: THREE.Quaternion }>;
       /** every thing of the shot with a body to it, by its object's id: where it is and how it is turned (the jerk and release tests) */
       objs: Map<string, { p: THREE.Vector3; q: THREE.Quaternion; M: THREE.Matrix4; name: string; held: boolean }> }[] = [];
@@ -63,7 +63,7 @@ export const motionCheck = (film: Film, opt: { shots?: string[] } = {}) => {
         const box: Fig["box"] = [Math.min(...xs.map((x) => x - r), ...hx), Math.max(...xs.map((x) => x + r), ...hx), Math.min(...ys) - 0.04 * H, Math.max(...ys) + 0.02 * H];
         const eyes = (["A", "B"] as const).map((k2) => { const e = a.mark?.(`eye${k2}`), p = a.mark?.(`pupil${k2}`); return e && p ? { e: [P(e)[0], P(e)[1]] as [number, number], p: [P(p)[0], P(p)[1]] as [number, number] } : null; }).filter((q): q is { e: [number, number]; p: [number, number] } => !!q);
         figs.set(a.name, { eyes, skullW: a.joint("skull"), pic, face: faceTurn(sk.faceYaw), mirror: a.o.mirror ?? a.D.mirrorAt?.(yaw) ?? false, H, box, heading: a.heading, head: a.pose.head?.[0] ?? 0, at: a.at, pipe: !!a.mark?.("pipeOpen"), fade: !!a.mark?.("pipeFade"), ...(() => { const m = (n: string) => { const v = a.mark?.(n); return v ? (P(v).slice(0, 2) as [number, number]) : null; }; return { pipeOn: m("pipeOn"), pipeTip: m("pipeTip"), pipeRoot: m("pipeRoot") }; })(), W: Object.fromEntries(JOINTS.map((j) => [j, a.joint(j)])), kind: { L: a.o.handL ?? "relaxed", R: a.o.handR ?? "relaxed" }, held: { L: false, R: false }, sit: seated(sk) > 0.5,
-          ears: [a.val?.("earA") ?? null, a.val?.("earB") ?? null], patch: (() => { const side = a.o.patch; if (!side) return null; const m = a.mark?.(`patch${side}`), e = a.mark?.(`eye${side}`); if (!m) return { side, at: [NaN, NaN] as [number, number], eye: null, span: 0 }; const A = a.mark?.("eyeA"), B2 = a.mark?.("eyeB"); return { side, at: P(m).slice(0, 2) as [number, number], eye: e ? (P(e).slice(0, 2) as [number, number]) : null, span: A && B2 ? Math.abs(P(A)[0] - P(B2)[0]) : 0 }; })(), foreTop: { L: a.val?.("foreTopL") === 1, R: a.val?.("foreTopR") === 1 }, holds: { L: null, R: null }, card: Object.fromEntries(["shL", "elL", "wrL", "tipL", "shR", "elR", "wrR", "tipR"].map((j) => [j, sk.j[j as Joint] as [number, number]])) }); }
+          ears: [a.val?.("earA") ?? null, a.val?.("earB") ?? null], hx: [Math.min(...hx), Math.max(...hx)], patch: (() => { const side = a.o.patch; if (!side) return null; const m = a.mark?.(`patch${side}`), e = a.mark?.(`eye${side}`); if (!m) return { side, at: [NaN, NaN] as [number, number], eye: null, span: 0 }; const A = a.mark?.("eyeA"), B2 = a.mark?.("eyeB"); return { side, at: P(m).slice(0, 2) as [number, number], eye: e ? (P(e).slice(0, 2) as [number, number]) : null, span: A && B2 ? Math.abs(P(A)[0] - P(B2)[0]) : 0 }; })(), foreTop: { L: a.val?.("foreTopL") === 1, R: a.val?.("foreTopR") === 1 }, holds: { L: null, R: null }, card: Object.fromEntries(["shL", "elL", "wrL", "tipL", "shR", "elR", "wrR", "tipR"].map((j) => [j, sk.j[j as Joint] as [number, number]])) }); }
       // the shot's things: their names, and the small things with where they are in the picture (for the pop test)
       const g = new THREE.Group(); AUDIT.rows = []; AUDIT.on = true; CROWD_LOG.on = false;
       try { s.things?.(g, staged, t, s.a + t, cam); } finally { AUDIT.on = false; } g.updateMatrixWorld(true);
@@ -125,12 +125,21 @@ export const motionCheck = (film: Film, opt: { shots?: string[] } = {}) => {
             if (Math.sign(sh) !== Math.sign(dx) || Math.abs(sh) < 0.06 * span) note(`${s.id}|${name}|eyes`, { shot: s.id, who: name, what: `${name}'s eyes do not turn toward what he looks at (${L.what ?? "the target"}): in the picture they look ${Math.abs(sh) < 0.06 * span ? "straight out, at the lens" : "the other way"}` }, F); } }
         // edge: cut by the picture's edge while not walking in or out
         // (with 20 px to spare: a cap 2 px from the edge reads as cut by it)
-        const [x0, x1, y0, y1] = B.box, M = 20, cut = (x0 < M && x1 > 0) || (x0 < 1080 && x1 > 1080 - M) || (y0 < M && y1 > 0) || (y0 < 1920 && y1 > 1920 - M);
+        // (a close-up the shot names (Shot.closeUp) frames the head and lets the body go past the edge: then only the head must be whole)
+        const hb = (f: Fig): [number, number, number, number] => [f.hx[0], f.hx[1], f.pic.crown[1] - 0.04 * f.H, f.pic.skull[1] + 0.03 * f.H];
+        // (the review, 20 Nov: the head always whole with air above it; the body cut only by the bottom edge, along a clear line across the chest
+        //  or the shoulders; no hand or arm cut half way by a side edge)
+        const closeWhy = (f: Fig): string | null => { const [a0, a1, b0] = hb(f), Mx = 20, chest = f.pic.neck[1] + 0.45 * (f.pic.pelvis[1] - f.pic.neck[1]);
+          if (a0 < Mx || a1 > 1080 - Mx || b0 < 0.03 * f.H) return "his head is cut by the picture's edge or has no air above it";
+          if (1920 < f.pic.neck[1] + 0.02 * f.H || 1920 > chest) return "the bottom edge does not cut him along a clear line across the chest or the shoulders";
+          for (const sd of ["L", "R"]) for (const j of [`el${sd}`, `wr${sd}`, `tip${sd}`]) { const q = f.pic[j]; if (q[1] < 1920 - Mx && (q[0] < Mx || q[0] > 1080 - Mx)) return `his ${sd === "L" ? "left" : "right"} arm is cut half way by the side of the picture`; }
+          return null; };
+        const close = !!s.closeUp?.[name], whyC = close ? closeWhy(B) : null, [x0, x1, y0, y1] = close ? [100, 900, 100, 900] : B.box, M = 20, cut = whyC !== null || (x0 < M && x1 > 0) || (x0 < 1080 && x1 > 1080 - M) || (y0 < M && y1 > 0) || (y0 < 1920 && y1 > 1920 - M);
         const vx = B.pic.pelvis[0] - A.pic.pelvis[0], going = (x0 < M && Math.abs(vx) > 2) || (x1 > 1080 - M && Math.abs(vx) > 2);
-        if (cut && !going) note(`${s.id}|${name}|edge`, { shot: s.id, who: name, what: `${name} is cut by the picture's edge while he is not walking in or out (the figure in the picture from the first frame)` }, F);
+        if (cut && !going) note(`${s.id}|${name}|edge`, { shot: s.id, who: name, what: close ? `${name} in a close-up: ${whyC}` : `${name} is cut by the picture's edge while he is not walking in or out (the figure in the picture from the first frame)` }, F);
       }
       // (the first frame too)
-      const first = frames[0]?.figs.get(name); if (first) { const [x0, x1, y0, y1] = first.box; if ((x0 < 20 && x1 > 0) || (x0 < 1080 && x1 > 1060) || (y0 < 20 && y1 > 0)) note(`${s.id}|${name}|edge0`, { shot: s.id, who: name, what: `${name} is cut by the picture's edge on the shot's first frame` }, frames[0].F); }
+      const first = frames[0]?.figs.get(name); if (first && !s.closeUp?.[name]) { const [x0, x1, y0, y1] = first.box; if ((x0 < 20 && x1 > 0) || (x0 < 1080 && x1 > 1060) || (y0 < 20 && y1 > 0)) note(`${s.id}|${name}|edge0`, { shot: s.id, who: name, what: `${name} is cut by the picture's edge on the shot's first frame` }, frames[0].F); }
     }
     // ---- the tests added after round 2 ----
     const ang = (u: V3, v: V3) => { const a = Math.hypot(u[0], u[1]) || 1, b = Math.hypot(v[0], v[1]) || 1; return (Math.acos(Math.max(-1, Math.min(1, (u[0] * v[0] + u[1] * v[1]) / (a * b)))) * 180) / Math.PI; };
@@ -262,6 +271,7 @@ export const picsAt = (film: Film, F: number) => {
   const P = (p: V3) => { const q = new THREE.Vector3(...p).project(l); return [Math.round((q.x + 1) * 540), Math.round((1 - q.y) * 960)]; };
   const out: Record<string, Record<string, number[]>> = {};
   for (const a of castOf(s)(t, s.a + t)) { const st = stageAt(a, cam), r: Record<string, number[]> = {};
-    for (const j of JOINTS) r[j] = P(st.joint(j)); for (const m of ["headMin", "headMax", "eyeA", "eyeB", "pipeTip", "pipeRoot", "patchA", "patchB"]) { const v = st.mark?.(m); if (v) r[m] = P(v); } out[a.name] = r; }
+    for (const j of JOINTS) r[j] = P(st.joint(j)); for (const m of ["headMin", "headMax", "eyeA", "eyeB", "pipeTip", "pipeRoot", "patchA", "patchB"]) { const v = st.mark?.(m); if (v) r[m] = P(v); }
+    for (const v of ["earA", "earB"]) { const q = st.val?.(v); if (q !== null && q !== undefined) r[v] = [q]; } out[a.name] = r; }
   return out;
 };

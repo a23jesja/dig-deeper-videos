@@ -222,7 +222,7 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
   const earTop = (e: Ear) => { const k2 = earGrow(e), ox = Math.sign(e.e.x) || 1, rx = 0.17 * a * k2; return { k2, cx: e.e.x + ox * (0.17 * a - rx), rx }; };
   ears.forEach((e, n) => { const T = earTop(e), behind = earBehind(e); let seen = 0, all = 0;
     for (let i = -3; i <= 3; i++) for (let j = -2; j <= 2; j++) { if ((i / 3.5) ** 2 + (j / 2.5) ** 2 > 1) continue; const p: P2 = [e.e.x + (i / 3) * 0.17 * a, -0.5 * H + (j / 2) * 0.12 * H]; all++;
-      const onTop = T.k2 >= 1 || (T.rx > 0 && ((p[0] - T.cx) / T.rx) ** 2 + ((p[1] + 0.5 * H) / (0.12 * H)) ** 2 <= 1);
+      const onTop = T.k2 >= 1 || (T.rx > 0 && ((p[0] - T.cx) / (T.rx * 3.5 / 3)) ** 2 + ((p[1] + 0.5 * H) / (0.12 * H * 2.5 / 2)) ** 2 <= 1);      // (the same ellipse as the samples' own: the drawn one, tested at the grid's corners, left them out)
       if (onTop || (behind && !within(skull, p))) seen++; }
     k.val(n ? "earB" : "earA", seen / all); });
   for (const e of ears) if (earBehind(e)) e.draw();
@@ -235,7 +235,7 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
   piece(k, skull, skin);
   // (the head's outline at its widest, a hat's brim further out, for the checks: motionCheck.ts holds the whole drawn head inside the
   //  picture; round the joints alone, the back of a head in profile was cut by the edge and passed)
-  { const xs = skull.map((p) => p[0]), brim = HAT === "none" ? 0 : 0.16 * H; k.mark("headMin", Math.min(...xs) - brim, -0.6 * H); k.mark("headMax", Math.max(...xs) + brim, -0.6 * H); }
+  { const xs = skull.map((p) => p[0]), brim = HAT === "none" ? 0 : HAT === "band" ? 0.03 * H : 0.16 * H; /* (a headscarf has no brim: counted as one, a close-up's head was a brim wider than it is) */ k.mark("headMin", Math.min(...xs) - brim, -0.6 * H); k.mark("headMax", Math.max(...xs) + brim, -0.6 * H); }
   if (L.hair) {
     // the hairline runs from the top of the brow back behind the ear down to the nape, so the hair follows the head in every view
     const tailed = L.hair.kind === "queue", kind = tailed || (o.hatOff && L.hair.kind === "back") || L.hair.kind === "messy" ? "short" : L.hair.kind, y0 = kind === "bald" ? -0.72 * H : -1.03 * H, patches: P2[][] = [];

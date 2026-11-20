@@ -587,6 +587,25 @@ export const hangDown = (o: THREE.Object3D) => { const hs = o.userData.hang as T
   for (const h of hs) h.rotation.z = phi; o.updateMatrixWorld(true); };
 /** a book held open in two hands by its outer edges (userData.grips): on the left page a woodcut of a bearded man with a fuse smoking on
  *  each side of his face, on the right page lines of print; the pages face +z */
+/** an old picture of pirates, drawn by us in the manner of a woodcut (the eye patch Short: "No picture or record from their time says so"):
+ *  three pirates on a deck under a sail, hats, cutlasses, each with both eyes and no patch, in a dark frame; no words on it. Faces +z */
+export const piratePrint = (w = 0.44, h = 0.34) => { const map = paint("pirateprint", 440, 340, (g) => {
+    g.fillStyle = "#efe0bb"; g.fillRect(0, 0, 440, 340); g.strokeStyle = "#2a1a14"; g.lineWidth = 4; g.strokeRect(14, 14, 412, 312); g.lineWidth = 2; g.strokeRect(22, 22, 396, 296);
+    // the deck, a mast and a sail
+    g.lineWidth = 3; g.beginPath(); g.moveTo(22, 262); g.lineTo(418, 262); g.stroke(); g.beginPath(); g.moveTo(330, 262); g.lineTo(330, 40); g.stroke();
+    g.beginPath(); g.moveTo(334, 50); g.quadraticCurveTo(400, 110, 334, 190); g.closePath(); g.stroke(); for (let y = 70; y < 180; y += 12) { g.beginPath(); g.moveTo(338, y); g.lineTo(350 + 25 * Math.sin((y - 50) / 45), y); g.stroke(); }
+    for (let x = 30; x < 418; x += 10) { g.beginPath(); g.moveTo(x, 268); g.lineTo(x - 8, 310); g.stroke(); }
+    // three pirates: hat, a round face with BOTH eyes, a body, a cutlass held up
+    for (const [cx, k] of [[90, 1], [175, -1], [255, 1]] as [number, number][]) { const top = 92;
+      g.fillStyle = "#2a1a14"; g.beginPath(); g.moveTo(cx - 34, top + 6); g.quadraticCurveTo(cx, top - 26, cx + 34, top + 6); g.closePath(); g.fill();
+      g.fillStyle = "#efe0bb"; g.beginPath(); g.arc(cx, top + 28, 22, 0, 7); g.fill(); g.lineWidth = 3; g.stroke();
+      g.fillStyle = "#2a1a14"; for (const ex of [-8, 8]) { g.beginPath(); g.arc(cx + ex, top + 24, 3.4, 0, 7); g.fill(); }
+      g.beginPath(); g.arc(cx, top + 36, 7, 0.2, Math.PI - 0.2); g.stroke();
+      g.beginPath(); g.moveTo(cx - 26, top + 54); g.lineTo(cx + 26, top + 54); g.lineTo(cx + 20, top + 140); g.lineTo(cx - 20, top + 140); g.closePath(); g.stroke();
+      for (let y = top + 62; y < top + 138; y += 9) { g.beginPath(); g.moveTo(cx - 20, y); g.lineTo(cx - 6, y); g.stroke(); }
+      g.beginPath(); g.moveTo(cx - 10, top + 140); g.lineTo(cx - 14, 260); g.moveTo(cx + 10, top + 140); g.lineTo(cx + 14, 260); g.stroke();
+      g.beginPath(); g.moveTo(cx + k * 26, top + 64); g.lineTo(cx + k * 44, top + 40); g.stroke(); g.lineWidth = 4; g.beginPath(); g.moveTo(cx + k * 44, top + 40); g.quadraticCurveTo(cx + k * 60, top + 10, cx + k * 52, top - 14); g.stroke(); } });
+  return group([mesh(box(w + 0.05, h + 0.05, 0.025), "#3a2416", { at: [0, 0, -0.012] }), mesh(box(w, h, 0.01), "#ffffff", { map, line: 0.4, shadow: false })]); };
 /** a ship's log held open the same way: both pages ruled with lines of handwriting (no words to read), a small sketch of a ship on the left */
 export const logBook = (w = 0.52, h = 0.36) => { const map = paint("booklog", 512, 352, (g) => {
     g.fillStyle = "#f1e3bd"; g.fillRect(0, 0, 512, 352); g.fillStyle = "#cdb98a"; g.fillRect(253, 0, 6, 352);
@@ -595,7 +614,11 @@ export const logBook = (w = 0.52, h = 0.36) => { const map = paint("booklog", 51
     // the sketch: a hull and a mast with a sail
     g.lineWidth = 3.5; g.beginPath(); g.moveTo(60, 230); g.lineTo(190, 230); g.lineTo(170, 248); g.lineTo(80, 248); g.closePath(); g.stroke(); g.beginPath(); g.moveTo(125, 230); g.lineTo(125, 160); g.stroke();
     g.beginPath(); g.moveTo(128, 165); g.quadraticCurveTo(165, 190, 128, 222); g.stroke(); });
-  const g = group([mesh(box(w + 0.03, h + 0.03, 0.02), "#5a3a22", { at: [0, 0, -0.012] }), mesh(box(w, h, 0.012), "#ffffff", { map, line: 0.5, shadow: false })]);
+  // its cover (the back, toward -z): dark leather with a gold border and a gold compass rose, so that seen from the front, held to read, it is a book
+  const cover = paint("logcover", 256, 176, (q) => { q.fillStyle = "#5a2e1c"; q.fillRect(0, 0, 256, 176); q.strokeStyle = "#d8b24a"; q.lineWidth = 5; q.strokeRect(12, 12, 232, 152); q.lineWidth = 2; q.strokeRect(20, 20, 216, 136);
+    q.fillStyle = "#d8b24a"; q.beginPath(); for (let k = 0; k < 8; k++) { const r = k % 2 ? 12 : 34, an = (k * Math.PI) / 4; q.lineTo(128 + r * Math.sin(an), 88 - r * Math.cos(an)); } q.closePath(); q.fill(); q.fillStyle = "#5a2e1c"; q.beginPath(); q.arc(128, 88, 6, 0, 7); q.fill(); });
+  const g = group([mesh(box(w + 0.03, h + 0.03, 0.02), "#5a3a22", { at: [0, 0, -0.012] }), mesh(box(w, h, 0.012), "#ffffff", { map, line: 0.5, shadow: false }),
+    mesh(box(w + 0.02, h + 0.02, 0.004), "#ffffff", { at: [0, 0, -0.024], rot: [0, Math.PI, 0], map: cover, line: 0.4, shadow: false })]);
   g.userData.grips = [[-w / 2 - 0.01, 0, 0], [w / 2 + 0.01, 0, 0]]; g.userData.depth = 0.04; return g; };
 export const openBook = (w = 0.52, h = 0.36) => { const map = paint("bookwoodcut", 512, 352, (g) => {
     g.fillStyle = "#f3e6c4"; g.fillRect(0, 0, 512, 352); g.fillStyle = "#cdb98a"; g.fillRect(253, 0, 6, 352); g.strokeStyle = "#2a1a14"; g.lineWidth = 3; g.strokeRect(22, 22, 210, 308);

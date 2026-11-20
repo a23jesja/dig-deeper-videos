@@ -44,6 +44,9 @@ export type Shot = {
   /** which of a figure's own eyes wears the eye patch in this shot, as the script says ("A" his right, "B" his left): motionCheck fails a
    *  shot where the patch is drawn on the other one */
   patchEye?: Record<string, "A" | "B">;
+  /** a figure framed close on purpose (a close-up on his face): the edge test then holds only his head whole in the picture, and lets his
+   *  body go past the edge. The value says why */
+  closeUp?: Record<string, string>;
   /** named things of the world that are not there in this shot (the world lists them in userData.named) */
   hide?: string[];
   cast: (t: number, T: number) => Actor[];

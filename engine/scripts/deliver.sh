@@ -12,15 +12,21 @@ if [ "$WHAT" = all ] || [ "$WHAT" = film ]; then
   # too) and scaled down, so that thin outlines and fine lines are averaged instead of stepping from frame to frame; then encoded at CRF 17,
   # constant 30 frames a second, yuv420p in the limited (tv) range, BT.709. Before, Remotion's own file was full range (yuvj420p) at
   # about 5 Mbit/s
-  BIG=out/craft/qa-$FILM/render-2x$V.mp4
-  npx remotion render src/index.ts $COMP "$BIG" --scale 2 --gl=angle --codec h264 --crf 10 --concurrency 2 --browser-executable "$CHROME" < /dev/null 2>&1 | tail -2
-  test -s "$BIG"
+  # (one tab at a time, the double-size picture written fast (veryfast) so that ffmpeg keeps up instead of holding frames in memory, and
+  #  mem_guard.sh: started only with 8 GB free, stopped by itself under 2 GB. On 20 Nov two tabs and the slow preset left ffmpeg holding
+  #  3.2 GB and the machine at 3 GB free)
+  BIG=out/craft/qa-$FILM/render-2x$V.mp4; CAND=out/craft/qa-$FILM/$FILM$V.mp4
+  export REMOTION_TMP="${REMOTION_TMP:-$LOCALAPPDATA/Temp/remotion-tmp}"
+  rm -f "$BIG"; bash scripts/mem_guard.sh npx remotion render src/index.ts $COMP "$BIG" --scale 2 --gl=angle --codec h264 --crf 10 --x264-preset veryfast --concurrency 1 --browser-executable "$CHROME" < /dev/null > out/craft/qa-$FILM/render$V.log 2>&1 || { grep -E "mem_guard|rror" out/craft/qa-$FILM/render$V.log | tail -5; exit 1; }
+  grep mem_guard out/craft/qa-$FILM/render$V.log; test -s "$BIG"
   # the sound is copied as it is: re-encoding it beside the picture has stalled ffmpeg for hours on this machine; a stall now fails after ten minutes
-  timeout 600 ffmpeg -nostdin -v error -y -i "$BIG" -vf "scale=1080:1920:flags=lanczos:in_range=pc:out_range=tv:in_color_matrix=bt601:out_color_matrix=bt709,format=yuv420p"     -c:v libx264 -preset slow -crf 17 -r 30 -fps_mode cfr -colorspace bt709 -color_primaries bt709 -color_trc bt709 -color_range tv -c:a copy -movflags +faststart "$OUT/$FILM$V.mp4" < /dev/null
-  test -s "$OUT/$FILM$V.mp4"
+  timeout 600 ffmpeg -nostdin -v error -y -i "$BIG" -vf "scale=1080:1920:flags=lanczos:in_range=pc:out_range=tv:in_color_matrix=bt601:out_color_matrix=bt709,format=yuv420p"     -c:v libx264 -preset slow -crf 17 -r 30 -fps_mode cfr -colorspace bt709 -color_primaries bt709 -color_trc bt709 -color_range tv -c:a copy -movflags +faststart "$CAND" < /dev/null
+  test -s "$CAND"
   # the flicker check stops the delivery (exit 1) and names the times
   node scripts/film_info.mjs $FILM regions > out/craft/qa-$FILM/regions.jsonl
-  python scripts/flicker.py "$OUT/$FILM$V.mp4" out/craft/qa-$FILM/regions.jsonl --out out/craft/qa-$FILM/flicker$V.txt
+  python scripts/flicker.py "$CAND" out/craft/qa-$FILM/regions.jsonl --out out/craft/qa-$FILM/flicker$V.txt
+  # only a film that passed comes into the delivery folder
+  cp "$CAND" "$OUT/$FILM$V.mp4"
   # the phone copy for review is the only low-bitrate file (under 29 MB: the 30 MB send limit); YouTube gets the full one
   timeout 600 ffmpeg -nostdin -v error -y -i "$OUT/$FILM$V.mp4" -c:v libx264 -preset slow -crf 23 -pix_fmt yuv420p -color_range tv -colorspace bt709 -color_primaries bt709 -color_trc bt709 -c:a copy -movflags +faststart "$OUT/$FILM$V-telefon.mp4" < /dev/null
   test $(stat -c %s "$OUT/$FILM$V-telefon.mp4") -lt 29000000

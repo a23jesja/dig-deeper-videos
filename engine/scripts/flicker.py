@@ -196,6 +196,10 @@ def main():
         L.append(f"FAIL: {len(fails)} frames")
         for t, why in fails: L.append(f"  frame {t} ({t / 30:.2f} s): " + "; ".join(why))
     else: L.append("PASS: no frame flickers")
+    # the raw measure, Jesper's rule as written (nothing taken out for movement), frame by frame: it does not decide, it is shown
+    rawf = [(r[0], r[4], r[5], r[6]) for r in rows if r[4] > FRAME_MAX or r[5] > EYE_MAX or r[6] > TEXT_MAX]
+    L += ["", f"RAW (Jesper's rule as written, no movement taken out; at most {FRAME_MAX} in the picture, {EYE_MAX} in an eye, {TEXT_MAX} in a text): {len(rawf)} frames over"]
+    L += [f"  frame {t} ({t / 30:.2f} s): picture {n}, eye {e}, text {x}" for t, n, e, x in rawf]
     L += ["", "every frame: frame, picture, eye, text, then the raw picture, eye, text"] + ["\t".join(str(v) for v in r) for r in rows]
     txt = "\n".join(L) + "\n"
     if outp: open(outp, "w", encoding="utf-8").write(txt)

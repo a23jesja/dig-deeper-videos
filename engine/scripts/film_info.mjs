@@ -109,7 +109,8 @@ else if (what === "regions") { const caps = captions(film.words, (w) => w.b <= f
     for (const r of Object.values(figs)) { const hw = r.headMin && r.headMax ? Math.abs(r.headMax[0] - r.headMin[0]) : 0, rad = Math.max(8, Math.round(0.11 * hw));
       for (const k of ["eyeA", "eyeB"]) if (r[k]) eyes.push([r[k][0], r[k][1], rad]); }
     const text = [...textBoxes(film, T, caps).map((q) => q.box), ...bubblesAt(film, T).map((q) => q.box)].map((b) => b.map(Math.round));
-    console.log(JSON.stringify({ F, eyes, text })); } }
+    const bub = bubblesAt(film, T).map((q) => q.box.map(Math.round));
+    console.log(JSON.stringify({ F, eyes, text, bub })); } }
 else if (what === "pick") { const [F, x, y] = process.argv.slice(4).map(Number); console.log(JSON.stringify(pickAt(film, F, x, y), null, 1)); }
 else if (what === "grips") {
   const { bad, held, spots } = auditGrips(film, process.argv[4] === "tenths" ? 0.1 : undefined);

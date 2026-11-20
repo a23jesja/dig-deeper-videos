@@ -83,21 +83,26 @@ const reader = (at: V3, y: number, V: Lens, turn: number, sun: boolean, len: num
   //  read", and the opening that stood still)
   //  (a line read: the eyes and the head go slowly along it from left to right, then back quickly to the start of the next; the head down
   //   to the page, the lids low)
-  if (o.lines) { const LT = 1.15, R0 = P({ ...hold(KK, FF, 0.015), head: [hy - 6, 27, 0] }), R1 = P({ ...hold(KK, FF, 0.015), head: [hy + 6, 28, 0] });
-    for (let t = 0.0; t < len + 0.3; t += LT) { m.actAt(t, R0, 0.28, { in: 0.12, out: 0.12, antic: 0, over: 1, ...T0H, face: face({ ...READ, lid: 0.56, gaze: [-0.4, 1] }) });
-      m.actAt(t + 0.28, R1, LT - 0.3, { in: 0.25, out: 0.25, antic: 0, over: 1, ...T0H, face: face({ ...READ, lid: 0.56, gaze: [0.4, 1] }) }); } }
+  // (the swing 4.5 degrees each way and the way back 0.4 s: at 6 degrees and 0.28 s the face slid up to 17 px a frame in the two-shot and the
+  //  outlines strobed, the flicker check of 20 Nov)
+  if (o.lines) { const LT = 1.15, LB = 0.4, R0 = P({ ...hold(KK, FF, 0.015), head: [hy - 4.5, 27, 0] }), R1 = P({ ...hold(KK, FF, 0.015), head: [hy + 4.5, 28, 0] });
+    for (let t = 0.0; t < len + 0.3; t += LT) { m.actAt(t, R0, LB, { in: 0.16, out: 0.16, antic: 0, over: 1, ...T0H, face: face({ ...READ, lid: 0.56, gaze: [-0.4, 1] }) });
+      m.actAt(t + LB, R1, LT - LB - 0.02, { in: 0.25, out: 0.25, antic: 0, over: 1, ...T0H, face: face({ ...READ, lid: 0.56, gaze: [0.4, 1] }) }); } }
   // (after he looks up he keeps moving: a small nod and sway, pleased with himself; holding still he read as a frozen picture for a second,
   //  the independent review of v1g)
   const hl = -(o.lookFace ?? 0.7) * turn;      // (his head toward the lens when he looks up: see below)
   // (when he looks up at us his head turns to the lens; turned with his body, the patch, nose and moustache were cut by the head's outline,
   //  the independent review of v1k)
-  if (o.looks !== undefined) ease(m, o.looks, { ...hold(KK, FF, 0.015), head: [hl + 2, 3, 0], px: 0 }, 0.5, { ...T0H, face: face({ brow: 0.9, lid: 0.15, smile: 0.9 }) });
+  // (in a close-up the look-up takes 0.8 s and the nod after it is a third as big: at 0.5 s and full size his face slid 22 px a frame and
+  //  its outlines strobed, the flicker check of 20 Nov)
+  const ck = o.closeUp ? 0.35 : 1;
+  if (o.looks !== undefined) ease(m, o.looks, { ...hold(KK, FF, 0.015), head: [hl + 2, 3, 0], px: 0 }, o.closeUp ? 0.8 : 0.5, { ...T0H, face: face({ brow: 0.9, lid: 0.15, smile: 0.9 }) });
   // (the nod laid after the look-up pose: laid before it, the later pose held him still to the end of the shot, the still-figure test, v1k)
-  if (o.looks !== undefined && o.looks + 0.6 < len) wag(m, o.looks + 0.6, len - o.looks - 0.4, P({ ...hold(KK, FF, 0.015), head: [hl + 4, 5, 3], px: 0.012 }), P({ ...hold(KK, FF, 0.015), head: [hl - 3, 1, -3], px: -0.01 }), 1.0, { ...T0H, face: face({ brow: 0.9, lid: 0.15, smile: 0.9 }), glide: true });
+  if (o.looks !== undefined && o.looks + 0.6 < len) wag(m, o.looks + 0.6, len - o.looks - 0.4, P({ ...hold(KK, FF, 0.015), head: [hl + 4 * ck, 3 + 2 * ck, 3 * ck], px: 0.012 * ck }), P({ ...hold(KK, FF, 0.015), head: [hl - 3 * ck, 3 - 2 * ck, -3 * ck], px: -0.01 * ck }), 1.0, { ...T0H, face: face({ brow: 0.9, lid: 0.15, smile: 0.9 }), glide: true });
   // (puzzled: from `puzzled` on he looks up from the book, brows up and askew, eyes up and to the side, his head cocked: "Arr. Which eye was
   //  it?" was said with the reading smile, the independent review of v1f. wide: from `wide` on his open eye goes wide, he can see)
   if (o.puzzled !== undefined) ease(m, o.puzzled, { ...hold(KK, FF, 0.015), head: [hl + 6, -2, 9], px: 0 }, 0.45, { ...T0H, face: face({ brow: 1, lid: 0, wide: 0.4, mouth: 0, smile: -0.3, gaze: [0.6, -0.7] }) });
-  if (o.wide !== undefined) ease(m, o.wide, { ...hold(KK, FF, 0.015), head: [2, 0, 0], px: 0 }, 0.3, { ...T0H, face: face({ brow: 1, lid: 0, wide: 0.9, mouth: 0.3, smile: 0.9 }) });
+  if (o.wide !== undefined) ease(m, o.wide, { ...hold(KK, FF, 0.015), head: [2, 0, 0], px: 0 }, o.closeUp ? 0.55 : 0.3, { ...T0H, face: face({ brow: 1, lid: 0, wide: 0.9, mouth: 0.3, smile: 0.9 }) });
   const lookAt = rcOf(KK, FF);
   return { m, cast: (t: number) => on("pirate", PIRATE_D, m, t, y, { patch: sun ? "A" : "B", ...T0H }, 3), book: (g: THREE.Group, c: Record<string, any>, cam: Cam) => { carryBy(g, BOOK(), c.pirate, "L", c.pirate, "R", o.reads !== undefined ? HC : cam, 0.1, "carry", false); turnBook(); if (o.tilt) tiltBook(o.tilt); },
     look: { pirate: { at: lookAt, what: "the log in his hands", to: o.looks ?? o.puzzled ?? 99 } }, len };
@@ -120,10 +125,10 @@ const mate = (at: V3, V: Lens, turn: number, v: number, len: number, o: { hang?:
   const m = mover(MATE_SHORT_D, HM, at[0], at[2], V.toward(at[0], at[2], turn * MT)); m.w = 0.09; m.stand(9);
   const [A, B] = o.hang ? [REST.armL as [Seg, Seg], REST.armR as [Seg, Seg]] : FEEL[v % 3], R2 = { handL: "relaxed" as const, handR: "relaxed" as const }, sw = (q: [Seg, Seg], k: number): [Seg, Seg] => [[q[0][0] + 8 * k, q[0][1] + 4], [q[1][0] + 8 * k, q[1][1] + 6]];
   const F0 = o.shout ? SHOUT : SEARCH(0.8), F1 = o.shout ? { ...SHOUT, gaze: [-0.4, -0.2] as [number, number] } : SEARCH(-0.8);
-  const hs = o.heads ?? (o.shout ? 0.3 : HS);      // (at full swing his far eye was cut by the head's outline, the independent review of v1m)
+  const hs = o.heads ?? (o.shout ? 0.12 : HS), pk = o.shout ? 0.35 : 1;      // (shouting in the close-up: the swing smaller, at 0.3 his face slid 23 px a frame and strobed, the flicker check of 20 Nov)      // (at full swing his far eye was cut by the head's outline, the independent review of v1m)
   ease(m, -1, { armL: A, armR: B, head: [18 * hs, -4, 0], lean: 6 }, 0.01, { ...R2, face: F0 });
   // (always moving: the head round from side to side with the eyes, the hands searching; a period that never stops for long)
-  wag(m, 0.0, len + 0.5, P({ armL: A, armR: B, head: [24 * hs, -5, 5 * hs], lean: 6, px: 0.014 }), P({ armL: sw(A, 1), armR: sw(B, -1), head: [-22 * hs, -2, -5 * hs], lean: 8, px: -0.014 }), 0.95 + 0.12 * v, { ...R2, face: F1, glide: true });
+  wag(m, 0.0, len + 0.5, P({ armL: A, armR: B, head: [24 * hs, -5, 5 * hs], lean: 6, px: 0.014 * pk }), P({ armL: sw(A, 1), armR: sw(B, -1), head: [-22 * hs, -2, -5 * hs], lean: 8, px: -0.014 * pk }), 0.95 + 0.12 * v, { ...R2, face: F1, glide: true });
   if (o.stumble !== undefined) { ease(m, o.stumble, { armL: sw(A, 1.5), armR: sw(B, 1.5), lean: 11, px: 0.035, py: -0.02, head: [10 * hs, 8, 6] }, 0.32, { ...R2, face: { ...F0, wide: 0.7, lid: 0, mouth: 0.4 } });
     ease(m, o.stumble + 0.55, { armL: A, armR: B, lean: 6, px: 0, py: 0, head: [-14 * hs, -3, 0] }, 0.4, { ...R2, face: F1 });
     // (searching again after he has caught himself: the pose above held him still to the end of the shot, the still-figure test, v1k)

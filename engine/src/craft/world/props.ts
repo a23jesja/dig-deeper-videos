@@ -589,14 +589,14 @@ export const hangDown = (o: THREE.Object3D) => { const hs = o.userData.hang as T
  *  each side of his face, on the right page lines of print; the pages face +z */
 /** an old picture of pirates, drawn by us in the manner of a woodcut (the eye patch Short: "No picture or record from their time says so"):
  *  three pirates on a deck under a sail, hats, cutlasses, each with both eyes and no patch, in a dark frame; no words on it. Faces +z */
-export const piratePrint = (w = 0.44, h = 0.34) => { const map = paint("pirateprint2", 660, 510, (g) => {
+export const piratePrint = (w = 0.44, h = 0.34) => { const map = paint("pirateprint3", 1320, 1020, (g) => { g.scale(2, 2);      // (drawn at twice the size: its thinnest lines were under a pixel of the texture and shimmered as the lens moved, the flicker of 20 Nov)
     // (redrawn after the review of v1b: "a child's drawing"; now a woodcut: hatched sky and sea, a ship under sail, three pirates in cocked
     //  hats and long coats with cutlasses, beards, and both eyes on every face; no words)
     const ink = "#24160e"; g.fillStyle = "#ead9b0"; g.fillRect(0, 0, 660, 510); g.strokeStyle = ink; g.fillStyle = ink;
     g.lineWidth = 6; g.strokeRect(16, 16, 628, 478); g.lineWidth = 2; g.strokeRect(28, 28, 604, 454);
     const L = (pts: number[][], wd = 2.4) => { g.lineWidth = wd; g.beginPath(); pts.forEach(([x, y], k) => (k ? g.lineTo(x, y) : g.moveTo(x, y))); g.stroke(); };
     const F = (pts: number[][]) => { g.beginPath(); pts.forEach(([x, y], k) => (k ? g.lineTo(x, y) : g.moveTo(x, y))); g.closePath(); g.fill(); };
-    for (let y = 40; y < 300; y += 9) L([[32, y], [628, y]], y < 200 ? 0.9 : 0.6);      // the sky, hatched down to the sea (a bare strip at the horizon read as a band of light)
+    for (let y = 40; y < 300; y += 12) L([[32, y], [628, y]], y < 200 ? 1.6 : 1.2);      // (every 12 px at 1.2-1.6 wide: 9 px apart at 0.6-0.9 they moiréd)      // the sky, hatched down to the sea (a bare strip at the horizon read as a band of light)
     for (let y = 300; y < 380; y += 8) { g.lineWidth = 1.6; g.beginPath(); for (let x = 32; x < 628; x += 4) g.lineTo(x, y + 3 * Math.sin(x / 11 + y)); g.stroke(); }      // the sea
     // the ship far off under sail
     F([[530, 300], [624, 300], [612, 318], [542, 318]]); L([[560, 300], [560, 190]], 2.5); L([[600, 300], [600, 176]], 2.5);

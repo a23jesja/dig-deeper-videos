@@ -162,24 +162,36 @@ const bottleAt = (g: THREE.Group, t: number) => { const b = BOTTLE(); if (t < FA
 //  first choice, the lens in the passage, would put the leaf between the lens and his hand: the review's fallback)
 { const p: V3 = inCabin([1.85, 0, 1.25]), m0 = 178;
   const L0 = inCabin([-1.95, 0, 0.12]), tgt = inCabin([1.9, 0, 0.75]), V = lens(L0[0], Y + 1.3, L0[2], tgt[0] - L0[0], tgt[2] - L0[2], -6, FOV);
-  const T0 = 0.45, LET = 1.4, ang = (t: number) => { if (t < T0) return 0; if (t < LET) { const k = (t - T0) / (LET - T0); return -20 * (0.5 - 0.5 * Math.cos(Math.PI * k)); } return -(20 + 75 * (1 - Math.exp(-(t - LET) / 0.5))); };
+  // (round 4, the review of round 3: the push ended at rest and the door then swung on at full speed, the ring sliding out from under the
+  //  fist, and only 20 degrees of it were pushed. Now his hand pushes it 25 degrees, the door gathering speed from rest (an ease in, no ease
+  //  out); he lets go while it moves and it swings on at that speed, slowing as it goes. 25 degrees: pushed to 30, his arm went straight out)
+  // (round 4: his hand shoves it open 25 degrees, the door gathering speed and the shove easing off; he lets go while it still moves
+  //  slowly, and it coasts on, slowing, to about 40 degrees, the lit passage showing. Pushed at full speed and let go, the ring slid out
+  //  from under the fist, round 3; pushed further, his arm went straight out)
+  const T0 = 0.45, T1 = 1.8, LET = 1.6, PA = 25, TAU = 1.4, S = (k: number) => k * k * (3 - 2 * k);
+  const kL = (LET - T0) / (T1 - T0), aL = PA * S(kL), vL = (PA * 6 * kL * (1 - kL)) / (T1 - T0);
+  const ang = (t: number) => { if (t < T0) return 0; if (t < LET) return -PA * S((t - T0) / (T1 - T0)); return -(aL + vL * TAU * (1 - Math.exp(-(t - LET) / TAU))); };
   const ring = (t: number) => cabinDoor(DZ, ang(t), true).handle, R0 = ring(0);
   const deg = (v: number) => ((((v + 540) % 360) + 360) % 360) - 180, dirTo = (q: V3) => (Math.atan2(q[0] - p[0], q[2] - p[2]) * 180) / Math.PI, lensDir = dirTo([V.cam.pos[0], 0, V.cam.pos[2]]);
   // (his body turned no more than 72 degrees from the lens, his head the rest of the way to the ring, the face never past 86)
   const hd = lensDir + Math.max(-72, Math.min(72, deg(m0 - lensDir))), headTo = (q: V3) => { const want = deg(dirTo(q) - hd), face = deg(hd + want - lensDir); return want - Math.sign(face) * Math.max(0, Math.abs(face) - 86); };
   const m = mover(SIR_D, H, p[0], p[2], hd); m.w = 0.09; m.stand(9);
   const ss = stand(p, hd, {}, V.cam), sh = jointsOf(ss)("shR"), hr = (hd * Math.PI) / 180, side: [number, number] = [-Math.cos(hr), Math.sin(hr)];
-  const push = (t: number): Partial<Pose> => { const q = ring(t), e: V3 = [sh[0] + side[0] * 0.12 + (q[0] - sh[0]) * 0.4, sh[1] - 0.22, sh[2] + side[1] * 0.12 + (q[2] - sh[2]) * 0.4];
-    return { armR: reachArm(SIR_D, {} as Pose, {}, { at: p, heading: hd, h: H }, V.cam.pos, "R", q, 0.5, e) }; };
+  const EY = 0.3, EK = 0.35, LX = -0.25, RL = 8, push = (t: number): Partial<Pose> => { const q = ring(t), e: V3 = [sh[0] + side[0] * 0.12 + (q[0] - sh[0]) * EK, sh[1] - EY, sh[2] + side[1] * 0.12 + (q[2] - sh[2]) * EK];
+    // (his weight goes over toward the door as he pushes it, so that his shoulder follows the ring and the arm stays bent: standing upright,
+    //  the arm went straight out once the door was 20 degrees open; the body check)
+    const lean = LX * Math.min(1, Math.max(0, (t - T0) / (LET - T0))), pose0 = { px: lean, roll: RL * lean / (LX || 1) } as Pose;
+    return { px: pose0.px, roll: pose0.roll, armR: reachArm(SIR_D, pose0, {}, { at: p, heading: hd, h: H }, V.cam.pos, "R", q, 0.5, e) }; };
   const LOOK = { gaze: [-0.9, 0.3] as [number, number] }, hR = headTo(R0);
   ease(m, -1, { ...REST, head: [hR * 0.4, 2, 0] }, 0.01, { ...LOOSE, face: { brow: 0.3, lid: 0.15 } });
   // the reach: the head and eyes to the ring first, the hand after them, onto the ring as the push begins
   ease(m, 0.0, { ...REST, head: [hR, 3, 0] }, 0.35, { ...LOOSE, face: { brow: 0.5, lid: 0.1, ...LOOK } });
   ease(m, 0.05, { ...push(0), head: [hR, 3, 0] }, T0 - 0.05, { handL: "relaxed", handR: "grip", face: { brow: 0.5, lid: 0.1, ...LOOK } });
   // the push: the arm solved where the ring is at three moments, each blend begun before the last one ends so that the hand never stops
-  for (const [q, d] of [[0.75, 0.42], [1.05, 0.42], [LET - 0.04, 0.42]] as [number, number][]) ease(m, q - d * 0.6, { ...push(q), head: [headTo(ring(q)), 3, 0] }, d, { handL: "relaxed", handR: "grip", face: { brow: 0.6, lid: 0.08, ...LOOK } });
-  // let go: the hand back to his side, his eyes after the door as it swings wide
-  ease(m, LET, { ...REST, head: [headTo(ring(2.4)), 2, 0] }, 0.7, { ...LOOSE, face: { brow: 0.8, lid: 0.05, wide: 0.4, ...LOOK } });
+  for (const [q, d] of [[0.7, 0.36], [0.95, 0.36], [1.2, 0.36], [1.42, 0.34], [LET, 0.3]] as [number, number][]) ease(m, q - d * 0.6, { ...push(q), head: [headTo(ring(q)), 3, 0] }, d, { handL: "relaxed", handR: "grip", face: { brow: 0.6, lid: 0.08, ...LOOK } });
+  // let go: the hand, still closed, comes back to his side as the door coasts on; his eyes after the door. (It stays a fist until it is
+  //  back: opened as it let go, its palm jumped 4 cm in a frame, and the release test read that as the ring sliding away from it)
+  ease(m, LET, { ...REST, head: [headTo(ring(2.6)), 2, 0] }, 0.9, { handL: "relaxed", handR: "grip", face: { brow: 0.8, lid: 0.05, wide: 0.4, ...LOOK } });
   const DOOR_O = once(() => noShade(cabinDoor(DZ, 0, true).g));
   // (seen across the room, the cabin's open front showed the night beyond it at the picture's right edge: here a planked bulkhead closes it)
   const FRONT_WALL = once(() => mesh(box(CABIN.w + 0.24, CABIN.h, 0.12), "#6a4428", { at: inCabin([0, CABIN.h / 2, CABIN.d / 2 + 0.06]) }));

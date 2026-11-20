@@ -265,7 +265,9 @@ export class Mover {
     // the arms swing against the legs (left arm forward with the right foot); in a walk they hang almost straight and the hand is loose
     // (a fuller swing, the elbow a little bent: hanging almost straight with fists and a small swing, the walk read as a shuffle, the shot
     //  library review of round 2)
-    const up = lerp(24, 46, run) * sep, bend = lerp(14, 82, run), fw = (q: number) => 10 * Math.max(0, q) * (1 - run);
+    // (the shot library's round 3: the arm swinging forward carried its forearm 48 degrees out, where the loose hand is drawn open, palm up,
+    //  "like a tray", and the swing hardly showed. Now a fuller swing from the shoulder and the forearm kept nearer the line of the arm)
+    const up = lerp(30, 46, run) * sep, bend = lerp(10, 82, run), fw = (q: number) => 4 * Math.max(0, q) * (1 - run);
     pose.armL = [[up, lerp(8, 14, run)], [up + bend + fw(sep), 5]]; pose.armR = [[-up, lerp(8, 14, run)], [-up + bend + fw(-sep), 5]];
     pose.handL = pose.handR = 8;
     pose.twist = -9 * sep * (1 + 0.6 * run); pose.lean = this.lean.at(t); pose.head = [0, -(pose.lean ?? 0) * 0.45, 0];

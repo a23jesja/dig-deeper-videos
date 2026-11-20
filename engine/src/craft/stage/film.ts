@@ -5,6 +5,8 @@ import type { CardLight } from "../world/kit";
 import type * as THREE from "three";
 import type { Design, FigOpts } from "../designs/common";
 import type { Pose, Props, Joint } from "../rig";
+import { solve } from "../rig";
+import { FORE_TOP } from "../cast";
 import { Mover, blink, mouthAt } from "../motion";
 
 export type V3 = [number, number, number];
@@ -205,10 +207,29 @@ export const loopShot = (last: Shot, first: Shot, over: number) => {
   last.cam = (t, u) => { const c = own(t, u); if (t <= len - over) return c; const w = Math.min(1, (t - (len - over)) / over), k = w * w * (3 - 2 * w), d = first.cam(0, 0);
     return { ...c, pos: mix(c.pos, d.pos, k) as typeof c.pos, look: mix(c.look, d.look, k) as typeof c.look, fov: c.fov + (d.fov - c.fov) * k }; };
 };
+/** a draw-order choice that would last under ORDER_MIN frames keeps the choice before it (motionCheck's order test fails the rest) */
+export const ORDER_MIN = 15;
+/** false = the forearm's order not settled (as before v1t): the order test's planted fault */
+export const SETTLE_ORDER = true;
+const settle = (raw: boolean[]) => { const out = raw.slice();
+  for (let i = 1; i < out.length; ) { if (out[i] === out[i - 1]) { i++; continue; } let j = i; while (j < out.length && raw[j] === raw[i]) j++;
+    if (j - i < ORDER_MIN && j < out.length) for (let k = i; k < j; k++) out[k] = out[i - 1]; i = j; }
+  return out; };
 export const castOf = (s: Shot): Shot["cast"] => { const had = LOCKED.get(s); if (had) return had;
   let lock: Map<string, boolean> | null = null;
+  // the forearm over or under the upper arm, for each figure and arm, settled over the whole shot (frames at 30 a second)
+  let fore: Map<string, { L: boolean[]; R: boolean[] }> | null = null;
+  const foreOf = () => { if (fore) return fore; fore = new Map(); const n = Math.max(1, Math.round((s.b - s.a) * 30)), raw = new Map<string, { L: boolean[]; R: boolean[] }>();
+    for (let F = 0; F < n; F++) { const t = F / 30, c = s.cam(t, t / (s.b - s.a));
+      for (const a of s.cast(t, s.a + t)) { const P = a.D.props(a.o.who ?? "sir"), az = Math.atan2(c.pos[0] - a.at[0], c.pos[2] - a.at[2]), sk = solve(P, a.pose, a.heading - (az * 180) / Math.PI);
+        const r = raw.get(a.name) ?? { L: [], R: [] }; raw.set(a.name, r);
+        for (const sd of ["L", "R"] as const) r[sd][F] = sk.z[`wr${sd}`] - sk.z[`el${sd}`] > FORE_TOP * P.fore; } }
+    for (const [k, r] of raw) { const L = Array.from(r.L, (v) => !!v), R = Array.from(r.R, (v) => !!v); fore.set(k, SETTLE_ORDER ? { L: settle(L), R: settle(R) } : { L, R }); }
+    return fore; };
   const f: Shot["cast"] = (t, T) => { if (!lock) { lock = new Map(); const c0 = s.cam(0, 0); for (const a of s.cast(0, s.a)) if (a.D.mirrorAt) lock.set(a.name, a.D.mirrorAt(a.heading - (Math.atan2(c0.pos[0] - a.at[0], c0.pos[2] - a.at[2]) * 180) / Math.PI)); }
-    const own = s.cast(t, T).map((a) => (lock!.has(a.name) && a.o.mirror === undefined ? { ...a, o: { ...a.o, mirror: lock!.get(a.name) } } : a));
+    const Fi = Math.max(0, Math.round(t * 30)), fo = foreOf();
+    const own = s.cast(t, T).map((a) => { const b = lock!.has(a.name) && a.o.mirror === undefined ? { ...a, o: { ...a.o, mirror: lock!.get(a.name) } } : a, q = fo.get(a.name);
+      return q && q.L.length ? { ...b, o: { ...b.o, foreTopFix: { L: q.L[Math.min(Fi, q.L.length - 1)], R: q.R[Math.min(Fi, q.R.length - 1)] } } } : b; });
     const L = s.loopInto, len = s.b - s.a; if (!L || t <= len - L.over) return own;
     // (the loop: eased so that at the end of the shot, one frame past its last, the figures stand exactly as on the first frame)
     const u = Math.min(1, (t - (len - L.over)) / L.over), k = u * u * (3 - 2 * u), into = castOf(L.shot)(0, L.shot.a);

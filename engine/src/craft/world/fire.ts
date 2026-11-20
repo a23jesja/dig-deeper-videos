@@ -64,7 +64,10 @@ export const embers = (into: THREE.Object3D, p: V3, t: number, r = 0.6, n = 9, s
     into.add(mesh(ball(1, 8), g > 0.75 ? "#ffb02a" : "#e0521a", { at: [p[0] + Math.cos(a) * d, p[1] + 0.03, p[2] + Math.sin(a) * d], scale: [0.09, 0.05, 0.07], rot: [0, a, 0], line: 0.4, shadow: false, receive: false, glow: "#c03a00" })); }
 };
 /** how brightly a fire burns at the time t (0.75 to 1.1): for the light and the tint a film lays over a night shot */
-export const flicker = (t: number, seed = 0) => 0.92 + 0.1 * Math.sin(t * 11 + seed) + 0.06 * Math.sin(t * 23 + seed * 2) + 0.03 * Math.sin(t * 47 + seed * 3);
+// (slow and gentle: at 11, 23 and 47 radians a second a lamp's glow jumped in size and strength from one frame to the next at 30 a second,
+//  and the light it lays on what is near it (a table leg under the lantern) flickered, DAILY-RULES Impossible things 9, the review of the
+//  eye patch Short v1s. Now no term turns more than about a fifth of a radian a frame)
+export const flicker = (t: number, seed = 0) => 0.94 + 0.05 * Math.sin(t * 2.3 + seed) + 0.03 * Math.sin(t * 3.7 + seed * 2) + 0.015 * Math.sin(t * 6.1 + seed * 3);
 let GLOWMAT: THREE.MeshBasicMaterial | null = null;
 const GLOWGEO = new THREE.PlaneGeometry(1, 1);
 /** The light a fire throws on a wall or on the ground: a soft warm patch w wide and h high with its middle at p, lying in the plane

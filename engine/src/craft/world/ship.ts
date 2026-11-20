@@ -207,7 +207,7 @@ export type Dusk = (T: number) => number;
 export const flagSea = (duskAt: Dusk = () => 0) => {
   const root = pirateShip(), W = SHIP.half, q = SHIP.quarter, x = -(W - 0.12) - 0.11, z0 = q.z + 0.12, z1 = 7.72, top = FLAGSEA.cloth;
   const old = root.userData.named as THREE.Object3D[]; old.find((o) => o.name === "plank")!.visible = false;
-  root.add(mesh(box(0.05, top - SHIP.aft, z1 - z0), "#e2cf9e", { at: [x, (top + SHIP.aft) / 2, (z0 + z1) / 2], line: 0.8 }), mesh(box(0.06, 0.15, z1 - z0), "#b3261e", { at: [x, top - 0.22, (z0 + z1) / 2], line: 0, shadow: false }));
+  root.add(mesh(box(0.05, top - SHIP.aft, z1 - z0), "#e2cf9e", { at: [x, (top + SHIP.aft) / 2, (z0 + z1) / 2], line: 0.8 }), mesh(box(0.06, 0.15, z1 - z0 - 0.012), "#b3261e", { at: [x, top - 0.22, (z0 + z1) / 2], line: 0, shadow: false }));      // (the red band 6 mm short of the panel's ends: as long as the panel, its end faces lay in the panel's and fought it for depth, a red sliver coming and going on the panel's edge, the review of v1s)
   for (let z = z0; z <= z1 + 0.01; z += (z1 - z0) / 4) root.add(rod([x + 0.06, SHIP.aft, z], [x + 0.06, top + 0.06, z], 0.035, "#8a6a3e"), mesh(torus(0.05, 0.014, 10), "#dcc38a", { at: [x + 0.03, top - 0.08, z], rot: [0, Math.PI / 2, 0], line: 0.5, shadow: false }));
   // her flagstaff is lengthened, so that a flag run up to its top flies clear above every head
   { const [sx, , sz] = SHIP.staff.at; root.add(rod([sx, SHIP.staff.at[1] + SHIP.staff.h, sz], [sx, FLAGSEA.staffTop, sz], 0.04, "#8a6a3e"), mesh(ball(0.07, 10), C.gold, { at: [sx, FLAGSEA.staffTop + 0.05, sz] })); }

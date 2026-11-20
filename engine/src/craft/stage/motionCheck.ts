@@ -23,7 +23,7 @@
 //   gazeY    in a shot that says where someone looks, a target well above or below his eyes while his eyes look straight out (03, 05).
 import * as THREE from "three";
 import type { Film, Staged, V3 } from "./film";
-import { castOf } from "./film";
+import { ORDER_MIN, castOf } from "./film";
 import { stageAt } from "./staging";
 import { AUDIT } from "./grips";
 import { CROWD_LOG } from "../world/people";
@@ -275,11 +275,13 @@ export const motionCheck = (film: Film, opt: { shots?: string[] } = {}) => {
         const p = B.pic[`wr${sd}`], q = B.pic[`tip${sd}`], hx = (p[0] + q[0]) / 2, hy = (p[1] + q[1]) / 2, hd2 = (p[2] + q[2]) / 2;
         const over = (frames[i].things.get("")?.small ?? []).some((m) => Math.hypot(m.x - hx, m.y - hy) < 0.07 * B.H && Math.abs(m.d - hd2) < 0.3);
         run2 = over ? run2 + 1 : 0; if (run2 >= 9) note(`${s.id}|${name}|hover|${sd}`, { shot: s.id, who: name, what: `${name}'s ${sd === "L" ? "left" : "right"} hand hangs over a small thing for 0.3 s without holding it: it seems about to take it` }, frames[i].F); } }
-    // order: the order the body is drawn in (cast.ts "order": side on, from behind, an arm drawn late) may change, but not for one frame and
-    //  back: then a part appears or vanishes for a frame (the review of v1r: the mate's far arm at a turn of exactly 30 degrees, 288-292)
-    for (const name of who) for (let i = 1; i + 1 < frames.length; i++) { const A = frames[i - 1].figs.get(name), B = frames[i].figs.get(name), C = frames[i + 1].figs.get(name);
-      if (!A || !B || !C || A.order === null || B.order === null || C.order === null) continue;
-      if (B.order !== A.order && C.order === A.order) note(`${s.id}|${name}|order`, { shot: s.id, who: name, what: `${name}'s drawing order changes for one frame and back (${A.order} -> ${B.order} -> ${C.order}: side on, from behind or an arm drawn late): a part appears or vanishes for a frame` }, frames[i].F); }
+    // order: the order the body is drawn in (cast.ts "order": side on, from behind, an arm drawn late; and each forearm over or under its upper
+    //  arm, foreTop) may change, but not change back within ORDER_MIN frames (15): then a part appears or vanishes and comes back (the review of
+    //  v1r: the mate's far arm at a turn of exactly 30 degrees, 288-292; of v1s: the mate's elbow for 8 frames, 256-263)
+    for (const name of who) for (const key of ["order", "foreL", "foreR"] as const) { const v: (number | null)[] = frames.map((fr) => { const B = fr.figs.get(name); if (!B) return null; return key === "order" ? B.order : B.foreTop[key === "foreL" ? "L" : "R"] ? 1 : 0; });
+      for (let i2 = 1; i2 < v.length; i2++) { if (v[i2] === null || v[i2 - 1] === null || v[i2] === v[i2 - 1]) continue; let j2 = i2; while (j2 < v.length && v[j2] === v[i2]) j2++;
+        if (j2 < v.length && j2 - i2 < ORDER_MIN && v[j2] === v[i2 - 1]) note(`${s.id}|${name}|${key}|${frames[i2].F}`, { shot: s.id, who: name, what: `${name}'s drawing order (${key === "order" ? "side on, from behind or an arm drawn late" : `the ${key === "foreL" ? "left" : "right"} forearm over or under the upper arm`}) changes and changes back after ${j2 - i2} frames (under ${ORDER_MIN}): a part appears or vanishes and comes back` }, frames[i2].F);
+        i2 = j2 - 1; } }
     // forearm: the card draws the forearm and the hand first and the upper arm over them (unless the forearm comes toward the lens: cast.ts arm). A forearm that lies inside the upper arm's width on
     //  the card for 0.2 s (6 frames), two thirds of it or more hidden, puts the hand on the shoulder: it seems to grow out of it (06 frames 44-119)
     for (const name of who) for (const sd of ["L", "R"] as const) { let run: number[] = [];

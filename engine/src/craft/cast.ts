@@ -10,6 +10,8 @@ import { FigOpts, Face, frame, shoePts, thumbFlip, loaf, cane } from "./designs/
 /** the body is drawn side on (the far arm behind the torso) when |sin| of its turn is over this. Not 0.5: a turn of a round 30 degrees sat
  *  exactly on 0.5 and the order flipped from frame to frame with the rounding, so the far arm and the shoulder button came and went (the
  *  eye patch Short v1r, frames 288-292 and 632, the review of 20 Nov) */
+/** the forearm is drawn over the upper arm when the wrist is this much of a forearm nearer the lens than the elbow */
+export const FORE_TOP = 0.25;
 export const SIDE_ON = 0.513;
 export type Look = {
   id: string; P: Props;
@@ -312,7 +314,9 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
     const low: P2[] = [[-2 * w, yJaw + dy], ...lip, [2 * w, yJaw + dy], [2 * w, 60 + dy], [-2 * w, 60 + dy]];
     // (the jaw's card is the head's outline with only its chin let down, so that its sides go on straight from the face's: the whole outline
     //  moved down jutted past the face on a turned head, the review of round 2)
-    const jawO = dy ? skull.map(([x, y]) => [x, y > yJaw ? y + dy : y] as P2) : skull;
+    // (and the drop comes in over 0.08 of the head below the hinge: let down whole at the hinge, the outline stepped out at the jaw's sides and
+    //  a beard's edge showed a double outline with a notch and a strip of skin, the expression sheet v1, the review of 20 Nov)
+    const jawO = dy ? skull.map(([x, y]) => [x, y > yJaw ? y + dy * Math.min(1, (y - yJaw) / (0.08 * H)) : y] as P2) : skull;
     k.clip(jawO, () => { k.shape(shift(low, 0, 6), "rgba(52,32,16,0.2)", 0); k.shape(low, shade(skin, 0.965)); });
     if (m > 0.04) k.clip(low, () => k.shape(jawO, null));
     if (vis && !(L.mouth2 && isOpen)) { const xl = at(h, -36, 0.72).x, xr = at(h, 36, 0.72).x, ym = yJaw + dy, smk = f.smirk ?? 0, te = f.teeth ?? 0;
@@ -323,7 +327,7 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
           k.line([[cx2 - tw * 1.02, ym], [cx2 + tw * 1.02, ym]], 3.4 * u); for (const fx of [-0.5, 0, 0.5]) k.line([[cx2 + fx * tw, ym - th * 0.9], [cx2 + fx * tw, ym + th * 0.9]], 2.6 * u); }); }
       else k.clip(jawO, () => k.line(spline([[xl, yl], [lerp(xl, xr, 0.25) + h.sin * 0.05 * a, ym + sm * 0.018 * H - smk * 0.012 * H], [lerp(xl, xr, 0.75) + h.sin * 0.05 * a, ym + sm * 0.018 * H + smk * 0.012 * H], [xr, yr]], false, 6), 6.4 * u)); }
     if (L.lips && vis) { const q = at(h, 0, 0.72); piece(k, ellPts(q.x, yJaw - 0.025 * H + drop, 0.2 * a * Math.max(0.35, Math.abs(h.cos)), 0.032 * H), L.lips); }
-    if (L.beard && !L.beard2) { const xs: P2[] = []; for (let az = -100; az <= 100; az += 20) { const q = at(h, az, 1.04); if (q.d > -0.1 * b) xs.push([q.x, -0.32 * H + drop * 0.5]); } if (xs.length > 1) { const lo = xs.map(([x], i) => [x * 0.92, 0.2 * H * (1 - Math.abs(i / (xs.length - 1) - 0.5) * 1.2) + drop] as P2).reverse(); piece(k, spline([...xs, ...lo], true, 4), L.beard); } }
+    if (L.beard && !L.beard2) { const xs: P2[] = []; for (let az = -100; az <= 100; az += 20) { const q = at(h, az, 1.07); if (q.d > -0.1 * b) xs.push([q.x, -0.32 * H + drop * 0.5]); } if (xs.length > 1) { const wk = 0.92 + 0.1 * Math.min(1, drop / (0.08 * H)), lo = xs.map(([x], i) => [x * wk, 0.2 * H * (1 - Math.abs(i / (xs.length - 1) - 0.5) * 1.2) + drop] as P2).reverse(); /* (its foot as wide as the let-down jaw: at 0.92 the jaw stuck out beside it with its own outline, a notch and a strip of skin) */ piece(k, spline([...xs, ...lo], true, 4), L.beard); } }
     if (L.beard && L.beard2) {
       // The corrected beard. Outer edge: from one sideburn down the jaw to a rounded foot under the chin and up to the other sideburn,
       // with tufts along it. Inner edge: from the sideburn across the cheek to the corner of the mouth, under the lower lip, and back.
@@ -593,7 +597,7 @@ const drawTrue = (L: Look) => (k: Ink, sk: Sk, o: FigOpts) => {
     //  hand lie over the upper arm. Drawn under it always, a forearm raised before the chest or a hand on the chest vanished behind the
     //  upper arm and the hand seemed to grow out of the shoulder: the shot library's 06 frames 44-119. foreUnder = as before, the proof's
     //  planted fault)
-    const foreTop = !o.foreUnder && sk.z[`wr${s}`] - sk.z[`el${s}`] > 0.25 * P.fore; k.val(`foreTop${s}`, foreTop ? 1 : 0);
+    const foreTop = !o.foreUnder && (o.foreTopFix ? o.foreTopFix[s] : sk.z[`wr${s}`] - sk.z[`el${s}`] > FORE_TOP * P.fore); k.val(`foreTop${s}`, foreTop ? 1 : 0);
     const up = () => { const upper = seg(Sh, E, L.arm[0], L.arm[1]); piece(k, upper, col, long && L.weave ? Sh : undefined); if (long) woven(Sh, E, L.arm[0], L.arm[1], upper);
       if (!long) piece(k, seg(Sh, mid(Sh, E, 0.5), L.arm[0] + 6, L.arm[0] + 4), L.coat);
       if (L.armour) piece(k, seg(add(Sh, [0, -6]), mid(Sh, E, 0.32), L.arm[0] + 12, L.arm[0] + 10), "#b9c3cd"); };

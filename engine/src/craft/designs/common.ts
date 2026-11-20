@@ -28,6 +28,9 @@ export type FigOpts = { who?: Who; face?: Face; handL?: HandKind; handR?: HandKi
   /** true = the upper arm drawn over the forearm always, as before 20 Nov (the shot library's 06: the forearm raised before the chest hid
    *  behind the upper arm; the proof's planted fault) */
   foreUnder?: boolean;
+  /** the forearm drawn over the upper arm (true) or under it, settled for the shot by the stage (film.ts castOf): a choice that would last
+   *  under 15 frames keeps the one before it, so the order does not flip back and forth (the mate's elbow, eye patch v1s, 8.5 s) */
+  foreTopFix?: { L: boolean; R: boolean };
   /** an eye patch over one eye: "A" the figure's right eye, "B" his left (the pirate's patch, moved to the other eye between shots) */
   patch?: "A" | "B";
   /** proof cases only: "off" draws the patch beside the eye instead of over it */

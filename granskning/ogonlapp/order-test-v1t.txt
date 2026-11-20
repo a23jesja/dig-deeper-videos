@@ -1,0 +1,8 @@
+# Ordningstestet, nu också underarmen över/under och byten som går tillbaka inom 15 rutor. Planterat fel: underarmens ordning inte utjämnad (SETTLE_ORDER = false, som i v1s)
+below frames 257-257 (film 8.57-8.60 s): mate's drawing order (the right forearm over or under the upper arm) changes and changes back after 7 frames (under 15): a part appears or vanishes and comes back
+test frames 695-695 (film 23.17-23.20 s): mate's drawing order (the right forearm over or under the upper arm) changes and changes back after 11 frames (under 15): a part appears or vanishes and comes back
+verdict frames 748-748 (film 24.93-24.97 s): mate's drawing order (the right forearm over or under the upper arm) changes and changes back after 12 frames (under 15): a part appears or vanishes and comes back
+MOTION CHECK FAILED for eye-patch: 3 faults
+
+# Utjämnad (SETTLE_ORDER = true)
+MOTION CHECK OK for eye-patch: 0 faults

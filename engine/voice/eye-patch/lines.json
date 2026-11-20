@@ -9,84 +9,84 @@
  {
   "id": "idea",
   "a": 2.569,
-  "b": 4.661,
-  "text": "One idea: to see in the dark.",
+  "b": 5.123,
+  "text": "One idea: so they never fought blind.",
   "voice": "bm_george"
  },
  {
   "id": "deck",
-  "a": 4.911,
-  "b": 7.097,
+  "a": 5.373,
+  "b": 7.559,
   "text": "Up on deck, the sun is blinding.",
   "voice": "bm_george"
  },
  {
   "id": "below",
-  "a": 7.297,
-  "b": 9.446,
+  "a": 7.759,
+  "b": 9.908,
   "text": "Go below, and you can't see a thing.",
   "voice": "bm_george"
  },
  {
   "id": "mins",
-  "a": 10.346,
-  "b": 14.021,
+  "a": 10.808,
+  "b": 14.483,
   "text": "Eyes need twenty to thirty minutes to get used to the dark.",
   "voice": "bm_george"
  },
  {
   "id": "patch",
-  "a": 14.271,
-  "b": 17.02,
+  "a": 14.733,
+  "b": 17.481,
   "text": "But an eye under a patch is already used to it.",
   "voice": "bm_george"
  },
  {
   "id": "flip",
-  "a": 17.22,
-  "b": 19.231,
+  "a": 17.681,
+  "b": 19.693,
   "text": "Flip the patch, and you can see.",
   "voice": "bm_george"
  },
  {
   "id": "myth",
-  "a": 19.581,
-  "b": 23.367,
+  "a": 20.043,
+  "b": 23.829,
   "text": "In 2007, MythBusters tested the idea.",
   "voice": "bm_george"
  },
  {
   "id": "verdict",
-  "a": 23.567,
-  "b": 25.274,
+  "a": 24.029,
+  "b": 25.736,
   "text": "Their verdict: plausible.",
   "voice": "bm_george"
  },
  {
   "id": "but",
-  "a": 25.624,
-  "b": 27.374,
+  "a": 26.086,
+  "b": 27.836,
   "text": "But did real pirates do it?",
   "voice": "bm_george"
  },
  {
   "id": "none",
-  "a": 27.624,
-  "b": 28.815,
+  "a": 28.086,
+  "b": 29.277,
   "text": "Nobody knows.",
   "voice": "bm_george"
  },
  {
   "id": "proof",
-  "a": 29.015,
-  "b": 32.058,
+  "a": 29.477,
+  "b": 32.52,
   "text": "No picture or record from their time says so.",
   "voice": "bm_george"
  },
  {
   "id": "trick",
-  "a": 32.358,
-  "b": 34.14,
+  "a": 32.82,
+  "b": 34.602,
   "text": "Still. A very clever trick.",
   "voice": "bm_george"
  }

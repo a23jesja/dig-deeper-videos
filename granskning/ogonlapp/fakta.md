@@ -100,3 +100,19 @@ Not: NBC anger 1793, RMG 1794. Använd 1794 (RMG) eller undvik årtalet. Mental 
 
 ## Förslag på ärlig ram
 "Kunde det funka? Ja, ett öga i mörker vänjer sig på cirka 20-30 minuter. Gjorde pirater så? Ingen vet. Ingen källa från tiden säger det."
+
+---
+
+## 6. Idén kopplad till strid under däck (för krokrepliken "One idea: so they never fought blind.")
+Status: STÖDS som en idé och inte som fakta. Källorna säger själva att det är en teori utan historiskt belägg. Ordagrant lästa på sidorna kl. 09.20, hämtade med en egen begäran av byggsessionen:
+
+Källa 1: IFLScience (James Felton, med Dr Rebecca Simon), https://www.iflscience.com/you-probably-believe-the-myth-about-why-pirates-wore-eye-patches-70246
+Citat: "One theory, proposed without historical evidence, is that the patch wasn't due to eye injuries at all, but to aid the pirates' vision during battles. The idea goes that when boarding another ship and going below deck, your eyes will take some time to adjust to the lack of light."
+
+Källa 2: Mental Floss, https://www.mentalfloss.com/science/body/why-did-pirates-wear-eye-patches
+Citat: "When the pirate went below decks, he could switch the patch to the outdoor eye and see in the darkness easily (potentially to fight while boarding and plundering another vessel)."
+
+Källa 3: Children's Museum of Indianapolis, https://www.childrensmuseum.org/stories/why-pirates-wear-eye-patch
+Citat: "if a pirate was fighting on deck in the sunlight, then had to continue the fight under the deck where it is usually pretty dark, it could take too long for their eyes to adjust"
+
+Repliken börjar med "One idea:" och lägger därmed fram detta som en idé. Längre fram säger manuset "Nobody knows" och "No picture or record from their time says so".

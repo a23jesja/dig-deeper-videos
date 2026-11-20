@@ -596,7 +596,7 @@ export const piratePrint = (w = 0.44, h = 0.34) => { const map = paint("piratepr
     g.lineWidth = 6; g.strokeRect(16, 16, 628, 478); g.lineWidth = 2; g.strokeRect(28, 28, 604, 454);
     const L = (pts: number[][], wd = 2.4) => { g.lineWidth = wd; g.beginPath(); pts.forEach(([x, y], k) => (k ? g.lineTo(x, y) : g.moveTo(x, y))); g.stroke(); };
     const F = (pts: number[][]) => { g.beginPath(); pts.forEach(([x, y], k) => (k ? g.lineTo(x, y) : g.moveTo(x, y))); g.closePath(); g.fill(); };
-    for (let y = 40; y < 200; y += 9) L([[32, y], [628, y]], 0.9);                  // the sky, hatched
+    for (let y = 40; y < 300; y += 9) L([[32, y], [628, y]], y < 200 ? 0.9 : 0.6);      // the sky, hatched down to the sea (a bare strip at the horizon read as a band of light)
     for (let y = 300; y < 380; y += 8) { g.lineWidth = 1.6; g.beginPath(); for (let x = 32; x < 628; x += 4) g.lineTo(x, y + 3 * Math.sin(x / 11 + y)); g.stroke(); }      // the sea
     // the ship far off under sail
     F([[420, 300], [600, 300], [580, 322], [440, 322]]); L([[470, 300], [470, 150]], 3); L([[540, 300], [540, 130]], 3);
@@ -627,7 +627,8 @@ export const piratePrint = (w = 0.44, h = 0.34) => { const map = paint("piratepr
       const sx = cx + sword * 44, hx = cx + sword * 76, hy = top + 64; L([[sx, top + 104], [hx, hy]], 9); g.beginPath(); g.arc(hx, hy, 7, 0, 7); g.fill();
       g.lineWidth = 3; g.beginPath(); g.moveTo(hx, hy); g.quadraticCurveTo(hx + sword * 30, hy - 30, hx + sword * 18, hy - 78); g.stroke(); L([[hx - 10, hy + 2], [hx + 10, hy - 2]], 4); };
     pirate(150, 470, -1, true); pirate(300, 466, 1, false); pirate(440, 472, 1, true); });
-  return group([mesh(box(w + 0.05, h + 0.05, 0.025), "#3a2416", { at: [0, 0, -0.012] }), mesh(box(w, h, 0.01), "#ffffff", { map, line: 0.4, shadow: false })]); };
+  // (no shadow falls on it: the daylight from the cabin's open side laid a beam's shadow edge across it, a band of light from nowhere)
+  return group([mesh(box(w + 0.05, h + 0.05, 0.025), "#3a2416", { at: [0, 0, -0.012], receive: false }), mesh(box(w, h, 0.01), "#ffffff", { map, line: 0.4, shadow: false, receive: false })]); };
 /** a ship's log held open the same way: both pages ruled with lines of handwriting (no words to read), a small sketch of a ship on the left */
 export const logBook = (w = 0.52, h = 0.36, fold = 0.32) => { const page = (side: number) => paint("booklog" + side, 256, 352, (g) => {
     g.fillStyle = "#f1e3bd"; g.fillRect(0, 0, 256, 352); g.fillStyle = "rgba(120,90,50,0.25)"; g.fillRect(side < 0 ? 236 : 0, 0, 20, 352);

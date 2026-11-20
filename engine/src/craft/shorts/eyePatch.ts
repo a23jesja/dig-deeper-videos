@@ -97,13 +97,13 @@ const SHUTTERS = once(() => { const g = new THREE.Group();
   return noShade(g); });
 // (and a weak cool fill from the room's open side, so that a face turned away from the lantern still reads in a close-up)
 const DARK_LIGHT: CardLight = { amb: "#544e5c", rim: 1.0, lights: [{ at: [LANT_AT[0], FL + 1.1, LANT_AT[2]], color: "#ffb468", power: 2.6, reach: 3.6, rimK: 0.8 }, { at: inCabin([-0.2, 1.6, 1.9]), color: "#a8b0d8", power: 0.9, reach: 3.0, rimK: 0 }] };
-const below = (g: THREE.Group, T2: number, cam: Cam) => { g.add(SHUTTERS()); glow(g, [LANT_AT[0], FL + 0.88, LANT_AT[2]], 0.6, 0.6, T2, Math.atan2(cam.pos[0] - LANT_AT[0], cam.pos[2] - LANT_AT[2]), 3); };
+const below = (g: THREE.Group, T2: number, cam: Cam, noGlow = false) => { g.add(SHUTTERS()); if (!noGlow) glow(g, [LANT_AT[0], FL + 0.88, LANT_AT[2]], 0.6, 0.6, T2, Math.atan2(cam.pos[0] - LANT_AT[0], cam.pos[2] - LANT_AT[2]), 3); };
 const BELOW = (len: number) => [{ k: "lap", a: 0, b: len, g: 0.7 }];
 type ShotO = { id: string; a: number; b: number; V: Lens; push?: number; cast: ((t: number) => Actor)[]; things?: (g: THREE.Group, c: Record<string, any>, cam: Cam) => void; sun: boolean; patch?: "A" | "B"; look?: Shot["look"]; close?: boolean; sounds?: Shot["sounds"]; hide?: string[]; newScene?: Shot["newScene"] };
 const add = (o: ShotO) => shots.push({ id: o.id, a: o.a, b: o.b, still: (o.b - o.a) * 0.5, cam: (_t, u) => o.V.push((o.push ?? 0.06) * u), sun: { target: o.sun ? [PIR_DECK[0], MD, PIR_DECK[1]] : inCabin([0, 0, 0]), reach: o.sun ? 6 : 4 },
   ...(o.patch ? { patchEye: { pirate: o.patch } } : {}), ...(o.close ? { closeUp: { pirate: "close on his face and the patch", mate: "close on his face in the dark" } } : {}), look: o.look, hide: o.hide, newScene: o.newScene,
   ...(o.sun ? {} : { light: DARK_LIGHT }), sounds: o.sounds ?? [], beds: o.sun ? deckBeds(o.b - o.a) : BELOW(o.b - o.a),
-  cast: (t) => o.cast.map((f) => f(t)), things: (g, c, _t, T2, cam) => { if (o.sun) flagpole(g, T2); else below(g, T2, cam); o.things?.(g, c, cam); } } as Shot);
+  cast: (t) => o.cast.map((f) => f(t)), things: (g, c, _t, T2, cam) => { if (o.sun) flagpole(g, T2); else below(g, T2, cam, o.id.startsWith("record")); o.things?.(g, c, cam); } } as Shot);
 
 // ---------------- the deck in the sun ----------------
 const DECK = lens(-10.9, 1.5, 2.2, 1, 0, 0, 50);      // (level: tipped down, a hatch at the bottom right corner was cut by the edge)
@@ -166,7 +166,7 @@ opening("hook", 0, S.s2);
 //    drawn by us: wide, then close on their faces, every one with both eyes
 const PRINT = once(() => noShade(piratePrint())), PRINT_AT = inCabin([0.62, 0, -CABIN.d / 2 + 0.1]);
 const print = (g: THREE.Group) => { PRINT().position.set(PRINT_AT[0], FL + 1.38, PRINT_AT[2]); g.add(PRINT()); };
-add({ id: "record", a: S.s11, b: S.s11b, V: lens(PRINT_AT[0] - 0.15, FL + 1.35, PRINT_AT[2] + 1.6, 0.1, -1, 0, 44), push: 0.2, cast: [], things: (g) => print(g), sun: false, sounds: [{ t: 0.2, k: "creak", g: 0.4 }] });
+add({ id: "record", a: S.s11, b: S.s11b, V: lens(PRINT_AT[0] - 0.08, FL + 1.36, PRINT_AT[2] + 1.15, 0.07, -1, 0, 42), push: 0.15, cast: [], things: (g) => print(g), sun: false, sounds: [{ t: 0.2, k: "creak", g: 0.4 }] });
 add({ id: "record2", a: S.s11b, b: S.s12, V: lens(PRINT_AT[0] + 0.02, FL + 1.39, PRINT_AT[2] + 0.75, -0.02, -1, 0, 34), push: 0.12, cast: [], things: (g) => print(g), sun: false });
 // 18. (32.2 - 33.9) STILL. A VERY CLEVER TRICK. Close on him below, looking up from the book, smug
 { const V = frameOn(PIR_AT, FL, -25, "close"), r = reader(PIR_AT, FL, V, 8, false, S.s12b - S.s12, { looks: 0.1 }); add({ id: "trick", a: S.s12, b: S.s12b, V, push: 0.04, cast: [r.cast], things: r.book, sun: false, patch: "B", close: true }); }

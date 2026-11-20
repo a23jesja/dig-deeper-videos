@@ -3,6 +3,30 @@
 Applies to every production session for the Sir Digsworth channel, on top of README.md and GROWTH.md.
 This replaces the earlier "2 Shorts per day about news and trends" rule.
 
+## THE QUALITY GATE (Jesper 2026-11-19) - read this first, it overrides everything below
+Jesper scrapped the animal-trials Short: characters sat in the air beside the bench, hand movements were wrong
+again, and the topic (weevils) meant nothing to most people. Rules alone have not stopped the same faults, so the
+way of working changes. Nothing is built or sent that does not pass all six gates.
+1. **Topic gate.** Jesper approves the topic before any script. A topic passes only if a 12-year-old understands
+   in one sentence why it is surprising, using words everyone knows (pirates, Romans, Vikings, samurai, knights,
+   Egypt, the Wild West, famous prisons, spies, famous con men). No specialist words (weevil, quartermaster,
+   prize counter) in the title, the hook or the first ten seconds.
+2. **Shot library gate.** Videos may only use shot types Jesper has approved as a short test clip: for example
+   stand and talk, walk across, turn and look, hold a prop with both hands, point, react, sit on a seat, push a
+   door. A shot type that is not approved is not used, and the script is written around what is approved. Sitting
+   is not approved until its test clip is.
+3. **Proof gate.** Before the checks may approve anything, the build deliberately makes three faults (a figure
+   sitting in the air above a seat, an arm locked straight out, a foot inside a sofa) and shows that the checks
+   stop every one. This is repeated whenever a check or a set changes.
+4. **Risk sheet gate.** Before the full render, Jesper gets one image with every moment where a figure touches
+   something: sits, leans, holds, gives, points, stands next to furniture. Built only after his yes.
+5. **Voice gate.** The voice chosen in the voice test, one sentence at a time, with pauses, plain short sentences
+   a listener understands the first time.
+6. **Review gate.** The reviewer approves only what it can prove: per shot it lists every figure and every contact
+   and the check result. Every fault Jesper finds after an approval goes into granskning/regressions.md and gets
+   a code check before the next video.
+Until gates 2, 3 and 5 exist, no new Short is built. A few days without videos is better than more of these.
+
 ## Goal
 Within one year: about 1 million long-video views a month, enough for at least 50,000 SEK a month from ads and
 memberships. (Estimate: 0.6-1.6 million views at 3-8 USD per 1,000. Shorts alone would need 60-150 million.)
@@ -225,6 +249,29 @@ however short, in the background as much as in front. "It is only in the backgro
 7. Light, shadow or smoke that does something impossible: a shadow on the wrong side, a fire that lights
    nothing, smoke that cuts off in a straight line.
 8. Words on screen that disagree with the voice, or a caption covering a face.
+9. **Flicker** (Jesper 2026-11-20, eye-patch Short): outlines, eyes, text or light that blink, shimmer or jump
+   between frames. Causes found: a blink drawn as an empty eye ring for one or two frames; thin outlines aliasing
+   while the camera moves slowly; speech bubbles jumping a few pixels per frame as they pop in; heavy compression.
+   Fixes that are required: render at twice the size and scale down (or SMAA/FXAA on the composer), mipmapped and
+   filtered character textures, outlines at least 3 px at 1080 wide, a blink as open, half-lid, closed arc,
+   half-lid, open with no ring frame, bubbles that ease in over 6 frames and then hold still, and export at CRF
+   16-18 (about 12-16 Mbit/s for 1080x1920), constant 30 fps, yuv420p limited range. The phone copy for review is
+   the only low-bitrate file; YouTube always gets the full-quality one.
+   **Check by script:** count pixels that change from frame t-1 to t and back at t+1 (t-1 and t+1 alike, t
+   different); more than 2,000 such pixels in a frame, or any eye or caption region flipping, fails the render and
+   names the time.
+**It applies to every look and every technique** (Jesper 2026-11-19, after Blackbeard stood inside a painted
+sofa): 3D sets, painted or generated backgrounds, depth layers, photos, overlays, anything added later. A new
+look or tool is only allowed in a video once the code checks can see everything in it.
+- **Painted or generated backgrounds** count as solid wherever they show furniture, walls, rails or props. Before
+  a figure is placed in front of one, the build makes a solid map for it (from the depth map plus hand-marked
+  shapes where needed) and runs the same body and feet checks against it on every frame. No solid map, no figure in
+  front of the painting: then it may only be used where nobody stands on or near painted objects (far views,
+  windows, sky, empty establishing shots).
+- **Feet stand on painted floor only where the solid map says it is floor.** Shadows and contact shadows match the
+  painted light.
+- **Every new technique** is tested once on a sheet that shows the checks catching a deliberate error before it
+  is used in a video.
 **How it is caught, in this order:**
 - **By code, every frame.** The scene code tests every moving figure, background people included, and every
   prop against every solid in the set, and every foot against the ground, on every frame, before rendering. Any
@@ -240,6 +287,36 @@ however short, in the background as much as in front. "It is only in the backgro
   one. Every new video is checked against the whole list before it is sent.
 - **When in doubt it fails.** If the reviewer cannot tell whether a figure is behind or inside something, it is
   inside, and it fails.
+
+## Human bodies move like humans (Jesper 2026-11-19, after the gladiator Short)
+Arms, hands and legs were posed in ways no person moves: locked straight arms at shoulder height, hands turned the
+wrong way, gestures pointing at the speaker's own body, people sitting or squatting on nothing.
+**Built into the skeleton (code, every frame):**
+- **Joint limits.** Elbows and knees bend one way only, 0-150 degrees, and are never fully straight unless the
+  action needs it (reaching to the limit, a punch, a push). Shoulders, hips, wrists and the neck have real ranges;
+  a pose outside them fails the render.
+- **No T-pose.** An arm held straight out near shoulder height for more than half a second fails, unless the
+  character is pointing at or reaching for something it looks at.
+- **Weight and support.** Every standing figure has its weight on at least one foot under its hips. Sitting needs
+  a seat under the hips; kneeling puts a knee on the ground; crouching low needs a hand on the ground or a lean.
+**Gesture library (built once, approved as a sheet, then reused):** each gesture is written as a real person does
+it, with hand shape, palm direction, elbow bend, body turn and eye direction, for example:
+- **Point:** body turns toward the target, arm raised toward it with the elbow slightly bent, index finger out,
+  other fingers curled, eyes on the target.
+- **Explain:** both hands in front of the chest at waist height, palms up and open, moving outward on the stressed
+  words.
+- **Shrug:** shoulders up, elbows bent close to the body, palms up, head tilted.
+- **Arms crossed:** forearms over each other at the lower chest, hands tucked, never at shoulder height.
+- **Stop:** one arm forward with the elbow bent, palm out facing the other person, fingers up.
+- **Hand on shoulder, handshake, pull up, give and take:** both hands meet at the same point, elbows bent, bodies
+  close enough that no arm is locked straight.
+- **Kneel, sit, fall, get up, hold the head, cover the eyes, cheer, flex.**
+Every gesture fits the word it goes with; a character never gestures toward its own body when it talks about
+something else.
+**Review:** the reviewer checks every arm and hand in every shot: would a real person hold it like that? If you
+would have to twist your own arm to copy the pose, it fails.
+**Option, if the library still looks stiff:** Jesper records himself doing the gestures once on his phone, and a
+free pose-estimation model on the computer (licence read first) turns the video into skeleton motion.
 
 ## Held objects (Jesper 2026-11-17: the telescope and the pistol were held the wrong way round)
 An object in a hand must look held and used the way a person would, in every frame.
@@ -278,6 +355,34 @@ and reactions make the viewer feel they are watching a show, not a list of facts
 - **In the script:** every invented line is marked [OWN] and every claim [SOURCE], so the reviewer can check
   that no [OWN] line carries a fact. The reviewer also asks: is it funny or alive enough, or does it read like a
   list?
+
+## Lessons from the best reference Shorts (Jesper 2026-11-19) - these override older rules where they differ
+Jesper studied a channel whose Shorts get hundreds of thousands of likes. Not one frame looked wrong. The reason is
+not better character animation: it is choosing what to animate. Learn the craft, copy nothing (no designs, scenes,
+lines or topics of theirs).
+**1. Simple acting, rich picture.** Characters do one simple, clear thing at a time: stand, sit on a seat, walk,
+hold a prop with both hands, look, turn, a small gesture. Avoid actions that need two bodies to fit together
+(handshakes, bandaging, carrying a person, pulling someone up, a hand on another's shoulder) unless the story is
+that action; then show it in a cut-away close-up of the hands or let it happen just off screen. Fewer characters
+per shot. If an action is hard to make look right, show its result instead.
+**2. The camera carries the motion.** Every shot moves: a slow push-in, a dolly along a corridor, a crane down
+from above into the street, a slow pan across a scene, a pull-back reveal. Smooth eased curves, no jerks. The
+characters may stand almost still while the camera moves.
+**3. Light tells the mood and picks out the subject.** One motivated light per shot (a lamp, a window, a fire, a
+sign) falls on the person who matters; the rest is darker. Visible light beams with dust in them, glow around lamps
+and signs, reflections on wet or polished floors, soft depth of field. One colour theme per scene (night blue with
+neon, warm amber inside, brown and gold underground), changing when the story turns. Night and interiors are
+encouraged: they make light work.
+**4. Every prop tells the story.** Readable signs and labels that name the place and the trick, objects of the
+trade, a small living detail (a cat, a bird, steam). Nothing generic.
+**5. Open on the strange action, as a statement.** Frame one shows someone doing the odd thing while the voice says
+it in the past tense: "He loaded the shotgun with gold." "He rolled the bomb into the enemy camp." Then the turn:
+"You see, ..." and the explanation. The question goes in the title, not in the first frame. This is hook type (d)
+in the hook lab and the default to test first.
+**6. Even pace.** Captions one word at a time, large, in the middle of the lower half, timed to the voice. The voice
+keeps one steady speed; add a short pause at every comma (about 0.15 s) and a longer one at every full stop (about
+0.35 s). Short sentences, no clauses inside clauses. Loudness normalised so the level never jumps.
+**7. The format is confirmed:** how a trick, loophole or scheme worked, told through one person doing it.
 
 ## The hook lab (Jesper 2026-11-17): most of the polish goes into the first five seconds
 The numbers so far: half the viewers swipe away in the first second, and a third of those who stay leave in the
@@ -403,6 +508,16 @@ Jesper does not pick times. The session picks the slot and tells him which one i
 - Public studies disagree with each other (some say Sunday morning, some weekday afternoons), so treat timing as a
   small gain: never delay a finished, approved video more than three days to wait for a slot.
 
+## Publishing hygiene (Jesper 2026-11-18, after Nero was uploaded, deleted and re-uploaded and then got no views)
+- **Schedule, never publish directly.** A scheduled video can be changed or stopped before anyone sees it.
+- **Check before scheduling:** the title is the question or claim (never a date or a file name), "not made for
+  kids", altered content "No", category Education, the description and the thumbnail are the final ones.
+- **Never delete or hide a new video in its first seven days.** Views can come late; judge on "stayed and
+  watched" after a week.
+- **Never re-upload a deleted video within two weeks**, and then only as a clearly new version (new opening, new
+  title). Uploading and deleting the same video again and again can look like spam to YouTube.
+- **A fault found after publishing** is fixed in the next video, not by replacing the published one.
+
 ## Monetisation milestones
 1. 500 subscribers: turn on channel memberships.
 2. 1,000 subscribers and 4,000 watch hours in 12 months (or 10 million Shorts views in 90 days): apply to the Partner
@@ -413,8 +528,23 @@ Jesper does not pick times. The session picks the slot and tells him which one i
 Record views, average view duration, retention at 30 seconds and at 50 %, click-through rate and subscribers gained for
 every video in GROWTH.md. Make more of what holds viewers, stop what does not. Watch time matters more than views.
 
-## Voice (decided by Jesper 2026-11-13)
-Keep the Kokoro `bm_george` voice; no human narrator. Everything else in this plan is done in full.
+## Voice (decided by Jesper 2026-11-13; reopened 2026-11-19: the voice sounds too synthetic)
+Until Jesper picks from the voice test below, keep the Kokoro `bm_george` voice; no human narrator.
+**Voice test (Jesper 2026-11-19):** the narration must sound like a person telling a story: clear, steady level,
+natural pauses at commas and full stops. Three candidates read the same script and Jesper chooses by ear:
+- **A. Kokoro bm_george, tuned:** speed 1.0, one sentence at a time with set pauses (0.15 s comma, 0.35 s full
+  stop, 0.6 s before a punchline), best of three takes per sentence, loudness normalised, light compression.
+- **B. Qwen3-TTS VoiceDesign** (Apache-2.0 per the official model card; read the licence on the official GitHub
+  and Hugging Face pages before download): a designed voice from a text description of Sir Digsworth, no cloning.
+- **C. Chatterbox** (MIT per Resemble AI; read the LICENSE on GitHub first; every output carries an inaudible
+  watermark): its default voice, or cloned only from audio we own (a bm_george sample or Jesper's own voice).
+- **D. ElevenLabs** (Jesper 2026-11-20: paid Starter plan, approved for the voice only): three or four British
+  narrator voices from their voice library, no cloning. The API key lives only in the environment variable
+  ELEVENLABS_API_KEY on the computer; never print it, log it, write it to a file or commit it. Report credits used
+  after every run. Starter covers about 20-25 Shorts a month with retakes; move to Creator when long videos start.
+Never clone or imitate a real person or another channel's narrator. Non-commercial models are never used
+(F5-TTS weights, XTTS-v2, Voxtral, Fish Speech without a paid licence). The chosen voice is then fixed for Sir
+Digsworth; side characters keep short lines in other free voices.
 Because the voice is synthetic, the script, pacing and pictures have to carry more: vary sentence length, leave pauses
 for jokes, and time every picture to the word.
 

@@ -16,9 +16,10 @@
 # Movement: a thin line or a pupil that moves further in one frame than it is wide is also "there on t and not on t-1 or t+1" (the
 # mate's eyes as his head turns 4 px a frame: 80-150 such pixels in an eye on every frame of the turn). That is movement, not
 # flicker, and those pixels are taken out (the count before that is kept in the report as "raw"):
-#   EXPLAINED BY STEADY MOVEMENT: there is one step v (dy, dx), at most STEP px long, such that the 5 x 5 patch round the pixel on frame t
-#   matches the frame before at the place v behind AND the frame after at the place v ahead (the mean grey difference of each under
-#   MATCH levels): the same thing has gone on moving the same way. And the patch on frame t has something in it that can be followed
+#   EXPLAINED BY STEADY MOVEMENT: there are steps v0 and v1 (dy, dx), each at most STEP px long, such that the 5 x 5 patch round the
+#   pixel on frame t matches the frame before at the place v0 behind AND the frame after at the place v1 ahead (the mean grey difference
+#   of each under MATCH levels), and v0 and v1 go on the same way: they point the same way (v0 . v1 > 0) and differ by at most half the
+#   longer of them, or ACCEL px (a movement that speeds up or slows down). The same thing has gone on moving. And the patch on frame t has something in it that can be followed
 #   (its grey levels vary by at least TEX: an edge, a line, a pupil). A flat patch (skin, sky, an eye filled with skin) is never
 #   explained, because a flat patch looks the same wherever it is put.
 #   Frames next to a cut are not compared across it.
@@ -46,7 +47,7 @@ def flicker_map(a, b, c):
     d1 = np.abs(b - a).max(2); d2 = np.abs(b - c).max(2); d0 = np.abs(a - c).max(2)
     return (d1 > DIFF) & (d2 > DIFF) & (d0 < SAME)
 
-STEP, MATCH, PATCH, TEX = 12, 14, 2, 10
+STEP, MATCH, PATCH, TEX, ACCEL = 12, 14, 2, 10, 2
 
 def gray(f):
     return f.astype(np.float32) @ np.array([0.299, 0.587, 0.114], np.float32)
@@ -61,11 +62,22 @@ def explained(G0, G1, G2, ys, xs, shifts):
     mid = pads[1][Y, X]; best = np.full(len(ys), np.inf, np.float32)
     live = (mid.max(1) - mid.min(1)) >= TEX      # (a flat patch is never explained)
     if not live.any(): return np.zeros(len(ys), bool)
-    Y, X, mid = Y[live], X[live], mid[live]; bl = best[live]
-    for (ya, xa) in shifts:
-        c = (np.abs(mid - pads[0][Y - ya, X - xa]).mean(1) + np.abs(mid - pads[2][Y + ya, X + xa]).mean(1)) / 2
-        bl = np.minimum(bl, c)
-    out = np.zeros(len(ys), bool); out[live] = bl < MATCH; return out
+    Y, X, mid = Y[live], X[live], mid[live]
+    # which steps v0 the frame before matches (it was v0 behind) and which steps v1 the frame after matches (it will be v1 ahead)
+    M0 = np.stack([np.abs(mid - pads[0][Y - ya, X - xa]).mean(1) < MATCH for (ya, xa) in shifts], 1).astype(np.float32)
+    M1 = np.stack([np.abs(mid - pads[2][Y + ya, X + xa]).mean(1) < MATCH for (ya, xa) in shifts], 1)
+    ok = ((M0 @ consistent(tuple(shifts))) > 0) & M1
+    out = np.zeros(len(ys), bool); out[live] = ok.any(1); return out
+
+_CONS = {}
+def consistent(shifts):
+    """K x K: the step before v0 and the step after v1 go on the same way (they point the same way and differ by at most half the longer
+    one, or ACCEL px): a movement that speeds up or slows down. A step out and a step back point opposite ways and never pass"""
+    if shifts not in _CONS:
+        v = np.array(shifts, np.float32); n = np.hypot(v[:, 0], v[:, 1]); d = np.hypot(v[:, None, 0] - v[None, :, 0], v[:, None, 1] - v[None, :, 1])
+        dot = v[:, None, 0] * v[None, :, 0] + v[:, None, 1] * v[None, :, 1]
+        _CONS[shifts] = ((dot > 0) & (d <= np.maximum(ACCEL, 0.5 * np.maximum(n[:, None], n[None, :])))).astype(np.float32)
+    return _CONS[shifts]
 
 STEADY = [(dy, dx) for dy in range(-STEP, STEP + 1) for dx in range(-STEP, STEP + 1) if (dy or dx) and dy * dy + dx * dx <= STEP * STEP]
 
@@ -179,7 +191,7 @@ def main():
          f"fails: more than {FRAME_MAX} flickering pixels in a frame, more than {EYE_MAX} (or {EYE_PART * 100:.0f} % of a large eye's circle) in an eye, more than {TEXT_MAX} in a box of text",
          f"eye circles per frame: {sum(len(regions.get(t, {}).get('eyes', [])) for t, *_ in rows)} in all; text boxes: {sum(len(regions.get(t, {}).get('text', [])) for t, *_ in rows)}" if regions else "no regions given: the picture as a whole only",
          f"largest: picture {max(r[1] for r in rows)} pixels (frame {max(rows, key=lambda r: r[1])[0]}), eye {max(r[2] for r in rows)} (frame {max(rows, key=lambda r: r[2])[0]}), text {max(r[3] for r in rows)} (frame {max(rows, key=lambda r: r[3])[0]})",
-         f"movement taken out: a pixel is movement when one steady step of at most {STEP} px explains it (the frame before {STEP} px or less behind and the frame after the same step ahead both match its 5 x 5 patch, mean grey difference under {MATCH}) and its patch is not flat (grey levels vary by {TEX} or more)",
+         f"movement taken out: a pixel is movement when steps v0 and v1 of at most {STEP} px explain it (the frame before v0 behind and the frame after v1 ahead both match its 5 x 5 patch, mean grey difference under {MATCH}; v0 and v1 point the same way and differ by at most half the longer, or {ACCEL} px) and its patch is not flat (grey levels vary by {TEX} or more)",
          f"raw (before movement is taken out): largest picture {max(r[4] for r in rows)}, eye {max(r[5] for r in rows)}, text {max(r[6] for r in rows)}; frames over the limits raw: {sum(1 for r in rows if r[4] > FRAME_MAX or r[5] > EYE_MAX or r[6] > TEXT_MAX)}",
          f"median picture count: {int(np.median([r[1] for r in rows]))}",
          f"the loop (last frame to first): {SEAM['seam'] * 100:.1f} % of the picture changes; inside the shots the median frame change is {SEAM['median'] * 100:.1f} % and 95 % are {SEAM['p95'] * 100:.1f} % or less (a pixel changes by more than {SEAM_DIFF})", ""]

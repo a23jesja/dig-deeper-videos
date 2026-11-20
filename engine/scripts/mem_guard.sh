@@ -4,6 +4,7 @@
 #   usage: scripts/mem_guard.sh <command> [args...]
 #   MEM_START (GB, default 8): wait until this much is free before starting (up to MEM_WAIT minutes, default 10, then give up)
 #   MEM_STOP  (GB, default 2): stop the command and everything it started when less than this is free
+#   MEM_LOG: the command's log; when the guard stops it, it names the last "Rendered n/N" line in it (the frame it had come to)
 START=${MEM_START:-8}; STOP=${MEM_STOP:-2}; WAITN=$(( ${MEM_WAIT:-10} * 6 ))
 free_gb() { powershell -NoProfile -Command "[math]::Round((Get-CimInstance Win32_OperatingSystem).FreePhysicalMemory/1MB, 1)" | tr -d '\r' | tr ',' '.'; }
 for i in $(seq 1 $WAITN); do f=$(free_gb); awk -v f="$f" -v s="$START" 'BEGIN{exit !(f>=s)}' && break
@@ -12,7 +13,9 @@ for i in $(seq 1 $WAITN); do f=$(free_gb); awk -v f="$f" -v s="$START" 'BEGIN{ex
 echo "mem_guard: $(free_gb) GB free, starting"
 "$@" & PID=$!; WPID=$(cat /proc/$PID/winpid 2>/dev/null); low=""
 while kill -0 $PID 2>/dev/null; do f=$(free_gb)
-  if awk -v f="$f" -v s="$STOP" 'BEGIN{exit !(f<s)}'; then echo "mem_guard: only $f GB free (under $STOP): stopping the command and all it started"; low=1
+  if awk -v f="$f" -v s="$STOP" 'BEGIN{exit !(f<s)}'; then at=""; [ -n "$MEM_LOG" ] && at=$(tr '' '
+' < "$MEM_LOG" | grep -o "Rendered [0-9]*/[0-9]*" | tail -1)
+    echo "mem_guard: only $f GB free (under $STOP) at ${at:-an unknown frame}: stopping the command and all it started"; low=1
     [ -n "$WPID" ] && taskkill //PID $WPID //T //F > /dev/null 2>&1; kill $PID 2>/dev/null; break; fi
   sleep 5; done
 wait $PID; rc=$?; [ -n "$low" ] && exit 4; exit $rc

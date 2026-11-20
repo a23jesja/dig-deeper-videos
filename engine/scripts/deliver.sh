@@ -17,8 +17,10 @@ if [ "$WHAT" = all ] || [ "$WHAT" = film ]; then
   #  3.2 GB and the machine at 3 GB free)
   BIG=out/craft/qa-$FILM/render-2x$V.mp4; CAND=out/craft/qa-$FILM/$FILM$V.mp4
   export REMOTION_TMP="${REMOTION_TMP:-$LOCALAPPDATA/Temp/remotion-tmp}"
+  # (BIG_READY=<file>: the double-size render already made in parts (render_part.sh, render_join.sh), on a machine short of memory)
+  if [ -n "$BIG_READY" ]; then BIG=$BIG_READY; else
   rm -f "$BIG"; bash scripts/mem_guard.sh npx remotion render src/index.ts $COMP "$BIG" --scale 2 --gl=angle --codec h264 --crf 10 --x264-preset veryfast --concurrency 1 --browser-executable "$CHROME" < /dev/null > out/craft/qa-$FILM/render$V.log 2>&1 || { grep -E "mem_guard|rror" out/craft/qa-$FILM/render$V.log | tail -5; exit 1; }
-  grep mem_guard out/craft/qa-$FILM/render$V.log; test -s "$BIG"
+  grep mem_guard out/craft/qa-$FILM/render$V.log; fi; test -s "$BIG"
   # the sound is copied as it is: re-encoding it beside the picture has stalled ffmpeg for hours on this machine; a stall now fails after ten minutes
   timeout 600 ffmpeg -nostdin -v error -y -i "$BIG" -vf "scale=1080:1920:flags=lanczos:in_range=pc:out_range=tv:in_color_matrix=bt601:out_color_matrix=bt709,format=yuv420p"     -c:v libx264 -preset slow -crf 17 -r 30 -fps_mode cfr -colorspace bt709 -color_primaries bt709 -color_trc bt709 -color_range tv -c:a copy -movflags +faststart "$CAND" < /dev/null
   test -s "$CAND"

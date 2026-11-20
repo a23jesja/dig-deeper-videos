@@ -30,14 +30,15 @@ def main():
     def pick(ok, span=1):
         for t in sorted(quiet):
             if t < 15 or any(abs(t - u) < 25 for u in used): continue
-            if all(k in quiet for k in range(t - 2, t + span + 2)) and ok(t): used.add(t); return t
+            sh = {regions.get(k, {}).get('shot') for k in range(t - 2, t + span + 2)}      # (all in one shot: no cut beside a planted frame)
+            if len(sh) == 1 and all(k in quiet for k in range(t - 2, t + span + 2)) and ok(t): used.add(t); return t
         raise SystemExit("no quiet frame for a case")
     big = lambda t, rmin: [e for e in regions.get(t, {}).get("eyes", []) if e[2] >= rmin]
     A = pick(lambda t: big(t, 20))
     try: B = pick(lambda t: regions.get(t, {}).get("bub") and regions.get(t - 1, {}).get("bub") and regions.get(t + 1, {}).get("bub")); BOX = "bub"
     except SystemExit: B = pick(lambda t: regions.get(t, {}).get("text")); BOX = "text"      # (no quiet frame with a bubble: a caption moved instead)
-    C = pick(lambda t: big(t, 60)); D = pick(lambda t: regions.get(t, {}).get("text") and not regions.get(t, {}).get("bub"))
-    E = pick(lambda t: big(t, 20)); G = pick(lambda t: big(t, 60)); Fs = pick(lambda t: all(big(k, 60) for k in range(t, t + 12)), 12)
+    C = pick(lambda t: big(t, 60)); D = pick(lambda t: regions.get(t, {}).get("text") and not regions.get(t, {}).get("bub") and regions.get(t - 1, {}).get("text") == regions[t]["text"] and regions.get(t + 1, {}).get("text") == regions[t]["text"])
+    E = pick(lambda t: big(t, 20)); G = pick(lambda t: big(t, 60)); Fs = pick(lambda t: all(big(k, 25) for k in range(t, t + 12)) and all(regions.get(k, {}).get("text") == regions[t].get("text") and not regions.get(k, {}).get("bub") for k in range(t - 1, t + 13)), 12)
     cases = {"a": A, "b": B, "c": C, "d": D, "e": E, "g": G, "f": Fs}
     out = subprocess.Popen(["ffmpeg", "-nostdin", "-v", "error", "-y", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}", "-r", "30", "-i", "-",
                             "-c:v", "libx264", "-preset", "slow", "-crf", "17", "-pix_fmt", "yuv420p", dst], stdin=subprocess.PIPE)
@@ -53,7 +54,11 @@ def main():
             es = big(C, 60); cx, cy = int(np.mean([e[0] for e in es])), int(np.mean([e[1] for e in es]))
             x0, y0, x1, y1 = max(0, cx - 180), max(0, cy - 180), min(W - 3, cx + 180), min(H, cy + 180); fr[y0:y1, x0 + 3:x1 + 3] = fr[y0:y1, x0:x1].copy()
         if F == D:
-            x0, y0, x1, y1 = regions[D]["text"][0]; mx = (x0 + x1) // 2; y0, y1 = max(0, y0), min(H, y1); fr[y0:y1, mx - 35:mx + 35] = fr[y0:y1, mx - 35:mx + 35][:, ::-1].copy()
+            # (one letter changed: the 60 px of the line with the most ink in it is replaced by another 60 px of the same line, two letters
+            #  along. Mirroring a slice in v1 left a symmetric letter or a space as it was)
+            x0, y0, x1, y1 = regions[D]["text"][0]; x0, x1, y0, y1 = max(0, x0), min(W, x1), max(0, y0), min(H, y1); g = fl.gray(fr[y0:y1, x0:x1])
+            ink = np.array([(g[:, i:i + 60] < 60).sum() for i in range(0, max(1, x1 - x0 - 200), 10)]); i0 = x0 + 10 * int(ink.argmax()); j0 = i0 + 130 if i0 + 190 < x1 else i0 - 130
+            fr[y0:y1, i0:i0 + 60] = fr[y0:y1, j0:j0 + 60].copy()
         if F == E:
             x, y, r = big(E, 20)[0]; r2 = max(4, int(r * 0.5)); m = (XX - x) ** 2 + (YY - y) ** 2 <= r2 * r2; sh = np.roll(fr, 6, axis=1); fr[m] = sh[m]
         if F == G:
@@ -61,6 +66,9 @@ def main():
             x0, y0, x1, y1 = max(0, cx - 180), max(0, cy - 180), min(W - 11, cx + 180), min(H, cy + 180); fr[y0:y1, x0 + 11:x1 + 11] = fr[y0:y1, x0:x1].copy()
         if Fs <= F < Fs + 12:
             k = 5 * (F - Fs + 1); fr = np.concatenate([fr[:, k:], np.repeat(fr[:, -1:], k, axis=1)], axis=1)
+        elif F >= Fs + 12 and regions.get(F, {}).get("shot") == regions.get(Fs, {}).get("shot"):
+            # (after the slide the picture stays where it slid to, to the end of the shot: snapping back would be a jump of 60 px)
+            fr = np.concatenate([fr[:, 60:], np.repeat(fr[:, -1:], 60, axis=1)], axis=1)
         out.stdin.write(fr.tobytes())
     out.stdin.close(); out.wait()
     rowsP, fails = fl.check(dst, regions)
@@ -69,7 +77,7 @@ def main():
     L = [f"flicker proof: faults planted in {src} -> {dst}", ""]
     desc = {"a": "an empty eye ring on one frame", "b": ("a speech bubble" if BOX == "bub" else "a caption (no quiet frame with a bubble)") + " 3 px out on one frame and back", "c": "a close-up's face outline 3 px out on one frame and back",
             "d": "a caption with one letter changed on one frame", "e": "a pupil 6 px out on one frame and back",
-            "g": "a close-up's face outline 11 px out on one frame and back (within the 12 px movement step)", "f": "the whole close-up sliding steadily 5 px a frame for 12 frames (must pass)"}
+            "g": "a close-up's face outline 11 px out on one frame and back (within the 12 px movement step)", "f": "the whole picture, faces in it, sliding steadily 5 px a frame for 12 frames as a fast steady turn moves them, then staying there (must pass)"}
     allok = True
     for k, t in cases.items():
         span = range(t - 1, t + 13) if k == "f" else range(t - 1, t + 2)

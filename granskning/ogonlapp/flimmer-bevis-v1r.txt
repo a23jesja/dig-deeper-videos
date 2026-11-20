@@ -1,0 +1,25 @@
+flicker proof: faults planted in out/craft/qa-eye-patch/eye-patch-v1r.mp4 -> out/craft/qa-eye-patch/proof-v1r-planted.mp4
+
+a) an empty eye ring on one frame: frame 43 (1.43 s): FAILED by the check (as it must)
+     frame 43 (1.43 s): 733 pixels flicker in an eye (at most 49)
+     the raw measure (no movement taken out) is over its limits on frames: [43]
+b) a speech bubble 3 px out on one frame and back: frame 300 (10.00 s): FAILED by the check (as it must)
+     frame 300 (10.00 s): 3148 pixels flicker in the picture (at most 2000); 3148 pixels flicker in a text or bubble (at most 150)
+     the raw measure (no movement taken out) is over its limits on frames: [300]
+c) a close-up's face outline 3 px out on one frame and back: frame 329 (10.97 s): FAILED by the check (as it must)
+     frame 329 (10.97 s): 2288 pixels flicker in the picture (at most 2000); 578 pixels flicker in an eye (at most 443)
+     the raw measure (no movement taken out) is over its limits on frames: [329]
+d) a caption with one letter changed on one frame: frame 78 (2.60 s): FAILED by the check (as it must)
+     frame 78 (2.60 s): 2616 pixels flicker in the picture (at most 2000); 2612 pixels flicker in a text or bubble (at most 150)
+     the raw measure (no movement taken out) is over its limits on frames: [78]
+e) a pupil 6 px out on one frame and back: frame 103 (3.43 s): FAILED by the check (as it must)
+     frame 103 (3.43 s): 158 pixels flicker in an eye (at most 86)
+     the raw measure (no movement taken out) is over its limits on frames: [103]
+g) a close-up's face outline 11 px out on one frame and back (within the 12 px movement step): frame 486 (16.20 s): FAILED by the check (as it must)
+     frame 486 (16.20 s): 6774 pixels flicker in the picture (at most 2000); 2309 pixels flicker in an eye (at most 432)
+     the raw measure (no movement taken out) is over its limits on frames: [485, 486, 487]
+f) the whole picture, faces in it, sliding steadily 5 px a frame for 12 frames as a fast steady turn moves them, then staying there (must pass): frame 128 (4.27 s)-139: passed by the check (as it must)
+     the raw measure (no movement taken out) is over its limits on frames: [128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140]
+
+fails outside the planted frames (the film's own): [12, 32, 33, 34, 35, 38, 64, 218, 221, 264, 265, 281, 282, 283, 284, 287, 289, 738, 801, 836, 1043, 1049, 1063, 1064, 1065, 1075]
+RESULT: the seven planted cases all as they must be

@@ -1,0 +1,24 @@
+flicker proof: faults planted in ../leverans/eye-patch/eye-patch-v1q.mp4 -> out/craft/qa-eye-patch/proof-v1q-planted.mp4
+
+a) an empty eye ring on one frame: frame 19 (0.63 s): FAILED by the check (as it must)
+     frame 19 (0.63 s): 461 pixels flicker in an eye (at most 49)
+     the raw measure (no movement taken out) is over its limits on frames: [19]
+b) a speech bubble 3 px out on one frame and back: frame 333 (11.10 s): FAILED by the check (as it must)
+     frame 333 (11.10 s): 7007 pixels flicker in the picture (at most 2000); 7007 pixels flicker in a text or bubble (at most 150)
+     the raw measure (no movement taken out) is over its limits on frames: [333]
+c) a close-up's face outline 3 px out on one frame and back: frame 488 (16.27 s): passed by the check (WRONG)
+     the raw measure (no movement taken out) is over its limits on frames: [488, 489]
+d) a caption with one letter changed on one frame: frame 51 (1.70 s): FAILED by the check (as it must)
+     frame 51 (1.70 s): 2176 pixels flicker in the picture (at most 2000); 2174 pixels flicker in a text or bubble (at most 150)
+     the raw measure (no movement taken out) is over its limits on frames: [51]
+e) a pupil 6 px out on one frame and back: frame 89 (2.97 s): FAILED by the check (as it must)
+     frame 89 (2.97 s): 169 pixels flicker in an eye (at most 86)
+     the raw measure (no movement taken out) is over its limits on frames: [89]
+g) a close-up's face outline 11 px out on one frame and back (within the 12 px movement step): frame 513 (17.10 s): FAILED by the check (as it must)
+     frame 513 (17.10 s): 7659 pixels flicker in the picture (at most 2000); 2930 pixels flicker in an eye (at most 443)
+     the raw measure (no movement taken out) is over its limits on frames: [512, 513]
+f) the whole picture, faces in it, sliding steadily 5 px a frame for 12 frames as a fast steady turn moves them, then staying there (must pass): frame 574 (19.13 s)-585: passed by the check (as it must)
+     the raw measure (no movement taken out) is over its limits on frames: [573]
+
+fails outside the planted frames (the film's own): [9, 10, 11, 12, 28, 34, 38, 42, 43, 44, 82, 168, 219, 220, 221, 259, 260, 277, 287, 299, 300, 301, 302, 303, 307, 308, 309, 313, 314, 315, 316, 317, 324, 325, 326, 327, 342, 343, 344, 345, 346, 357, 382, 392, 403, 404, 405, 507, 525, 526, 527, 528, 551, 592, 604, 605, 606, 630, 639, 640, 671, 672, 673, 680, 821, 855, 856, 861, 862, 873, 874, 879, 880, 883, 884, 888, 890, 893, 894, 895, 898, 899, 900, 901, 902, 905, 915, 918, 919, 920, 924, 927, 928, 1039, 1040, 1042, 1043, 1044, 1045, 1058, 1080, 1081, 1082]
+RESULT: the seven planted cases NOT as they must be

@@ -85,9 +85,9 @@ const reader = (at: V3, y: number, V: Lens, turn: number, sun: boolean, len: num
   //   to the page, the lids low)
   // (the swing 4.5 degrees each way and the way back 0.4 s: at 6 degrees and 0.28 s the face slid up to 17 px a frame in the two-shot and the
   //  outlines strobed, the flicker check of 20 Nov)
-  if (o.lines) { const LT = 1.15, LB = 0.4, R0 = P({ ...hold(KK, FF, 0.015), head: [hy - 4.5, 27, 0] }), R1 = P({ ...hold(KK, FF, 0.015), head: [hy + 4.5, 28, 0] });
-    for (let t = 0.0; t < len + 0.3; t += LT) { m.actAt(t, R0, LB, { in: 0.16, out: 0.16, antic: 0, over: 1, ...T0H, face: face({ ...READ, lid: 0.56, gaze: [-0.4, 1] }) });
-      m.actAt(t + LB, R1, LT - LB - 0.02, { in: 0.25, out: 0.25, antic: 0, over: 1, ...T0H, face: face({ ...READ, lid: 0.56, gaze: [0.4, 1] }) }); } }
+  if (o.lines) { const LT = 1.15, LB = 0.6, R0 = P({ ...hold(KK, FF, 0.015), head: [hy - 3.5, 27, 0] }), R1 = P({ ...hold(KK, FF, 0.015), head: [hy + 3.5, 28, 0] });      // (3.5 degrees and 0.6 s back: at 4.5 and 0.4 s his eyes still moved 15 px a frame in myth)
+    for (let t = 0.0; t < len + 0.3; t += LT) { m.actAt(t, R0, LB, { in: 0.4, out: 0.3, antic: 0, over: 1, ...T0H, face: face({ ...READ, lid: 0.56, gaze: [-0.4, 1] }) });
+      m.actAt(t + LB, R1, LT - LB - 0.02, { in: 0.5, out: 0.4, antic: 0, over: 1, ...T0H, face: face({ ...READ, lid: 0.56, gaze: [0.4, 1] }) }); } }
   // (after he looks up he keeps moving: a small nod and sway, pleased with himself; holding still he read as a frozen picture for a second,
   //  the independent review of v1g)
   const hl = -(o.lookFace ?? 0.7) * turn;      // (his head toward the lens when he looks up: see below)
@@ -124,7 +124,7 @@ const mate = (at: V3, V: Lens, turn: number, v: number, len: number, o: { hang?:
   //  face test after the independent reviewer of v1p)
   const m = mover(MATE_SHORT_D, HM, at[0], at[2], V.toward(at[0], at[2], turn * MT)); m.w = 0.09; m.stand(9);
   const [A, B] = o.hang ? [REST.armL as [Seg, Seg], REST.armR as [Seg, Seg]] : FEEL[v % 3], R2 = { handL: "relaxed" as const, handR: "relaxed" as const }, sw = (q: [Seg, Seg], k: number): [Seg, Seg] => [[q[0][0] + 8 * k, q[0][1] + 4], [q[1][0] + 8 * k, q[1][1] + 6]];
-  const F0 = o.shout ? SHOUT : SEARCH(0.8), F1 = o.shout ? { ...SHOUT, gaze: [-0.4, -0.2] as [number, number] } : SEARCH(-0.8);
+  const F0 = o.shout ? SHOUT : SEARCH(0.55), F1 = o.shout ? { ...SHOUT, gaze: [-0.4, -0.2] as [number, number] } : SEARCH(-0.55);      // (the eyes search 0.55 each way: at 0.8, with the head's swing, his pupils crossed the eyes fast enough to strobe, the flicker check of 20 Nov)
   const hs = o.heads ?? (o.shout ? 0.12 : HS), pk = o.shout ? 0.35 : 1;      // (shouting in the close-up: the swing smaller, at 0.3 his face slid 23 px a frame and strobed, the flicker check of 20 Nov)      // (at full swing his far eye was cut by the head's outline, the independent review of v1m)
   ease(m, -1, { armL: A, armR: B, head: [18 * hs, -4, 0], lean: 6 }, 0.01, { ...R2, face: F0 });
   // (always moving: the head round from side to side with the eyes, the hands searching; a period that never stops for long)
@@ -203,7 +203,7 @@ const S = {
   s2: T.s2, s3: T.s3, s4: T.s4, s4b: L.below.b, s5: L.mins.a + 0.8, s5b: L.mins.a + 2.3, s6: T.s6, s6b: L.patch.a + 1.4, s7: FLIP_AT, s8: T.s8, s8b: L.myth.a + 2.0, s9: T.s8b, s10: T.s9, s10b: L.but.b + 0.15, s11: T.s10, s11b: L.proof.a + 1.6, s12: T.s11, s12b: L.trick.b - 0.25, end: T.end };
 // 1. (0 - 2.4) WHY DID PIRATES WEAR EYE PATCHES? In the dark below, the pirate reads calmly, his head following the lines from the first
 //    frame, while his shipmate behind him feels the air and stumbles. A creak on the first frame. The last shot is this one again
-const opening = (id: string, a: number, b: number) => { const r = reader(PIR_AT, FL, WIDE, 22, false, b - a, { lines: true, ...(id === "end" ? { puzzled: 0.45 } : {}) }), mt = mate(MAT_AT, WIDE, 48, 2, b - a, { stumble: 0.35, heads: 0.5 });      // (turned 65 with his head swinging 24 more, he stood in bare profile on frame one, the independent review of v1f)
+const opening = (id: string, a: number, b: number) => { const r = reader(PIR_AT, FL, WIDE, 22, false, b - a, { lines: true, ...(id === "end" ? { puzzled: 0.45 } : {}) }), mt = mate(MAT_AT, WIDE, 48, 2, b - a, { stumble: 0.35, heads: 0.32 });      // (heads 0.32: at 0.5 his eyes moved 12 px a frame and his pupils slid across them, the flicker check of 20 Nov)      // (turned 65 with his head swinging 24 more, he stood in bare profile on frame one, the independent review of v1f)
   add({ id, a, b, V: WIDE, cast: [r.cast, mt.cast], things: r.book, sun: false, patch: "B", look: r.look, sounds: [{ t: 0, k: "creak", g: 0.8 }, { t: 0.4, k: "thud", g: 0.3 }], ...(id === "hook" ? {} : { newScene: { pirate: "the same moment below as the opening: the film loops" } }) }); };
 opening("hook", 0, S.s2);
 // 2. ONE IDEA: SO THEY NEVER FOUGHT BLIND. The mate at the table, his hand feeling along its edge, his eyes screwed up
@@ -252,7 +252,8 @@ const MAT_M: V3 = [MAT_AT[0], MAT_AT[1], MAT_AT[2] + 0.3];
 //  picture as the one at 'patch', whatever its size, the sharpened twice test after the review's independent reviewer of v1k)
 { const MS = DECK.spot(5.1, NL), MS3: V3 = [MS[0], MD, MS[1]], V = (() => { const r = (NY * Math.PI) / 180, fx = Math.sin(r), fz = -Math.cos(r); return lens(MS3[0] - fx * NF, MD + NH, MS3[2] - fz * NF, fx, fz, -10, 48); })(), mm = mover(MATE_SHORT_D, HM, MS[0], MS[1], V.toward(MS[0], MS[1], 20)); mm.w = 0.09; mm.stand(9);
   ease(mm, -1, { ...REST, head: [0, -4, 0], lean: 3 }, 0.01, { ...LOOSE, face: SQUINT });
-  wag(mm, 0.15, S.s11 - S.s10b, P({ ...REST, head: [16, -3, 3], lean: 3, px: 0.008 }), P({ ...REST, head: [-16, -3, -3], lean: 4, px: -0.008 }), 0.6, { ...LOOSE, face: { ...SQUINT, lid: 0.6, mouth: 0, smile: -0.5, brow: 0.6 }, glide: true });      // (puzzled, lips pressed: with the mouth open the squint read as a grin)
+  wag(mm, 0.15, S.s11 - S.s10b, P({ ...REST, head: [9, -3, 2], lean: 3, px: 0.005 }), P({ ...REST, head: [-9, -3, -2], lean: 4, px: -0.005 }), 0.8,      // (the shake 9 degrees each way in 0.8 s: at 16 in 0.6 s his eyes moved 22 px a frame, the flicker check of 20 Nov)
+  { ...LOOSE, face: { ...SQUINT, lid: 0.6, mouth: 0, smile: -0.5, brow: 0.6 }, glide: true });      // (puzzled, lips pressed: with the mouth open the squint read as a grin)
   add({ id: "nobody", a: S.s10b, b: S.s11, V, push: 0.04, cast: [(t) => on("mate", MATE_SHORT_D, mm, t, MD, {}, 5)], sun: true, noPole: true }); }      // (no flagpole: it stood close before the lens at the left edge)
 // 16-17. NO PICTURE OR RECORD FROM THEIR TIME SAYS SO. Below, on the wall by a small lantern that lights it, the old picture of pirates drawn
 //    by us: wide, then close on their faces, every one with both eyes

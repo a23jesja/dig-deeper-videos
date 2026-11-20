@@ -14,10 +14,13 @@ export const tread = (m: Mover, t0: number, dur: number, period = 0.4, lift = 56
   for (let t = t0, i = 0; t < t0 + dur; t += period, i++) m.actAt(t, (i % 2 ? { legL: { th: [lift, 6], sh: [-34, 0], pitch: 24 }, roll: -3, py: 0.015 } : { legR: { th: [lift, 6], sh: [-34, 0], pitch: 24 }, roll: 3, py: 0.015 }) as Partial<Pose>, period * 0.92, { in: period * 0.36, out: period * 0.36, antic: 0, over: 1.3 });
 };
 /** a small repeated move between two arm poses (wagging a finger, waving a smell away, shaking a box) */
-export const wag = (m: Mover, t0: number, dur: number, a: Partial<Pose>, b: Partial<Pose>, period = 0.3, o: Parameters<Mover["actAt"]>[3] = {}) => {
+export const wag = (m: Mover, t0: number, dur: number, a: Partial<Pose>, b: Partial<Pose>, period = 0.3, o0: Parameters<Mover["actAt"]>[3] & { /** no beat starts after this time (a cut: a new movement begun three frames before it reads as a slip, the review of the eye patch Short v1s); the first pose stays under to the end */ lastBeat?: number } = {}) => {
+  const { lastBeat, ...o } = o0;
   // the first pose lies under the whole move, so the hand keeps its shape and the arm never drops between two beats
   m.actAt(t0 - 0.1, a, dur + 0.2, { in: 0.14, out: 0.2, antic: 0, over: 1.1, ...o });
-  for (let t = t0, i = 0; t < t0 + dur; t += period / 2, i++) m.actAt(t, i % 2 ? b : a, period * 0.62, { in: period * 0.26, out: period * 0.26, antic: 0, over: 1.2, ...o });
+  const starts: number[] = []; for (let t = t0; t < t0 + dur && (lastBeat === undefined || t <= lastBeat); t += period / 2) starts.push(t);
+  // (with lastBeat the last beat is held to the end of the move: ending, it went back to the first pose, a new movement just before the cut)
+  starts.forEach((t, i) => { const last = lastBeat !== undefined && i === starts.length - 1; m.actAt(t, i % 2 ? b : a, last ? Math.max(period * 0.62, t0 + dur + 0.2 - t) : period * 0.62, { in: period * 0.26, out: last ? 0 : period * 0.26, antic: 0, over: 1.2, ...o }); });
 };
 export const arm = (a: number, b: number, c: number, d: number): [Seg, Seg] => [[a, b], [c, d]];
 

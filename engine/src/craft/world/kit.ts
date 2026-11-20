@@ -15,7 +15,9 @@ const mats = new Map<string, THREE.MeshToonMaterial>();
 /** a flat toon colour (cached per colour and texture) */
 export const toon = (color: string, map?: THREE.Texture, side: THREE.Side = THREE.FrontSide, glow?: string) => {
   const key = color + (map ? map.uuid : "") + side + (glow ?? ""); let m = mats.get(key);
-  if (!m) { m = new THREE.MeshToonMaterial({ color, gradientMap: ramp(), map: map ?? null, side, emissive: glow ?? "#000000" }); mats.set(key, m); }
+  // (dithering: three's fixed screen pattern of half a level, the same on every frame: the lamp's light fading across a dark wall showed rings,
+  //  steps of one level of the 8 bits, the review of the eye patch Short v1s; the pattern does not move, so it adds no flicker)
+  if (!m) { m = new THREE.MeshToonMaterial({ color, gradientMap: ramp(), map: map ?? null, side, emissive: glow ?? "#000000", dithering: true }); mats.set(key, m); }
   return m;
 };
 /** the black contour: the object's hull pushed out along its normals and drawn inside out, a constant width on the screen */
@@ -234,3 +236,13 @@ export const card = (key: string, cw: number, ch: number, w: number, h: number, 
 };
 /** turn a card to face the camera (about the vertical axis only, so the feet stay on the ground) */
 export const faceCam = (m: THREE.Object3D, cam: THREE.Vector3) => { m.rotation.y = Math.atan2(cam.x - m.position.x, cam.z - m.position.z); };
+
+/** a contact shadow: a soft dark oval lying flat on a surface at `at` (rx, rz = its half-size in metres), where something rests on it, so
+ *  that it reads as lying there and not hovering (a fist on a table top: the review of the eye patch Short v1s, its only shadow 30 px off) */
+let CONTACT: THREE.CanvasTexture | null = null;
+export const contactShadow = (g: THREE.Object3D, at: [number, number, number], rx: number, rz: number, strength = 0.55) => {
+  if (!CONTACT) { const cv = document.createElement("canvas"); cv.width = cv.height = 128; const c = cv.getContext("2d")!, gr = c.createRadialGradient(64, 64, 0, 64, 64, 64);
+    gr.addColorStop(0, "rgba(20,12,6,1)"); gr.addColorStop(0.45, "rgba(20,12,6,0.75)"); gr.addColorStop(1, "rgba(20,12,6,0)"); c.fillStyle = gr; c.fillRect(0, 0, 128, 128); CONTACT = filtered(new THREE.CanvasTexture(cv)); }
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(2 * rx, 2 * rz), new THREE.MeshBasicMaterial({ map: CONTACT, transparent: true, opacity: strength, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 }));
+  m.rotation.x = -Math.PI / 2; m.position.set(at[0], at[1] + 0.002, at[2]); m.userData.own = true; m.userData.decal = true; m.castShadow = false; m.receiveShadow = false; g.add(m); return m;
+};

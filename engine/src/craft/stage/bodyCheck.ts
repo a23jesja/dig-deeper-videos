@@ -99,6 +99,18 @@ const dist = (o: Ob, p: THREE.Vector3, r: number): number => {
 /** what lies at a pixel of a frame (x, y in the 1080 x 1920 picture): every mesh of the set and of the shot's things the ray from the lens
  *  meets, nearest first, with its colour, its size and where it is, and the names of the groups it is in (to find a shape nobody can name
  *  in the picture: Blackbeard v4, a dark shape at the hook's edge). The figures are drawn cards and are not in it */
+/** what a shot's things put in the picture on a frame (film_info <film> things <frame>): each mesh, where it is and on the picture, and
+ *  whether it is a decal */
+export const thingsAt = (film: Film, frame: number) => {
+  const T = frame / film.fps, s = film.shots.find((q) => T >= q.a - 1e-6 && T < q.b) ?? film.shots[film.shots.length - 1], t = Math.max(0, T - s.a), cam = s.cam(t, t / (s.b - s.a));
+  const st: Record<string, Staged> = {}; for (const a of castOf(s)(t, s.a + t)) st[a.name] = stageAt(a, cam);
+  const g = new THREE.Group(); s.things?.(g, st, t, s.a + t, cam); g.updateMatrixWorld(true);
+  const lens = new THREE.PerspectiveCamera(cam.fov, 1080 / 1920, 0.05, 3000); lens.position.set(...cam.pos); lens.lookAt(...cam.look); lens.updateProjectionMatrix(); lens.updateMatrixWorld(true);
+  const out: { geo: string; at: number[]; pic: number[]; decal: boolean }[] = [];
+  g.traverse((o) => { const m = o as THREE.Mesh; if (!m.isMesh) return; const p = new THREE.Vector3().setFromMatrixPosition(m.matrixWorld), q = p.clone().project(lens);
+    out.push({ geo: m.geometry.type, at: p.toArray().map((v) => +v.toFixed(3)), pic: [Math.round((q.x + 1) * 540), Math.round((1 - q.y) * 960)], decal: !!m.userData.decal }); });
+  return { shot: s.id, cam: cam.pos, things: out };
+};
 export const pickAt = (film: Film, frame: number, x: number, y: number) => {
   const T = frame / film.fps, s = film.shots.find((q) => T >= q.a - 1e-6 && T < q.b) ?? film.shots[film.shots.length - 1], t = Math.max(0, T - s.a), cam = s.cam(t, t / (s.b - s.a));
   const st: Record<string, Staged> = {}; for (const a of castOf(s)(t, s.a + t)) st[a.name] = stageAt(a, cam);

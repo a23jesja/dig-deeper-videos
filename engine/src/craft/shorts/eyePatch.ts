@@ -13,7 +13,7 @@ import { FLAGSEA_SOLIDS, MERCHANT_DECK } from "../world/ship";
 import { CABIN, inCabin, cabinSea } from "../world/cabin";
 import { glow } from "../world/fire";
 import { logBook, clothFlag, piratePrint } from "../world/props";
-import { rod, mesh, box, cyl, type CardLight } from "../world/kit";
+import { rod, mesh, box, cyl, contactShadow, type CardLight } from "../world/kit";
 import { PIRATE_D, MATE_SHORT_D } from "../looks";
 import { POSES, type Pose, type Seg } from "../rig";
 import type { Design, FigOpts, Face } from "../designs/common";
@@ -40,10 +40,11 @@ const SQUINT: Face = { brow: -0.6, lid: 0.62, smile: -0.1 }, SMUG: Face = { brow
 // ---------------- v1c (the review of v1b, 20 Nov): below deck dark behind shut shutters, the patch's move shown in two close-ups (deck,
 // a whoosh, the dark), the same open book in his hands in every shot, the mate searching with his eyes and hands, no shot still for more
 // than 2.5 s, no jump cut, no picture twice, and the last shot the first one again so that the film loops ----------------
-const BF = 0.12, GO = 0.04, KK = 0.52, FF = 0.36, HW = 0.31;      // (v1q: the book turned cover out has its edges further back than its spine, and with the halves folded 0.25 rad the fists stood off its edges; folded 0.12 its edges come forward to them)      // (HW: half the hands' spacing, the book's grips apart (0.54 wide, 4 cm out each side): at 0.27 the book sat centred between hands closer than its grips, so each fist hid behind its edge at some lenses, the independent review of v1g)
+const BF = 0.12, GO = -0.01, KK = 0.52, FF = 0.36, HW = 0.31;      // (v1q: the book turned cover out has its edges further back than its spine, and with the halves folded 0.25 rad the fists stood off its edges; folded 0.12 its edges come forward to them)      // (HW: half the hands' spacing, the book's grips apart (0.54 wide, 4 cm out each side): at 0.27 the book sat centred between hands closer than its grips, so each fist hid behind its edge at some lenses, the independent review of v1g)
 //      // (the shot library 04's grip; 0.55-0.6 high turned an elbow the wrong way at some lenses)
 // (held 4 cm out past its edges: the fists show at its sides and the thumbs come over the edge, as at 750 in v1d; held at the edge, the fists hid behind it and the thumbs lay on the page like two blobs, the reviews of v1d and v1f)
-const BOOK = once(() => noShade(logBook(0.54, 0.36, BF, GO))), T0H = { handL: "thumb" as const, handR: "thumb" as const };
+const BOOK = once(() => noShade(logBook(0.62, 0.36, BF, GO)))      // (0.62 wide, so that its edges lie inside the fists held 0.31 out: at 0.54 the right fist stood beside the edge in five shots, the review of v1s; the hands closer gave the elbow wing again)
+, T0H = { handL: "thumb" as const, handR: "thumb" as const };
 const READ: Face = { brow: 0.6, lid: 0.42, smile: 0.6, gaze: [-0.1, 0.9] };      // (gaze y: + is down)
 /** the book turned round on its upright middle line: its cover to the lens and its pages to him, as a book is held to be read (the review
  *  of v1k: with its pages to the lens he read the back of it). The grips lie either side of that line, so the hands stay on them; his
@@ -100,7 +101,7 @@ const reader = (at: V3, y: number, V: Lens, turn: number, sun: boolean, len: num
   const ck = o.closeUp ? 0.35 : 1;
   if (o.looks !== undefined) ease(m, o.looks, { ...hold(KK, FF, 0.015), head: [hl + 2, 3, 0], px: 0 }, o.closeUp ? 1.0 : 0.5, { ...T0H, face: face({ brow: 0.9, lid: 0.15, smile: 0.9 }) });
   // (the nod laid after the look-up pose: laid before it, the later pose held him still to the end of the shot, the still-figure test, v1k)
-  if (o.looks !== undefined && o.looks + 0.6 < len) wag(m, o.looks + 0.6, len - o.looks - 0.4, P({ ...hold(KK, FF, 0.015), head: [hl + 4 * ck, 3 + 2 * ck, 3 * ck], px: 0.012 * ck }), P({ ...hold(KK, FF, 0.015), head: [hl - 3 * ck, 3 - 2 * ck, -3 * ck], px: -0.01 * ck }), 1.0, { ...T0H, face: face({ brow: 0.9, lid: 0.15, smile: 0.9 }), glide: true });
+  if (o.looks !== undefined && o.looks + 0.6 < len) wag(m, o.looks + 0.6, len - o.looks - 0.4, P({ ...hold(KK, FF, 0.015), head: [hl + 4 * ck, 3 + 2 * ck, 3 * ck], px: 0.012 * ck }), P({ ...hold(KK, FF, 0.015), head: [hl - 3 * ck, 3 - 2 * ck, -3 * ck], px: -0.01 * ck }), 1.0, { ...T0H, face: face({ brow: 0.9, lid: 0.15, smile: 0.9 }), glide: true, lastBeat: len - 0.35 });
   // (puzzled: from `puzzled` on he looks up from the book, brows up and askew, eyes up and to the side, his head cocked: "Arr. Which eye was
   //  it?" was said with the reading smile, the independent review of v1f. wide: from `wide` on his open eye goes wide, he can see)
   if (o.puzzled !== undefined) ease(m, o.puzzled, { ...hold(KK, FF, 0.015), head: [hl + 6, -2, 9], px: 0 }, 0.45, { ...T0H, face: face({ brow: 1, lid: 0, wide: 0.4, mouth: 0, smile: -0.3, gaze: [0.6, -0.7] }) });
@@ -211,7 +212,16 @@ const opening = (id: string, a: number, b: number) => { const r = reader(PIR_AT,
 opening("hook", 0, S.s2);
 // 2. ONE IDEA: SO THEY NEVER FOUGHT BLIND. The mate at the table, his hand feeling along its edge, his eyes screwed up
 const TBL_AT = inCabin([0.5, 0, -0.18]), YW = 70, TN = -20;
-{ const V = frameOn(TBL_AT, FL, YW, "two", 50, 1), mt = mateTable(TBL_AT, V, TN, S.s3 - S.s2); add({ id: "dark", a: S.s2, b: S.s3, V, cast: [mt.cast], sun: false, hide: ["cabin stool"] }); }      // (the stool hidden: it stood before his feet, cutting one, in seconds 2-5: the independent review of v1f)
+{ const V = frameOn(TBL_AT, FL, YW, "two", 50, 1), mt = mateTable(TBL_AT, V, TN, S.s3 - S.s2);
+  // (a contact shadow on the table top under his fist, so that it lies on the top: its only shadow fell 30 px off and it read as hovering, the
+  //  independent review of v1s)
+  add({ id: "dark", a: S.s2, b: S.s3, V, cast: [mt.cast], sun: false, hide: ["cabin stool"], things: (g, c, cam) => { const w = c.mate?.joint("wrR"), tp = c.mate?.joint("tipR"); if (!w || !tp) return;
+    // (where the table top is seen at the fist's lower edge: on the line from the lens through it; under the hand itself it lay 20 px lower in
+    //  the picture, apart from the fist)
+    const top = FL + 0.795, P0: V3 = [w[0] + (tp[0] - w[0]) * 0.45, w[1] + (tp[1] - w[1]) * 0.45 - 0.045, w[2] + (tp[2] - w[2]) * 0.45], C0 = cam.pos, k = (top - C0[1]) / (P0[1] - C0[1] || -1e-6);
+    const at0: V3 = k > 0 ? [C0[0] + (P0[0] - C0[0]) * k, top, C0[2] + (P0[2] - C0[2]) * k] : [P0[0], top, P0[2]], dx = C0[0] - at0[0], dz = C0[2] - at0[2], dl = Math.hypot(dx, dz) || 1;
+    // (6 cm toward the lens: the lens is only 9 degrees above the top, so the shadow shows as a thin band, and centred on the fist's edge the fist hid it)
+    contactShadow(g, [at0[0] + (dx / dl) * 0.06, top, at0[2] + (dz / dl) * 0.06], 0.14, 0.08, 0.9); } }); }      // (the stool hidden: it stood before his feet, cutting one, in seconds 2-5: the independent review of v1f)
 // 3. UP ON DECK, THE SUN IS BLINDING. On deck in the sun: the pirate reads (the patch on his right eye), the mate squints
 //    (the lens tipped 4 degrees up and the two half a step further off: tipped down, the merchant's hatch stood cut by the bottom right
 //    corner, the review of v1b)

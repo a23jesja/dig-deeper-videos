@@ -78,7 +78,7 @@ export const motionCheck = (film: Film, opt: { shots?: string[] } = {}) => {
         for (const part of r.holder.split(/\s*[,&]\s*/)) { const [hn, hs] = part.trim().split(" "), f = figs.get(hn); if (f && hs) for (const sd of hs.split("+")) if (sd === "L" || sd === "R") { f.held[sd] = true; if (r.o) f.holds[sd] = r.o.uuid; } }
         if (r.o && !held.has(r.prop)) held.set(r.prop, { p: r.o.getWorldPosition(new THREE.Vector3()), q: r.o.getWorldQuaternion(new THREE.Quaternion()) }); }
       const names = new Set<string>(), small: { key: string; x: number; y: number; d: number }[] = [];
-      g.traverse((o) => { if (o.name) names.add(o.name); const m = o as THREE.Mesh; if (!m.isMesh || !m.visible || (m as unknown as THREE.Points).isPoints) return;
+      g.traverse((o) => { if (o.name) names.add(o.name); const m = o as THREE.Mesh; if (!m.isMesh || !m.visible || (m as unknown as THREE.Points).isPoints || m.userData.decal) return;      // (a decal, a contact shadow, is not a thing)
         if (!m.geometry.boundingBox) m.geometry.computeBoundingBox(); const bb = m.geometry.boundingBox!.clone().applyMatrix4(m.matrixWorld), z = bb.getSize(new THREE.Vector3());
         if (Math.max(z.x, z.y, z.z) > 0.25 || Math.max(z.x, z.y, z.z) < 0.01) return; const c = bb.getCenter(new THREE.Vector3()), p = P([c.x, c.y, c.z]); small.push({ key: `${m.geometry.uuid}:${(m.material as THREE.Material)?.uuid}`, x: p[0], y: p[1], d: p[2] }); });
       // (every thing with a body to it, whoever moves it: a door swinging on after it is let go, a bottle falling. Dust, glows and light

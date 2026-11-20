@@ -177,6 +177,11 @@ export const captions = (words: Word[], skip: (w: Word) => boolean = () => false
   // that hangs over into the next picture looks like a slip
   // a caption that the voice says in a moment ("INTO" stood four frames) comes up a little early, into the pause before it, if there is one
   out.forEach((c, i) => { if (c.b - c.a >= 0.4) return; const p = out[i - 1], first = Math.max(p ? p.b : 0, c.a - 0.3); c.a = Math.min(c.a, Math.max(first, c.b - 0.4)); });
+  // a caption still under 0.4 s (its neighbours too close on both sides to give it time) is put together with the next one, or the one before
+  // if the next is not straight after it: "THE SUN" stood 0.3 s and "AND YOU" 0.2 s in the eye patch Short v1s, the review of 20 Nov
+  for (let i = 0; i < out.length; i++) { const c = out[i]; if (c.b - c.a >= 0.4) continue; const n = out[i + 1], p = out[i - 1];
+    if (n && n.a - c.b < 0.1) { n.a = c.a; n.text = `${c.text} ${n.text}`; out.splice(i, 1); i--; }
+    else if (p && c.a - p.b < 0.1) { p.b = c.b; p.text = `${p.text} ${c.text}`; out.splice(i, 1); i--; } }
   for (const c of out) for (const x of cuts) if (x > c.a + 0.5 && x < c.b && c.b - x < 0.4) c.b = x;
   return out;
 };

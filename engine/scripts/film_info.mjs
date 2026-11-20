@@ -26,7 +26,7 @@ if (typeof globalThis.document === "undefined") {
   globalThis.document = { createElement: () => { const g = context(); return { width: 300, height: 150, style: {}, getContext: () => g, toDataURL: () => "", addEventListener() {} }; }, createElementNS: () => ({ style: {} }) };
   globalThis.Path2D = class { constructor() { return quiet({}); } };
 }
-const { FILMS, captions, auditGrips, occlusions, textOver, bodyCheck, bodyLines, pickAt, stageAt, motionCheck, motionLines, MOTION_DEBUG, picsAt, bubblesAt, textBoxes } = await import(pathToFileURL(tmp).href); fs.rmSync(tmp, { force: true });
+const { FILMS, captions, auditGrips, occlusions, textOver, bodyCheck, bodyLines, pickAt, stageAt, motionCheck, motionLines, MOTION_DEBUG, picsAt, bubblesAt, textBoxes, thingsAt } = await import(pathToFileURL(tmp).href); fs.rmSync(tmp, { force: true });
 if (!FILMS[name]) { console.error(`no film named ${name}; there are: ${Object.keys(FILMS).join(", ")}`); process.exit(1); }
 const { film, comp } = FILMS[name], f = (t) => Math.round(t * film.fps);
 const rows = film.shots.map((s) => ({ id: s.id, a: f(s.a), b: f(s.b), still: Math.min(f(s.b) - 1, f(s.a + (s.still ?? (s.b - s.a) / 2))), seconds: +(s.b - s.a).toFixed(2) }));
@@ -112,6 +112,7 @@ else if (what === "regions") { const caps = captions(film.words, (w) => w.b <= f
     const bub = bubblesAt(film, T).map((q) => q.box.map(Math.round));
     const shot = film.shots.findIndex((q) => T >= q.a - 1e-6 && T < q.b);
     console.log(JSON.stringify({ F, shot, eyes, text, bub })); } }
+else if (what === "things") { console.log(JSON.stringify(thingsAt(film, Number(process.argv[4])), null, 1)); }
 else if (what === "pick") { const [F, x, y] = process.argv.slice(4).map(Number); console.log(JSON.stringify(pickAt(film, F, x, y), null, 1)); }
 else if (what === "grips") {
   const { bad, held, spots } = auditGrips(film, process.argv[4] === "tenths" ? 0.1 : undefined);

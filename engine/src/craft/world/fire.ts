@@ -74,7 +74,7 @@ const GLOWGEO = new THREE.PlaneGeometry(1, 1);
  *  that faces `ry` (radians about the vertical; flat = true lays it on the ground instead). It breathes with the fire. Put it a
  *  hand's breadth in front of the wall */
 export const glow = (into: THREE.Object3D, p: V3, w: number, h: number, t: number, ry = 0, seed = 0, flat = false) => {
-  GLOWMAT ??= new THREE.MeshBasicMaterial({ transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, fog: false,
+  GLOWMAT ??= new THREE.MeshBasicMaterial({ transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, fog: false, dithering: true,
     map: paint("fireglow", 128, 128, (g) => { const q = g.createRadialGradient(64, 64, 2, 64, 64, 64); q.addColorStop(0, "rgba(255,170,70,0.62)"); q.addColorStop(0.5, "rgba(255,120,40,0.3)"); q.addColorStop(1, "rgba(255,90,20,0)"); g.fillStyle = q; g.fillRect(0, 0, 128, 128); }) });
   const m = new THREE.Mesh(GLOWGEO, GLOWMAT), k = flicker(t, seed); m.position.set(...p); m.rotation.set(flat ? -Math.PI / 2 : 0, flat ? 0 : ry, 0); if (flat) m.rotation.z = ry;
   m.scale.set(w * k, h * k, 1); m.castShadow = false; m.receiveShadow = false; m.renderOrder = 4; into.add(m); return m;

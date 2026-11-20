@@ -599,9 +599,9 @@ export const piratePrint = (w = 0.44, h = 0.34) => { const map = paint("piratepr
     for (let y = 40; y < 300; y += 9) L([[32, y], [628, y]], y < 200 ? 0.9 : 0.6);      // the sky, hatched down to the sea (a bare strip at the horizon read as a band of light)
     for (let y = 300; y < 380; y += 8) { g.lineWidth = 1.6; g.beginPath(); for (let x = 32; x < 628; x += 4) g.lineTo(x, y + 3 * Math.sin(x / 11 + y)); g.stroke(); }      // the sea
     // the ship far off under sail
-    F([[420, 300], [600, 300], [580, 322], [440, 322]]); L([[470, 300], [470, 150]], 3); L([[540, 300], [540, 130]], 3);
-    for (const [mx, top] of [[470, 160], [540, 140]]) { g.fillStyle = "#ead9b0"; F([[mx - 34, top + 8], [mx + 34, top + 8], [mx + 40, top + 70], [mx - 40, top + 70]]); g.fillStyle = ink; L([[mx - 34, top + 8], [mx + 34, top + 8], [mx + 40, top + 70], [mx - 40, top + 70], [mx - 34, top + 8]], 2); for (let k = 1; k < 4; k++) L([[mx - 36 + k * 0, top + 8 + k * 15], [mx + 37, top + 8 + k * 15]], 1); }
-    L([[540, 130], [540, 112]], 2); F([[540, 112], [566, 118], [540, 124]]);
+    F([[530, 300], [624, 300], [612, 318], [542, 318]]); L([[560, 300], [560, 190]], 2.5); L([[600, 300], [600, 176]], 2.5);
+    for (const [mx, top] of [[560, 196], [600, 182]].map(([x, t]) => [x, t]) as [number, number][]) { g.fillStyle = "#ead9b0"; F([[mx - 16, top + 8], [mx + 16, top + 8], [mx + 19, top + 50], [mx - 19, top + 50]]); g.fillStyle = ink; L([[mx - 16, top + 8], [mx + 16, top + 8], [mx + 19, top + 50], [mx - 19, top + 50], [mx - 16, top + 8]], 2); for (let k = 1; k < 4; k++) L([[mx - 17, top + 8 + k * 11], [mx + 18, top + 8 + k * 11]], 1); }
+    L([[600, 176], [600, 160]], 2); F([[600, 160], [618, 165], [600, 170]]);
     // the deck in front
     g.fillStyle = "#cdb88c"; F([[32, 392], [628, 392], [628, 482], [32, 482]]); g.fillStyle = ink; L([[32, 392], [628, 392]], 3); for (let x = 40; x < 628; x += 26) L([[x, 396], [x - 14, 480]], 1.4);
     // three pirates
@@ -620,12 +620,20 @@ export const piratePrint = (w = 0.44, h = 0.34) => { const map = paint("piratepr
       else L([[cx - 16, top + 78], [cx - 4, top + 74], [cx + 4, top + 74], [cx + 16, top + 78]], 3);
       // the cocked hat seen from the front: a round crown, and the brim turned up into three corners, the front one pointing down at us
       // (raised clear of the eyes: the front corner of the brim covered them)
-      g.beginPath(); g.ellipse(cx, top + 4, 27, 20, 0, Math.PI, 0); g.fill();
-      F([[cx - 56, top - 4], [cx - 30, top + 12], [cx, top + 30], [cx + 30, top + 12], [cx + 56, top - 4], [cx + 44, top + 12], [cx + 18, top + 22], [cx, top + 34], [cx - 18, top + 22], [cx - 44, top + 12]]);
-      F([[cx - 56, top - 4], [cx - 26, top + 6], [cx, top + 16], [cx + 26, top + 6], [cx + 56, top - 4], [cx + 30, top + 14], [cx, top + 28], [cx - 30, top + 14]]);
-      // an arm up with a cutlass
-      const sx = cx + sword * 44, hx = cx + sword * 76, hy = top + 64; L([[sx, top + 104], [hx, hy]], 9); g.beginPath(); g.arc(hx, hy, 7, 0, 7); g.fill();
-      g.lineWidth = 3; g.beginPath(); g.moveTo(hx, hy); g.quadraticCurveTo(hx + sword * 30, hy - 30, hx + sword * 18, hy - 78); g.stroke(); L([[hx - 10, hy + 2], [hx + 10, hy - 2]], 4); };
+      // (one solid shape, as a tricorn looks from the front: a low crown, the brim's two side corners turned up, its lower edge on the
+      //  forehead with the front corner down; a light line where the brim turns up over the crown. A crown and a brim drawn as separate
+      //  pieces read as horns, the review of v1d and our own look at v1e)
+      F([[cx - 50, top + 20], [cx - 40, top + 6], [cx - 24, top + 2], [cx - 16, top - 12], [cx, top - 16], [cx + 16, top - 12], [cx + 24, top + 2], [cx + 40, top + 6], [cx + 50, top + 20],
+        [cx + 34, top + 30], [cx + 14, top + 33], [cx, top + 40], [cx - 14, top + 33], [cx - 34, top + 30]]);
+      g.strokeStyle = "#ead9b0"; L([[cx - 46, top + 19], [cx - 26, top + 12], [cx, top + 22], [cx + 26, top + 12], [cx + 46, top + 19]], 2.2); g.strokeStyle = ink;
+      // an arm up with a cutlass: a sleeve from the shoulder to a fist round the hilt, and the other arm hanging at his side to a fist (the
+      // review of v1d: the swords grew out of their bodies)
+      const sx = cx + sword * 40, hx = cx + sword * 78, hy = top + 66;
+      L([[sx, top + 102], [cx + sword * 66, top + 100], [hx, hy]], 18); g.strokeStyle = "#ead9b0"; L([[sx, top + 102], [cx + sword * 66, top + 100], [hx, hy]], 11); g.strokeStyle = ink;
+      g.fillStyle = "#ead9b0"; g.beginPath(); g.arc(hx, hy, 9, 0, 7); g.fill(); g.fillStyle = ink; g.lineWidth = 2.5; g.stroke();
+      g.lineWidth = 4; g.beginPath(); g.moveTo(hx, hy - 8); g.quadraticCurveTo(hx + sword * 30, hy - 40, hx + sword * 16, hy - 88); g.stroke(); L([[hx - 12, hy - 6], [hx + 12, hy - 10]], 5);
+      const ox = cx - sword * 46; L([[ox, top + 102], [ox - sword * 6, top + 150], [ox - sword * 4, top + 190]], 16); g.strokeStyle = "#ead9b0"; L([[ox, top + 102], [ox - sword * 6, top + 150], [ox - sword * 4, top + 190]], 9); g.strokeStyle = ink;
+      g.fillStyle = "#ead9b0"; g.beginPath(); g.arc(ox - sword * 4, top + 194, 8, 0, 7); g.fill(); g.fillStyle = ink; g.lineWidth = 2.5; g.stroke(); };
     pirate(150, 470, -1, true); pirate(300, 466, 1, false); pirate(440, 472, 1, true); });
   // (no shadow falls on it: the daylight from the cabin's open side laid a beam's shadow edge across it, a band of light from nowhere)
   return group([mesh(box(w + 0.05, h + 0.05, 0.025), "#3a2416", { at: [0, 0, -0.012], receive: false }), mesh(box(w, h, 0.01), "#ffffff", { map, line: 0.4, shadow: false, receive: false })]); };

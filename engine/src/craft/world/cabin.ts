@@ -61,13 +61,14 @@ export const cabin = (o: { rich?: boolean; door?: number } = {}) => {
   g.add(mesh(box(w + t, 0.08, d + t), "#5a3a22", { at: [0, h + 0.04, -t / 2], line: 0.4, shadow: false }));
   for (let x = -w / 2 + 0.3; x < w / 2; x += 0.3) g.add(mesh(box(0.012, 0.004, d), woodD, { at: [x, h - 0.002, 0], line: 0, shadow: false, receive: false }));
   // the mirror on the left wall, its glass toward +x
-  g.add(group([mesh(box(0.06, 0.66, 0.5), C.gold, { line: 0.6 }), mesh(box(0.066, 0.56, 0.4), "#cfe3ee", { line: 0.3, shadow: false }), mesh(box(0.068, 0.5, 0.06), "#eef6fa", { at: [0, 0.04, -0.08], rot: [0.5, 0, 0], line: 0, shadow: false })], [CABIN.mirror[0] + 0.02, CABIN.mirror[1], CABIN.mirror[2]]));
+  // (named: in a dark cabin its gilt frame glowed by itself, the eye patch Short v1d; Shot.hide "cabin mirror")
+  const mirror = group([mesh(box(0.06, 0.66, 0.5), C.gold, { line: 0.6 }), mesh(box(0.066, 0.56, 0.4), "#cfe3ee", { line: 0.3, shadow: false }), mesh(box(0.068, 0.5, 0.06), "#eef6fa", { at: [0, 0.04, -0.08], rot: [0.5, 0, 0], line: 0, shadow: false })], [CABIN.mirror[0] + 0.02, CABIN.mirror[1], CABIN.mirror[2]]); mirror.name = "cabin mirror"; g.add(mirror);
   // the table with a chart, a bottle and the lantern
   const tb = table(1.3, 0.8, 0.76); tb.position.set(...CABIN.table); tb.userData.gloss = true; g.add(tb);
   g.add(mesh(box(0.6, 0.006, 0.42), "#efe2bc", { at: [CABIN.table[0] - 0.2, 0.765, CABIN.table[2] + 0.05], rot: [0, 0.2, 0], line: 0.4, shadow: false }));
   // (named: seen past a head it shows as a thin green sliver standing up behind the chin, the shot library's 08; a shot whose lens puts it
   //  behind a head leaves it out, Shot.hide "table bottle")
-  const bottle = mesh(cyl(0.035, 0.045, 0.22, 10), "#3f6a3a", { at: [CABIN.table[0] - 0.45, 0.87, CABIN.table[2] - 0.15], line: 0.5 }); bottle.name = "table bottle"; g.add(bottle); g.userData.named = [bottle];
+  const bottle = mesh(cyl(0.035, 0.045, 0.22, 10), "#3f6a3a", { at: [CABIN.table[0] - 0.45, 0.87, CABIN.table[2] - 0.15], line: 0.5 }); bottle.name = "table bottle"; g.add(bottle); g.userData.named = [bottle, mirror];
   const [fx, fy, fz] = CABIN.flame;
   g.add(mesh(box(0.16, 0.02, 0.16), "#2b2a33", { at: [fx, 0.77, fz], line: 0.5 }), mesh(box(0.14, 0.2, 0.14), "#ffe7a8", { at: [fx, 0.88, fz], line: 0.6, shadow: false }), mesh(box(0.17, 0.03, 0.17), "#2b2a33", { at: [fx, 0.99, fz], line: 0.5 }),
     mesh(cyl(0.012, 0.012, 0.05, 8), "#fbf3df", { at: [fx, fy - 0.08, fz], line: 0, shadow: false }), mesh(ball(0.02, 8), "#ffb040", { at: [fx, fy - 0.04, fz], line: 0, shadow: false }));

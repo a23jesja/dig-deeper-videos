@@ -325,6 +325,8 @@ export const castDesign = (L0: Look, name = L0.id): Design => { const L: Look = 
 export const SIR_D = castDesign(SIR, "Sir Digsworth"), BAKER_D = castDesign(BAKER), SOLDIER_D = castDesign(SOLDIER), MERCHANT_D = castDesign(MERCHANT);
 export const KNIGHT_D = castDesign(KNIGHT), TOMMY_D = castDesign(TOMMY), LADY_D = castDesign(LADY), DOCKER_D = castDesign(DOCKER), BOY_D = castDesign(BOY), GRANNY_D = castDesign(GRANNY), ROMAN_WOMAN_D = castDesign(ROMAN_WOMAN);
 export const VESPASIAN_D = castDesign(VESPASIAN), TITUS_D = castDesign(TITUS), FULLER_D = castDesign(FULLER), CITIZEN_D = castDesign(CITIZEN), COLLECTOR_D = castDesign(COLLECTOR);
+/** the mate with his hair cut short (the eye patch Short v1d: his pigtail was drawn down in front of his collar into his beard, "a rod") */
+export const MATE_SHORT_D = castDesign({ ...MATE, id: "mateshort", hair: { col: "#6a4424", kind: "short" } });
 export const CAPTAIN_D = castDesign(CAPTAIN), PIRATE_D = castDesign(PIRATE), MATE_D = castDesign(MATE), CASTAWAY_D = castDesign(CASTAWAY), BLACKBEARD_D = castDesign(BLACKBEARD, "Blackbeard");
 export const CUSTOMS_D = castDesign(CUSTOMS), SHIPOWNER_D = castDesign(SHIPOWNER), SAILOR_D = castDesign(SAILOR), DOCKHAND_D = castDesign(DOCKHAND), TOWNSWOMAN_D = castDesign(TOWNSWOMAN);
 export const OLDHAND_D = castDesign(OLDHAND), COOK_D = castDesign(COOK), SHIPBOY_D = castDesign(SHIPBOY), PIRATE2_D = castDesign(PIRATE2), GUNNER_D = castDesign(GUNNER), CORSAIR_D = castDesign(CORSAIR);

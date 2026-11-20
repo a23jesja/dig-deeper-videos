@@ -476,7 +476,8 @@ export const drawFingers = (L: Look) => (k: Ink, sk0: Sk, sides: Side[], whole?:
     // (a thing shown by its edges: the thumb laid over its front from the hand toward the middle of the body, where the thing is; along
     //  the hand it pointed out past the edge, beside the book. The fist is on the figure's card, behind the thing)
     if (kind === "thumb") { const h = sk.P.hand, a0 = (len(sub(T, W)) > 6 ? angle(W, T) : angle(E, W)) * R, B: P2 = [W[0] + Math.cos(a0) * 0.42 * h, W[1] + Math.sin(a0) * 0.42 * h], dir = Math.sign(sk.j.neck[0] - B[0]) || 1;
-      k.group([seg([B[0] + dir * 0.05 * h, B[1] - 0.05 * h], [B[0] + dir * 0.5 * h, B[1] - 0.1 * h], 0.11 * h, 0.09 * h, 0, 0.3, false)], L.skin, k.ol); continue; }      // (from the middle of the fist, which reaches out past the edge)
+      // (only the thumb's last joint over the edge: half a hand long, it lay across the page like a pink sausage, the eye patch Short v1d)
+      k.group([seg([B[0] + dir * 0.03 * h, B[1] - 0.05 * h], [B[0] + dir * 0.24 * h, B[1] - 0.08 * h], 0.12 * h, 0.1 * h, 0, 0.3, false)], L.skin, k.ol); continue; }      // (from the middle of the fist, which reaches out past the edge)
     hand(k, W, len(sub(T, W)) > 6 ? angle(W, T) : angle(E, W), sk.P.hand, kind ?? "fist", L.skin, thumbFlip(sk, s), false, k.ol, "all"); }
   if (mir) k.g.restore();
 };

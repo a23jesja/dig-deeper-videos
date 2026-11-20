@@ -10,7 +10,7 @@ import { SIR_D, DOCTOR_D, PIRATE_D } from "../looks";
 import { stool, woodSword } from "../world/props";
 import { kneeling } from "../stage/gestures";
 import { WOODSWORD, wield, usePose, AUDIT } from "../stage/grips";
-import { mesh, box, skyDome, sunRig } from "../world/kit";
+import { mesh, box, cyl, skyDome, sunRig } from "../world/kit";
 import { dayLight, DAY } from "./gestureSheet";
 import { SIT } from "./gripSheet";
 
@@ -205,6 +205,13 @@ add("AZ-control-board-far-behind", sir({}), (g) => { BOARD.position.set(0, 0.95,
 add("BA-shoe-past-the-edge", { ...sir(STRIDE, 70), at: [0.45, 0, 0] });      // (ankles, joints and head all inside the edge: only the front shoe crosses it)
 add("BB-control-shoe-inside", { ...sir(STRIDE, 70), at: [0.3, 0, 0] });
 
+// BC-BD. A HAND THAT HANGS OVER A THING (the eye patch Short v1d: the mate's hand over the bottle). BC: his right hand held out over a cup on
+// a stand, 6 cm above it, not holding it, for two seconds. BD: CONTROL, the same cup with his hands at his sides
+const CUP = mesh(cyl(0.04, 0.035, 0.09, 12), "#c8a060", { at: [0, 0, 0] }), STAND = mesh(box(0.1, 0.8, 0.1), "#6a4a2a", { at: [0, 0.4, 0] });
+const HOVER: Partial<typeof POSES.stand> = { armR: [[18, 32], [72, 26]] };
+add("BC-hand-over-a-cup", { ...sir(HOVER), o: { handL: "relaxed", handR: "relaxed", face: { gaze: [-1, 0.5] } } }, (g, c) => { const pm = palm(c.sir, "R"); STAND.position.set(pm[0], pm[1] - 0.06 - 0.09 - 0.8, pm[2]); CUP.position.set(pm[0], pm[1] - 0.06 - 0.045, pm[2]); g.add(STAND, CUP); });
+add("BD-control-cup-hands-down", sir({}), (g) => { STAND.position.set(0.55, 0, 0.1); CUP.position.set(0.55, 0.845, 0.1); g.add(STAND, CUP); });
+
 export const PROOF_FAULTS: Film = { cases: true, id: "proof-faults", fps: 30, seconds: shots.length * LEN, range: [0, 999], sky: "#9cc8f0", world, shots, words: [], hook: { text: [], a: 0, b: 0 }, light: dayLight(DAY.from, [0, 1, 0]) };
 
 // THE CUT TESTS (the eye patch Short's v1b, 20 Nov: a jump cut, a shot standing still, the same picture twice). A film of its own, cut
@@ -213,15 +220,17 @@ export const PROOF_FAULTS: Film = { cases: true, id: "proof-faults", fps: 30, se
 const cutShots: Shot[] = []; let at0 = 0;
 const addC = (id: string, len: number, cast: (t: number) => Actor[], cam: () => Cam, more: Partial<Shot> = {}) => { cutShots.push({ id, a: at0, b: at0 + len, still: len / 2, cam, sun: { target: [0, 0.8, 0], reach: 5 }, cast, ...more }); at0 += len; };
 const sirAt = (x: number, z: number, pose: Partial<typeof POSES.stand> = {}): Actor => ({ ...sir(pose), at: [x, 0, z], heading: V.toward(x, z, 0) });
+// (every case but C3 moves its head a little, so that only C3 is still: the still test also reads a 1 s window since the eye patch Short v1d)
+const sirMov = (x: number, z: number) => (t: number) => [sirAt(x, z, { head: [10 * Math.sin(t * 2.6), 2, 0] })];
 const V5 = lens(0.06, 1.0, 3.7, 0.04, -1, 0, 46), VW = lens(-0.2, 1.1, 3.9, 0.05, -1, -2, 50), VC = lens(0.6, 1.6, 1.6, 0, -1, 0, 34);
-addC("C1-a-wide", 2, () => [sirAt(-0.25, 0)], () => V.cam);
-addC("C1-b-jump-cut", 2, () => [sirAt(-0.25, 0)], () => V5.cam);
-addC("C2-a-wide", 2, () => [sirAt(0.6, 0)], () => VW.cam);
-addC("C2-b-control-close-up", 2, () => [sirAt(0.6, 0)], () => VC.cam, { closeUp: { sir: "control: a close-up after the wide" } });
+addC("C1-a-wide", 2, sirMov(-0.25, 0), () => V.cam);
+addC("C1-b-jump-cut", 2, sirMov(-0.25, 0), () => V5.cam);
+addC("C2-a-wide", 2, sirMov(0.6, 0), () => VW.cam);
+addC("C2-b-control-close-up", 2, sirMov(0.6, 0), () => VC.cam, { closeUp: { sir: "control: a close-up after the wide" } });
 addC("C3-still-three-seconds", 3, () => [sirAt(0, -0.5)], () => V.cam);
-addC("C4-control-head-turning", 3, (t) => [sirAt(0.6, -0.7, { head: [30 * Math.sin(t * 2.2), 2, 0] })], () => V.cam);
-addC("C5-x", 2, () => [sirAt(-0.3, -1.1)], () => V.cam);
-addC("C5-y", 2, () => [sirAt(0.3, 0.7)], () => VW.cam);
-addC("C5-z-the-same-again", 2, () => [sirAt(-0.3, -1.1)], () => V.cam);
-addC("C6-end", 2, () => [sirAt(-0.45, 0.6)], () => VW.cam);
+addC("C4-control-head-turning", 3, (t) => [sirAt(0.05, 1.0, { head: [30 * Math.sin(t * 2.2), 2, 0] })], () => V.cam);
+addC("C5-x", 2, sirMov(-0.3, -1.1), () => V.cam);
+addC("C5-y", 2, sirMov(0.3, 0.7), () => VW.cam);
+addC("C5-z-the-same-again", 2, sirMov(-0.3, -1.1), () => V.cam);
+addC("C6-end", 2, sirMov(-0.45, 0.6), () => lens(-0.45, 2.6, 5.4, 0, -1, -16, 50).cam);
 export const PROOF_CUTS: Film = { id: "proof-cuts", fps: 30, seconds: at0, range: [0, 999], sky: "#9cc8f0", world, shots: cutShots, words: [], hook: { text: [], a: 0, b: 0 }, light: dayLight(DAY.from, [0, 1, 0]) };

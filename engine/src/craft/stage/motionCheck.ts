@@ -239,6 +239,13 @@ export const motionCheck = (film: Film, opt: { shots?: string[] } = {}) => {
         const mid = ea.length === 2 ? (ea[0].e[0] + ea[1].e[0]) / 2 : null, onRight = mid === null || isNaN(pt.at[0]) || Math.abs(pt.at[0] - mid) < 2 ? null : Math.sign(pt.at[0] - mid) === sh;
         if (pt.side !== want || (onRight !== null && onRight !== (want === "A"))) note(`${s.id}|${name}|patch-eye`, { shot: s.id, who: name, what: `${name}'s eye patch is on his ${(onRight ?? pt.side === "A") ? "right" : "left"} eye; the script has it on his ${want === "A" ? "right" : "left"}` }, frames[i].F); }
       if (A?.patch && A.patch.side !== pt.side) note(`${s.id}|${name}|patch-swap`, { shot: s.id, who: name, what: `${name}'s eye patch moves to his other eye from one frame to the next inside the shot (it may move only in a cut)` }, frames[i].F); }
+    // hover: a hand that lies over a small thing in the picture, at about its depth (within 30 cm), without holding it, for 0.3 s or more: it
+    //  seems about to take it, or to touch it and not (the eye patch Short v1d: the mate's hand over the bottle on the table)
+    for (const name of who) for (const sd of ["L", "R"] as const) { let run2 = 0;
+      for (let i = 0; i < frames.length; i++) { const B = frames[i].figs.get(name); if (!B || B.held[sd]) { run2 = 0; continue; }
+        const p = B.pic[`wr${sd}`], q = B.pic[`tip${sd}`], hx = (p[0] + q[0]) / 2, hy = (p[1] + q[1]) / 2, hd2 = (p[2] + q[2]) / 2;
+        const over = (frames[i].things.get("")?.small ?? []).some((m) => Math.hypot(m.x - hx, m.y - hy) < 0.07 * B.H && Math.abs(m.d - hd2) < 0.3);
+        run2 = over ? run2 + 1 : 0; if (run2 >= 9) note(`${s.id}|${name}|hover|${sd}`, { shot: s.id, who: name, what: `${name}'s ${sd === "L" ? "left" : "right"} hand hangs over a small thing for 0.3 s without holding it: it seems about to take it` }, frames[i].F); } }
     // forearm: the card draws the forearm and the hand first and the upper arm over them (unless the forearm comes toward the lens: cast.ts arm). A forearm that lies inside the upper arm's width on
     //  the card for 0.2 s (6 frames), two thirds of it or more hidden, puts the hand on the shoulder: it seems to grow out of it (06 frames 44-119)
     for (const name of who) for (const sd of ["L", "R"] as const) { let run: number[] = [];
@@ -275,7 +282,9 @@ export const motionCheck = (film: Film, opt: { shots?: string[] } = {}) => {
     for (const [name, gb] of fb.figs) { const ga = fa.figs.get(name); if (!ga) continue; const ratio = gb.H / ga.H, dx = Math.abs(gb.pic.skull[0] - ga.pic.skull[0]) / 1080, turn = angleBetween(A.cam[A.cam.length - 1], B.cam[0]);
       if (ratio > 0.8 && ratio < 1.25 && dx < 0.15 && turn < 15) note(`${B.s.id}|${name}|jumpcut`, { shot: B.s.id, who: name, what: `a jump cut into ${B.s.id}: ${name} stays about as big (${Math.round(ratio * 100)} %) and in the same place, the lens turned ${turn.toFixed(0)} degrees: change the size or the angle clearly, or leave the cut out` }, fb.F); } }
   // still: a stretch of 2.5 s in which no figure's joint moves more than 2 % of its height in the picture and the lens hardly moves
-  for (const A of sums) { const N = 75; if (A.frames.length < N) continue;
+  // (two windows: 2.5 s under 2 % of his height, and 1 s under 0.6 %: the eye patch Short v1d stood dead still for 0.7-0.8 s at a time,
+  //  which the 2.5 s window let through)
+  for (const [N, LIM] of [[75, 0.02], [30, 0.006]] as [number, number][]) for (const A of sums) { if (A.frames.length < N) continue;
     for (let i0 = 0; i0 + N <= A.frames.length; i0 += 15) { let most = 0, any = false;
       for (const name of A.frames[i0].figs.keys()) { let H = 0; const lo: Record<string, number[]> = {}, hi: Record<string, number[]> = {};
         // (the joints and the eyes: a head that turns moves its eyes across the face, not its joints)
@@ -283,13 +292,18 @@ export const motionCheck = (film: Film, opt: { shots?: string[] } = {}) => {
           for (const [j, q] of [...Object.entries(g2.pic), ...eyes]) { lo[j] = lo[j] ? [Math.min(lo[j][0], q[0]), Math.min(lo[j][1], q[1])] : [q[0], q[1]]; hi[j] = hi[j] ? [Math.max(hi[j][0], q[0]), Math.max(hi[j][1], q[1])] : [q[0], q[1]]; } }
         for (const j of Object.keys(lo)) most = Math.max(most, Math.hypot(hi[j][0] - lo[j][0], hi[j][1] - lo[j][1]) / (H || 1)); }
       const c0 = A.cam[i0], c1 = A.cam[i0 + N - 1], camMove = Math.hypot(c1.pos[0] - c0.pos[0], c1.pos[1] - c0.pos[1], c1.pos[2] - c0.pos[2]);
-      if (any && most < 0.02 && camMove < 0.15) { note(`${A.s.id}|still`, { shot: A.s.id, who: "", what: `${A.s.id} stands still for 2.5 s: no figure moves more than ${(most * 100).toFixed(1)} % of its height and the lens hardly moves` }, A.frames[i0 + N - 1].F); break; } } }
+      if (any && most < LIM && camMove < (N === 75 ? 0.15 : 0.04)) { note(`${A.s.id}|still${N}`, { shot: A.s.id, who: "", what: `${A.s.id} stands still for ${(N / 30).toFixed(1)} s: no figure moves more than ${(most * 100).toFixed(1)} % of its height and the lens hardly moves` }, A.frames[i0 + N - 1].F); break; } } }
   // twice: two shots that are not side by side, with the same figures, the lens within 35 cm and 12 degrees of the other's and every figure
   //  within 30 cm of where it stood: the same picture twice. The last shot may be the first again (a film that loops)
   for (let i = 0; i < sums.length; i++) for (let k = i + 2; k < sums.length; k++) { const A = sums[i], B = sums[k]; if (i === 0 && k === sums.length - 1) continue;
     const fa = A.frames[Math.floor(A.frames.length / 2)], fb = B.frames[Math.floor(B.frames.length / 2)]; if (!fa || !fb || fa.figs.size === 0 || fa.figs.size !== fb.figs.size) continue;
     const ca = A.cam[Math.floor(A.cam.length / 2)], cb = B.cam[Math.floor(B.cam.length / 2)], dp = Math.hypot(ca.pos[0] - cb.pos[0], ca.pos[1] - cb.pos[1], ca.pos[2] - cb.pos[2]);
     let same = dp < 0.35 && angleBetween(ca, cb) < 12; for (const [name, ga] of fa.figs) { const gb = fb.figs.get(name); if (!gb || Math.hypot(ga.at[0] - gb.at[0], ga.at[2] - gb.at[2]) > 0.3) same = false; }
+    // (or the same composition: the same figures, each as big (within 15 %) and in the same place in the picture (within a tenth of it),
+    //  the lens turned less than 30 degrees: two close-ups alike in all but the eyes, the eye patch Short v1d)
+    if (!same && dp < 4 && angleBetween(ca, cb) < 30) { let comp = true;      // (in the same place: on deck and below deck are not the same picture)
+      for (const [name, ga] of fa.figs) { const gb = fb.figs.get(name); if (!gb) { comp = false; break; } const r2 = gb.H / ga.H;
+      if (r2 < 0.85 || r2 > 1.18 || Math.hypot(gb.pic.skull[0] - ga.pic.skull[0], gb.pic.skull[1] - ga.pic.skull[1]) > 0.1 * 1080) comp = false; } same = comp; }
     if (same) note(`${B.s.id}|twice|${A.s.id}`, { shot: B.s.id, who: "", what: `${B.s.id} is the same picture as ${A.s.id} again: the same figures in the same places, the lens ${dp.toFixed(2)} m and ${angleBetween(ca, cb).toFixed(0)} degrees from where it was` }, fb.F); }
   return [...faults.values()];
 };

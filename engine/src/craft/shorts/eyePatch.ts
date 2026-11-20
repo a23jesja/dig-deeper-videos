@@ -115,7 +115,7 @@ const mateTable = (at: V3, V: Lens, turn: number, len: number) => {
   const hd = V.toward(at[0], at[2], turn), m = mover(MATE_SHORT_D, HM, at[0], at[2], hd); m.w = 0.09; m.stand(9);
   const st: Stand = { D: MATE_SHORT_D, at: [at[0], FL, at[2]], heading: hd, h: HM, cam: V.cam, pose: {} };
   const onEdge = (x: number) => { const q = TABLE_EDGE(x); return reach(st, "R", [q[0], FL + 0.76 + 0.035 + 0.08, q[2]]); };      // (the palm on the top, the hand lying on it)
-  const R2 = { handL: "relaxed" as const, handR: "grip" as const }, L0: [Seg, Seg] = [[8, 10], [26, -8]];      // (the hand curled over the table's edge: laid open, it was drawn palm up)
+  const R2 = { handL: "relaxed" as const, handR: "fist" as const }, L0: [Seg, Seg] = [[8, 10], [26, -8]];      // (the hand curled over the table's edge: laid open, it was drawn palm up)
   ease(m, -1, { ...onEdge(0.3), armL: L0, head: [-16, 6, 0], lean: 8 }, 0.01, { ...R2, face: SEARCH(0.6) });
   ease(m, 0.15, { ...onEdge(0.37), armL: [[12, 8], [30, -4]], head: [12, 7, 3], lean: 9 }, 0.8, { ...R2, face: SEARCH(-0.7) });
   ease(m, 1.05, { ...onEdge(0.44), armL: [[6, 12], [24, -10]], head: [-10, 6, -3], lean: 8 }, 0.8, { ...R2, face: SEARCH(0.7) });

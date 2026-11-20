@@ -89,9 +89,9 @@ const SHOUT: Face = { brow: 1, lid: 0, wide: 0.9, mouth: 0.85, smile: -0.8, gaze
 // (the review of v1d: he "presented", forearms out and palms up, the same in every shot. Now his forearms reach forward low, where a loose hand
 //  is drawn edge on, each shot its own way; a stumble now and then; one hand feeling along the table's edge)
 const FEEL: [[Seg, Seg], [Seg, Seg]][] = [
-  [[[20, 6], [34, -6]], [[8, 10], [24, -8]]],
-  [[[10, 8], [24, -8]], [[22, 4], [34, -4]]],
-  [[[18, 4], [32, -8]], [[12, 12], [28, -14]]]];      // (the forearms at most 34 + 8 degrees from hanging: further, the loose hand is drawn palm up, "presenting", the review of v1d)
+  [[[20, 14], [32, 10]], [[8, 18], [22, 14]]],
+  [[[10, 18], [22, 14]], [[22, 14], [32, 10]]],
+  [[[18, 12], [30, 8]], [[12, 20], [24, 16]]]];      // (out from the body to the sides, feeling the air: held in, the two hands met low before him, our own look at v1e)      // (the forearms at most 34 + 8 degrees from hanging: further, the loose hand is drawn palm up, "presenting", the review of v1d)
 const mate = (at: V3, V: Lens, turn: number, v: number, len: number, o: { hang?: boolean; shout?: boolean; stumble?: number } = {}) => {
   const m = mover(MATE_SHORT_D, HM, at[0], at[2], V.toward(at[0], at[2], turn)); m.w = 0.09; m.stand(9);
   const [A, B] = o.hang ? [REST.armL as [Seg, Seg], REST.armR as [Seg, Seg]] : FEEL[v % 3], R2 = { handL: "relaxed" as const, handR: "relaxed" as const }, sw = (q: [Seg, Seg], k: number): [Seg, Seg] => [[q[0][0] + 8 * k, q[0][1] + 4], [q[1][0] + 8 * k, q[1][1] + 6]];
@@ -178,14 +178,14 @@ const TBL_AT = inCabin([0.5, 0, -0.18]), YW = 70, TN = -40;
   ease(mm, -1, { ...REST, head: [8, -6, 0], lean: 3 }, 0.01, { ...LOOSE, face: SQUINT }); ease(mm, 0.5, { ...REST, head: [-6, -9, 0], lean: 5, py: -0.01 }, 1.0, { ...LOOSE, face: { ...SQUINT, lid: 0.75 } });
   add({ id: "sun", a: S.s3, b: S.s4, V: SV, push: 0.08, cast: [r.cast, (t) => on("mate", MATE_SHORT_D, mm, t, MD, {}, 5)], things: r.book, sun: true, patch: "A", look: r.look, newScene: { pirate: "up on deck in the sun: another place than below" } }); }
 // 4. GO BELOW, AND YOU CAN'T SEE A THING. Below, wide and dark, the mate small in the room, feeling his way, stumbling
-{ const V = frameOn(MAT_AT2, FL, -32, "full", 50, 1.55), mt = mate(MAT_AT2, V, 60, 1, S.s4b - S.s4, { stumble: 1.0 }); add({ id: "below", a: S.s4, b: S.s4b, V, cast: [mt.cast], sun: false, sounds: [{ t: 0.05, k: "creak", g: 0.6 }, { t: 1.05, k: "thud", g: 0.35 }] }); }
+{ const V = frameOn(MAT_AT2, FL, -32, "full", 50, 1.4), mt = mate(MAT_AT2, V, 60, 1, S.s4b - S.s4, { stumble: 1.0 }); add({ id: "below", a: S.s4, b: S.s4b, V, cast: [mt.cast], sun: false, sounds: [{ t: 0.05, k: "creak", g: 0.6 }, { t: 1.05, k: "thud", g: 0.35 }] }); }
 // 5. "Who blew out the sun?!" Close on the mate's face in the dark, shouting, his head high in the picture
 { const V = frameOn(MAT_AT2, FL, -12, "close", 36, 1, 1.62), mt = mate(MAT_AT2, V, 25, 0, S.s5 - S.s4b, { hang: true, shout: true }); add({ id: "who", a: S.s4b, b: S.s5, V, push: 0.03, cast: [mt.cast], sun: false, close: true }); }
 // 6. EYES NEED TWENTY TO THIRTY MINUTES... The pirate reading, seen from his left at three quarters, the book tipped up to him, his head
 //    following the lines
 { const V = frameOn(PIR_AT, FL, -38, "full", 46, 1.1), r = reader(PIR_AT, FL, V, -30, false, S.s5b - S.s5, { lines: true, tilt: TLT }); add({ id: "calm", a: S.s5, b: S.s5b, V, cast: [r.cast], things: r.book, sun: false, patch: "B", look: r.look }); }
 // 7. ...TO GET USED TO THE DARK. The mate from behind his right shoulder, his hands low and searching
-{ const V = frameOn(MAT_AT, FL, 46, "full", 50, 1.55), mt = mate(MAT_AT, V, 42, 2, S.s6 - S.s5b); add({ id: "mins", a: S.s5b, b: S.s6, V, cast: [mt.cast], sun: false }); }
+{ const V = frameOn(MAT_AT, FL, 46, "full", 50, 1.55), mt = mate(MAT_AT, V, 60, 2, S.s6 - S.s5b); add({ id: "mins", a: S.s5b, b: S.s6, V, cast: [mt.cast], sun: false }); }
 // 8. BUT AN EYE UNDER A PATCH... On deck, the pirate reading in the sun, from low at his side
 { const V = lens(PIR_DECK[0] - 2.6, MD + 0.95, PIR_DECK[1] - 1.75, 0.83, 0.56, 5, 52), r = reader(PIR_DECK3, MD, V, 20, true, S.s6b - S.s6); add({ id: "deck2", a: S.s6, b: S.s6b, V, cast: [r.cast], things: r.book, sun: true, patch: "A", look: r.look, newScene: { pirate: "up on deck in the sun: another place than below" } }); }
 // 9. ...IS ALREADY USED TO IT. Close on his face in the sun: the patch over his right eye (the first of the pair)

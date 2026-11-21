@@ -1,0 +1,316 @@
+{
+ "rebuilt_v1y_vs_public_eye_patch_wav_max_diff": 1.4082850241514677e-07,
+ "whoosh_cues": [
+  {
+   "f": 530,
+   "shot": "flip",
+   "k": "whoosh",
+   "g": 0.9
+  }
+ ],
+ "cues_left_out": [
+  {
+   "f": 299,
+   "shot": "bubble",
+   "k": "tap",
+   "g": 0.45,
+   "p": 0
+  },
+  {
+   "f": 1041,
+   "shot": "bubble",
+   "k": "tap",
+   "g": 0.45,
+   "p": 0
+  }
+ ],
+ "beds_left_out": 34,
+ "bed_kinds_left_out": [
+  "birds",
+  "flap",
+  "lap",
+  "sea",
+  "wind"
+ ],
+ "hits_left_out": 0,
+ "integrated_lufs": -14.06,
+ "true_peak_db": -2.61,
+ "v1y_integrated_lufs": -14.02,
+ "voice_lufs": -13.7,
+ "music_lufs": -29.9,
+ "whoosh_peak_dbfs": -0.3,
+ "music_under_voice_db_while_speaking": 18.0,
+ "rest_peak_dbfs_whole": -5.5,
+ "sections": [
+  {
+   "from": 0.0,
+   "to": 2.27,
+   "what": "voice: Why did pirates wear eye patches?",
+   "mix_rms_dbfs": -16.1,
+   "voice_rms": -15.7,
+   "music_rms": -30.6,
+   "whoosh_rms": -355.5,
+   "rest_peak_dbfs": -12.5
+  },
+  {
+   "from": 2.27,
+   "to": 2.57,
+   "what": "gap",
+   "mix_rms_dbfs": -33.0,
+   "voice_rms": -114.0,
+   "music_rms": -33.0,
+   "whoosh_rms": -356.5,
+   "rest_peak_dbfs": -68.5
+  },
+  {
+   "from": 2.57,
+   "to": 5.12,
+   "what": "voice: One idea: so they never fought blind.",
+   "mix_rms_dbfs": -16.2,
+   "voice_rms": -15.8,
+   "music_rms": -33.3,
+   "whoosh_rms": -354.8,
+   "rest_peak_dbfs": -13.4
+  },
+  {
+   "from": 5.12,
+   "to": 5.37,
+   "what": "gap",
+   "mix_rms_dbfs": -33.4,
+   "voice_rms": -114.0,
+   "music_rms": -33.4,
+   "whoosh_rms": -356.7,
+   "rest_peak_dbfs": -74.6
+  },
+  {
+   "from": 5.37,
+   "to": 7.56,
+   "what": "voice: Up on deck, the sun is blinding.",
+   "mix_rms_dbfs": -16.3,
+   "voice_rms": -15.9,
+   "music_rms": -34.4,
+   "whoosh_rms": -355.2,
+   "rest_peak_dbfs": -13.2
+  },
+  {
+   "from": 7.56,
+   "to": 7.76,
+   "what": "gap",
+   "mix_rms_dbfs": -32.5,
+   "voice_rms": -124.0,
+   "music_rms": -32.5,
+   "whoosh_rms": -355.6,
+   "rest_peak_dbfs": -72.8
+  },
+  {
+   "from": 7.76,
+   "to": 9.91,
+   "what": "voice: Go below, and you can't see a thing.",
+   "mix_rms_dbfs": -15.9,
+   "voice_rms": -15.5,
+   "music_rms": -34.1,
+   "whoosh_rms": -355.8,
+   "rest_peak_dbfs": -11.3
+  },
+  {
+   "from": 9.91,
+   "to": 10.81,
+   "what": "gap",
+   "mix_rms_dbfs": -28.7,
+   "voice_rms": -121.3,
+   "music_rms": -28.7,
+   "whoosh_rms": -354.1,
+   "rest_peak_dbfs": -52.6
+  },
+  {
+   "from": 10.81,
+   "to": 14.48,
+   "what": "voice: Eyes need twenty to thirty minutes to get used to the dark.",
+   "mix_rms_dbfs": -16.4,
+   "voice_rms": -16.0,
+   "music_rms": -33.9,
+   "whoosh_rms": -355.4,
+   "rest_peak_dbfs": -13.3
+  },
+  {
+   "from": 14.48,
+   "to": 14.73,
+   "what": "gap",
+   "mix_rms_dbfs": -34.1,
+   "voice_rms": -120.2,
+   "music_rms": -34.1,
+   "whoosh_rms": -356.1,
+   "rest_peak_dbfs": -79.0
+  },
+  {
+   "from": 14.73,
+   "to": 17.48,
+   "what": "voice: But an eye under a patch is already used to it.",
+   "mix_rms_dbfs": -16.1,
+   "voice_rms": -15.8,
+   "music_rms": -34.1,
+   "whoosh_rms": -353.8,
+   "rest_peak_dbfs": -12.6
+  },
+  {
+   "from": 17.48,
+   "to": 17.67,
+   "what": "gap",
+   "mix_rms_dbfs": -32.6,
+   "voice_rms": -80.7,
+   "music_rms": -32.6,
+   "whoosh_rms": -351.8,
+   "rest_peak_dbfs": -71.0
+  },
+  {
+   "from": 17.67,
+   "to": 18.12,
+   "what": "whoosh",
+   "mix_rms_dbfs": -13.4,
+   "voice_rms": -15.4,
+   "music_rms": -33.4,
+   "whoosh_rms": -15.3,
+   "rest_peak_dbfs": -5.5
+  },
+  {
+   "from": 17.68,
+   "to": 19.69,
+   "what": "voice: Flip the patch, and you can see.",
+   "mix_rms_dbfs": -15.1,
+   "voice_rms": -15.3,
+   "music_rms": -33.6,
+   "whoosh_rms": -21.8,
+   "rest_peak_dbfs": -5.5
+  },
+  {
+   "from": 19.69,
+   "to": 20.04,
+   "what": "gap",
+   "mix_rms_dbfs": -36.3,
+   "voice_rms": -119.9,
+   "music_rms": -36.3,
+   "whoosh_rms": -355.0,
+   "rest_peak_dbfs": -80.8
+  },
+  {
+   "from": 20.04,
+   "to": 23.83,
+   "what": "voice: In 2007, MythBusters tested the idea.",
+   "mix_rms_dbfs": -16.6,
+   "voice_rms": -16.2,
+   "music_rms": -33.9,
+   "whoosh_rms": -355.1,
+   "rest_peak_dbfs": -14.3
+  },
+  {
+   "from": 23.83,
+   "to": 24.03,
+   "what": "gap",
+   "mix_rms_dbfs": -32.3,
+   "voice_rms": -114.7,
+   "music_rms": -32.3,
+   "whoosh_rms": -354.2,
+   "rest_peak_dbfs": -70.9
+  },
+  {
+   "from": 24.03,
+   "to": 25.74,
+   "what": "voice: Their verdict: plausible.",
+   "mix_rms_dbfs": -16.1,
+   "voice_rms": -15.7,
+   "music_rms": -34.2,
+   "whoosh_rms": -352.4,
+   "rest_peak_dbfs": -16.4
+  },
+  {
+   "from": 25.74,
+   "to": 26.09,
+   "what": "gap",
+   "mix_rms_dbfs": -34.4,
+   "voice_rms": -119.1,
+   "music_rms": -34.4,
+   "whoosh_rms": -356.0,
+   "rest_peak_dbfs": -78.7
+  },
+  {
+   "from": 26.09,
+   "to": 27.84,
+   "what": "voice: But did real pirates do it?",
+   "mix_rms_dbfs": -15.8,
+   "voice_rms": -15.4,
+   "music_rms": -34.0,
+   "whoosh_rms": -355.7,
+   "rest_peak_dbfs": -12.6
+  },
+  {
+   "from": 27.84,
+   "to": 28.09,
+   "what": "gap",
+   "mix_rms_dbfs": -34.1,
+   "voice_rms": -87.7,
+   "music_rms": -34.1,
+   "whoosh_rms": -356.2,
+   "rest_peak_dbfs": -74.6
+  },
+  {
+   "from": 28.09,
+   "to": 29.28,
+   "what": "voice: Nobody knows.",
+   "mix_rms_dbfs": -15.3,
+   "voice_rms": -14.9,
+   "music_rms": -33.6,
+   "whoosh_rms": -355.6,
+   "rest_peak_dbfs": -13.5
+  },
+  {
+   "from": 29.28,
+   "to": 29.48,
+   "what": "gap",
+   "mix_rms_dbfs": -35.3,
+   "voice_rms": -99.4,
+   "music_rms": -35.3,
+   "whoosh_rms": -356.0,
+   "rest_peak_dbfs": -73.3
+  },
+  {
+   "from": 29.48,
+   "to": 32.52,
+   "what": "voice: No picture or record from their time says so.",
+   "mix_rms_dbfs": -16.3,
+   "voice_rms": -15.9,
+   "music_rms": -34.1,
+   "whoosh_rms": -355.0,
+   "rest_peak_dbfs": -13.6
+  },
+  {
+   "from": 32.52,
+   "to": 32.82,
+   "what": "gap",
+   "mix_rms_dbfs": -32.8,
+   "voice_rms": null,
+   "music_rms": -32.8,
+   "whoosh_rms": -355.9,
+   "rest_peak_dbfs": -69.5
+  },
+  {
+   "from": 32.82,
+   "to": 34.6,
+   "what": "voice: Still. A very clever trick.",
+   "mix_rms_dbfs": -15.8,
+   "voice_rms": -15.3,
+   "music_rms": -35.1,
+   "whoosh_rms": -354.9,
+   "rest_peak_dbfs": -16.1
+  },
+  {
+   "from": 34.6,
+   "to": 36.1,
+   "what": "gap",
+   "mix_rms_dbfs": -24.2,
+   "voice_rms": -98.8,
+   "music_rms": -24.1,
+   "whoosh_rms": -355.7,
+   "rest_peak_dbfs": -29.0
+  }
+ ]
+}

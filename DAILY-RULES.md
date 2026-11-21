@@ -46,6 +46,12 @@ explained and it entertains. Ours have been calm explanations. From now on every
   push-ins and whip pans, a short camera shake on impact, a held impact frame, speed lines, dust, sparks, splashes,
   things flying, a cut on the hit. Crowds charge as many small simple figures in a wide shot; close-ups show one
   face reacting.
+- **Let rigid things carry the action** (Jesper 2026-11-21, a dogfight Short with ~75,000 likes): planes, ships,
+  carts, cannonballs, a falling bridge, a rolling barrel, a door bursting open. They can spin, dive, crash and chase
+  with no limbs to get wrong. The people sit in a cockpit, behind a rail or a wall, and act with the face only.
+- **Extreme close-ups of the eyes** for tension (narrowed eyes, a raised brow) between the big moves.
+- **A hook with a rule or a secret:** "The deadliest pilot in the sky had one rule." The viewer stays to hear it.
+- **Light can be part of the story:** the sun behind an attacker blinds the screen with glare at the key line.
 - **Violence stays cartoon and bloodless:** no gore, no suffering in detail, respect for real victims.
 
 ## Goal

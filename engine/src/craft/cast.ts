@@ -414,10 +414,10 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
       // a shut eye is one arc and nothing else (no outline of the open eye is left round it, which read as spectacles): it bows upward
       // in a smile and downward otherwise
       const cx = (x: number) => { const m = k.g.getTransform(); return m.a * x + m.c * yEye + m.e; }, one = Math.abs(f.shut ?? 0) > 0.5 && Math.sign(cx(q.x) - cx(at(h, 0, 0.8).x)) === Math.sign(f.shut ?? 0);
-      // (a lid lower than 0.7 left a ring with no eye in it: drawn shut instead, the flicker of 20 Nov. Between 0.685 and 0.715 the open eye fades
-      //  out as the shut arc fades in, a few frames for a lid that moves slowly past 0.7 (the mate at 6.3 s, the review of v1w); a wider fade
-      //  showed the open eye see-through under the arc. A squint that should stay a squint is kept under 0.685)
-      const shutK = one ? 1 : clamp((lid - 0.685) / 0.03, 0, 1), shut = shutK >= 1,
+      // (a lid lower than 0.7 left a ring with no eye in it: drawn shut instead, the flicker of 20 Nov. One drawing or the other, never both:
+      //  a fade between them showed the open eye see-through under the arc, the review of v1x's stills. A squint that should stay a squint is
+      //  kept under 0.7 (the mate at 6.3 s); the check fails an eye drawn both ways at once (val eyeBoth))
+      const shutK = one || lid > 0.7 ? 1 : 0, shut = shutK >= 1,
       bow = (f.smile ?? 0) > 0.4 && !one ? -1 : 1;
       // (squeezed hard shut: a chevron pointing at the nose, the lids pressed together, Jesper 20 Nov "eyes squeezed shut")
       const sq = f.squeeze ?? 0;
@@ -428,6 +428,7 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
         if (lid > (STYLE.simple ? 0.35 : 0.01)) { const y = yEye - ry + 2 * ry * lid; k.shape([[q.x - rx - 2, yEye - ry - 2], [q.x + rx + 2, yEye - ry - 2], [q.x + rx + 2, y], [q.x - rx - 2, y]], STYLE.simple ? skin : shade(skin, 0.86), 0); if (!STYLE.simple) { const lk = clamp((lid - 0.01) / 0.09, 0, 1), lw = 4.6 * u * lk * lk * (3 - 2 * lk); if (lw > 0.05) k.line([[q.x - rx - 2, y], [q.x + rx + 2, y]], lw, LINE, "butt"); } }      // (the lid line grows from nothing at lid 0.01 to its full width at 0.1: it was drawn whole as soon as the lid passed 0.01, and came in one frame, the review of v1r)
       });
       k.shape(ball, null); k.g.globalAlpha = a0;
+      k.val("eyeBoth", Math.max(k.vals.eyeBoth ?? 0, shutK > 0 && shutK < 1 ? 1 : 0));
       if (shutK > 0) { k.g.globalAlpha = a0 * shutK; k.line(spline([[q.x - rx * 0.86, yEye - bow * ry * 0.14], [q.x, yEye + bow * ry * 0.34], [q.x + rx * 0.86, yEye - bow * ry * 0.14]], false, 8), 6.4 * u); k.g.globalAlpha = a0; } }
       // (a tear under the eye on the right of the picture, a pale blue drop with its outline and a glint, and the wet trail to it)
       if ((f.tear ?? 0) > 0.05 && s > 0) { const tr = r * 0.62 * Math.min(1, f.tear ?? 0), tx = q.x + rx * 0.55, ty = yEye + ry * 1.35 + tr * 1.2;
@@ -439,7 +440,9 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
       // an eye patch over this eye (FigOpts.patch: "A" his right eye, "B" his left): black cloth a little larger than the eye, the strap
       // drawn after both eyes
       if (o.patch && (o.patch === "A") === s < 0) { const px = q.x + (o.patchFault === "off" ? s * 2.4 * rx : 0);      // (patchFault "off": beside the eye, the proof's planted fault)
-        k.mark(s < 0 ? "patchA" : "patchB", px, yEye); piece(k, spline([[px - rx * 1.3, yEye - ry * 1.05], [px + rx * 1.3, yEye - ry * 1.05], [px + rx * 1.15, yEye + ry * 0.75], [px, yEye + ry * 1.25], [px - rx * 1.15, yEye + ry * 0.75]], true, 6), "#1c1612"); }
+        // (clipped to the head's outline as the strap is: its lower flap went past the head's edge by a varying amount as the head turned, the
+        //  review of v1w at 1018-1022)
+        k.mark(s < 0 ? "patchA" : "patchB", px, yEye); k.clip(skull, () => piece(k, spline([[px - rx * 1.3, yEye - ry * 1.05], [px + rx * 1.3, yEye - ry * 1.05], [px + rx * 1.15, yEye + ry * 0.75], [px, yEye + ry * 1.25], [px - rx * 1.15, yEye + ry * 0.75]], true, 6), "#1c1612")); }
       // the brow is its own piece: up for surprise, down toward the nose for a frown
       const bi = at(h, s * 9, 0.8), bo = at(h, s * 46, 0.8), by = yEye - ry - 0.04 * H, bw = f.brow ?? 0, th = 0.04 * H;
       const sd2 = f.sad ?? 0, yi = by - 0.014 * H - 0.055 * H * Math.max(bw, 0) + 0.045 * H * Math.max(-bw, 0) - 0.06 * H * sd2, yo = by + 0.008 * H - 0.04 * H * Math.max(bw, 0) - 0.022 * H * Math.max(-bw, 0) + 0.035 * H * sd2;      // (sad: the inner end up, the outer down)

@@ -1,0 +1,17 @@
+{
+ "_why": "Jesper 2026-11-21 after the ElevenLabs voice test: \"Ta goerge då\" and \"Slipper vi krångla\". The narrator (Sir Digsworth) in every new video from now on. The eye patch Short keeps its Kokoro bm_george narration.",
+ "provider": "elevenlabs",
+ "voice_name": "George",
+ "voice_id": "JBFqnCBsd6RMkjVDRZzb",
+ "voice_kind": "ElevenLabs premade voice (not a library voice from another user)",
+ "model_id": "eleven_multilingual_v2",
+ "output_format": "mp3_44100_128",
+ "voice_settings": "the voice's own defaults (none sent), as in the voice test of 2026-11-21",
+ "takes_per_sentence": 3,
+ "pick": "the take faster-whisper small.en hears with the fewest word errors",
+ "gap_between_sentences_s": 0.3,
+ "loudness_lufs": -16,
+ "key": "read from the environment variable ELEVENLABS_API_KEY only; never written anywhere",
+ "credits": "pre-count characters x takes before every call, read character_count before and after; Starter has 40 000 a month",
+ "previous": {"provider": "kokoro", "voice": "bm_george", "until": "2026-11-21"}
+}

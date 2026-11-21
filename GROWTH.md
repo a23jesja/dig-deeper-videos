@@ -57,6 +57,8 @@ that?"); the other Shorts keep that shape.
 | Blackbeard and the burning fuses | __ | b (chosen in the hook lab, 18 Nov 2026: he strides out of the smoke with his cutlass up over "Blackbeard's beard smoked in battle."; the review's choice, Jesper may switch to c) | __ % | __ s | __ | __ | __ % | __ |
 | **TEST, 45-55 s:** Were animals really put on trial? | __ | __ | __ % | __ s | __ | __ | __ % | __ |
 
+**Narrator voice (Jesper, 21 November 2026): "Ta goerge då" and "Slipper vi krångla".** From now on every new video uses ElevenLabs **George** (voice id JBFqnCBsd6RMkjVDRZzb, a premade voice), model eleven_multilingual_v2, three takes per sentence with the best picked by faster-whisper, 0.3 s between sentences, -16 LUFS (fixed in engine/voice/narrator.json). It replaces Kokoro bm_george; the eye patch Short keeps bm_george. The test: granskning/rost/stopp-rosttest-elevenlabs-21nov.md.
+
 **Opening types (DAILY-RULES, "The hook lab", Jesper 17 November 2026):** (a) the strangest moment already
 happening, (b) a shocking statement spoken over action, (c) Sir Digsworth in trouble with the question on screen.
 From the next Short that is built, seconds 0-5 are built first in all three versions and the strongest is chosen

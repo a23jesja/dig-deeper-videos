@@ -508,6 +508,7 @@ through it. The events around him are true and sourced; his own journey is drama
 
 ## The niche: "What really happens?" (widened by Jesper 2026-11-21)
 Sir Digsworth digs into what really happened, or what really would happen. Two strands under one host:
+- **The host need not be on screen** (Jesper 2026-11-21: "Sir digsworth måste inte vara med i varje video utan kan vara berättaren"): Sir Digsworth may be only the narrator's voice. Put him in a shot only where he makes that shot better (holding the map, reacting), never standing and telling.
 1. **True stories from history:** battles, escapes, cons, survivals, people who made a brave choice.
 2. **Invented "what if" scenarios, answered with real facts:** "What if you won a billion dollars?", "What if you
    ran around the whole Earth?", "What if you opened a submarine hatch on the ocean floor?". The premise is made up;

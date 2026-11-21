@@ -85,11 +85,14 @@ const browEnds = (r: FR, cx: number, base: number, s: number, half: number, side
   return [[cx - side * half, base - raise + cross * 14 * s - r.sad * 14 * s], [cx + side * half, base - raise - cross * 5 * s + r.sad * 7 * s]];
 };
 /** the mouth: a curve, or open (a dark shape with a tongue, or clenched teeth) */
-const mouthAt = (k: Ink, x: number, y: number, w: number, s: number, r: FR) => {
+/** lip: the lower lip's colour (A: the open mouth a third taller with the lower lip drawn under it, so a speaking mouth reads on a phone, Jesper
+ *  approving the A sheet) */
+const mouthAt = (k: Ink, x: number, y: number, w: number, s: number, r: FR, lip?: string) => {
   const sm = r.smile, cl = -sm * 12 * s + r.smirk * 4 * s, cr = -sm * 12 * s - r.smirk * 15 * s;
   if (r.mouth > 0.08) {
-    const H = 46 * s * r.mouth, top = spline([[x - w, y + cl], [x, y + (sm < 0 ? -H * 0.2 : sm * 3 * s)], [x + w, y + cr]], false, 8);
+    const H = (lip ? 61 : 46) * s * r.mouth, top = spline([[x - w, y + cl], [x, y + (sm < 0 ? -H * 0.2 : sm * 3 * s)], [x + w, y + cr]], false, 8);
     const bot = spline([[x + w, y + cr], [x, y + H + Math.max(0, sm) * 10 * s], [x - w, y + cl]], false, 8), m = [...top, ...bot.slice(1)];
+    if (lip && r.mouth > 0.2) { const lb = spline([[x + w * 0.7, y + cr + H * 0.5], [x, y + H + Math.max(0, sm) * 10 * s + 7 * s], [x - w * 0.7, y + cl + H * 0.5]], false, 8); band(k, lb, 9 * s, lip, k.ol * 0.6); }
     fl(k, m, MOUTH);
     k.clip(m, () => { if (r.teeth > 0.4) { k.shape([[x - w - 6, y - 60 * s], [x + w + 6, y - 60 * s], [x + w + 6, y + H * 0.62], [x - w - 6, y + H * 0.62]], WHITE, 0); ln(k, [[x - w, y + H * 0.32], [x + w, y + H * 0.32]], 0.5); }
       else k.shape(ellPts(x, y + H + 6 * s, w * 0.62, H * 0.5), TONGUE, 0); });
@@ -215,8 +218,10 @@ const A_SPEC: FlatSpec = {
     monoRing(k, -46 + tx, -118, 42, 52, 7);
     // (the mouth always shows under the moustache, closed a small dark mouth, so it can move with the voice; the pipe sits in its corner:
     //  Jesper choosing A, 21 Nov)
-    mouthAt(k, tx + r.smirk * 4, -27, 24 * (1 + 0.3 * r.mouth), 1, { ...r, mouth: Math.max(r.mouth, 0.13) });
-    pipeAt(k, [tx + 22, -27], 1);
+    const mw = 24 * (1 + 0.4 * r.mouth);
+    // (the mouth's top under the moustache, so the open mouth, a third taller, ends above the chin: lower, it went past the head's edge)
+    mouthAt(k, tx + r.smirk * 4, -44, mw, 1, { ...r, mouth: Math.max(r.mouth, 0.13) }, "#e0806e");
+    pipeAt(k, [tx + mw - 2, -40], 1);
     const half: P2[] = [[0, -64], [30, -72], [62, -66], [88, -76], [98, -98], [112, -92], [102, -60], [66, -50], [30, -54], [0, -58]];
     fl(k, at(spline([...half, ...mirror(half).reverse()]), tx), CA.hair);
     fl(k, ellPts(tx, -80, 17, 14), CA.nose);
@@ -230,8 +235,8 @@ const A_SPEC: FlatSpec = {
     eyeA(k, 66, -118, 0.9, { ...r, gaze: [Math.max(0.35, r.gaze[0]), r.gaze[1]] }, CA.skin, 1);
     monoRing(k, 66, -118, 36, 50, 7);
     // (from the side the pipe's mouthpiece is in the mouth under the moustache, not at the moustache's tip: Jesper choosing A)
-    mouthAt(k, 96, -25, 14 * (1 + 0.3 * r.mouth), 0.9, { ...r, mouth: Math.max(r.mouth, 0.13) });
-    pipeAt(k, [108, -24], 1);
+    mouthAt(k, 96, -36, 14 * (1 + 0.4 * r.mouth), 0.9, { ...r, mouth: Math.max(r.mouth, 0.13) }, "#e0806e");
+    pipeAt(k, [108, -33], 1);
     fl(k, spline([[70, -66], [108, -70], [130, -74], [140, -94], [151, -88], [140, -60], [112, -50], [74, -56]]), CA.hair);
     fl(k, ellPts(126, -82, 19, 16), CA.nose);
     tearAt(k, 72, -82, 1, r.tear);

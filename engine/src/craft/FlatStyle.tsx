@@ -147,7 +147,7 @@ const sheet = (g: G, i: number, v3 = false) => {
     text(g, "mobil", cx, 1712, 16, 400, "center", SUB); });
   // (v3: the mouth moving with the voice in the neutral face: closed, half open, open)
   if (v3) { text(g, "TAL I NEUTRAL MIN", 2390, 1120, 26, 800);
-    ([["STÄNGD", 0], ["HALVÖPPEN", 0.35], ["ÖPPEN", 0.7]] as [string, number][]).forEach(([t, m], n) => { const cx = 2210 + n * 180; bust(g, D, { mouth: m }, cx, 1290, 150, 170, 260); text(g, t, cx, 1450, 20, 800); }); }
+    ([["STÄNGD", 0], ["HALVÖPPEN", 0.35], ["ÖPPEN", 0.7]] as [string, number][]).forEach(([t, m], n) => { const cx = 2210 + n * 180; bust(g, D, { mouth: m }, cx, 1290, 150, 170, 260); text(g, t, cx, 1450, 20, 800); bust(g, D, { mouth: m }, cx, 1540, 54, 92, 96); text(g, "mobil", cx, 1612, 16, 400, "center", SUB); }); }
   g.setTransform(1, 0, 0, 1, 0, 0);
 };
 

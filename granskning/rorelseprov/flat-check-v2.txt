@@ -1,0 +1,3 @@
+events (s): T_TURN 2.66, T_POINT 3.36, T_SCARED 5.55, T_RUN_TURN 6.10, T_RUN 6.60, LINE 3.10, LINE_END 5.15
+largest sink 0.0 px, largest slide of a foot on the ground 0.0 px between two frames
+FLAT CHECK OK: feet on the ground line, none sunk, none sliding, never both off the ground except in the run

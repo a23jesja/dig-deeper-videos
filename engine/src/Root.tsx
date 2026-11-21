@@ -21,6 +21,7 @@ import { CastViews, CAST_VIEW_FRAMES, CW, CH } from "./craft/CastViews";
 import { FaceSheet, FACE_SHEET_FRAMES, FW, FH } from "./craft/FaceSheet";
 import { ExpressionSheet, EW, EH } from "./craft/ExpressionSheet";
 import { FlatStyle, FSW, FSH, FLAT_FRAMES } from "./craft/FlatStyle";
+import { FlatMotionA, FLAT_MOTION_FRAMES } from "./craft/FlatMotion";
 import { SirTest, SirMoves, SIR_TEST_FRAMES, TW, TH, TFPS, MVW, MVH } from "./craft/SirMotion";
 import { SetViews, SET_VIEWS } from "./craft/world/SetViews";
 import { CabinTest, CABIN_TEST_FRAMES, CabinNight, CABIN_NIGHT_FRAMES } from "./craft/shorts/cabinTestComp";
@@ -81,6 +82,7 @@ export const Root: React.FC = () => (
     <Composition id="FaceSheet" component={FaceSheet} durationInFrames={FACE_SHEET_FRAMES} fps={30} width={FW} height={FH} />
     <Composition id="ExpressionSheet" component={ExpressionSheet} durationInFrames={1} fps={30} width={EW} height={EH} />
     <Composition id="FlatStyle" component={FlatStyle} durationInFrames={FLAT_FRAMES} fps={30} width={FSW} height={FSH} />
+    <Composition id="FlatMotionA" component={FlatMotionA} durationInFrames={FLAT_MOTION_FRAMES} fps={30} width={1080} height={1920} />
     <Composition id="SirTest" component={SirTest} durationInFrames={SIR_TEST_FRAMES} fps={TFPS} width={TW} height={TH} />
     <Composition id="SirMoves" component={SirMoves} durationInFrames={1} fps={30} width={MVW} height={MVH} />
     <Composition id="RomePee" component={RomePee} durationInFrames={ROME_PEE_FRAMES} fps={30} width={1080} height={1920} />

@@ -131,12 +131,14 @@ export class Mover {
   }
   run(dist: number, o: { step?: number; tau?: number; keep?: boolean } = {}) { return this.walk(dist, { ...o, run: true }); }
   /** turn on the spot by `deg` (positive = toward the figure's left); each quarter turn is two small steps */
-  turn(deg: number, dur?: number) {
+  /** lift: how high each small step lifts the foot (leg lengths; 0.06 as before). A flat side view needs a clear lift, or the moved foot
+   *  seems to slide along the ground line (the flat 2D motion test of 21 Nov) */
+  turn(deg: number, dur?: number, lift = 0.06) {
     const parts = Math.max(1, Math.ceil(Math.abs(deg) / 95)), each = deg / parts, td = (dur ?? 0.42 * parts + 0.14) / parts;
     for (let i = 0; i < parts; i++) {
       const T0 = this.t, psi1 = this.psi + each, a: Side = each > 0 ? "L" : "R", b = other(a);
-      this.put(a, T0 + 0.02, T0 + td * 0.5, this.spot(a, this.P, psi1, 0, 0.06));
-      this.put(b, T0 + td * 0.46, T0 + td * 0.96, this.spot(b, this.P, psi1, 0, 0.06));
+      this.put(a, T0 + 0.02, T0 + td * 0.5, this.spot(a, this.P, psi1, 0, lift));
+      this.put(b, T0 + td * 0.46, T0 + td * 0.96, this.spot(b, this.P, psi1, 0, lift));
       this.yawT.ramp(T0, T0 + td, psi1); this.psi = psi1; this.t = T0 + td;
     }
     this.pel.push({ t: this.t, x: this.P[0], z: this.P[1] });

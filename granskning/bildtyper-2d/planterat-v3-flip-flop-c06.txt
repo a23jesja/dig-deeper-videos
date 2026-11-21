@@ -1,0 +1,6 @@
+== c06 06 Reagera (4.00 s, 120 frames, full shot)
+   views: sir front 0-16 | q-right 17-39 | side-right 40-45 | q-right 46-119
+   shoe past the line's top at most 0.0 px, slide at most 0.0 px; pupils min 50 %, step max 10 %; largest joint move in a frame 30 px; figure 50 % of the height; head past the edge 0 px; nearest hand to the crab 164 px
+   46 sir: the view turns back from side-right to q-right 6 frames after leaving it
+   by kind: 1 x "sir: the view turns back from side-right to q-right # frames after leaving it"
+   CLIP CHECK FAILED: 1

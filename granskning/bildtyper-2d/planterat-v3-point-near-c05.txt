@@ -1,0 +1,28 @@
+== c05 05 Peka (4.00 s, 120 frames, medium shot)
+   views: sir side-right 0-119
+   shoe past the line's top at most 0.0 px, slide at most 0.0 px; pupils min 100 %, step max 0 %; largest joint move in a frame 39 px; figure 70 % of the height; head past the edge 0 px; point held 0.75 s, finger out 28 frames
+   41 sir: the target only 138 px away and not on the horizon, not far
+   42 sir: the target only 138 px away and not on the horizon, not far
+   43 sir: the target only 138 px away and not on the horizon, not far
+   44 sir: the target only 139 px away and not on the horizon, not far
+   45 sir: the target only 139 px away and not on the horizon, not far
+   46 sir: the target only 139 px away and not on the horizon, not far
+   47 sir: the target only 139 px away and not on the horizon, not far
+   48 sir: the target only 140 px away and not on the horizon, not far
+   49 sir: the target only 140 px away and not on the horizon, not far
+   50 sir: the target only 140 px away and not on the horizon, not far
+   51 sir: the target only 140 px away and not on the horizon, not far
+   52 sir: the target only 140 px away and not on the horizon, not far
+   53 sir: the target only 140 px away and not on the horizon, not far
+   54 sir: the target only 140 px away and not on the horizon, not far
+   55 sir: the target only 141 px away and not on the horizon, not far
+   56 sir: the target only 141 px away and not on the horizon, not far
+   57 sir: the target only 141 px away and not on the horizon, not far
+   58 sir: the target only 141 px away and not on the horizon, not far
+   59 sir: the target only 141 px away and not on the horizon, not far
+   60 sir: the target only 141 px away and not on the horizon, not far
+   61 sir: the target only 141 px away and not on the horizon, not far
+   62 sir: the target only 141 px away and not on the horizon, not far
+   63 sir: the target only 141 px away and not on the horizon, not far
+   by kind: 23 x "sir: the target only # px away and not on the horizon, not far"
+   CLIP CHECK FAILED: 23

@@ -1,0 +1,24 @@
+== c06 06 Reagera (4.00 s, 120 frames, full shot)
+   views: sir front 0-16 | q-right 17-119
+   shoe past the line's top at most 0.0 px, slide at most 0.0 px; pupils min 50 %, step max 10 %; largest joint move in a frame 30 px; figure 50 % of the height; head past the edge 0 px; nearest hand to the crab 164 px
+   14 crab: passes through the spade
+   15 crab: passes through the spade
+   16 crab: passes through the spade
+   17 crab: passes through the spade
+   18 crab: passes through the spade
+   19 crab: passes through the spade
+   20 crab: passes through the spade
+   21 crab: passes through the spade
+   22 crab: passes through the spade
+   23 crab: passes through the spade
+   24 crab: passes through the spade
+   25 crab: passes through the spade
+   26 crab: passes through the spade
+   27 crab: passes through the spade
+   28 crab: passes through the spade
+   29 crab: passes through the spade
+   30 crab: passes through the spade
+   31 crab: passes through the spade
+   32 crab: passes through the spade
+   by kind: 19 x "crab: passes through the spade"
+   CLIP CHECK FAILED: 19

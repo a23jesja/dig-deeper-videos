@@ -96,6 +96,10 @@ export class Mover {
     return { t0, t1: 1e9, x: P[0] + l[0] * k, z: P[1] + l[1] * k, ang: psi + (s === "L" ? 11 : -11), h, run };
   }
   private lastPlant(s: Side) { return this.feet[s][this.feet[s].length - 1]; }
+  /** the step of each walk from its start, in leg lengths (the arm swing is read against the one under way: a single value was overwritten by
+   *  a later walk before the frames were drawn) */
+  walkRefs: [number, number][] = [[-1e9, 0.52]];
+  walkRef(t: number) { let r = 0.52; for (const [t0, v] of this.walkRefs) if (t >= t0) r = v; return r; }
   /** the feet at the start, laid again with the present width: the foot that steps first d leg lengths behind the other, so that in
    *  profile neither stands on the other and the first step passes rather than rising over it (the review of the shot types v1) */
   stance(d: number) { const f = fwd(this.psi); for (const s of ["L", "R"] as Side[]) { const b = s === this.next ? d : 0; this.feet[s][0] = this.spot(s, [this.P[0] - f[0] * b, this.P[1] - f[1] * b], this.psi, -1e9); } return this; }
@@ -111,6 +115,7 @@ export class Mover {
    *  the other came down onto it and sank into the other shoe (the review of the shot types v1) */
   walk(dist: number, o: { run?: boolean; step?: number; tau?: number; keep?: boolean; stagger?: number } = {}) {
     const run = !!o.run, tau = o.tau ?? (run ? 0.33 : 0.5), ref = o.step ?? (run ? 1.22 : 0.52), cont = this.moving;
+    if (!run) this.walkRefs.push([this.t, Math.max(0.52, ref)]);
     const n = Math.max(cont ? 1 : 2, Math.round(dist / ref + (cont ? 0 : 0.5))), L = cont ? dist / n : dist / (n - 0.5), T0 = this.t, d = fwd(this.psi), P0 = this.P;
     // a running foot is on the ground for under half a step, so between two feet both are in the air
     const half = run ? 0.23 : 0.55, lead = cont ? 0 : run ? 0.25 : 0.4, m = (k: number) => T0 + (k + lead) * tau, pos = (k: number) => (cont ? k : k - 0.5) * L, at = (a: number): V2 => [P0[0] + d[0] * a, P0[1] + d[1] * a];
@@ -119,7 +124,10 @@ export class Mover {
     let s = this.next;
     for (let k = 1; k <= n + (o.keep ? 0 : 1); k++) {
       const land = k <= n ? m(k) - half * tau : m(n) + (run ? 0.5 : 0.45) * tau, prev = this.lastPlant(s);
-      const lift = prev.out !== undefined ? prev.out : k <= 2 ? Math.max(T0 + 0.02, land - (run ? 1.05 : k === 1 ? 0.8 : 0.9) * tau) : m(k - 2) + half * tau;
+      // (the closing step lifts late and comes in quickly: lifted at the last step's push-off it hung 15 px over the ground for ten frames
+      //  as it crept the short way in, the review of the shot types v2)
+      const lift0 = prev.out !== undefined ? prev.out : k <= 2 ? Math.max(T0 + 0.02, land - (run ? 1.05 : k === 1 ? 0.8 : 0.9) * tau) : m(k - 2) + half * tau;
+      const lift = k > n && !run ? Math.max(lift0, land - 0.38 * tau) : lift0;
       const pl = this.spot(s, at(pos(Math.min(k, n)) - (k > n ? o.stagger ?? 0 : 0)), this.psi, land, k > n ? 0.05 : run ? 0.36 : 0.11, run); if (k <= n) pl.out = m(k) + half * tau;
       this.put(s, lift, land, pl);
       s = other(s);
@@ -268,7 +276,13 @@ export class Mover {
       if (s === "L") pose.legL = ik; else pose.legR = ik;
     }
     // arms, shoulders and bounce follow the feet, so they start, stop and change gait with them
-    const sep = clamp((rel.R.lz - rel.L.lz) / lerp(0.52, 0.95, run), -1.25, 1.25), air = Math.min(rel.L.y, rel.R.y);
+    // (the spread read against the step actually taken, and faded out as he comes to a stand: read against the library's 0.52 a longer step
+    //  hit the limit and the arms flew through; standing with the feet apart the arms stayed swung out and the body low, a frozen stride,
+    //  the review of the shot types v2)
+    // (how much he is moving: the pelvis's speed over 0.3 s about t, so it fades in and out over that time; measured over one frame it fell
+    //  to 0 in a frame at the stop and the arms dropped 50 px at once)
+    const pa = this.pelAt(t + 0.15), pb = this.pelAt(t - 0.15), moving = clamp(Math.hypot(pa[0] - pb[0], pa[1] - pb[1]) / 0.3 / 0.6, 0, 1);
+    const sep = clamp((rel.R.lz - rel.L.lz) / lerp(this.walkRef(t), 0.95, run), -1.25, 1.25) * Math.max(moving, run), air = Math.min(rel.L.y, rel.R.y);
     // the arms swing against the legs (left arm forward with the right foot); in a walk they hang almost straight and the hand is loose
     // (a fuller swing, the elbow a little bent: hanging almost straight with fists and a small swing, the walk read as a shuffle, the shot
     //  library review of round 2)

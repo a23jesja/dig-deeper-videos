@@ -1,0 +1,30 @@
+== c05 05 Peka (4.00 s, 120 frames, medium shot)
+   views: sir side-right 0-119
+   shoe past the line's top at most 0.0 px, slide at most 0.0 px; pupils min 100 %, step max 0 %; largest joint move in a frame 39 px; figure 70 % of the height; head past the edge 0 px; point held 0.75 s, finger out 28 frames
+   0 sir: the R shoe overlaps the bollard on the same ground line
+   1 sir: the R shoe overlaps the bollard on the same ground line
+   2 sir: the R shoe overlaps the bollard on the same ground line
+   3 sir: the R shoe overlaps the bollard on the same ground line
+   4 sir: the R shoe overlaps the bollard on the same ground line
+   5 sir: the R shoe overlaps the bollard on the same ground line
+   6 sir: the R shoe overlaps the bollard on the same ground line
+   7 sir: the R shoe overlaps the bollard on the same ground line
+   8 sir: the R shoe overlaps the bollard on the same ground line
+   9 sir: the R shoe overlaps the bollard on the same ground line
+   10 sir: the R shoe overlaps the bollard on the same ground line
+   11 sir: the R shoe overlaps the bollard on the same ground line
+   12 sir: the R shoe overlaps the bollard on the same ground line
+   13 sir: the R shoe overlaps the bollard on the same ground line
+   14 sir: the R shoe overlaps the bollard on the same ground line
+   15 sir: the R shoe overlaps the bollard on the same ground line
+   16 sir: the R shoe overlaps the bollard on the same ground line
+   17 sir: the R shoe overlaps the bollard on the same ground line
+   18 sir: the R shoe overlaps the bollard on the same ground line
+   19 sir: the R shoe overlaps the bollard on the same ground line
+   20 sir: the R shoe overlaps the bollard on the same ground line
+   21 sir: the R shoe overlaps the bollard on the same ground line
+   22 sir: the R shoe overlaps the bollard on the same ground line
+   23 sir: the R shoe overlaps the bollard on the same ground line
+   24 sir: the R shoe overlaps the bollard on the same ground line
+   by kind: 120 x "sir: the R shoe overlaps the bollard on the same ground line"
+   CLIP CHECK FAILED: 120

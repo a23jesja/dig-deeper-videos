@@ -1,0 +1,30 @@
+== c04 04 Hålla med båda händerna (4.40 s, 132 frames, medium shot)
+   views: sir front 0-131
+   shoe past the line's top at most 0.0 px, slide at most 0.0 px; pupils min 100 %, step max 0 %; largest joint move in a frame 1 px; figure 82 % of the height; head past the edge 0 px; contacts off at most 20.4 px
+   0 sir: his left hand at the chest's right side: the wrist 19.7 px off
+   0 sir: his right hand at the chest's left side: the wrist 20.1 px off
+   1 sir: his left hand at the chest's right side: the wrist 20.1 px off
+   1 sir: his right hand at the chest's left side: the wrist 19.8 px off
+   2 sir: his left hand at the chest's right side: the wrist 19.8 px off
+   2 sir: his right hand at the chest's left side: the wrist 20.2 px off
+   3 sir: his left hand at the chest's right side: the wrist 20.2 px off
+   3 sir: his right hand at the chest's left side: the wrist 19.9 px off
+   4 sir: his left hand at the chest's right side: the wrist 20.0 px off
+   4 sir: his right hand at the chest's left side: the wrist 19.7 px off
+   5 sir: his left hand at the chest's right side: the wrist 19.7 px off
+   5 sir: his right hand at the chest's left side: the wrist 20.1 px off
+   6 sir: his left hand at the chest's right side: the wrist 20.2 px off
+   6 sir: his right hand at the chest's left side: the wrist 19.9 px off
+   7 sir: his left hand at the chest's right side: the wrist 20.1 px off
+   7 sir: his right hand at the chest's left side: the wrist 19.8 px off
+   8 sir: his left hand at the chest's right side: the wrist 20.0 px off
+   8 sir: his right hand at the chest's left side: the wrist 19.7 px off
+   9 sir: his left hand at the chest's right side: the wrist 19.9 px off
+   9 sir: his right hand at the chest's left side: the wrist 20.3 px off
+   10 sir: his left hand at the chest's right side: the wrist 19.8 px off
+   10 sir: his right hand at the chest's left side: the wrist 20.2 px off
+   11 sir: his left hand at the chest's right side: the wrist 19.8 px off
+   11 sir: his right hand at the chest's left side: the wrist 20.2 px off
+   12 sir: his left hand at the chest's right side: the wrist 19.8 px off
+   by kind: 132 x "sir: his left hand at the chest's right side: the wrist # px off"; 132 x "sir: his right hand at the chest's left side: the wrist # px off"
+   CLIP CHECK FAILED: 264

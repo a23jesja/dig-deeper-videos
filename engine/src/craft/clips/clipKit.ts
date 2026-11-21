@@ -35,7 +35,7 @@ export type Cast = { name: string; m: MM; who: Who; hands?: { L: HS; R: HS }; mo
   pose?: (t: number, p: Pose, heading: number) => Pose };
 
 /** a figure on the ground at x metres, heading in degrees (90 = toward the picture's right, 0 = toward the lens, -90 = left) */
-export const figure = (who: Who, x: number, heading: number, stagger = 0.5): MM => { const m = mover(D, heightOf(who), x, 0, heading); m.w = hipLL(who); m.stance(stagger); return m; };
+export const figure = (who: Who, x: number, heading: number, stagger = 0): MM => { const m = mover(D, heightOf(who), x, 0, heading); m.w = hipLL(who); m.stance(stagger); return m; };
 
 /** the cast at time t: where each stands in the picture (x in pixels), the solved skeleton and the drawing options */
 export const castAt = (cast: Cast[], t: number): Fig[] => cast.map((c) => {
@@ -57,12 +57,19 @@ export const jointPx = (g: Fig, j: string): [number, number] => { const q = g.sk
 
 /** an arm put so that its wrist reaches a point in the picture (a handle, a box's side): the upper arm's and forearm's swing found by a
  *  search on the solved skeleton (the rig has no arm IK). side is the arm; the pose's other values stay */
-export const reach = (who: Who, x: number, pose: Pose, heading: number, side: "L" | "R", target: [number, number], tip = false): Pose => {
+/** o.bend: the elbow bent at least this many degrees in the picture (a point that shows its elbow); o.elbowBelow: the elbow never above the
+ *  wrist (a hand holding a thing at the waist: an elbow lifted out put the sleeve up over the thing's corner, the review of v2) */
+export const reach = (who: Who, x: number, pose: Pose, heading: number, side: "L" | "R", target: [number, number], tip = false, o: { bend?: number; elbowBelow?: boolean } = {}): Pose => {
   const key = side === "L" ? "armL" : "armR", s = scaleOf(who), P = D.props(who);
   type A = [Seg, Seg];
   const at = (arm: A) => { const sk = solve(P, { ...pose, [key]: arm } as Pose, heading), q = sk.j[`${tip ? "tip" : "wr"}${side}` as keyof Sk["j"]] as unknown as number[]; return [x + q[0] * s, footY(who) + q[1] * s]; };
   // (several starts, the best kept: from the pose's own arm alone the search could stick on the wrong side and the wrist jumped 90 px)
-  const err = (a: A) => Math.hypot(...at(a).map((v, i) => v - target[i]));
+  const joints = (arm: A) => { const sk = solve(P, { ...pose, [key]: arm } as Pose, heading), J2 = (n: string) => { const q = sk.j[n as keyof Sk["j"]] as unknown as number[]; return [x + q[0] * s, footY(who) + q[1] * s]; }; return { sh: J2(`sh${side}`), el: J2(`el${side}`), wr: J2(`wr${side}`) }; };
+  const err = (a: A) => { let e = Math.hypot(...at(a).map((v, i) => v - target[i]));
+    if (o.bend || o.elbowBelow) { const j = joints(a);
+      if (o.bend) { const u = [j.el[0] - j.sh[0], j.el[1] - j.sh[1]], v = [j.wr[0] - j.el[0], j.wr[1] - j.el[1]], ang = (Math.acos(Math.max(-1, Math.min(1, (u[0] * v[0] + u[1] * v[1]) / (Math.hypot(...u) * Math.hypot(...v) || 1)))) * 180) / Math.PI; if (ang < o.bend) e += (o.bend - ang) * 1.5; }
+      if (o.elbowBelow && j.el[1] < j.wr[1] + 10) e += (j.wr[1] + 10 - j.el[1]) * 2; }
+    return e; };
   const own = ((pose[key] ?? [[4, 13], [16, 9]]) as A).map((g) => [...g]) as A;
   let arm = [own, [[own[0][0] + 40, own[0][1]], [30, own[1][1]]], [[own[0][0] - 40, own[0][1]], [30, own[1][1]]], [[60, own[0][1]], [20, own[1][1]]]].map((a) => a.map((g) => [...g]) as A).reduce((b, a) => (err(a) < err(b) ? a : b)), best = err(arm);
   for (const step of [16, 8, 4, 2, 1, 0.5]) for (let it = 0; it < 30; it++) { let moved = false;
@@ -86,6 +93,17 @@ export type Cam = { cx: number; cy: number; z: number };
 export const camFor = (z: number, cx: number, top: number): Cam => ({ cx, cy: top + FM.H / (2 * z), z });
 export const viewOf = (c: Cam) => ({ x0: c.cx - FM.W / (2 * c.z), x1: c.cx + FM.W / (2 * c.z), y0: c.cy - FM.H / (2 * c.z), y1: c.cy + FM.H / (2 * c.z) });
 export type Solid = { name: string; x0: number; x1: number; top: number };
+/** the points that bound a figure as drawn: its head with the cap and ears (and the pipe in profile), its hands, elbows and feet */
+export const figBox = (g: Fig): [number, number][] => { const s = scaleOf(g.who), J2 = (n: string, dx = 0, dy = 0): [number, number] => { const q = g.sk.j[n as keyof Sk["j"]] as unknown as number[]; return [g.x + (q[0] + dx) * s, footY(g.who) + (q[1] + dy) * s]; };
+  return [J2("skull", -168, 0), J2("skull", 168, 0), J2("crown", 0, -64), J2("crown", -150, -40), J2("crown", 150, -40),
+    ...(["L", "R"] as const).flatMap((d) => [J2(`tip${d}`, -32, -32), J2(`tip${d}`, 32, 32), J2(`wr${d}`, -30, -30), J2(`wr${d}`, 30, 30), J2(`el${d}`, -26, 0), J2(`el${d}`, 26, 0), J2(`toe${d}`, -24, 4), J2(`toe${d}`, 24, 4), J2(`heel${d}`, -24, 4), J2(`heel${d}`, 24, 4)])]; };
+/** a camera that holds every figure whole, hands and cap included, in every frame (but those where offFrameOK), and the extra points, with a
+ *  margin of 4 % of the picture each side; zoom at most zMax. The review of v2: a medium shot too tight cut hands, caps and heads */
+export const fitCam = (cast: Cast[], seconds: number, zMax: number, extra: [number, number][] = [], skip: (t: number) => boolean = () => false, margin = 0.04): Cam => {
+  const pts: [number, number][] = [...extra]; for (let f = 0; f < Math.round(seconds * FM.FPS); f += 2) { const t = f / FM.FPS; if (skip(t)) continue; for (const g of castAt(cast, t)) pts.push(...figBox(g)); }
+  const x0 = Math.min(...pts.map((p) => p[0])), x1 = Math.max(...pts.map((p) => p[0])), y0 = Math.min(...pts.map((p) => p[1])), y1 = Math.max(...pts.map((p) => p[1]));
+  const z = Math.min(zMax, (FM.W * (1 - 2 * margin)) / (x1 - x0), (FM.H * (1 - 2 * margin)) / (y1 - y0));
+  return { cx: (x0 + x1) / 2, cy: (y0 + y1) / 2, z }; };
 /** what a clip hands to the checks and the drawing */
 export type Clip = { id: string; title: string; seconds: number; cast: Cast[]; events: Record<string, number>; audio?: string;
   back?: (g: CanvasRenderingContext2D, t: number) => void; front?: (g: CanvasRenderingContext2D, t: number, figs: Fig[]) => void;
@@ -93,6 +111,8 @@ export type Clip = { id: string; title: string; seconds: number; cast: Cast[]; e
   over?: (g: CanvasRenderingContext2D, t: number, f: Fig) => void;
   seats?: Seat[]; appear?: Appear[]; points?: Point[]; contacts?: Contact[]; bg?: number; bgOpts?: { spade?: boolean };
   camera: (t: number) => Cam; shot: "medium" | "full"; solids?: Solid[]; door?: { h: number };
+  /** things standing on the figures' own ground line (a crate, a bollard): no shoe may overlap them, or which is in front cannot be read */
+  groundProps?: { name: string; x0: number; x1: number }[];
   /** a clip that draws its own background (bg -1) */
   ownBg?: (g: CanvasRenderingContext2D, t: number) => void;
   /** a figure that may stand past the picture's edge at time t (walking in or out) */

@@ -142,7 +142,11 @@ const drawFlat = (c: FlatSpec) => (k: Ink, sk: Sk, o: FigOpts) => {
   };
   const torso = () => {
     if (B.neck) k.group([seg(Fr.T(0, P.spine - 20), sk.j.skull, B.neck, B.neck * 0.92)], C.skin);
-    const t = torsoPts(sk, B.rows), dz = Math.max(...B.rows.map((q) => q[2])) * 0.8;
+    // (the coat's hem comes up as the thighs bend toward level, so a seated figure's thighs show on the seat: hanging 34 under the hip the
+    //  coat covered them and its hem sank in front of the seat, the review of the shot types v2)
+    const flexOf = (s: Side) => { const h = J(sk, "hip", s), kn = J(sk, "kn", s); return Math.abs(Math.atan2(Math.abs(kn[0] - h[0]), kn[1] - h[1])) * (180 / Math.PI); };
+    const flex = Math.max(0, Math.min(1, (Math.max(flexOf("L"), flexOf("R")) - 35) / 45)), rows = B.rows.map((q, i) => (i === 0 ? [q[0] + 30 * flex, ...q.slice(1)] : q));
+    const t = torsoPts(sk, rows), dz = Math.max(...B.rows.map((q) => q[2])) * 0.8;
     const Q = (l: number, a: number) => Fr.Q(l, dz, a);
     if (other) {
       fl(k, t, C.dress);
@@ -177,9 +181,11 @@ const drawFlat = (c: FlatSpec) => (k: Ink, sk: Sk, o: FigOpts) => {
     if (other) return;
     const w = headToWorld(sk, view !== "front" && flip), dz = Math.max(...B.rows.map((q) => q[2])), end = Fr.Q(c.chainEnd[0], dz * 0.8, c.chainEnd[1]);
     // (the monocle on his right eye only: seen from his left side it is behind his head, and so is its chain)
-    if (view === "side") { if (!flip) { const a = w(c.chainSide[0]), b = Fr.T(dz * 0.7 * d, c.chainEnd[1]); chainAt(k, a, b, [(a[0] + b[0]) / 2 - 14 * d, (a[1] + b[1]) / 2 + 26], c.chainW); } }
-    else if (view === "q") { const q = c.chainQ![flip ? "far" : "near"], a = w(q[0]); chainAt(k, a, end, w(q[1]), c.chainW); }
-    else { const tx = sn * c.turn; chainAt(k, w([c.chainFront[0][0] + tx, c.chainFront[0][1]]), end, w([c.chainFront[1][0] + tx, c.chainFront[1][1]]), c.chainW); }
+    // (the chain ends in a small gold button on the coat: it ended loose on the cloth, the review of the shot types v2)
+    const clasp = (p: P2) => fl(k, ellPts(p[0], p[1], 8, 8), "#e8c45a");
+    if (view === "side") { if (!flip) { const a = w(c.chainSide[0]), b = Fr.T(dz * 0.7 * d, c.chainEnd[1]); chainAt(k, a, b, [(a[0] + b[0]) / 2 - 14 * d, (a[1] + b[1]) / 2 + 26], c.chainW); clasp(b); } }
+    else if (view === "q") { const q = c.chainQ![flip ? "far" : "near"], a = w(q[0]); chainAt(k, a, end, w(q[1]), c.chainW); clasp(end); }
+    else { const tx = sn * c.turn; chainAt(k, w([c.chainFront[0][0] + tx, c.chainFront[0][1]]), end, w([c.chainFront[1][0] + tx, c.chainFront[1][1]]), c.chainW); clasp(end); }
   };
   layers(sk, { arm, leg, torso, head });
 };
@@ -250,6 +256,7 @@ const A_SPEC: FlatSpec = {
   // three-quarter, facing the picture's right: the near eye (his right) full, the far eye narrower by the edge, the nose by the edge, the near
   // half of the moustache long and the far one short, the near ear on the head's left
   sirQ: (k, r, lift, mono) => {
+    ear(k, 120, -114, 12, 22, CA.skin);      // (the far ear just showing past the cheek: from the front both ears popped out in one frame, the review of v2)
     fl(k, ellPts(0, -128, 126, 132, 0, 0, 360, 60), CA.skin);
     ear(k, -92, -114, 20, 28, CA.skin);
     for (const [x, hw] of [[10, 20], [74, 14]] as [number, number][]) { const [i, o] = browEnds(r, x, -172, 1, hw, x < 40 ? -1 : 1); k.line([i, o], 15 + k.ol * 1.7); k.line([i, o], 15, CA.hair); }
@@ -270,8 +277,13 @@ const A_SPEC: FlatSpec = {
     const my = -58 + 14 * (1 - Math.min(1, r.mouth / 0.5));
     const m0 = Math.max(r.mouth, 0.2);
     k.clip(head, () => mouthAt(k, 62 + r.smirk * 4, my, mw, 0.8, { ...r, mouth: m0 }, "#e0806e"));
-    pipeAt(k, [62 + mw - 2, my + 4 + 61 * 0.8 * (m0 - 0.2) * 0.45], 1, 1, droopOf(r));
-    const near = mirror(MOUS_A).map(([x, y]) => [x * 1.05 + 84, y] as P2), far = MOUS_A.map(([x, y]) => [x * 0.34 + 84, y] as P2);
+    // (the pipe stays in his left mouth corner: turned to his left that corner is the far one, at the mouth's nose side; turned to his right
+    //  (drawn mirrored) it is the near one, at the mouth's back, the stem going out the same way on the screen as from the front. It jumped
+    //  to the other corner in one frame, the review of v2)
+    if (mono === "far") pipeAt(k, [62 - mw + 2, my + 4 + 61 * 0.8 * (m0 - 0.2) * 0.45], 1, -1, droopOf(r));
+    else pipeAt(k, [62 + mw - 2, my + 4 + 61 * 0.8 * (m0 - 0.2) * 0.45], 1, 1, droopOf(r));
+    // (the far half 0.6 of the near one: at 0.34 the moustache doubled in size the frame the head turned to the front, the review of v2)
+    const near = mirror(MOUS_A).map(([x, y]) => [x * 1.0 + 84, y] as P2), far = MOUS_A.map(([x, y]) => [x * 0.6 + 84, y] as P2);
     fl(k, spline([...far, ...near.reverse()]), CA.hair);
     eyesAndMono();      // (after the moustache: the eyes and the monocle over it, the cord over them as before)
     fl(k, ellPts(104, -84, 17, 14), CA.nose);

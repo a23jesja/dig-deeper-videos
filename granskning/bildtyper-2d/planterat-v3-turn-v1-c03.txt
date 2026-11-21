@@ -1,0 +1,7 @@
+== c03 03 Vända sig (4.20 s, 126 frames, full shot)
+   views: sir side-right 0-24 | q-right 25-28 | front 29-68 | q-left 69-72 | side-left 73-125
+   shoe past the line's top at most 0.0 px, slide at most 0.0 px; pupils min 100 %, step max 0 %; largest joint move in a frame 25 px; figure 55 % of the height; head past the edge 0 px
+   73 sir: the monocle vanishes from one frame to the next (q-left to side-left)
+   73 sir: the pipe changes side from one frame to the next (q-left to side-left)
+   by kind: 1 x "sir: the monocle vanishes from one frame to the next (q-left to side-left)"; 1 x "sir: the pipe changes side from one frame to the next (q-left to side-left)"
+   CLIP CHECK FAILED: 2

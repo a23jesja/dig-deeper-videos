@@ -1,0 +1,17 @@
+== c02 02 Gå (4.70 s, 141 frames, full shot)
+   views: sir side-right 0-140
+   shoe past the line's top at most 0.0 px, slide at most 60.0 px; pupils min 100 %, step max 0 %; largest joint move in a frame 84 px; figure 55 % of the height; head past the edge 0 px
+   60 sir: the R foot slides 60.0 px
+   60 sir: the skull jumps 66 px in one frame
+   60 sir: the pelvis jumps 66 px in one frame
+   60 sir: the wrL jumps 47 px in one frame
+   60 sir: the wrR jumps 84 px in one frame
+   60 sir: the heelL jumps 79 px in one frame
+   60 sir: the heelR jumps 60 px in one frame
+   61 sir: the R foot slides 60.0 px
+   61 sir: the skull jumps 55 px in one frame
+   61 sir: the pelvis jumps 55 px in one frame
+   61 sir: the wrL jumps 74 px in one frame
+   61 sir: the heelR jumps 60 px in one frame
+   by kind: 2 x "sir: the R foot slides # px"; 2 x "sir: the skull jumps # px in one frame"; 2 x "sir: the pelvis jumps # px in one frame"; 2 x "sir: the wrL jumps # px in one frame"; 1 x "sir: the wrR jumps # px in one frame"; 1 x "sir: the heelL jumps # px in one frame"; 2 x "sir: the heelR jumps # px in one frame"
+   CLIP CHECK FAILED: 12

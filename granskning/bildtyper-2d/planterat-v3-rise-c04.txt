@@ -1,0 +1,26 @@
+== c04 04 Hålla med båda händerna (4.40 s, 132 frames, medium shot)
+   views: sir front 0-131
+   shoe past the line's top at most 0.0 px, slide at most 0.0 px; pupils min 100 %, step max 0 %; largest joint move in a frame 48 px; figure 82 % of the height; head past the edge 40 px; contacts off at most 47.9 px
+   40 sir: the body rises 12 px in one frame
+   40 sir: the figure 4 px past the picture's margin
+   40 sir: his left hand at the chest's right side: the wrist 11.9 px off
+   40 sir: his right hand at the chest's left side: the wrist 11.9 px off
+   41 sir: the body rises 12 px in one frame
+   41 sir: the figure 16 px past the picture's margin
+   41 sir: his left hand at the chest's right side: the wrist 24.0 px off
+   41 sir: his right hand at the chest's left side: the wrist 24.1 px off
+   42 sir: the body rises 12 px in one frame
+   42 sir: the figure 28 px past the picture's margin
+   42 sir: his left hand at the chest's right side: the wrist 36.1 px off
+   42 sir: his right hand at the chest's left side: the wrist 35.9 px off
+   43 sir: the body rises 12 px in one frame
+   43 sir: the figure 40 px past the picture's margin
+   43 sir: his left hand at the chest's right side: the wrist 47.8 px off
+   43 sir: his right hand at the chest's left side: the wrist 47.9 px off
+   44 sir: the body sinks 48 px in one frame
+   44 sir: the skull jumps 48 px in one frame
+   44 sir: the pelvis jumps 48 px in one frame
+   44 sir: the wrL jumps 47 px in one frame
+   44 sir: the wrR jumps 47 px in one frame
+   by kind: 4 x "sir: the body rises # px in one frame"; 4 x "sir: the figure # px past the picture's margin"; 4 x "sir: his left hand at the chest's right side: the wrist # px off"; 4 x "sir: his right hand at the chest's left side: the wrist # px off"; 1 x "sir: the body sinks # px in one frame"; 1 x "sir: the skull jumps # px in one frame"; 1 x "sir: the pelvis jumps # px in one frame"; 1 x "sir: the wrL jumps # px in one frame"; 1 x "sir: the wrR jumps # px in one frame"
+   CLIP CHECK FAILED: 21

@@ -130,7 +130,10 @@ export const solve = (P: Props, pose: Pose, yaw = 0): Sk => {
   for (const k of Object.keys(v) as Joint[]) { j[k] = [v[k][0] * c + v[k][2] * sn, -v[k][1]]; z[k] = v[k][2] * c - v[k][0] * sn; }
   const h = pose.head ?? [0, 0, 0], faceYaw = yaw + (pose.twist ?? 0) * 0.6 + h[0];
   const ndx = nd[0] * c + nd[2] * sn, headTilt = Math.atan2(ndx, nd[1]) / R + h[1] * Math.sin(faceYaw * R) + h[2] * Math.cos(faceYaw * R);
-  const near: Side = z.shR >= z.shL ? "R" : "L";
+  // (turned away from the lens the near side is the side he turns: facing the picture's right his right; only near the front view do the
+  //  shoulders' depths decide. In profile the shoulders stand at almost the same depth, and as a twist passed zero the arms swapped their
+  //  drawing order in one frame, the body seeming to change its drawing, the review of the shot types v3)
+  const near: Side = Math.abs(sn) > 0.35 ? (sn > 0 ? "R" : "L") : z.shR >= z.shL ? "R" : "L";
   return { P, pose, yaw, sin: sn, cos: c, j, z, v, faceYaw, headTilt, near, far: near === "R" ? "L" : "R" };
 };
 

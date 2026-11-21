@@ -1,0 +1,32 @@
+== c01 01 Stå och prata (4.60 s, 138 frames, medium shot)
+   views: sir front 0-137
+   shoe past the line's top at most 0.0 px, slide at most 0.0 px; pupils min 100 %, step max 0 %; largest joint move in a frame 27 px; figure 72 % of the height; head past the edge 0 px
+   CLIP CHECK OK
+== c02 02 Gå (4.70 s, 141 frames, full shot)
+   views: sir side-right 0-140
+   shoe past the line's top at most 0.0 px, slide at most 0.0 px; pupils min 100 %, step max 0 %; largest joint move in a frame 39 px; figure 55 % of the height; head past the edge 0 px
+   CLIP CHECK OK
+== c03 03 Vända sig (4.60 s, 138 frames, full shot)
+   views: sir side-right 0-32 | q-right 33-42 | front 43-91 | q-left 92-137
+   shoe past the line's top at most 0.0 px, slide at most 0.0 px; pupils min 100 %, step max 0 %; largest joint move in a frame 20 px; figure 55 % of the height; head past the edge 0 px
+   CLIP CHECK OK
+== c04 04 Hålla med båda händerna (4.40 s, 132 frames, medium shot)
+   views: sir front 0-131
+   shoe past the line's top at most 0.0 px, slide at most 0.0 px; pupils min 100 %, step max 0 %; largest joint move in a frame 2 px; figure 82 % of the height; head past the edge 0 px; contacts off at most 0.4 px
+   CLIP CHECK OK
+== c05 05 Peka (4.00 s, 120 frames, medium shot)
+   views: sir side-right 0-119
+   shoe past the line's top at most 0.0 px, slide at most 0.0 px; pupils min 100 %, step max 0 %; largest joint move in a frame 23 px; figure 72 % of the height; head past the edge 0 px; point held 0.75 s, finger out 28 frames
+   CLIP CHECK OK
+== c06 06 Reagera (4.00 s, 120 frames, full shot)
+   views: sir front 0-16 | q-right 17-119
+   shoe past the line's top at most 0.0 px, slide at most 0.0 px; pupils min 50 %, step max 10 %; largest joint move in a frame 28 px; figure 50 % of the height; head past the edge 0 px; nearest hand to the crab 41 px
+   CLIP CHECK OK
+== c07 07 Sitta (4.40 s, 132 frames, full shot)
+   views: sir side-left 0-131
+   shoe past the line's top at most 0.0 px, slide at most 0.0 px; pupils min 100 %, step max 0 %; largest joint move in a frame 9 px; figure 55 % of the height; head past the edge 0 px; seat off at most 1.0 px
+   CLIP CHECK OK
+== c08 08 Öppna en dörr (4.40 s, 132 frames, full shot)
+   views: sir side-right 0-131
+   shoe past the line's top at most 0.0 px, slide at most 0.0 px; pupils min 100 %, step max 0 %; largest joint move in a frame 14 px; figure 52 % of the height; head past the edge 0 px; contacts off at most 0.5 px; door 940 px
+   CLIP CHECK OK

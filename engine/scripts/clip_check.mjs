@@ -55,6 +55,9 @@ for (const id of ids) {
     if (PL === "heel-snap" && f === 70) lift(figs[0], ["heelL"], 22);
     if (PL === "rise" && f >= 40 && f < 44) for (const n of Object.keys(figs[0].sk.j)) if (!/heel|toe|an/.test(n)) lift(figs[0], [n], 12 * (f - 39));
     if (PL === "flip-flop" && f >= 40 && f < 46) figs[0].sk.faceYaw += 45;
+    if (PL === "arm-snap" && f === 70) { const g = figs[0], sc = scaleOf(g.who); for (const n of ["elL", "wrL", "tipL"]) g.sk.j[n] = [g.sk.j[n][0] + 25 / sc, g.sk.j[n][1] - 10 / sc]; }
+    if (PL === "thigh-in-seat") for (const st of c.seats ?? []) st.top -= 18;
+    if (PL === "claw") for (const a of c.appear ?? []) { const f0 = a.points; a.points = (tt) => { const g = castAt(c.cast, tt)[0], w = M.jointPx(g, "wrR"); return [...(f0?.(tt) ?? []), [w[0] + 20, w[1]]]; }; }
     if (PL === "shoe-on-shoe" && f >= 130 && f < 134) { const g = figs[0], sc = scaleOf(g.who), up = 34 / sc; for (const [a2, b2] of [["heelL", "heelR"], ["toeL", "toeR"], ["anL", "anR"]]) g.sk.j[a2] = [g.sk.j[b2][0], g.sk.j[b2][1] - up]; } if (PL === "blink-snap") for (const g of figs) { const l = g.o.face?.lid ?? 0; if (l > 0.3 && l < 0.93) g.o.face = { ...g.o.face, lid: 0.16 }; } return figs; };
   const F = Math.round(FM.FPS * c.seconds), faults = [], stat = { shoe: -1e9, slide: 0, pupilMin: 9, pupilStep: 0, edge: 0, creature: 1e9, contact: 0, seat: 0, jump: 0, fill: 1e9, pointRun: 0 };
   const prev = {}, prevPupil = {}, runs = {}, track = {}, standY = {}, lids = {}, hands = {}, joints = {}, mono = {}, pointRun = {}, hover = {}, pipe = {}, viewLog = {};
@@ -104,6 +107,11 @@ for (const id of ids) {
         const pk = g.name + s; if ((g.o[`hand${s}`] ?? "") === "point") { pointRun[pk] = (pointRun[pk] ?? 0) + 1; stat.pointRun = Math.max(stat.pointRun, pointRun[pk]); if (pointRun[pk] === 31) faults.push(`${f} ${g.name}: the ${s} finger has been out over 1.0 s`); } else pointRun[pk] = 0; }
       // the body rising or sinking more than 8 px in a frame
       { const py = J(g, "pelvis")[1], q = joints[g.name + "pelvisY"]; if (q !== undefined && !running && Math.abs(py - q) > 8) faults.push(`${f} ${g.name}: the body ${py < q ? "rises" : "sinks"} ${Math.abs(py - q).toFixed(0)} px in one frame`); joints[g.name + "pelvisY"] = py; }
+      // snaps: a joint that jumps in one frame while it stood nearly still the frames before and after (an arm's answer flipping, v3)
+      for (const j of ["elL", "elR", "wrL", "wrR", "tipL", "tipR", "knL", "knR", "skull"]) { const p = J(g, j), h = (joints[g.name + j + "h"] ??= []); h.push(p);
+        if (h.length >= 3) { const [a2, b2, c2] = h.slice(-3), m1 = Math.hypot(b2[0] - a2[0], b2[1] - a2[1]), m2 = Math.hypot(c2[0] - b2[0], c2[1] - b2[1]), m0 = h.length >= 4 ? Math.hypot(a2[0] - h[h.length - 4][0], a2[1] - h[h.length - 4][1]) : m1;
+          if (m1 > 12 && m1 > 3 * Math.max(m0, m2, 1)) faults.push(`${f - 1} ${g.name}: the ${j} snaps ${m1.toFixed(0)} px in one frame with the frames around it still`);
+          if (m1 > 12 && m2 > 12 && Math.hypot(c2[0] - a2[0], c2[1] - a2[1]) < 0.3 * (m1 + m2) && !running) faults.push(`${f - 1} ${g.name}: the ${j} jumps ${m1.toFixed(0)} px and back`); } }
       // jumps
       for (const j of ["skull", "pelvis", "wrL", "wrR", "heelL", "heelR"]) { const p = J(g, j), q = joints[g.name + j]; if (q && !running) { const d = Math.hypot(p[0] - q[0], p[1] - q[1]); stat.jump = Math.max(stat.jump, d); if (d > 45) faults.push(`${f} ${g.name}: the ${j} jumps ${d.toFixed(0)} px in one frame`); } joints[g.name + j] = p; }
       // framing: the whole figure (cap, ears, hands, elbows, feet) inside the picture with 3 % of its width and height to spare
@@ -115,11 +123,17 @@ for (const id of ids) {
         if (!away && c.shot === "full" && Math.max(J(g, "heelL")[1], J(g, "heelR")[1]) > V.y1) faults.push(`${f} ${g.name}: a full shot with the feet out of the picture`); }
       (track[g.name] ??= []).push([...J(g, "skull"), ...J(g, "pelvis")]);
       // seats: the thighs' underside (half a leg's width under the hip) on the seat's top
-      for (const st of c.seats ?? []) { const pv = J(g, "pelvis"); standY[g.name] ??= pv[1]; if (pv[0] < st.x0 || pv[0] > st.x1 || pv[1] - standY[g.name] < 30) continue;
-        const seatY = pv[1] + (27 / 2) * sc + 4, d = seatY - st.top; if (t > (c.events.T_SIT ?? 0) + 1.0) { stat.seat = Math.max(stat.seat, Math.abs(d)); if (Math.abs(d) > 2) faults.push(`${f} ${g.name}: seated ${d > 0 ? "into" : "above"} the seat by ${Math.abs(d).toFixed(1)} px`); } }
-      for (const ct of c.contacts ?? []) { if (ct.who !== g.name || t < ct.t0 || t > ct.t1) continue; const w = J(g, `wr${ct.side}`), at = ct.at(t), d = Math.hypot(w[0] - at[0], w[1] - at[1]); stat.contact = Math.max(stat.contact, d);
+      // seats: the thighs' undersides (half a leg's width under the hip-knee line) over the seat: never into it; seated, the lowest of them on
+      // its top (v3: measured along the thighs, not at the pelvis, where a thigh sloping to the knee lay 15-20 px into the crate)
+      for (const st of c.seats ?? []) { const U = ["L", "R"].flatMap((d) => { const h = J(g, `hip${d}`), k = J(g, `kn${d}`); return Array.from({ length: 11 }, (_, i) => [h[0] + (k[0] - h[0]) * (i / 10), h[1] + (k[1] - h[1]) * (i / 10) + (27 / 2) * sc]); }).filter(([xx]) => xx >= st.x0 && xx <= st.x1);
+        if (!U.length) continue; const low = Math.max(...U.map((q) => q[1])) + 4, d = low - st.top;
+        if (d > 2) faults.push(`${f} ${g.name}: a thigh ${d.toFixed(1)} px into the seat`);
+        if (t > (c.events.T_SIT ?? 0) + 1.6) { stat.seat = Math.max(stat.seat, Math.abs(d)); if (d < -2) faults.push(`${f} ${g.name}: seated ${(-d).toFixed(1)} px above the seat`); } }
+      for (const ct of c.contacts ?? []) { if (ct.who !== g.name || t < ct.t0 || t > ct.t1) continue; const w0 = J(g, `wr${ct.side}`), tp = J(g, `tip${ct.side}`), w = ct.mid ? [w0[0] + 0.45 * (tp[0] - w0[0]), w0[1] + 0.45 * (tp[1] - w0[1])] : w0, at = ct.at(t), d = Math.hypot(w[0] - at[0], w[1] - at[1]); stat.contact = Math.max(stat.contact, d);
         if (d > ct.tol) faults.push(`${f} ${g.name}: ${ct.what}: the wrist ${d.toFixed(1)} px off`); }
-      for (const a of c.appear ?? []) { const p = a.at(t); if (!p) continue; for (const s of ["L", "R"]) { const d = Math.hypot(...J(g, `wr${s}`).map((v, i) => v - p[i])) - 100; stat.creature = Math.min(stat.creature, d); if (d < 40) faults.push(`${f} ${g.name}: the ${s} hand ${d.toFixed(0)} px from the ${a.name}`); } }
+      for (const a of c.appear ?? []) { const p = a.at(t); if (!p) continue; const pts = a.points?.(t) ?? [];
+        for (const s of ["L", "R"]) { const H = [J(g, `wr${s}`), J(g, `tip${s}`)], d = Math.min(Math.hypot(...H[0].map((v, i) => v - p[i])) - 100, ...pts.flatMap((q) => H.map((h) => Math.hypot(h[0] - q[0], h[1] - q[1]) - 30)));
+          stat.creature = Math.min(stat.creature, d); if (d < 40) faults.push(`${f} ${g.name}: the ${s} hand ${d.toFixed(0)} px from the ${a.name} (claws counted)`); } }
       if (c.door) { const need = 1.5 * FM.PPM * heightOf(g.who); if (c.door.h < need && f === 0) faults.push(`the door ${c.door.h} px high for a figure of ${(need / 1.5).toFixed(0)} px: under one and a half times his height`); } }
     // things that turn up never pass through solid things (a creature about 100 px round its place)
     for (const a of c.appear ?? []) { const p = a.at(t); if (!p) continue; for (const so of c.solids ?? []) if (p[0] + 100 > so.x0 && p[0] - 100 < so.x1) faults.push(`${f} ${a.name}: passes through the ${so.name}`); }
@@ -135,7 +149,10 @@ for (const id of ids) {
   for (const [name, L] of Object.entries(viewLog)) { const ch = []; L.forEach((v, i) => { if (i && v !== L[i - 1]) ch.push([i, L[i - 1], v]); });
     for (let i = 1; i < ch.length; i++) if (ch[i][2] === ch[i - 1][1] && ch[i][0] - ch[i - 1][0] < 30) faults.push(`${ch[i][0]} ${name}: the view turns back from ${ch[i][1]} to ${ch[i][2]} ${ch[i][0] - ch[i - 1][0]} frames after leaving it`); }
   // a thing that turns up comes to rest wholly inside the picture (its body about 150 px wide, 2 frames from the end)
-  for (const a of c.appear ?? []) { const tE = c.seconds - 2 / FM.FPS, p = a.at(tE), V = viewOf(c.camera(tE)), m = 0.03 * (V.x1 - V.x0); if (p && (p[0] + 150 > V.x1 - m || p[0] - 150 < V.x0 + m)) faults.push(`${a.name}: comes to rest at the picture's edge (${p[0].toFixed(0)}, picture ${V.x0.toFixed(0)}-${V.x1.toFixed(0)})`); }
+  for (const a of c.appear ?? []) { const tE = c.seconds - 2 / FM.FPS, p = a.at(tE), V = viewOf(c.camera(tE)), m = 0.03 * (V.x1 - V.x0);
+    // (its own outermost points where it has them, a crab's claws; else 150 px each side)
+    const xs = p ? (a.points?.(tE)?.length ? a.points(tE).map((q) => q[0]) : [p[0] - 150, p[0] + 150]) : [];
+    if (p && (Math.max(...xs) > V.x1 - m || Math.min(...xs) < V.x0 + m)) faults.push(`${a.name}: comes to rest at the picture's edge (${p[0].toFixed(0)}, picture ${V.x0.toFixed(0)}-${V.x1.toFixed(0)})`); }
   for (const a of c.appear ?? []) { if (a.from === "hole") { if (!a.hole || a.hole.drawnFrom > 0) faults.push(`${a.name}: comes out of a hole that is not drawn from the first frame`); }
     else { const p = a.at(a.t0), V = viewOf(c.camera(a.t0)); if (!p || (p[0] > V.x0 - 40 && p[0] < V.x1 + 40)) faults.push(`${a.name}: enters from the ${a.from} but starts inside the picture (${p?.[0]?.toFixed(0)})`); } }
   for (const [name, r] of Object.entries(runs)) r.forEach((x, i) => { if (x.v.startsWith("q") && x.n < 2) faults.push(`${name}: three-quarter at ${x.f} only ${x.n} frame`);

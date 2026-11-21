@@ -45,7 +45,7 @@ const c01 = (): Clip => {
   const cast: Cast[] = [{ name: "sir", m: sir, who: "sir", mouth: M, hands: { L: [[0, "relaxed"], [1.31, "open"], [2.27, "relaxed"]], R: [[0, "relaxed"], [1.31, "open"], [3.55, "relaxed"]] } }];
   // (the camera fitted to hold him whole, his hands through the gesture and his cap, with a margin: at 2.7 both hands and the cap were cut)
   const cam = fitCam(cast, 4.6, MED);
-  return { id: "c01", title: "01 Stå och prata", seconds: 4.6, cast, events: { LINE: M.t0, LINE_END: M.t0 + M.len }, audio: "craft/bildtyp-01.wav", bg: 0, bgOpts: { spade: false },
+  return { id: "c01", title: "01 Stå och prata", seconds: 4.6, cast, events: { LINE: M.t0, LINE_END: M.t0 + M.len }, audio: "craft/bildtyp-01.wav", bg: 0, bgOpts: { spade: false, pit: false },
     shot: "medium", camera: () => cam };
 };
 
@@ -65,7 +65,7 @@ const c02 = (): Clip => {
   const T_STOP = sir.t; sir.stand(6);
   ease(sir, T_STOP + 0.15, { head: [-26, 0, 0] }, 0.45, { face: { pupil: 1, smile: 0.4, gaze: [-0.3, 0] } });
   ease(sir, -1, {}, 0.01, { face: { pupil: 1, smile: 0.2 } });
-  return { id: "c02", title: "02 Gå", seconds: Math.min(5, Math.ceil((T_STOP + 1.0) * 30) / 30), events: { T_STOP }, bg: 0, bgOpts: { spade: false }, shot: "full", camera: () => cam,
+  return { id: "c02", title: "02 Gå", seconds: Math.min(5, Math.ceil((T_STOP + 1.0) * 30) / 30), events: { T_STOP }, bg: 0, bgOpts: { spade: false, pit: false }, shot: "full", camera: () => cam,
     // (walking hands are loose fists: a relaxed hand swung out past 50 degrees is drawn open, palm up, as if offering something)
     cast: [{ name: "sir", m: sir, who: "sir", hands: { L: [[0, "fist"]], R: [[0, "fist"]] } }],
     offFrameOK: (n, t) => n === "sir" && t < T_STOP - 0.6 };
@@ -78,11 +78,12 @@ const c03 = (): Clip => {
   // (the feet together: staggered 0.8 he stood in a frozen stride with an arm out and rose 40 px when the turn brought them together)
   const sir = figure("sir", 0, 90);
   sir.stand(0.55); ease(sir, 0.4, { head: [8, 3, 0] }, 0.15, { face: { pupil: 1, smile: 0.3 } });
-  const T1 = sir.t; sir.turn(-90, 1.0, 0.03); ease(sir, T1, { head: [0, 0, 0] }, 0.4);
+  // (slower turns, 1.3 and 1.0 s, so each three-quarter step stands longer: the steps of the frozen look read as jumps, the review of v3)
+  const T1 = sir.t; sir.turn(-90, 1.3, 0.015); ease(sir, T1, { head: [0, 0, 0] }, 0.4);
   sir.stand(0.7); ease(sir, sir.t - 0.15, { head: [-8, 3, 0] }, 0.15);
-  const T2 = sir.t; sir.turn(-52, 0.8, 0.03); ease(sir, T2, { head: [0, 0, 0] }, 0.4);
+  const T2 = sir.t; sir.turn(-52, 1.0, 0.015); ease(sir, T2, { head: [0, 0, 0] }, 0.4);
   sir.stand(3);
-  return { id: "c03", title: "03 Vända sig", seconds: 4.2, events: { T1, T2 }, bg: 0, bgOpts: { spade: false }, shot: "full", camera: () => full(px(0)),
+  return { id: "c03", title: "03 Vända sig", seconds: 4.6, events: { T1, T2 }, bg: 0, bgOpts: { spade: false, pit: false }, shot: "full", camera: () => full(px(0)),
     cast: [{ name: "sir", m: sir, who: "sir", hands: { L: [[0, "relaxed"]], R: [[0, "relaxed"]] } }] };
 };
 
@@ -98,11 +99,12 @@ const c04 = (): Clip => {
   ease(sir, 1.3, { head: [0, 8, 0] }, 0.6, { face: { pupil: 1, smile: 0.6, brow: 0.5, gaze: [0, 0.8] } });
   ease(sir, 2.9, { head: [0, 0, 0] }, 0.6, { face: { pupil: 1, smile: 0.4, gaze: [0, 0.3] } });
   // (the wrists inside the chest's sides, so the figure's own hands lie behind it; the visible hand is drawn over its side edge)
+  // (the wrists just inside the chest's sides, the elbows kept under the wrists: an elbow lifted out put the sleeve over the chest's corner,
+  //  the review of v2. Elbows held out beyond the sides, to show more forearm, could not be reached with the hands on the edges, v3)
   const side = (t: number, d: 1 | -1): [number, number] => { const [cx, cy] = boxAt(t); return [cx + d * (BOX.w / 2 - 16), cy + 4]; };
-  // (the elbows kept under the wrists: lifted out, his right sleeve rose over the chest's corner to his chin, the review of v2)
   const hold = (t: number, p: Pose, heading: number): Pose => { const x = px(0); return reach("sir", x, reach("sir", x, p, heading, "L", side(t, 1), false, { elbowBelow: true }), heading, "R", side(t, -1), false, { elbowBelow: true }); };
   const cast: Cast[] = [{ name: "sir", m: sir, who: "sir", hands: { L: [[0, "grip"]], R: [[0, "grip"]] }, pose: hold }], cam = fitCam(cast, 4.4, MED);
-  return { id: "c04", title: "04 Hålla med båda händerna", seconds: 4.4, bg: 0, bgOpts: { spade: false }, events: { LIFT: 1.3, DOWN: 2.7 }, shot: "medium", camera: () => cam, cast,
+  return { id: "c04", title: "04 Hålla med båda händerna", seconds: 4.4, bg: 0, bgOpts: { spade: false, pit: false }, events: { LIFT: 1.3, DOWN: 2.7 }, shot: "medium", camera: () => cam, cast,
     contacts: [{ who: "sir", side: "L", t0: 0, t1: 99, at: (t) => side(t, 1), tol: 4, what: "his left hand at the chest's right side" }, { who: "sir", side: "R", t0: 0, t1: 99, at: (t) => side(t, -1), tol: 4, what: "his right hand at the chest's left side" }],
     over: (g, t, f) => { if (f.name !== "sir") return; const [cx, cy] = boxAt(t), x = cx - BOX.w / 2, y = cy - BOX.h / 2;
       rect(g, x, y, BOX.w, BOX.h, "#a0683c"); rect(g, x, y + 30, BOX.w, 12, "#7a4a28", 6); rect(g, cx - 14, y + 44, 28, 30, "#e8c45a", 6);
@@ -122,7 +124,7 @@ const c04 = (): Clip => {
 // the finger out under a second, and lowers the arm. Finger and eyes on the same ship. (v3: the ship larger and nearer the horizon's front,
 // below his eyes, which look down at it; no bollard on his ground line; the camera holds him and the ship whole.)
 // (the horizon at 1265, so the ship lies under his pipe: at 1200 the pipe's bowl hid its sail)
-const HORIZON = 1265, SHIP_S = 1.5;
+const HORIZON = 1265, SHIP_S = 1.05;      // (smaller: at 1.5 the ship looked near, the review of v3)
 const shoulderPx = (x: number, p: Pose, heading: number): [number, number] => { const sk = solve(D.props("sir"), p, heading), q = sk.j.shR as unknown as number[], s = scaleOf("sir"); return [x + q[0] * s, footY("sir") + q[1] * s]; };
 const c05 = (): Clip => {
   // (the ship on the horizon line, its hull's foot on it: lower in the water, near him, it read as a toy boat)
@@ -136,9 +138,10 @@ const c05 = (): Clip => {
     const P = D.props("sir"), s = scaleOf("sir"), reachLen = (P.upper + P.fore + P.hand * 0.6) * s * 0.78;
     const sh = shoulderPx(sx, p, heading), dx = SHIP[0] - sh[0], dy = SHIP[1] - sh[1], l = Math.hypot(dx, dy);
     // (the elbow bent 35 degrees or more in the picture: reached straight it showed no elbow, the review of v2)
-    const q = reach("sir", sx, p, heading, "R", [sh[0] + (dx / l) * reachLen, sh[1] + (dy / l) * reachLen], true, { bend: 35 });
+    const q = reach("sir", sx, p, heading, "R", [sh[0] + (dx / l) * reachLen, sh[1] + (dy / l) * reachLen], true, { bend: 35, elbowBelow: true });
     return { ...p, armR: lerpArm(p.armR, q.armR, w) }; };
-  const cast: Cast[] = [{ name: "sir", m: sir, who: "sir", pose: aim, hands: { L: [[0, "relaxed"]], R: [[0, "relaxed"], [P_ON, "point"], [P_OFF, "fist"]] } }];
+  // (blink seed 7: he blinks at 0.47 s and 3.37 s, never during the look and the point; it fell in the point, the review of v3)
+  const cast: Cast[] = [{ name: "sir", m: sir, who: "sir", seed: 7, pose: aim, hands: { L: [[0, "relaxed"]], R: [[0, "relaxed"], [P_ON, "point"], [P_OFF, "fist"]] } }];
   const cam = fitCam(cast, 4.0, 2.4, [[SHIP[0] + 30 * SHIP_S + 20, SHIP[1] - 46 * SHIP_S], [SHIP[0] - 30 * SHIP_S, SHIP[1] + 22 * SHIP_S]]);
   const harbour = (g: G) => {
     rect(g, -40, -40, 1160, 2000, "#9ad3e6", 0); rect(g, -40, HORIZON, 1160, LINE_TOP - HORIZON + 6, "#2f7fb3", 0);
@@ -157,21 +160,25 @@ const c05 = (): Clip => {
 // Full shot (the crab is on the ground: a closer frame would lose it). A big crab scuttles in from outside the picture's right edge toward
 // Sir; he jerks back, arms up, eyes wide, pipe drooping, and then looks down at it, wary, while it stops well inside the picture and waves
 // a claw. (v3: he faces 25 degrees off the lens, so his head stays in one three-quarter view through the jerk; the camera holds him whole.)
-const CRAB_IN = 0.45, CRAB_STOP = 1.5, CRAB_S = 2.0;
+// (the crab in sight from 0.25 s, before he sees it at 0.95 s: he reacted before it showed, the review of v3)
+const CRAB_IN = 0.15, CRAB_STOP = 1.3, CRAB_S = 1.7;
 const c06 = (): Clip => {
-  const sir = figure("sir", -0.24, 25); sir.stand(6);
+  const sir = figure("sir", -0.18, 25); sir.stand(6);
   ease(sir, -1, {}, 0.01, { face: { pupil: 1, smile: 0.3 } });
   ease(sir, 0.95, { head: [14, 4, 0] }, 0.25, { face: { pupil: 1, brow: 0.4, gaze: [0.8, 0.4] } });      // (he sees it come)
   const T_SCARED = 1.25;
-  ease(sir, T_SCARED, { lean: -9, armL: [[34, 30], [104, 20]], armR: [[34, 30], [104, 20]], head: [10, -6, 0] }, 0.24, { face: { ...SCARED, gaze: [0.8, 0.6] } });
-  ease(sir, 2.2, { lean: -5, armL: [[20, 22], [74, 12]], armR: [[20, 22], [74, 12]], head: [16, 16, 0] }, 0.5, { face: { pupil: 0.7, wide: 0.6, brow: 0.9, sad: 0.3, mouth: 0.25, gaze: [0.8, 0.9] } });
+  // (the hands come up in front of his chest, not out to the side: flung out, his left hand came within 20 px of the crab's claw)
+  ease(sir, T_SCARED, { lean: -9, armL: [[30, 14], [112, 10]], armR: [[30, 14], [112, 10]], head: [10, -6, 0] }, 0.24, { face: { ...SCARED, gaze: [0.8, 0.6] } });
+  // (his hands drawn in to his chest as he looks down: held out, his hand came onto the crab's claw, the review of v3)
+  ease(sir, 2.2, { lean: -5, armL: [[16, 14], [118, 6]], armR: [[16, 14], [118, 6]], head: [16, 16, 0] }, 0.5, { face: { pupil: 0.7, wide: 0.6, brow: 0.9, sad: 0.3, mouth: 0.25, gaze: [0.8, 0.9] } });
   const cast: Cast[] = [{ name: "sir", m: sir, who: "sir", hands: { L: [[0, "relaxed"], [T_SCARED + 0.06, "open"]], R: [[0, "relaxed"], [T_SCARED + 0.06, "open"]] } }];
   // (it stops 0.22 m right of the middle, well inside: it ended 10-20 px from the edge, the review of v2; the camera holds Sir and the crab)
-  const crabEnd = px(0.22), cam = fitCam(cast, 4.0, 1.75, [[crabEnd + 75 * CRAB_S, LINE_TOP - 95 * CRAB_S], [crabEnd - 75 * CRAB_S, FM.GY + 60]]);
+  const crabEnd = px(0.32), cam = fitCam(cast, 4.0, 1.75, [[crabEnd + 75 * CRAB_S, LINE_TOP - 95 * CRAB_S], [crabEnd - 75 * CRAB_S, FM.GY + 60]]);
   const crabStart = viewOf(cam).x1 + 75 * CRAB_S + 20;
   const crabAt = (t: number): [number, number] | null => { if (t < CRAB_IN) return null; const u = smooth(Math.min(1, (t - CRAB_IN) / (CRAB_STOP - CRAB_IN))); return [crabStart + (crabEnd - crabStart) * u, LINE_TOP]; };
-  return { id: "c06", title: "06 Reagera", seconds: 4.0, bg: 0, bgOpts: { spade: false }, events: { CRAB_IN, CRAB_STOP, T_SCARED }, shot: "full", camera: () => cam, cast,
-    appear: [{ name: "crab", t0: CRAB_IN, from: "right", at: crabAt }],
+  return { id: "c06", title: "06 Reagera", seconds: 4.0, bg: 0, bgOpts: { spade: false, pit: false }, events: { CRAB_IN, CRAB_STOP, T_SCARED }, shot: "full", camera: () => cam, cast,
+    // (the claws' tips, raised and waving, for the check: his hand came onto a claw in v3)
+    appear: [{ name: "crab", t0: CRAB_IN, from: "right", at: crabAt, points: (t) => { const c = crabAt(t); if (!c) return []; return [-1, 1].flatMap((d) => [[c[0] + d * (34 + 10 + 13) * CRAB_S, c[1] - (50 + 40 + 17) * CRAB_S], [c[0] + d * (34 + 8) * CRAB_S, c[1] - 76 * CRAB_S], [c[0] + d * 60 * CRAB_S, c[1] - 20 * CRAB_S]] as [number, number][]); } }],
     front: (g, t) => { const c = crabAt(t); if (!c) return; const [x, y] = c, walking = t < CRAB_STOP, k = Math.sin(t * 40) * (walking ? 1 : 0);
       g.save(); g.translate(x, y); g.scale(CRAB_S, CRAB_S); g.lineCap = "round"; g.lineJoin = "round";
       for (const s of [-1, 1]) for (let i = 0; i < 3; i++) { const lx = s * (16 + i * 13); g.beginPath(); g.moveTo(lx, -26); g.lineTo(lx + s * 18, -20 + (i % 2 ? k : -k) * 4); g.lineTo(lx + s * 24, 0); g.lineWidth = 6; g.strokeStyle = INK; g.stroke(); }
@@ -193,7 +200,9 @@ const c07 = (): Clip => {
   ease(sir, -1, {}, 0.01, { face: { pupil: 1, smile: 0.3 } });
   const T_SIT = sir.t;
   // (down over 1.2 s with no dip first: over 0.9 s with a dip the body sank 9 px in a frame)
-  sir.act({ py: -0.52, pz: -0.52, lean: 6, head: [0, 2, 0] }, 30, { in: 1.2, out: 0.01, antic: 0, over: 0, wait: false });
+  // (back first, then down: lowered while still in front of the crate, his thigh went below its top as he came back over it, v3)
+  sir.act({ pz: -0.52, lean: 6, head: [0, 2, 0] }, 30, { in: 0.8, out: 0.01, antic: 0, over: 0, wait: false });
+  sir.actAt(T_SIT + 0.3, { py: -0.52 }, 30, { in: 1.1, out: 0.01, antic: 0, glide: true });
   sir.actAt(T_SIT, { lean: 16 }, 1.1, { in: 0.45, out: 0.5, glide: true, antic: 0 });
   sir.stand(6);
   const T_KNEES = T_SIT + 1.15;
@@ -203,10 +212,14 @@ const c07 = (): Clip => {
   const cast: Cast[] = [{ name: "sir", m: sir, who: "sir", pose: knees, hands: { L: [[0, "fist"]], R: [[0, "fist"]] } }];
   // (the crate's top under the backs of his thighs, half a leg's width under the hip; its front edge a third of the thigh in front of the
   //  hip, so the thighs reach out past it to the knees; its back edge behind his seat)
-  const g0 = castAt(cast, T_SIT + 2.5)[0], s = scaleOf("sir"), pel = jointPx(g0, "pelvis"), top = pel[1] + (27 / 2) * s + 4, TH = D.props("sir").thigh * s;
+  // (the crate's top at the lowest point of the thighs' undersides over it, its outline touching: from the pelvis alone the thigh, sloping
+  //  a little to the knee, lay 15-20 px into the crate, the review of v3)
+  const g0 = castAt(cast, T_SIT + 2.5)[0], s = scaleOf("sir"), pel = jointPx(g0, "pelvis"), TH = D.props("sir").thigh * s;
   const x0 = pel[0] - 0.33 * TH, x1 = pel[0] + 0.95 * TH;
+  const under = (["L", "R"] as const).flatMap((d) => { const h = jointPx(g0, `hip${d}`), k = jointPx(g0, `kn${d}`); return Array.from({ length: 11 }, (_, i) => [h[0] + (k[0] - h[0]) * (i / 10), h[1] + (k[1] - h[1]) * (i / 10) + (27 / 2) * s] as [number, number]); }).filter(([xx]) => xx >= x0 && xx <= x1);
+  const top = Math.max(pel[1] + (27 / 2) * s, ...under.map((q) => q[1])) + 4;
   const cam = fitCam(cast, 4.4, FULL, [[x1 + 20, top], [x0 - 20, FM.GY + 60]]);
-  return { id: "c07", title: "07 Sitta", seconds: 4.4, bg: 0, bgOpts: { spade: false }, events: { T_SIT }, cast, shot: "full", camera: () => cam,
+  return { id: "c07", title: "07 Sitta", seconds: 4.4, bg: 0, bgOpts: { spade: false, pit: false }, events: { T_SIT }, cast, shot: "full", camera: () => cam,
     seats: [{ x0, x1, top }], groundProps: [{ name: "crate", x0, x1 }],
     back: (g) => { const w = x1 - x0; rect(g, x0, top, w, LINE_TOP - top + 4, "#b07a46");
       for (const yy of [top + (LINE_TOP - top) / 3, top + (2 * (LINE_TOP - top)) / 3]) { g.beginPath(); g.moveTo(x0, yy); g.lineTo(x1, yy); g.lineWidth = 6; g.strokeStyle = INK; g.stroke(); }
@@ -234,13 +247,15 @@ const c08 = (): Clip => {
   sir.stand(6);
   ease(sir, 0.4, { head: [0, 6, 0], lean: 3 }, 0.3); ease(sir, T_PULL, { lean: 10, head: [0, 4, 0] }, 1.2);
   const onHandle = (t: number, p: Pose, heading: number): Pose => {
-    const x = px(sampleX(sir, t)), w = env(t, T_REACH, 0.55, T_LET, 0.45); let q: Pose = { ...p, armL: REST };
-    if (w > 0) { const r = reach("sir", x, p, heading, "R", handleAt(t)); q = { ...q, armR: lerpArm(p.armR, r.armR, w) }; }
+    const x = px(sampleX(sir, t)), w = env(t, T_REACH, 0.45, T_LET, 0.45); let q: Pose = { ...p, armL: REST };
+    // (the fist's middle on the handle, so the hand visibly grips the bar: the wrist on it put the cuff over the bar and the fist below, in
+    //  the air in front of the door, the review of v3)
+    if (w > 0) { const r = reach("sir", x, p, heading, "R", handleAt(t), false, { mid: true, abdFix: 8 }); q = { ...q, armR: lerpArm(p.armR, r.armR, w) }; }
     return q; };
-  const cast: Cast[] = [{ name: "sir", m: sir, who: "sir", pose: onHandle, hands: { L: [[0, "fist"]], R: [[0, "relaxed"], [T_REACH + 0.3, "grip"], [T_LET + 0.2, "fist"]] } }];
+  const cast: Cast[] = [{ name: "sir", m: sir, who: "sir", pose: onHandle, hands: { L: [[0, "fist"]], R: [[0, "relaxed"], [T_REACH + 0.22, "grip"], [T_LET + 0.22, "fist"]] } }];      // (each change in the middle of the arm's move)
   const L = DOOR.hinge - DOOR.w, top0 = WALL_Y - DOOR.h, cam = fitCam(cast, 4.4, FULL, [[L - 40, top0 - 30], [DOOR.hinge + 40, FM.GY + 60]]);
   return { id: "c08", title: "08 Öppna en dörr", seconds: 4.4, bg: 1, events: { T_REACH, T_PULL, T_LET }, shot: "full", camera: () => cam, door: { h: DOOR.h }, cast,
-    contacts: [{ who: "sir", side: "R", t0: T_REACH + 0.55, t1: T_LET, at: handleAt, tol: 4, what: "his hand on the handle" }],
+    contacts: [{ who: "sir", side: "R", t0: T_REACH + 0.55, t1: T_LET, at: handleAt, tol: 4, what: "his fist's middle on the handle", mid: true }],
     back: (g, t) => {
       // the pavement in front of the house, the house front on it, the doorway's dark hall
       rect(g, -60, WALL_Y, 1200, FM.GY - WALL_Y + 4, "#b9b4aa", 0); g.beginPath(); g.moveTo(-60, WALL_Y); g.lineTo(1140, WALL_Y); g.lineWidth = 6; g.strokeStyle = INK; g.stroke();

@@ -41,7 +41,8 @@ type EyeFn = (k: Ink, cx: number, cy: number, s: number, r: FR, skin: string, no
 const eyeA: EyeFn = (k, cx, cy, s, r, skin, nose) => {
   const rx = 30 * s, ry = 40 * s * (1 + 0.15 * r.wide);
   if (r.squeeze > 0.5) return chevron(k, cx, cy, rx * 0.9, ry * 0.5, nose);
-  if (r.lid > 0.93) { const d = r.smile > 0.5 ? -ry * 0.45 : ry * 0.32; ln(k, spline([[cx - rx, cy], [cx, cy + d], [cx + rx, cy]], false, 8), 1.15); return; }
+  // (a shut eye is always one arc bowed down: with a smile over 0.5 it turned to a "^", two shapes for the same blink, the review of v3)
+  if (r.lid > 0.93) { const d = ry * 0.32; ln(k, spline([[cx - rx, cy], [cx, cy + d], [cx + rx, cy]], false, 8), 1.15); return; }
   const ball = ellPts(cx, cy, rx, ry, 0, 0, 360, 40);
   fl(k, ball, WHITE);
   // (the pupil travels to the eye's edge: at three-quarter, looking at Ada, it stayed near the middle and he seemed to look at the lens)
@@ -183,7 +184,8 @@ const drawFlat = (c: FlatSpec) => (k: Ink, sk: Sk, o: FigOpts) => {
     // (the monocle on his right eye only: seen from his left side it is behind his head, and so is its chain)
     // (the chain ends in a small gold button on the coat: it ended loose on the cloth, the review of the shot types v2)
     const clasp = (p: P2) => fl(k, ellPts(p[0], p[1], 8, 8), "#e8c45a");
-    if (view === "side") { if (!flip) { const a = w(c.chainSide[0]), b = Fr.T(dz * 0.7 * d, c.chainEnd[1]); chainAt(k, a, b, [(a[0] + b[0]) / 2 - 14 * d, (a[1] + b[1]) / 2 + 26], c.chainW); clasp(b); } }
+    // (in profile the chain ends on the waistcoat's front, at the coat's edge: at 0.7 of its depth it ended inside the coat's shoulder, v3)
+    if (view === "side") { if (!flip) { const a = w(c.chainSide[0]), b = Fr.T(dz * 0.95 * d, c.chainEnd[1] - 10); chainAt(k, a, b, [(a[0] + b[0]) / 2 - 14 * d, (a[1] + b[1]) / 2 + 26], c.chainW); clasp(b); } }
     else if (view === "q") { const q = c.chainQ![flip ? "far" : "near"], a = w(q[0]); chainAt(k, a, end, w(q[1]), c.chainW); clasp(end); }
     else { const tx = sn * c.turn; chainAt(k, w([c.chainFront[0][0] + tx, c.chainFront[0][1]]), end, w([c.chainFront[1][0] + tx, c.chainFront[1][1]]), c.chainW); clasp(end); }
   };
@@ -213,7 +215,7 @@ const A_SPEC: FlatSpec = {
     B: { rows: [[-34, 58, 50, 46], [0, 66, 64, 50], [50, 74, 76, 52], [100, 70, 66, 48], [132, 62, 50, 42], [150, 40, 34, 30], [162, 22, 22, 20]], arm: [23, 19, 17], leg: [27, 23, 20], shoeW: 42, neck: 0 } },
   other: { P: { thigh: 66, shin: 60, ankle: 16, foot: 80, hipW: 34, shW: 50, spine: 140, shDrop: 16, neck: 4, head: 244, upper: 66, fore: 62, hand: 54 },
     B: { rows: [[-80, 80, 66, 62], [-40, 66, 56, 52], [0, 52, 44, 40], [60, 42, 38, 32], [110, 52, 40, 34], [128, 40, 30, 26], [148, 20, 20, 18]], arm: [19, 16, 14], leg: [15, 13, 11], shoeW: 34, neck: 0 } },
-  col: CA, chainFront: [[-74, -92], [-96, -2]], chainSide: [[42, -74], [40, 10]], chainEnd: [-34, 64], chainW: 4.5, vest: [150, -4, 36],
+  col: CA, chainFront: [[-74, -92], [-96, -2]], chainSide: [[42, -74], [40, 10]], chainEnd: [-34, 52], chainW: 4.5, vest: [150, -4, 36],
   sirFront: (k, r, tx, lift) => {
     for (const s of [-1, 1]) fl(k, ellPts(s * 126, -118, 24, 30), CA.skin);
     fl(k, ellPts(0, -128, 128, 132, 0, 0, 360, 60), CA.skin);
@@ -283,7 +285,8 @@ const A_SPEC: FlatSpec = {
     if (mono === "far") pipeAt(k, [62 - mw + 2, my + 4 + 61 * 0.8 * (m0 - 0.2) * 0.45], 1, -1, droopOf(r));
     else pipeAt(k, [62 + mw - 2, my + 4 + 61 * 0.8 * (m0 - 0.2) * 0.45], 1, 1, droopOf(r));
     // (the far half 0.6 of the near one: at 0.34 the moustache doubled in size the frame the head turned to the front, the review of v2)
-    const near = mirror(MOUS_A).map(([x, y]) => [x * 1.0 + 84, y] as P2), far = MOUS_A.map(([x, y]) => [x * 0.6 + 84, y] as P2);
+    // (the far half 0.5, the whole moustache 6 nearer the middle: at 0.6 from 84 its tip and the pipe came close to the head's outline, v3)
+    const near = mirror(MOUS_A).map(([x, y]) => [x * 1.0 + 78, y] as P2), far = MOUS_A.map(([x, y]) => [x * 0.5 + 78, y] as P2);
     fl(k, spline([...far, ...near.reverse()]), CA.hair);
     eyesAndMono();      // (after the moustache: the eyes and the monocle over it, the cord over them as before)
     fl(k, ellPts(104, -84, 17, 14), CA.nose);

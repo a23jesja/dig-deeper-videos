@@ -119,11 +119,11 @@ export const sandal = (k: Ink, sk: Sk, side: Side, skin: string, strap: string, 
 export const layers = (sk: Sk, L: { arm: (s: Side) => void; leg: (s: Side) => void; torso: () => void; head: () => void; tail?: () => void }) => {
   const { near, far } = sk;
   if (Math.abs(sk.sin) > 0.5) { L.arm(far); L.tail?.(); L.leg(far); L.leg(near); L.torso(); L.head(); L.arm(near); return; }
-  const late = (s: Side) => sk.z[`wr${s}`] - sk.z[`sh${s}`] > sk.P.upper * 0.6;
-  L.tail?.(); L.leg(far); L.leg(near); L.torso();
-  for (const s of [far, near]) if (!late(s)) L.arm(s);
-  L.head();
-  for (const s of [far, near]) if (late(s)) L.arm(s);
+  // (from the front both arms are drawn after the torso and the head: an arm that moved from behind the body to in front of it as its wrist
+  //  came forward swapped its layer in one frame, the hand popping out, and the monocle's clasp lay over the arm, the review of the shot
+  //  types v3. In the flat look the arms hang at the body's sides or reach forward; neither goes behind it)
+  L.tail?.(); L.leg(far); L.leg(near); L.torso(); L.head();
+  for (const s of [far, near]) L.arm(s);
 };
 /** how the head art is placed: side art when the face is turned more than about 45 degrees from the lens, mirrored when it faces screen-left */
 export const headPose = (sk: Sk) => {

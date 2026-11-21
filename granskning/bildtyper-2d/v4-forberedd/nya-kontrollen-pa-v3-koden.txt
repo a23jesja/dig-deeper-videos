@@ -1,0 +1,53 @@
+== c01 01 Stå och prata (4.60 s, 138 frames, medium shot)
+   views: sir front 0-137
+   shoe past the line's top at most 0.0 px, slide at most 0.0 px; pupils min 100 %, step max 0 %; largest joint move in a frame 27 px; figure 72 % of the height; head past the edge 0 px
+   CLIP CHECK OK
+== c02 02 Gå (4.70 s, 141 frames, full shot)
+   views: sir side-right 0-140
+   shoe past the line's top at most 0.0 px, slide at most 0.0 px; pupils min 100 %, step max 0 %; largest joint move in a frame 39 px; figure 55 % of the height; head past the edge 0 px
+   CLIP CHECK OK
+== c03 03 Vända sig (4.20 s, 126 frames, full shot)
+   views: sir side-right 0-29 | q-right 30-36 | front 37-79 | q-left 80-125
+   shoe past the line's top at most 0.0 px, slide at most 0.0 px; pupils min 100 %, step max 0 %; largest joint move in a frame 24 px; figure 55 % of the height; head past the edge 0 px
+   CLIP CHECK OK
+== c04 04 Hålla med båda händerna (4.40 s, 132 frames, medium shot)
+   views: sir front 0-131
+   shoe past the line's top at most 0.0 px, slide at most 0.0 px; pupils min 100 %, step max 0 %; largest joint move in a frame 1 px; figure 82 % of the height; head past the edge 0 px; contacts off at most 0.4 px
+   50 sir: the tipR snaps 23 px in one frame with the frames around it still
+   88 sir: the elL jumps 13 px and back
+   89 sir: the elL jumps 15 px and back
+   89 sir: the tipL jumps 18 px and back
+   90 sir: the elL jumps 25 px and back
+   90 sir: the tipL jumps 21 px and back
+   92 sir: the elL jumps 15 px and back
+   by kind: 1 x "sir: the tipR snaps # px in one frame with the frames around it still"; 4 x "sir: the elL jumps # px and back"; 2 x "sir: the tipL jumps # px and back"
+   CLIP CHECK FAILED: 7
+== c05 05 Peka (4.00 s, 120 frames, medium shot)
+   views: sir side-right 0-119
+   shoe past the line's top at most 0.0 px, slide at most 0.0 px; pupils min 100 %, step max 0 %; largest joint move in a frame 35 px; figure 70 % of the height; head past the edge 0 px; point held 0.75 s, finger out 28 frames
+   CLIP CHECK OK
+== c06 06 Reagera (4.00 s, 120 frames, full shot)
+   views: sir front 0-16 | q-right 17-119
+   shoe past the line's top at most 0.0 px, slide at most 0.0 px; pupils min 50 %, step max 10 %; largest joint move in a frame 30 px; figure 50 % of the height; head past the edge 0 px; nearest hand to the crab 164 px
+   CLIP CHECK OK
+== c07 07 Sitta (4.40 s, 132 frames, full shot)
+   views: sir side-left 0-131
+   shoe past the line's top at most 0.0 px, slide at most 0.0 px; pupils min 100 %, step max 0 %; largest joint move in a frame 9 px; figure 55 % of the height; head past the edge 0 px; seat off at most 1.4 px
+   125 sir: the elL snaps 21 px in one frame with the frames around it still
+   125 sir: the tipL snaps 18 px in one frame with the frames around it still
+   130 sir: the elL snaps 21 px in one frame with the frames around it still
+   130 sir: the tipL snaps 18 px in one frame with the frames around it still
+   by kind: 2 x "sir: the elL snaps # px in one frame with the frames around it still"; 2 x "sir: the tipL snaps # px in one frame with the frames around it still"
+   CLIP CHECK FAILED: 4
+== c08 08 Öppna en dörr (4.40 s, 132 frames, full shot)
+   views: sir side-right 0-131
+   shoe past the line's top at most 0.0 px, slide at most 0.0 px; pupils min 100 %, step max 0 %; largest joint move in a frame 17 px; figure 52 % of the height; head past the edge 0 px; contacts off at most 0.3 px; door 940 px
+   61 sir: the elR snaps 12 px in one frame with the frames around it still
+   66 sir: the elR snaps 14 px in one frame with the frames around it still
+   79 sir: the elR snaps 13 px in one frame with the frames around it still
+   83 sir: the elR jumps 17 px and back
+   83 sir: the tipR jumps 21 px and back
+   84 sir: the elR jumps 21 px and back
+   84 sir: the tipR jumps 13 px and back
+   by kind: 3 x "sir: the elR snaps # px in one frame with the frames around it still"; 2 x "sir: the elR jumps # px and back"; 2 x "sir: the tipR jumps # px and back"
+   CLIP CHECK FAILED: 7

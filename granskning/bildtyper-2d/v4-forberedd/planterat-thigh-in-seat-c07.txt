@@ -1,0 +1,30 @@
+== c07 07 Sitta (4.40 s, 132 frames, full shot)
+   views: sir side-left 0-131
+   shoe past the line's top at most 0.0 px, slide at most 0.0 px; pupils min 100 %, step max 0 %; largest joint move in a frame 9 px; figure 55 % of the height; head past the edge 0 px; seat off at most 2375.8 px
+   29 sir: a thigh 474.1 px into the seat
+   30 sir: a thigh 500.2 px into the seat
+   31 sir: a thigh 526.0 px into the seat
+   32 sir: a thigh 551.5 px into the seat
+   33 sir: a thigh 570.5 px into the seat
+   34 sir: a thigh 595.8 px into the seat
+   35 sir: a thigh 614.6 px into the seat
+   36 sir: a thigh 633.2 px into the seat
+   37 sir: a thigh 658.0 px into the seat
+   38 sir: a thigh 676.4 px into the seat
+   39 sir: a thigh 694.7 px into the seat
+   40 sir: a thigh 712.9 px into the seat
+   41 sir: a thigh 731.1 px into the seat
+   42 sir: a thigh 749.0 px into the seat
+   43 sir: a thigh 762.9 px into the seat
+   44 sir: a thigh 782.6 px into the seat
+   45 sir: a thigh 802.4 px into the seat
+   46 sir: a thigh 818.4 px into the seat
+   47 sir: a thigh 838.7 px into the seat
+   48 sir: a thigh 859.1 px into the seat
+   49 sir: a thigh 879.4 px into the seat
+   50 sir: a thigh 899.8 px into the seat
+   51 sir: a thigh 920.0 px into the seat
+   52 sir: a thigh 940.2 px into the seat
+   53 sir: a thigh 960.3 px into the seat
+   by kind: 103 x "sir: a thigh # px into the seat"
+   CLIP CHECK FAILED: 103

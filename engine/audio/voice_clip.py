@@ -35,12 +35,22 @@ def main():
     rms = np.array([np.sqrt(np.mean(v[f * hop:(f + 1) * hop] ** 2)) if f * hop < len(v) else 0 for f in range(F)])
     db = 20 * np.log10(np.maximum(rms, 1e-9)); top = np.percentile(db[db > -60], 90) if np.any(db > -60) else -20
     raw = np.where(db > top - 9, 0.7, np.where(db > top - 20, 0.35, 0.0))
-    m = list(raw); i = 0
-    while i < F:                                   # hold each shape at least 2 frames
-        j = i
-        while j + 1 < F and m[j + 1] == m[i]: j += 1
-        if j == i and i + 1 < F: m[i + 1] = m[i]; j = i + 1
-        i = j + 1
+    # (the mouth only between the first word's start and the last word's end, as faster-whisper heard them in the take (pick.json beside it):
+    #  it moved in the silence before the line, the review of the shot types v3)
+    pick = os.path.join(os.path.dirname(os.path.abspath(src)), "pick.json")
+    if os.path.exists(pick):
+        W = json.load(open(pick, encoding="utf-8"))["words"]; w0, w1 = t0 + W[0]["a"] - 0.03, t0 + W[-1]["b"] + 0.03
+        for f in range(F):
+            if not (w0 <= f / FPS <= w1): raw[f] = 0.0
+    # (every shape held two frames or more: a run of one frame takes its neighbour's shape; single frames read as chatter, v3)
+    m = [float(q) for q in raw]
+    for _ in range(3):
+        i = 0
+        while i < F:
+            j = i
+            while j + 1 < F and m[j + 1] == m[i]: j += 1
+            if j == i: m[i] = m[i - 1] if i > 0 else (m[i + 1] if i + 1 < F else m[i])
+            i = j + 1
     words_end = (a + len(x)) / SR
     json.dump({"t0": t0, "len": round(len(x) / SR, 3), "end": round(words_end, 3), "mouth": [float(q) for q in m]}, open(out_json, "w"), indent=0)
     print(f"{out_wav}: {secs:.2f} s, {integrated(mix):.2f} LUFS, true peak {true_peak(mix):.2f} dB; voice {t0:.2f}-{words_end:.2f} s; mouth {sum(1 for q in m if q > 0)} open frames of {F}")

@@ -59,33 +59,52 @@ export const jointPx = (g: Fig, j: string): [number, number] => { const q = g.sk
  *  search on the solved skeleton (the rig has no arm IK). side is the arm; the pose's other values stay */
 /** o.bend: the elbow bent at least this many degrees in the picture (a point that shows its elbow); o.elbowBelow: the elbow never above the
  *  wrist (a hand holding a thing at the waist: an elbow lifted out put the sleeve up over the thing's corner, the review of v2) */
-export const reach = (who: Who, x: number, pose: Pose, heading: number, side: "L" | "R", target: [number, number], tip = false, o: { bend?: number; elbowBelow?: boolean } = {}): Pose => {
+/** o.mid: the hand's middle (not the wrist) on the target, a fist gripping a handle; o.elbowOut: the elbow at least this x far out (a sign
+ *  gives the side: +x right of it, -x left), so the forearm shows beside a held thing; the search is pulled a little toward the pose's own
+ *  arm, so it does not flip between two near-equal answers from frame to frame (the arm's shape snapped and back, the review of v3) */
+export const reach = (who: Who, x: number, pose: Pose, heading: number, side: "L" | "R", target: [number, number], tip = false, o: { bend?: number; elbowBelow?: boolean; mid?: boolean; elbowOut?: number; elbowDown?: boolean; swingMin?: number; abdMax?: number; abdFix?: number } = {}): Pose => {
   const key = side === "L" ? "armL" : "armR", s = scaleOf(who), P = D.props(who);
   type A = [Seg, Seg];
-  const at = (arm: A) => { const sk = solve(P, { ...pose, [key]: arm } as Pose, heading), q = sk.j[`${tip ? "tip" : "wr"}${side}` as keyof Sk["j"]] as unknown as number[]; return [x + q[0] * s, footY(who) + q[1] * s]; };
+  const at = (arm: A) => { const sk = solve(P, { ...pose, [key]: arm } as Pose, heading), W = sk.j[`wr${side}` as keyof Sk["j"]] as unknown as number[], T = sk.j[`tip${side}` as keyof Sk["j"]] as unknown as number[];
+    const q = o.mid ? [W[0] + 0.45 * (T[0] - W[0]), W[1] + 0.45 * (T[1] - W[1])] : tip ? T : W; return [x + q[0] * s, footY(who) + q[1] * s]; };
   // (several starts, the best kept: from the pose's own arm alone the search could stick on the wrong side and the wrist jumped 90 px)
   const joints = (arm: A) => { const sk = solve(P, { ...pose, [key]: arm } as Pose, heading), J2 = (n: string) => { const q = sk.j[n as keyof Sk["j"]] as unknown as number[]; return [x + q[0] * s, footY(who) + q[1] * s]; }; return { sh: J2(`sh${side}`), el: J2(`el${side}`), wr: J2(`wr${side}`) }; };
-  const err = (a: A) => { let e = Math.hypot(...at(a).map((v, i) => v - target[i]));
+  const own0 = ((pose[key] ?? [[4, 13], [16, 9]]) as A);
+  const err = (a: A) => { let e = Math.hypot(...at(a).map((v, i) => v - target[i])) + 0.12 * (Math.abs(a[0][0] - own0[0][0]) + Math.abs(a[0][1] - own0[0][1]) + Math.abs(a[1][0] - own0[1][0]));
+    if (o.elbowOut !== undefined) { const j = joints(a), need = Math.abs(o.elbowOut), out = o.elbowOut > 0 ? j.el[0] - need : need - j.el[0]; if (out < 0) e += -out * 2; }
+    // (elbowDown: the elbow under the line from the shoulder to the target; the arm's two answers mirror each other about that line, and
+    //  this keeps the low one, which can always be reached)
+    if (o.elbowDown) { const j = joints(a), dx = target[0] - j.sh[0], dy = target[1] - j.sh[1], l = Math.hypot(dx, dy) || 1, side = ((j.el[0] - j.sh[0]) * dy - (j.el[1] - j.sh[1]) * dx) / l, down = dx >= 0 ? -side : side; if (down < 40) e += (40 - down) * 0.6; }
     if (o.bend || o.elbowBelow) { const j = joints(a);
       if (o.bend) { const u = [j.el[0] - j.sh[0], j.el[1] - j.sh[1]], v = [j.wr[0] - j.el[0], j.wr[1] - j.el[1]], ang = (Math.acos(Math.max(-1, Math.min(1, (u[0] * v[0] + u[1] * v[1]) / (Math.hypot(...u) * Math.hypot(...v) || 1)))) * 180) / Math.PI; if (ang < o.bend) e += (o.bend - ang) * 1.5; }
-      if (o.elbowBelow && j.el[1] < j.wr[1] + 10) e += (j.wr[1] + 10 - j.el[1]) * 2; }
+      if (o.elbowBelow && j.el[1] < j.wr[1] + 4) e += (j.wr[1] + 4 - j.el[1]) * 2; }
     return e; };
   const own = ((pose[key] ?? [[4, 13], [16, 9]]) as A).map((g) => [...g]) as A;
-  let arm = [own, [[own[0][0] + 40, own[0][1]], [30, own[1][1]]], [[own[0][0] - 40, own[0][1]], [30, own[1][1]]], [[60, own[0][1]], [20, own[1][1]]]].map((a) => a.map((g) => [...g]) as A).reduce((b, a) => (err(a) < err(b) ? a : b)), best = err(arm);
-  for (const step of [16, 8, 4, 2, 1, 0.5]) for (let it = 0; it < 30; it++) { let moved = false;
-    for (const [i, k] of [[0, 0], [1, 0], [0, 1]] as [number, number][]) for (const d of [step, -step]) {
-      const c = arm.map((g) => [...g]) as A; c[i][k] += d; if (i === 1 && k === 0 && (c[1][0] < 4 || c[1][0] > 150)) continue;      // (the elbow bends one way, never locked)
-      const e = Math.hypot(...at(c).map((v, j) => v - target[j])); if (e < best - 1e-6) { best = e; arm = c; moved = true; } }
-    if (!moved) break; }
+  // (the search descends from every start and keeps the best end, measured with the whole error, conditions and pull included: descending
+  //  on the distance alone from the best-looking start, two equally good arms won in turn from frame to frame and the arm snapped, v3)
+  const clampSeed = (a: A): A => [[Math.max(o.swingMin ?? -999, a[0][0]), o.abdFix ?? (o.abdMax !== undefined ? Math.max(-o.abdMax, Math.min(o.abdMax, a[0][1])) : a[0][1])], a[1]] as A;
+  const seeds = [own, [[own[0][0] + 40, own[0][1]], [30, own[1][1]]], [[own[0][0] - 40, own[0][1]], [30, own[1][1]]], [[60, own[0][1]], [20, own[1][1]]]].map((a) => clampSeed(a.map((g) => [...g]) as A));
+  const descend = (start: A): [A, number] => { let a = start, best = err(a);
+    for (const step of [16, 8, 4, 2, 1, 0.5]) for (let it = 0; it < 30; it++) { let moved = false;
+      for (const [i, k] of [[0, 0], [1, 0], [0, 1]] as [number, number][]) for (const d of [step, -step]) {
+        const c = a.map((g) => [...g]) as A; c[i][k] += d; if (i === 1 && k === 0 && (c[1][0] < 4 || c[1][0] > 150)) continue;      // (the elbow bends one way, never locked)
+        if (o.swingMin !== undefined && i === 0 && k === 0 && c[0][0] < o.swingMin) continue;
+        if (o.abdMax !== undefined && i === 0 && k === 1 && Math.abs(c[0][1]) > o.abdMax) continue;      // (in profile, the upper arm out to the side only a little)
+        if (o.abdFix !== undefined && i === 0 && k === 1) continue;      // (abdFix: the arm in the picture's plane, two links with an elbow that bends one way: one answer)      // (reaching forward the upper arm swings forward: its elbow went behind the shoulder, v3)
+        const e = err(c); if (e < best - 1e-6) { best = e; a = c; moved = true; } }
+      if (!moved) break; }
+    return [a, best]; };
+  const arm = seeds.map(descend).reduce((b, r) => (r[1] < b[1] - 1e-6 ? r : b))[0];
   return { ...pose, [key]: arm } as Pose;
 };
 
 export type Seat = { x0: number; x1: number; top: number };
-export type Appear = { name: string; t0: number; from: "left" | "right" | "hole"; at: (t: number) => [number, number] | null; hole?: { x: number; drawnFrom: number } };
+/** points: the thing's outermost points (a crab's claw tips), which no hand may touch */
+export type Appear = { name: string; t0: number; from: "left" | "right" | "hole"; at: (t: number) => [number, number] | null; hole?: { x: number; drawnFrom: number }; points?: (t: number) => [number, number][] };
 /** horizon: the target lies on the horizon at this height (far in depth however near in the picture) */
 export type Point = { who: string; t0: number; t1: number; side: "L" | "R"; target: [number, number]; horizon?: number };
 /** a hand that must be at a place from t0 to t1 (a handle, a box's side, a knee): its wrist within tol px */
-export type Contact = { who: string; side: "L" | "R"; t0: number; t1: number; at: (t: number) => [number, number]; tol: number; what: string };
+export type Contact = { who: string; side: "L" | "R"; t0: number; t1: number; at: (t: number) => [number, number]; tol: number; what: string; mid?: boolean };
 /** the camera: the world point at the picture's middle and the zoom (the world is 1080 x 1920 at zoom 1). Shot types (the review of the
  *  shot types v1: at zoom 1 Sir was too small for the shot to read on a phone): "medium" about 2.7, the figure filling most of the height;
  *  "full" about 1.7, the whole figure filling at least half the height */
@@ -109,7 +128,7 @@ export type Clip = { id: string; title: string; seconds: number; cast: Cast[]; e
   back?: (g: CanvasRenderingContext2D, t: number) => void; front?: (g: CanvasRenderingContext2D, t: number, figs: Fig[]) => void;
   /** after each figure is drawn (a held thing, a thumb over it) */
   over?: (g: CanvasRenderingContext2D, t: number, f: Fig) => void;
-  seats?: Seat[]; appear?: Appear[]; points?: Point[]; contacts?: Contact[]; bg?: number; bgOpts?: { spade?: boolean };
+  seats?: Seat[]; appear?: Appear[]; points?: Point[]; contacts?: Contact[]; bg?: number; bgOpts?: { spade?: boolean; pit?: boolean };
   camera: (t: number) => Cam; shot: "medium" | "full"; solids?: Solid[]; door?: { h: number };
   /** things standing on the figures' own ground line (a crate, a bollard): no shoe may overlap them, or which is in front cannot be read */
   groundProps?: { name: string; x0: number; x1: number }[];

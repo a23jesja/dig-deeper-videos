@@ -40,13 +40,13 @@ const cloud = (g: G, x: number, y: number, s: number) => {
   for (const pass of [0, 1]) for (const p of parts) { g.beginPath(); p(g); g.closePath(); if (pass) { g.fillStyle = "#ffffff"; g.fill(); } else { g.lineWidth = 16; g.lineJoin = "round"; g.strokeStyle = INK; g.stroke(); } }
 };
 const groundLine = (g: G, col: string) => { rect(g, -20, GY, 1120, 440, col, 0); g.beginPath(); g.moveTo(-20, GY); g.lineTo(1100, GY); g.lineWidth = 12; g.strokeStyle = INK; g.stroke(); };
-export const BGS: ((g: G, o?: { spade?: boolean }) => void)[] = [
+export const BGS: ((g: G, o?: { spade?: boolean; pit?: boolean }) => void)[] = [
   // A: a dig in the desert, noon (o.spade false: no spade, for scenes where something crosses its place)
   (g, o = {}) => { rect(g, -20, -20, 1120, 1960, "#f6e2b3", 0); circ(g, 820, 380, 110, "#ffcf5c");
     poly(g, [[-20, 1180], [120, 1180], [170, 1060], [330, 1060], [380, 1180], [640, 1200], [700, 1110], [860, 1110], [930, 1210], [1100, 1210], [1100, 1520], [-20, 1520]], "#e0a868");
     poly(g, [[-20, 1330], [260, 1250], [560, 1320], [820, 1270], [1100, 1330], [1100, 1520], [-20, 1520]], "#eab676");
     groundLine(g, "#d39350");
-    poly(g, [[60, 1560], [330, 1560], [300, 1640], [90, 1640]], "#8a5a33");
+    if (o.pit !== false) poly(g, [[60, 1560], [330, 1560], [300, 1640], [90, 1640]], "#8a5a33");      // (the dug pit; o.pit false where a close frame cut it to a dark "7")
     // (the spade stuck into the ground: its blade's lower half under a heap of sand; it stood on its tip with nothing holding it, the review
     //  of the shot types v1)
     if (o.spade !== false) { g.lineCap = "round"; g.beginPath(); g.moveTo(960, 1520); g.lineTo(1010, 1290); g.lineWidth = 34; g.strokeStyle = INK; g.stroke(); g.lineWidth = 18; g.strokeStyle = "#9c6a3c"; g.stroke();

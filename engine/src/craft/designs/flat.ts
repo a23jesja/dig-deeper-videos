@@ -106,12 +106,15 @@ const tearAt = (k: Ink, x: number, y: number, s: number, amt: number) => {
   fl(k, d, TEAR);
 };
 /** a pipe from the corner of the mouth: the stem out and a little down, the bowl upright (d = which way it points) */
-const pipeAt = (k: Ink, a: P2, s: number, d = 1) => {
-  const b: P2 = [a[0] + 62 * s * d, a[1] + 16 * s];
-  band(k, [a, b], 11 * s, "#3b2416");
-  const bowl: P2[] = [[b[0] - 13 * s * d, b[1] - 36 * s], [b[0] + 19 * s * d, b[1] - 36 * s], [b[0] + 15 * s * d, b[1] + 8 * s], [b[0] - 10 * s * d, b[1] + 8 * s]];
-  fl(k, bowl, "#8a4b26"); k.line([bowl[0], bowl[1]], 8 * s, k.ink);
+/** droop 0..1: the pipe tips down in the corner of a gaping, frightened mouth (the review of the motion test: it stayed level in the gape) */
+const pipeAt = (k: Ink, a: P2, s: number, d = 1, droop = 0) => {
+  k.at(a[0], a[1], d * droop * 52, false, () => {
+    const b: P2 = [62 * s * d, 16 * s];
+    band(k, [[0, 0], b], 11 * s, "#3b2416");
+    const bowl: P2[] = [[b[0] - 13 * s * d, b[1] - 36 * s], [b[0] + 19 * s * d, b[1] - 36 * s], [b[0] + 15 * s * d, b[1] + 8 * s], [b[0] - 10 * s * d, b[1] + 8 * s]];
+    fl(k, bowl, "#8a4b26"); k.line([bowl[0], bowl[1]], 8 * s, k.ink); });
 };
+const droopOf = (r: FR) => Math.max(0, Math.min(1, r.wide));
 /** an ear seen from the side: a filled oval and the curve of its bowl opening forward */
 const ear = (k: Ink, x: number, y: number, rx: number, ry: number, skin: string) => { fl(k, ellPts(x, y, rx, ry, 0, 0, 360, 28), skin); ln(k, ellPts(x + rx * 0.2, y, rx * 0.5, ry * 0.55, 0, 110, 250, 10), 0.6); };
 const monoRing = (k: Ink, cx: number, cy: number, rx: number, ry: number, w: number) => { const r = ellPts(cx, cy, rx, ry, 0, 0, 360, 40); band(k, r, w, GOLD, k.ol * 0.55); };
@@ -140,8 +143,12 @@ export type FlatSpec = {
   id: string; name: string; ol: number; faceW: number; sir: { P: Props; B: Body }; other: { P: Props; B: Body }; col: Col;
   /** waistcoat over shirt sleeves (no coat) */ noCoat?: boolean;
   /** how far the face slides as the head turns from the lens */ turn: number;
-  sirFront: (k: Ink, r: FR, tx: number, lift: number) => void; sirSide: (k: Ink, r: FR, lift: number) => void;
+  sirFront: (k: Ink, r: FR, tx: number, lift: number) => void; sirSide: (k: Ink, r: FR, lift: number, mono?: boolean) => void;
   otherFront: (k: Ink, r: FR, tx: number) => void; otherSide: (k: Ink, r: FR) => void;
+  /** a three-quarter head, facing the picture's right (drawn mirrored for the left): turning, the head goes front, three-quarter, side, each
+   *  drawing held for frames, never front to side in one frame (the review of the motion test). mono = which eye the monocle shows on: his
+   *  right eye is the near one facing right, the far one facing left */
+  sirQ?: (k: Ink, r: FR, lift: number, mono: "near" | "far") => void; otherQ?: (k: Ink, r: FR) => void; chainQ?: { near: [P2, P2]; far: [P2, P2] };
   /** the monocle and the bow of its chain, head-local (front: x before the turn slide), and where it ends on the waistcoat [to the left, above the pelvis] */
   chainFront: [P2, P2]; chainSide: [P2, P2]; chainEnd: [number, number]; chainW: number;
   /** the waistcoat's top, its point at the bottom, and half its width (front marks) */ vest: [number, number, number];
@@ -152,7 +159,7 @@ const drawFlat = (c: FlatSpec) => (k: Ink, sk: Sk, o: FigOpts) => {
   void _p; const front = sk.cos > 0.35, sideOn = Math.abs(sk.sin) > 0.6, d = Math.sign(sk.sin) || 1;
   const leg = (s: Side) => {
     k.group(limb(J(sk, "hip", s), J(sk, "kn", s), J(sk, "an", s), B.leg), other ? C.stock : C.trous);
-    const sh = shoePts(sk, s, B.shoeW, 0.34, 0.2); fl(k, sh.pts, C.shoe); k.line([sh.O, add(sh.O, sh.ex, sh.span)], k.ol * 0.9, k.ink, "butt");
+    const sh = shoeDrawn(sk, s, B.shoeW); fl(k, sh.pts, C.shoe); k.line([sh.a, sh.b], k.ol * 0.9, k.ink, "butt");
   };
   const arm = (s: Side) => {
     const S = J(sk, "sh", s), E = J(sk, "el", s), W = J(sk, "wr", s), kind = (s === "L" ? o.handL : o.handR) ?? "relaxed";
@@ -186,16 +193,26 @@ const drawFlat = (c: FlatSpec) => (k: Ink, sk: Sk, o: FigOpts) => {
     });
   };
   const head = () => {
-    k.at(sk.j.skull[0], sk.j.skull[1], sk.headTilt, hp.side && hp.flip, () => {
-      if (other) (hp.side ? c.otherSide(k, r) : c.otherFront(k, r, hp.turn * c.turn));
-      else (hp.side ? c.sirSide(k, r, o.capLift ?? 0) : c.sirFront(k, r, hp.turn * c.turn, o.capLift ?? 0));
+    const sn = Math.sin(sk.faceYaw * (Math.PI / 180)), as = Math.abs(sn), flip = sn < 0;
+    const view = !c.sirQ ? (hp.side ? "side" : "front") : as < 0.45 ? "front" : as < 0.85 ? "q" : "side";
+    k.at(sk.j.skull[0], sk.j.skull[1], sk.headTilt, view !== "front" && flip, () => {
+      if (other) (view === "side" ? c.otherSide(k, r) : view === "q" ? c.otherQ!(k, r) : c.otherFront(k, r, sn * c.turn));
+      else (view === "side" ? c.sirSide(k, r, o.capLift ?? 0, !flip) : view === "q" ? c.sirQ!(k, r, o.capLift ?? 0, flip ? "far" : "near") : c.sirFront(k, r, sn * c.turn, o.capLift ?? 0));
     });
     if (other) return;
-    const w = headToWorld(sk, hp.side && hp.flip), end = Fr.Q(c.chainEnd[0], Math.max(...B.rows.map((q) => q[2])) * 0.8, c.chainEnd[1]);
-    if (hp.side) { const a = w(c.chainSide[0]), b = Fr.T(Math.max(...B.rows.map((q) => q[2])) * 0.7 * d, c.chainEnd[1]); chainAt(k, a, b, [(a[0] + b[0]) / 2 - 14 * d, (a[1] + b[1]) / 2 + 26], c.chainW); }
-    else { const tx = hp.turn * c.turn; chainAt(k, w([c.chainFront[0][0] + tx, c.chainFront[0][1]]), end, w([c.chainFront[1][0] + tx, c.chainFront[1][1]]), c.chainW); }
+    const w = headToWorld(sk, view !== "front" && flip), dz = Math.max(...B.rows.map((q) => q[2])), end = Fr.Q(c.chainEnd[0], dz * 0.8, c.chainEnd[1]);
+    // (the monocle on his right eye only: seen from his left side it is behind his head, and so is its chain)
+    if (view === "side") { if (!flip) { const a = w(c.chainSide[0]), b = Fr.T(dz * 0.7 * d, c.chainEnd[1]); chainAt(k, a, b, [(a[0] + b[0]) / 2 - 14 * d, (a[1] + b[1]) / 2 + 26], c.chainW); } }
+    else if (view === "q") { const q = c.chainQ![flip ? "far" : "near"], a = w(q[0]); chainAt(k, a, end, w(q[1]), c.chainW); }
+    else { const tx = sn * c.turn; chainAt(k, w([c.chainFront[0][0] + tx, c.chainFront[0][1]]), end, w([c.chainFront[1][0] + tx, c.chainFront[1][1]]), c.chainW); }
   };
   layers(sk, { arm, leg, torso, head });
+};
+/** a shoe as drawn: no part of it below the ground line (y = 0): turning, lifting or setting down a foot, its toe went 5-10 px through the
+ *  line (the review of the motion test). clamp = false gives the shoe as it was (the check's planted fault) */
+export const shoeDrawn = (sk: Sk, side: Side, W: number, clamp = true) => {
+  const sh = shoePts(sk, side, W, 0.34, 0.2), cl = (p: P2): P2 => [p[0], clamp ? Math.min(p[1], 0) : p[1]];
+  return { pts: sh.pts.map(cl), a: cl(sh.O), b: cl(add(sh.O, sh.ex, sh.span)) };
 };
 const design = (c: FlatSpec): Design => ({ id: c.id, name: c.name, ol: c.ol, faceW: c.faceW, props: (w: Who) => (w === "baker" ? c.other.P : c.sir.P), draw: drawFlat(c) });
 
@@ -203,6 +220,8 @@ const design = (c: FlatSpec): Design => ({ id: c.id, name: c.name, ol: c.ol, fac
 const CA: Col = { skin: "#f7c9a3", nose: "#ef9f86", hair: "#4a2e1e", cap: "#9b6b43", coat: "#9b6b43", vest: TURQ, shirt: "#fffaf0", tie: "#d9483b", trous: "#6e5a4a", shoe: "#3a2a22",
   dress: "#f2a33a", stock: "#3d3346", collar: "#fffaf0" };
 const ADA_HAIR_A = "#2e2a3a";
+/** A's moustache, the right half (8 higher than on the sheet, with the mouth: a chin under the open mouth) */
+const MOUS_A: P2[] = [[0, -72], [30, -80], [62, -74], [88, -84], [98, -106], [112, -100], [102, -68], [66, -58], [30, -62], [0, -66]];
 const A_SPEC: FlatSpec = {
   id: "flatA", name: "A Knopp", ol: 9, faceW: 160, turn: 34,
   sir: { P: { thigh: 70, shin: 64, ankle: 16, foot: 92, hipW: 40, shW: 60, spine: 150, shDrop: 18, neck: 4, head: 262, upper: 74, fore: 68, hand: 60 },
@@ -220,28 +239,62 @@ const A_SPEC: FlatSpec = {
     //  Jesper choosing A, 21 Nov)
     const mw = 24 * (1 + 0.4 * r.mouth);
     // (the mouth's top under the moustache, so the open mouth, a third taller, ends above the chin: lower, it went past the head's edge)
-    mouthAt(k, tx + r.smirk * 4, -44, mw, 1, { ...r, mouth: Math.max(r.mouth, 0.13) }, "#e0806e");
-    pipeAt(k, [tx + mw - 2, -40], 1);
-    const half: P2[] = [[0, -64], [30, -72], [62, -66], [88, -76], [98, -98], [112, -92], [102, -60], [66, -50], [30, -54], [0, -58]];
-    fl(k, at(spline([...half, ...mirror(half).reverse()]), tx), CA.hair);
-    fl(k, ellPts(tx, -80, 17, 14), CA.nose);
+    // (moustache and mouth 8 higher than on the sheet, so a narrow chin shows under the open mouth: it reached the head's edge, the review of
+    //  the motion test)
+    mouthAt(k, tx + r.smirk * 4, -52, mw, 1, { ...r, mouth: Math.max(r.mouth, 0.13) }, "#e0806e");
+    pipeAt(k, [tx + mw - 2, -48], 1, 1, droopOf(r));
+    fl(k, at(spline([...MOUS_A, ...mirror(MOUS_A).reverse()]), tx), CA.hair);
+    fl(k, ellPts(tx, -84, 17, 14), CA.nose);
     tearAt(k, tx + 54, -82, 1, r.tear); tearAt(k, tx - 38, -82, 0.9, r.tear * 0.7);
     k.g.save(); k.g.translate(-lift * 12, -lift * 50); capFront(k, 124, -206, -312, CA.cap, 12); k.g.restore();
   },
-  sirSide: (k, r, lift) => {
+  sirSide: (k, r, lift, mono = true) => {
     fl(k, ellPts(0, -128, 124, 132, 0, 0, 360, 60), CA.skin);
     ear(k, -34, -112, 22, 30, CA.skin);
     const [i, o] = browEnds(r, 66, -172, 0.9, 18, 1); k.line([i, o], 14 + k.ol * 1.7); k.line([i, o], 14, CA.hair);
     eyeA(k, 66, -118, 0.9, { ...r, gaze: [Math.max(0.35, r.gaze[0]), r.gaze[1]] }, CA.skin, 1);
-    monoRing(k, 66, -118, 36, 50, 7);
-    // (from the side the pipe's mouthpiece is in the mouth under the moustache, not at the moustache's tip: Jesper choosing A)
-    mouthAt(k, 96, -36, 14 * (1 + 0.4 * r.mouth), 0.9, { ...r, mouth: Math.max(r.mouth, 0.13) }, "#e0806e");
-    pipeAt(k, [108, -33], 1);
-    fl(k, spline([[70, -66], [108, -70], [130, -74], [140, -94], [151, -88], [140, -60], [112, -50], [74, -56]]), CA.hair);
+    if (mono) monoRing(k, 66, -118, 36, 50, 7);
+    // (from the side the pipe's mouthpiece is in the mouth under the moustache, not at the moustache's tip: Jesper choosing A. The mouth is drawn
+    //  after the stem, so it shows in profile too: it was hidden by the moustache and the pipe while he walked in, the review of the motion test)
+    pipeAt(k, [104, -40], 1, 1, droopOf(r));
+    mouthAt(k, 92, -40, 14 * (1 + 0.4 * r.mouth), 0.9, { ...r, mouth: Math.max(r.mouth, 0.16) }, "#e0806e");
+    fl(k, spline([[70, -72], [108, -76], [130, -80], [140, -100], [151, -94], [140, -66], [112, -58], [74, -62]]), CA.hair);
     fl(k, ellPts(126, -82, 19, 16), CA.nose);
     tearAt(k, 72, -82, 1, r.tear);
     k.g.save(); k.g.translate(-lift * 40, -lift * 50); k.g.rotate(-lift * 0.25); capSide(k, -128, 112, -206, -312, CA.cap, 52); k.g.restore();
   },
+  // three-quarter, facing the picture's right: the near eye (his right) full, the far eye narrower by the edge, the nose by the edge, the near
+  // half of the moustache long and the far one short, the near ear on the head's left
+  sirQ: (k, r, lift, mono) => {
+    fl(k, ellPts(0, -128, 126, 132, 0, 0, 360, 60), CA.skin);
+    ear(k, -92, -114, 20, 28, CA.skin);
+    for (const [x, hw] of [[10, 20], [74, 14]] as [number, number][]) { const [i, o] = browEnds(r, x, -172, 1, hw, x < 40 ? -1 : 1); k.line([i, o], 15 + k.ol * 1.7); k.line([i, o], 15, CA.hair); }
+    const gz: P2 = [Math.max(0.2, r.gaze[0]), r.gaze[1]];
+    eyeA(k, 10, -118, 1, { ...r, gaze: gz }, CA.skin, 1); eyeA(k, 76, -118, 0.8, { ...r, gaze: gz }, CA.skin, -1);
+    if (mono === "near") monoRing(k, 10, -118, 42, 52, 7); else monoRing(k, 76, -118, 34, 44, 7);
+    const mw = 20 * (1 + 0.4 * r.mouth);
+    mouthAt(k, 84 + r.smirk * 4, -52, mw, 1, { ...r, mouth: Math.max(r.mouth, 0.13) }, "#e0806e");
+    pipeAt(k, [84 + mw - 2, -48], 1, 1, droopOf(r));
+    const near = mirror(MOUS_A).map(([x, y]) => [x * 1.05 + 92, y] as P2), far = MOUS_A.map(([x, y]) => [x * 0.34 + 92, y] as P2);
+    fl(k, spline([...far, ...near.reverse()]), CA.hair);
+    fl(k, ellPts(104, -84, 17, 14), CA.nose);
+    tearAt(k, 84, -82, 0.9, r.tear); tearAt(k, 18, -82, 1, r.tear * 0.7);
+    k.g.save(); k.g.translate(-lift * 20 + 18, -lift * 50); capFront(k, 124, -206, -312, CA.cap, 12); k.g.restore();
+  },
+  otherQ: (k, r) => {
+    fl(k, ellPts(-56, -252, 42, 40), ADA_HAIR_A);
+    fl(k, ellPts(0, -120, 120, 124, 0, 0, 360, 60), CA.skin);
+    ear(k, -92, -110, 18, 24, CA.skin);
+    fl(k, spline([[-118, -100], [-124, -170], [-84, -232], [10, -250], [96, -226], [122, -176], [118, -140], [80, -172], [30, -184], [-20, -178], [-70, -160], [-100, -122]]), ADA_HAIR_A);
+    for (const [x, hw] of [[14, 18], [76, 12]] as [number, number][]) { const [i, o] = browEnds(r, x, -176, 0.95, hw, x < 40 ? -1 : 1); k.line([i, o], 9 + k.ol * 1.7); k.line([i, o], 9, ADA_HAIR_A); }
+    const gz: P2 = [Math.max(0.2, r.gaze[0]), r.gaze[1]];
+    eyeA(k, 14, -124, 0.95, { ...r, gaze: gz }, CA.skin, 1); eyeA(k, 78, -124, 0.76, { ...r, gaze: gz }, CA.skin, -1);
+    if (r.lid < 0.9 && r.squeeze < 0.5) { ln(k, [[-10, -150], [-20, -162]], 0.7); ln(k, [[96, -146], [104, -156]], 0.7); }
+    fl(k, ellPts(104, -90, 10, 8), CA.nose);
+    mouthAt(k, 86, -56, 16 * (1 + 0.3 * r.mouth), 0.95, r);
+    tearAt(k, 84, -88, 0.9, r.tear);
+  },
+  chainQ: { near: [[-24, -78], [-50, -4]], far: [[56, -80], [10, 0]] },
   otherFront: (k, r, tx) => {
     fl(k, ellPts(0, -262, 44, 40), ADA_HAIR_A);
     for (const s of [-1, 1]) fl(k, ellPts(s * 118, -112, 20, 26), CA.skin);

@@ -1,0 +1,3 @@
+events (s): T_TURN 1.76, T_POINT 2.46, T_SNAKE 5.20, T_SCARED 5.50, T_RUN_TURN 6.20, T_RUN 6.70, T_ADA_TURN 6.60, T_ADA_POINT 7.15, T_GONE 7.80, LINE 3.10, LINE_END 5.15, END 8.80
+largest shoe outline below the line 0.0 px, largest sink 0.0 px, largest slide of a foot on the ground 0.0 px between two frames
+FLAT CHECK OK: feet on the ground line, none sunk, none sliding, never both off the ground except in the run

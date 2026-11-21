@@ -1,0 +1,25 @@
+events (s): T_TURN 1.76, T_POINT 2.46, T_SNAKE 5.20, T_SCARED 5.50, T_RUN_TURN 6.20, T_RUN 6.70, T_ADA_TURN 6.60, T_ADA_POINT 7.15, T_GONE 7.80, LINE 3.10, LINE_END 5.15, END 8.80
+61 sir: the R shoe's outline 10.1 px below the ground line
+62 sir: the R shoe's outline 14.5 px below the ground line
+69 sir: the L shoe's outline 6.2 px below the ground line
+70 sir: the L shoe's outline 14.7 px below the ground line
+184 sir: the R shoe's outline 14.6 px below the ground line
+185 sir: the R shoe's outline 14.1 px below the ground line
+186 sir: the R shoe's outline 12.4 px below the ground line
+187 sir: the R shoe's outline 1.4 px below the ground line
+190 sir: the L shoe's outline 13.7 px below the ground line
+191 sir: the L shoe's outline 14.6 px below the ground line
+192 sir: the L shoe's outline 12.8 px below the ground line
+193 sir: the L shoe's outline 8.8 px below the ground line
+195 ada: the R shoe's outline 1.4 px below the ground line
+196 ada: the R shoe's outline 3.5 px below the ground line
+197 ada: the R shoe's outline 4.7 px below the ground line
+198 ada: the R shoe's outline 4.9 px below the ground line
+202 ada: the L shoe's outline 10.9 px below the ground line
+203 ada: the L shoe's outline 11.6 px below the ground line
+204 ada: the L shoe's outline 10.2 px below the ground line
+205 ada: the L shoe's outline 6.8 px below the ground line
+212 ada: the L shoe's outline 0.9 px below the ground line
+213 ada: the L shoe's outline 0.7 px below the ground line
+largest shoe outline below the line 14.7 px, largest sink 0.0 px, largest slide of a foot on the ground 0.0 px between two frames
+FLAT CHECK FAILED: 22 faults

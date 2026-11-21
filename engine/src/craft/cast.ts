@@ -92,6 +92,8 @@ const piece = (k: Ink, pts: P2[], fill: string, weave?: P2, tilt = 0) => {
   if (!STYLE.simple) k.shape(shift(pts, 5, 6), "rgba(52,32,16,0.24)", 0); k.shape(pts, fill, 0); if (weave) k.tweed(pts, WEAVE, weave, tilt, 14, 2.4); k.shape(pts, null);
 };
 const pin = (k: Ink, p: P2, r = 8) => { if (STYLE.simple) return; k.dot(p[0] + 2, p[1] + 2.5, r, "rgba(52,32,16,0.28)"); k.dot(p[0], p[1], r, "#7d5f1a"); k.dot(p[0], p[1], r - 1.8, BRASS); k.dot(p[0] - r * 0.3, p[1] - r * 0.3, r * 0.28, "#fff4c4"); };
+/** the far half of a moustache is never drawn shorter than this share of the near half (Jesper on the eye patch v1u) */
+export const MOUS_MIN = 0.6;
 /** a tapered ribbon along a line of points (a moustache half, a crest): half-widths per point */
 export const ribbon = (pts: P2[], w: number[]): P2[] => {
   const c = spline(pts, false, 5), n = c.length, lf: P2[] = [], rt: P2[] = [];
@@ -178,11 +180,17 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
     // the head turns from |sin| 0.35 to 0.55 and grows back the same way (it was cut off whole at 0.45 and came and went in one frame,
     // the eye patch Short v1r at 1.3 s and 23.6 s, the review of 20 Nov)
     const farK = !L.mous && !nearHalf ? (() => { const c = clamp((0.55 - Math.abs(h.sin)) / 0.2, 0, 1); return c * c * (3 - 2 * c); })() : 1;
-    if (farK <= 0.001) return;
     const S = (nearHalf ? [[0.97, 0], [0.74, 7], [0.42, 10], [0.12, 2], [-0.02, -16 * M.curl], [0.06, -34 * M.curl]] : [[0.97, 0], [1.1, 4], [1.26, 1], [1.38, -9 * M.curl], [1.4, -24 * M.curl], [1.34, -34 * M.curl]]).map(([x, y]) => [dirx * b * (0.97 + (x - 0.97) * k2), yM + y * u] as P2);
     const q = Math.abs(h.sin) ** 2 * (h.cos > -0.3 ? 1 : 0), P = G.map((g, n) => [lerp(g[0], S[n][0], q), lerp(g[1], S[n][1], q)] as P2);
-    const P2 = farK < 1 ? P.map(([x, y]) => [P[0][0] + (x - P[0][0]) * farK, P[0][1] + (y - P[0][1]) * farK] as P2) : P;
-    piece(k, ribbon(P2, [M.w, M.w, M.w * 0.88, M.w * 0.66, M.w * 0.42, M.w * 0.18].map((w) => w * farK)), M.col);
+    // (both halves always show, the far one never shorter than MOUS_MIN of the near one, measured along the drawn line: the beard's far half
+    //  shrank to a stub and went as the head turned, Jesper on the eye patch v1u. Its width keeps at least the same share)
+    const along = (Q: P2[]) => Q.slice(1).reduce((t, q, n) => t + Math.hypot(q[0] - Q[n][0], q[1] - Q[n][1]), 0);
+    const pathOf = (sd: number) => { const dn = sd * dirx < 0, Sn = (dn ? [[0.97, 0], [0.74, 7], [0.42, 10], [0.12, 2], [-0.02, -16 * M.curl], [0.06, -34 * M.curl]] : [[0.97, 0], [1.1, 4], [1.26, 1], [1.38, -9 * M.curl], [1.4, -24 * M.curl], [1.34, -34 * M.curl]]).map(([x, y]) => [dirx * b * (0.97 + (x - 0.97) * k2), yM + y * u] as P2);
+      const Gn = ([[0, 0, b * 1.0], [0.3 * a, 2, b * 0.98], [0.62 * r, 7, b * 0.74], [0.86 * r, 6, b * 0.5], [0.98 * r, -8 * M.curl, b * 0.38], [0.97 * r, -30 * M.curl, b * 0.36]] as number[][]).map(([X, y, Z]) => [p3(h, sd * X, Z).x, yM + y * u] as P2);
+      return Gn.map((g, n) => [lerp(g[0], Sn[n][0], q), lerp(g[1], Sn[n][1], q)] as P2); };
+    let kk = farK; if (!nearHalf) { const ln = along(pathOf(-s)), lf = along(P); if (lf > 1e-3) kk = Math.max(farK, Math.min(1.6, (MOUS_MIN * ln) / lf)); }
+    const P2 = kk !== 1 ? P.map(([x, y]) => [P[0][0] + (x - P[0][0]) * kk, P[0][1] + (y - P[0][1]) * kk] as P2) : P;
+    piece(k, ribbon(P2, [M.w, M.w, M.w * 0.88, M.w * 0.66, M.w * 0.42, M.w * 0.18].map((w) => w * Math.max(farK, MOUS_MIN))), M.col);
   };
   const pipe = () => {
     // (the stem's end in the corner of the mouth, where the mouth line ends (36 degrees round, 0.72 of the way out): rooted on the face's

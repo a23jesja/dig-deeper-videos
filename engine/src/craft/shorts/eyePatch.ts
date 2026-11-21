@@ -178,9 +178,9 @@ const SHUTTERS = once(() => { const g = new THREE.Group();
 const DARK_LIGHT: CardLight = { amb: "#544e5c", rim: 1.0, lights: [{ at: [LANT_AT[0], FL + 1.1, LANT_AT[2]], color: "#ffb468", power: 2.6, reach: 3.6, rimK: 0.8 }, { at: inCabin([-0.2, 1.6, 1.9]), color: "#a8b0d8", power: 0.9, reach: 3.0, rimK: 0 }] };
 const below = (g: THREE.Group, T2: number, cam: Cam, noGlow = false) => { g.add(SHUTTERS()); if (!noGlow) glow(g, [LANT_AT[0], FL + 0.88, LANT_AT[2]], 0.6, 0.6, T2, Math.atan2(cam.pos[0] - LANT_AT[0], cam.pos[2] - LANT_AT[2]), 3); };
 const BELOW = (len: number) => [{ k: "lap", a: 0, b: len, g: 0.7 }];
-type ShotO = { id: string; a: number; b: number; V: Lens; push?: number; cast: ((t: number) => Actor)[]; things?: (g: THREE.Group, c: Record<string, any>, cam: Cam) => void; sun: boolean; patch?: "A" | "B"; look?: Shot["look"]; close?: boolean; sounds?: Shot["sounds"]; hide?: string[]; newScene?: Shot["newScene"]; matchCut?: string; noPole?: boolean };
+type ShotO = { id: string; a: number; b: number; V: Lens; push?: number; cast: ((t: number) => Actor)[]; things?: (g: THREE.Group, c: Record<string, any>, cam: Cam) => void; sun: boolean; patch?: "A" | "B"; look?: Shot["look"]; close?: boolean; sounds?: Shot["sounds"]; hide?: string[]; newScene?: Shot["newScene"]; matchCut?: string; noPole?: boolean; armOrder?: Shot["armOrder"] };
 const add = (o: ShotO) => shots.push({ id: o.id, a: o.a, b: o.b, still: (o.b - o.a) * 0.5, cam: (_t, u) => o.V.push((o.push ?? 0.06) * u), sun: { target: o.sun ? [PIR_DECK[0], MD, PIR_DECK[1]] : inCabin([0, 0, 0]), reach: o.sun ? 6 : 4 },
-  ...(o.patch ? { patchEye: { pirate: o.patch } } : {}), ...(o.close ? { closeUp: { pirate: "close on his face and the patch", mate: "close on his face in the dark" } } : {}), look: o.look, hide: [...(o.hide ?? []), ...(o.sun ? ["cabin room"] : ["table bottle", "cabin mirror"])], newScene: o.newScene, matchCut: o.matchCut,
+  ...(o.patch ? { patchEye: { pirate: o.patch } } : {}), ...(o.close ? { closeUp: { pirate: "close on his face and the patch", mate: "close on his face in the dark" } } : {}), look: o.look, hide: [...(o.hide ?? []), ...(o.sun ? ["cabin room"] : ["table bottle", "cabin mirror"])], newScene: o.newScene, matchCut: o.matchCut, armOrder: o.armOrder,
   ...(o.sun ? {} : { light: DARK_LIGHT }), sounds: o.sounds ?? [], beds: o.sun ? deckBeds(o.b - o.a) : BELOW(o.b - o.a),
   cast: (t) => o.cast.map((f) => f(t)), things: (g, c, _t, T2, cam) => { if (o.sun) { if (!o.noPole) flagpole(g, T2); } else below(g, T2, cam, o.id.startsWith("record")); o.things?.(g, c, cam); } } as Shot);
 
@@ -211,9 +211,10 @@ const FLIP_AT = W.find((w) => w.line === "flip" && /flip/i.test(w.w))!.a - 0.03;
 const S = {
   s2: T.s2, s3: T.s3, s4: T.s4, s4b: L.below.b, s5: L.mins.a + 0.8, s5b: L.mins.a + 2.3, s6: T.s6, s6b: L.patch.a + 1.4, s7: FLIP_AT, s8: T.s8, s8b: L.myth.a + 2.0, s9: T.s8b, s10: T.s9, s10b: L.but.b + 0.15, s11: T.s10, s11b: L.proof.a + 1.6, s12: T.s11, s12b: L.trick.b - 0.25, end: T.end };
 // 1. (0 - 2.4) WHY DID PIRATES WEAR EYE PATCHES? In the dark below, the pirate reads calmly, his head following the lines from the first
-//    frame, while his shipmate behind him feels the air and stumbles. A creak on the first frame. The last shot is this one again
+//    frame, while his shipmate behind him feels the air and stumbles. The last shot is this one again. (No sound effect on the first
+//    frames: the creak on frame 0 and the thud at 0.4 s, a short low buzzing saw and a low thump, sounded like a fart, Jesper on v1u)
 const opening = (id: string, a: number, b: number) => { const r = reader(PIR_AT, FL, WIDE, 22, false, b - a, { lines: true, ...(id === "end" ? { puzzled: 0.45 } : {}) }), mt = mate(MAT_AT, WIDE, 48, 2, b - a, { stumble: 0.35, heads: 0.16 });      // (heads 0.32: at 0.5 his eyes moved 12 px a frame and his pupils slid across them, the flicker check of 20 Nov)      // (turned 65 with his head swinging 24 more, he stood in bare profile on frame one, the independent review of v1f)
-  add({ id, a, b, V: WIDE, cast: [r.cast, mt.cast], things: r.book, sun: false, patch: "B", look: r.look, sounds: [{ t: 0, k: "creak", g: 0.8 }, { t: 0.4, k: "thud", g: 0.3 }], ...(id === "hook" ? {} : { newScene: { pirate: "the same moment below as the opening: the film loops" } }) }); };
+  add({ id, a, b, V: WIDE, cast: [r.cast, mt.cast], things: r.book, sun: false, patch: "B", look: r.look, armOrder: { mate: { L: false } }, ...(id === "hook" ? {} : { newScene: { pirate: "the same moment below as the opening: the film loops" } }) }); };
 opening("hook", 0, S.s2);
 // 2. ONE IDEA: SO THEY NEVER FOUGHT BLIND. The mate at the table, his hand feeling along its edge, his eyes screwed up
 const TBL_AT = inCabin([0.5, 0, -0.18]), YW = 70, TN = -20;

@@ -55,6 +55,9 @@ export type Shot = {
    *  the first shot's first frame (and its place and turn), so that the cut from the last frame to the first is no bigger than a frame
    *  of movement (the eye patch Short v1q: at the loop the pirate's head jumped from tilted and frowning to straight and smiling) */
   loopInto?: { shot: Shot; over: number };
+  /** an arm drawn after the head (true) or behind it (false) for the whole shot, per figure and side (body terms): for a stance where the
+   *  settled choice put the shoulder cap over the beard (the mate's arm in the opening of the eye patch Short, Jesper on v1u) */
+  armOrder?: Record<string, { L?: boolean; R?: boolean }>;
   /** named things of the world that are not there in this shot (the world lists them in userData.named) */
   hide?: string[];
   cast: (t: number, T: number) => Actor[];
@@ -257,6 +260,7 @@ export const castOf = (s: Shot): Shot["cast"] => { const had = LOCKED.get(s); if
         fore: md === "free" ? settleFree(b(r.fore[sd]), b(r.freeFore[sd])) : md === "v1t" ? settle(b(r.fore[sd])) : b(r.fore[sd]),
         arm: md === "free" ? settleFree(b(r.after[sd]), b(r.freeArm[sd]), b(r.face[sd])) : null });
       const L = side("L"), R = side("R"); fore.set(k, { fore: { L: L.fore, R: R.fore }, arm: r.has && L.arm && R.arm ? { L: L.arm, R: R.arm } : null });
+      { const fx = s.armOrder?.[k], e = fore.get(k)!; if (fx && e.arm) for (const sd of ["L", "R"] as const) { const v = fx[sd]; if (v !== undefined) e.arm[sd] = e.arm[sd].map(() => v); } }
       // (a shot that loops into the first one ends in that shot's first frame: its last stretch where the parts overlap takes the order the
       //  first frame has, so that nothing changes at the seam; switched with the other options half way through the blend it jumped, 1072)
       const lp = s.loopInto; if (md === "free" && lp) { const b0 = castOf(lp.shot)(0, lp.shot.a).find((x) => x.name === k), e = fore.get(k)!;

@@ -14,7 +14,6 @@ import { CABIN, inCabin, cabinSea } from "../world/cabin";
 import { glow } from "../world/fire";
 import { logBook, clothFlag, piratePrint } from "../world/props";
 import { rod, mesh, box, cyl, contactShadow, type CardLight } from "../world/kit";
-import { reachArmFrom } from "../world/people";
 import { PIRATE_D, MATE_SHORT_D } from "../looks";
 import { POSES, type Pose, type Seg } from "../rig";
 import type { Design, FigOpts, Face } from "../designs/common";
@@ -160,11 +159,10 @@ const mateTable = (at: V3, V: Lens, turn: number, len: number) => {
   ease(m, 0.15, { ...REST_R, armL: [[12, 8], [30, -4]], head: [6, 7, 3], lean: 8 }, 0.8, { ...R2, face: SEARCH(-0.7) });
   ease(m, 1.05, { ...REST_R, armL: [[6, 12], [24, -10]], head: [-5, 6, -3], lean: 8 }, 0.8, { ...R2, face: SEARCH(0.7) });
   ease(m, 1.95, { ...REST_R, armL: L0, head: [8, 5, 4], lean: 8 }, 0.8, { ...R2, face: SEARCH(-0.6) });
-  // (the arm worked out again on every frame against where his body really is that frame, so the fist stays on its one point of the top while
-  //  his body breathes and sways: with the angles alone it slid 32-37 mm round in a slow loop, the review of v1w)
-  const HOLD = edgeAt(0.34);
-  const FROM = REST_R.armR as [Seg, Seg];      // (from the resting arm, adjusted as little as it must each frame: the full search picked another elbow on some frames)
-  return { cast: (t: number) => { const a = on("mate", MATE_SHORT_D, m, t, FL, {}, 5); return { ...a, pose: { ...a.pose, armR: reachArmFrom(MATE_SHORT_D, a.pose, {}, { at: a.at, heading: a.heading, h: HM }, V.cam.pos, "R", HOLD, FROM) } }; } };
+  // (his weight sway held still in this shot, roll and px at 0: it rolled his spine ±1.3 degrees and slid his pelvis 20 mm, and the resting fist
+  //  went round 32-37 mm on the top with it, the review of v1w. Re-solving the arm each frame instead made the elbow jump 10-37 px. With the
+  //  body still the arm keeps its resting angles and the fist stays on its point; his head, eyes and free arm still move)
+  return { cast: (t: number) => { const a = on("mate", MATE_SHORT_D, m, t, FL, {}, 5); return { ...a, pose: { ...a.pose, roll: 0, px: 0 } }; } };
 };
 
 // below deck: the shutters closed over the windows, the room lit only by the lantern on the table: dark, with warm light on the faces

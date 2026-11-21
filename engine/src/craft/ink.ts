@@ -152,9 +152,15 @@ export type HandKind = "relaxed" | "open" | "fist" | "point" | "grip" | "two" | 
 /** a hand at the wrist, fingers along `deg`; thumbFlip puts the thumb on the other side; cut = straight-edged (woodcut, card) */
 /** layer = "fingers": only the four closed fingers of a hand that holds something, without the heel of the hand and the thumb. The
  *  stage draws them on a card of their own in front of the thing held, so that the thing lies between the palm and the fingers */
+/** which drawing a hand gets: a relaxed hand is drawn hanging (edge on, fingers curled) within 50 degrees of hanging and as a loose mitten
+ *  beyond; the clip check reads it to fail a hand whose drawing changes in one frame while it hardly moves */
+export const drawnHandKind = (kind: HandKind, deg: number) => (kind === "relaxed" ? (Math.abs((((deg - 90) % 360) + 540) % 360 - 180) < 50 ? "relaxed-hanging" : "relaxed-mitten") : kind);
 export const hand = (k: Ink, wrist: P2, deg: number, h: number, kind: HandKind, col: string, thumbFlip: boolean, cut = false, ol = k.ol, layer: "all" | "fingers" = "all") => {
   const S = (pts: P2[]) => pts.map(([x, y]) => [x * h, y * h] as P2), body = (pts: P2[]) => (cut ? S(pts) : spline(S(pts), true, 5));
   const fin = (x: number, y: number, a: number, l: number, w0 = 0.085, w1 = 0.07) => seg([x * h, y * h], [(x + l * Math.cos(a * R)) * h, (y + l * Math.sin(a * R)) * h], w0 * h, w1 * h, 0, 0.3, cut);
+  // (a pointing finger always on the hand's upper side: with the thumb flip it could come out under the fist, palm up and the finger
+  //  pointing down, the review of the shot types v1)
+  if (kind === "point") thumbFlip = Math.cos(deg * R) < 0;
   const g = k.g; g.save(); g.translate(wrist[0], wrist[1]); g.rotate(deg * R); if (thumbFlip) g.scale(1, -1);
   const thin = ol * 0.5;
   if (kind === "thumb" && layer === "fingers") {

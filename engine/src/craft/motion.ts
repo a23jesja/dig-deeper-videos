@@ -96,6 +96,9 @@ export class Mover {
     return { t0, t1: 1e9, x: P[0] + l[0] * k, z: P[1] + l[1] * k, ang: psi + (s === "L" ? 11 : -11), h, run };
   }
   private lastPlant(s: Side) { return this.feet[s][this.feet[s].length - 1]; }
+  /** the feet at the start, laid again with the present width: the foot that steps first d leg lengths behind the other, so that in
+   *  profile neither stands on the other and the first step passes rather than rising over it (the review of the shot types v1) */
+  stance(d: number) { const f = fwd(this.psi); for (const s of ["L", "R"] as Side[]) { const b = s === this.next ? d : 0; this.feet[s][0] = this.spot(s, [this.P[0] - f[0] * b, this.P[1] - f[1] * b], this.psi, -1e9); } return this; }
   /** lift a foot at `lift` and put it down at `land` on a new spot */
   private put(s: Side, lift: number, land: number, p: Plant) {
     const prev = this.lastPlant(s); prev.t1 = Math.max(prev.t0 + 0.02, Math.min(lift, land - 0.06)); p.t0 = land; this.feet[s].push(p);
@@ -104,7 +107,9 @@ export class Mover {
   /** walk `dist` leg lengths the way the figure faces, then bring the feet together.
    *  keep = do not stop: no closing step and no straightening up, so the next move (more running, a stumble, a fall) grows out of
    *  this one. A walk or run that follows a kept one carries on in stride. */
-  walk(dist: number, o: { run?: boolean; step?: number; tau?: number; keep?: boolean } = {}) {
+  /** stagger: the closing step lands this many leg lengths behind the other foot (default 0, beside it). In profile a foot closing beside
+   *  the other came down onto it and sank into the other shoe (the review of the shot types v1) */
+  walk(dist: number, o: { run?: boolean; step?: number; tau?: number; keep?: boolean; stagger?: number } = {}) {
     const run = !!o.run, tau = o.tau ?? (run ? 0.33 : 0.5), ref = o.step ?? (run ? 1.22 : 0.52), cont = this.moving;
     const n = Math.max(cont ? 1 : 2, Math.round(dist / ref + (cont ? 0 : 0.5))), L = cont ? dist / n : dist / (n - 0.5), T0 = this.t, d = fwd(this.psi), P0 = this.P;
     // a running foot is on the ground for under half a step, so between two feet both are in the air
@@ -115,7 +120,7 @@ export class Mover {
     for (let k = 1; k <= n + (o.keep ? 0 : 1); k++) {
       const land = k <= n ? m(k) - half * tau : m(n) + (run ? 0.5 : 0.45) * tau, prev = this.lastPlant(s);
       const lift = prev.out !== undefined ? prev.out : k <= 2 ? Math.max(T0 + 0.02, land - (run ? 1.05 : k === 1 ? 0.8 : 0.9) * tau) : m(k - 2) + half * tau;
-      const pl = this.spot(s, at(pos(Math.min(k, n))), this.psi, land, k > n ? 0.05 : run ? 0.36 : 0.11, run); if (k <= n) pl.out = m(k) + half * tau;
+      const pl = this.spot(s, at(pos(Math.min(k, n)) - (k > n ? o.stagger ?? 0 : 0)), this.psi, land, k > n ? 0.05 : run ? 0.36 : 0.11, run); if (k <= n) pl.out = m(k) + half * tau;
       this.put(s, lift, land, pl);
       s = other(s);
     }

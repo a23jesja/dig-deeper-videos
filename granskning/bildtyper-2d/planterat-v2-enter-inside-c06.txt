@@ -1,0 +1,6 @@
+== c06 06 Reagera (4.00 s, 120 frames, full shot)
+   views: sir q-right 0-34 | side-right 35-42 | q-right 43-71 | side-right 72-119
+   shoe past the line's top at most 0.0 px, slide at most 0.0 px; pupils min 50 %, step max 10 %; largest joint move in a frame 39 px; figure 57 % of the height; head past the edge 0 px; nearest hand to the crab 140 px
+   crab: enters from the right but starts inside the picture (668)
+   by kind: 1 x "crab: enters from the right but starts inside the picture (#)"
+   CLIP CHECK FAILED: 1

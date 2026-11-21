@@ -14,6 +14,7 @@ export const FM = { W: 1080, H: 1920, FPS: 30, GY: 1500, LINE: 12, PPM: 620, HM:
 export const D = FLAT[0];
 export const MODE = { v3: false };
 export { shoeDrawn, FLAT_SPECS } from "../designs/flat";
+export { drawnHandKind } from "../ink";
 export const hipLL = (who: Who) => { const P = D.props(who); return P.hipW / (P.thigh + P.shin); };
 const tallOf = (who: Who) => { const P = D.props(who); return P.thigh + P.shin + P.ankle + P.spine + P.neck + P.head; };
 /** heights in metres: Sir 1.0, Ada 0.92 of him */
@@ -34,13 +35,15 @@ export type Cast = { name: string; m: MM; who: Who; hands?: { L: HS; R: HS }; mo
   pose?: (t: number, p: Pose, heading: number) => Pose };
 
 /** a figure on the ground at x metres, heading in degrees (90 = toward the picture's right, 0 = toward the lens, -90 = left) */
-export const figure = (who: Who, x: number, heading: number): MM => { const m = mover(D, heightOf(who), x, 0, heading); m.w = hipLL(who); return m; };
+export const figure = (who: Who, x: number, heading: number, stagger = 0.5): MM => { const m = mover(D, heightOf(who), x, 0, heading); m.w = hipLL(who); m.stance(stagger); return m; };
 
 /** the cast at time t: where each stands in the picture (x in pixels), the solved skeleton and the drawing options */
 export const castAt = (cast: Cast[], t: number): Fig[] => cast.map((c) => {
   const a = play(c.name, D, c.m, t, [0, 0, 0], heightOf(c.who), { blink: true, seed: c.seed ?? (c.who === "sir" ? 3 : 7), extra: { who: c.who } });
-  // blinks open, shut, open with no half lid (a half lid covered the pupil); never in fright
-  const f0 = { pupil: 1, ...a.o.face }, lid0 = f0.lid ?? 0.16, f1 = lid0 > 0.3 ? { ...f0, lid: lid0 > 0.55 ? 1 : 0.16 } : f0;
+  // blinks open, half, shut, half, open (motion.ts BLINK, each step two frames); the half lid at 0.42, so the pupil still shows under it
+  // (shut and open with nothing between jumped, the review of the shot types v1; a half lid at 0.5 had covered the pupil, the review of
+  // the motion test v4); never in fright
+  const f0 = { pupil: 1, ...a.o.face }, lid0 = f0.lid ?? 0.16, f1 = lid0 > 0.3 ? { ...f0, lid: lid0 > 0.75 ? 1 : 0.42 } : f0;
   let face: Face = (f1.wide ?? 0) > 0.5 ? { ...f1, lid: 0 } : f1;
   if (c.mouth) { const f = Math.round(t * FM.FPS); if (f >= 0 && f < c.mouth.mouth.length && c.mouth.mouth[f] > 0) face = { ...face, mouth: c.mouth.mouth[f] }; }
   const fix = (l: Pose["legL"]) => (l && (l as { th?: unknown }).th === undefined ? { ...l, x: ((l as { x?: number }).x ?? 0) - hipLL(c.who) } : l);
@@ -72,14 +75,25 @@ export const reach = (who: Who, x: number, pose: Pose, heading: number, side: "L
 
 export type Seat = { x0: number; x1: number; top: number };
 export type Appear = { name: string; t0: number; from: "left" | "right" | "hole"; at: (t: number) => [number, number] | null; hole?: { x: number; drawnFrom: number } };
-export type Point = { who: string; t0: number; t1: number; side: "L" | "R"; target: [number, number] };
+/** horizon: the target lies on the horizon at this height (far in depth however near in the picture) */
+export type Point = { who: string; t0: number; t1: number; side: "L" | "R"; target: [number, number]; horizon?: number };
 /** a hand that must be at a place from t0 to t1 (a handle, a box's side, a knee): its wrist within tol px */
 export type Contact = { who: string; side: "L" | "R"; t0: number; t1: number; at: (t: number) => [number, number]; tol: number; what: string };
+/** the camera: the world point at the picture's middle and the zoom (the world is 1080 x 1920 at zoom 1). Shot types (the review of the
+ *  shot types v1: at zoom 1 Sir was too small for the shot to read on a phone): "medium" about 2.7, the figure filling most of the height;
+ *  "full" about 1.7, the whole figure filling at least half the height */
+export type Cam = { cx: number; cy: number; z: number };
+export const camFor = (z: number, cx: number, top: number): Cam => ({ cx, cy: top + FM.H / (2 * z), z });
+export const viewOf = (c: Cam) => ({ x0: c.cx - FM.W / (2 * c.z), x1: c.cx + FM.W / (2 * c.z), y0: c.cy - FM.H / (2 * c.z), y1: c.cy + FM.H / (2 * c.z) });
+export type Solid = { name: string; x0: number; x1: number; top: number };
 /** what a clip hands to the checks and the drawing */
 export type Clip = { id: string; title: string; seconds: number; cast: Cast[]; events: Record<string, number>; audio?: string;
   back?: (g: CanvasRenderingContext2D, t: number) => void; front?: (g: CanvasRenderingContext2D, t: number, figs: Fig[]) => void;
   /** after each figure is drawn (a held thing, a thumb over it) */
   over?: (g: CanvasRenderingContext2D, t: number, f: Fig) => void;
-  seats?: Seat[]; appear?: Appear[]; points?: Point[]; contacts?: Contact[]; bg?: number;
+  seats?: Seat[]; appear?: Appear[]; points?: Point[]; contacts?: Contact[]; bg?: number; bgOpts?: { spade?: boolean };
+  camera: (t: number) => Cam; shot: "medium" | "full"; solids?: Solid[]; door?: { h: number };
+  /** a clip that draws its own background (bg -1) */
+  ownBg?: (g: CanvasRenderingContext2D, t: number) => void;
   /** a figure that may stand past the picture's edge at time t (walking in or out) */
   offFrameOK?: (name: string, t: number) => boolean; running?: (name: string, t: number) => boolean };

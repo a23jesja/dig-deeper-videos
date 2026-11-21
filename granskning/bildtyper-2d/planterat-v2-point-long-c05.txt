@@ -1,0 +1,24 @@
+== c05 05 Peka (4.00 s, 120 frames, medium shot)
+   views: sir side-right 0-119
+   shoe past the line's top at most 0.0 px, slide at most 0.0 px; pupils min 100 %, step max 0 %; largest joint move in a frame 28 px; figure 73 % of the height; head past the edge 0 px; point held 1.50 s, finger out 28 frames
+   68 sir: the finger aims 21 degrees off the target
+   69 sir: the finger aims 28 degrees off the target
+   70 sir: the finger aims 35 degrees off the target
+   71 sir: the finger aims 41 degrees off the target
+   72 sir: the finger aims 47 degrees off the target
+   73 sir: the finger aims 51 degrees off the target
+   74 sir: the finger aims 54 degrees off the target
+   75 sir: the finger aims 55 degrees off the target
+   76 sir: the finger aims 56 degrees off the target
+   77 sir: the finger aims 56 degrees off the target
+   78 sir: the finger aims 56 degrees off the target
+   79 sir: the finger aims 56 degrees off the target
+   80 sir: the finger aims 56 degrees off the target
+   81 sir: the finger aims 56 degrees off the target
+   82 sir: the finger aims 56 degrees off the target
+   83 sir: the finger aims 56 degrees off the target
+   84 sir: the finger aims 57 degrees off the target
+   85 sir: the finger aims 57 degrees off the target
+   point by sir: held 1.50 s, over one second
+   by kind: 18 x "sir: the finger aims # degrees off the target"; 1 x "point by sir: held # s, over one second"
+   CLIP CHECK FAILED: 19

@@ -119,7 +119,8 @@ export const figsAt = (t: number): Fig[] => {
     // (no blink while frightened: a blink and the lids of a smug half look showed in the middle of the fright, the review of v3)
     // (a blink goes open, shut, open with no half lid between: half shut, the lid covered the pupil and the eye's lower white stood empty, the
     //  independent review of v4)
-    const f0 = { pupil: 1, ...a.o.face }, lid0 = f0.lid ?? 0.16, f1 = lid0 > 0.3 ? { ...f0, lid: lid0 > 0.55 ? 1 : 0.16 } : f0;
+    // (v5 of the shot types: open, half (0.42, the pupil showing), shut, half, open; open-shut-open jumped)
+    const f0 = { pupil: 1, ...a.o.face }, lid0 = f0.lid ?? 0.16, f1 = lid0 > 0.3 ? { ...f0, lid: lid0 > 0.75 ? 1 : 0.42 } : f0;
     const face0 = (f1.wide ?? 0) > 0.5 ? { ...f1, lid: 0 } : f1;
     const face = name === "sir" && t >= MOUTH.t0 - 0.05 && t <= MOUTH.t0 + MOUTH.len + 0.1 ? { ...face0, mouth: MOUTH.mouth[f] } : face0;
     const fix = (l: Pose["legL"]) => (l && (l as { th?: unknown }).th === undefined ? { ...l, x: ((l as { x?: number }).x ?? 0) - hipLL(who) } : l);

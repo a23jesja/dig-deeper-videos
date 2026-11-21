@@ -32,7 +32,7 @@ import { seated } from "../designs/common";
 import { MOUS_MIN } from "../cast";
 /** the moustache check's tip rule (a tip outside the head's outline): off for the eye patch v1w by the review's decision of 21 Nov (the tip at
  *  the edge in three-quarter views is in every version and goes to Jesper as a known fault); MOUS_TIP=1 in film_info turns it on */
-export const MOUS_CHECK = { tip: false };
+export const MOUS_CHECK = { tip: true };      // (on again from v1x: the far half bent inside the outline gives 0 faults)
 
 export type MotionFault = { shot: string; who: string; what: string; f0: number; f1: number };
 /** for setting the limits: MOTION_DEBUG.on = true keeps the largest value of each measure (film_info <film> motion with MOTION_DEBUG=1) */

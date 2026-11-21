@@ -125,11 +125,13 @@ const FEEL: [[Seg, Seg], [Seg, Seg]][] = [
   [[[16, 6], [26, 4]], [[6, 8], [16, 6]]],
   [[[8, 8], [16, 6]], [[16, 6], [26, 4]]],
   [[[14, 4], [22, 2]], [[10, 10], [18, 8]]]];      // (low and a little out from the body, the hands loose: further out or forward, the hand was drawn palm up, "presenting", the independent review of v1f)
-const mate = (at: V3, V: Lens, turn: number, v: number, len: number, o: { hang?: boolean; shout?: boolean; stumble?: number; heads?: number } = {}) => {
+const mate = (at: V3, V: Lens, turn: number, v: number, len: number, o: { hang?: boolean; shout?: boolean; stumble?: number; heads?: number; armOut?: number } = {}) => {
   // (his body turned MT of the asked turn from the lens: at full turn his far eye, nose and moustache were cut by the head's outline, the
   //  face test after the independent reviewer of v1p)
   const m = mover(MATE_SHORT_D, HM, at[0], at[2], V.toward(at[0], at[2], turn * MT)); m.w = 0.09; m.stand(9);
-  const [A, B] = o.hang ? [REST.armL as [Seg, Seg], REST.armR as [Seg, Seg]] : FEEL[v % 3], R2 = { handL: "relaxed" as const, handR: "relaxed" as const }, sw = (q: [Seg, Seg], k: number): [Seg, Seg] => [[q[0][0] + 8 * k, q[0][1] + 4], [q[1][0] + 8 * k, q[1][1] + 6]];
+  // (armOut: his left upper arm held a little out from the body, so a shoulder shows beside the beard: in the opening the sleeve's outer line
+  //  ran straight on from the beard's edge and the arm seemed to grow out of it, the independent review of v1w)
+  const [A0, B] = o.hang ? [REST.armL as [Seg, Seg], REST.armR as [Seg, Seg]] : FEEL[v % 3], A: [Seg, Seg] = o.armOut ? [[A0[0][0], A0[0][1] + o.armOut], [A0[1][0], A0[1][1] + o.armOut * 0.6]] : A0, R2 = { handL: "relaxed" as const, handR: "relaxed" as const }, sw = (q: [Seg, Seg], k: number): [Seg, Seg] => [[q[0][0] + 8 * k, q[0][1] + 4], [q[1][0] + 8 * k, q[1][1] + 6]];
   const F0 = o.shout ? SHOUT : SEARCH(0.55), F1 = o.shout ? { ...SHOUT, gaze: [-0.4, -0.2] as [number, number] } : SEARCH(-0.55);      // (the eyes search 0.55 each way: at 0.8, with the head's swing, his pupils crossed the eyes fast enough to strobe, the flicker check of 20 Nov)
   const hs = o.heads ?? (o.shout ? 0.12 : HS), pk = o.shout ? 0.35 : 1;      // (shouting in the close-up: the swing smaller, at 0.3 his face slid 23 px a frame and strobed, the flicker check of 20 Nov)      // (at full swing his far eye was cut by the head's outline, the independent review of v1m)
   ease(m, -1, { armL: A, armR: B, head: [18 * hs, -4, 0], lean: 6 }, 0.01, { ...R2, face: F0 });
@@ -213,7 +215,7 @@ const S = {
 // 1. (0 - 2.4) WHY DID PIRATES WEAR EYE PATCHES? In the dark below, the pirate reads calmly, his head following the lines from the first
 //    frame, while his shipmate behind him feels the air and stumbles. The last shot is this one again. (No sound effect on the first
 //    frames: the creak on frame 0 and the thud at 0.4 s, a short low buzzing saw and a low thump, sounded like a fart, Jesper on v1u)
-const opening = (id: string, a: number, b: number) => { const r = reader(PIR_AT, FL, WIDE, 22, false, b - a, { lines: true, ...(id === "end" ? { puzzled: 0.45 } : {}) }), mt = mate(MAT_AT, WIDE, 48, 2, b - a, { stumble: 0.35, heads: 0.16 });      // (heads 0.32: at 0.5 his eyes moved 12 px a frame and his pupils slid across them, the flicker check of 20 Nov)      // (turned 65 with his head swinging 24 more, he stood in bare profile on frame one, the independent review of v1f)
+const opening = (id: string, a: number, b: number) => { const r = reader(PIR_AT, FL, WIDE, 22, false, b - a, { lines: true, ...(id === "end" ? { puzzled: 0.45 } : {}) }), mt = mate(MAT_AT, WIDE, 48, 2, b - a, { stumble: 0.35, heads: 0.16, armOut: 12 });      // (heads 0.32: at 0.5 his eyes moved 12 px a frame and his pupils slid across them, the flicker check of 20 Nov)      // (turned 65 with his head swinging 24 more, he stood in bare profile on frame one, the independent review of v1f)
   add({ id, a, b, V: WIDE, cast: [r.cast, mt.cast], things: r.book, sun: false, patch: "B", look: r.look, armOrder: { mate: { L: false } }, ...(id === "hook" ? {} : { newScene: { pirate: "the same moment below as the opening: the film loops" } }) }); };
 opening("hook", 0, S.s2);
 // 2. ONE IDEA: SO THEY NEVER FOUGHT BLIND. The mate at the table, his hand feeling along its edge, his eyes screwed up
@@ -233,7 +235,7 @@ const TBL_AT = inCabin([0.5, 0, -0.18]), YW = 70, TN = -20;
 //    corner, the review of v1b)
 { const SV = lens(-10.9, SUNH, SUNZ, 1, 0, SUNP, 50), P3 = DECK.spot(3.5, 0.05), MS = DECK.spot(5.1, -0.8), PS: V3 = [P3[0], MD, P3[1]];
   const r = reader(PS, MD, SV, 24, true, S.s4 - S.s3, { moves: true }), mm = mover(MATE_SHORT_D, HM, MS[0], MS[1], SV.toward(MS[0], MS[1], -24)); mm.w = 0.09; mm.stand(9);
-  ease(mm, -1, { ...REST, head: [8, -6, 0], lean: 3 }, 0.01, { ...LOOSE, face: SQUINT }); ease(mm, 0.5, { ...REST, head: [-6, -9, 0], lean: 5, py: -0.01 }, 1.0, { ...LOOSE, face: { ...SQUINT, lid: 0.75 } });
+  ease(mm, -1, { ...REST, head: [8, -6, 0], lean: 3 }, 0.01, { ...LOOSE, face: SQUINT }); ease(mm, 0.5, { ...REST, head: [-6, -9, 0], lean: 5, py: -0.01 }, 1.0, { ...LOOSE, face: { ...SQUINT, lid: 0.68 } });      // (0.68: at 0.75 his eyes went from half-open lids to shut arcs in one frame at 6.3 s, the review of v1w; a squint stays a squint)
   add({ id: "sun", a: S.s3, b: S.s4, V: SV, push: 0.08, cast: [r.cast, (t) => on("mate", MATE_SHORT_D, mm, t, MD, {}, 5)], things: r.book, sun: true, patch: "A", look: r.look, newScene: { pirate: "up on deck in the sun: another place than below" } }); }
 // 4. GO BELOW, AND YOU CAN'T SEE A THING. Below, wide and dark, the mate small in the room, feeling his way, stumbling
 { const V = frameOn(MAT_AT2, FL, -32, "full", 50, 1.4), mt = mate(MAT_AT2, V, 60, 0, S.s4b - S.s4, { stumble: 1.0 }); add({ id: "below", a: S.s4, b: S.s4b, V, cast: [mt.cast], sun: false, sounds: [{ t: 0.05, k: "creak", g: 0.6 }, { t: 1.05, k: "thud", g: 0.35 }] }); }

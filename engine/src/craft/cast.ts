@@ -95,7 +95,7 @@ const pin = (k: Ink, p: P2, r = 8) => { if (STYLE.simple) return; k.dot(p[0] + 2
 /** the far half of a moustache is never drawn shorter than this share of the near half (Jesper on the eye patch v1u) */
 export const MOUS_MIN = 0.6;
 /** proof only: the moustache drawn as in v1v (a beard's moustache before the nose, which lay over its far half as the head turned) */
-export const MOUS = { v1v: false, bend: false };
+export const MOUS = { v1v: false, bend: true };
 const inPoly2 = (p: P2, P: P2[]) => { let c = false; for (let i = 0, j = P.length - 1; i < P.length; j = i++) { const [xi, yi] = P[i], [xj, yj] = P[j]; if (yi > p[1] !== yj > p[1] && p[0] < ((xj - xi) * (p[1] - yi)) / (yj - yi || 1e-12) + xi) c = !c; } return c; };
 /** a tapered ribbon along a line of points (a moustache half, a crest): half-widths per point */
 export const ribbon = (pts: P2[], w: number[]): P2[] => {
@@ -177,7 +177,8 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
     return hull([[n1.x, -0.49 * H], [n2.x, -0.49 * H], [c1.x + out * 0.5, -0.385 * H], [c2.x + out * 0.5, -0.385 * H], [t0.x + out, -0.385 * H], [t0.x + out * 0.86, -0.35 * H], [t0.x, -0.335 * H]]); };
   // a beard's moustache is drawn after the nose (before it, the nose card lay over the far half as the head turned and left a stub, the eye
   // patch v1v at 24.8 s, the review of 21 Nov); a waxed moustache keeps its place before the nose
-  let beardPoly: P2[] | null = null;      // (the beard's outline once drawn: the head's outline for the moustache check is the skull's and the beard's)
+  let beardPoly: P2[] | null = null;
+  let mousCollect: P2[][] | null = null;      // (a beard's moustache drawn after the nose: its two halves gathered and drawn as one shape)      // (the beard's outline once drawn: the head's outline for the moustache check is the skull's and the beard's)
   const mousLate = () => !!(L.beard && L.beard2 && !L.mous) && !MOUS.v1v;
   // --- parts that lie behind the skull card ---
   const mousHalf = (s: number) => {
@@ -207,10 +208,12 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
     const tipOk = (q: P2) => [0, 60, 120, 180, 240, 300].every((d) => inHead0([q[0] + tw0 * Math.cos(d * R), q[1] + tw0 * Math.sin(d * R)]));
     const P2 = nearHalf || MOUS.v1v || away || !MOUS.bend ? P1 : (() => { const out: P2[] = [P1[0]]; let rot = 0; const sg = (P1[P1.length - 1][0] - P1[0][0]) >= 0 ? 1 : -1;
       for (let n = 1; n < P1.length; n++) { const dx = P1[n][0] - P1[n - 1][0], dy = P1[n][1] - P1[n - 1][1], Ls = Math.hypot(dx, dy), a0 = Math.atan2(dy, dx) + rot; let q: P2 = [out[n - 1][0] + Ls * Math.cos(a0), out[n - 1][1] + Ls * Math.sin(a0)];
-        for (let t = 0; t <= 14; t++) { const a1 = a0 + sg * t * 8 * R, c: P2 = [out[n - 1][0] + Ls * Math.cos(a1), out[n - 1][1] + Ls * Math.sin(a1)]; if (inHead0(c) && (n < P1.length - 1 || tipOk(c))) { q = c; rot += sg * t * 8 * R; break; } }
+        // (down along the cheek first; if no angle that way keeps it inside, up toward the cheekbone)
+        search: for (let t = 0; t <= 14; t++) for (const dir of t ? [sg, -sg] : [sg]) { const a1 = a0 + dir * t * 8 * R, c: P2 = [out[n - 1][0] + Ls * Math.cos(a1), out[n - 1][1] + Ls * Math.sin(a1)]; if (inHead0(c) && (n < P1.length - 1 || tipOk(c))) { q = c; rot += dir * t * 8 * R; break search; } }
         out.push(q); } return out; })();
     const rb = ribbon(P2, [M.w, M.w, M.w * 0.88, M.w * 0.66, M.w * 0.42, M.w * 0.18].map((w) => w * Math.max(farK, MOUS_MIN)));
-    piece(k, rb, M.col);
+    const tipW = M.w * 0.18 * Math.max(farK, MOUS_MIN), tipP = P2[P2.length - 1];
+    if (mousCollect) mousCollect.push(rb, ellPts(tipP[0], tipP[1], tipW, tipW, 0, 0, 360, 12), ellPts(P2[0][0], P2[0][1], M.w * 1.05, M.w * 0.92, 0, 0, 360, 16)); else piece(k, rb, M.col);
     // (for the moustache check: the half's length that shows, the nose card taken off where it lies over it, and how many points of its
     //  outline lie outside the head's outline)
     const nh = mousLate() || away ? null : noseHull(); let vis2 = 0;
@@ -411,17 +414,21 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
       // a shut eye is one arc and nothing else (no outline of the open eye is left round it, which read as spectacles): it bows upward
       // in a smile and downward otherwise
       const cx = (x: number) => { const m = k.g.getTransform(); return m.a * x + m.c * yEye + m.e; }, one = Math.abs(f.shut ?? 0) > 0.5 && Math.sign(cx(q.x) - cx(at(h, 0, 0.8).x)) === Math.sign(f.shut ?? 0);
-      const shut = lid > 0.7 || one,      // (a lid lower than this left a ring with no eye in it: drawn shut instead, the flicker of 20 Nov)
+      // (a lid lower than 0.7 left a ring with no eye in it: drawn shut instead, the flicker of 20 Nov. Between 0.685 and 0.715 the open eye fades
+      //  out as the shut arc fades in, a few frames for a lid that moves slowly past 0.7 (the mate at 6.3 s, the review of v1w); a wider fade
+      //  showed the open eye see-through under the arc. A squint that should stay a squint is kept under 0.685)
+      const shutK = one ? 1 : clamp((lid - 0.685) / 0.03, 0, 1), shut = shutK >= 1,
       bow = (f.smile ?? 0) > 0.4 && !one ? -1 : 1;
       // (squeezed hard shut: a chevron pointing at the nose, the lids pressed together, Jesper 20 Nov "eyes squeezed shut")
       const sq = f.squeeze ?? 0;
       if (sq > 0.5) { const tip = q.x - s * rx * 0.55, back = q.x + s * rx * 0.9; k.line([[back, yEye - ry * 0.62], [tip, yEye], [back, yEye + ry * 0.62]], 7.2 * u, LINE, "round"); }
       else if (shut) k.line(spline([[q.x - rx * 0.86, yEye - bow * ry * 0.14], [q.x, yEye + bow * ry * 0.34], [q.x + rx * 0.86, yEye - bow * ry * 0.14]], false, 8), 6.4 * u);
-      else { k.shape(ball, "#fffdf6"); k.clip(ball, () => {
+      else { const a0 = k.g.globalAlpha; if (shutK > 0) k.g.globalAlpha = a0 * (1 - shutK); k.shape(ball, "#fffdf6"); k.clip(ball, () => {
         const px = q.x + clamp(gz[0] * 0.5 + h.sin * 0.22 + ahead * 0.5, -0.56, 0.56) * rx, py = yEye + gz[1] * ry * 0.5; k.mark(s < 0 ? "pupilA" : "pupilB", px, py); const pu = Math.max(0.5, Math.min(1.6, f.pupil ?? 1)); k.shape(ellPts(px, py, rx * 0.5 * pu, ry * 0.5 * pu), "#2a1f1a", 0); k.dot(px - rx * 0.17, py - ry * 0.2, r * 0.13, "#ffffff");
         if (lid > (STYLE.simple ? 0.35 : 0.01)) { const y = yEye - ry + 2 * ry * lid; k.shape([[q.x - rx - 2, yEye - ry - 2], [q.x + rx + 2, yEye - ry - 2], [q.x + rx + 2, y], [q.x - rx - 2, y]], STYLE.simple ? skin : shade(skin, 0.86), 0); if (!STYLE.simple) { const lk = clamp((lid - 0.01) / 0.09, 0, 1), lw = 4.6 * u * lk * lk * (3 - 2 * lk); if (lw > 0.05) k.line([[q.x - rx - 2, y], [q.x + rx + 2, y]], lw, LINE, "butt"); } }      // (the lid line grows from nothing at lid 0.01 to its full width at 0.1: it was drawn whole as soon as the lid passed 0.01, and came in one frame, the review of v1r)
       });
-      k.shape(ball, null); }
+      k.shape(ball, null); k.g.globalAlpha = a0;
+      if (shutK > 0) { k.g.globalAlpha = a0 * shutK; k.line(spline([[q.x - rx * 0.86, yEye - bow * ry * 0.14], [q.x, yEye + bow * ry * 0.34], [q.x + rx * 0.86, yEye - bow * ry * 0.14]], false, 8), 6.4 * u); k.g.globalAlpha = a0; } }
       // (a tear under the eye on the right of the picture, a pale blue drop with its outline and a glint, and the wet trail to it)
       if ((f.tear ?? 0) > 0.05 && s > 0) { const tr = r * 0.62 * Math.min(1, f.tear ?? 0), tx = q.x + rx * 0.55, ty = yEye + ry * 1.35 + tr * 1.2;
         k.line([[q.x + rx * 0.3, yEye + ry * 0.85], [tx, ty - tr * 1.2]], 5 * u, "#8fd3ff", "round");
@@ -461,7 +468,8 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
       monocle();
       strap();
     }
-    if (!away && mousLate()) { mousHalf(far); mousHalf(-far); if (!tipBehind) pipe(); }
+    // (one shape, one outline: the near half read as a block with a straight end standing higher than the far half, a step at the nose, the review of v1w)
+    if (!away && mousLate()) { mousCollect = []; mousHalf(far); mousHalf(-far); const parts = mousCollect; mousCollect = null; if (parts.length) k.group(parts, L.beard!, k.ol / 1.7); if (!tipBehind) pipe(); }
   }
   // (the part on top grows with its outline: drawn with the full outline from the first sliver, a thin ear stood beside the head as a dark
   //  stick or ring and came and went in one frame, the eye patch Short v1r at 15.2 s and 19.2 s, the independent review of 20 Nov)

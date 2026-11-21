@@ -1,4 +1,6 @@
-# STOPP: Alcatraz 1962, manus, källor och bildlista (v2, 21 november 2026), omgång 2 av 3
+# STOPP: Alcatraz 1962, manus, källor och bildlista (v2, 21 november 2026), omgång 2 av 3: GODKÄND
+
+Godkänd av granskaren med en ändring i bild 13: vakten drar undan filten så att det falska huvudet syns. Att huvudet rullade säger ingen av de lästa källorna.
 
 Ingenting är byggt eller renderat, och inga ElevenLabs-anrop är gjorda. Stilen är platt 2D A Knopp. Berättaren är George (ElevenLabs); Sir Digsworth syns inte i bild (Jesper: "Sir digsworth måste inte vara med i varje video utan kan vara berättaren", inskrivet i DAILY-RULES, 19d4c5b).
 
@@ -78,7 +80,7 @@ Det kortar också manuset till cirka 38 s.
 | 10 | 19,0–21,0 | Nerför ett rör, mot vattnet. | klättrar ner | röret | klättra saknas | rör |
 | 11 | 21,0–24,0 | Flotten skjuts ut i svart vatten med vågor. | paddlar | flotten på vågorna | hav (finns) | flotte, paddla |
 | 12 | 24,0–26,0 | Extrem närbild: en av männens ögon på vattnet, med strålkastarens ljus i dem. | ögonen | ögonnärbild, ljuset | miner | — |
-| 13 | 26,0–28,5 | Soluppgång. Vakten rycker i en filt, och huvudet rullar ner på golvet. | vakten drar, huvudet rullar | huvudet (stel sak) | — | filt |
+| 13 | 26,0–28,5 | Soluppgång. Vakten drar undan filten, och det falska huvudet syns. | vakten drar, ryck i kroppen | filten, huvudet | — | filt |
 | 14 | 28,5–30,5 | Vakten blir rädd, och sirenen blinkar. | rädd min, ryck | sirenens ljus | rädd min, recoil | siren |
 | 15 | 30,5–32,5 | Händer sätter upp tre efterlysningsaffischer på en tavla. | bara händerna | affischerna | grip | affischer, tavla |
 | 16 | 32,5–36,0 | Den tomma bukten i morgonljus. Kameran glider över vattnet mot staden, där en vind lyfter en affisch. | kameran, affischen | vattnet, affischen | hav | stad i fjärran |

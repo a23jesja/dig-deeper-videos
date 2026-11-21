@@ -214,7 +214,11 @@ const drawFlat = (c: FlatSpec) => (k: Ink, sk: Sk, o: FigOpts) => {
 /** a shoe as drawn: no part of it below the ground line (y = 0): turning, lifting or setting down a foot, its toe went 5-10 px through the
  *  line (the review of the motion test). clamp = false gives the shoe as it was (the check's planted fault) */
 export const shoeDrawn = (sk: Sk, side: Side, W: number, clamp = true) => {
-  const sh = shoePts(sk, side, W, 0.34, 0.2), cl = (p: P2): P2 => [p[0], clamp ? Math.min(p[1], 0) : p[1]];
+  const sh = shoePts(sk, side, W, 0.34, 0.2);
+  // (a foot whose toe or heel touches the ground has its drawn shoe touch it too: with the heel a little up the shoe's rounded toe stood
+  //  5-11 px above the line, a floating foot, the independent review of v4. The shoe comes down until its lowest point is on the line)
+  const touch = clamp && Math.max(sk.j[`heel${side}`][1], sk.j[`toe${side}`][1]) > -0.5, low = Math.max(...sh.pts.map((p) => p[1])), dy = touch && low < 0 ? -low : 0;
+  const cl = (p: P2): P2 => [p[0], clamp ? Math.min(p[1] + dy, 0) : p[1]];
   return { pts: sh.pts.map(cl), a: cl(sh.O), b: cl(add(sh.O, sh.ex, sh.span)) };
 };
 const design = (c: FlatSpec): Design => ({ id: c.id, name: c.name, ol: c.ol, faceW: c.faceW, props: (w: Who) => (w === "baker" ? c.other.P : c.sir.P), draw: drawFlat(c) });
@@ -236,8 +240,8 @@ const A_SPEC: FlatSpec = {
     for (const s of [-1, 1]) fl(k, ellPts(s * 126, -118, 24, 30), CA.skin);
     fl(k, ellPts(0, -128, 128, 132, 0, 0, 360, 60), CA.skin);
     for (const s of [-1, 1]) { const [i, o] = browEnds(r, s * 46 + tx, -172, 1, 20, s); k.line([i, o], 15 + k.ol * 1.7); k.line([i, o], 15, CA.hair); }
-    for (const s of [-1, 1]) eyeA(k, s * 46 + tx, -118, 1, r, CA.skin, -s);
-    monoRing(k, -46 + tx, -118, 42, 52, 7);
+    // (the eyes and the monocle are drawn after the mouth, the pipe and the moustache, below: drawn before, the moustache lay over the eyes'
+    //  lower edge and the monocle's ring while the monocle's cord lay on top, the independent review of the motion test v4)
     // (the mouth always shows under the moustache, closed a small dark mouth, so it can move with the voice; the pipe sits in its corner:
     //  Jesper choosing A, 21 Nov)
     const mw = 24 * (1 + 0.4 * r.mouth);
@@ -247,6 +251,8 @@ const A_SPEC: FlatSpec = {
     mouthAt(k, tx + r.smirk * 4, -52, mw, 1, { ...r, mouth: Math.max(r.mouth, 0.13) }, "#e0806e");
     pipeAt(k, [tx + mw - 2, -48], 1, 1, droopOf(r));
     fl(k, at(spline([...MOUS_A, ...mirror(MOUS_A).reverse()]), tx), CA.hair);
+    for (const s of [-1, 1]) eyeA(k, s * 46 + tx, -118, 1, r, CA.skin, -s);
+    monoRing(k, -46 + tx, -118, 42, 52, 7);
     fl(k, ellPts(tx, -84, 17, 14), CA.nose);
     tearAt(k, tx + 54, -82, 1, r.tear); tearAt(k, tx - 38, -82, 0.9, r.tear * 0.7);
     k.g.save(); k.g.translate(-lift * 12, -lift * 50); capFront(k, 124, -206, -312, CA.cap, 12); k.g.restore();
@@ -255,13 +261,13 @@ const A_SPEC: FlatSpec = {
     fl(k, ellPts(0, -128, 124, 132, 0, 0, 360, 60), CA.skin);
     ear(k, -34, -112, 22, 30, CA.skin);
     const [i, o] = browEnds(r, 66, -172, 0.9, 18, -1); k.line([i, o], 14 + k.ol * 1.7); k.line([i, o], 14, CA.hair);      // (side -1: the brow's inner end toward the nose; the other way a scared brow read as cross in profile)
-    eyeA(k, 66, -118, 0.9, { ...r, gaze: [Math.max(0.35, r.gaze[0]), r.gaze[1]] }, CA.skin, 1);
-    if (mono) monoRing(k, 66, -118, 36, 50, 7);
     // (from the side the pipe's mouthpiece is in the mouth under the moustache, not at the moustache's tip: Jesper choosing A. The mouth is drawn
     //  after the stem, so it shows in profile too: it was hidden by the moustache and the pipe while he walked in, the review of the motion test)
     pipeAt(k, [104, -40], 1, 1, droopOf(r));
     mouthAt(k, 92, -40, 14 * (1 + 0.4 * r.mouth), 0.9, { ...r, mouth: Math.max(r.mouth, 0.16) }, "#e0806e");
     fl(k, spline([[70, -72], [108, -76], [130, -80], [140, -100], [151, -94], [140, -66], [112, -58], [74, -62]]), CA.hair);
+    eyeA(k, 66, -118, 0.9, { ...r, gaze: [Math.max(0.35, r.gaze[0]), r.gaze[1]] }, CA.skin, 1);      // (after the moustache, as front and three-quarter)
+    if (mono) monoRing(k, 66, -118, 36, 50, 7);
     fl(k, ellPts(126, -82, 19, 16), CA.nose);
     tearAt(k, 72, -82, 1, r.tear);
     k.g.save(); k.g.translate(-lift * 40, -lift * 50); k.g.rotate(-lift * 0.25); capSide(k, -128, 112, -206, -312, CA.cap, 52); k.g.restore();
@@ -275,19 +281,22 @@ const A_SPEC: FlatSpec = {
     // (a three-quarter head looks the way it faces: the pupils start 0.45 toward that side and the gaze adds to it. At the gaze alone the near
     //  pupil sat in the eye's middle while he pointed at Ada and he seemed to look into the lens, the review of v3)
     const gz: P2 = [Math.min(1, 0.45 + 0.7 * Math.max(0, r.gaze[0])), r.gaze[1]];
-    eyeA(k, 10, -118, 1, { ...r, gaze: gz }, CA.skin, 1); eyeA(k, 76, -118, 0.8, { ...r, gaze: gz }, CA.skin, -1);
-    if (mono === "near") monoRing(k, 10, -118, 42, 52, 7); else monoRing(k, 76, -118, 34, 44, 7);
+    const eyesAndMono = () => { eyeA(k, 10, -118, 1, { ...r, gaze: gz }, CA.skin, 1); eyeA(k, 76, -118, 0.8, { ...r, gaze: gz }, CA.skin, -1);
+      if (mono === "near") monoRing(k, 10, -118, 42, 52, 7); else monoRing(k, 76, -118, 34, 44, 7); };
     // (the mouth nearer the head's middle, kept inside the head's outline with a narrow chin under it, its open height 0.8 of the front's: at
     //  the nose's side the jaw curves up and the open mouth and its lip went out past the outline, over the collar; closed it shows below the
     //  moustache as clearly as from the front. The review of the motion test v3)
     const mw = 18 * (1 + 0.4 * r.mouth), head = ellPts(0, -128, 126, 132, 0, 0, 360, 60);
     // (closing, the mouth comes down 10 below the moustache's edge and keeps a small open shape: at -58 the closed mouth lay under the
     //  moustache, 2-4 px, unseen at phone size)
-    const my = -58 + 10 * (1 - Math.min(1, r.mouth / 0.5));
-    k.clip(head, () => mouthAt(k, 62 + r.smirk * 4, my, mw, 0.8, { ...r, mouth: Math.max(r.mouth, 0.26) }, "#e0806e"));
+    // (at rest the small dark mouth of the front, 0.13 open, no tongue: at 0.26 it stood open with its tongue while he was silent, the
+    //  independent review of v4; it sits 14 lower when closed, under the moustache's edge)
+    const my = -58 + 14 * (1 - Math.min(1, r.mouth / 0.5));
+    k.clip(head, () => mouthAt(k, 62 + r.smirk * 4, my, mw, 0.8, { ...r, mouth: Math.max(r.mouth, 0.13) }, "#e0806e"));
     pipeAt(k, [62 + mw - 2, my + 4], 1, 1, droopOf(r));
     const near = mirror(MOUS_A).map(([x, y]) => [x * 1.05 + 84, y] as P2), far = MOUS_A.map(([x, y]) => [x * 0.34 + 84, y] as P2);
     fl(k, spline([...far, ...near.reverse()]), CA.hair);
+    eyesAndMono();      // (after the moustache: the eyes and the monocle over it, the cord over them as before)
     fl(k, ellPts(104, -84, 17, 14), CA.nose);
     tearAt(k, 84, -82, 0.9, r.tear); tearAt(k, 18, -82, 1, r.tear * 0.7);
     k.g.save(); k.g.translate(-lift * 20 + 18, -lift * 50); capFront(k, 124, -206, -312, CA.cap, 12); k.g.restore();

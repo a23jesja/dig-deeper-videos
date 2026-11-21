@@ -1,0 +1,45 @@
+events (s): T_TURN 1.76, T_POINT 2.46, T_SNAKE 5.00, T_SCARED 5.45, T_RUN_TURN 5.93, T_RUN 6.33, T_ADA_TURN 6.23, T_ADA_POINT 6.78, T_GONE 7.40, LINE 3.10, LINE_END 5.15, END 8.40
+0 ada: the head 71 px past the picture's edge
+1 ada: the head 72 px past the picture's edge
+2 ada: the head 72 px past the picture's edge
+3 ada: the head 72 px past the picture's edge
+4 ada: the head 72 px past the picture's edge
+5 ada: the head 73 px past the picture's edge
+6 ada: the head 73 px past the picture's edge
+7 ada: the head 73 px past the picture's edge
+8 ada: the head 73 px past the picture's edge
+9 ada: the head 73 px past the picture's edge
+10 ada: the head 73 px past the picture's edge
+11 ada: the head 73 px past the picture's edge
+12 ada: the head 73 px past the picture's edge
+13 ada: the head 73 px past the picture's edge
+14 ada: the head 73 px past the picture's edge
+15 ada: the head 73 px past the picture's edge
+16 ada: the head 73 px past the picture's edge
+17 ada: the head 73 px past the picture's edge
+18 sir: the head 36 px past the picture's edge
+18 ada: the head 72 px past the picture's edge
+19 sir: the head 29 px past the picture's edge
+19 ada: the head 72 px past the picture's edge
+20 sir: the head 22 px past the picture's edge
+20 ada: the head 72 px past the picture's edge
+21 sir: the head 15 px past the picture's edge
+21 ada: the head 72 px past the picture's edge
+22 sir: the head 7 px past the picture's edge
+22 ada: the head 71 px past the picture's edge
+23 ada: the head 71 px past the picture's edge
+24 ada: the head 70 px past the picture's edge
+25 ada: the head 70 px past the picture's edge
+26 ada: the head 70 px past the picture's edge
+27 ada: the head 69 px past the picture's edge
+28 ada: the head 69 px past the picture's edge
+29 ada: the head 68 px past the picture's edge
+30 ada: the head 68 px past the picture's edge
+31 ada: the head 67 px past the picture's edge
+32 ada: the head 67 px past the picture's edge
+33 ada: the head 66 px past the picture's edge
+34 ada: the head 66 px past the picture's edge
+shoe outline past the line's top edge at most 0.0 px; smallest pupil 50 %, largest pupil change in a frame 15 %; nearest hand to the snake 76 px
+head past the picture's edge at most 1655 px (Sir walking in and running out not counted)
+largest sink 0.0 px, largest slide of a foot on the ground 0.0 px between two frames
+FLAT CHECK FAILED: 257 faults

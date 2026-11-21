@@ -9,8 +9,9 @@ Spåret "Invented what if scenarios, answered with real facts" ur DAILY-RULES "T
 - "Story first" gäller: du är med, något står på spel, det blir värre, något händer var 2–3 sekunder, och slutet har en vändning och en loop.
 
 **Titlar:**
-- "What if you…" är formellt en fråga. Varje titel står därför med ett alternativ som inte är en fråga, och båda är körda genom title.py.
-- title.py fäller inte frågeformen i sig, bara längd och siffror.
+- Enligt Jespers regel 21 november ("Jo men titlarna kan vara frågor fast utan "?" Oftast,") står frågetitlarna utan frågetecken som huvudalternativ.
+- Alternativet utan frågeform står kvar som reserv.
+- Alla är körda genom title.py för längd och trunkering. Poängen gäller formen med "?"; utan "?" är titlarna ett tecken kortare.
 
 **Referensvideorna:**
 - Reglerna nämner de här referens-Shortsen: Rom-bron (Horatius), en luftstrid, soldatflickan, geväret med guld och bomben in i lägret.
@@ -21,7 +22,7 @@ Spåret "Invented what if scenarios, answered with real facts" ur DAILY-RULES "T
 
 ---
 
-## 1. What If You Won a Billion Dollars? (Jespers exempel)
+## 1. What If You Won a Billion Dollars (Jespers exempel)
 *title.py 94 (no-number) · alternativ: "You Just Won $1,000,000,000" (100)*
 
 - **Första bilden:** du håller en lottkupong, siffrorna stämmer, och ett berg av sedlar välter över dig.
@@ -43,7 +44,7 @@ Spåret "Invented what if scenarios, answered with real facts" ur DAILY-RULES "T
 - **Närbilder:** ögonen på kupongen; händerna som räknar sedlar.
 - **Animering: LÄTT.** Saknas: sedelbuntar och en lottkupong.
 
-## 2. What If You Ran Around the Whole Earth? (Jespers exempel)
+## 2. What If You Ran Around the Whole Earth (Jespers exempel)
 *title.py 94 (no-number) · alternativ: "Running 40,075 km Around the Earth" (100)*
 
 - **Första bilden:** du springer mot kameran, och bakom dig rullar jordklotet som ett löpband.
@@ -65,7 +66,7 @@ Spåret "Invented what if scenarios, answered with real facts" ur DAILY-RULES "T
 - **Närbilder:** foten som går igenom en sula; ögonen mot horisonten.
 - **Animering: LÄTT–MEDEL.** Löpning har vi (rig.ts run). Saknas: ett jordklot och en båt.
 
-## 3. What If You Opened a Submarine Hatch on the Ocean Floor? (Jespers exempel)
+## 3. What If You Opened a Submarine Hatch on the Ocean Floor (Jespers exempel)
 *title.py 80 (mobil, no-number) · alternativ: "The Hatch That 1,000 Tonnes Hold Shut" (100)*
 
 - **Första bilden:** din hand på ratten till en ubåtslucka; utanför fönstret är det svart vatten.
@@ -86,7 +87,7 @@ Spåret "Invented what if scenarios, answered with real facts" ur DAILY-RULES "T
 - **Närbilder:** ögonen på djupmätaren; händerna på ratten.
 - **Animering: MEDEL.** Stela föremål. Saknas: ubåten utvändigt och invändigt, och djuphavet.
 
-## 4. What If You Dug a Hole Through the Earth?
+## 4. What If You Dug a Hole Through the Earth
 *title.py 80 (mobil, no-number) · alternativ: "A 38-Minute Fall Through the Earth" (100)*
 
 - **Första bilden:** du hoppar ner i ett hål med en ficklampa, och jordlagren rusar förbi.
@@ -107,7 +108,7 @@ Spåret "Invented what if scenarios, answered with real facts" ur DAILY-RULES "T
 - **Närbilder:** ögonen när värmen kommer; handen som tappar ficklampan.
 - **Animering: LÄTT–MEDEL.** Fall och kamera. Saknas: schaktet och jordlagren.
 
-## 5. What If You Shrank to the Size of an Ant?
+## 5. What If You Shrank to the Size of an Ant
 *title.py 80 (mobil, no-number) · alternativ: "You, Shrunk to the Size of an Ant" (90)*
 
 - **Första bilden:** en jättelik vattendroppe faller mot dig, lika stor som en badboll.
@@ -128,7 +129,7 @@ Spåret "Invented what if scenarios, answered with real facts" ur DAILY-RULES "T
 - **Närbilder:** ögonen när droppen kommer; händerna i ytspänningen.
 - **Animering: MEDEL.** Saknas: köket i jätteskala, en droppe och en myra.
 
-## 6. What If You Lived a Year on the Space Station?
+## 6. What If You Lived a Year on the Space Station
 *title.py 80 (mobil, no-number) · alternativ: "One Year, 16 Sunrises a Day" (100)*
 
 - **Första bilden:** du svävar i rymdstationen, och genom fönstret går solen upp på några sekunder.
@@ -148,7 +149,7 @@ Spåret "Invented what if scenarios, answered with real facts" ur DAILY-RULES "T
 - **Närbilder:** ögonen mot soluppgången; handen som släpper en sked som svävar.
 - **Animering: SVÅRT.** Saknas: rymdmiljön och viktlösheten.
 
-## 7. What If You Jumped From the Edge of Space?
+## 7. What If You Jumped From the Edge of Space
 *title.py 80 (mobil, no-number) · alternativ: "A 39-Kilometre Jump Back to Earth" (100)*
 
 - **Första bilden:** du står på kanten av en kapsel, jorden är krökt under dig och himlen svart.
@@ -168,7 +169,7 @@ Spåret "Invented what if scenarios, answered with real facts" ur DAILY-RULES "T
 - **Närbilder:** ögonen genom visiret; handen på luckans spak.
 - **Animering: MEDEL.** Saknas: en kapsel, jorden sedd från höjd och en fallskärm.
 
-## 8. What If You Stayed a Month on the Moon?
+## 8. What If You Stayed a Month on the Moon
 *title.py 94 (no-number) · alternativ: "One Month on the Moon Is One Day" (90)*
 
 - **Första bilden:** du tar ett jättekliv på månen, och jorden hänger över horisonten.
@@ -189,7 +190,7 @@ Spåret "Invented what if scenarios, answered with real facts" ur DAILY-RULES "T
 - **Närbilder:** ögonen på jorden; handen som skriver i damm.
 - **Animering: MEDEL.** Saknas: månlandskap, en dräkt och en månbil.
 
-## 9. What If You Lived a Week in the Stone Age?
+## 9. What If You Lived a Week in the Stone Age
 *title.py 80 (mobil, no-number) · alternativ: "Seven Days in the Stone Age" (90)*
 
 - **Första bilden:** du gnider en pinne mot en träbit, och en enda gnista slocknar.
@@ -208,7 +209,7 @@ Spåret "Invented what if scenarios, answered with real facts" ur DAILY-RULES "T
 - **Närbilder:** händerna som gnider; ögonen på gnistan.
 - **Animering: LÄTT.** Saknas: en grotta eller ett läger, eld och en eldborr.
 
-## 10. What If You Rowed Across the Atlantic Alone?
+## 10. What If You Rowed Across the Atlantic Alone
 *title.py 80 (mobil, no-number) · alternativ: "Rowing 3,000 Miles Across the Atlantic Alone" (94, mobil)*
 
 - **Första bilden:** en liten roddbåt på en enorm våg, och du drar i årorna.

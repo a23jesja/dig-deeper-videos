@@ -564,6 +564,7 @@ Jesper does not pick times. The session picks the slot and tells him which one i
 - **Schedule, never publish directly.** A scheduled video can be changed or stopped before anyone sees it.
 - **Check before scheduling:** the title is the question or claim (never a date or a file name), "not made for
   kids", altered content "No", category Education, the description and the thumbnail are the final ones.
+- **Titles may be questions, mostly written without the question mark** (Jesper 2026-11-21: "Jo men titlarna kan vara frågor fast utan "?" Oftast,"): "What If You Won a Billion Dollars", not "What If You Won a Billion Dollars?". This replaces the rule of 2026-11-20 that titles are not questions. title.py is still run on every title for length and truncation.
 - **Never delete or hide a new video in its first seven days.** Views can come late; judge on "stayed and
   watched" after a week.
 - **Never re-upload a deleted video within two weeks**, and then only as a clearly new version (new opening, new

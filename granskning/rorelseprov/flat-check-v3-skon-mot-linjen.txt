@@ -1,0 +1,44 @@
+events (s): T_TURN 1.76, T_POINT 2.46, T_SNAKE 5.00, T_SCARED 5.45, T_RUN_TURN 5.93, T_RUN 6.33, T_ADA_TURN 6.23, T_ADA_POINT 6.78, T_GONE 7.16, LINE 3.10, LINE_END 5.15, END 8.17
+0 sir: the L shoe's outline 15.7 px past the top of the ground line
+0 sir: the R shoe's outline 15.7 px past the top of the ground line
+0 ada: the L shoe's outline 15.6 px past the top of the ground line
+0 ada: the R shoe's outline 15.6 px past the top of the ground line
+1 sir: the L shoe's outline 15.7 px past the top of the ground line
+1 sir: the R shoe's outline 13.7 px past the top of the ground line
+1 ada: the L shoe's outline 15.6 px past the top of the ground line
+1 ada: the R shoe's outline 15.6 px past the top of the ground line
+2 sir: the L shoe's outline 15.7 px past the top of the ground line
+2 sir: the R shoe's outline 7.9 px past the top of the ground line
+2 ada: the L shoe's outline 15.6 px past the top of the ground line
+2 ada: the R shoe's outline 15.6 px past the top of the ground line
+3 sir: the L shoe's outline 15.7 px past the top of the ground line
+3 sir: the R shoe's outline 3.6 px past the top of the ground line
+3 ada: the L shoe's outline 15.6 px past the top of the ground line
+3 ada: the R shoe's outline 15.6 px past the top of the ground line
+4 sir: the L shoe's outline 15.7 px past the top of the ground line
+4 ada: the L shoe's outline 15.6 px past the top of the ground line
+4 ada: the R shoe's outline 15.6 px past the top of the ground line
+5 sir: the L shoe's outline 15.7 px past the top of the ground line
+5 ada: the L shoe's outline 15.6 px past the top of the ground line
+5 ada: the R shoe's outline 15.6 px past the top of the ground line
+6 sir: the L shoe's outline 15.7 px past the top of the ground line
+6 ada: the L shoe's outline 15.6 px past the top of the ground line
+6 ada: the R shoe's outline 15.6 px past the top of the ground line
+7 sir: the L shoe's outline 15.7 px past the top of the ground line
+7 ada: the L shoe's outline 15.6 px past the top of the ground line
+7 ada: the R shoe's outline 15.6 px past the top of the ground line
+8 sir: the L shoe's outline 15.7 px past the top of the ground line
+8 ada: the L shoe's outline 15.6 px past the top of the ground line
+8 ada: the R shoe's outline 15.6 px past the top of the ground line
+9 sir: the L shoe's outline 15.7 px past the top of the ground line
+9 sir: the R shoe's outline 1.4 px past the top of the ground line
+9 ada: the L shoe's outline 15.6 px past the top of the ground line
+9 ada: the R shoe's outline 15.6 px past the top of the ground line
+10 sir: the L shoe's outline 15.7 px past the top of the ground line
+10 sir: the R shoe's outline 5.0 px past the top of the ground line
+10 ada: the L shoe's outline 15.6 px past the top of the ground line
+10 ada: the R shoe's outline 15.6 px past the top of the ground line
+11 sir: the L shoe's outline 15.7 px past the top of the ground line
+shoe outline past the line's top edge at most 15.7 px; smallest pupil 50 %, largest pupil change in a frame 15 %; nearest hand to the snake 45 px
+largest sink 0.0 px, largest slide of a foot on the ground 0.0 px between two frames
+FLAT CHECK FAILED: 877 faults

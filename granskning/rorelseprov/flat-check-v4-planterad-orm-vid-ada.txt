@@ -1,0 +1,44 @@
+events (s): T_TURN 1.76, T_POINT 2.46, T_SNAKE 5.00, T_SCARED 5.45, T_RUN_TURN 5.93, T_RUN 6.33, T_ADA_TURN 6.23, T_ADA_POINT 6.78, T_GONE 7.16, LINE 3.10, LINE_END 5.15, END 8.17
+153 ada: the R hand 35 px from the snake
+154 ada: the R hand 12 px from the snake
+155 ada: the R hand 15 px from the snake
+156 ada: the R hand 16 px from the snake
+157 ada: the R hand -12 px from the snake
+158 ada: the R hand -22 px from the snake
+159 ada: the R hand -39 px from the snake
+160 ada: the R hand -47 px from the snake
+161 ada: the R hand -41 px from the snake
+162 ada: the R hand -40 px from the snake
+163 ada: the R hand -40 px from the snake
+164 ada: the R hand -40 px from the snake
+165 ada: the R hand -39 px from the snake
+166 ada: the R hand -44 px from the snake
+167 ada: the R hand -7 px from the snake
+168 ada: the R hand 23 px from the snake
+207 ada: the L hand 30 px from the snake
+207 ada: the R hand 40 px from the snake
+208 ada: the L hand 13 px from the snake
+208 ada: the R hand 30 px from the snake
+209 ada: the L hand -7 px from the snake
+209 ada: the R hand 19 px from the snake
+210 ada: the L hand -23 px from the snake
+210 ada: the R hand 8 px from the snake
+211 ada: the L hand -43 px from the snake
+211 ada: the R hand -1 px from the snake
+212 ada: the L hand -35 px from the snake
+212 ada: the R hand -4 px from the snake
+213 ada: the L hand -19 px from the snake
+213 ada: the R hand -1 px from the snake
+214 ada: the L hand -5 px from the snake
+214 ada: the R hand 5 px from the snake
+215 ada: the L hand 5 px from the snake
+215 ada: the R hand 13 px from the snake
+216 ada: the L hand 11 px from the snake
+216 ada: the R hand 18 px from the snake
+217 ada: the L hand 12 px from the snake
+217 ada: the R hand 20 px from the snake
+218 ada: the L hand 13 px from the snake
+218 ada: the R hand 20 px from the snake
+shoe outline past the line's top edge at most 0.0 px; smallest pupil 50 %, largest pupil change in a frame 15 %; nearest hand to the snake -47 px
+largest sink 0.0 px, largest slide of a foot on the ground 0.0 px between two frames
+FLAT CHECK FAILED: 92 faults

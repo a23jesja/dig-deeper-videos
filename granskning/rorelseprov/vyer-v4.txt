@@ -1,0 +1,3 @@
+sir: side-right 0-61 | q-right 62-65 | front 66-80 | q-right 81-164 | front 165-183 | q-left 184-186 | side-left 187-244
+ada: front 0-108 | q-left 109-166 | front 167-190 | q-left 191-197 | side-left 198-244
+VIEWS OK: every turn goes through a three-quarter drawing held 2 frames or more

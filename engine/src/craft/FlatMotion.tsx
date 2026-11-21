@@ -5,7 +5,7 @@ import React from "react";
 import { AbsoluteFill, Audio, staticFile, useCurrentFrame } from "remotion";
 import { Ink } from "./ink";
 import { BGS } from "./FlatStyle";
-import { FM, figsAt, scaleOf, EVENTS, FLAT_A, SECONDS, T_SNAKE } from "./flatMotionModel";
+import { FM, figsAt, scaleOf, EVENTS, FLAT_A, SECONDS, SNAKE, footY, snakeAt } from "./flatMotionModel";
 
 export const FLAT_MOTION_FRAMES = Math.round(FM.FPS * SECONDS);
 type G = CanvasRenderingContext2D;
@@ -16,22 +16,28 @@ const puffs = (g: G, t: number) => {
     for (const [dx, dy, r] of [[0, -18, 26], [34, -10, 18], [60, -5, 11]]) { g.beginPath(); g.arc(x + dx + age * 40, FM.GY + dy - age * 20, r * (1 + age), 0, Math.PI * 2); g.fillStyle = "#efe6d2"; g.fill(); g.lineWidth = 6; g.strokeStyle = "#241726"; g.stroke(); }
     g.globalAlpha = 1; }
 };
-/** the snake that comes up out of the sand where he pointed ("the treasure is buried right there"): what scares them (the review of v2: nothing
- *  caused the fright). A flat green body rising from a little sand hole in 0.2 s, swaying, its tongue flicking */
-const SNAKE_X = FM.W / 2 + 0.14 * FM.PPM;
+/** the snake that comes up out of its hole where he pointed ("the treasure is buried right there"): what scares them. v4 (the review of v3):
+ *  the hole is there from the first frame, the snake rises over 12 frames, an S-bend, bands down its back, a head wider than its neck with
+ *  eyes on top and a forked tongue. Its shape is the model's (snakeAt), which the check also measures */
 const snake = (g: G, t: number) => {
-  const u = Math.max(0, Math.min(1, (t - T_SNAKE) / 0.2)); if (u <= 0) return;
-  const ink = "#241726", e = u * u * (3 - 2 * u), hgt = 175 * e, sw = Math.sin((t - T_SNAKE) * 4) * 14 * e, x0 = SNAKE_X, y0 = FM.GY;
-  g.beginPath(); g.ellipse(x0, y0 + 4, 46, 12, 0, 0, Math.PI * 2); g.fillStyle = "#b47b3e"; g.fill(); g.lineWidth = 6; g.strokeStyle = ink; g.stroke();
-  const pts: [number, number][] = []; for (let i = 0; i <= 12; i++) { const v = i / 12; pts.push([x0 + Math.sin(v * 3.2) * 18 * (1 - v) + sw * v, y0 - hgt * v]); }
-  for (const [w, col] of [[44, ink], [30, "#5fa83c"]] as [number, string][]) { g.beginPath(); pts.forEach(([x, y], i) => (i ? g.lineTo(x, y) : g.moveTo(x, y))); g.lineWidth = w; g.lineCap = "round"; g.lineJoin = "round"; g.strokeStyle = col; g.stroke(); }
-  const [hx, hy] = pts[12]; g.beginPath(); g.ellipse(hx + 8, hy, 34, 24, 0, 0, Math.PI * 2); g.fillStyle = "#5fa83c"; g.fill(); g.lineWidth = 7; g.strokeStyle = ink; g.stroke();
-  for (const dx of [-6, 20]) { g.beginPath(); g.ellipse(hx + dx, hy - 6, 9, 11, 0, 0, Math.PI * 2); g.fillStyle = "#ffffff"; g.fill(); g.lineWidth = 4; g.stroke(); g.beginPath(); g.arc(hx + dx + 2, hy - 4, 4.5, 0, Math.PI * 2); g.fillStyle = ink; g.fill(); }
-  if (Math.floor((t - T_SNAKE) * 6) % 2 === 0) { g.beginPath(); g.moveTo(hx + 40, hy + 8); g.lineTo(hx + 62, hy + 10); g.lineTo(hx + 70, hy + 4); g.moveTo(hx + 62, hy + 10); g.lineTo(hx + 70, hy + 16); g.lineWidth = 4; g.strokeStyle = "#d9483b"; g.stroke(); }
+  const ink = "#241726", S = snakeAt(t), [x0, y0] = S.spine[0];
+  g.beginPath(); g.ellipse(x0, y0 + 2, 54, 12, 0, 0, Math.PI * 2); g.fillStyle = "#4a2e1e"; g.fill(); g.lineWidth = 6; g.strokeStyle = ink; g.stroke();
+  if (!S.up) return;
+  const path = (pts: [number, number][]) => { g.beginPath(); pts.forEach(([x, y], i) => (i ? g.lineTo(x, y) : g.moveTo(x, y))); };
+  const sc = 0.6 + 0.4 * S.e; g.lineCap = "round"; g.lineJoin = "round";
+  path(S.spine); g.lineWidth = 46 * sc; g.strokeStyle = ink; g.stroke(); path(S.spine); g.lineWidth = 33 * sc; g.strokeStyle = "#5fa83c"; g.stroke();
+  // (dark bands across its back every other stretch: a snake's markings; without them it read as a worm or a sock)
+  for (let i = 2; i < 18; i += 3) { const [ax, ay] = S.spine[i], [bx, by] = S.spine[i + 1], dx = bx - ax, dy = by - ay, l = Math.hypot(dx, dy) || 1, nx = -dy / l, ny = dx / l, w = 15 * sc;
+    g.beginPath(); g.moveTo(ax + nx * w, ay + ny * w); g.lineTo(ax - nx * w, ay - ny * w); g.lineWidth = 7; g.lineCap = "butt"; g.strokeStyle = "#2f6b2a"; g.stroke(); }
+  g.lineCap = "round";
+  path(S.head); g.closePath(); g.fillStyle = "#5fa83c"; g.fill(); g.lineWidth = 7; g.strokeStyle = ink; g.stroke();
+  for (const dx of [-14, 10]) { g.beginPath(); g.ellipse(S.hx + dx, S.hy - 14, 9, 10, 0, 0, Math.PI * 2); g.fillStyle = "#fff8d0"; g.fill(); g.lineWidth = 4; g.strokeStyle = ink; g.stroke(); g.beginPath(); g.ellipse(S.hx + dx - 2, S.hy - 13, 3, 7, 0, 0, Math.PI * 2); g.fillStyle = ink; g.fill(); }
+  g.beginPath(); g.moveTo(S.hx - 44, S.hy + 6); g.quadraticCurveTo(S.hx - 20, S.hy + 12, S.hx + 6, S.hy + 6); g.lineWidth = 4; g.strokeStyle = ink; g.stroke();      // (its mouth line)
+  if (Math.floor((t - SNAKE.t0) * 6) % 2 === 0) { g.beginPath(); g.moveTo(S.hx - 48, S.hy + 6); g.lineTo(S.hx - 72, S.hy + 8); g.lineTo(S.hx - 82, S.hy + 1); g.moveTo(S.hx - 72, S.hy + 8); g.lineTo(S.hx - 82, S.hy + 15); g.lineWidth = 4; g.strokeStyle = "#d9483b"; g.stroke(); }
 };
 const paint = (g: G, t: number) => {
   g.setTransform(1, 0, 0, 1, 0, 0); BGS[0](g); puffs(g, t); snake(g, t);
-  for (const f of figsAt(t)) { const sc = scaleOf(f.who); g.save(); g.translate(f.x, FM.GY); g.scale(sc, sc); FLAT_A.draw(new Ink(g, FLAT_A.ol), f.sk, f.o); g.restore(); }
+  for (const f of figsAt(t)) { const sc = scaleOf(f.who); g.save(); g.translate(f.x, footY(f.who)); g.scale(sc, sc); FLAT_A.draw(new Ink(g, FLAT_A.ol), f.sk, f.o); g.restore(); }
 };
 export const FlatMotionA: React.FC<{ audio?: boolean }> = ({ audio = true }) => {
   const fr = useCurrentFrame();

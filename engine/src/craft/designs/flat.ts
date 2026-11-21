@@ -44,7 +44,8 @@ const eyeA: EyeFn = (k, cx, cy, s, r, skin, nose) => {
   if (r.lid > 0.93) { const d = r.smile > 0.5 ? -ry * 0.45 : ry * 0.32; ln(k, spline([[cx - rx, cy], [cx, cy + d], [cx + rx, cy]], false, 8), 1.15); return; }
   const ball = ellPts(cx, cy, rx, ry, 0, 0, 360, 40);
   fl(k, ball, WHITE);
-  k.clip(ball, () => { const pr = 16 * s * r.pupil; k.dot(cx + r.gaze[0] * (rx - pr - 3 * s), cy + 4 * s + r.gaze[1] * (ry - pr - 4 * s), pr);
+  // (the pupil travels to the eye's edge: at three-quarter, looking at Ada, it stayed near the middle and he seemed to look at the lens)
+  k.clip(ball, () => { const pr = 16 * s * r.pupil; k.dot(cx + r.gaze[0] * (rx - pr * 0.72 - 2 * s), cy + 4 * s + r.gaze[1] * (ry - pr * 0.8 - 3 * s), pr);
     lids(k, cx, cy, rx, ry, r.lid, r.smile > 0.5 ? 0.3 * r.smile : 0, skin); });
 };
 /** B: a solid black upright pill with no white; scared, it gets a white ring round a small pill */
@@ -195,9 +196,11 @@ const drawFlat = (c: FlatSpec) => (k: Ink, sk: Sk, o: FigOpts) => {
   const head = () => {
     const sn = Math.sin(sk.faceYaw * (Math.PI / 180)), as = Math.abs(sn), flip = sn < 0;
     const view = !c.sirQ ? (hp.side ? "side" : "front") : as < 0.45 ? "front" : as < 0.85 ? "q" : "side";
+    // (a mirrored head's gaze turned with it: the gaze is given in the picture, so a head drawn mirrored for the left looked the other way)
+    const rv: FR = view !== "front" && flip ? { ...r, gaze: [-r.gaze[0], r.gaze[1]] } : r;
     k.at(sk.j.skull[0], sk.j.skull[1], sk.headTilt, view !== "front" && flip, () => {
-      if (other) (view === "side" ? c.otherSide(k, r) : view === "q" ? c.otherQ!(k, r) : c.otherFront(k, r, sn * c.turn));
-      else (view === "side" ? c.sirSide(k, r, o.capLift ?? 0, !flip) : view === "q" ? c.sirQ!(k, r, o.capLift ?? 0, flip ? "far" : "near") : c.sirFront(k, r, sn * c.turn, o.capLift ?? 0));
+      if (other) (view === "side" ? c.otherSide(k, rv) : view === "q" ? c.otherQ!(k, rv) : c.otherFront(k, rv, sn * c.turn));
+      else (view === "side" ? c.sirSide(k, rv, o.capLift ?? 0, !flip) : view === "q" ? c.sirQ!(k, rv, o.capLift ?? 0, flip ? "far" : "near") : c.sirFront(k, rv, sn * c.turn, o.capLift ?? 0));
     });
     if (other) return;
     const w = headToWorld(sk, view !== "front" && flip), dz = Math.max(...B.rows.map((q) => q[2])), end = Fr.Q(c.chainEnd[0], dz * 0.8, c.chainEnd[1]);
@@ -251,7 +254,7 @@ const A_SPEC: FlatSpec = {
   sirSide: (k, r, lift, mono = true) => {
     fl(k, ellPts(0, -128, 124, 132, 0, 0, 360, 60), CA.skin);
     ear(k, -34, -112, 22, 30, CA.skin);
-    const [i, o] = browEnds(r, 66, -172, 0.9, 18, 1); k.line([i, o], 14 + k.ol * 1.7); k.line([i, o], 14, CA.hair);
+    const [i, o] = browEnds(r, 66, -172, 0.9, 18, -1); k.line([i, o], 14 + k.ol * 1.7); k.line([i, o], 14, CA.hair);      // (side -1: the brow's inner end toward the nose; the other way a scared brow read as cross in profile)
     eyeA(k, 66, -118, 0.9, { ...r, gaze: [Math.max(0.35, r.gaze[0]), r.gaze[1]] }, CA.skin, 1);
     if (mono) monoRing(k, 66, -118, 36, 50, 7);
     // (from the side the pipe's mouthpiece is in the mouth under the moustache, not at the moustache's tip: Jesper choosing A. The mouth is drawn
@@ -269,13 +272,21 @@ const A_SPEC: FlatSpec = {
     fl(k, ellPts(0, -128, 126, 132, 0, 0, 360, 60), CA.skin);
     ear(k, -92, -114, 20, 28, CA.skin);
     for (const [x, hw] of [[10, 20], [74, 14]] as [number, number][]) { const [i, o] = browEnds(r, x, -172, 1, hw, x < 40 ? -1 : 1); k.line([i, o], 15 + k.ol * 1.7); k.line([i, o], 15, CA.hair); }
-    const gz: P2 = [Math.max(0.2, r.gaze[0]), r.gaze[1]];
+    // (a three-quarter head looks the way it faces: the pupils start 0.45 toward that side and the gaze adds to it. At the gaze alone the near
+    //  pupil sat in the eye's middle while he pointed at Ada and he seemed to look into the lens, the review of v3)
+    const gz: P2 = [Math.min(1, 0.45 + 0.7 * Math.max(0, r.gaze[0])), r.gaze[1]];
     eyeA(k, 10, -118, 1, { ...r, gaze: gz }, CA.skin, 1); eyeA(k, 76, -118, 0.8, { ...r, gaze: gz }, CA.skin, -1);
     if (mono === "near") monoRing(k, 10, -118, 42, 52, 7); else monoRing(k, 76, -118, 34, 44, 7);
-    const mw = 20 * (1 + 0.4 * r.mouth);
-    mouthAt(k, 84 + r.smirk * 4, -52, mw, 1, { ...r, mouth: Math.max(r.mouth, 0.13) }, "#e0806e");
-    pipeAt(k, [84 + mw - 2, -48], 1, 1, droopOf(r));
-    const near = mirror(MOUS_A).map(([x, y]) => [x * 1.05 + 92, y] as P2), far = MOUS_A.map(([x, y]) => [x * 0.34 + 92, y] as P2);
+    // (the mouth nearer the head's middle, kept inside the head's outline with a narrow chin under it, its open height 0.8 of the front's: at
+    //  the nose's side the jaw curves up and the open mouth and its lip went out past the outline, over the collar; closed it shows below the
+    //  moustache as clearly as from the front. The review of the motion test v3)
+    const mw = 18 * (1 + 0.4 * r.mouth), head = ellPts(0, -128, 126, 132, 0, 0, 360, 60);
+    // (closing, the mouth comes down 10 below the moustache's edge and keeps a small open shape: at -58 the closed mouth lay under the
+    //  moustache, 2-4 px, unseen at phone size)
+    const my = -58 + 10 * (1 - Math.min(1, r.mouth / 0.5));
+    k.clip(head, () => mouthAt(k, 62 + r.smirk * 4, my, mw, 0.8, { ...r, mouth: Math.max(r.mouth, 0.26) }, "#e0806e"));
+    pipeAt(k, [62 + mw - 2, my + 4], 1, 1, droopOf(r));
+    const near = mirror(MOUS_A).map(([x, y]) => [x * 1.05 + 84, y] as P2), far = MOUS_A.map(([x, y]) => [x * 0.34 + 84, y] as P2);
     fl(k, spline([...far, ...near.reverse()]), CA.hair);
     fl(k, ellPts(104, -84, 17, 14), CA.nose);
     tearAt(k, 84, -82, 0.9, r.tear); tearAt(k, 18, -82, 1, r.tear * 0.7);
@@ -287,11 +298,11 @@ const A_SPEC: FlatSpec = {
     ear(k, -92, -110, 18, 24, CA.skin);
     fl(k, spline([[-118, -100], [-124, -170], [-84, -232], [10, -250], [96, -226], [122, -176], [118, -140], [80, -172], [30, -184], [-20, -178], [-70, -160], [-100, -122]]), ADA_HAIR_A);
     for (const [x, hw] of [[14, 18], [76, 12]] as [number, number][]) { const [i, o] = browEnds(r, x, -176, 0.95, hw, x < 40 ? -1 : 1); k.line([i, o], 9 + k.ol * 1.7); k.line([i, o], 9, ADA_HAIR_A); }
-    const gz: P2 = [Math.max(0.2, r.gaze[0]), r.gaze[1]];
+    const gz: P2 = [Math.min(1, 0.45 + 0.7 * Math.max(0, r.gaze[0])), r.gaze[1]];      // (as Sir's: a three-quarter head looks the way it faces)
     eyeA(k, 14, -124, 0.95, { ...r, gaze: gz }, CA.skin, 1); eyeA(k, 78, -124, 0.76, { ...r, gaze: gz }, CA.skin, -1);
     if (r.lid < 0.9 && r.squeeze < 0.5) { ln(k, [[-10, -150], [-20, -162]], 0.7); ln(k, [[96, -146], [104, -156]], 0.7); }
     fl(k, ellPts(104, -90, 10, 8), CA.nose);
-    mouthAt(k, 86, -56, 16 * (1 + 0.3 * r.mouth), 0.95, r);
+    k.clip(ellPts(0, -120, 120, 124, 0, 0, 360, 60), () => mouthAt(k, 68, -58, 16 * (1 + 0.3 * r.mouth), 0.95, r));
     tearAt(k, 84, -88, 0.9, r.tear);
   },
   chainQ: { near: [[-24, -78], [-50, -4]], far: [[56, -80], [10, 0]] },
@@ -310,7 +321,7 @@ const A_SPEC: FlatSpec = {
     fl(k, ellPts(-92, -236, 42, 40), ADA_HAIR_A);
     fl(k, ellPts(0, -120, 118, 124, 0, 0, 360, 60), CA.skin);
     fl(k, spline([[-116, -90], [-122, -170], [-80, -232], [10, -248], [80, -226], [110, -186], [60, -190], [10, -176], [-30, -150], [-60, -96]]), ADA_HAIR_A);
-    const [i, o] = browEnds(r, 64, -176, 0.9, 16, 1); k.line([i, o], 9 + k.ol * 1.7); k.line([i, o], 9, ADA_HAIR_A);
+    const [i, o] = browEnds(r, 64, -176, 0.9, 16, -1); k.line([i, o], 9 + k.ol * 1.7); k.line([i, o], 9, ADA_HAIR_A);
     eyeA(k, 64, -124, 0.88, { ...r, gaze: [Math.max(0.35, r.gaze[0]), r.gaze[1]] }, CA.skin, 1);
     if (r.lid < 0.9 && r.squeeze < 0.5) ln(k, [[88, -150], [100, -160]], 0.7);
     fl(k, ellPts(118, -92, 11, 9), CA.nose);

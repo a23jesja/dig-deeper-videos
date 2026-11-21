@@ -1,0 +1,5 @@
+47 sir: the pupil at 1 % without a frightened face
+47 sir: the pupil changes by 99 % in one frame
+48 sir: the pupil at 18 % without a frightened face
+v3 code: smallest pupil 1 %, largest change in a frame 99 %
+PUPIL CHECK FAILED on v3: 3

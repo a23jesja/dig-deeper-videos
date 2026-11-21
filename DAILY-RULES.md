@@ -46,6 +46,21 @@ explained and it entertains. Ours have been calm explanations. From now on every
   push-ins and whip pans, a short camera shake on impact, a held impact frame, speed lines, dust, sparks, splashes,
   things flying, a cut on the hit. Crowds charge as many small simple figures in a wide shot; close-ups show one
   face reacting.
+- **Let rigid things carry the action** (Jesper 2026-11-21, a dogfight Short with ~75,000 likes): planes, ships,
+  carts, cannonballs, a falling bridge, a rolling barrel, a door bursting open. They can spin, dive, crash and chase
+  with no limbs to get wrong. The people sit in a cockpit, behind a rail or a wall, and act with the face only.
+- **Extreme close-ups of the eyes** for tension (narrowed eyes, a raised brow) between the big moves.
+- **A hook with a rule or a secret:** "The deadliest pilot in the sky had one rule." The viewer stays to hear it.
+- **Light can be part of the story:** the sun behind an attacker blinds the screen with glare at the key line.
+- **A hook with a contradiction or a secret, in one sentence** (Jesper 2026-11-21, a flat 2D Short with ~117,000
+  likes): "This soldier could never get wounded, because the doctors would find out she was a girl." The first
+  sentence holds the whole puzzle; the rest answers how.
+- **Heart, not only action:** one person, something personal at stake (a brother, a home, a promise), a sacrifice
+  or a choice. Show the feeling on the face: a tear, a wince, a brave half-smile.
+- **Key actions as hands-only close-ups:** a letter held up to the camera, scissors cutting a braid, a key
+  turning, a coin handed over. Easy to animate, impossible to misread.
+- **Topics are found by us, never taken from a reference video.** A story another channel has just told is not
+  used, even with a new angle.
 - **Violence stays cartoon and bloodless:** no gore, no suffering in detail, respect for real victims.
 
 ## Goal

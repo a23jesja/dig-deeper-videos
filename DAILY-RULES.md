@@ -27,6 +27,27 @@ way of working changes. Nothing is built or sent that does not pass all six gate
    a code check before the next video.
 Until gates 2, 3 and 5 exist, no new Short is built. A few days without videos is better than more of these.
 
+## Story first: something happens (Jesper 2026-11-21)
+Jesper's verdict on the reference Shorts: they win because a lot happens, there are action scenes, it is clearly
+explained and it entertains. Ours have been calm explanations. From now on every Short and long video is a story:
+- **Topics with a fight, a danger or a scheme:** a battle, a last stand, an escape, a heist, a con, a siege, a
+  chase, a rescue, a duel, a disaster survived. A trick or habit topic only if it can be told through someone in
+  danger using it. The topic gate asks: is there a person, something at stake, and a moment where it could go
+  wrong?
+- **Shape (Shorts, 30-50 s):** frame one is the danger at its peak; the stakes in one line ("If they cross, Rome
+  falls."); three or four escalating beats, each bigger or worse than the last (they attack, he holds, they attack
+  harder, the bridge starts to fall); the twist or turn; the payoff; the last line loops to the first frame.
+- **Something visibly happens every 2-3 seconds:** a charge, a clash, a fall, a throw, a crash, a reveal. Never
+  more than three seconds of only talking.
+- **Explain inside the action:** the "why" comes as a short line while the action runs ("You see, the bridge was
+  so narrow only three men could fight at once"), never as a lecture over a still picture. A map shot is allowed
+  once, for two seconds.
+- **Action without hard animation:** show action with the camera and effects, not complex choreography: fast
+  push-ins and whip pans, a short camera shake on impact, a held impact frame, speed lines, dust, sparks, splashes,
+  things flying, a cut on the hit. Crowds charge as many small simple figures in a wide shot; close-ups show one
+  face reacting.
+- **Violence stays cartoon and bloodless:** no gore, no suffering in detail, respect for real victims.
+
 ## Goal
 Within one year: about 1 million long-video views a month, enough for at least 50,000 SEK a month from ads and
 memberships. (Estimate: 0.6-1.6 million views at 3-8 USD per 1,000. Shorts alone would need 60-150 million.)

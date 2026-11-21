@@ -4,6 +4,7 @@ import { Composition } from "remotion";
 // Directions B and C, the 3D card figures, the 3D sets and every film built on them are removed; git tag fore-platt-2d builds them all.
 import { FlatStyle, FSW, FSH, FLAT_FRAMES } from "./craft/FlatStyle";
 import { FlatMotionA, FLAT_MOTION_FRAMES } from "./craft/FlatMotion";
+import { FlatClip, CLIP_IDS, clipFrames } from "./craft/clips/FlatClip";
 // the older flat films (style2d: no 3D, no card figures)
 import { Dance, DanceThumb, Mona2D, Mona2DThumb, Titanic1, Titanic1Thumb } from "./videos/style2d/Mona2D";
 import { DANCE_TOTAL } from "./videos/style2d/dance";
@@ -14,6 +15,8 @@ export const Root: React.FC = () => (
   <>
     <Composition id="FlatStyle" component={FlatStyle} durationInFrames={FLAT_FRAMES} fps={30} width={FSW} height={FSH} />
     <Composition id="FlatMotionA" component={FlatMotionA} durationInFrames={FLAT_MOTION_FRAMES} fps={30} width={1080} height={1920} />
+    {/* the eight shot types of the library in flat 2D, one clip each (Bildtyp-c01 ... c08) */}
+    {CLIP_IDS.map((id) => <Composition key={id} id={`Bildtyp-${id}`} component={FlatClip} defaultProps={{ id }} durationInFrames={clipFrames(id)} fps={30} width={1080} height={1920} />)}
     <Composition id="Mona2D" component={Mona2D} durationInFrames={MONA2D_TOTAL} fps={30} width={1080} height={1920} />
     <Composition id="Mona2DThumb" component={Mona2DThumb} durationInFrames={3} fps={30} width={1080} height={1920} />
     <Composition id="Titanic1" component={Titanic1} durationInFrames={TITANIC1_TOTAL} fps={30} width={1080} height={1920} />

@@ -279,12 +279,19 @@ export class Mover {
     // nobody stands like a post: when the feet are still the weight drifts from foot to foot, the head and the arms move a little
     const dt0 = 1 / 60, Pb = this.pelAt(t - dt0), still = clamp(1 - Math.hypot(P[0] - Pb[0], P[1] - Pb[1]) / dt0 / 0.35, 0, 1) * (1 - run);
     pose.px = 0.02 * Math.sin(2.3 * t + 0.4) * still; pose.roll = 1.3 * Math.sin(2.3 * t + 1.0) * still; pose.hipTilt = -1.6 * Math.sin(2.3 * t + 0.4) * still;
-    pose.head = [3 * Math.sin(1.1 * t) * still, (pose.head as number[])[1], 1.6 * Math.sin(1.7 * t + 2) * still];
+    // (the head's small turn and tilt are added after the act layers too, below, so a layer that holds the head does not stop them)
+    // breathing (Jesper's library rule 3, 21 Nov 2026: a figure standing still shifts its weight, breathes and moves its head): the body
+    // rises and sinks a little, about 17 breaths a minute, the head nods with it
+    // (added after the act layers, below: a layer that holds the pelvis or the head, sitting or looking at a door, stopped the breath, the
+    //  clip check's rest test, 21 Nov)
+    const breath = still;
     pose.armL[1][0] += 3 * Math.sin(2.3 * t) * still; pose.armR[1][0] -= 3 * Math.sin(2.3 * t + 0.7) * still;
     // a hand that swings in a walk or pumps in a run is loosely closed; an open hand would read as reaching out
     let handL: HandKind = run > 0.5 ? "fist" : "relaxed", handR: HandKind = handL; const face: Face = {};      // (a walking hand hangs loose: the review of round 2)
+    let pelvisHeld = 0;      // (how strongly an act layer holds the pelvis: sitting; the breath then leaves the pelvis alone)
     for (const L of this.layers) {
       const w = this.weight(L, t); if (!w) continue;
+      if (L.pose.py !== undefined || L.pose.pz !== undefined) pelvisHeld = Math.max(pelvisHeld, clamp(Math.abs(w), 0, 1));
       const P0 = pose as Record<string, unknown>, Lp = L.pose as Record<string, unknown>;
       for (const key of Object.keys(Lp)) {
         const a = P0[key], b = Lp[key];
@@ -299,6 +306,15 @@ export class Mover {
         //  gave way to the next, which the flicker check of 20 Nov found in every reading shot)
         : Array.isArray(b) && b.every((v) => typeof v === "number") ? (b as number[]).map((v, i) => lerp(((F[key] as number[] | undefined)?.[i]) ?? 0, v, ww)) : b; } }
     }
+    // (breath 0.012 leg lengths, about 2 px on Knopp: at 0.006 it was under a pixel; a sway forward and back of 0.01, which shows in profile
+    //  where the sideways weight shift is only depth: the clip check's rest test found a figure in profile dead still, 21 Nov)
+    // (the breath only lowers the pelvis, 0 to 0.012: standing on straight legs a rise is stopped by the legs' length; and the chest rises
+    //  with a lean of 0.9 degrees, which shows in profile; a pelvis held by a layer, seated, is left where it is)
+    const free = breath * (1 - pelvisHeld);
+    pose.py = (pose.py ?? 0) + 0.006 * (Math.sin(1.8 * t + 0.3) - 1) * free;
+    pose.pz = (pose.pz ?? 0) + 0.01 * Math.sin(1.15 * t + 0.4) * free;
+    pose.lean = (pose.lean ?? 0) + 0.9 * Math.sin(1.8 * t + 0.3) * breath;
+    pose.head = [(pose.head as number[])[0] + 3 * Math.sin(1.1 * t) * breath, (pose.head as number[])[1] + 1.2 * Math.sin(1.8 * t + 0.9) * breath, (pose.head as number[])[2] + 1.6 * Math.sin(1.7 * t + 2) * breath];
     const dt = 1 / 60, vel = (tt: number) => { const a = this.pelAt(tt), b = this.pelAt(tt - dt); return ((a[0] - b[0]) * f[0] + (a[1] - b[1]) * f[1]) / dt; };
     const drag = vel(t - 0.1), now = vel(t), lateLean = this.lean.at(t - 0.12) - this.lean.at(t);
     // loose things trail behind steady motion, lag further when it starts and swing ahead when it stops

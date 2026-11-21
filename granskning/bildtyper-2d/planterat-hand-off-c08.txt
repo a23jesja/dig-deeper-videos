@@ -1,0 +1,30 @@
+== c08 08 Öppna en dörr (4.40 s, 132 frames)
+   views: sir side-left 0-131
+   shoe past the line's top at most 0.0 px, slide at most 0.0 px; pupils min 100 %, step max 0 %; head past the edge 0 px; contacts off at most 20.2 px
+   38 sir: his hand on the handle: the wrist 20.1 px off
+   39 sir: his hand on the handle: the wrist 19.9 px off
+   40 sir: his hand on the handle: the wrist 20.0 px off
+   41 sir: his hand on the handle: the wrist 20.0 px off
+   42 sir: his hand on the handle: the wrist 19.9 px off
+   43 sir: his hand on the handle: the wrist 19.9 px off
+   44 sir: his hand on the handle: the wrist 19.9 px off
+   45 sir: his hand on the handle: the wrist 19.9 px off
+   46 sir: his hand on the handle: the wrist 20.1 px off
+   47 sir: his hand on the handle: the wrist 20.1 px off
+   48 sir: his hand on the handle: the wrist 20.1 px off
+   49 sir: his hand on the handle: the wrist 20.0 px off
+   50 sir: his hand on the handle: the wrist 20.0 px off
+   51 sir: his hand on the handle: the wrist 19.9 px off
+   52 sir: his hand on the handle: the wrist 20.0 px off
+   53 sir: his hand on the handle: the wrist 19.9 px off
+   54 sir: his hand on the handle: the wrist 20.0 px off
+   55 sir: his hand on the handle: the wrist 20.1 px off
+   56 sir: his hand on the handle: the wrist 19.9 px off
+   57 sir: his hand on the handle: the wrist 20.0 px off
+   58 sir: his hand on the handle: the wrist 20.0 px off
+   59 sir: his hand on the handle: the wrist 20.0 px off
+   60 sir: his hand on the handle: the wrist 19.9 px off
+   61 sir: his hand on the handle: the wrist 20.0 px off
+   62 sir: his hand on the handle: the wrist 20.1 px off
+   by kind: 63 x "sir: his hand on the handle: the wrist # px off"
+   CLIP CHECK FAILED: 63

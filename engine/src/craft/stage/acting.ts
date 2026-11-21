@@ -24,6 +24,14 @@ export const wag = (m: Mover, t0: number, dur: number, a: Partial<Pose>, b: Part
 };
 export const arm = (a: number, b: number, c: number, d: number): [Seg, Seg] => [[a, b], [c, d]];
 
+/** a point (Jesper's library rule 1, 21 Nov 2026): the arm rises over `up` seconds, is held at most one second, and comes down over
+ *  `down`; the eyes go to the target first. pose is the pointing pose (the gesture library's point, aimed); hold is cut to 1 s */
+export const pointAt = (m: Mover, t0: number, pose: Partial<Pose>, hold: number, o: { up?: number; down?: number; face?: import("../designs/common").Face } = {}) => {
+  const up = o.up ?? 0.32, down = o.down ?? 0.34, h = Math.min(1.0, hold);
+  m.actAt(t0, pose, up + h + down, { in: up, out: down, glide: true, antic: 0, face: o.face });
+  return { t0, held: [t0 + up, t0 + up + h] as [number, number], t1: t0 + up + h + down };
+};
+
 /** a pose laid on at t0 that eases in over `dur` seconds (slow at both ends) and holds until a later one takes over: a body never starts
  *  or stops a move at full speed (the motion check's jerk test, the shot library review of round 2) */
 export const ease = (m: Mover, t0: number, pose: Partial<Pose>, dur: number, o: Omit<NonNullable<Parameters<Mover["actAt"]>[3]>, "in" | "glide"> = {}) => m.actAt(t0, pose, 30, { ...o, in: dur, glide: true, antic: 0 });

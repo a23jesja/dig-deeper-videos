@@ -1,0 +1,32 @@
+== c01 01 Stå och prata (4.60 s, 138 frames)
+   views: sir front 0-137 ;; ada q-left 0-137
+   shoe past the line's top at most 0.0 px, slide at most 0.0 px; pupils min 100 %, step max 0 %; head past the edge 0 px
+   CLIP CHECK OK
+== c02 02 Gå (5.00 s, 150 frames)
+   views: sir side-right 0-149
+   shoe past the line's top at most 0.0 px, slide at most 0.0 px; pupils min 100 %, step max 0 %; head past the edge 0 px
+   CLIP CHECK OK
+== c03 03 Vända sig (4.00 s, 120 frames)
+   views: sir side-right 0-24 | q-right 25-28 | front 29-68 | q-left 69-72 | side-left 73-119
+   shoe past the line's top at most 0.0 px, slide at most 0.0 px; pupils min 100 %, step max 0 %; head past the edge 0 px
+   CLIP CHECK OK
+== c04 04 Hålla med båda händerna (4.40 s, 132 frames)
+   views: sir front 0-131
+   shoe past the line's top at most 0.0 px, slide at most 0.0 px; pupils min 100 %, step max 0 %; head past the edge 0 px; contacts off at most 0.4 px
+   CLIP CHECK OK
+== c05 05 Peka (4.00 s, 120 frames)
+   views: sir q-right 0-16 | side-right 17-119
+   shoe past the line's top at most 0.0 px, slide at most 0.0 px; pupils min 100 %, step max 0 %; head past the edge 0 px; point held 0.90 s
+   CLIP CHECK OK
+== c06 06 Reagera (4.00 s, 120 frames)
+   views: sir q-right 0-119
+   shoe past the line's top at most 0.0 px, slide at most 0.0 px; pupils min 50 %, step max 15 %; head past the edge 0 px; nearest hand to the crab 233 px
+   CLIP CHECK OK
+== c07 07 Sitta (4.40 s, 132 frames)
+   views: sir side-left 0-131
+   shoe past the line's top at most 0.0 px, slide at most 0.0 px; pupils min 100 %, step max 0 %; head past the edge 0 px; seat off at most 0.0 px
+   CLIP CHECK OK
+== c08 08 Öppna en dörr (4.40 s, 132 frames)
+   views: sir side-left 0-131
+   shoe past the line's top at most 0.0 px, slide at most 0.0 px; pupils min 100 %, step max 0 %; head past the edge 0 px; contacts off at most 0.3 px
+   CLIP CHECK OK

@@ -41,8 +41,17 @@ const STAND = POSES.stand;
  *  tipped 20 (at -0.53 and 60 the foot sank 14 cm into the ground) */
 const KNEEL: Partial<Pose> = { py: -0.51, legL: { z: 0.42, x: 0.04, toe: 10 } as FootIK, legR: { th: [-6, 4], sh: [-100, 0], pitch: 20 } as LegFK };
 
+/** Jesper's library rules of 21 Nov 2026 (the flat 2D look frozen), checked by scripts/flat_check.mjs on every clip:
+ *  1. Point: at something further away, the elbow slightly bent, the eyes on the target, at most one second; never straight at another
+ *     figure's body at close range (clip.points: the hold, the target's distance from every other figure, the finger's aim, the gaze).
+ *  2. Animals and things that turn up come in from the side or out of a hole that is seen before they come, never out of empty ground
+ *     (clip.appear: a side entry starts outside the picture, a hole is drawn from its first frame).
+ *  3. Rest: a figure standing still shifts its weight, breathes and moves its head a little (motion.ts, the idle; the check fails a
+ *     figure whose body is dead still for a second). */
+export const LIBRARY_RULES = ["point far, elbow bent, eyes on it, at most 1 s", "things enter from the side or a seen hole", "standing still: weight, breath, head"];
+
 export const GESTURES: Record<string, Gesture> = {
-  point: { how: "The body turns a little toward the target and the eyes go to it. The pointing arm is raised toward it, a little under shoulder height, the elbow bent (about 30 degrees, never locked), the index finger out and the other fingers curled. The other arm hangs at ease.",
+  point: { how: "The body turns a little toward the target and the eyes go to it. The pointing arm is raised toward it, a little under shoulder height, the elbow bent (about 30 degrees, never locked), the index finger out and the other fingers curled. The other arm hangs at ease. Jesper, 21 Nov 2026: at something further away, never straight at another figure's body at close range; held at most one second (acting.ts pointAt; the check reads clip.points).",
     pose: (aim) => ({ ...STAND, armR: planar(aim, 62, 92), armL: REST, twist: aim === "side" ? -10 : 0, lean: aim === "ahead" ? 4 : 0, head: aim === "side" ? [-30, 0, 0] : [0, -2, 0] }), hands: { handR: "point", handL: "relaxed" } },
   explain: { how: "Both hands in front of the chest at waist height, palms up and open, the elbows bent about 60 degrees close to the body. On the stressed words the hands open outward a little and come back. The eyes on the listener.",
     pose: (_aim, t) => { const o = 42 + 12 * Math.max(0, Math.sin(t * 3.2)); return { ...STAND, armL: [[18, 20], [70, o]], armR: [[18, 20], [70, o]], head: [0, 2, 0] }; }, hands: { handL: "open", handR: "open" } },

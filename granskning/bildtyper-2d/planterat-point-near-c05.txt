@@ -1,0 +1,30 @@
+== c05 05 Peka (4.00 s, 120 frames)
+   views: sir q-right 0-16 | side-right 17-119 ;; ada front 0-119
+   shoe past the line's top at most 0.0 px, slide at most 0.0 px; pupils min 100 %, step max 0 %; head past the edge 90 px; point held 0.90 s
+   0 ada: the head 80 px past the picture's edge
+   1 ada: the head 80 px past the picture's edge
+   2 ada: the head 80 px past the picture's edge
+   3 ada: the head 79 px past the picture's edge
+   4 ada: the head 79 px past the picture's edge
+   5 ada: the head 79 px past the picture's edge
+   6 ada: the head 79 px past the picture's edge
+   7 ada: the head 79 px past the picture's edge
+   8 ada: the head 79 px past the picture's edge
+   9 ada: the head 78 px past the picture's edge
+   10 ada: the head 78 px past the picture's edge
+   11 ada: the head 78 px past the picture's edge
+   12 ada: the head 78 px past the picture's edge
+   13 ada: the head 78 px past the picture's edge
+   14 ada: the head 79 px past the picture's edge
+   15 ada: the head 79 px past the picture's edge
+   16 ada: the head 79 px past the picture's edge
+   17 ada: the head 79 px past the picture's edge
+   18 ada: the head 79 px past the picture's edge
+   19 ada: the head 79 px past the picture's edge
+   20 ada: the head 80 px past the picture's edge
+   21 ada: the head 80 px past the picture's edge
+   22 ada: the head 80 px past the picture's edge
+   23 ada: the head 81 px past the picture's edge
+   24 ada: the head 81 px past the picture's edge
+   by kind: 120 x "ada: the head # px past the picture's edge"; 27 x "sir: the finger aims # degrees off the target"; 27 x "sir: not facing the target"; 27 x "sir: the target is within # px of ada"
+   CLIP CHECK FAILED: 201

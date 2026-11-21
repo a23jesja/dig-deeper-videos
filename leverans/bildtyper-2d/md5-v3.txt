@@ -1,0 +1,16 @@
+229ff9d67514be5dd1d93eab5a62ebd1 *../leverans/bildtyper-2d/01-sta-och-prata-v3-telefon.mp4
+913b6dabb8672977d01e841745929dde *../leverans/bildtyper-2d/01-sta-och-prata-v3.mp4
+34b88a3f2041cb98044542ff903acf7a *../leverans/bildtyper-2d/02-ga-v3-telefon.mp4
+4304db378bee1cdba524d0d30031b77d *../leverans/bildtyper-2d/02-ga-v3.mp4
+894ea256905e520f44783249deded093 *../leverans/bildtyper-2d/03-vanda-sig-v3-telefon.mp4
+41a0ac26bbc1d3531380f69503ead45b *../leverans/bildtyper-2d/03-vanda-sig-v3.mp4
+1357ec0121d84b5e6c1670cee2c35e78 *../leverans/bildtyper-2d/04-halla-med-bada-handerna-v3-telefon.mp4
+2160e8a835d756fc30deee166f8d6a39 *../leverans/bildtyper-2d/04-halla-med-bada-handerna-v3.mp4
+791f33cabc4c98d05b32016a70233470 *../leverans/bildtyper-2d/05-peka-v3-telefon.mp4
+06ef3648ca6e22fd28c5b89140baacd1 *../leverans/bildtyper-2d/05-peka-v3.mp4
+9a1432a825c01383c94bc3d78214ef42 *../leverans/bildtyper-2d/06-reagera-v3-telefon.mp4
+80e11db8f8dca80c59e6c238d3f3a94a *../leverans/bildtyper-2d/06-reagera-v3.mp4
+1522e771df410a750a5dd6b501ac0c02 *../leverans/bildtyper-2d/07-sitta-v3-telefon.mp4
+fe6219a48e053ff037672b090d25e654 *../leverans/bildtyper-2d/07-sitta-v3.mp4
+19e3ed805dbfbe10888cdf8c94eb39c9 *../leverans/bildtyper-2d/08-oppna-en-dorr-v3-telefon.mp4
+fa1d8a5fc012cbfa718d9b9559d28d0b *../leverans/bildtyper-2d/08-oppna-en-dorr-v3.mp4

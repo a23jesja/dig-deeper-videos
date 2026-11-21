@@ -121,7 +121,8 @@ const c04 = (): Clip => {
 // Medium shot on the quay. Out at sea, near the horizon, a ship; Sir looks down at it first, then points at it with the elbow visibly bent,
 // the finger out under a second, and lowers the arm. Finger and eyes on the same ship. (v3: the ship larger and nearer the horizon's front,
 // below his eyes, which look down at it; no bollard on his ground line; the camera holds him and the ship whole.)
-const HORIZON = 1200, SHIP_S = 1.5;
+// (the horizon at 1265, so the ship lies under his pipe: at 1200 the pipe's bowl hid its sail)
+const HORIZON = 1265, SHIP_S = 1.5;
 const shoulderPx = (x: number, p: Pose, heading: number): [number, number] => { const sk = solve(D.props("sir"), p, heading), q = sk.j.shR as unknown as number[], s = scaleOf("sir"); return [x + q[0] * s, footY("sir") + q[1] * s]; };
 const c05 = (): Clip => {
   // (the ship on the horizon line, its hull's foot on it: lower in the water, near him, it read as a toy boat)
@@ -255,10 +256,11 @@ const c08 = (): Clip => {
       g.restore();
       // the door frame over the leaf's edges
       g.lineWidth = 16; g.strokeStyle = "#e9dcc4"; g.strokeRect(L - 8, top0 - 8, DOOR.w + 16, DOOR.h + 8); g.lineWidth = 5; g.strokeStyle = INK; g.strokeRect(L - 16, top0 - 16, DOOR.w + 32, DOOR.h + 16); g.strokeRect(L, top0, DOOR.w, DOOR.h);
-      // the lever handle: a round rose and a lever toward the hinges (its end shows past his fist)
-      const [hx, hy] = handleAt(t), [lx, ly] = doorPt(t, 0.7, DOOR.handleUp);
-      g.lineCap = "round"; g.beginPath(); g.moveTo(hx, hy); g.lineTo(lx, ly); g.lineWidth = 18; g.strokeStyle = INK; g.stroke(); g.lineWidth = 9; g.strokeStyle = "#e8c45a"; g.stroke();
-      g.beginPath(); g.arc(hx, hy, 13, 0, Math.PI * 2); g.fillStyle = "#e8c45a"; g.fill(); g.lineWidth = 5; g.strokeStyle = INK; g.stroke(); } };
+      // the handle: an upright brass bar on two posts, longer than his fist, so its ends show above and below the hand that grips it (a
+      //  round knob and a short lever were hidden under the fist, the review of v2)
+      const [ax, ay] = doorPt(t, 0.86, DOOR.handleUp + 46), [bx, by] = doorPt(t, 0.86, DOOR.handleUp - 46);
+      g.lineCap = "round"; for (const [px2, py2] of [[ax, ay], [bx, by]]) { g.beginPath(); g.arc(px2, py2, 9, 0, Math.PI * 2); g.fillStyle = "#c9a23a"; g.fill(); g.lineWidth = 5; g.strokeStyle = INK; g.stroke(); }
+      g.beginPath(); g.moveTo(ax - 10, ay); g.lineTo(bx - 10, by); g.lineWidth = 20; g.strokeStyle = INK; g.stroke(); g.lineWidth = 10; g.strokeStyle = "#e8c45a"; g.stroke(); } };
 };
 
 export const CLIPS: Record<string, () => Clip> = { c01, c02, c03, c04, c05, c06, c07, c08 };

@@ -213,9 +213,11 @@ const A_SPEC: FlatSpec = {
     for (const s of [-1, 1]) { const [i, o] = browEnds(r, s * 46 + tx, -172, 1, 20, s); k.line([i, o], 15 + k.ol * 1.7); k.line([i, o], 15, CA.hair); }
     for (const s of [-1, 1]) eyeA(k, s * 46 + tx, -118, 1, r, CA.skin, -s);
     monoRing(k, -46 + tx, -118, 42, 52, 7);
-    mouthAt(k, tx + r.smirk * 4, -32, 22 * (1 + 0.3 * r.mouth), 1, r);
-    pipeAt(k, [tx + 30, -38], 1);
-    const half: P2[] = [[0, -62], [30, -70], [62, -64], [88, -74], [98, -96], [112, -90], [102, -58], [66, -46], [30, -50], [0, -54]];
+    // (the mouth always shows under the moustache, closed a small dark mouth, so it can move with the voice; the pipe sits in its corner:
+    //  Jesper choosing A, 21 Nov)
+    mouthAt(k, tx + r.smirk * 4, -27, 24 * (1 + 0.3 * r.mouth), 1, { ...r, mouth: Math.max(r.mouth, 0.13) });
+    pipeAt(k, [tx + 22, -27], 1);
+    const half: P2[] = [[0, -64], [30, -72], [62, -66], [88, -76], [98, -98], [112, -92], [102, -60], [66, -50], [30, -54], [0, -58]];
     fl(k, at(spline([...half, ...mirror(half).reverse()]), tx), CA.hair);
     fl(k, ellPts(tx, -80, 17, 14), CA.nose);
     tearAt(k, tx + 54, -82, 1, r.tear); tearAt(k, tx - 38, -82, 0.9, r.tear * 0.7);
@@ -227,9 +229,10 @@ const A_SPEC: FlatSpec = {
     const [i, o] = browEnds(r, 66, -172, 0.9, 18, 1); k.line([i, o], 14 + k.ol * 1.7); k.line([i, o], 14, CA.hair);
     eyeA(k, 66, -118, 0.9, { ...r, gaze: [Math.max(0.35, r.gaze[0]), r.gaze[1]] }, CA.skin, 1);
     monoRing(k, 66, -118, 36, 50, 7);
-    mouthAt(k, 100, -34, 13 * (1 + 0.3 * r.mouth), 0.9, r);
-    pipeAt(k, [110, -38], 1);
-    fl(k, spline([[70, -66], [110, -70], [140, -74], [154, -98], [166, -88], [152, -60], [112, -50], [74, -56]]), CA.hair);
+    // (from the side the pipe's mouthpiece is in the mouth under the moustache, not at the moustache's tip: Jesper choosing A)
+    mouthAt(k, 96, -25, 14 * (1 + 0.3 * r.mouth), 0.9, { ...r, mouth: Math.max(r.mouth, 0.13) });
+    pipeAt(k, [108, -24], 1);
+    fl(k, spline([[70, -66], [108, -70], [130, -74], [140, -94], [151, -88], [140, -60], [112, -50], [74, -56]]), CA.hair);
     fl(k, ellPts(126, -82, 19, 16), CA.nose);
     tearAt(k, 72, -82, 1, r.tear);
     k.g.save(); k.g.translate(-lift * 40, -lift * 50); k.g.rotate(-lift * 0.25); capSide(k, -128, 112, -206, -312, CA.cap, 52); k.g.restore();

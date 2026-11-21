@@ -11,7 +11,7 @@ import { Design, FigOpts, Face, Who } from "./designs/common";
 import { FLAT, FLAT_SPECS, FLAT_LINES, OTHER_NAME } from "./designs/flat";
 import { GESTURES } from "./stage/gestures";
 
-export const FSW = 2700, FSH = 1800, FLAT_FRAMES = 3;
+export const FSW = 2700, FSH = 1800, FLAT_FRAMES = 4;
 const BG = "#f3ecdc", PANEL = "#e7dcc4", TXT = "#2b1d12", SUB = "#5d4a33", INK = "#241726";
 type G = CanvasRenderingContext2D;
 const tall = (P: Props) => P.thigh + P.shin + P.ankle + P.spine + P.neck + P.head * 1.45;
@@ -69,6 +69,9 @@ const BGS: ((g: G) => void)[] = [
     rect(g, 820, GY - 190, 200, 190, "#c99a5c"); rect(g, 860, GY - 330, 140, 140, "#d8ad6e");
     poly(g, [[70, GY], [70, GY - 90], [90, GY - 120], [150, GY - 120], [170, GY - 90], [170, GY]], "#3b3b44"); },
 ];
+/** the run of the action scene (Jesper choosing A, 21 Nov: more forward lean and a clear stride, the back foot pushing off): rig.ts run with
+ *  the body leaning 27 degrees into it, the back leg straight on its toe pushing off, the front knee bent high */
+const RUN: Pose = { ...POSES.run, lean: 34, pz: 0.16, legL: { z: -1.0, pitch: 66, toe: 4 }, legR: { th: [80, 2], sh: [-22, 0], pitch: 10 }, armL: [[46, 8], [126, 6]], armR: [[-60, 12], [10, 6]], head: [0, -14, 0] };
 /** the scene, an action: Sir runs, his cap lifting off in the wind, startled; Ada points the way (rig.ts run, the gesture library's point).
  *  (v1: Sir explaining and Ada shrugging stood still, and their hands met in the middle of the picture, the review of 21 Nov) */
 const scene = (g: G, i: number, x: number, y: number, w: number) => {
@@ -80,7 +83,7 @@ const scene = (g: G, i: number, x: number, y: number, w: number) => {
   g.restore();
   // (Ada behind him on the left points the way he runs, to the right: the two apart, no hand near the other figure)
   fig(g, D, "baker", pt.pose("ahead", 0) as Pose, 80, { ...pt.hands, face: { brow: 0.5, mouth: 0.4, smile: 0.2, gaze: [0.6, -0.1] } }, x + 210 * u, y + GY * u, sc * u * 0.82, clip);
-  fig(g, D, "sir", POSES.run, 72, { handL: "fist", handR: "fist", capLift: 0.4, face: { wide: 1, brow: 1, mouth: 0.55, smile: -0.3, pupil: 0.6, gaze: [0.6, 0] } }, x + 720 * u, y + GY * u, sc * u * 0.86, clip);
+  fig(g, D, "sir", RUN, 88, { handL: "fist", handR: "fist", capLift: 0.4, face: { wide: 1, brow: 1, mouth: 0.55, smile: -0.3, pupil: 0.6, gaze: [0.6, 0] } }, x + 720 * u, y + GY * u, sc * u * 0.86, clip);
   g.setTransform(1, 0, 0, 1, 0, 0); g.lineWidth = 3; g.strokeStyle = INK; g.strokeRect(x, y, w, w * 16 / 9);
 };
 
@@ -99,10 +102,10 @@ const bust = (g: G, D: Design, face: Face, cx: number, cy: number, hpx: number, 
   fig(g, D, "sir", POSES.stand, 12, { face }, cx, cy + 22 * (hpx / 220) + headMid(P) * hs, hs, [cx - cw / 2, cy - ch / 2, cw, ch]);
 };
 
-const sheet = (g: G, i: number) => {
+const sheet = (g: G, i: number, v3 = false) => {
   const D = FLAT[i], spec = FLAT_SPECS[i], sir = D.props("sir");
   box(g, 0, 0, FSW, FSH, BG);
-  text(g, `RIKTNING ${D.name.toUpperCase()}`, 40, 72, 52, 800, "left");
+  text(g, `RIKTNING ${D.name.toUpperCase()}${v3 ? "  (v3: munnen syns alltid, pipan i munnen från sidan, tydligare löpsteg)" : ""}`, 40, 72, v3 ? 40 : 52, 800, "left");
   text(g, FLAT_LINES[i], 40, 112, 25, 400, "left", SUB);
   text(g, "Platt 2D ritad i kod: jämn tjock kontur, platta färger, inget mönster, inget ljus. Skelettet och gestbiblioteket är motorns egna, oförändrade.", 40, 146, 21, 400, "left", SUB);
   // the turnaround: Sir and Ada, front and side
@@ -142,10 +145,14 @@ const sheet = (g: G, i: number) => {
     text(g, t, cx, 1490, 28, 800); text(g, what, cx, 1522, 19, 400, "center", SUB);
     bust(g, D, face, cx, 1640, 54, 92, 96);
     text(g, "mobil", cx, 1712, 16, 400, "center", SUB); });
+  // (v3: the mouth moving with the voice in the neutral face: closed, half open, open)
+  if (v3) { text(g, "TAL I NEUTRAL MIN", 2390, 1120, 26, 800);
+    ([["STÄNGD", 0], ["HALVÖPPEN", 0.35], ["ÖPPEN", 0.7]] as [string, number][]).forEach(([t, m], n) => { const cx = 2210 + n * 180; bust(g, D, { mouth: m }, cx, 1290, 150, 170, 260); text(g, t, cx, 1450, 20, 800); }); }
   g.setTransform(1, 0, 0, 1, 0, 0);
 };
 
 export const FlatStyle: React.FC = () => {
-  const fr = useCurrentFrame(), i = Math.min(fr, FLAT.length - 1);
-  return <AbsoluteFill style={{ background: BG }}><canvas width={FSW} height={FSH} ref={(cv) => { if (cv) sheet(cv.getContext("2d")!, i); }} /></AbsoluteFill>;
+  // (frames 0-2: the three directions; frame 3: A Knopp v3, Jesper's choice with his three fixes)
+  const fr = useCurrentFrame(), i = fr >= 3 ? 0 : Math.min(fr, FLAT.length - 1);
+  return <AbsoluteFill style={{ background: BG }}><canvas width={FSW} height={FSH} ref={(cv) => { if (cv) sheet(cv.getContext("2d")!, i, fr >= 3); }} /></AbsoluteFill>;
 };

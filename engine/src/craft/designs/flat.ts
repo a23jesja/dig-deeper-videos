@@ -48,36 +48,6 @@ const eyeA: EyeFn = (k, cx, cy, s, r, skin, nose) => {
   k.clip(ball, () => { const pr = 16 * s * r.pupil; k.dot(cx + r.gaze[0] * (rx - pr * 0.72 - 2 * s), cy + 4 * s + r.gaze[1] * (ry - pr * 0.8 - 3 * s), pr);
     lids(k, cx, cy, rx, ry, r.lid, r.smile > 0.5 ? 0.3 * r.smile : 0, skin); });
 };
-/** B: a solid black upright pill with no white; scared, it gets a white ring round a small pill */
-const eyeB: EyeFn = (k, cx, cy, s, r, skin, nose) => {
-  if (r.squeeze > 0.5) return chevron(k, cx, cy, 15 * s, 12 * s, nose);
-  if (r.lid > 0.93) { if (r.smile > 0.5) ln(k, spline([[cx - 16 * s, cy + 4 * s], [cx, cy - 10 * s], [cx + 16 * s, cy + 4 * s]], false, 8), 1.15); else ln(k, [[cx - 17 * s, cy + 4 * s], [cx + 17 * s, cy + 4 * s]], 1.25); return; }
-  const g = r.gaze;
-  if (r.wide > 0.3) {
-    const rx = 21 * s, ry = 28 * s, ball = ellPts(cx, cy, rx, ry, 0, 0, 360, 36); fl(k, ball, WHITE);
-    k.clip(ball, () => { k.shape(ellPts(cx + g[0] * 8 * s, cy + g[1] * 10 * s, 8 * s * r.pupil, 13 * s * r.pupil), k.ink, 0); lids(k, cx, cy, rx, ry, r.lid, 0, skin); });
-    return;
-  }
-  const rx = 11 * s, ry = 21 * s, x = cx + g[0] * 6 * s, y = cy + g[1] * 6 * s, pill = ellPts(x, y, rx, ry, 0, 0, 360, 32);
-  k.shape(pill, k.ink, 0);
-  const lo = r.smile > 0.5 ? 0.32 * r.smile : 0;
-  // (the lid cuts the pill with a straight edge drawn wider than the pill, so a heavy lid reads at a distance)
-  k.clip(ellPts(x, y, rx + 1, ry + 1), () => { if (r.lid > 0.12) k.shape([[x - 30 * s, y - 40 * s], [x + 30 * s, y - 40 * s], [x + 30 * s, y - ry + 2 * ry * r.lid], [x - 30 * s, y - ry + 2 * ry * r.lid]], skin, 0);
-    if (lo > 0.02) k.shape([[x - 30 * s, y + 40 * s], [x + 30 * s, y + 40 * s], [x + 30 * s, y + ry - 2 * ry * lo], [x - 30 * s, y + ry - 2 * ry * lo]], skin, 0); });
-  if (r.lid > 0.12) ln(k, [[x - rx * 1.6, y - ry + 2 * ry * r.lid], [x + rx * 1.6, y - ry + 2 * ry * r.lid]], 1.1);
-  if (lo > 0.02) ln(k, spline([[x - rx * 1.5, y + ry - 2 * ry * lo + 4 * s], [x, y + ry - 2 * ry * lo - 3 * s], [x + rx * 1.5, y + ry - 2 * ry * lo + 4 * s]], false, 6));
-};
-/** C: a dome, flat along the bottom, its pupil sitting on the flat line; a little heavy-lidded at rest; scared, the dome opens to a full oval */
-const eyeC: EyeFn = (k, cx, cy, s, r, skin, nose) => {
-  const rx = 28 * s, ry = 30 * s * (1 + 0.2 * r.wide), ry2 = ry * (0.14 + 0.8 * r.wide);
-  if (r.squeeze > 0.5) return chevron(k, cx, cy, rx * 0.9, ry * 0.45, nose);
-  if (r.lid > 0.93) { if (r.smile > 0.5) ln(k, spline([[cx - rx, cy + 4 * s], [cx, cy - ry * 0.5], [cx + rx, cy + 4 * s]], false, 8), 1.15); else { ln(k, [[cx - rx, cy + ry2], [cx + rx, cy + ry2]], 1.25); for (const u of [-0.6, 0, 0.6]) ln(k, [[cx + u * rx, cy + ry2], [cx + u * rx * 1.2, cy + ry2 + 9 * s]], 0.6); } return; }
-  const dome = [...ellPts(cx, cy, rx, ry, 0, 180, 360, 24), ...ellPts(cx, cy, rx, ry2, 0, 0, 180, 16).slice(1)];
-  fl(k, dome, WHITE);
-  const lid = r.wide > 0.3 ? r.lid : Math.max(r.lid, 0.24);
-  k.clip(dome, () => { const pr = 14 * s * r.pupil; k.dot(cx + r.gaze[0] * (rx - pr - 2 * s), cy + ry2 - pr * 0.75 + r.gaze[1] * 5 * s, pr);
-    lids(k, cx, cy, rx, ry, lid, 0, skin, 0); });
-};
 
 // ---------------- brows, mouth, tear, pipe, monocle ----------------
 /** the brows' two ends, inner and outer (y down): up as a whole with `brow`, the inner end down when cross, up when sad */
@@ -339,134 +309,12 @@ const A_SPEC: FlatSpec = {
   },
 };
 
-// ======================= B: STÅNG — tall and narrow, a small bean head on a long neck =======================
-const CB: Col = { skin: "#f0c4a0", nose: "#f0c4a0", hair: "#6b4a2f", cap: "#7d7a6a", coat: "#7d7a6a", vest: "#19a6a6", shirt: "#f6f3ea", tie: "#2c2f3a", trous: "#55606b", shoe: "#2b2b33",
-  dress: "#c84b5a", stock: "#3a2e33", collar: "#f6f3ea" };
-const ADA_HAIR_B = "#b5652f";
-const beanFront = sym([[0, 8], [40, 2], [62, -40], [66, -112], [58, -162], [36, -188], [0, -194]]);
-const B_SPEC: FlatSpec = {
-  id: "flatB", name: "B Stång", ol: 11, faceW: 112, turn: 22, noCoat: true,
-  sir: { P: { thigh: 150, shin: 140, ankle: 20, foot: 100, hipW: 34, shW: 58, spine: 250, shDrop: 18, neck: 44, head: 182, upper: 130, fore: 120, hand: 62 },
-    B: { rows: [[-24, 42, 40, 36], [0, 42, 40, 36], [80, 40, 38, 34], [160, 46, 42, 36], [222, 58, 40, 34], [244, 40, 30, 26], [256, 16, 16, 14]], arm: [16, 13, 12], leg: [20, 17, 14], shoeW: 34, neck: 15 } },
-  other: { P: { thigh: 140, shin: 130, ankle: 18, foot: 86, hipW: 30, shW: 48, spine: 230, shDrop: 16, neck: 42, head: 172, upper: 118, fore: 110, hand: 56 },
-    B: { rows: [[-150, 72, 62, 58], [-70, 52, 48, 44], [0, 40, 36, 32], [110, 32, 30, 26], [190, 44, 32, 28], [212, 30, 24, 20], [230, 12, 12, 12]], arm: [13, 11, 10], leg: [13, 11, 9], shoeW: 28, neck: 13 } },
-  col: CB, chainFront: [[-40, -96], [-62, 10]], chainSide: [[28, -84], [30, 10]], chainEnd: [-30, 150], chainW: 4, vest: [242, -10, 30],
-  sirFront: (k, r, tx, lift) => {
-    for (const s of [-1, 1]) fl(k, ellPts(s * 64, -100, 14, 22), CB.skin);
-    fl(k, beanFront, CB.skin);
-    for (const s of [-1, 1]) { const [i, o] = browEnds(r, s * 26 + tx, -148, 0.8, 20, s); ln(k, spline([i, [(i[0] + o[0]) / 2, Math.min(i[1], o[1]) - 7], o], false, 6), 0.95); }
-    for (const s of [-1, 1]) eyeB(k, s * 26 + tx, -112, 1, r, CB.skin, -s);
-    monoRing(k, -26 + tx, -112, 25, 32, 5.5);
-    fl(k, [[tx - 6, -124], [tx + 14, -72], [tx - 12, -68]], CB.nose);
-    mouthAt(k, tx + r.smirk * 3, -36, 13 * (1 + 0.35 * r.mouth), 0.75, r);
-    pipeAt(k, [tx + 16, -40], 0.78);
-    const half: P2[] = [[0, -56], [22, -59], [50, -62], [76, -74], [82, -70], [56, -52], [24, -50], [0, -52]];
-    fl(k, at([...half, ...mirror(half).reverse()], tx), CB.hair);
-    tearAt(k, tx + 30, -88, 0.75, r.tear); tearAt(k, tx - 24, -88, 0.7, r.tear * 0.7);
-    k.g.save(); k.g.translate(-lift * 10, -lift * 40); capFront(k, 72, -178, -254, CB.cap, 10); k.g.restore();
-  },
-  sirSide: (k, r, lift) => {
-    fl(k, spline([[-40, 8], [-62, -40], [-66, -120], [-50, -176], [-10, -196], [30, -190], [52, -162], [58, -126], [60, -112], [100, -82], [96, -74], [60, -74], [58, -60], [64, -40], [50, -6], [10, 10]]), CB.skin);
-    ear(k, -30, -100, 14, 22, CB.skin);
-    const [i, o] = browEnds(r, 36, -148, 0.8, 16, 1); ln(k, spline([i, [(i[0] + o[0]) / 2, Math.min(i[1], o[1]) - 6], o], false, 6), 0.95);
-    eyeB(k, 36, -112, 0.95, { ...r, gaze: [Math.max(0.4, r.gaze[0]), r.gaze[1]] }, CB.skin, 1);
-    monoRing(k, 36, -112, 20, 31, 5.5);
-    mouthAt(k, 54, -38, 9 * (1 + 0.35 * r.mouth), 0.7, r);
-    pipeAt(k, [60, -42], 0.78);
-    fl(k, [[52, -64], [80, -66], [104, -78], [110, -73], [82, -54], [54, -54]], CB.hair);
-    tearAt(k, 40, -88, 0.75, r.tear);
-    k.g.save(); k.g.translate(-lift * 30, -lift * 40); k.g.rotate(-lift * 0.25); capSide(k, -70, 58, -178, -254, CB.cap, 44); k.g.restore();
-  },
-  otherFront: (k, r, tx) => {
-    fl(k, spline([[-74, -150], [-84, -60], [-72, 30], [-40, 40], [40, 40], [72, 30], [84, -60], [74, -150], [40, -196], [-40, -196]]), ADA_HAIR_B);
-    fl(k, sym([[0, 6], [38, 0], [58, -40], [62, -110], [54, -156], [34, -180], [0, -186]]), CB.skin);
-    fl(k, spline([[-62, -110], [-62, -160], [-30, -194], [30, -194], [62, -160], [62, -110], [40, -146], [tx, -150], [-40, -146]]), ADA_HAIR_B);
-    for (const s of [-1, 1]) { const [i, o] = browEnds(r, s * 24 + tx, -136, 0.75, 16, s); ln(k, spline([i, [(i[0] + o[0]) / 2, Math.min(i[1], o[1]) - 6], o], false, 6), 0.85); }
-    for (const s of [-1, 1]) { eyeB(k, s * 24 + tx, -104, 0.95, r, CB.skin, -s); if (r.lid < 0.9 && r.squeeze < 0.5 && r.wide < 0.3) ln(k, [[s * 34 + tx, -122], [s * 42 + tx, -130]], 0.6); }
-    fl(k, [[tx - 4, -100], [tx + 9, -70], [tx - 9, -68]], CB.nose);
-    mouthAt(k, tx, -42, 13 * (1 + 0.35 * r.mouth), 0.75, r);
-    tearAt(k, tx + 28, -82, 0.75, r.tear);
-  },
-  otherSide: (k, r) => {
-    fl(k, spline([[-60, -170], [-96, -150], [-118, -90], [-108, -40], [-90, -60], [-80, -120]]), ADA_HAIR_B);
-    fl(k, spline([[-40, 6], [-58, -40], [-62, -116], [-48, -168], [-10, -188], [28, -182], [50, -154], [56, -116], [58, -104], [80, -78], [58, -72], [56, -58], [60, -40], [46, -6], [8, 8]]), CB.skin);
-    fl(k, spline([[-62, -100], [-66, -160], [-30, -192], [20, -194], [52, -168], [56, -140], [20, -150], [-20, -140], [-40, -100]]), ADA_HAIR_B);
-    const [i, o] = browEnds(r, 34, -136, 0.75, 14, 1); ln(k, spline([i, [(i[0] + o[0]) / 2, Math.min(i[1], o[1]) - 5], o], false, 6), 0.85);
-    eyeB(k, 34, -104, 0.9, { ...r, gaze: [Math.max(0.4, r.gaze[0]), r.gaze[1]] }, CB.skin, 1);
-    mouthAt(k, 52, -42, 9 * (1 + 0.35 * r.mouth), 0.7, r);
-    tearAt(k, 38, -82, 0.75, r.tear);
-  },
-};
-
-// ======================= C: KLOSS — a square head, a barrel chest, short legs =======================
-const CC: Col = { skin: "#e9b48c", nose: "#e58f74", hair: "#e4ddd0", cap: "#8a6a3a", coat: "#8a6a3a", vest: "#12b0a0", shirt: "#ffffff", tie: "#2b3f73", trous: "#3f4a5e", shoe: "#4a2a1a",
-  dress: "#5b7fd1", stock: "#2b2530", collar: "#ffffff" };
-const ADA_HAIR_C = "#1e1a1a";
-const block = sym([[0, 6], [72, 4], [102, -22], [106, -100], [98, -172], [72, -198], [0, -204]]);
-const C_SPEC: FlatSpec = {
-  id: "flatC", name: "C Kloss", ol: 10, faceW: 140, turn: 30,
-  sir: { P: { thigh: 90, shin: 80, ankle: 18, foot: 116, hipW: 52, shW: 100, spine: 230, shDrop: 26, neck: 6, head: 204, upper: 105, fore: 100, hand: 78 },
-    B: { rows: [[-34, 64, 50, 46], [0, 68, 56, 48], [60, 92, 80, 58], [140, 112, 92, 64], [200, 110, 70, 56], [222, 80, 50, 40], [238, 30, 30, 26]], arm: [31, 27, 23], leg: [32, 28, 24], shoeW: 52, neck: 0 } },
-  other: { P: { thigh: 86, shin: 76, ankle: 18, foot: 96, hipW: 46, shW: 78, spine: 200, shDrop: 22, neck: 6, head: 188, upper: 92, fore: 88, hand: 66 },
-    B: { rows: [[-84, 94, 74, 68], [-30, 76, 62, 56], [0, 66, 54, 48], [80, 70, 58, 44], [160, 86, 60, 46], [184, 62, 42, 34], [200, 24, 22, 20]], arm: [24, 21, 18], leg: [18, 15, 13], shoeW: 40, neck: 0 } },
-  col: CC, chainFront: [[-64, -100], [-92, -6]], chainSide: [[46, -88], [40, 10]], chainEnd: [-52, 120], chainW: 5, vest: [226, -6, 48],
-  sirFront: (k, r, tx, lift) => {
-    for (const s of [-1, 1]) fl(k, ellPts(s * 104, -100, 18, 28), CC.skin);
-    fl(k, block, CC.skin);
-    for (const s of [-1, 1]) { const [i, o] = browEnds(r, s * 40 + tx, -158, 1, 24, s), n: P2 = [0, -15]; fl(k, [i, o, add(o, n), add(i, n)], CC.hair); }
-    for (const s of [-1, 1]) eyeC(k, s * 40 + tx, -122, 1, r, CC.skin, -s);
-    monoRing(k, -40 + tx, -122, 38, 40, 7);
-    mouthAt(k, tx + r.smirk * 4, -22, 24 * (1 + 0.25 * r.mouth), 1, r);
-    pipeAt(k, [tx + 52, -30], 1.05);
-    const half: P2[] = [[0, -72], [40, -76], [78, -68], [98, -40], [86, -24], [62, -36], [30, -30], [0, -38]];
-    fl(k, at(spline([...half, ...mirror(half).reverse()]), tx), CC.hair);
-    fl(k, ellPts(tx, -88, 30, 24), CC.nose);
-    tearAt(k, tx + 48, -104, 1, r.tear); tearAt(k, tx - 34, -104, 0.9, r.tear * 0.7);
-    k.g.save(); k.g.translate(-lift * 12, -lift * 50); capFront(k, 108, -184, -270, CC.cap, 10); k.g.restore();
-  },
-  sirSide: (k, r, lift) => {
-    fl(k, spline([[-70, 6], [-100, -30], [-104, -120], [-92, -182], [-50, -206], [30, -206], [80, -186], [94, -140], [98, -112], [96, -74], [100, -30], [86, 0], [40, 8]]), CC.skin);
-    ear(k, -36, -104, 18, 28, CC.skin);
-    const [i, o] = browEnds(r, 56, -158, 0.9, 20, 1); fl(k, [i, o, add(o, [0, -14]), add(i, [0, -14])], CC.hair);
-    eyeC(k, 56, -122, 0.85, { ...r, gaze: [Math.max(0.4, r.gaze[0]), r.gaze[1]] }, CC.skin, 1);
-    monoRing(k, 56, -122, 30, 38, 7);
-    mouthAt(k, 92, -24, 14 * (1 + 0.25 * r.mouth), 0.9, r);
-    pipeAt(k, [118, -32], 1.05);
-    fl(k, spline([[58, -74], [100, -72], [130, -56], [126, -28], [98, -30], [72, -34], [54, -50]]), CC.hair);
-    fl(k, ellPts(112, -90, 30, 24), CC.nose);
-    tearAt(k, 60, -104, 1, r.tear);
-    k.g.save(); k.g.translate(-lift * 40, -lift * 50); k.g.rotate(-lift * 0.25); capSide(k, -108, 92, -184, -270, CC.cap, 50); k.g.restore();
-  },
-  otherFront: (k, r, tx) => {
-    fl(k, spline([[-112, -40], [-118, -150], [-90, -206], [0, -216], [90, -206], [118, -150], [112, -40], [70, -30], [-70, -30]]), ADA_HAIR_C);
-    fl(k, sym([[0, 6], [62, 4], [90, -22], [94, -96], [88, -160], [64, -184], [0, -190]]), CC.skin);
-    fl(k, [[-96, -120], [-96, -186], [-60, -206], [60, -206], [96, -186], [96, -120], [70, -150], [-70, -150]], ADA_HAIR_C);
-    for (const s of [-1, 1]) { const [i, o] = browEnds(r, s * 38 + tx, -140, 0.95, 20, s); fl(k, [i, o, add(o, [0, -10]), add(i, [0, -10])], ADA_HAIR_C); }
-    for (const s of [-1, 1]) { eyeC(k, s * 38 + tx, -108, 0.95, r, CC.skin, -s); if (r.lid < 0.9 && r.squeeze < 0.5) ln(k, [[s * 62 + tx, -116], [s * 74 + tx, -124]], 0.7); }
-    fl(k, ellPts(tx, -74, 16, 13), CC.nose);
-    mouthAt(k, tx, -40, 22 * (1 + 0.3 * r.mouth), 0.95, r);
-    tearAt(k, tx + 46, -92, 0.9, r.tear);
-  },
-  otherSide: (k, r) => {
-    fl(k, spline([[-30, -40], [-108, -40], [-116, -150], [-80, -204], [10, -214], [70, -196], [40, -150], [-10, -100]]), ADA_HAIR_C);
-    fl(k, spline([[-62, 6], [-90, -30], [-94, -120], [-84, -170], [-44, -192], [28, -192], [72, -172], [84, -130], [86, -100], [84, -66], [88, -30], [76, 0], [36, 8]]), CC.skin);
-    fl(k, spline([[-96, -110], [-100, -180], [-40, -210], [40, -208], [84, -176], [82, -146], [30, -150], [-40, -140], [-70, -110]]), ADA_HAIR_C);
-    const [i, o] = browEnds(r, 52, -140, 0.9, 16, 1); fl(k, [i, o, add(o, [0, -10]), add(i, [0, -10])], ADA_HAIR_C);
-    eyeC(k, 52, -108, 0.85, { ...r, gaze: [Math.max(0.4, r.gaze[0]), r.gaze[1]] }, CC.skin, 1);
-    if (r.lid < 0.9 && r.squeeze < 0.5) ln(k, [[72, -116], [84, -124]], 0.7);
-    fl(k, ellPts(94, -78, 14, 12), CC.nose);
-    mouthAt(k, 76, -40, 13 * (1 + 0.3 * r.mouth), 0.9, r);
-    tearAt(k, 56, -92, 0.9, r.tear);
-  },
-};
-
-export const FLAT_SPECS = [A_SPEC, B_SPEC, C_SPEC];
+/** the frozen look (Jesper, 21 Nov 2026: "Riktning A Knopp är godkänd och fryst"); directions B Stång and C Kloss removed, see git tag fore-platt-2d */
+export const FLAT_SPECS = [A_SPEC];
 export const FLAT: Design[] = FLAT_SPECS.map(design);
 /** the one-line description of each direction on the sheet */
 export const FLAT_LINES = [
   "Stort runt huvud, halva längden. Liten rund kropp, korta ben. Ögon: höga vita ovaler med stor svart pupill. Knappnäsa, krullad mustasch.",
-  "Lång och smal, litet bönformat huvud på lång hals, sex och ett halvt huvud lång. Ögon: svarta stående piller utan vitt. Lång spetsig näsa, smal vaxad mustasch. Väst över skjortärmar.",
-  "Fyrkantigt huvud, bred tunnbröstkorg, korta ben. Ögon: kupoler med platt underkant där pupillen vilar. Stor rund näsa, yvig valrossmustasch som täcker munnen.",
 ];
 /** the supporting figure: Ada, his assistant, in the same style */
 export const OTHER_NAME = "ADA, ASSISTENTEN";

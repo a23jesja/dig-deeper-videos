@@ -1,13 +1,16 @@
 // A film as data: shots with a camera, the cast of each shot played from the motion library, and the things they hold. One stage
 // (Stage.tsx) plays any film in any world of the kit, so a Short is a script of shots and never its own engine.
 // Time: T = seconds from the start of the film, t = seconds from the start of the shot.
-import type { CardLight } from "../world/kit";
 import type * as THREE from "three";
 import type { Design, FigOpts } from "../designs/common";
 import type { Pose, Props, Joint } from "../rig";
 import { solve } from "../rig";
-import { FORE_TOP } from "../cast";
 import { Mover, blink, mouthAt, CUT } from "../motion";
+/** a forearm lies over the body when its wrist is further toward the lens than its elbow by this share of the forearm (cast.ts had it; the
+ *  3D card figures are removed, git tag fore-platt-2d) */
+const FORE_TOP = 0.25;
+/** the old 3D card light (world/kit.ts, removed): kept as a loose type so the film types still read */
+type CardLight = Record<string, unknown>;
 
 export type V3 = [number, number, number];
 export type Cam = { pos: V3; look: V3; fov: number };

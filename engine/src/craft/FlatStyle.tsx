@@ -11,7 +11,7 @@ import { Design, FigOpts, Face, Who } from "./designs/common";
 import { FLAT, FLAT_SPECS, FLAT_LINES, OTHER_NAME } from "./designs/flat";
 import { GESTURES } from "./stage/gestures";
 
-export const FSW = 2700, FSH = 1800, FLAT_FRAMES = 4;
+export const FSW = 2700, FSH = 1800, FLAT_FRAMES = 1;
 const BG = "#f3ecdc", PANEL = "#e7dcc4", TXT = "#2b1d12", SUB = "#5d4a33", INK = "#241726";
 type G = CanvasRenderingContext2D;
 const tall = (P: Props) => P.thigh + P.shin + P.ankle + P.spine + P.neck + P.head * 1.45;
@@ -152,7 +152,7 @@ const sheet = (g: G, i: number, v3 = false) => {
 };
 
 export const FlatStyle: React.FC = () => {
-  // (frames 0-2: the three directions; frame 3: A Knopp v3, Jesper's choice with his three fixes)
-  const fr = useCurrentFrame(), i = fr >= 3 ? 0 : Math.min(fr, FLAT.length - 1);
-  return <AbsoluteFill style={{ background: BG }}><canvas width={FSW} height={FSH} ref={(cv) => { if (cv) sheet(cv.getContext("2d")!, i, fr >= 3); }} /></AbsoluteFill>;
+  // (one frame: A Knopp, the frozen look. Directions B and C, frames 0-2 before, are removed: git tag fore-platt-2d)
+  useCurrentFrame();
+  return <AbsoluteFill style={{ background: BG }}><canvas width={FSW} height={FSH} ref={(cv) => { if (cv) sheet(cv.getContext("2d")!, 0, true); }} /></AbsoluteFill>;
 };

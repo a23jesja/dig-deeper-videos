@@ -33,6 +33,12 @@ type Sh = [number, number][];
 const poly = (g: G, pts: Sh, col: string, w = 8) => { g.beginPath(); pts.forEach(([x, y], i) => (i ? g.lineTo(x, y) : g.moveTo(x, y))); g.closePath(); g.fillStyle = col; g.fill(); if (w) { g.lineWidth = w; g.lineJoin = "round"; g.strokeStyle = INK; g.stroke(); } };
 const circ = (g: G, x: number, y: number, r: number, col: string, w = 8) => { g.beginPath(); g.arc(x, y, r, 0, Math.PI * 2); g.fillStyle = col; g.fill(); if (w) { g.lineWidth = w; g.strokeStyle = INK; g.stroke(); } };
 const rect = (g: G, x: number, y: number, w: number, h: number, col: string, lw = 8) => poly(g, [[x, y], [x + w, y], [x + w, y + h], [x, y + h]], col, lw);
+/** a cloud: three puffs on a rounded base, one outline round the whole (the ink drawn under all the parts, then all the fills) */
+const cloud = (g: G, x: number, y: number, s: number) => {
+  const parts: ((c: G) => void)[] = [(c) => c.arc(x, y, 70 * s, 0, Math.PI * 2), (c) => c.arc(x + 80 * s, y - 20 * s, 90 * s, 0, Math.PI * 2), (c) => c.arc(x + 170 * s, y, 66 * s, 0, Math.PI * 2),
+    (c) => { c.moveTo(x, y + 66 * s); c.lineTo(x + 170 * s, y + 66 * s); c.arc(x + 170 * s, y + 33 * s, 33 * s, Math.PI / 2, -Math.PI / 2, true); c.lineTo(x, y); c.arc(x, y + 33 * s, 33 * s, -Math.PI / 2, Math.PI / 2, true); }];
+  for (const pass of [0, 1]) for (const p of parts) { g.beginPath(); p(g); g.closePath(); if (pass) { g.fillStyle = "#ffffff"; g.fill(); } else { g.lineWidth = 16; g.lineJoin = "round"; g.strokeStyle = INK; g.stroke(); } }
+};
 const groundLine = (g: G, col: string) => { rect(g, -20, GY, 1120, 440, col, 0); g.beginPath(); g.moveTo(-20, GY); g.lineTo(1100, GY); g.lineWidth = 12; g.strokeStyle = INK; g.stroke(); };
 const BGS: ((g: G) => void)[] = [
   // A: a dig in the desert, noon
@@ -49,11 +55,12 @@ const BGS: ((g: G) => void)[] = [
       for (let yy = GY - h + 70; yy < GY - 170; yy += 150) for (let xx = x + 50; xx < x + w - 60; xx += 110) rect(g, xx, yy, 56, 84, "#f3d98b", 6); }
     for (const [x, w] of [[30, 140], [560, 160]]) rect(g, x, GY - 230, w, 230, "#5b4a52");
     groundLine(g, "#a9a7a0"); rect(g, -20, GY + 120, 1120, 26, "#8d8b85", 6);
-    g.beginPath(); g.moveTo(940, GY); g.lineTo(940, 980); g.lineWidth = 34; g.strokeStyle = INK; g.stroke(); g.lineWidth = 18; g.strokeStyle = "#3b4048"; g.stroke();
-    poly(g, [[880, 980], [1000, 980], [980, 900], [900, 900]], "#ffe08a"); poly(g, [[870, 900], [1010, 900], [940, 850]], "#3b4048"); },
+    // (the lamp at the right edge: in the middle it stood behind Sir's head as he ran, the v2 sheet)
+    g.beginPath(); g.moveTo(1030, GY); g.lineTo(1030, 980); g.lineWidth = 34; g.strokeStyle = INK; g.stroke(); g.lineWidth = 18; g.strokeStyle = "#3b4048"; g.stroke();
+    poly(g, [[970, 980], [1090, 980], [1070, 900], [990, 900]], "#ffe08a"); poly(g, [[960, 900], [1100, 900], [1030, 850]], "#3b4048"); },
   // C: a harbour, morning
   (g) => { rect(g, -20, -20, 1120, 1960, "#9ad3e6", 0);
-    for (const [x, y, s] of [[200, 330, 1], [760, 520, 0.8]]) { circ(g, x, y, 70 * s, "#ffffff"); circ(g, x + 80 * s, y - 20 * s, 90 * s, "#ffffff"); circ(g, x + 170 * s, y, 66 * s, "#ffffff"); rect(g, x - 10 * s, y, 250 * s, 66 * s, "#ffffff", 0); }
+    for (const [x, y, s] of [[200, 330, 1], [760, 520, 0.8]]) cloud(g, x, y, s);
     rect(g, -20, 1160, 1120, 360, "#2f7fb3");
     poly(g, [[520, 1150], [900, 1150], [860, 1220], [560, 1220]], "#6b3b2a");
     g.beginPath(); g.moveTo(700, 1150); g.lineTo(700, 880); g.lineWidth = 10; g.strokeStyle = INK; g.stroke();
@@ -62,13 +69,18 @@ const BGS: ((g: G) => void)[] = [
     rect(g, 820, GY - 190, 200, 190, "#c99a5c"); rect(g, 860, GY - 330, 140, 140, "#d8ad6e");
     poly(g, [[70, GY], [70, GY - 90], [90, GY - 120], [150, GY - 120], [170, GY - 90], [170, GY]], "#3b3b44"); },
 ];
-/** the scene: Sir explaining, Ada answering with a shrug (the gesture library's explain and shrug), on the painted ground */
+/** the scene, an action: Sir runs, his cap lifting off in the wind, startled; Ada points the way (rig.ts run, the gesture library's point).
+ *  (v1: Sir explaining and Ada shrugging stood still, and their hands met in the middle of the picture, the review of 21 Nov) */
 const scene = (g: G, i: number, x: number, y: number, w: number) => {
   const D = FLAT[i], u = w / 1080, sir = D.props("sir"), sc = 930 / tall(sir);
   g.save(); g.setTransform(1, 0, 0, 1, 0, 0); g.beginPath(); g.rect(x, y, w, w * 16 / 9); g.clip(); g.translate(x, y); g.scale(u, u); BGS[i](g); g.restore();
-  const ex = GESTURES.explain, sh = GESTURES.shrug;
-  fig(g, D, "sir", ex.pose("side", 0.5) as Pose, 28, { ...ex.hands, face: { smile: 0.7, mouth: 0.45, brow: 0.4, gaze: [0.6, 0] } }, x + 360 * u, y + GY * u, sc * u, [x, y, w, w * 16 / 9]);
-  fig(g, D, "baker", sh.pose("side", 0) as Pose, -28, { ...sh.hands, face: { lid: 0.35, brow: -0.2, smirk: 0.6, gaze: [-0.6, 0] } }, x + 770 * u, y + GY * u, sc * u, [x, y, w, w * 16 / 9]);
+  const pt = GESTURES.point, clip = [x, y, w, w * 16 / 9];
+  g.save(); g.setTransform(1, 0, 0, 1, 0, 0); g.beginPath(); g.rect(clip[0], clip[1], clip[2], clip[3]); g.clip(); g.translate(x, y); g.scale(u, u);
+  for (const [dx, dy, r] of [[150, -26, 34], [96, -14, 24], [52, -6, 15]]) circ(g, 620 - dx, GY + dy, r, "#efe6d2", 6);      // (dust kicked up behind him: flat puffs)
+  g.restore();
+  // (Ada behind him on the left points the way he runs, to the right: the two apart, no hand near the other figure)
+  fig(g, D, "baker", pt.pose("ahead", 0) as Pose, 80, { ...pt.hands, face: { brow: 0.5, mouth: 0.4, smile: 0.2, gaze: [0.6, -0.1] } }, x + 210 * u, y + GY * u, sc * u * 0.82, clip);
+  fig(g, D, "sir", POSES.run, 72, { handL: "fist", handR: "fist", capLift: 0.4, face: { wide: 1, brow: 1, mouth: 0.55, smile: -0.3, pupil: 0.6, gaze: [0.6, 0] } }, x + 720 * u, y + GY * u, sc * u * 0.86, clip);
   g.setTransform(1, 0, 0, 1, 0, 0); g.lineWidth = 3; g.strokeStyle = INK; g.strokeRect(x, y, w, w * 16 / 9);
 };
 
@@ -97,16 +109,16 @@ const sheet = (g: G, i: number) => {
   box(g, 40, 170, 1400, 880, PANEL);
   const sc = Math.min(800 / tall(sir), 330 / (2 * spec.faceW)), FY = 990;
   box(g, 40, FY, 1400, 60, "#d8c9a6");
-  fig(g, D, "sir", POSES.stand, 0, {}, 215, FY, sc);
-  fig(g, D, "sir", POSES.standSide, 90, {}, 540, FY, sc);
-  fig(g, D, "baker", POSES.stand, 0, {}, 900, FY, sc);
-  fig(g, D, "baker", POSES.standSide, 90, {}, 1230, FY, sc);
-  ([["SIR FRAMIFRÅN", 215], ["SIR FRÅN SIDAN", 560], [`${OTHER_NAME.split(",")[0]} FRAMIFRÅN`, 900], [`${OTHER_NAME.split(",")[0]} FRÅN SIDAN`, 1240]] as [string, number][]).forEach(([t, x]) => text(g, t, x, 1032, 22, 800));
+  fig(g, D, "sir", POSES.stand, 0, {}, 205, FY, sc);
+  fig(g, D, "sir", POSES.standSide, 90, {}, 530, FY, sc);
+  fig(g, D, "baker", POSES.stand, 0, {}, 945, FY, sc);
+  fig(g, D, "baker", POSES.standSide, 90, {}, 1265, FY, sc);
+  ([["SIR FRAMIFRÅN", 205], ["SIR FRÅN SIDAN", 550], [`${OTHER_NAME.split(",")[0]} FRAMIFRÅN`, 945], [`${OTHER_NAME.split(",")[0]} FRÅN SIDAN`, 1275]] as [string, number][]).forEach(([t, x]) => text(g, t, x, 1032, 22, 800));
   text(g, `Bifigur: ${OTHER_NAME.toLowerCase().replace("ada", "Ada")}, i samma stil`, 1420, 206, 20, 400, "right", SUB);
   // the scene
   scene(g, i, 1480, 170, 495);
-  text(g, "SCEN: platt målad bakgrund, marklinje", 1727, 1060 + 12, 20, 800);
-  text(g, "gesterna explain och shrug ur biblioteket", 1727, 1094, 18, 400, "center", SUB);
+  text(g, "ACTIONSCEN: platt målad bakgrund, marklinje", 1727, 1060 + 12, 20, 800);
+  text(g, "Sir springer (run), Ada pekar vägen (point)", 1727, 1094, 18, 400, "center", SUB);
   // phone size
   box(g, 2010, 170, 660, 880, PANEL);
   text(g, "MOBILSTORLEK", 2340, 206, 24, 800);

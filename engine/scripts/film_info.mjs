@@ -26,9 +26,14 @@ if (typeof globalThis.document === "undefined") {
   globalThis.document = { createElement: () => { const g = context(); return { width: 300, height: 150, style: {}, getContext: () => g, toDataURL: () => "", addEventListener() {} }; }, createElementNS: () => ({ style: {} }) };
   globalThis.Path2D = class { constructor() { return quiet({}); } };
 }
-const { FILMS, captions, auditGrips, occlusions, textOver, bodyCheck, bodyLines, pickAt, stageAt, motionCheck, motionLines, MOTION_DEBUG, picsAt, bubblesAt, textBoxes, thingsAt, SETTLE_ORDER, coplanarFilm, COPLANAR, castOf } = await import(pathToFileURL(tmp).href); fs.rmSync(tmp, { force: true });
+const { FILMS, captions, auditGrips, occlusions, textOver, bodyCheck, bodyLines, pickAt, stageAt, motionCheck, motionLines, MOTION_DEBUG, picsAt, bubblesAt, textBoxes, thingsAt, SETTLE_ORDER, coplanarFilm, COPLANAR, castOf, MOUS, MOUS_CHECK } = await import(pathToFileURL(tmp).href); fs.rmSync(tmp, { force: true });
 // ORDER_MODE=v1t|raw: the drawing order settled as in v1t, or not at all (the order test's planted faults; film.ts SETTLE_ORDER)
 if (process.env.ORDER_MODE) SETTLE_ORDER.mode = process.env.ORDER_MODE;
+// MOUS_V1V=1: the moustache drawn as in v1v (the moustache check's planted fault; cast.ts MOUS)
+if (process.env.MOUS_V1V) MOUS.v1v = true;
+// MOUS_TIP=1: the moustache check's tip rule on (off for v1w); MOUS_BEND=1: the far half bent down inside the outline (v1x, not rendered)
+if (process.env.MOUS_TIP) MOUS_CHECK.tip = true;
+if (process.env.MOUS_BEND) MOUS.bend = true;
 if (!FILMS[name]) { console.error(`no film named ${name}; there are: ${Object.keys(FILMS).join(", ")}`); process.exit(1); }
 const { film, comp } = FILMS[name], f = (t) => Math.round(t * film.fps);
 const rows = film.shots.map((s) => ({ id: s.id, a: f(s.a), b: f(s.b), still: Math.min(f(s.b) - 1, f(s.a + (s.still ?? (s.b - s.a) / 2))), seconds: +(s.b - s.a).toFixed(2) }));

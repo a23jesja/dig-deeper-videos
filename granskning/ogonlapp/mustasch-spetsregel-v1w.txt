@@ -1,0 +1,11 @@
+hook frames 0-72 (film 0.00-2.43 s): mate's moustache goes out past the head's outline (0 points of the near half, 2 of the far half)
+dark frames 73-82 (film 2.43-2.77 s): mate's moustache goes out past the head's outline (0 points of the near half, 3 of the far half)
+sun frames 192-229 (film 6.40-7.67 s): mate's moustache goes out past the head's outline (0 points of the near half, 1 of the far half)
+below frames 230-297 (film 7.67-9.93 s): mate's moustache goes out past the head's outline (0 points of the near half, 11 of the far half)
+mins frames 394-417 (film 13.13-13.93 s): mate's moustache goes out past the head's outline (0 points of the near half, 1 of the far half)
+test frames 688-717 (film 22.93-23.93 s): mate's moustache goes out past the head's outline (0 points of the near half, 1 of the far half)
+verdict frames 747-761 (film 24.90-25.40 s): mate's moustache goes out past the head's outline (0 points of the near half, 4 of the far half)
+nobody frames 846-859 (film 28.20-28.67 s): mate's moustache goes out past the head's outline (0 points of the near half, 1 of the far half)
+trick frames 981-984 (film 32.70-32.83 s): pirate's moustache goes out past the head's outline (0 points of the near half, 1 of the far half)
+end frames 1031-1083 (film 34.37-36.13 s): mate's moustache goes out past the head's outline (0 points of the near half, 2 of the far half)
+MOTION CHECK FAILED for eye-patch: 10 faults

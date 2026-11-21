@@ -56,6 +56,8 @@ export { motionCheck, motionLines, MOTION_DEBUG, picsAt } from "../stage/motionC
 export { bubblesAt } from "../stage/bubbles";
 export { thingsAt } from "../stage/bodyCheck";
 export { textBoxes, SETTLE_ORDER, castOf } from "../stage/film";
+export { MOUS } from "../cast";
+export { MOUS_CHECK } from "../stage/motionCheck";
 export { coplanar, COPLANAR } from "../stage/coplanar";
 export { coplanarFilm } from "../stage/bodyCheck";
 // the painted-cabin test (not a film): in node the painted layers are empty planes, so that the checks see the set and the figures

@@ -94,6 +94,9 @@ const piece = (k: Ink, pts: P2[], fill: string, weave?: P2, tilt = 0) => {
 const pin = (k: Ink, p: P2, r = 8) => { if (STYLE.simple) return; k.dot(p[0] + 2, p[1] + 2.5, r, "rgba(52,32,16,0.28)"); k.dot(p[0], p[1], r, "#7d5f1a"); k.dot(p[0], p[1], r - 1.8, BRASS); k.dot(p[0] - r * 0.3, p[1] - r * 0.3, r * 0.28, "#fff4c4"); };
 /** the far half of a moustache is never drawn shorter than this share of the near half (Jesper on the eye patch v1u) */
 export const MOUS_MIN = 0.6;
+/** proof only: the moustache drawn as in v1v (a beard's moustache before the nose, which lay over its far half as the head turned) */
+export const MOUS = { v1v: false, bend: false };
+const inPoly2 = (p: P2, P: P2[]) => { let c = false; for (let i = 0, j = P.length - 1; i < P.length; j = i++) { const [xi, yi] = P[i], [xj, yj] = P[j]; if (yi > p[1] !== yj > p[1] && p[0] < ((xj - xi) * (p[1] - yi)) / (yj - yi || 1e-12) + xi) c = !c; } return c; };
 /** a tapered ribbon along a line of points (a moustache half, a crest): half-widths per point */
 export const ribbon = (pts: P2[], w: number[]): P2[] => {
   const c = spline(pts, false, 5), n = c.length, lf: P2[] = [], rt: P2[] = [];
@@ -169,6 +172,13 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
   };
   const skull = spline([[0, 6], ...prof(1), [0, -H], ...prof(-1).reverse()], true, 5);
   const nose0 = at(h, 0), yEye = -0.565 * H, yM = -0.315 * H, yJaw = -0.18 * H, drop = 0.16 * H * m;
+  // the nose card (drawn after the eyes): its outline, also for the moustache check
+  const noseHull = () => { const t0 = at(h, 0, 0.9), n1 = at(h, -7, 0.9), n2 = at(h, 7, 0.9), c1 = at(h, -13, 0.9), c2 = at(h, 13, 0.9), out = 0.5 * a * h.sin;
+    return hull([[n1.x, -0.49 * H], [n2.x, -0.49 * H], [c1.x + out * 0.5, -0.385 * H], [c2.x + out * 0.5, -0.385 * H], [t0.x + out, -0.385 * H], [t0.x + out * 0.86, -0.35 * H], [t0.x, -0.335 * H]]); };
+  // a beard's moustache is drawn after the nose (before it, the nose card lay over the far half as the head turned and left a stub, the eye
+  // patch v1v at 24.8 s, the review of 21 Nov); a waxed moustache keeps its place before the nose
+  let beardPoly: P2[] | null = null;      // (the beard's outline once drawn: the head's outline for the moustache check is the skull's and the beard's)
+  const mousLate = () => !!(L.beard && L.beard2 && !L.mous) && !MOUS.v1v;
   // --- parts that lie behind the skull card ---
   const mousHalf = (s: number) => {
     const M = L.mous ?? (L.beard && L.beard2 ? { col: L.beard, span: 0.74, curl: -0.42 + 0.6 * Math.max(L.mouth2 ? 0.1 : -9, f.smile ?? 0.25), w: 15 } : undefined); if (!M) return; const r = M.span * a;
@@ -188,9 +198,28 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
     const pathOf = (sd: number) => { const dn = sd * dirx < 0, Sn = (dn ? [[0.97, 0], [0.74, 7], [0.42, 10], [0.12, 2], [-0.02, -16 * M.curl], [0.06, -34 * M.curl]] : [[0.97, 0], [1.1, 4], [1.26, 1], [1.38, -9 * M.curl], [1.4, -24 * M.curl], [1.34, -34 * M.curl]]).map(([x, y]) => [dirx * b * (0.97 + (x - 0.97) * k2), yM + y * u] as P2);
       const Gn = ([[0, 0, b * 1.0], [0.3 * a, 2, b * 0.98], [0.62 * r, 7, b * 0.74], [0.86 * r, 6, b * 0.5], [0.98 * r, -8 * M.curl, b * 0.38], [0.97 * r, -30 * M.curl, b * 0.36]] as number[][]).map(([X, y, Z]) => [p3(h, sd * X, Z).x, yM + y * u] as P2);
       return Gn.map((g, n) => [lerp(g[0], Sn[n][0], q), lerp(g[1], Sn[n][1], q)] as P2); };
-    let kk = farK; if (!nearHalf) { const ln = along(pathOf(-s)), lf = along(P); if (lf > 1e-3) kk = Math.max(farK, Math.min(1.6, (MOUS_MIN * ln) / lf)); }
-    const P2 = kk !== 1 ? P.map(([x, y]) => [P[0][0] + (x - P[0][0]) * kk, P[0][1] + (y - P[0][1]) * kk] as P2) : P;
-    piece(k, ribbon(P2, [M.w, M.w, M.w * 0.88, M.w * 0.66, M.w * 0.42, M.w * 0.18].map((w) => w * Math.max(farK, MOUS_MIN))), M.col);
+    let kk = farK; if (!nearHalf) { const ln = along(pathOf(-s)), lf = along(P); if (lf > 1e-3) kk = Math.max(farK, Math.min(MOUS.v1v ? 1.6 : 2.5, (MOUS_MIN * ln) / lf)); /* (v1v capped the lengthening at 1.6: 54-57 % at 7.7 s and 25.0 s) */ }
+    const P1 = kk !== 1 ? P.map(([x, y]) => [P[0][0] + (x - P[0][0]) * kk, P[0][1] + (y - P[0][1]) * kk] as P2) : P;
+    // (the far half kept inside the head's outline without being shortened: where a piece of it would leave the outline, it bends down along
+    //  the cheek, keeping every piece's length; its tip stays a tip's width and an outline inside the edge, so the rim line does not cut it
+    //  flat. The review of v1v: out through the head's edge at 8.9 s, ended flat on it at 4.2 s)
+    const inHead0 = (q: P2) => inPoly2(q, skull) || !!(beardPoly && inPoly2(q, beardPoly)), tw0 = M.w * 0.18 * Math.max(farK, MOUS_MIN) + k.ol;
+    const tipOk = (q: P2) => [0, 60, 120, 180, 240, 300].every((d) => inHead0([q[0] + tw0 * Math.cos(d * R), q[1] + tw0 * Math.sin(d * R)]));
+    const P2 = nearHalf || MOUS.v1v || away || !MOUS.bend ? P1 : (() => { const out: P2[] = [P1[0]]; let rot = 0; const sg = (P1[P1.length - 1][0] - P1[0][0]) >= 0 ? 1 : -1;
+      for (let n = 1; n < P1.length; n++) { const dx = P1[n][0] - P1[n - 1][0], dy = P1[n][1] - P1[n - 1][1], Ls = Math.hypot(dx, dy), a0 = Math.atan2(dy, dx) + rot; let q: P2 = [out[n - 1][0] + Ls * Math.cos(a0), out[n - 1][1] + Ls * Math.sin(a0)];
+        for (let t = 0; t <= 14; t++) { const a1 = a0 + sg * t * 8 * R, c: P2 = [out[n - 1][0] + Ls * Math.cos(a1), out[n - 1][1] + Ls * Math.sin(a1)]; if (inHead0(c) && (n < P1.length - 1 || tipOk(c))) { q = c; rot += sg * t * 8 * R; break; } }
+        out.push(q); } return out; })();
+    const rb = ribbon(P2, [M.w, M.w, M.w * 0.88, M.w * 0.66, M.w * 0.42, M.w * 0.18].map((w) => w * Math.max(farK, MOUS_MIN)));
+    piece(k, rb, M.col);
+    // (for the moustache check: the half's length that shows, the nose card taken off where it lies over it, and how many points of its
+    //  outline lie outside the head's outline)
+    const nh = mousLate() || away ? null : noseHull(); let vis2 = 0;
+    // (a piece counts as hidden when the nose card covers the upper half of the band there: what is left is a thin sliver under the nose)
+    const Pd = spline(P2, false, 8), cov = (q: P2) => !!nh && inPoly2([q[0], q[1] - M.w * 0.45], nh);
+    for (let n = 1; n < Pd.length; n++) if (!(cov(Pd[n]) && cov(Pd[n - 1]))) vis2 += Math.hypot(Pd[n][0] - Pd[n - 1][0], Pd[n][1] - Pd[n - 1][1]);
+    const tag = nearHalf ? "Near" : "Far"; k.val("mousShown", away ? 0 : 1); k.val(`mous${tag}Len`, vis2); const inHead = (q: P2) => inPoly2(q, skull) || !!(beardPoly && inPoly2(q, beardPoly)), tip = P2[P2.length - 1], tw = M.w * 0.18 * Math.max(farK, MOUS_MIN) + k.ol;
+    // (the line of the half and its tip with a margin of the tip's width and the outline round it: a tip on the edge is covered by the rim line and ends flat)
+    k.val(`mous${tag}Out`, P2.filter((q) => !inHead(q)).length + [0, 60, 120, 180, 240, 300].filter((d) => !inHead([tip[0] + tw * Math.cos(d * R), tip[1] + tw * Math.sin(d * R)])).length);
   };
   const pipe = () => {
     // (the stem's end in the corner of the mouth, where the mouth line ends (36 degrees round, 0.72 of the way out): rooted on the face's
@@ -354,7 +383,7 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
       for (let u = 1; u >= 0; u -= 0.125) { const q = cheek(1, u); if (q) inner.push(q); }
       for (let az = 40; az >= -40; az -= 8) { const q = at(h, az, 0.9); if (seen(q)) inner.push([q.x, lerp(yJaw + 0.105 * H - sour, yJaw - 0.08 * H + sour, (Math.abs(az) / 40) ** 2) + drop * (1 - 0.5 * (Math.abs(az) / 40) ** 2)]); }
       for (let u = 0; u <= 1; u += 0.125) { const q = cheek(-1, u); if (q) inner.push(q); }
-      if (outer.length > 2 && inner.length > 2) piece(k, spline([...outer, ...inner], true, 2), L.beard);
+      if (outer.length > 2 && inner.length > 2) { beardPoly = spline([...outer, ...inner], true, 2); piece(k, beardPoly, L.beard); }
       // the plaited tails, each tied with a ribbon: they hang from the foot of the beard and go down with the jaw
       if (L.tails?.length) { const n = L.tails.length;
         L.tails.forEach((col, i) => { const az = n === 1 ? 0 : lerp(-52, 52, i / (n - 1)), q = at(h, az, 1.02); if (!seen(q)) return;
@@ -422,17 +451,17 @@ const drawHead = (k: Ink, L: Look, phiTrue: number, f: Face, o: FigOpts) => {
         pts.push(...run); if (pts.length > 1) k.clip(skull, () => k.line(spline(pts, false, 4), 0.026 * H, "#1c1612", "round")); } };
     const far = h.sin >= 0 ? 1 : -1;
     if (vis) eye(far);
-    if (!away) { mousHalf(far); mousHalf(-far); if (L.mous && h.cos > 0.5) pin(k, [nose0.x * 0.9, yM + 1], 4); }
+    if (!away && !mousLate()) { mousHalf(far); mousHalf(-far); if (L.mous && h.cos > 0.5) pin(k, [nose0.x * 0.9, yM + 1], 4); }
     // (the pipe after the moustache: drawn before it, the moustache hid the stem and left only the bowl under it, a tooth or a block,
     //  with the head turned toward the pipe's side; or a bowl floating off the face near profile. The review of round 2)
-    if (!tipBehind && !away) pipe();
+    if (!tipBehind && !away && !mousLate()) pipe();
     if (vis) {
       eye(-far);
-      const t0 = at(h, 0, 0.9), n1 = at(h, -7, 0.9), n2 = at(h, 7, 0.9), c1 = at(h, -13, 0.9), c2 = at(h, 13, 0.9), out = 0.5 * a * h.sin;
-      piece(k, hull([[n1.x, -0.49 * H], [n2.x, -0.49 * H], [c1.x + out * 0.5, -0.385 * H], [c2.x + out * 0.5, -0.385 * H], [t0.x + out, -0.385 * H], [t0.x + out * 0.86, -0.35 * H], [t0.x, -0.335 * H]]), shade(skin, 0.9));
+      piece(k, noseHull(), shade(skin, 0.9));
       monocle();
       strap();
     }
+    if (!away && mousLate()) { mousHalf(far); mousHalf(-far); if (!tipBehind) pipe(); }
   }
   // (the part on top grows with its outline: drawn with the full outline from the first sliver, a thin ear stood beside the head as a dark
   //  stick or ring and came and went in one frame, the eye patch Short v1r at 15.2 s and 19.2 s, the independent review of 20 Nov)

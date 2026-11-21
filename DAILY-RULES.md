@@ -27,6 +27,18 @@ way of working changes. Nothing is built or sent that does not pass all six gate
    a code check before the next video.
 Until gates 2, 3 and 5 exist, no new Short is built. A few days without videos is better than more of these.
 
+## THE LOOK IS FROZEN: flat 2D, direction A "Knopp" (Jesper 2026-11-21)
+Overrides every older look section below (the emu look, the 3D cabin lighting, the frozen sprattelgubbe).
+- **Flat 2D drawn in code:** even thick outlines, flat colours, no pattern, no lighting, painted flat backgrounds
+  with a ground line. Big round head about half the height, small round body, short legs, tall white oval eyes with
+  a large black pupil, button nose.
+- **Sir Digsworth:** tweed cap with teal band, gold monocle with thin chain, curled moustache with the mouth always
+  visible under it, pipe in the mouth, brown coat, teal waistcoat. **Ada**, his assistant, in the same style.
+- **The approved sheet is the reference:** `granskning` sheet "Riktning A Knopp v3" and the motion test v4.
+  Every new character, animal and prop is drawn by the same rules.
+- **The rig, gesture library, checks and voice carry over.** 3D sets and lighting are no longer used in videos.
+- **Only Jesper can unfreeze it.** Fixing a fault inside the style is allowed, as before.
+
 ## Story first: something happens (Jesper 2026-11-21)
 Jesper's verdict on the reference Shorts: they win because a lot happens, there are action scenes, it is clearly
 explained and it entertains. Ours have been calm explanations. From now on every Short and long video is a story:
@@ -418,6 +430,26 @@ in the hook lab and the default to test first.
 **6. Even pace.** Captions one word at a time, large, in the middle of the lower half, timed to the voice. The voice
 keeps one steady speed; add a short pause at every comma (about 0.15 s) and a longer one at every full stop (about
 0.35 s). Short sentences, no clauses inside clauses. Loudness normalised so the level never jumps.
+**8. Faces tell the joke** (Jesper 2026-11-20, from a flat 2D Shorts channel he liked): big, simple, unmistakable
+expressions (eyes squeezed shut, a tear, a wince, a smug half-lid, a bandage over the eyes). A viewer with the
+sound off should get the joke from the face. Close framing: characters fill most of the picture, a row of three
+reads as an army.
+**9. Gags live in props, not in hard motion:** a blindfold, a symbol on a shield, a too-big coat, a sign. The prop
+makes the joke while the body stays simple.
+**10. Explain with a map or object on a table:** a hand-drawn map with a candle, tokens moving across it, one label.
+Two seconds instead of ten of talk.
+**11. One palette per video:** three or four main colours plus outline black, used everywhere in that video.
+Thick, even outlines on everything.
+
+**12. "You" in the hook works for Shorts too** (Jesper 2026-11-20, a reference Short with ~30,000 likes): "Rome's
+whole army is running away, and you're the only one guarding the bridge." Frame one is the panic itself, running
+straight at the camera; frame two is "you" seen from behind, facing the danger. This is hook type (e) in the hook
+lab: test it against (d).
+**13. Date and place as objects in the world:** a carved stone reading "508 BC", a sign, a map, never a text
+overlay. One aerial map shot (river, bridge, city, two armies) explains the geography in two seconds.
+**14. Rhythm:** a new shot every 1.5-2.5 seconds in the first 15 seconds, alternating close panic, wide view,
+map and the hero. Crowds are many small simple figures in wide shots; close-ups show only two or three.
+
 **7. The format is confirmed:** how a trick, loophole or scheme worked, told through one person doing it.
 
 ## The hook lab (Jesper 2026-11-17): most of the polish goes into the first five seconds
@@ -508,7 +540,6 @@ through it. The events around him are true and sourced; his own journey is drama
 
 ## The niche: "What really happens?" (widened by Jesper 2026-11-21)
 Sir Digsworth digs into what really happened, or what really would happen. Two strands under one host:
-- **The host need not be on screen** (Jesper 2026-11-21: "Sir digsworth måste inte vara med i varje video utan kan vara berättaren"): Sir Digsworth may be only the narrator's voice. Put him in a shot only where he makes that shot better (holding the map, reacting), never standing and telling.
 1. **True stories from history:** battles, escapes, cons, survivals, people who made a brave choice.
 2. **Invented "what if" scenarios, answered with real facts:** "What if you won a billion dollars?", "What if you
    ran around the whole Earth?", "What if you opened a submarine hatch on the ocean floor?". The premise is made up;
@@ -565,7 +596,6 @@ Jesper does not pick times. The session picks the slot and tells him which one i
 - **Schedule, never publish directly.** A scheduled video can be changed or stopped before anyone sees it.
 - **Check before scheduling:** the title is the question or claim (never a date or a file name), "not made for
   kids", altered content "No", category Education, the description and the thumbnail are the final ones.
-- **Titles may be questions, mostly written without the question mark** (Jesper 2026-11-21: "Jo men titlarna kan vara frågor fast utan "?" Oftast,"): "What If You Won a Billion Dollars", not "What If You Won a Billion Dollars?". This replaces the rule of 2026-11-20 that titles are not questions. title.py is still run on every title for length and truncation.
 - **Never delete or hide a new video in its first seven days.** Views can come late; judge on "stayed and
   watched" after a week.
 - **Never re-upload a deleted video within two weeks**, and then only as a clearly new version (new opening, new

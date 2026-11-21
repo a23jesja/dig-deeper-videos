@@ -4,7 +4,7 @@
    0 sir: the chest's right side in his left hand: the wrist 20.1 px off
    0 sir: the chest's left side in his right hand: the wrist 19.9 px off
    1 sir: the chest's right side in his left hand: the wrist 19.7 px off
-   1 sir: the chest's left side in his right hand: the wrist 20.3 px off
+   1 sir: the chest's left side in his right hand: the wrist 20.2 px off
    2 sir: the chest's right side in his left hand: the wrist 20.1 px off
    2 sir: the chest's left side in his right hand: the wrist 19.9 px off
    3 sir: the chest's right side in his left hand: the wrist 19.9 px off

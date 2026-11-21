@@ -506,8 +506,24 @@ through it. The events around him are true and sourced; his own journey is drama
   three Shorts in a row (part 1, 2, 3). Later candidates: the tunnel escapes under the Berlin Wall, the Great Escape
   from Stalag Luft III (1944), a medieval castle siege (Rochester 1215), D-Day 1944.
 
-## One niche
-Bizarre and forgotten history, told by Sir Digsworth. Every video, long or short.
+## The niche: "What really happens?" (widened by Jesper 2026-11-21)
+Sir Digsworth digs into what really happened, or what really would happen. Two strands under one host:
+1. **True stories from history:** battles, escapes, cons, survivals, people who made a brave choice.
+2. **Invented "what if" scenarios, answered with real facts:** "What if you won a billion dollars?", "What if you
+   ran around the whole Earth?", "What if you opened a submarine hatch on the ocean floor?". The premise is made up;
+   every number and fact inside it is real and checked against two solid sources (science bodies, universities,
+   agencies, peer-reviewed work, recognised experts). The script says "would" and "probably", never presents the
+   scenario as something that happened, and says in the description that it is a thought experiment.
+- **Both strands obey "Story first":** "you" are in it, something is at stake, it escalates, every 2-3 seconds
+  something happens, and it ends with a twist and a loop.
+- **Pick what-ifs that are fun and safe for advertisers:** money, space, the ocean, the body, extreme travel,
+  animals, inventions, "living in another age". Weapons of mass destruction, disasters with real victims, suicide,
+  drugs and graphic injury are avoided or handled without graphic detail: they limit ads and can break YouTube's
+  rules. Jesper decides case by case on war topics.
+- **Measure both strands:** record which strand each video belongs to in GROWTH.md. After ten videos of each,
+  make more of the strand with the better "stayed and watched" and average percentage viewed.
+- Long videos suit what-ifs especially well (8-12 min, "What if you..."), and evergreen topics keep getting views.
+The older history-only notes below still apply to the history strand:
 - **News and trends only choose WHICH history we tell.** Each working day, search the day's news and what is trending
   on YouTube, then look for the historical story that mirrors it ("this has happened before"). A scandal becomes a
   forgotten scandal of the same kind; a trending build video becomes history's strangest building.

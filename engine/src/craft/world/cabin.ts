@@ -5,7 +5,7 @@
 // falls in from above. (Blackbeard v4: without it, the sky and a sail showed over the back wall wherever the lens looked a little up.)
 // `cabinSea` puts it beside the two ships of flagSea, far enough off that neither ship shows through its windows.
 import * as THREE from "three";
-import { mesh, group, box, cyl, ball, sunRig, paint, type Sun } from "./kit";
+import { mesh, group, box, cyl, ball, sunRig, paint, contactShadow, type Sun } from "./kit";
 import { C, table, stool, chest } from "./props";
 import { flagSea } from "./ship";
 import type { V3 } from "../stage/film";
@@ -65,14 +65,20 @@ export const cabin = (o: { rich?: boolean; door?: number } = {}) => {
   const mirror = group([mesh(box(0.06, 0.66, 0.5), C.gold, { line: 0.6 }), mesh(box(0.066, 0.56, 0.4), "#cfe3ee", { line: 0.3, shadow: false }), mesh(box(0.068, 0.5, 0.06), "#eef6fa", { at: [0, 0.04, -0.08], rot: [0.5, 0, 0], line: 0, shadow: false })], [CABIN.mirror[0] + 0.02, CABIN.mirror[1], CABIN.mirror[2]]); mirror.name = "cabin mirror"; g.add(mirror);
   // the table with a chart, a bottle and the lantern
   const tb = table(1.3, 0.8, 0.76); tb.position.set(...CABIN.table); tb.userData.gloss = true; g.add(tb);
-  g.add(mesh(box(0.6, 0.006, 0.42), "#efe2bc", { at: [CABIN.table[0] - 0.2, 0.765, CABIN.table[2] + 0.05], rot: [0, 0.2, 0], line: 0.4, shadow: false }));
+  // (the table's top surface lies at 0.795 (its 7 cm top centred on 0.76): the chart, the bottle and the lantern stand on it. Before, the lantern's
+  //  foot and the bottle's lower part were sunk into the top, the lantern seemed to stand in the table: Jesper on the eye patch v1w)
+  const TOP = 0.795;
+  g.add(mesh(box(0.6, 0.006, 0.42), "#efe2bc", { at: [CABIN.table[0] - 0.2, TOP + 0.003, CABIN.table[2] + 0.05], rot: [0, 0.2, 0], line: 0.4, shadow: false }));
   // (named: seen past a head it shows as a thin green sliver standing up behind the chin, the shot library's 08; a shot whose lens puts it
   //  behind a head leaves it out, Shot.hide "table bottle")
-  const bottle = mesh(cyl(0.035, 0.045, 0.22, 10), "#3f6a3a", { at: [CABIN.table[0] - 0.45, 0.87, CABIN.table[2] - 0.15], line: 0.5 }); bottle.name = "table bottle"; g.add(bottle); g.userData.named = [bottle, mirror];
+  const bottle = mesh(cyl(0.035, 0.045, 0.22, 10), "#3f6a3a", { at: [CABIN.table[0] - 0.45, TOP + 0.11, CABIN.table[2] - 0.15], line: 0.5 }); bottle.name = "table bottle"; g.add(bottle); g.userData.named = [bottle, mirror];
   const [fx, fy, fz] = CABIN.flame;
-  g.add(mesh(box(0.16, 0.02, 0.16), "#2b2a33", { at: [fx, 0.77, fz], line: 0.5 }), mesh(box(0.14, 0.2, 0.14), "#ffe7a8", { at: [fx, 0.88, fz], line: 0.6, shadow: false }), mesh(box(0.17, 0.03, 0.17), "#2b2a33", { at: [fx, 0.99, fz], line: 0.5 }),
+  // the lantern: a foot plate wider than the glass standing on the top, the glass, the cap; a contact shadow round the foot
+  const LF = TOP + 0.02;      // (the foot 4 cm high from the top; the glass from its top up)
+  g.add(mesh(box(0.2, 0.04, 0.2), "#2b2a33", { at: [fx, TOP + 0.02, fz], line: 0.5 }), mesh(box(0.14, 0.19, 0.14), "#ffe7a8", { at: [fx, LF + 0.02 + 0.095, fz], line: 0.6, shadow: false }), mesh(box(0.17, 0.03, 0.17), "#2b2a33", { at: [fx, LF + 0.02 + 0.19 + 0.015, fz], line: 0.5 }),
     mesh(cyl(0.012, 0.012, 0.05, 8), "#fbf3df", { at: [fx, fy - 0.08, fz], line: 0, shadow: false }), mesh(ball(0.02, 8), "#ffb040", { at: [fx, fy - 0.04, fz], line: 0, shadow: false }));
-  for (const sx of [-1, 1]) for (const sz of [-1, 1]) g.add(mesh(box(0.012, 0.2, 0.012), "#2b2a33", { at: [fx + sx * 0.07, 0.88, fz + sz * 0.07], line: 0, shadow: false }));
+  for (const sx of [-1, 1]) for (const sz of [-1, 1]) g.add(mesh(box(0.012, 0.19, 0.012), "#2b2a33", { at: [fx + sx * 0.07, LF + 0.02 + 0.095, fz + sz * 0.07], line: 0, shadow: false }));
+  contactShadow(g, [fx, TOP + 0.001, fz], 0.17, 0.17, 0.6);
   const st = stool(); st.position.set(...CABIN.stool); st.name = "cabin stool"; g.add(st); g.userData.named = [...((g.userData.named as THREE.Object3D[]) ?? []), st];      // (named: Shot.hide "cabin stool", a lens that has it before a figure's feet)
   // (its lock old dull brass: bright gold, it shone lighter than the lantern in the shade under the table, the review of the eye patch v1t)
   const ch = chest(false, false, 0.7, 0.42, 0.44, "#8c6c2a"); ch.position.set(1.65, 0, -1.15); ch.rotation.y = -0.35; ch.userData.gloss = true; g.add(ch);

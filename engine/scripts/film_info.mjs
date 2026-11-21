@@ -100,6 +100,18 @@ else if (what === "body") {
 }
 // pick <frame> <x> <y> = what lies at that pixel of that frame (the set and the shot's things, nearest first)
 // joints <frame> [name] = where each figure's joints are on that frame (metres, the world), to measure a pose without rendering it
+// contact <who> <F0> <F1> [wr tip drop]: a resting fist's contact point with what it rests on, frame by frame: in the world (metres) and in the
+// picture (pixels of 1080 x 1920), and how far it moves from the first frame and from the frame before (the review of v1w: the mate's fist)
+else if (what === "contact") { const who = process.argv[4], F0 = Number(process.argv[5]), F1 = Number(process.argv[6]), THREE = await import("three"); let first = null, prev = null, maxW = 0, maxP = 0, maxR = 0;
+  for (let F = F0; F <= F1; F++) { const T = F / film.fps, s = film.shots.find((q) => T >= q.a - 1e-6 && T < q.b) ?? film.shots.at(-1), t = Math.max(0, T - s.a), cam = s.cam(t, t / (s.b - s.a));
+    const a = castOf(s)(t, s.a + t).find((x) => x.name === who); if (!a) continue; const st = stageAt(a, cam), w = st.joint("wrR"), tp = st.joint("tipR");
+    const P = [w[0] + (tp[0] - w[0]) * 0.45, w[1] + (tp[1] - w[1]) * 0.45 - 0.045, w[2] + (tp[2] - w[2]) * 0.45];
+    const lens = new THREE.PerspectiveCamera(cam.fov, 1080 / 1920, 0.05, 3000); lens.position.set(...cam.pos); lens.lookAt(...cam.look); lens.updateMatrixWorld(true); lens.updateProjectionMatrix();
+    const q = new THREE.Vector3(...P).project(lens), px = [(q.x + 1) * 540, (1 - q.y) * 960];
+    if (!first) first = { P, px }; const qf = new THREE.Vector3(...first.P).project(lens), pf = [(qf.x + 1) * 540, (1 - qf.y) * 960], rel = Math.hypot(px[0] - pf[0], px[1] - pf[1]); maxR = Math.max(maxR, rel); const dW = Math.hypot(P[0] - first.P[0], P[1] - first.P[1], P[2] - first.P[2]) * 1000, dP = Math.hypot(px[0] - first.px[0], px[1] - first.px[1]);
+    const sW = prev ? Math.hypot(P[0] - prev.P[0], P[1] - prev.P[1], P[2] - prev.P[2]) * 1000 : 0, sP = prev ? Math.hypot(px[0] - prev.px[0], px[1] - prev.px[1]) : 0; maxW = Math.max(maxW, dW); maxP = Math.max(maxP, dP);
+    console.log(`${F} ${s.id} world ${P.map((x) => x.toFixed(4)).join(" ")} | from first ${dW.toFixed(1)} mm, ${dP.toFixed(1)} px | step ${sW.toFixed(1)} mm, ${sP.toFixed(2)} px | against the table point it rested on first: ${rel.toFixed(2)} px`); prev = { P, px }; }
+  console.log(`largest move from the first frame: ${maxW.toFixed(1)} mm in the world, ${maxP.toFixed(1)} px in the picture (the lens moves), ${maxR.toFixed(2)} px against the table point under it`); }
 else if (what === "joints") { const F = Number(process.argv[4]), who = process.argv[5], T = F / film.fps, s = film.shots.find((q) => T >= q.a - 1e-6 && T < q.b) ?? film.shots.at(-1), t = Math.max(0, T - s.a), cam = s.cam(t, t / (s.b - s.a));
   for (const a of s.cast(t, s.a + t)) { if (who && a.name !== who) continue; const st = stageAt(a, cam); console.log(`${s.id} ${a.name} at ${a.at.map((x) => x.toFixed(2))} heading ${a.heading.toFixed(0)}`);
     for (const j of ["pelvis", "hipL", "knL", "anL", "heelL", "toeL", "hipR", "knR", "anR", "heelR", "toeR", "wrL", "tipL", "wrR", "tipR", "neck"]) { try { console.log(`  ${j.padEnd(6)} ${st.joint(j).map((x) => x.toFixed(3)).join(" ")}`); } catch { /* no such joint */ } } } }

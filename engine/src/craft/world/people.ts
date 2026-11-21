@@ -136,6 +136,21 @@ export const reachArm = (D: Design, pose: Pose, o: FigOpts, sp: Spot, cam: numbe
   return searchArm((q) => { const sk = solve(P, { ...pose, [key]: [[q[0], q[1]], [q[2], q[3]]] }, yaw), W = sk.j[wr], T = sk.j[tip], E = sk.j[el];
     return Math.hypot(W[0] + (T[0] - W[0]) * slide - tx, W[1] + (T[1] - W[1]) * slide - ty) + (elbow ? 0.02 * Math.hypot(E[0] - ex, E[1] - ey) : 0); });
 };
+/** The arm that puts its hand on `target` starting from a known arm (`from`) and moving it as little as it must: a fine search from that arm
+ *  only, with a small pull back toward it. For a hand held on one point while the body moves under it, frame after frame: the full search
+ *  picked a different elbow on some frames and the fist jumped 5-6 mm (the eye patch v1x, the mate's fist on the table) */
+export const reachArmFrom = (D: Design, pose: Pose, o: FigOpts, sp: Spot, cam: number[], side: "L" | "R", target: [number, number, number], from: ArmPose, slide = 0.5): ArmPose => {
+  const P = D.props(o.who ?? "sir"), mpu = (sp.h ?? 1.75) / bodyH(P), [x, y, z] = sp.at, az = Math.atan2(cam[0] - x, cam[2] - z), yaw = sp.heading - az / D2R;
+  const seen = (q: [number, number, number]): [number, number] => [((q[0] - x) * Math.cos(az) - (q[2] - z) * Math.sin(az)) / mpu, -(q[1] - y) / mpu];
+  const [tx, ty] = seen(target), key = side === "L" ? "armL" : "armR", wr = `wr${side}` as Joint, tip = `tip${side}` as Joint, q0 = [from[0][0], from[0][1], from[1][0], from[1][1]];
+  const cost = (q: number[]) => { const sk = solve(P, { ...pose, [key]: [[q[0], q[1]], [q[2], q[3]]] }, yaw), W = sk.j[wr], T = sk.j[tip];
+    return Math.hypot(W[0] + (T[0] - W[0]) * slide - tx, W[1] + (T[1] - W[1]) * slide - ty) + 0.01 * Math.hypot(q[0] - q0[0], q[1] - q0[1], q[2] - q0[2], q[3] - q0[3]); };
+  let q = [...q0], c = cost(q);
+  for (let step = 8; step >= 0.125; step /= 2) for (let it = 0; it < 8; it++) { let moved = false;
+    for (let i = 0; i < 4; i++) for (const sg of [-1, 1]) { const r = [...q]; r[i] += sg * step; const cr = cost(r); if (cr < c - 1e-7) { q = r; c = cr; moved = true; } }
+    if (!moved) break; }
+  return [[q[0], q[1]], [q[2], q[3]]];
+};
 /** The arm that points straight at something: the whole arm, shoulder to hand, lies along `dir` in the picture (x to the right, y
  *  up) and is stretched as far as it is drawn (an aimed pistol, a pointing finger). `bend` 0..1 lets the elbow give a little */
 export const pointArm = (D: Design, pose: Pose, o: FigOpts, sp: Spot, cam: number[], side: "L" | "R", dir: [number, number], bend = 0): ArmPose => {

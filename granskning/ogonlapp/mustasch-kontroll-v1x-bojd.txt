@@ -1,0 +1,4 @@
+sun frames 198-198 (film 6.60-6.63 s): mate's moustache goes out past the head's outline (0 points of the near half, 1 of the far half)
+test frames 692-706 (film 23.07-23.57 s): mate's moustache goes out past the head's outline (0 points of the near half, 1 of the far half)
+trick frames 981-984 (film 32.70-32.83 s): pirate's moustache goes out past the head's outline (0 points of the near half, 1 of the far half)
+MOTION CHECK FAILED for eye-patch: 3 faults

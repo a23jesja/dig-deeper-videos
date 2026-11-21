@@ -27,6 +27,18 @@ way of working changes. Nothing is built or sent that does not pass all six gate
    a code check before the next video.
 Until gates 2, 3 and 5 exist, no new Short is built. A few days without videos is better than more of these.
 
+## THE LOOK IS FROZEN: flat 2D, direction A "Knopp" (Jesper 2026-11-21)
+Overrides every older look section below (the emu look, the 3D cabin lighting, the frozen sprattelgubbe).
+- **Flat 2D drawn in code:** even thick outlines, flat colours, no pattern, no lighting, painted flat backgrounds
+  with a ground line. Big round head about half the height, small round body, short legs, tall white oval eyes with
+  a large black pupil, button nose.
+- **Sir Digsworth:** tweed cap with teal band, gold monocle with thin chain, curled moustache with the mouth always
+  visible under it, pipe in the mouth, brown coat, teal waistcoat. **Ada**, his assistant, in the same style.
+- **The approved sheet is the reference:** `granskning` sheet "Riktning A Knopp v3" and the motion test v4.
+  Every new character, animal and prop is drawn by the same rules.
+- **The rig, gesture library, checks and voice carry over.** 3D sets and lighting are no longer used in videos.
+- **Only Jesper can unfreeze it.** Fixing a fault inside the style is allowed, as before.
+
 ## Story first: something happens (Jesper 2026-11-21)
 Jesper's verdict on the reference Shorts: they win because a lot happens, there are action scenes, it is clearly
 explained and it entertains. Ours have been calm explanations. From now on every Short and long video is a story:

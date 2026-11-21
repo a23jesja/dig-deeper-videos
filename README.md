@@ -5,6 +5,41 @@ Rendered videos and the video engine for the YouTube channel **Sir Digsworth** (
 Videos in `videos/` are public so Metricool can fetch them by raw URL:
 `https://raw.githubusercontent.com/a23jesja/dig-deeper-videos/main/videos/<file>.mp4`
 
+## THE LOOK IS FROZEN: flat 2D, direction A "Knopp" (Jesper, 2026-11-21)
+
+Jesper: "Riktning A Knopp är godkänd och fryst." This overrides every older look further down this file (the jointed card
+puppet of 2026-11-16, the emu 3D world, the 3D cabin lighting); those sections are history. The rules are in DAILY-RULES.md,
+"THE LOOK IS FROZEN". Only Jesper can unfreeze it; a fault inside the style may be fixed, as before.
+
+- **The look:** flat 2D drawn in code. Even thick outlines, flat colours, no pattern, no lighting, painted flat backgrounds
+  with a ground line. A big round head about half the height, a small round body, short legs, tall white oval eyes with a
+  large black pupil, a button nose.
+- **Sir Digsworth:** tweed cap with a teal band, gold monocle on his right eye with a thin chain, curled moustache with the
+  mouth always visible under it, pipe in the mouth, brown coat, teal waistcoat. **Ada**, his assistant, in the same style.
+  Sir need not be in every video; he can be only the narrator.
+- **The reference:** the sheet "Riktning A Knopp v3" (`granskning/stilprov/`, composition `FlatStyle`) and the motion test
+  v4 (`leverans/rorelseprov/rorelseprov-a-v4.mp4`, composition `FlatMotionA`). Every new character, animal and prop is drawn
+  by the same rules.
+- **The code that is left** (`engine/src/craft/`):
+  - `designs/flat.ts`: the drawing. Heads from the front, at three-quarter and in profile, chosen by the face's turn; mirrored for the left. The eyes and monocle are drawn over the moustache.
+  - `rig.ts`: the skeleton.
+  - `motion.ts`: walk, run, turn and act layers with planted feet.
+  - `stage/gestures.ts`: the gesture library.
+  - `stage/acting.ts` and `stage/film.ts` (`play`): what plays a Mover at a time.
+  - `ink.ts`: lines and hands.
+  - `flatMotionModel.ts` and `FlatMotion.tsx`: the motion test, the model and its drawing.
+- **The checks** (from `engine/`):
+  - `node scripts/flat_check.mjs`: the shoes rest on the ground line's top edge, never sunk or sliding, and never floating. Pupils are never under 30 % without fright and never jump more than a third in a frame. No hand within 40 px of a creature that comes up. The head stays inside the picture.
+  - `node scripts/flat_views.mjs`: every turn goes through a three-quarter head held 2 frames or more.
+- **Removed from the video code on 2026-11-21:** directions B and C, the 3D card figures (`cast.ts`, `toon.ts`, `looks.ts`, `beast.ts`), the 3D sets (`craft/world/`), every film built on them (`craft/shorts/`, `videos/emu/`, `videos/three3d/`, `videos/style/`, `videos/puppet/`, `videos/threeway/`) and the 3D stage. **Git tag `fore-platt-2d`** (commit 06f7cf6) builds every one of those films. Nothing in `granskning/` or `leverans/` was removed.
+- **Scripts that served only the removed films, and no longer run on main:**
+  - `scripts/film_info.mjs`, `craft_check.mjs`, `cues.mjs`, `card_check.mjs` and `kit_check.mjs`;
+  - `audio/film_audio.py` and `audio/eye_patch_ljud2.py`, which read film_info;
+  - the per-film audio scripts of the emu, Mona, Wojtek, pig, Pompeii and Titanic films.
+
+  Run them from the tag. `audio/craft_sfx.py` (the sounds) still runs.
+- **The narrator:** ElevenLabs George (`JBFqnCBsd6RMkjVDRZzb`, `engine/voice/narrator.json`). The key is only in the environment variable.
+
 ## Status 2026-11-16, night: the big build, step by step
 
 The big build (DAILY-RULES.md "One big build, then the look is frozen") runs in steps A to G. This list is kept current.

@@ -30,7 +30,7 @@ v1v innehåller Jespers tre rättningar av v1u och inget annat (commit cea4c0d).
 
 **regressions.md, rad 44:** inget ljud i början av en film får kunna låta som en fis. Inga korta, låga, brummande eller surrande ljud i början.
 
-Fler "creak" finns kvar längre in: below vid 7,8 s och record vid cirka 27 s. Jesper har inte nämnt dem, och jag har inte rört dem.
+Fler "creak" finns kvar längre in: below vid 7,7 s och record vid 29,6 s. Jesper har inte nämnt dem, och jag har inte rört dem.
 
 ## 2. Kamratens mustasch
 

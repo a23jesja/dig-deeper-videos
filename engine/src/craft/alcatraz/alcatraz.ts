@@ -43,7 +43,7 @@ const cone = (g: G, x0: number, y0: number, x1: number, y1: number, r: number, a
 // thing goes between them: the back (sleeve, cuff, palm, thumb) behind it, the fingers in front of it (the grip rule of 17 Nov: fingers in
 // front of the thing, the palm behind). ang: the direction the hand points (radians), s: its size (1 = a palm 70 px across)
 const SKIN = "#f7c9a3";
-type HandSpec = { id?: string; x: number; y: number; ang: number; s: number; sleeve: string; cuff?: string; curl?: number; thumb?: number };
+type HandSpec = { id?: string; x: number; y: number; ang: number; s: number; sleeve: string; cuff?: string; curl?: number; thumb?: number; /** the other hand: the drawing mirrored across its own length, its thumb on the other side */ flip?: boolean };
 /** what the drawing of a frame puts down, for the checks (clip_check, the Alcatraz shots): each sleeve's far end and each cloth on its support */
 export const DRAWN = { sleeves: [] as { id: string; end: P2; wrist: P2; s: number }[], cloths: [] as { what: string; top: number; support: number; bottom: number }[],
   /** an upright (a bar, a bed's leg): its foot and the floor it must stand on (or reach past the picture's edge) */ uprights: [] as { what: string; foot: number; floor: number; x: number }[],
@@ -54,14 +54,14 @@ export const DRAWN = { sleeves: [] as { id: string; end: P2; wrist: P2; s: numbe
 export const SLEEVE = { len: 3000 };
 const handBack = (g: G, h: HandSpec) => {
   const L = SLEEVE.len; DRAWN.sleeves.push({ id: h.id ?? "", s: h.s, wrist: [h.x, h.y], end: [h.x - Math.cos(h.ang) * L * h.s, h.y - Math.sin(h.ang) * L * h.s] });
-  g.save(); g.translate(h.x, h.y); g.rotate(h.ang); g.scale(h.s, h.s);
+  g.save(); g.translate(h.x, h.y); g.rotate(h.ang); g.scale(h.s, h.flip ? -h.s : h.s);
   poly(g, [[-L, -34], [-40, -40], [-40, 40], [-L, 34]], h.sleeve);            // sleeve, from behind the wrist back to past the picture's edge
   rrect(g, -52, -40, 26, 80, 8, h.cuff ?? "#fffaf0");                              // cuff
   ell(g, 6, 0, 40, 36, SKIN);                                                      // palm
   const th = h.thumb ?? 0.6; g.save(); g.translate(4, -30); g.rotate(-0.9 + th * 0.6); ell(g, 22, 0, 24, 13, SKIN); g.restore();      // thumb
   g.restore(); };
 const handFingers = (g: G, h: HandSpec) => {
-  g.save(); g.translate(h.x, h.y); g.rotate(h.ang); g.scale(h.s, h.s);
+  g.save(); g.translate(h.x, h.y); g.rotate(h.ang); g.scale(h.s, h.flip ? -h.s : h.s);
   const c = h.curl ?? 0.6;
   for (let i = 0; i < 4; i++) { const y = -24 + i * 16; g.save(); g.translate(30, y); g.rotate(c * 0.9); ell(g, 18 - c * 4, 0, 22 - c * 6, 9, SKIN, OL * 0.8); g.restore(); }
   g.restore(); };
@@ -243,7 +243,8 @@ const s06 = (): Shot => propShot("a06", "6 Regnrockarna", 2.2, (g, t) => {
   line(g, [[600, 560], [640, 1500]], OL * 1.2, "#8f7f42"); for (const y of [760, 960, 1160, 1360]) ell(g, 900, y, 13, 13, "#6b5c2c", 0);
   g.restore();
   DRAWN.things.push({ what: "coat", at: [630 + dx, 1010], carried: u < 1, look: "coat" });      // (registered at its held edge, between the two hands)
-  for (const [id, y] of [["coatTop", 760], ["coatLow", 1260]] as [string, number][]) { const H: HandSpec = { id, x: 640 + dx, y, ang: Math.PI, s: 1.1, sleeve: INMATE_SLEEVE, curl: 0.25, thumb: 0.3 }; handBack(g, H); handFingers(g, H); }
+  // (v4: the lower hand is the man's other hand, mirrored, so the two thumbs point towards each other: both were the same right hand, the review of v3 point 1)
+  for (const [id, y] of [["coatTop", 760], ["coatLow", 1260]] as [string, number][]) { const H: HandSpec = { id, x: 640 + dx, y, ang: Math.PI, s: 1.1, sleeve: INMATE_SLEEVE, curl: 0.25, thumb: 0.3, flip: id === "coatLow" }; handBack(g, H); handFingers(g, H); }
 }, [{ t: 0.15, k: "flap", g: 0.6 }, { t: 1.45, k: "flap", g: 0.4 }], { cx: 600, cy: 1040, z: 1.5 });
 
 // 7  the fake head laid on the pillow by two hands holding it low at its sides; they let go and go out through the picture's sides; a hand from the
@@ -423,8 +424,10 @@ const s15 = (): Shot => propShot("a15", "15 Affischerna", 2.0, (g, t) => {
   // (the hand holds the poster's top right corner, away from the printed face; when the poster reaches the board the thumb pushes a pin in there)
   // (v3: the pin at the top middle as on the other two, the hand holding the poster there from the right: a poster hanging straight from a corner
   //  pin is impossible on an upright board, the review of STOPP 2 point 2)
+  // (v4: the hand 22 px further left until it leaves, so the pin comes in under its fingertips and shows only as they slide off it: it popped up half
+  //  visible beside them, the review of v3 point 2)
   if (t >= 1.05) { ell(g, x, y - 150, 12, 12, "#c0392b", OL * 0.5); DRAWN.things.push({ what: "pin", at: [x, y - 150], carried: false, look: "pin" }); }
-  if (!PLANT.nohand && away < 1) { const H: HandSpec = { id: "poster", x: x + 62 + away * 260, y: y - 150, ang: Math.PI, s: 0.95, sleeve: GUARD_SLEEVE, curl: 0.5, thumb: 0.9 }; handBack(g, H); handFingers(g, H); }
+  if (!PLANT.nohand && away < 1) { const H: HandSpec = { id: "poster", x: x + 40 + away * 282, y: y - 150, ang: Math.PI, s: 0.95, sleeve: GUARD_SLEEVE, curl: 0.5, thumb: 0.9 }; handBack(g, H); handFingers(g, H); }
 }, [{ t: 1.05, k: "tap", g: 1.0 }, { t: 0.2, k: "paper", g: 0.8 }], { cx: 600, cy: 760, z: 1.25 });
 
 // 16 the empty bay in the morning light: the camera glides over the water toward the city, and the wind carries a poster off the city's shore

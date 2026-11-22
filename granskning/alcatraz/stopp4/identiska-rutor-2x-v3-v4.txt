@@ -1,0 +1,18 @@
+The drawn picture: v3 and v4 rendered at double size (render-2x-v3.mp4, render-2x-v4.mp4, the step before the final scaling), every frame outside 361-426 and 763-822, RGB:
+834 frames, 818 pixel-identical; largest difference 13 of 255 (frame 761)
+  frame 355: largest 3, pixels over 2: 1
+  frame 356: largest 3, pixels over 2: 5
+  frame 357: largest 5, pixels over 2: 23
+  frame 358: largest 7, pixels over 2: 28
+  frame 359: largest 6, pixels over 2: 27
+  frame 360: largest 7, pixels over 2: 34
+  frame 758: largest 2, pixels over 2: 0
+  frame 759: largest 5, pixels over 2: 128
+  frame 760: largest 4, pixels over 2: 645
+  frame 761: largest 13, pixels over 2: 5870
+  frame 762: largest 5, pixels over 2: 1573
+  frame 825: largest 3, pixels over 2: 4
+  frame 826: largest 6, pixels over 2: 204
+  frame 828: largest 5, pixels over 2: 12
+  frame 829: largest 4, pixels over 2: 73
+  frame 830: largest 3, pixels over 2: 34

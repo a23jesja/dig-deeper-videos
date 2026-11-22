@@ -1,0 +1,33 @@
+v3 against v4, decoded from the two delivered mp4s, every frame (numbered from 1), RGB:
+outside 361-426 and 763-822: 834 frames, 669 pixel-identical (largest difference 47 of 255)
+  not identical: frame 346, largest 1, pixels over 2: 0
+  not identical: frame 347, largest 1, pixels over 2: 0
+  not identical: frame 348, largest 3, pixels over 2: 16
+  not identical: frame 349, largest 3, pixels over 2: 16
+  not identical: frame 350, largest 3, pixels over 2: 16
+  not identical: frame 351, largest 3, pixels over 2: 16
+  not identical: frame 352, largest 3, pixels over 2: 16
+  not identical: frame 353, largest 3, pixels over 2: 32
+  not identical: frame 354, largest 4, pixels over 2: 36
+  not identical: frame 355, largest 4, pixels over 2: 42
+  not identical: frame 356, largest 8, pixels over 2: 58
+  not identical: frame 357, largest 6, pixels over 2: 92
+  not identical: frame 358, largest 7, pixels over 2: 145
+  not identical: frame 359, largest 15, pixels over 2: 274
+  not identical: frame 360, largest 3, pixels over 2: 48
+  not identical: frame 732, largest 28, pixels over 2: 15962
+  not identical: frame 733, largest 45, pixels over 2: 41252
+  not identical: frame 734, largest 26, pixels over 2: 37848
+  not identical: frame 735, largest 47, pixels over 2: 53476
+  not identical: frame 736, largest 24, pixels over 2: 55189
+  not identical: frame 737, largest 31, pixels over 2: 64611
+  not identical: frame 738, largest 30, pixels over 2: 67775
+  not identical: frame 739, largest 26, pixels over 2: 78482
+  not identical: frame 740, largest 24, pixels over 2: 77681
+  not identical: frame 741, largest 29, pixels over 2: 80752
+  not identical: frame 742, largest 25, pixels over 2: 81825
+  not identical: frame 743, largest 38, pixels over 2: 85874
+  not identical: frame 744, largest 27, pixels over 2: 86664
+  not identical: frame 745, largest 34, pixels over 2: 95190
+  not identical: frame 746, largest 26, pixels over 2: 87606
+inside the two shots: 126 frames, 126 changed; e.g. 361 (13731 px over 24), 362 (13731 px over 24), 363 (13731 px over 24), 364 (13732 px over 24), 365 (13746 px over 24), 366 (13814 px over 24)

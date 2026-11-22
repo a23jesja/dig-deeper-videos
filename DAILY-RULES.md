@@ -38,6 +38,15 @@ Overrides every older look section below (the emu look, the 3D cabin lighting, t
   Every new character, animal and prop is drawn by the same rules.
 - **The rig, gesture library, checks and voice carry over.** 3D sets and lighting are no longer used in videos.
 - **Only Jesper can unfreeze it.** Fixing a fault inside the style is allowed, as before.
+- **Background upgrade under test (Jesper 2026-11-22, from a reference Short):** "Såhär ska animationen vara,
+  levande där karaktärerna syns, snygga bakgrunder med mjuk och perfekt animation". The flat Knopp characters stay;
+  what changes, if Jesper approves a style test, is the world behind them: rich lit backgrounds with depth (warm
+  light, texture, soft depth of field) instead of flat colour fields, characters big in the frame (60-90 % of the
+  height in medium and close shots, over-the-shoulder shots), bolder comic exaggeration (face changing colour,
+  steam, sweat, sparks), and a slow camera drift for parallax. Preferred technique: our own 3D sets with the
+  approved cabin lighting rendered as background plates, the flat characters composited in front on the floor
+  plane with contact shadows, so the solid and foot checks still see everything. Until the test is approved the
+  frozen look above applies unchanged.
 
 ## Story first: something happens (Jesper 2026-11-21)
 Jesper's verdict on the reference Shorts: they win because a lot happens, there are action scenes, it is clearly

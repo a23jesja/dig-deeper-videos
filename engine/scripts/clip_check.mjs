@@ -25,10 +25,10 @@
 //     node scripts/clip_check.mjs <clip id | all>     (from engine/)   CLIP_PLANT=<fault> plants one fault (see below)
 import * as esbuild from "esbuild"; import fs from "node:fs"; import path from "node:path"; import { pathToFileURL } from "node:url";
 const out = path.resolve("out/clip_model.mjs");
-fs.writeFileSync("out/_clip_entry.ts", 'export * from "../src/craft/clips/clipKit"; export { CLIPS, CRAB } from "../src/craft/clips/clips"; export { ease } from "../src/craft/stage/acting"; export { pupilIn, drawnGaze } from "../src/craft/designs/flat"; export { handFlip, SHOE } from "../src/craft/designs/common";\n');
+fs.writeFileSync("out/_clip_entry.ts", 'export * from "../src/craft/clips/clipKit"; export { CLIPS, CRAB } from "../src/craft/clips/clips"; export { ease } from "../src/craft/stage/acting"; export { pupilIn, drawnGaze } from "../src/craft/designs/flat"; export { handFlip, SHOE } from "../src/craft/designs/common"; export { PIVOT } from "../src/craft/motion";\n');
 await esbuild.build({ entryPoints: ["out/_clip_entry.ts"], bundle: true, format: "esm", platform: "node", outfile: out, logLevel: "error", loader: { ".json": "json" } });
 const M = await import(pathToFileURL(out).href); fs.rmSync(out); fs.rmSync("out/_clip_entry.ts");
-const { CLIPS, CRAB, castAt, FM, scaleOf, footY, D, shoeDrawn, FLAT_SPECS, viewOf, heightOf, drawnHandKind, figBox, pupilIn, drawnGaze, thighUnder, handFlip, SHOE } = M;
+const { CLIPS, CRAB, castAt, FM, scaleOf, footY, D, shoeDrawn, FLAT_SPECS, viewOf, heightOf, drawnHandKind, figBox, pupilIn, drawnGaze, thighUnder, handFlip, SHOE, PIVOT } = M;
 const LINE_TOP = FM.GY - FM.LINE / 2, ids = process.argv[2] && process.argv[2] !== "all" ? [process.argv[2]] : Object.keys(CLIPS);
 const PL = process.env.CLIP_PLANT;
 let failed = 0;
@@ -43,7 +43,7 @@ for (const id of ids) {
   if (PL === "hand-head") for (const cm of c.cast) { const f0 = cm.pose; cm.pose = (t, p, h) => { const q = f0 ? f0(t, p, h) : p; return t > 2.0 ? { ...q, armL: [[20, 20], [150, 10]] } : q; }; }
   if (PL === "point-touch") for (const p of c.points ?? []) if (p.box) { const g = castAt(c.cast, p.t0 + 0.2)[0], tp = M.jointPx(g, `tip${p.side}`); p.box = [tp[0] + 15, p.box[1], tp[0] + 15 + (p.box[2] - p.box[0]), p.box[3]]; }
   if (PL === "point-aim") for (const p of c.points ?? []) { const g = castAt(c.cast, p.t0)[0], sh = M.jointPx(g, `sh${p.side}`); p.target = [p.target[0], p.target[1] - 0.8 * Math.abs(p.target[0] - sh[0])]; p.horizon = p.target[1]; }
-  if (PL === "shoe-tilt") SHOE.blend = false;
+  if (PL === "shoe-tilt") { SHOE.blend = false; PIVOT.heel = false; }
   if (PL === "jitter") for (const cm of c.cast) { const f0 = cm.pose; cm.pose = (t, p, h) => { const q = f0 ? f0(t, p, h) : p, f = Math.round(t * FM.FPS); return t > 1.4 && t < 2.0 ? { ...q, armL: [[q.armL[0][0], q.armL[0][1]], [q.armL[1][0] + (f % 2 ? 4 : -4), q.armL[1][1]]] } : q; }; }
   if (PL === "start-pop") for (const cm of c.cast) for (const l of cm.m.layers ?? []) if (l.pose && l.pose.pz !== undefined) l.glide = false;
   if (PL === "point-long") for (const p of c.points ?? []) p.t1 = p.t0 + 1.5;
@@ -70,7 +70,7 @@ for (const id of ids) {
     if (PL === "arm-snap" && f === 70) { const g = figs[0], sc = scaleOf(g.who); for (const n of ["elL", "wrL", "tipL"]) g.sk.j[n] = [g.sk.j[n][0] + 25 / sc, g.sk.j[n][1] - 10 / sc]; }
     if (PL === "thigh-in-seat") for (const st of c.seats ?? []) st.top -= 18;
     if (PL === "claw") for (const a of c.appear ?? []) { const f0 = a.points; a.points = (tt) => { const g = castAt(c.cast, tt)[0], w = M.jointPx(g, "wrR"); return [...(f0?.(tt) ?? []), [w[0] + 20, w[1]]]; }; }
-    if (PL === "shoe-on-shoe" && f >= 130 && f < 134) { const g = figs[0], sc = scaleOf(g.who), up = 34 / sc; for (const [a2, b2] of [["heelL", "heelR"], ["toeL", "toeR"], ["anL", "anR"]]) g.sk.j[a2] = [g.sk.j[b2][0], g.sk.j[b2][1] - up]; } if (PL === "blink-snap") for (const g of figs) { const l = g.o.face?.lid ?? 0; if (l > 0.3 && l < 0.93) g.o.face = { ...g.o.face, lid: 0.16 }; } return figs; };
+    if (PL === "shoe-on-shoe" && f >= 130 && f < 134) { const g = figs[0], sc = scaleOf(g.who), up = 34 / sc; for (const [a2, b2] of [["heelL", "heelR"], ["toeL", "toeR"], ["anL", "anR"]]) g.sk.j[a2] = [g.sk.j[b2][0], g.sk.j[b2][1] - up]; } if (PL === "shoe-off" && f >= 60 && f < 64) for (const g of figs) g.sk.j.anR = [g.sk.j.anR[0], g.sk.j.anR[1] - 40]; if (PL === "blink-snap") for (const g of figs) { const l = g.o.face?.lid ?? 0; if (l > 0.3 && l < 0.93) g.o.face = { ...g.o.face, lid: 0.16 }; } return figs; };
   const F = Math.round(FM.FPS * c.seconds), faults = [], stat = { shoe: -1e9, slide: 0, pupilMin: 9, pupilStep: 0, edge: 0, creature: 1e9, contact: 0, seat: 0, jump: 0, fill: 1e9, pointRun: 0 };
   const prev = {}, prevPupil = {}, runs = {}, track = {}, standY = {}, lids = {}, hands = {}, joints = {}, mono = {}, pointRun = {}, hover = {}, pipe = {}, viewLog = {};
   const J = (g, j) => { const q = g.sk.j[j], s = scaleOf(g.who); return [g.x + q[0] * s, footY(g.who) + q[1] * s]; };
@@ -80,6 +80,11 @@ for (const id of ids) {
         const P = sh.pts.map((q) => [g.x + q[0] * sc, footY(g.who) + q[1] * sc]); shoes[s] = { x0: Math.min(...P.map((q) => q[0])), x1: Math.max(...P.map((q) => q[0])), y0: Math.min(...P.map((q) => q[1])), y1: Math.max(...P.map((q) => q[1])) + ink };
         const past = shoes[s].y1 - LINE_TOP; gap[s] = -past; stat.shoe = Math.max(stat.shoe, past);
         if (past > 0.75) faults.push(`${f} ${g.name}: the ${s} shoe ${past.toFixed(1)} px into the ground line`);
+        // (v5) the shoe on the leg's end: the ankle inside the drawn shoe or within 8 px of it (03 v5 draft: a foot lifted toe down drawn level
+        //  put its shoe 100 px over the trouser's end)
+        { const an = J(g, `an${s}`); let inside = false; for (let i = 0, j = P.length - 1; i < P.length; j = i++) { const [xi, yi] = P[i], [xj, yj] = P[j]; if ((yi > an[1]) !== (yj > an[1]) && an[0] < ((xj - xi) * (an[1] - yi)) / (yj - yi) + xi) inside = !inside; }
+          let dmin = 0; if (!inside) { dmin = 1e9; for (let i = 0; i < P.length; i++) { const a = P[i], b = P[(i + 1) % P.length], dx = b[0] - a[0], dy = b[1] - a[1], u = Math.max(0, Math.min(1, ((an[0] - a[0]) * dx + (an[1] - a[1]) * dy) / (dx * dx + dy * dy || 1))); dmin = Math.min(dmin, Math.hypot(a[0] + u * dx - an[0], a[1] + u * dy - an[1])); } }
+          stat.shoeOff = Math.max(stat.shoeOff ?? 0, dmin); if (dmin > 8 * sc) faults.push(`${f} ${g.name}: the ${s} shoe ${dmin.toFixed(0)} px off the leg's end`); }
         // (v5) a shoe seen short (under four fifths of its length) on the ground is not drawn tilted on a corner of its sole: its sole line within
         //  15 degrees of level (03: turning on its ball the far shoe stood 35 degrees on a corner, the independent review of v4)
         if (sh.kk < 0.8 && past > -1.5) { const tilt = Math.abs(Math.atan2(sh.b[1] - sh.a[1], Math.abs(sh.b[0] - sh.a[0]) || 1e-6)) * 180 / Math.PI; stat.shoeTilt = Math.max(stat.shoeTilt ?? 0, tilt);

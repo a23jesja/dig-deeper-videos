@@ -30,7 +30,9 @@ class Track {
 }
 /** one footprint: the foot stands at (x, z) pointing `ang` from t0 until t1; h = how high it swung to get there */
 /** `out` = when this foot would leave the ground if the gait simply went on (so the next move can carry on from it without a stop) */
-type Plant = { t0: number; t1: number; x: number; z: number; ang: number; h: number; run: boolean; out?: number };
+/** the check's switch: heel = false lifts a turn's pivots as walking steps, 30 degrees (the order of v4, clip_check shoe-tilt) */
+export const PIVOT = { heel: true };
+type Plant = { t0: number; t1: number; x: number; z: number; ang: number; h: number; run: boolean; out?: number; close?: boolean; pivot?: boolean };
 type PKey = { t: number; x: number; z: number };
 export type Face = { gaze?: V2; lid?: number; wide?: number; brow?: number; mouth?: number; smile?: number; /** one eye shut: the eye on the left (-1) or the right (1) of the picture (designs/common.ts) */ shut?: number; pupil?: number; squeeze?: number; tear?: number; smirk?: number; teeth?: number; sad?: number };
 export type Layer = { t0: number; t1: number; in: number; out: number; pose: Partial<Pose>; handL?: HandKind; handR?: HandKind; face?: Face; antic: number; over: number; glide?: boolean };
@@ -128,7 +130,7 @@ export class Mover {
       //  as it crept the short way in, the review of the shot types v2)
       const lift0 = prev.out !== undefined ? prev.out : k <= 2 ? Math.max(T0 + 0.02, land - (run ? 1.05 : k === 1 ? 0.8 : 0.9) * tau) : m(k - 2) + half * tau;
       const lift = k > n && !run ? Math.max(lift0, land - 0.38 * tau) : lift0;
-      const pl = this.spot(s, at(pos(Math.min(k, n)) - (k > n ? o.stagger ?? 0 : 0)), this.psi, land, k > n ? 0.05 : run ? 0.36 : 0.11, run); if (k <= n) pl.out = m(k) + half * tau;
+      const pl = this.spot(s, at(pos(Math.min(k, n)) - (k > n ? o.stagger ?? 0 : 0)), this.psi, land, k > n ? 0.05 : run ? 0.36 : 0.11, run); if (k <= n) pl.out = m(k) + half * tau; else pl.close = true;
       this.put(s, lift, land, pl);
       s = other(s);
     }
@@ -150,8 +152,10 @@ export class Mover {
     const parts = Math.max(1, Math.ceil(Math.abs(deg) / 95)), each = deg / parts, td = (dur ?? 0.42 * parts + 0.14) / parts;
     for (let i = 0; i < parts; i++) {
       const T0 = this.t, psi1 = this.psi + each, a: Side = each > 0 ? "L" : "R", b = other(a);
-      this.put(a, T0 + 0.02, T0 + td * 0.5, this.spot(a, this.P, psi1, 0, lift));
-      this.put(b, T0 + td * 0.46, T0 + td * 0.96, this.spot(b, this.P, psi1, 0, lift));
+      // (a turn's steps are pivots: the heel lifts a little, 5 degrees, not a walking step's 30: with 30 the heel stood 50 px up as the foot
+      //  turned on its ball, and the shoe, seen short, was drawn steeply tilted on a corner of its sole, 03, the independent review of v4)
+      this.put(a, T0 + 0.02, T0 + td * 0.5, { ...this.spot(a, this.P, psi1, 0, lift), pivot: true });
+      this.put(b, T0 + td * 0.46, T0 + td * 0.96, { ...this.spot(b, this.P, psi1, 0, lift), pivot: true });
       this.yawT.ramp(T0, T0 + td, psi1); this.psi = psi1; this.t = T0 + td;
     }
     this.pel.push({ t: this.t, x: this.P[0], z: this.P[1] });
@@ -250,16 +254,19 @@ export class Mover {
     if (t <= p.t1 || i === f.length - 1) {
       // planted: heel first as it lands, onto the toe before it leaves
       const land = clamp((t - p.t0) / 0.07, 0, 1), leave = p.t1 > 1e8 ? 0 : clamp((t - (p.t1 - (p.run ? 0.07 : 0.16))) / (p.run ? 0.07 : 0.16), 0, 1);
-      return { x: p.x, z: p.z, y: 0, ang: p.ang, pitch: (p.run ? -4 : -14) * (1 - land) * (i ? 1 : 0) + (p.run ? 34 : 30) * smooth(leave), down: true };
+      // (before a turn's pivot the heel rises 5 degrees, not 30, and a pivot lands flat: see turn())
+      const nx = f[i + 1], lev = nx?.pivot && PIVOT.heel ? 5 : p.run ? 34 : 30, landP = p.pivot && PIVOT.heel ? 0 : p.run ? -4 : -14;
+      return { x: p.x, z: p.z, y: 0, ang: p.ang, pitch: landP * (1 - land) * (i ? 1 : 0) + lev * smooth(leave), down: true };
     }
     // (the body check of 18 November: the foot came down while still travelling, and skidded the last centimetres along the ground.
     // It now rises a little before it moves on, and is over its new spot before it comes down, straight down onto it)
-    // (a low step, the closing one, lowers its heel at the step's pace: lowered at the full step's pace the heel came down faster than the low
+    // (the walk's closing step lowers its heel at the step's pace (only it: on a turn's low pivots the heel stayed up and the foot rose 100 px
+    //  up the shin, 03 v5 draft): lowered at the full step's pace the heel came down faster than the low
     //  arc rose, the ankle went down, up 3 px and down again, and the knee wobbled 7 px back and 14 forward, 02 v4, Jesper "Ja"; and it comes
     //  down flatter, -8: heel first with the toe at -14, the toe rose 3 px before it slapped down and the knee jiggled)
     const q = f[i + 1], u = clamp((t - p.t1) / (q.t0 - p.t1), 0, 1), e = smooth(clamp((u - 0.04) / 0.8, 0, 1)), far = Math.hypot(q.x - p.x, q.z - p.z);
     const up = Math.sin(Math.PI * Math.min(1, u * 1.08)) ** 0.8 * q.h * (far > 0.05 || q.h < 0.09 ? 1 : 0.6);
-    return { x: lerp(p.x, q.x, e), z: lerp(p.z, q.z, e), y: up, ang: lerp(p.ang, q.ang, e), pitch: lerp(p.run ? 34 : 30, q.run ? -4 : q.h < 0.09 ? -8 : -14, smooth(clamp(q.h < 0.09 ? u * 1.05 : u * 1.5 - 0.1, 0, 1))) + (q.run ? 28 : 8) * Math.sin(Math.PI * u) * (u < 0.5 ? 1 : 0.3), down: false };
+    return { x: lerp(p.x, q.x, e), z: lerp(p.z, q.z, e), y: up, ang: lerp(p.ang, q.ang, e), pitch: q.pivot && PIVOT.heel ? lerp(5, 0, smooth(u)) + 2 * Math.sin(Math.PI * u) : lerp(p.run ? 34 : 30, q.run ? -4 : q.close ? -8 : -14, smooth(clamp(q.close ? u * 1.05 : u * 1.5 - 0.1, 0, 1))) + (q.run ? 28 : 8) * Math.sin(Math.PI * u) * (u < 0.5 ? 1 : 0.3), down: false };
   }
   private weight(l: Layer, t: number) {
     if (t <= l.t0 || t >= l.t1) return 0;

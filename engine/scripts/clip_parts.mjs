@@ -7,7 +7,7 @@ import * as esbuild from "esbuild"; import fs from "node:fs"; import path from "
 fs.writeFileSync("out/_parts_entry.ts", 'export * from "../src/craft/clips/clipKit"; export { CLIPS } from "../src/craft/clips/clips";\n');
 await esbuild.build({ entryPoints: ["out/_parts_entry.ts"], bundle: true, format: "esm", platform: "node", outfile: "out/_parts.mjs", logLevel: "error", loader: { ".json": "json" } });
 const M = await import(pathToFileURL(path.resolve("out/_parts.mjs")).href); fs.rmSync("out/_parts.mjs"); fs.rmSync("out/_parts_entry.ts");
-const c = M.CLIPS[process.argv[2]](), F = Math.round(M.FM.FPS * c.seconds), frames = [], prev = {}, regions = [];
+const c = M.CLIPS[process.argv[2]](), F = Math.round(M.FM.FPS * c.seconds), frames = [], prev = {}, regions = [], things = {};
 const PARTS = { head: ["skull", "crown"], torso: ["pelvis", "neck", "shL", "shR"], armL: ["shL", "elL", "wrL", "tipL"], armR: ["shR", "elR", "wrR", "tipR"], legL: ["hipL", "knL", "anL", "toeL"], legR: ["hipR", "knR", "anR", "toeR"] };
 const PAD = { head: 150, torso: 70, armL: 34, armR: 34, legL: 30, legR: 30 };
 for (let f = 0; f < F; f++) { const t = f / M.FM.FPS, cam = c.camera(t), out = {};
@@ -26,7 +26,11 @@ for (let f = 0; f < F; f++) { const t = f / M.FM.FPS, cam = c.camera(t), out = {
     const hb = out[g.name + ".head"].box, d = (k, v) => { const q = prev[k]; prev[k] = v; return q ? Math.round(Math.max(...v.map((x, i) => Math.abs(x - q[i]))) * 100) : 0; };
     out[g.name + ".eyes"] = { box: hb, move: d(g.name + ".eyes", fe), headOnly: true };
     out[g.name + ".mouth"] = { box: [hb[0], Math.round((hb[1] + hb[3]) / 2), hb[2], hb[3]], move: d(g.name + ".mouth", fm) }; }
+  // a thing that enters while it moves (the crab scuttling in): its box, from its claw tips and its body, for scripts/flicker_parts.py
+  for (const a of c.appear ?? []) { const p = a.at(t), q = a.at(t - 1 / M.FM.FPS); if (!p || !q || Math.hypot(p[0] - q[0], p[1] - q[1]) < 0.5) continue;
+    const pts = [...(a.points ? a.points(t) : []), p], xs = pts.map((v) => v[0]), ys = pts.map((v) => v[1]);
+    const b = [S([Math.min(...xs) - 30, Math.min(...ys) - 30]), S([Math.max(...xs) + 30, Math.max(...ys) + 10])]; (things[f] ??= []).push([b[0][0], b[0][1], b[1][0], b[1][1]].map((v) => Math.round(v))); }
   frames.push(out); regions.push(JSON.stringify({ F: f, eyes, text: [] })); }
-fs.writeFileSync(process.argv[3], JSON.stringify({ clip: c.id, fps: M.FM.FPS, frames }));
+fs.writeFileSync(process.argv[3], JSON.stringify({ clip: c.id, fps: M.FM.FPS, frames, things }));
 if (process.argv[4]) fs.writeFileSync(process.argv[4], regions.join(String.fromCharCode(10)) + String.fromCharCode(10));
 console.log(`${process.argv[3]}: ${frames.length} frames`);

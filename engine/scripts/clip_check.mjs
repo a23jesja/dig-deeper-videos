@@ -6,7 +6,8 @@
 //   pupils: never under 30 % without fright, never more than a third's change in a frame; (v4) never drawn outside the eye (pupil-out)
 //   blinks (v2): open, half, shut, half, open: a shut eye has a half lid the frame before and after; a half lid leaves the pupil showing
 //   hands (v2): a hand's drawing never changes from one frame to the next while the hand hardly moves; the pointing hand out 1 s at most
-//   jumps (v2): no joint moves more than 45 px in a frame (a pose or a view swapped in one frame)
+//   jumps (v2): no joint moves more than 45 px in a frame (a pose or a view swapped in one frame); (v4) no joint jittering back and forth
+//       frame after frame (jitter), no body starting from still at full speed (start-pop)
 //   framing (v2): a medium shot has the figure filling 70 % of the picture's height, a full shot at least half, its feet in the picture;
 //         the head inside the picture (except a figure walking in or out, clip.offFrameOK)
 //   rest (Jesper's library rule 3): a figure is never dead still for a second
@@ -36,6 +37,8 @@ const handDeg = (sk, s) => { const w = sk.j[`wr${s}`], t = sk.j[`tip${s}`], e = 
 for (const id of ids) {
   const c = CLIPS[id]();
   // ---- planted faults ----
+  if (PL === "jitter") for (const cm of c.cast) { const f0 = cm.pose; cm.pose = (t, p, h) => { const q = f0 ? f0(t, p, h) : p, f = Math.round(t * FM.FPS); return t > 1.4 && t < 2.0 ? { ...q, armL: [[q.armL[0][0], q.armL[0][1]], [q.armL[1][0] + (f % 2 ? 4 : -4), q.armL[1][1]]] } : q; }; }
+  if (PL === "start-pop") for (const cm of c.cast) for (const l of cm.m.layers ?? []) if (l.pose && l.pose.pz !== undefined) l.glide = false;
   if (PL === "point-long") for (const p of c.points ?? []) p.t1 = p.t0 + 1.5;
   if (PL === "point-near") for (const p of c.points ?? []) { const g = castAt(c.cast, p.t0)[0]; p.target = [g.x + 130, FM.GY - 300]; p.horizon = undefined; }
   if (PL === "enter-inside") for (const a of c.appear ?? []) { const f0 = a.at; a.at = (t) => { const p = f0(t); return p ? [Math.min(p[0], viewOf(c.camera(t)).x1 - 150), p[1]] : p; }; }
@@ -114,7 +117,19 @@ for (const id of ids) {
       for (const j of ["elL", "elR", "wrL", "wrR", "tipL", "tipR", "knL", "knR", "skull"]) { const p = J(g, j), h = (joints[g.name + j + "h"] ??= []); h.push(p);
         if (h.length >= 3) { const [a2, b2, c2] = h.slice(-3), m1 = Math.hypot(b2[0] - a2[0], b2[1] - a2[1]), m2 = Math.hypot(c2[0] - b2[0], c2[1] - b2[1]), m0 = h.length >= 4 ? Math.hypot(a2[0] - h[h.length - 4][0], a2[1] - h[h.length - 4][1]) : m1;
           if (m1 > 12 && m1 > 3 * Math.max(m0, m2, 1)) faults.push(`${f - 1} ${g.name}: the ${j} snaps ${m1.toFixed(0)} px in one frame with the frames around it still`);
-          if (m1 > 12 && m2 > 12 && Math.hypot(c2[0] - a2[0], c2[1] - a2[1]) < 0.3 * (m1 + m2) && !running) faults.push(`${f - 1} ${g.name}: the ${j} jumps ${m1.toFixed(0)} px and back`); } }
+          if (m1 > 12 && m2 > 12 && Math.hypot(c2[0] - a2[0], c2[1] - a2[1]) < 0.3 * (m1 + m2) && !running) faults.push(`${f - 1} ${g.name}: the ${j} jumps ${m1.toFixed(0)} px and back`);
+          // (v4) jitter: a joint that goes back and forth between places within a few frames (an arm's answer swapping 4-5 px now and
+          //  then while the point was held, 11 px in the picture: under the snap rule's 12, and flicker in the rendered clip): among its
+          //  moves of over 2 px in the last 6 frames, two that turn back on the one before (a swing turns once in about 18 frames)
+          if (h.length >= 7) { const mv = []; for (let i = h.length - 6; i < h.length; i++) { const d = [h[i][0] - h[i - 1][0], h[i][1] - h[i - 1][1]]; if (Math.hypot(...d) > 2) mv.push(d); }
+            let turns = 0; for (let i = 1; i < mv.length; i++) if (mv[i][0] * mv[i - 1][0] + mv[i][1] * mv[i - 1][1] < -0.5 * Math.hypot(...mv[i]) * Math.hypot(...mv[i - 1])) turns++;
+            const rk = g.name + j + "jit", on = turns >= 2 && !running;
+            if (on && !joints[rk]) faults.push(`${f} ${g.name}: the ${j} jitters, turning back ${turns} times in 6 frames (moves ${mv.map((d) => Math.hypot(...d).toFixed(1)).join(", ")} px)`); joints[rk] = on; } } }
+      // (v4) a start at full speed: the body still one frame and moving over 5 px the next (an act that eased out but not in: the move back
+      //  before sitting started at 20 px a frame in the picture, 07 draft)
+      for (const j of ["pelvis", "skull"]) { const p = J(g, j), h = (joints[g.name + j + "s"] ??= []); h.push(p);
+        if (h.length >= 3 && !running) { const [a3, b3, c3] = h.slice(-3), n0 = Math.hypot(b3[0] - a3[0], b3[1] - a3[1]), n1 = Math.hypot(c3[0] - b3[0], c3[1] - b3[1]);
+          if (n0 < 0.6 && n1 > 5) faults.push(`${f} ${g.name}: the ${j} starts at full speed, still and then ${n1.toFixed(1)} px in one frame`); } }
       // jumps
       for (const j of ["skull", "pelvis", "wrL", "wrR", "heelL", "heelR"]) { const p = J(g, j), q = joints[g.name + j]; if (q && !running) { const d = Math.hypot(p[0] - q[0], p[1] - q[1]); stat.jump = Math.max(stat.jump, d); if (d > 45) faults.push(`${f} ${g.name}: the ${j} jumps ${d.toFixed(0)} px in one frame`); } joints[g.name + j] = p; }
       // framing: the whole figure (cap, ears, hands, elbows, feet) inside the picture with 3 % of its width and height to spare

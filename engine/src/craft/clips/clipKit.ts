@@ -38,6 +38,12 @@ export type Cast = { name: string; m: MM; who: Who; hands?: { L: HS; R: HS }; mo
 export const figure = (who: Who, x: number, heading: number, stagger = 0): MM => { const m = mover(D, heightOf(who), x, 0, heading); m.w = hipLL(who); m.stance(stagger); return m; };
 
 /** the cast at time t: where each stands in the picture (x in pixels), the solved skeleton and the drawing options */
+/** a cast member's own pose at t, before its pose hook (for a hook that needs the pose at a set time) */
+export const poseAt = (c: Cast, t: number): { pose: Pose; heading: number } => {
+  const a = play(c.name, D, c.m, t, [0, 0, 0], heightOf(c.who), { blink: true, seed: c.seed ?? (c.who === "sir" ? 3 : 7), extra: { who: c.who } });
+  const fix = (l: Pose["legL"]) => (l && (l as { th?: unknown }).th === undefined ? { ...l, x: ((l as { x?: number }).x ?? 0) - hipLL(c.who) } : l);
+  return { pose: { ...a.pose, legL: fix(a.pose.legL), legR: fix(a.pose.legR) } as Pose, heading: a.heading };
+};
 export const castAt = (cast: Cast[], t: number): Fig[] => cast.map((c) => {
   const a = play(c.name, D, c.m, t, [0, 0, 0], heightOf(c.who), { blink: true, seed: c.seed ?? (c.who === "sir" ? 3 : 7), extra: { who: c.who } });
   // blinks open, half, shut, half, open (motion.ts BLINK, each step two frames); the half lid at 0.42, so the pupil still shows under it

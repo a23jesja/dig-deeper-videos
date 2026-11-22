@@ -8,7 +8,7 @@ import type { Face } from "../designs/common";
 import { GESTURES, upper } from "../stage/gestures";
 import { ease, mt } from "../stage/acting";
 import { play } from "../stage/film";
-import { FM, D, figure, castAt, jointPx, reach, px, scaleOf, footY, camFor, fitCam, viewOf, type Clip, type Cast, type Fig, type HS, type Mouth } from "./clipKit";
+import { FM, D, figure, castAt, poseAt, jointPx, reach, px, scaleOf, footY, camFor, fitCam, viewOf, type Clip, type Cast, type Fig, type HS, type Mouth } from "./clipKit";
 import MOUTH01 from "./c01-mouth.json";
 
 type G = CanvasRenderingContext2D;
@@ -103,7 +103,12 @@ const c04 = (): Clip => {
   // (the wrists just inside the chest's sides, the elbows kept under the wrists: an elbow lifted out put the sleeve over the chest's corner,
   //  the review of v2. Elbows held out beyond the sides, to show more forearm, could not be reached with the hands on the edges, v3)
   const side = (t: number, d: 1 | -1): [number, number] => { const [cx, cy] = boxAt(t); return [cx + d * (BOX.w / 2 - 16), cy + 4]; };
-  const hold = (t: number, p: Pose, heading: number): Pose => { const x = px(0); return reach("sir", x, reach("sir", x, p, heading, "L", side(t, 1), false, { elbowBelow: true }), heading, "R", side(t, -1), false, { elbowBelow: true }); };
+  // (v4: every frame's search starts from, and is pulled toward, the arms found at the start, so it keeps one answer: from the breathing
+  //  pose the elbow swapped between two near-equal answers, 5 px back and forth three frames running at 2.5 s, v4 draft)
+  const solve2 = (t: number, p: Pose, heading: number): Pose => { const x = px(0); return reach("sir", x, reach("sir", x, p, heading, "L", side(t, 1), false, { elbowBelow: true }), heading, "R", side(t, -1), false, { elbowBelow: true }); };
+  let ref: Pose | null = null;
+  const hold = (t: number, p: Pose, heading: number): Pose => { if (!ref) { const a = poseAt({ name: "sir", m: sir, who: "sir" }, 0); ref = solve2(0, a.pose, a.heading); }
+    return solve2(t, { ...p, armL: ref.armL, armR: ref.armR }, heading); };
   const cast: Cast[] = [{ name: "sir", m: sir, who: "sir", hands: { L: [[0, "grip"]], R: [[0, "grip"]] }, pose: hold }], cam = fitCam(cast, 4.4, MED);
   return { id: "c04", title: "04 Hålla med båda händerna", seconds: 4.4, bg: 0, bgOpts: { spade: false, pit: false }, events: { LIFT: 1.3, DOWN: 2.7 }, shot: "medium", camera: () => cam, cast,
     contacts: [{ who: "sir", side: "L", t0: 0, t1: 99, at: (t) => side(t, 1), tol: 4, what: "his left hand at the chest's right side" }, { who: "sir", side: "R", t0: 0, t1: 99, at: (t) => side(t, -1), tol: 4, what: "his right hand at the chest's left side" }],
@@ -135,15 +140,17 @@ const c05 = (): Clip => {
   // (the eyes go first, down to the ship below his eye line: they looked up and right while the ship lay 35 degrees below, the review of v2)
   ease(sir, 0.5, { head: [18, 8, 0] }, 0.35, { face: { pupil: 1, smile: 0.5, brow: 0.7, gaze: [0.9, 0.7] } });
   const UP = 1.05, HOLD0 = 1.35, HOLD1 = 2.1, DOWN = 2.5, P_ON = 1.25, P_OFF = 2.2;
-  const aim = (t: number, p: Pose, heading: number): Pose => {
-    const w = env(t, UP, HOLD0 - UP, HOLD1, DOWN - HOLD1); if (w <= 0) return p;
+  // (v4: the arm found once, from his pose as the point is held, and kept: found anew each frame from the breathing pose, the search
+  //  swapped between two near-equal arms and the pointing arm jumped 11 px and back on every other frame of the hold, v4 draft)
+  let held: Pose["armL"] | null = null;
+  const heldArm = () => { if (held) return held; const { pose: p, heading } = poseAt({ name: "sir", m: sir, who: "sir", seed: 7 }, HOLD0);
     const P = D.props("sir"), s = scaleOf("sir"), reachLen = (P.upper + P.fore + P.hand * 0.6) * s * 0.78;
     const sh = shoulderPx(sx, p, heading, "L"), dx = SHIP[0] - sh[0], dy = SHIP[1] - sh[1], l = Math.hypot(dx, dy);
     // (the elbow bent 35 degrees or more in the picture: reached straight it showed no elbow, the review of v2)
     // (v4: he points with his left arm, on the ship's side of his body, the elbow out from it: the right arm, pointing across him in
     //  profile, laid its upper arm over his chest as a lump, Jesper on v3: "överarmen får inte bli en klump framför bröstet")
-    const q = reach("sir", sx, p, heading, "L", [sh[0] + (dx / l) * reachLen, sh[1] + (dy / l) * reachLen], true, { bend: 35, elbowOut: sh[0] + 34 });
-    return { ...p, armL: lerpArm(p.armL, q.armL, w) }; };
+    held = reach("sir", sx, p, heading, "L", [sh[0] + (dx / l) * reachLen, sh[1] + (dy / l) * reachLen], true, { bend: 35, elbowOut: sh[0] + 34 }).armL; return held; };
+  const aim = (t: number, p: Pose): Pose => { const w = env(t, UP, HOLD0 - UP, HOLD1, DOWN - HOLD1); return w <= 0 ? p : { ...p, armL: lerpArm(p.armL, heldArm(), w) }; };
   // (blink seed 7: he blinks at 0.47 s and 3.37 s, never during the look and the point; it fell in the point, the review of v3)
   const cast: Cast[] = [{ name: "sir", m: sir, who: "sir", seed: 7, pose: aim, hands: { R: [[0, "relaxed"]], L: [[0, "relaxed"], [P_ON, "point"], [P_OFF, "fist"]] } }];
   const cam = fitCam(cast, 4.0, 2.4, [[SHIP[0] + 30 * SHIP_S + 20, SHIP[1] - 46 * SHIP_S], [SHIP[0] - 30 * SHIP_S, SHIP[1] + 22 * SHIP_S]]);
@@ -177,8 +184,9 @@ const c06 = (): Clip => {
   //  palms toward the crab, the face afraid, and he stays afraid: leaning away, the guard up and trembling, the brows up, the mouth a grimace)
   ease(sir, T_SCARED, { lean: -10, py: -0.04, armL: [[14, 52], [118, 10]], armR: [[18, 38], [122, 10]], head: [8, -8, 0] }, 0.22, { face: { ...SCARED, pupil: 0.62, gaze: [0.4, 0.5] } });      // (the pupils small but whole, inside the eye: at 0.45 and [0.8, 0.9] they sat on the rim and the near eye read empty at phone size)
   ease(sir, 2.2, { lean: -8, py: -0.05, armL: [[12, 48], [114, 10]], armR: [[16, 34], [118, 10]], head: [14, 14, 0] }, 0.5, { face: { ...SCARED, pupil: 0.58, mouth: 0.4, gaze: [0.3, 0.6] } });
-  // (the guard trembles a little once it is up: 2 degrees at 7 Hz, so the held fear is never dead still)
-  const shake = (t: number, p: Pose): Pose => { const w = env(t, T_SCARED + 0.3, 0.3, 99, 0.1); if (w <= 0) return p; const d = 2 * w * Math.sin(t * 2 * Math.PI * 7);
+  // (the guard trembles a little once it is up: 2 degrees at 3 Hz, so the held fear is never dead still; at 7 Hz, a back and forth every
+  //  two frames at 30 fps, the hands jittered and the flicker check caught them, v4 draft)
+  const shake = (t: number, p: Pose): Pose => { const w = env(t, T_SCARED + 0.3, 0.3, 99, 0.1); if (w <= 0) return p; const d = 2 * w * Math.sin(t * 2 * Math.PI * 3);
     const sh = (a: Pose["armL"], k: number): Pose["armL"] => [[a![0][0] + d * k, a![0][1]], [a![1][0] - d * k, a![1][1]]];
     return { ...p, armL: sh(p.armL, 1), armR: sh(p.armR, -1) }; };
   const cast: Cast[] = [{ name: "sir", m: sir, who: "sir", pose: shake, hands: { L: [[0, "relaxed"], [T_SCARED + 0.06, "open"]], R: [[0, "relaxed"], [T_SCARED + 0.06, "open"]] } }];
@@ -211,7 +219,8 @@ const c07 = (): Clip => {
   const T_SIT = sir.t;
   // (down over 1.2 s with no dip first: over 0.9 s with a dip the body sank 9 px in a frame)
   // (back first, then down: lowered while still in front of the crate, his thigh went below its top as he came back over it, v3)
-  sir.act({ pz: -0.52, lean: 6, head: [0, 2, 0] }, 30, { in: 0.8, out: 0.01, antic: 0, over: 0, wait: false });
+  // (v4: glide, so the move back starts from rest: it started at full speed, 20 px in the first frame, v4 draft)
+  sir.act({ pz: -0.52, lean: 6, head: [0, 2, 0] }, 30, { in: 0.8, out: 0.01, antic: 0, over: 0, wait: false, glide: true });
   sir.actAt(T_SIT + 0.3, { py: -0.52 }, 30, { in: 1.1, out: 0.01, antic: 0, glide: true });
   sir.actAt(T_SIT, { lean: 16 }, 1.1, { in: 0.45, out: 0.5, glide: true, antic: 0 });
   sir.stand(6);

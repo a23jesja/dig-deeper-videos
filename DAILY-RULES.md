@@ -392,7 +392,7 @@ and reactions make the viewer feel they are watching a show, not a list of facts
 - **Kinds:** Sir Digsworth's asides and wrong guesses ("I'll have the tea, thank you."), side characters
   reacting or answering back ("Rum all out?!"), small banter between two characters, a running gag, a callback
   to an earlier moment. Ordinary lines are fine too: "Over here!", "Is that a weevil?".
-- **Who speaks:** Sir Digsworth keeps bm_george. Side characters may speak short lines with other free Kokoro
+- **Who speaks:** Sir Digsworth is ElevenLabs George (see "Voice"). Side characters may speak short lines with other free Kokoro
   voices (read the voice list first, never a paid voice), or in a speech bubble. The pronunciation rules apply.
 - **The line between fact and invention:** an invented line never carries a fact. No invented numbers, dates,
   names or events, and nothing invented is presented as what really happened. Never put an invented line in
@@ -612,8 +612,12 @@ Jesper does not pick times. The session picks the slot and tells him which one i
 Record views, average view duration, retention at 30 seconds and at 50 %, click-through rate and subscribers gained for
 every video in GROWTH.md. Make more of what holds viewers, stop what does not. Watch time matters more than views.
 
-## Voice (decided by Jesper 2026-11-13; reopened 2026-11-19: the voice sounds too synthetic)
-Until Jesper picks from the voice test below, keep the Kokoro `bm_george` voice; no human narrator.
+## Voice (decided by Jesper 2026-11-21: ElevenLabs George)
+**The narrator is ElevenLabs "George"** (premade voice `JBFqnCBsd6RMkjVDRZzb`, model eleven_multilingual_v2),
+chosen by Jesper by ear after the voice test of 2026-11-21: "Ta goerge då". Settings live in
+`engine/voice/narrator.json` on main. Three takes per sentence, the best by word errors, 0.3 s between sentences,
+-16 LUFS. Before every call the characters are pre-counted and the reviewer approves the count. Kokoro `bm_george`
+stays only in videos made before that date. The test history below is kept for reference.
 **Voice test (Jesper 2026-11-19):** the narration must sound like a person telling a story: clear, steady level,
 natural pauses at commas and full stops. Three candidates read the same script and Jesper chooses by ear:
 - **A. Kokoro bm_george, tuned:** speed 1.0, one sentence at a time with set pauses (0.15 s comma, 0.35 s full

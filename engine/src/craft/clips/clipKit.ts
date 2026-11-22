@@ -14,6 +14,7 @@ export const FM = { W: 1080, H: 1920, FPS: 30, GY: 1500, LINE: 12, PPM: 620, HM:
 export const D = FLAT[0];
 export const MODE = { v3: false };
 export { shoeDrawn, FLAT_SPECS } from "../designs/flat";
+import { FLAT_SPECS } from "../designs/flat";
 export { drawnHandKind } from "../ink";
 export const hipLL = (who: Who) => { const P = D.props(who); return P.hipW / (P.thigh + P.shin); };
 const tallOf = (who: Who) => { const P = D.props(who); return P.thigh + P.shin + P.ankle + P.spine + P.neck + P.head; };
@@ -106,9 +107,11 @@ export const reach = (who: Who, x: number, pose: Pose, heading: number, side: "L
 
 export type Seat = { x0: number; x1: number; top: number };
 /** points: the thing's outermost points (a crab's claw tips), which no hand may touch */
-export type Appear = { name: string; t0: number; from: "left" | "right" | "hole"; at: (t: number) => [number, number] | null; hole?: { x: number; drawnFrom: number }; points?: (t: number) => [number, number][] };
+export type Appear = { name: string; t0: number; from: "left" | "right" | "hole"; at: (t: number) => [number, number] | null; hole?: { x: number; drawnFrom: number }; points?: (t: number) => [number, number][];
+  /** its feet on the picture, for the check that a foot standing on the ground does not slide */ feet?: (t: number) => [number, number][] };
 /** horizon: the target lies on the horizon at this height (far in depth however near in the picture) */
-export type Point = { who: string; t0: number; t1: number; side: "L" | "R"; target: [number, number]; horizon?: number };
+/** box: the target's extent [x0, y0, x1, y1]; arm: the arm's whole move [up, down], over which the hand keeps clear of the box (sky between) */
+export type Point = { who: string; t0: number; t1: number; side: "L" | "R"; target: [number, number]; horizon?: number; box?: [number, number, number, number]; arm?: [number, number] };
 /** a hand that must be at a place from t0 to t1 (a handle, a box's side, a knee): its wrist within tol px */
 export type Contact = { who: string; side: "L" | "R"; t0: number; t1: number; at: (t: number) => [number, number]; tol: number; what: string; mid?: boolean };
 /** the camera: the world point at the picture's middle and the zoom (the world is 1080 x 1920 at zoom 1). Shot types (the review of the
@@ -119,6 +122,14 @@ export const camFor = (z: number, cx: number, top: number): Cam => ({ cx, cy: to
 export const viewOf = (c: Cam) => ({ x0: c.cx - FM.W / (2 * c.z), x1: c.cx + FM.W / (2 * c.z), y0: c.cy - FM.H / (2 * c.z), y1: c.cy + FM.H / (2 * c.z) });
 export type Solid = { name: string; x0: number; x1: number; top: number };
 /** the points that bound a figure as drawn: its head with the cap and ears (and the pipe in profile), its hands, elbows and feet */
+/** the underside of a figure's thighs as drawn, in picture pixels: each thigh's lower edge, its half-width going from the hip's to the
+ *  knee's (flat.ts B.leg, half-widths), and the trousers' seat behind the hips (drawn when seated). For a seat: the crate's top goes here.
+ *  (the half-width was taken as half of B.leg[0], 13.5 for 27: the thighs lay 15 px into the crate's front, the review of v4) */
+export const thighUnder = (g: Fig, n = 11): [number, number][] => { const s = scaleOf(g.who), L = (g.who === "sir" ? FLAT_SPECS[0].sir : FLAT_SPECS[0].other).B.leg;
+  const out = (["L", "R"] as const).flatMap((d) => { const h = jointPx(g, `hip${d}`), k = jointPx(g, `kn${d}`), dx = k[0] - h[0], dy = k[1] - h[1], l = Math.hypot(dx, dy) || 1;
+    let nx = -dy / l, ny = dx / l; if (ny < 0) { nx = -nx; ny = -ny; }
+    return Array.from({ length: n }, (_, i) => { const u = i / (n - 1), w = (L[0] + (L[1] - L[0]) * u) * s; return [h[0] + dx * u + nx * w, h[1] + dy * u + ny * w] as [number, number]; }); });
+  const pel = jointPx(g, "pelvis"); return [...out, [pel[0], pel[1] + (L[0] * 0.98 - 2) * s]]; };
 export const figBox = (g: Fig): [number, number][] => { const s = scaleOf(g.who), J2 = (n: string, dx = 0, dy = 0): [number, number] => { const q = g.sk.j[n as keyof Sk["j"]] as unknown as number[]; return [g.x + (q[0] + dx) * s, footY(g.who) + (q[1] + dy) * s]; };
   return [J2("skull", -168, 0), J2("skull", 168, 0), J2("crown", 0, -64), J2("crown", -150, -40), J2("crown", 150, -40),
     ...(["L", "R"] as const).flatMap((d) => [J2(`tip${d}`, -32, -32), J2(`tip${d}`, 32, 32), J2(`wr${d}`, -30, -30), J2(`wr${d}`, 30, 30), J2(`el${d}`, -26, 0), J2(`el${d}`, 26, 0), J2(`toe${d}`, -24, 4), J2(`toe${d}`, 24, 4), J2(`heel${d}`, -24, 4), J2(`heel${d}`, 24, 4)])]; };

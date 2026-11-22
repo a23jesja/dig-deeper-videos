@@ -25,10 +25,10 @@
 //     node scripts/clip_check.mjs <clip id | all>     (from engine/)   CLIP_PLANT=<fault> plants one fault (see below)
 import * as esbuild from "esbuild"; import fs from "node:fs"; import path from "node:path"; import { pathToFileURL } from "node:url";
 const out = path.resolve("out/clip_model.mjs");
-fs.writeFileSync("out/_clip_entry.ts", 'export * from "../src/craft/clips/clipKit"; export { CLIPS } from "../src/craft/clips/clips"; export { ease } from "../src/craft/stage/acting"; export { pupilIn, drawnGaze } from "../src/craft/designs/flat";\n');
+fs.writeFileSync("out/_clip_entry.ts", 'export * from "../src/craft/clips/clipKit"; export { CLIPS, CRAB } from "../src/craft/clips/clips"; export { ease } from "../src/craft/stage/acting"; export { pupilIn, drawnGaze } from "../src/craft/designs/flat"; export { handFlip } from "../src/craft/designs/common";\n');
 await esbuild.build({ entryPoints: ["out/_clip_entry.ts"], bundle: true, format: "esm", platform: "node", outfile: out, logLevel: "error", loader: { ".json": "json" } });
 const M = await import(pathToFileURL(out).href); fs.rmSync(out); fs.rmSync("out/_clip_entry.ts");
-const { CLIPS, castAt, FM, scaleOf, footY, D, shoeDrawn, FLAT_SPECS, viewOf, heightOf, drawnHandKind, figBox, pupilIn, drawnGaze } = M;
+const { CLIPS, CRAB, castAt, FM, scaleOf, footY, D, shoeDrawn, FLAT_SPECS, viewOf, heightOf, drawnHandKind, figBox, pupilIn, drawnGaze, thighUnder, handFlip } = M;
 const LINE_TOP = FM.GY - FM.LINE / 2, ids = process.argv[2] && process.argv[2] !== "all" ? [process.argv[2]] : Object.keys(CLIPS);
 const PL = process.env.CLIP_PLANT;
 let failed = 0;
@@ -37,6 +37,12 @@ const handDeg = (sk, s) => { const w = sk.j[`wr${s}`], t = sk.j[`tip${s}`], e = 
 for (const id of ids) {
   const c = CLIPS[id]();
   // ---- planted faults ----
+  // (the crate of v4: its top set from half of the thighs' half-width, 13.5 x scale higher than the thighs' drawn underside)
+  if (PL === "seat-v4") for (const st of c.seats ?? []) st.top -= 13.5 * scaleOf("sir");
+  if (PL === "crab-slide") CRAB.slide = true;
+  if (PL === "hand-head") for (const cm of c.cast) { const f0 = cm.pose; cm.pose = (t, p, h) => { const q = f0 ? f0(t, p, h) : p; return t > 2.0 ? { ...q, armL: [[20, 20], [150, 10]] } : q; }; }
+  if (PL === "point-touch") for (const p of c.points ?? []) if (p.box) { const g = castAt(c.cast, p.t0 + 0.2)[0], tp = M.jointPx(g, `tip${p.side}`); p.box = [tp[0] + 15, p.box[1], tp[0] + 15 + (p.box[2] - p.box[0]), p.box[3]]; }
+  if (PL === "point-aim") for (const p of c.points ?? []) { const g = castAt(c.cast, p.t0)[0], sh = M.jointPx(g, `sh${p.side}`); p.target = [p.target[0], p.target[1] - 0.8 * Math.abs(p.target[0] - sh[0])]; p.horizon = p.target[1]; }
   if (PL === "jitter") for (const cm of c.cast) { const f0 = cm.pose; cm.pose = (t, p, h) => { const q = f0 ? f0(t, p, h) : p, f = Math.round(t * FM.FPS); return t > 1.4 && t < 2.0 ? { ...q, armL: [[q.armL[0][0], q.armL[0][1]], [q.armL[1][0] + (f % 2 ? 4 : -4), q.armL[1][1]]] } : q; }; }
   if (PL === "start-pop") for (const cm of c.cast) for (const l of cm.m.layers ?? []) if (l.pose && l.pose.pz !== undefined) l.glide = false;
   if (PL === "point-long") for (const p of c.points ?? []) p.t1 = p.t0 + 1.5;
@@ -108,6 +114,17 @@ for (const id of ids) {
         // (v4: the pupil inside the eye as drawn: a gaze down and to the side put it outside the oval and both eyes stood empty, 06 draft)
         const gz = pupilIn(drawnGaze(v.split("-")[0], v.endsWith("-left"), fc.gaze ?? [0, 0]), PL !== "pupil-out"), gm = Math.hypot(gz[0], gz[1]); stat.gaze = Math.max(stat.gaze ?? 0, gm);
         if (gm > 1.001) faults.push(`${f} ${g.name}: the pupil drawn ${((gm - 1) * 100).toFixed(0)} % past the eye's inner edge (an empty eye)`); }
+      // (v5) a raised open hand shows its palm with the thumb toward the body's middle (06: both raised hands had the same drawing, the near
+      //  one thumb out, reading as a left hand or its back, the review of v4)
+      for (const s of ["L", "R"]) { const kind = g.o[`hand${s}`] ?? "relaxed"; if (kind !== "open") continue; const hf = handFlip(g.sk, s, kind, PL === "thumb-out"), r = (hf.d * Math.PI) / 180;
+        if (Math.sin(r) > -0.5) continue; const tx = (hf.flip ? -1 : 1) * -Math.sin(r), mid = g.sk.j.neck[0] - hf.w[0];
+        if (Math.abs(mid) > 4 && tx * mid < 0) faults.push(`${f} ${g.name}: the raised open ${s} hand has its thumb on the outside, away from the body's middle`); }
+      // (v5) no hand or forearm on the head: the wrist, the fingertip and the forearm's middle outside the head's circle (06: the head lay
+      //  against the far raised hand's wrist and sleeve, the review of v4)
+      if (g.who === "sir") { const hc = [J(g, "skull")[0], J(g, "skull")[1] - 128 * sc], hr = 128 * sc;
+        for (const s of ["L", "R"]) { const e = J(g, `el${s}`), w = J(g, `wr${s}`), tp = J(g, `tip${s}`), pts = [w, tp, [(e[0] + w[0]) / 2, (e[1] + w[1]) / 2]];
+          const dmin = Math.min(...pts.map((q) => Math.hypot(q[0] - hc[0], q[1] - hc[1]) - hr - 18 * sc)); stat.handHead = Math.min(stat.handHead ?? 1e9, dmin);
+          if (dmin < 0 && !(c.handHeadOK?.(t))) faults.push(`${f} ${g.name}: the ${s} hand or forearm ${(-dmin).toFixed(0)} px into the head`); } }
       // hands: the drawing that shows, and how far the wrist moved
       for (const s of ["L", "R"]) { const kind = drawnHandKind(g.o[`hand${s}`] ?? "relaxed", handDeg(g.sk, s)), w = J(g, `wr${s}`), h = (hands[g.name + s] ??= []); h.push({ kind, w });
         if (h.length >= 3) { const [a, b, cc] = h.slice(-3), mv = Math.hypot(cc.w[0] - b.w[0], cc.w[1] - b.w[1]), mv0 = Math.hypot(b.w[0] - a.w[0], b.w[1] - a.w[1]);
@@ -145,7 +162,8 @@ for (const id of ids) {
       // seats: the thighs' underside (half a leg's width under the hip) on the seat's top
       // seats: the thighs' undersides (half a leg's width under the hip-knee line) over the seat: never into it; seated, the lowest of them on
       // its top (v3: measured along the thighs, not at the pelvis, where a thigh sloping to the knee lay 15-20 px into the crate)
-      for (const st of c.seats ?? []) { const U = ["L", "R"].flatMap((d) => { const h = J(g, `hip${d}`), k = J(g, `kn${d}`); return Array.from({ length: 11 }, (_, i) => [h[0] + (k[0] - h[0]) * (i / 10), h[1] + (k[1] - h[1]) * (i / 10) + (27 / 2) * sc]); }).filter(([xx]) => xx >= st.x0 && xx <= st.x1);
+      // (v5: the thighs' underside as drawn, thighUnder, with the full half-width: from half of it the check passed thighs 15 px into the crate)
+      for (const st of c.seats ?? []) { const U = thighUnder(g).filter(([xx]) => xx >= st.x0 && xx <= st.x1);
         if (!U.length) continue; const low = Math.max(...U.map((q) => q[1])) + 4, d = low - st.top;
         if (d > 2) faults.push(`${f} ${g.name}: a thigh ${d.toFixed(1)} px into the seat`);
         if (t > (c.events.T_SIT ?? 0) + 1.6) { stat.seat = Math.max(stat.seat, Math.abs(d)); if (d < -2) faults.push(`${f} ${g.name}: seated ${(-d).toFixed(1)} px above the seat`); } }
@@ -154,12 +172,25 @@ for (const id of ids) {
       for (const a of c.appear ?? []) { const p = a.at(t); if (!p) continue; const pts = a.points?.(t) ?? [];
         for (const s of ["L", "R"]) { const H = [J(g, `wr${s}`), J(g, `tip${s}`)], d = Math.min(Math.hypot(...H[0].map((v, i) => v - p[i])) - 100, ...pts.flatMap((q) => H.map((h) => Math.hypot(h[0] - q[0], h[1] - q[1]) - 30)));
           stat.creature = Math.min(stat.creature, d); if (d < 40) faults.push(`${f} ${g.name}: the ${s} hand ${d.toFixed(0)} px from the ${a.name} (claws counted)`); } }
+      // (v5) a creature's feet: a foot that stands on the ground the frame before and this frame stays put (the crab slid 200 px with its
+      //  feet nearly still on the body, the review of v4)
+      for (const a of c.appear ?? []) { if (!a.feet) continue; const F2 = a.feet(t), P2 = prev[a.name + "feet"]; prev[a.name + "feet"] = F2; if (!P2 || P2.length !== F2.length) continue;
+        F2.forEach((q, i) => { const p0 = P2[i], down = (y) => y >= LINE_TOP - 0.5; if (down(q[1]) && down(p0[1])) { const dx = Math.abs(q[0] - p0[0]); stat.footSlide = Math.max(stat.footSlide ?? 0, dx); if (dx > 1) faults.push(`${f} ${a.name}: foot ${i + 1} slides ${dx.toFixed(1)} px on the ground`); } }); }
       if (c.door) { const need = 1.5 * FM.PPM * heightOf(g.who); if (c.door.h < need && f === 0) faults.push(`the door ${c.door.h} px high for a figure of ${(need / 1.5).toFixed(0)} px: under one and a half times his height`); } }
     // things that turn up never pass through solid things (a creature about 100 px round its place)
     for (const a of c.appear ?? []) { const p = a.at(t); if (!p) continue; for (const so of c.solids ?? []) if (p[0] + 100 > so.x0 && p[0] - 100 < so.x1) faults.push(`${f} ${a.name}: passes through the ${so.name}`); }
+    // (v5) a pointing hand keeps clear of what it points at, the whole arm's move: from the drawn fingertip (1.2 x the hand past the wrist),
+    //  the hand's middle and the wrist, at least 150 px in the picture to the target's box (05: the finger ended 5-10 px from the sail and
+    //  the hand passed over the ship on the way up and down, the review of v4)
+    for (const pt of c.points ?? []) { if (!pt.box || !pt.arm || t < pt.arm[0] || t > pt.arm[1]) continue; const g = figs.find((q) => q.name === pt.who), w = J(g, `wr${pt.side}`), tp = J(g, `tip${pt.side}`), z = c.camera(t).z;
+      const pts = [w, [w[0] + 0.5 * (tp[0] - w[0]), w[1] + 0.5 * (tp[1] - w[1])], [w[0] + 1.2 * (tp[0] - w[0]), w[1] + 1.2 * (tp[1] - w[1])]], [x0, y0, x1, y1] = pt.box;
+      const gap = Math.min(...pts.map(([x, y]) => Math.hypot(Math.max(x0 - x, 0, x - x1), Math.max(y0 - y, 0, y - y1)))) * z; stat.pointGap = Math.min(stat.pointGap ?? 1e9, gap);
+      if (gap < 150) faults.push(`${f} ${pt.who}: the pointing hand ${gap.toFixed(0)} px in the picture from the ${pt.horizon !== undefined ? "target on the horizon" : "target"} (150 or more)`); }
     for (const pt of c.points ?? []) { if (t < pt.t0 || t > pt.t1) continue; const g = figs.find((q) => q.name === pt.who), sh = J(g, `sh${pt.side}`), tip = J(g, `tip${pt.side}`), sk = J(g, "skull");
-      const a1 = Math.atan2(tip[1] - sh[1], tip[0] - sh[0]), a2 = Math.atan2(pt.target[1] - sh[1], pt.target[0] - sh[0]), da = Math.abs(((a1 - a2 + 3 * Math.PI) % (2 * Math.PI)) - Math.PI) * 180 / Math.PI;
-      if (da > 20) faults.push(`${f} ${pt.who}: the finger aims ${da.toFixed(0)} degrees off the target`);
+      // (v5: the aim along the finger, wrist to fingertip, as the picture shows it: a point with the elbow bent points with the forearm and
+      //  the finger, and the line from the shoulder runs below the target)
+      const wr = J(g, `wr${pt.side}`), a1 = Math.atan2(tip[1] - wr[1], tip[0] - wr[0]), a2 = Math.atan2(pt.target[1] - tip[1], pt.target[0] - tip[0]), da = Math.abs(((a1 - a2 + 3 * Math.PI) % (2 * Math.PI)) - Math.PI) * 180 / Math.PI;
+      stat.aim = Math.max(stat.aim ?? 0, da); if (da > 20) faults.push(`${f} ${pt.who}: the finger aims ${da.toFixed(0)} degrees off the target`);
       const dist = Math.hypot(pt.target[0] - sk[0], pt.target[1] - sk[1]), onHorizon = pt.horizon !== undefined && Math.abs(pt.target[1] - pt.horizon) <= 40;
       if (dist < 350 && !onHorizon) faults.push(`${f} ${pt.who}: the target only ${dist.toFixed(0)} px away and not on the horizon, not far`);
       const toward = Math.sign(pt.target[0] - sk[0]), facing = Math.sign(Math.sin((g.sk.faceYaw * Math.PI) / 180)) || Math.sign(g.o.face?.gaze?.[0] ?? 0); if (facing !== toward) faults.push(`${f} ${pt.who}: not facing the target`);
@@ -184,7 +215,7 @@ for (const id of ids) {
   console.log(`== ${id} ${c.title} (${c.seconds.toFixed(2)} s, ${F} frames, ${c.shot} shot)`);
   console.log("   views: " + Object.entries(runs).map(([n, r]) => n + " " + r.map((x) => `${x.v} ${x.f}-${x.f + x.n - 1}`).join(" | ")).join(" ;; "));
   console.log(`   shoe past the line's top at most ${stat.shoe.toFixed(1)} px, slide at most ${stat.slide.toFixed(1)} px; pupils min ${(stat.pupilMin * 100).toFixed(0)} %, gaze at most ${((stat.gaze ?? 0) * 100).toFixed(0)} % of the way to the eye's edge, step max ${(stat.pupilStep * 100).toFixed(0)} %; largest joint move in a frame ${stat.jump.toFixed(0)} px; figure ${(stat.fill * 100).toFixed(0)} % of the height; head past the edge ${stat.edge.toFixed(0)} px` +
-    (c.contacts ? `; contacts off at most ${stat.contact.toFixed(1)} px` : "") + (c.appear ? `; nearest hand to the ${c.appear[0].name} ${stat.creature.toFixed(0)} px` : "") + (c.seats ? `; seat off at most ${stat.seat.toFixed(1)} px` : "") + (c.points ? `; point held ${c.points.map((p) => (p.t1 - p.t0).toFixed(2)).join(", ")} s, finger out ${stat.pointRun} frames` : "") + (c.door ? `; door ${c.door.h} px` : ""));
+    (c.contacts ? `; contacts off at most ${stat.contact.toFixed(1)} px` : "") + (c.appear ? `; nearest hand to the ${c.appear[0].name} ${stat.creature.toFixed(0)} px` + (stat.footSlide !== undefined ? `, its feet on the ground slide at most ${stat.footSlide.toFixed(2)} px` : "") : "") + (c.seats ? `; seat off at most ${stat.seat.toFixed(1)} px` : "") + (c.points ? `; point held ${c.points.map((p) => (p.t1 - p.t0).toFixed(2)).join(", ")} s, finger out ${stat.pointRun} frames, aimed within ${(stat.aim ?? 0).toFixed(0)} degrees` + (stat.pointGap !== undefined ? `, the hand at least ${stat.pointGap.toFixed(0)} px from the target in the picture` : "") : "") + (c.door ? `; door ${c.door.h} px` : ""));
   for (const l of faults.slice(0, 25)) console.log("   " + l);
   if (faults.length) { const kinds = {}; for (const l of faults) { const k = l.replace(/^\d+ /, "").replace(/-?\d+(\.\d+)?/g, "#"); kinds[k] = (kinds[k] ?? 0) + 1; }
     console.log("   by kind: " + Object.entries(kinds).map(([k, n]) => `${n} x "${k}"`).join("; ")); }

@@ -82,9 +82,18 @@ export const limb = (a: P2, b: P2, c: P2, w: number[], bulge: number[] = [0, 0],
 /** should the thumb be flipped so that it points the way the figure faces and in toward the body */
 export const thumbFlip = (sk: Sk, side: Side) => sk.sin * 0.9 + (side === "R" ? sk.cos : -sk.cos) * 0.5 > 0;
 /** the hand of one side at its wrist, along the skeleton's hand bone */
+/** the thumb's flip as drawn: an open hand raised (its fingers up, within 60 degrees) shows its palm with the thumb toward the body's middle,
+ *  as a raised right or left hand does; by the facing alone both raised hands of 06 got the same drawing, the near one thumb out, reading
+ *  as a left hand or a back (the review of the shot types v4). raw = the facing alone (the check's planted fault) */
+export const handFlip = (sk: Sk, side: Side, kind: HandKind, raw = false) => {
+  const w = J(sk, "wr", side), t = J(sk, "tip", side), el = J(sk, "el", side), d = len(sub(t, w)) > 6 ? angle(w, t) : angle(el, w), r = (d * Math.PI) / 180;
+  if (raw || kind !== "open" || Math.sin(r) > -0.5) return { flip: thumbFlip(sk, side), d, w };
+  // (unflipped, the thumb lies on the hand's +y side: on the screen (-sin d, cos d); the middle is the neck's x)
+  return { flip: -Math.sin(r) * (sk.j.neck[0] - w[0]) <= 0, d, w };
+};
 export const handAt = (k: Ink, sk: Sk, side: Side, kind: HandKind, col: string, cut = false, scale = 1) => {
-  const w = J(sk, "wr", side), t = J(sk, "tip", side), el = J(sk, "el", side), d = len(sub(t, w)) > 6 ? angle(w, t) : angle(el, w);
-  hand(k, w, d, sk.P.hand * scale, kind, col, thumbFlip(sk, side), cut);
+  const { flip, d, w } = handFlip(sk, side, kind);
+  hand(k, w, d, sk.P.hand * scale, kind, col, flip, cut);
 };
 
 /** a shoe from any side: side-on it is a shoe in profile, toward the lens a rounded toe cap; it follows the heel and toe of the skeleton.

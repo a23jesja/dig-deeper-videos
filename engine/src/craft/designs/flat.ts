@@ -11,6 +11,8 @@ import { Design, FigOpts, Face, Who, frame, torsoPts, J, limb, handAt, shoePts, 
 type F = ReturnType<typeof frame>;
 export const TURQ = "#1fb3a6";
 const GOLD = "#e8b630", MOUTH = "#5b1f2a", TONGUE = "#e46a6a", TEAR = "#7cc8ee", WHITE = "#ffffff";
+/** the face check's switch (scripts/face_order.mjs): false draws the nose before the monocle's ring at three-quarter, as in v4 */
+export const FACE = { noseLast: true };
 
 /** a flat shape with the even outline: the ink is drawn under the fill, so the same width shows outside every part */
 const fl = (k: Ink, pts: P2[], col: string) => k.group([pts], col);
@@ -96,7 +98,12 @@ const pipeAt = (k: Ink, a: P2, s: number, d = 1, droop = 0) => {
     const bowl: P2[] = [[b[0] - 13 * s * d, b[1] - 36 * s], [b[0] + 19 * s * d, b[1] - 36 * s], [b[0] + 15 * s * d, b[1] + 8 * s], [b[0] - 10 * s * d, b[1] + 8 * s]];
     fl(k, bowl, "#8a4b26"); k.line([bowl[0], bowl[1]], 8 * s, k.ink); });
 };
-const droopOf = (r: FR) => Math.max(0, Math.min(1, r.wide));
+// (clenched teeth hold the pipe: it tips half as far; tipped all the way its bowl lay on the raised hand in 06, the review of the shot types v4)
+const droopOf = (r: FR) => Math.max(0, Math.min(1, r.wide)) * (1 - 0.5 * Math.max(0, Math.min(1, r.teeth)));
+/** how far a mouth's corners come down with the corners turned down (the pipe rides that corner: in the frightened grimace it stayed at the
+ *  resting corner, up at the moustache beside the mouth, as if hanging from the moustache, the review of the shot types v4). Only down, so a
+ *  smile leaves the pipe where the approved clips have it */
+const cornerDown = (r: FR, s: number) => Math.max(0, -r.smile) * 12 * s;
 /** an ear seen from the side: a filled oval and the curve of its bowl opening forward */
 const ear = (k: Ink, x: number, y: number, rx: number, ry: number, skin: string) => { fl(k, ellPts(x, y, rx, ry, 0, 0, 360, 28), skin); ln(k, ellPts(x + rx * 0.2, y, rx * 0.5, ry * 0.55, 0, 110, 250, 10), 0.6); };
 const monoRing = (k: Ink, cx: number, cy: number, rx: number, ry: number, w: number) => { const r = ellPts(cx, cy, rx, ry, 0, 0, 360, 40); band(k, r, w, GOLD, k.ol * 0.55); };
@@ -152,6 +159,7 @@ const drawFlat = (c: FlatSpec) => (k: Ink, sk: Sk, o: FigOpts) => {
     k.group(limb(S, E, W, B.arm), other ? C.dress : c.noCoat ? C.shirt : C.coat);
     handAt(k, sk, s, kind, C.skin);
   };
+  let torsoPoly: P2[] = [];
   const torso = () => {
     if (B.neck) k.group([seg(Fr.T(0, P.spine - 20), sk.j.skull, B.neck, B.neck * 0.92)], C.skin);
     // (the coat's hem comes up as the thighs bend toward level, so a seated figure's thighs show on the seat: hanging 34 under the hip the
@@ -162,7 +170,7 @@ const drawFlat = (c: FlatSpec) => (k: Ink, sk: Sk, o: FigOpts) => {
     //  with the hem 4 under the hip and the front 50 deep, the coat covered the thighs to the knees and he read as squatting, Jesper on the
     //  shot types v3: "låren vilar ovanpå den, fötterna i marken framför. Inte på huk")
     const l0 = B.rows[0][0] + 30 * flex, rows = B.rows.map((q, i) => (i === 0 ? [l0 + sit * (30 - l0), q[1], q[2] - sit * 30, q[3]] : i === 1 ? [q[0] + sit * 44, q[1], q[2] - sit * 14, q[3]] : q));
-    const t = torsoPts(sk, rows), dz = Math.max(...B.rows.map((q) => q[2])) * 0.8;
+    const t = torsoPts(sk, rows), dz = Math.max(...B.rows.map((q) => q[2])) * 0.8; torsoPoly = t;
     const Q = (l: number, a: number) => Fr.Q(l, dz, a);
     if (other) {
       fl(k, t, C.dress);
@@ -205,8 +213,23 @@ const drawFlat = (c: FlatSpec) => (k: Ink, sk: Sk, o: FigOpts) => {
     else if (view === "q") { const q = c.chainQ![flip ? "far" : "near"], a = w(q[0]); chainAt(k, a, end, w(q[1]), c.chainW); clasp(end); }
     else { const tx = sn * c.turn; chainAt(k, w([c.chainFront[0][0] + tx, c.chainFront[0][1]]), end, w([c.chainFront[1][0] + tx, c.chainFront[1][1]]), c.chainW); clasp(end); }
   };
+  // (v5: turning between front and side, 24 to 37 degrees off the lens, the far arm comes out from behind the body instead of jumping in
+  //  front of it in one frame: it is drawn behind, and the part of it that lies over the body is shown from the body's far edge inward as he
+  //  turns toward the lens. Switched at 30 degrees, the far arm changed layer in one frame in the turns of 03, Jesper on v4, "Ja")
+  const as = Math.abs(sk.sin);
+  if (!other && as > ARM_WIPE[0] && as < ARM_WIPE[1]) {
+    const far = sk.far, near = sk.near; arm(far); leg(far); leg(near); torso(); head();
+    const u = (ARM_WIPE[1] - as) / (ARM_WIPE[1] - ARM_WIPE[0]), xs = torsoPoly.map((p) => p[0]), x0 = Math.min(...xs), x1 = Math.max(...xs);
+    const side = Math.sign(J(sk, "sh", far)[0] - J(sk, "sh", near)[0]) || 1, xFar = side > 0 ? x1 : x0, xNear = side > 0 ? x0 : x1, line = xFar + (xNear - xFar) * u, B9 = 1e4;
+    const half: P2[] = side > 0 ? [[line, -B9], [B9, -B9], [B9, B9], [line, B9]] : [[-B9, -B9], [line, -B9], [line, B9], [-B9, B9]];
+    k.clip(torsoPoly, () => k.clip(half, () => arm(far)));
+    arm(near); return;
+  }
   layers(sk, { arm, leg, torso, head });
 };
+/** where the far arm comes out from behind the body in a turn (|sin| of the facing); [0, 0] switches it in one frame at 0.5 (the v4 order,
+ *  the bytes check's planted fault) */
+export const ARM_WIPE: [number, number] = [0.4, 0.6];
 /** a shoe as drawn: no part of it below the ground line (y = 0): turning, lifting or setting down a foot, its toe went 5-10 px through the
  *  line (the review of the motion test). clamp = false gives the shoe as it was (the check's planted fault) */
 export const shoeDrawn = (sk: Sk, side: Side, W: number, clamp = true) => {
@@ -248,7 +271,7 @@ const A_SPEC: FlatSpec = {
     //  opens: it stayed under the moustache while the mouth gaped, the review of the shot types v1)
     const m0 = Math.max(r.mouth, 0.2);
     mouthAt(k, tx + r.smirk * 4, -52, mw, 1, { ...r, mouth: m0 }, "#e0806e");
-    pipeAt(k, [tx + mw - 2, -48 + 61 * (m0 - 0.2) * 0.45], 1, 1, droopOf(r));
+    pipeAt(k, [tx + mw - 2, -48 + 61 * (m0 - 0.2) * 0.45 + cornerDown(r, 1)], 1, 1, droopOf(r));
     fl(k, at(spline([...MOUS_A, ...mirror(MOUS_A).reverse()]), tx), CA.hair);
     for (const s of [-1, 1]) eyeA(k, s * 46 + tx, -118, 1, r, CA.skin, -s);
     monoRing(k, -46 + tx, -118, 42, 52, 7);
@@ -281,7 +304,7 @@ const A_SPEC: FlatSpec = {
     // (a three-quarter head looks the way it faces: the pupils start 0.45 toward that side and the gaze adds to it. At the gaze alone the near
     //  pupil sat in the eye's middle while he pointed at Ada and he seemed to look into the lens, the review of v3)
     const gz: P2 = [Math.min(1, 0.45 + 0.7 * Math.max(0, r.gaze[0])), r.gaze[1]];
-    // (the monocle's ring is drawn after the nose: drawn before, the nose lay over the ring on the far eye, the review of the shot types v1)
+    // (v1-v4: the monocle's ring was drawn after the nose, the review of the shot types v1; v5: the nose last, below)
     const eyesAndMono = () => { eyeA(k, 10, -118, 1, { ...r, gaze: gz }, CA.skin, 1); eyeA(k, 76, -118, 0.8, { ...r, gaze: gz }, CA.skin, -1); };
     const ring = () => { if (mono === "near") monoRing(k, 10, -118, 42, 52, 7); else monoRing(k, 76, -118, 34, 44, 7); };
     // (the mouth nearer the head's middle, kept inside the head's outline with a narrow chin under it, its open height 0.8 of the front's: at
@@ -298,15 +321,17 @@ const A_SPEC: FlatSpec = {
     // (the pipe stays in his left mouth corner: turned to his left that corner is the far one, at the mouth's nose side; turned to his right
     //  (drawn mirrored) it is the near one, at the mouth's back, the stem going out the same way on the screen as from the front. It jumped
     //  to the other corner in one frame, the review of v2)
-    if (mono === "far") pipeAt(k, [62 - mw + 2, my + 4 + 61 * 0.8 * (m0 - 0.2) * 0.45], 1, -1, droopOf(r));
-    else pipeAt(k, [62 + mw - 2, my + 4 + 61 * 0.8 * (m0 - 0.2) * 0.45], 1, 1, droopOf(r));
+    if (mono === "far") pipeAt(k, [62 - mw + 2, my + 4 + 61 * 0.8 * (m0 - 0.2) * 0.45 + cornerDown(r, 0.8)], 1, -1, droopOf(r));
+    else pipeAt(k, [62 + mw - 2, my + 4 + 61 * 0.8 * (m0 - 0.2) * 0.45 + cornerDown(r, 0.8)], 1, 1, droopOf(r));
     // (the far half 0.6 of the near one: at 0.34 the moustache doubled in size the frame the head turned to the front, the review of v2)
     // (the far half 0.5, the whole moustache 6 nearer the middle: at 0.6 from 84 its tip and the pipe came close to the head's outline, v3)
     const near = mirror(MOUS_A).map(([x, y]) => [x * 1.0 + 78, y] as P2), far = MOUS_A.map(([x, y]) => [x * 0.5 + 78, y] as P2);
     fl(k, spline([...far, ...near.reverse()]), CA.hair);
     eyesAndMono();      // (after the moustache: the eyes and the monocle over it, the cord over them as before)
-    fl(k, ellPts(104, -84, 17, 14), CA.nose);
-    ring();
+    // (v5: the nose over the eyes and the monocle's ring in every view, as from the front and in profile: turned to his left the ring on the
+    //  far eye lay over the nose, Jesper on the shot types v4, "Ja"; this undoes the order the review of v1 asked for. FACE.noseLast = false
+    //  is the check's planted fault, the order of v4)
+    if (FACE.noseLast) { ring(); fl(k, ellPts(104, -84, 17, 14), CA.nose); } else { fl(k, ellPts(104, -84, 17, 14), CA.nose); ring(); }
     tearAt(k, 84, -82, 0.9, r.tear); tearAt(k, 18, -82, 1, r.tear * 0.7);
     k.g.save(); k.g.translate(-lift * 20 + 18, -lift * 50); capFront(k, 124, -206, -312, CA.cap, 12); k.g.restore();
   },

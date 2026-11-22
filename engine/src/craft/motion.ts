@@ -254,9 +254,12 @@ export class Mover {
     }
     // (the body check of 18 November: the foot came down while still travelling, and skidded the last centimetres along the ground.
     // It now rises a little before it moves on, and is over its new spot before it comes down, straight down onto it)
+    // (a low step, the closing one, lowers its heel at the step's pace: lowered at the full step's pace the heel came down faster than the low
+    //  arc rose, the ankle went down, up 3 px and down again, and the knee wobbled 7 px back and 14 forward, 02 v4, Jesper "Ja"; and it comes
+    //  down flatter, -8: heel first with the toe at -14, the toe rose 3 px before it slapped down and the knee jiggled)
     const q = f[i + 1], u = clamp((t - p.t1) / (q.t0 - p.t1), 0, 1), e = smooth(clamp((u - 0.04) / 0.8, 0, 1)), far = Math.hypot(q.x - p.x, q.z - p.z);
     const up = Math.sin(Math.PI * Math.min(1, u * 1.08)) ** 0.8 * q.h * (far > 0.05 || q.h < 0.09 ? 1 : 0.6);
-    return { x: lerp(p.x, q.x, e), z: lerp(p.z, q.z, e), y: up, ang: lerp(p.ang, q.ang, e), pitch: lerp(p.run ? 34 : 30, q.run ? -4 : -14, smooth(clamp(u * 1.5 - 0.1, 0, 1))) + (q.run ? 28 : 8) * Math.sin(Math.PI * u) * (u < 0.5 ? 1 : 0.3), down: false };
+    return { x: lerp(p.x, q.x, e), z: lerp(p.z, q.z, e), y: up, ang: lerp(p.ang, q.ang, e), pitch: lerp(p.run ? 34 : 30, q.run ? -4 : q.h < 0.09 ? -8 : -14, smooth(clamp(q.h < 0.09 ? u * 1.05 : u * 1.5 - 0.1, 0, 1))) + (q.run ? 28 : 8) * Math.sin(Math.PI * u) * (u < 0.5 ? 1 : 0.3), down: false };
   }
   private weight(l: Layer, t: number) {
     if (t <= l.t0 || t >= l.t1) return 0;

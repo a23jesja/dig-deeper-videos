@@ -135,7 +135,7 @@ const PT_HEAD = 25;      // (v4: he faces 25 degrees off the lens, so his left a
 const shoulderPx = (x: number, p: Pose, heading: number, side: "L" | "R" = "R"): [number, number] => { const sk = solve(D.props("sir"), p, heading), q = sk.j[`sh${side}`] as unknown as number[], s = scaleOf("sir"); return [x + q[0] * s, footY("sir") + q[1] * s]; };
 const c05 = (): Clip => {
   // (the ship on the horizon line, its hull's foot on it: lower in the water, near him, it read as a toy boat)
-  const sx = px(0) - 90, SHIP: [number, number] = [sx + 205, HORIZON - 20 * SHIP_S], sir = figure("sir", (sx - FM.W / 2) / FM.PPM, PT_HEAD); sir.stand(6);
+  const sx = px(0) - 90, SHIP: [number, number] = [sx + 215, HORIZON - 20 * SHIP_S], sir = figure("sir", (sx - FM.W / 2) / FM.PPM, PT_HEAD); sir.stand(6);
   ease(sir, -1, { head: [6, 0, 0] }, 0.01, { face: { pupil: 1, smile: 0.2, gaze: [0.2, 0] } });
   // (the eyes go first, down to the ship below his eye line: they looked up and right while the ship lay 35 degrees below, the review of v2)
   ease(sir, 0.5, { head: [18, 8, 0] }, 0.35, { face: { pupil: 1, smile: 0.5, brow: 0.7, gaze: [0.9, 0.7] } });
@@ -144,7 +144,8 @@ const c05 = (): Clip => {
   //  swapped between two near-equal arms and the pointing arm jumped 11 px and back on every other frame of the hold, v4 draft)
   let held: Pose["armL"] | null = null;
   const heldArm = () => { if (held) return held; const { pose: p, heading } = poseAt({ name: "sir", m: sir, who: "sir", seed: 7 }, HOLD0);
-    const P = D.props("sir"), s = scaleOf("sir"), reachLen = (P.upper + P.fore + P.hand * 0.6) * s * 0.78;
+    // (v4: the hand stops well short of the ship: reached 0.78 of the arm with the left arm, the finger lay on the ship, poking a toy boat)
+    const P = D.props("sir"), s = scaleOf("sir"), reachLen = (P.upper + P.fore + P.hand * 0.6) * s * 0.62;
     const sh = shoulderPx(sx, p, heading, "L"), dx = SHIP[0] - sh[0], dy = SHIP[1] - sh[1], l = Math.hypot(dx, dy);
     // (the elbow bent 35 degrees or more in the picture: reached straight it showed no elbow, the review of v2)
     // (v4: he points with his left arm, on the ship's side of his body, the elbow out from it: the right arm, pointing across him in
@@ -184,8 +185,9 @@ const c06 = (): Clip => {
   // (v4: one reaction, afraid, all the way: Jesper on v3, "en tydlig reaktion (rädd ELLER förtjust, inte båda)". The hands by his face read
   //  as delight, and the face eased toward curiosity as he looked down. Now he jerks back, the hands up in front of his chest as a guard,
   //  palms toward the crab, the face afraid, and he stays afraid: leaning away, the guard up and trembling, the brows up, the mouth a grimace)
-  ease(sir, T_SCARED, { lean: -10, py: -0.04, armL: [[16, 66], [112, 10]], armR: [[18, 38], [122, 10]], head: [8, -8, 0] }, 0.22, { face: { ...SCARED, pupil: 0.62, gaze: [0.4, 0.5] } });      // (the pupils small but whole, inside the eye: at 0.45 and [0.8, 0.9] they sat on the rim and the near eye read empty at phone size)
-  ease(sir, 2.2, { lean: -8, py: -0.05, armL: [[14, 62], [108, 10]], armR: [[16, 34], [118, 10]], head: [14, 14, 0] }, 0.5, { face: { ...SCARED, pupil: 0.58, mouth: 0.4, gaze: [0.3, 0.6] } });
+  ease(sir, T_SCARED, { lean: -10, py: -0.04, armL: [[16, 66], [112, 10]], armR: [[18, 38], [122, 10]], head: [8, -8, 0] }, 0.22, { face: { ...SCARED, sad: 1, smile: -1, mouth: 0.35, teeth: 1, pupil: 0.62, gaze: [0.4, 0.5] } });      // (the pupils small but whole, inside the eye: at 0.45 and [0.8, 0.9] they sat on the rim and the near eye read empty at phone size;
+  //  a grimace, teeth clenched, the corners down, the brows sad: the open mouth read as a delighted "oh!" with the hands up, v4 draft)
+  ease(sir, 2.2, { lean: -8, py: -0.05, armL: [[14, 62], [108, 10]], armR: [[16, 34], [118, 10]], head: [14, 14, 0] }, 0.5, { face: { ...SCARED, sad: 1, smile: -1, mouth: 0.35, teeth: 1, pupil: 0.58, gaze: [0.3, 0.6] } });
   // (the guard trembles a little once it is up: 2 degrees at 3 Hz, so the held fear is never dead still; at 7 Hz, a back and forth every
   //  two frames at 30 fps, the hands jittered and the flicker check caught them, v4 draft)
   const shake = (t: number, p: Pose): Pose => { const w = env(t, T_SCARED + 0.3, 0.3, 99, 0.1); if (w <= 0) return p; const d = 2 * w * Math.sin(t * 2 * Math.PI * 3);

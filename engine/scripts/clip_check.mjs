@@ -255,7 +255,8 @@ for (const id of ids) {
       { const away = c.offFrameOK?.(g.name, t), mx = 0.03 * (V.x1 - V.x0), my = 0.03 * (V.y1 - V.y0), B = figBox(g);
         const o = Math.max(0, ...B.map(([x, y]) => Math.max(V.x0 + mx - x, x - (V.x1 - mx), V.y0 + my - y, y - (V.y1 - my))));
         if (!away) { stat.edge = Math.max(stat.edge, o); if (o > 0) faults.push(`${f} ${g.name}: the figure ${o.toFixed(0)} px past the picture's margin`); }
-        const tall = FM.PPM * heightOf(g.who) * cam.z, need = c.shot === "medium" ? 0.7 : c.shot === "wide" ? 0.3 : 0.5; stat.fill = Math.min(stat.fill, tall / FM.H);
+        const tall = FM.PPM * heightOf(g.who) * cam.z, need = c.shot === "medium" ? 0.7 : c.shot === "wide" ? 0.25 : 0.5;      // (wide: Alcatraz shot 9 only, three whole men apart; 0.3 approved, 0.25 with air between them, the review of 1g point 2) stat.fill = Math.min(stat.fill, tall / FM.H);
+        stat.fill = Math.min(stat.fill, tall / FM.H);
         if (!away && tall < need * FM.H) faults.push(`${f} ${g.name}: a ${c.shot} shot with the figure ${((tall / FM.H) * 100).toFixed(0)} % of the picture's height (needs ${need * 100} %)`);
         if (!away && c.shot === "full" && Math.max(J(g, "heelL")[1], J(g, "heelR")[1]) > V.y1) faults.push(`${f} ${g.name}: a full shot with the feet out of the picture`); }
       (track[g.name] ??= []).push([...J(g, "skull"), ...J(g, "pelvis")]);

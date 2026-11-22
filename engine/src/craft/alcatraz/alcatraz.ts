@@ -210,16 +210,18 @@ const s05 = (): Shot => propShot("a05", "5 Ventilen", 3.7, (g, t) => {
   const off = smooth((t - 2.6) / 1.1) * 0.45;      // (v1g: pulled out slowly, a little way, so no slat steps more than about 12 px a frame)
   rect(g, 300, 660, 480, 360, "#15171c"); line(g, [[290, 650], [790, 650], [790, 1030], [290, 1030], [290, 650]], 5, "#5f5d58");
   rect(g, 240, 1150, 600, 26, "#6f6d68", OL * 0.6);      // the ledge under the vent, where the dust settles
-  g.save(); g.translate(540 + off * 260, 840 + off * 120); g.rotate(off * 0.35); grill(g, -240, -180, 480, 360); g.restore();
+  g.save(); g.translate(540 + off * 260, 840 - off * 170); g.rotate(-off * 0.3);      // (v1h: up and to the right, away from the tool below it: swung out over the tool, the tool went through it, the review of 1g point 1)
+  grill(g, -240, -180, 480, 360); g.restore();
   // (v1g: short slow strokes, 110 px in 1 s, and the dust drifting down slowly: the fast strokes and falling grains stepped too far a frame)
   const tipAt = (tt: number) => { const k = Math.min(tt, 2.6) % 2, u = k < 1 ? smooth(k) : smooth(2 - k); return lerp(480, 590, u); };
-  for (let k = 0; k < 30; k++) { const tk = 0.1 + k * 0.085; if (tk > 2.6 || tk > t) continue; const x0 = tipAt(tk) + ((k * 37) % 24) - 12, age = t - tk, y = Math.min(1144, 1028 + age * 110); ell(g, x0, y, 7, 6, "#d9d2c0", 0); }
+  for (let k = 0; k < 30; k++) { const tk = 0.1 + k * 0.085; if (tk > 2.6 || tk > t) continue; const x0 = tipAt(tk) - 18 - ((k * 37) % 16),      // (v1h: left of the tip, so no grain falls along the shaft, the review of 1g point 7)
+  age = t - tk, y = Math.min(1144, 1028 + age * 110); ell(g, x0, y, 7, 6, "#d9d2c0", 0); }
   // (v1g: the tool hand stays where it stopped, holding the tool, to the cut: leaving through the edge it had to move too fast. PLANT.cut: the
   //  check's planted fault, the hand gone in a frame)
   const leave = PLANT.cut && t >= 2.6 ? 1 : 0, tx = tipAt(t), ty = 1020;      // (PLANT.cut: the check's planted fault, the hand gone in a frame)
   if (leave < 1) { const H: HandSpec = { id: "tool", x: tx + 120, y: ty + 160, ang: -2.3, s: 1.1, sleeve: INMATE_SLEEVE, curl: 1 };
     handBack(g, H); g.save(); g.translate(tx, ty); g.rotate(-2.3 + Math.PI); rrect(g, -6, -8, 190, 16, 6, "#b9bec6", OL * 0.7); g.restore(); handFingers(g, H); }
-  { const cx = 780 + off * 260, cy = 660 + off * 120; const S2: HandSpec = { id: "steady", x: cx + 20, y: cy - 28, ang: 2.75, s: 1.0, sleeve: INMATE_SLEEVE, curl: 0.5, thumb: 0.2 }; handBack(g, S2); handFingers(g, S2); }
+  { const cx = 780 + off * 230, cy = 660 - off * 230; const S2: HandSpec = { id: "steady", x: cx + 20, y: cy - 28, ang: 2.75, s: 1.0, sleeve: INMATE_SLEEVE, curl: 0.5, thumb: 0.2 }; handBack(g, S2); handFingers(g, S2); }
 }, [...[0.1, 1.1, 2.1].map((t) => ({ t, k: "scratch", g: 0.9 })), { t: 2.7, k: "thunk", g: 0.8 }], { cx: 570, cy: 880, z: 1.8 });
 
 // 6  "They turned prison raincoats into a raft": close on two raincoats' edges laid over each other; one hand holds them flat, the other pulls a
@@ -281,13 +283,15 @@ const ROOF = FM.GY;
 const s09 = (): Shot => {
   const seconds = 1.6, cast: Cast[] = [];
   // (v1c, the automation session: they stand still, crouched, while the light sweeps over them; no walking, so no walking on the spot)
-  for (let i = 0; i < 3; i++) { const m = figure("sir", -0.55 + i * 0.52, 90, 0.2); m.stand(3);
+  for (let i = 0; i < 3; i++) { const m = figure("sir", -0.66 + i * 0.66, 90, 0.2);      // (v1h: 0.62 apart, so no head covers the man before's brim or shoulder, the review of 1g point 2)
+  m.stand(3);
     ease(m, -1, { lean: 26, head: [0, 10, 0] }, 0.01, { face: { pupil: 1, gaze: [0.5, -0.2] } }); // (v1g: three different men, caps and hair and skin of their own: they were clones, the review of STOPP 1c point 8)
     const look: Look = { ...MOON, col: { ...MOON.col!, ...[{}, { cap: "#4a3a2c", skin: "#c9ab9c", hair: "#5a3a24" }, { cap: "#3b4a40", skin: "#e2cbbd", hair: "#8a6a40" }][i] }, band: ["#262c3a", "#4a3a2c", "#3b4a40"][i] };
     cast.push({ name: `man${i}`, m, who: "sir", look, seed: 20 + i, armWipe: false, hands: { L: [[0, "fist"]], R: [[0, "fist"]] } }); }
   // (the camera follows the group's middle, so the three stay whole and apart in a frame a third of whose height they fill)
   // (v1g: the camera lower, the men in the picture's lower part and the sky with the searchlight above: 45 % of the picture was empty roof)
-  const cf = fitCam(cast, seconds, 1.2), c0 = { ...cf, cy: cf.cy + 260 }, camAt = (t: number) => ({ ...c0 }); const cam = c0; void castAt;
+  const cf = fitCam(cast, seconds, 1.2), c0 = { ...cf, cy: cf.cy - 330 },      // (v1h: the view up, so the men stand low in the picture: +260 had moved them up and left the lower half empty roof)
+  camAt = (t: number) => ({ ...c0 }); const cam = c0; void castAt;
   return { id: "a09", title: "9 Taket", seconds, cast, events: {}, shot: "wide", camera: camAt,
     ownBg: (g, t) => { const cam = camAt(t); fillAll(g, "#121a33"); const mx = cam.cx + 260, my = ROOF - 900; ell(g, mx, my, 60, 60, "#f4f0d6", OL * 0.6); g.save(); g.globalCompositeOperation = "lighter"; glow(g, mx, my, 360, "rgba(170,190,255,A)", 0.3);
       // the searchlight: from a tower off the left edge, a bright beam sweeping across the sky above their heads and passing them
@@ -325,14 +329,15 @@ const s10 = (): Shot => propShot("a10", "10 Röret", 1.5, (g, t) => {
 // 11 down at the water: the raft at the rocks with the three of them sitting in it (shoulders and heads, apart); the front man's hand pushes off
 //    the rock, and the raft glides out over the waves as one stiff thing (v1c: heads overlapping and sitting straight on the raft, and no one
 //    pushing off, the review of STOPP 1b point 7)
-const manInRaft = (g: G, x: number, y: number) => {
+const RAFT_MEN = [{ cap: "#262c3a", skin: "#d9c2b6" }, { cap: "#4a3a2c", skin: "#c9ab9c" }, { cap: "#3b4a40", skin: "#e2cbbd" }];      // (v1h: the roof's three men, the review of 1g point 6)
+const manInRaft = (g: G, x: number, y: number, i = 0) => { const lk = RAFT_MEN[i];
   rrect(g, x - 50, y - 6, 100, 80, 28, MOON.col!.coat);
-  ell(g, x, y - 58, 52, 54, MOON.col!.skin); poly(g, [[x - 54, y - 66], [x - 50, y - 102], [x - 18, y - 118], [x + 26, y - 116], [x + 54, y - 96], [x + 56, y - 68]], MOON.col!.cap, OL * 0.9);
+  ell(g, x, y - 58, 52, 54, lk.skin); poly(g, [[x - 54, y - 66], [x - 50, y - 102], [x - 18, y - 118], [x + 26, y - 116], [x + 54, y - 96], [x + 56, y - 68]], lk.cap, OL * 0.9);
   for (const sx of [-18, 18]) { ell(g, x + sx, y - 56, 11, 13, "#ffffff", OL * 0.6); ell(g, x + sx + 3, y - 54, 5, 6, INK, 0); }
   ell(g, x + 2, y - 34, 8, 6, MOON.col!.nose, OL * 0.5); };
 const raft = (g: G, x: number, y: number, s: number, rot: number) => {
   g.save(); g.translate(x, y); g.rotate(rot); g.scale(s, s);
-  for (let i = 0; i < 3; i++) manInRaft(g, -140 + i * 140, -92);      // (v1g: higher, so their shoulders show above the rim, the review of STOPP 1c point 5)
+  for (let i = 0; i < 3; i++) manInRaft(g, -140 + i * 140, -92, i);      // (v1g: higher, so their shoulders show above the rim, the review of STOPP 1c point 5)
   rrect(g, -230, -40, 460, 90, 44, "#b8a65e"); for (const xx of [-120, 0, 120]) line(g, [[xx, -36], [xx, 46]], OL * 0.5, "#8f7f42"); line(g, [[-200, 4], [200, 4]], OL * 0.5, "#8f7f42");
   g.restore(); };
 const waves = (g: G, t: number, y0: number, col = "#16233f") => { fillAll(g, "#0b1226"); rect(g, -100, y0, 1300, 2000, col, 0);
@@ -383,7 +388,10 @@ const s14 = (): Shot => {
   const cam = fitCam(cast, seconds, 1.75);
   return { id: "a14", title: "14 Vakten blir rädd", seconds, cast, events: {}, shot: "full", camera: () => cam,
     ownBg: (g, t) => { fillAll(g, "#55606f"); rect(g, cam.cx - 900, FM.GY - FM.LINE / 2, 1800, 600, "#3b4250", 0); line(g, [[cam.cx - 900, FM.GY - FM.LINE / 2], [cam.cx + 900, FM.GY - FM.LINE / 2]], 12);
-      bars(g, cam.cx - 520, cam.cx + 520, FM.GY - 1100, FM.GY - FM.LINE / 2, 160, "#6c7584"); },
+      // (v1h: the bars stand 40 px further back on the floor, so the guard stands in front of them: his soles were on the line where the bars met
+      //  the floor, the review of 1g point 4)
+      rect(g, cam.cx - 900, FM.GY - FM.LINE / 2 - 40, 1800, 40, "#454c5a", 0);
+      bars(g, cam.cx - 520, cam.cx + 520, FM.GY - 1100, FM.GY - FM.LINE / 2 - 40, 160, "#6c7584"); },
     front: (g, t) => { const on = 0.5 + 0.5 * Math.sin(t * Math.PI * 2 * 1.6); g.save(); g.globalCompositeOperation = "lighter"; glow(g, cam.cx + 280, FM.GY - 980, 900, "rgba(255,40,40,A)", 0.45 * on); g.restore(); } } as Shot; };
 
 // 15 hands put up three wanted posters on a board: the third comes in from the right with the hand holding its left edge (the hand first, in the
@@ -403,15 +411,16 @@ const s15 = (): Shot => propShot("a15", "15 Affischerna", 2.0, (g, t) => {
   //  STOPP 1c point 4)
   fillAll(g, "#a0784f"); for (let i = 0; i < 60; i++) ell(g, (i * 211) % 1080, (i * 433) % 1920, 6, 6, "#8d6a45", 0);
   poster(g, 340, 700, -0.05, 0); poster(g, 595, 760, 0.04, 1);
-  const u = smooth(t / 1.25), x = lerp(905, 840, u), y = lerp(728, 720, u);      // (in the picture from the first frame with the hand at it; slid the last bit)
+  const u = smooth(t / 1.0), x = lerp(905, 840, u), y = lerp(728, 720, u);      // (in the picture from the first frame with the hand at it; slid the last bit)
+  const away = smooth((t - 1.1) / 0.85);      // (v1h: after the pin the hand goes out through the right edge, about 11 px a frame, so the pin shows, the review of 1g point 5)
   if (PLANT.pop) { if (t >= 0.5) { poster(g, 840, 720, -0.03, 2); DRAWN.things.push({ what: "poster 3", at: [840, 720], carried: false, look: "poster" }); } return; }
   const plain = PLANT.swap && u < 1;
   if (PLANT.mirror) { g.save(); g.translate(x, y); g.scale(-1, 1); poster(g, 0, 0, 0.03, 2, false); g.restore(); }      // (PLANT.mirror: the check's planted fault, its print drawn mirrored)
   else poster(g, x, y, -0.03, plain ? -1 : 2, false); DRAWN.things.push({ what: "poster 3", at: [x, y], carried: u < 1, look: plain ? "poster, blank" : "poster" });
   // (the hand holds the poster's top right corner, away from the printed face; when the poster reaches the board the thumb pushes a pin in there)
-  if (t >= 1.3) { ell(g, x + 100, y - 146, 11, 11, "#c0392b", OL * 0.5); DRAWN.things.push({ what: "pin", at: [x + 100, y - 146], carried: false, look: "pin" }); }
-  if (!PLANT.nohand) { const H: HandSpec = { id: "poster", x: x + 150, y: y - 150, ang: Math.PI * 0.92, s: 0.95, sleeve: GUARD_SLEEVE, curl: 0.5, thumb: 0.9 }; handBack(g, H); handFingers(g, H); }
-}, [{ t: 1.3, k: "tap", g: 1.0 }, { t: 0.2, k: "paper", g: 0.8 }], { cx: 600, cy: 760, z: 1.25 });
+  if (t >= 1.05) { ell(g, x + 100, y - 146, 12, 12, "#c0392b", OL * 0.5); DRAWN.things.push({ what: "pin", at: [x + 100, y - 146], carried: false, look: "pin" }); }
+  if (!PLANT.nohand && away < 1) { const H: HandSpec = { id: "poster", x: x + 150 + away * 200, y: y - 150 - away * 20, ang: Math.PI * 0.92, s: 0.95, sleeve: GUARD_SLEEVE, curl: 0.5, thumb: 0.9 }; handBack(g, H); handFingers(g, H); }
+}, [{ t: 1.05, k: "tap", g: 1.0 }, { t: 0.2, k: "paper", g: 0.8 }], { cx: 600, cy: 760, z: 1.25 });
 
 // 16 the empty bay in the morning light: the camera glides over the water toward the city, and the wind carries a poster off the city's shore
 //    across the sky, small by the city and growing as it comes toward us, its blank back showing when it turns
@@ -420,7 +429,8 @@ const s16 = (): Shot => propShot("a16", "16 Bukten", 2.1, (g, t) => {
   const dx = -smooth(t / 2.1) * 120;
   for (let i = 0; i < 14; i++) { const x = 60 + i * 74 + dx * 0.3, h = 60 + ((i * 37) % 90); rect(g, x, 980 - h, 60, h, "#c4a088", OL * 0.5); for (let w = 14; w < h - 10; w += 24) ell(g, x + 30, 980 - h + w, 6, 5, "#f7dcb0", 0); }
   rect(g, -100, 980, 1300, 1000, "#7fa6c2", 0); line(g, [[-100, 980], [1200, 980]], 8);
-  for (let r = 0; r < 8; r++) { const y = 1060 + r * 120; g.beginPath(); for (let x = -40; x <= 1120; x += 20) { const yy = y + Math.sin(x / 70 + t * 1.5 + r) * 7; x === -40 ? g.moveTo(x + dx, yy) : g.lineTo(x + dx, yy); } g.lineWidth = 4; g.strokeStyle = "rgba(255,255,255,0.4)"; g.stroke(); }
+  // (v1h: the waves drawn to past both edges, the review of 1g point 3)
+  for (let r = 0; r < 8; r++) { const y = 1060 + r * 120; g.beginPath(); for (let x = -40; x <= 1320; x += 20) { const yy = y + Math.sin(x / 70 + t * 1.5 + r) * 7; x === -40 ? g.moveTo(x + dx, yy) : g.lineTo(x + dx, yy); } g.lineWidth = 4; g.strokeStyle = "rgba(255,255,255,0.4)"; g.stroke(); }
   // (v1h, the automation session: no poster flying; the bay and the city, the waves moving)
 }, [{ t: 0.1, k: "flap", g: 0.7 }]);
 

@@ -21,7 +21,7 @@ export const paintShot = (g: CanvasRenderingContext2D, c: Shot, t: number) => {
   c.front?.(g, t, figs);
 };
 const paintText = (g: CanvasRenderingContext2D, t: number) => {
-  const tail = FILM_S - TEXT.loopIn, al = t >= TEXT.t0 && t < TEXT.t1 ? 1 : t >= tail ? Math.min(1, (t - tail) / (TEXT.loopIn - 0.12)) : 0;
+  const tail = FILM_S - TEXT.loopIn, al = t >= TEXT.t0 && t < TEXT.t1 ? Math.min(1, (TEXT.t1 - t) / 0.2) : t >= tail ? Math.min(1, (t - tail) / (TEXT.loopIn - 0.12)) : 0;      // (v1h: out over 6 frames at 3.0-3.2 s, the review of 1g point 8)
   if (al <= 0) return;
   g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = al; g.font = "900 80px 'Arial Black', Arial, sans-serif"; g.textAlign = "center"; g.lineJoin = "round";
   TEXT.lines.forEach((l, i) => { const y = 300 + i * 100; g.lineWidth = 18; g.strokeStyle = "#141018"; g.strokeText(l, FM.W / 2, y); g.fillStyle = "#fff4c2"; g.fillText(l, FM.W / 2, y); });

@@ -1,7 +1,13 @@
-arm-short: a04 (75): 5 x "#: a forearm ends inside the picture (its sleeve stops at #, #)" | a05 (162): 62 x "#: a forearm ends inside the picture (its sleeve stops at #, #)" | a06 (173): 73 x "#: a forearm ends inside the picture (its sleeve stops at #, #)" | a07 (40): 0 x "#: a forearm ends inside the picture (its sleeve stops at #, #)" | a08 (42): 2 x "#: a forearm ends inside the picture (its sleeve stops at #, #)" | a13 (36): 6 x "#: a forearm ends inside the picture (its sleeve stops at #, #)" | 
-cloth-drop: a01 (54): 4 x "#: the blanket hangs # px below the top of what it lies on" | a03 (216): 16 x "#: the blanket hangs # px below the top of what it lies on" | a07 (36): 6 x "#: the blanket hangs # px below the top of what it lies on" | a13 (36): 6 x "#: the blanket hangs # px below the top of what it lies on" | a17 (75): 5 x "#: the blanket hangs # px below the top of what it lies on" | 
+hand-jump: a06 (4):  x "#: the hand "coatTop" jumps # px in one frame"; 2 x "#: the hand "coatLow" jumps # px in one frame" | 
+let-go: a08 (22):  x "#: the hand "hatch" jumps # px in one frame"; 17 x "#: the lid moves with no hand at it" | 
+swap: a15 (1):  x "#: the poster # changes its drawing in one frame (poster, blank -> poster)" | 
+pop-out: a05 (1):  x "#: the hand "tool" vanishes inside the picture instead of leaving through its edge" | 
+no-hand: a15 (25): 4 x "#: the poster # moves with no hand at it"; 1 x "#: the pin pops into the picture with no hand at it" | 
+long-arm: a08 (20): 0 x "#: the arm "hatch" shows # hand lengths in the picture (# at most)" | 
+arm-short: a05 (90): 0 x "#: a forearm ends inside the picture (its sleeve stops at #, #)" | a06 (50): 0 x "#: a forearm ends inside the picture (its sleeve stops at #, #)" | a07 (36): 6 x "#: a forearm ends inside the picture (its sleeve stops at #, #)" | a08 (23): 3 x "#: a forearm ends inside the picture (its sleeve stops at #, #)" | a13 (36): 6 x "#: a forearm ends inside the picture (its sleeve stops at #, #)" | 
 cloth-through: a01 (54): 4 x "#: the blanket goes # px down through the front of what it lies on" | a03 (216): 16 x "#: the blanket goes # px down through the front of what it lies on" | a07 (36): 6 x "#: the blanket goes # px down through the front of what it lies on" | a13 (36): 6 x "#: the blanket goes # px down through the front of what it lies on" | a17 (75): 5 x "#: the blanket goes # px down through the front of what it lies on" | 
-pop-in: a06 (3):  x "#: the coat # pops into the picture with no hand at it" | 
-pose-snap: a14 (14):  x "guard: the face's wide jumps # in one frame"; 1 x "guard: the face's mouth jumps # in one frame"; 1 x "gua | 
-mirror-print: a16 (36): 6 x "#: the poster's print is drawn mirrored" | 
+cloth-drop: a01 (54): 4 x "#: the blanket hangs # px below the top of what it lies on" | a03 (216): 16 x "#: the blanket hangs # px below the top of what it lies on" | a07 (36): 6 x "#: the blanket hangs # px below the top of what it lies on" | a13 (36): 6 x "#: the blanket hangs # px below the top of what it lies on" | a17 (75): 5 x "#: the blanket hangs # px below the top of what it lies on" | 
+pop-in: a15 (1):  x "#: the poster # pops into the picture with no hand at it" | 
+pose-snap: a14 (14):  x "guard: the face's wide jumps # in one frame"; 1 x "guard: the face's mouth jumps # in one frame"; 1 x "guard: the fa | 
+mirror-print: a15 (60): 0 x "#: the poster's print is drawn mirrored" | 
 short-bars: a14 (180): 80 x "#: a bar ends # px above the floor, in the air" | 

@@ -8,7 +8,7 @@ import type { Face } from "../designs/common";
 import { GESTURES, upper } from "../stage/gestures";
 import { ease, mt } from "../stage/acting";
 import { play } from "../stage/film";
-import { FM, D, figure, castAt, poseAt, jointPx, thighUnder, reach, px, scaleOf, footY, camFor, fitCam, viewOf, type Clip, type Cast, type Fig, type HS, type Mouth } from "./clipKit";
+import { FM, D, figure, castAt, poseAt, heightOf, jointPx, thighUnder, reach, px, scaleOf, footY, camFor, fitCam, viewOf, type Clip, type Cast, type Fig, type HS, type Mouth } from "./clipKit";
 import MOUTH01 from "./c01-mouth.json";
 
 type G = CanvasRenderingContext2D;
@@ -133,39 +133,41 @@ const c04 = (): Clip => {
 // (the horizon at 1265, so the ship lies under his pipe: at 1200 the pipe's bowl hid its sail)
 // (v6: the horizon at 1450, low, and the ship small and far at the right: he points down and forward under the pipe with a nearly straight
 //  arm, the hand well short of the ship, 150 px or more between; the review of v5 asked for the ship low and the upper arm showing)
-const HORIZON = 1450, SHIP_S = 0.55;      // (smaller: at 1.5 the ship looked near, the review of v3; v5 0.55, far off)
-const PT_HEAD = 25, PT_TIP: [number, number] = [70, 45], PT_REACH = 0.66, PT_BEND = 20;      // (v6: the tip 0.66 of the way to the ship, the arm nearly straight, its elbow about 34 degrees in the picture)      // (v5: the fingertip 70 out and 45 down from his shoulder, the forearm out under the pipe)      // (v4: he faces 25 degrees off the lens, so his left arm is on the ship's side of him)
+// (v7, Jesper's choice b on the review of v6: a wider shot, the figure about 55 % of the height (DAILY-RULES 50-80 %), a larger ship on the
+//  horizon at his chest's height, and he points straight out at it, the elbow a little bent: in the 70 % medium shot the ship had to lie low
+//  and near the frame's edge, and the point went down under the pipe)
+const HORIZON = 1265, SHIP_S = 1.4, SHIP_DX = 355, FILL05 = 0.55;      // (v6: 1450 at his knees, 0.55; v5 0.55; at 1.5 below the horizon in v3 it looked near)
+const PT_HEAD = 25, PT_REACH = 0.93, PT_BEND = 22;      // (v7: the fingertip 0.93 of the arm's length out from the shoulder toward the ship, the arm nearly straight)      // (v6: the tip 0.66 of the way to the ship, the elbow about 34 degrees in the picture)      // (v4: he faces 25 degrees off the lens, so his left arm is on the ship's side of him)
 const shoulderPx = (x: number, p: Pose, heading: number, side: "L" | "R" = "R"): [number, number] => { const sk = solve(D.props("sir"), p, heading), q = sk.j[`sh${side}`] as unknown as number[], s = scaleOf("sir"); return [x + q[0] * s, footY("sir") + q[1] * s]; };
 const c05 = (): Clip => {
   // (the ship on the horizon line, its hull's foot on it: lower in the water, near him, it read as a toy boat)
-  const sx = px(0) - 90, SHIP: [number, number] = [sx + 231, HORIZON - 20 * SHIP_S], sir = figure("sir", (sx - FM.W / 2) / FM.PPM, PT_HEAD); sir.stand(6);
+  const sx = px(0) - 90, SHIP: [number, number] = [sx + SHIP_DX, HORIZON - 20 * SHIP_S], sir = figure("sir", (sx - FM.W / 2) / FM.PPM, PT_HEAD); sir.stand(6);
   ease(sir, -1, { head: [6, 0, 0] }, 0.01, { face: { pupil: 1, smile: 0.2, gaze: [0.1, 0.05] } });
   // (the eyes go first, down to the ship below his eye line: they looked up and right while the ship lay 35 degrees below, the review of v2)
   // (v5: he looks toward us first; the eyes go to the ship just before the arm comes up and stay on it through the point, and come back to us
   //  after: the pupils stood in one place before, during and after the point, the review of v4)
-  ease(sir, 0.55, { head: [18, 10, 0] }, 0.3, { face: { pupil: 1, smile: 0.5, brow: 0.7, gaze: [1, 0.8] } });      // (v6: the ship low at the right: the pupils go to the eyes' lower right, from the middle where he looked at us)
+  ease(sir, 0.55, { head: [18, 6, 0] }, 0.3, { face: { pupil: 1, smile: 0.5, brow: 0.7, gaze: [1, 0.45] } });      // (v7: the ship at his chest's height at the right: the pupils to the eyes' right, a little down)      // (v6: the ship low at the right: the pupils to the eyes' lower right, from the middle where he looked at us)
   ease(sir, 2.85, { head: [6, 0, 0] }, 0.4, { face: { pupil: 1, smile: 0.4, gaze: [0.1, 0.05] } });
-  const UP = 0.95, HOLD0 = 1.35, HOLD1 = 2.1, DOWN = 2.6, P_ON = 1.28, P_OFF = 2.28;
+  const UP = 0.95, HOLD0 = 1.35, HOLD1 = 2.1, DOWN = 2.6, P_ON = 1.28, P_OFF = 2.2;      // (v7: the finger closes as the arm starts down: open to 2.28 it pointed at the water on the way down)
   // (v4: the arm found once, from his pose as the point is held, and kept: found anew each frame from the breathing pose, the search
   //  swapped between two near-equal arms and the pointing arm jumped 11 px and back on every other frame of the hold, v4 draft)
   let held: Pose["armL"] | null = null;
   const heldArm = () => { if (held) return held; const { pose: p, heading } = poseAt({ name: "sir", m: sir, who: "sir", seed: 7 }, HOLD0);
     // (v4: the hand stops well short of the ship: reached 0.78 of the arm with the left arm, the finger lay on the ship, poking a toy boat)
-    const P = D.props("sir"), s = scaleOf("sir"), reachLen = (P.upper + P.fore + P.hand * 0.6) * s * 0.5;      // (v5 0.5, the arm as in v4 otherwise)
+    const P = D.props("sir"), s = scaleOf("sir"), armLen = (P.upper + P.fore + P.hand) * s;
     const sh = shoulderPx(sx, p, heading, "L"), dx = SHIP[0] - sh[0], dy = SHIP[1] - sh[1], l = Math.hypot(dx, dy);
     // (the elbow bent 35 degrees or more in the picture: reached straight it showed no elbow, the review of v2)
     // (v4: he points with his left arm, on the ship's side of his body, the elbow out from it: the right arm, pointing across him in
     //  profile, laid its upper arm over his chest as a lump, Jesper on v3: "överarmen får inte bli en klump framför bröstet")
-    // (v6: a nearly straight arm down and forward toward the ship low at the right, the upper arm out from the shoulder past the coat's outline,
-    //  the elbow a little bent: the v5 point with the upper arm down inside the coat read as a forearm coming out of the chest, the review of v5)
-    void dx; void dy; void l; void reachLen;
-    held = reach("sir", sx, p, heading, "L", [sh[0] + (dx / l) * PT_REACH * l, sh[1] + (dy / l) * PT_REACH * l], true, { bend: PT_BEND, elbowOut: sh[0] + 20 }).armL; return held; };
+    // (v7: straight out from the shoulder toward the ship at his chest's height, the elbow a little bent, the upper arm out past the coat)
+    held = reach("sir", sx, p, heading, "L", [sh[0] + (dx / l) * PT_REACH * armLen, sh[1] + (dy / l) * PT_REACH * armLen], true, { bend: PT_BEND, elbowOut: sh[0] + 20 }).armL; return held; };
   // (v5: the easy point rises straight from his side to the forearm out, the hand staying near him and well short of the ship)
   const aim = (t: number, p: Pose): Pose => { const w = env(t, UP, HOLD0 - UP, HOLD1, DOWN - HOLD1); return w <= 0 ? p : { ...p, armL: lerpArm(p.armL, heldArm(), w) }; };
   // (blink seed 7: he blinks at 0.47 s and 3.37 s, never during the look and the point; it fell in the point, the review of v3)
   // (he stands turned, not turning: no far-arm sweep, the order of v4)
   const cast: Cast[] = [{ name: "sir", m: sir, who: "sir", seed: 7, armWipe: false, pose: aim, hands: { R: [[0, "relaxed"]], L: [[0, "relaxed"], [P_ON, "point"], [P_OFF, "fist"]] } }];
-  const cam = fitCam(cast, 4.0, 2.4, [[SHIP[0] + 30 * SHIP_S + 20, SHIP[1] - 46 * SHIP_S], [SHIP[0] - 30 * SHIP_S, SHIP[1] + 22 * SHIP_S]]);
+  // (v7: the zoom set so that he fills FILL05 of the height, a full shot with his feet and the quay in it; the ship whole at the right)
+  const cam = fitCam(cast, 4.0, (FILL05 * FM.H) / (FM.PPM * heightOf("sir")), [[SHIP[0] + 34 * SHIP_S + 20, SHIP[1] - 46 * SHIP_S], [SHIP[0] - 34 * SHIP_S, SHIP[1] + 22 * SHIP_S]]);
   const harbour = (g: G) => {
     rect(g, -40, -40, 1160, 2000, "#9ad3e6", 0); rect(g, -40, HORIZON, 1160, LINE_TOP - HORIZON + 6, "#2f7fb3", 0);
     g.beginPath(); g.moveTo(-40, HORIZON); g.lineTo(1120, HORIZON); g.lineWidth = 6; g.strokeStyle = INK; g.stroke();
@@ -175,7 +177,7 @@ const c05 = (): Clip => {
     shape(g, [[2, -38], [24, 4], [2, 4]], "#fffaf0", 3); shape(g, [[-2, -30], [-19, 4], [-2, 4]], "#fffaf0", 3);
     g.beginPath(); g.moveTo(-34, 22); g.quadraticCurveTo(0, 28, 34, 22); g.lineWidth = 3; g.strokeStyle = "#e6f2f8"; g.stroke(); g.restore();
     rect(g, -40, LINE_TOP, 1160, 480, "#b07a46", 0); g.beginPath(); g.moveTo(-40, FM.GY); g.lineTo(1120, FM.GY); g.lineWidth = 12; g.strokeStyle = INK; g.stroke(); };
-  return { id: "c05", title: "05 Peka", seconds: 4.0, events: { UP, HOLD0, HOLD1, DOWN, P_ON, P_OFF }, ownBg: harbour, shot: "medium", camera: () => cam, cast,
+  return { id: "c05", title: "05 Peka", seconds: 4.0, events: { UP, HOLD0, HOLD1, DOWN, P_ON, P_OFF }, ownBg: harbour, shot: "full", camera: () => cam, cast,
     points: [{ who: "sir", t0: HOLD0, t1: HOLD1, side: "L", target: SHIP, horizon: SHIP[1], arm: [UP, DOWN], box: [SHIP[0] - 34 * SHIP_S, SHIP[1] - 40 * SHIP_S, SHIP[0] + 34 * SHIP_S, SHIP[1] + 28 * SHIP_S] }] };
 };
 

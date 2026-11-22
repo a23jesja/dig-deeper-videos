@@ -1,0 +1,4 @@
+first frame: the first sound at 0.000 s (frame 1), the peak in frame 1 0.36 -> OK
+text: THE GUARD'S TORCH / HIT THE PILLOW (6 words), 0.0-3.2 s, 1.60 s per line -> OK
+seconds 0-10: shots start at [0, 1.8, 3.4, 5.8, 8.3], lasting [1.8, 1.6, 2.4, 2.5, 3.7] s -> OK
+the loop: 0.0 % of the picture changes from the last frame to the first; inside the film 95 % of frame changes are 3.4 % or less, the largest cut 95.5 %

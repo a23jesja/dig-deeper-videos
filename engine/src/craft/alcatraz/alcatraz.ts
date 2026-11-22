@@ -181,7 +181,7 @@ const s03 = (): Shot => propShot("a03", "3 Tre celler", 2.4, (g, t) => {
   fillAll(g, "#262d3e");
   for (let i = 0; i < 3; i++) { const x = 40 + i * 340;
     rect(g, x, 640, 320, 760, "#2f384c", OL);
-    rect(g, x + 20, 1240, 280, 30, "#5b4a3c"); for (const lx of [x + 30, x + 270]) { DRAWN.uprights.push({ what: "bed leg", foot: 1400, floor: 1400, x: lx }); rect(g, lx, 1270, 16, 130, "#5b4a3c"); }
+    rect(g, x + 20, 1240, 280, 30, "#5b4a3c"); for (const lx of [x + 30, x + 270]) { DRAWN.uprights.push({ what: "bed leg", foot: 1365, floor: 1365, x: lx }); rect(g, lx, 1270, 16, 95, "#5b4a3c"); }      // (v3: the legs end at 1365, behind the bars' feet at 1400, the review of STOPP 2 point 4)
     pillow(g, x + 90, 1222, 0.42); blanketOn(g, x + 130, 170, 1196, 1240); fakeHead(g, x + 90, 1190, 0.36, 0, ["#5a3a24", "#2e2a26", "#8a5a30"][i]); }
   const lx = lerp(160, 900, smooth(t / 2.4)); g.save(); g.globalCompositeOperation = "lighter"; glow(g, lx, 1200, 230, "rgba(255,244,190,A)", 0.45); g.restore();
   for (let i = 0; i < 3; i++) { const x = 40 + i * 340; for (let bb = 0; bb <= 3; bb++) { DRAWN.uprights.push({ what: "bar", foot: 1400, floor: 1400, x: x + bb * 106 + 2 }); rect(g, x + bb * 106 - 4, -2000, 12, 3400, "#5d6675", OL * 0.6); } rect(g, x - 6, 700, 332, 14, "#5d6675", OL * 0.6); }
@@ -194,6 +194,7 @@ const s03 = (): Shot => propShot("a03", "3 Tre celler", 2.4, (g, t) => {
 const s04 = (): Shot => propShot("a04", "4 Gallret i ljuset", 2.5, (g, t) => {
   cellWall(g, "#38425a"); for (let i = 0; i < 26; i++) ell(g, (i * 263) % 1080, (i * 571) % 1920, 6, 4, "#323b52", 0);
   grill(g, 330, 760, 420, 320); line(g, [[320, 750], [760, 750], [760, 1090], [320, 1090], [320, 750]], 5, "#2a3044");
+  rect(g, 277.5, 1188.5, 525, 23, "#6f6d68", OL * 0.6);      // (v3: the ledge under the vent where shot 5 shows it on the screen (y 1497, x 15-1065), so nothing moves at the cut)
   // the light: in from the left, along the wall, a stop on the grill (0.9-1.5 s), on to the right
   // (v1g: closer, the grill large; the light slower, in from 240 and out to 860, a soft glow)
   const x = t < 0.9 ? lerp(240, 540, smooth(t / 0.9)) : t < 1.5 ? 540 : lerp(540, 860, smooth((t - 1.5) / 1.0)), y = 920 + Math.sin(t * 1.7) * 10;
@@ -214,15 +215,16 @@ const s05 = (): Shot => propShot("a05", "5 Ventilen", 3.7, (g, t) => {
   grill(g, -240, -180, 480, 360); g.restore();
   // (v1g: short slow strokes, 110 px in 1 s, and the dust drifting down slowly: the fast strokes and falling grains stepped too far a frame)
   const tipAt = (tt: number) => { const k = Math.min(tt, 2.6) % 2, u = k < 1 ? smooth(k) : smooth(2 - k); return lerp(480, 590, u); };
-  for (let k = 0; k < 30; k++) { const tk = 0.1 + k * 0.085; if (tk > 2.6 || tk > t) continue; const x0 = tipAt(tk) - 18 - ((k * 37) % 16),      // (v1h: left of the tip, so no grain falls along the shaft, the review of 1g point 7)
-  age = t - tk, y = Math.min(1144, 1028 + age * 110); ell(g, x0, y, 7, 6, "#d9d2c0", 0); }
+  // (v3: each grain born at the tip, one every 0.3 s, falling straight down on its own and lying on the ledge: born 30-80 px left of the tip they
+  //  made a curved chain like a rope, the review of STOPP 2 point 5)
+  for (let k = 0; k < 9; k++) { const tk = 0.2 + k * 0.3; if (tk > 2.6 || tk > t) continue; const x0 = tipAt(tk) - 6, age = t - tk, y = Math.min(1144, 1028 + age * 110); ell(g, x0, y, 7, 6, "#d9d2c0", 0); }
   // (v1g: the tool hand stays where it stopped, holding the tool, to the cut: leaving through the edge it had to move too fast. PLANT.cut: the
   //  check's planted fault, the hand gone in a frame)
   const leave = PLANT.cut && t >= 2.6 ? 1 : 0, tx = tipAt(t), ty = 1020;      // (PLANT.cut: the check's planted fault, the hand gone in a frame)
   if (leave < 1) { const H: HandSpec = { id: "tool", x: tx + 120, y: ty + 160, ang: -2.3, s: 1.1, sleeve: INMATE_SLEEVE, curl: 1 };
     handBack(g, H); g.save(); g.translate(tx, ty); g.rotate(-2.3 + Math.PI); rrect(g, -6, -8, 190, 16, 6, "#b9bec6", OL * 0.7); g.restore(); handFingers(g, H); }
   { const cx = 780 + off * 230, cy = 660 - off * 230; const S2: HandSpec = { id: "steady", x: cx + 20, y: cy - 28, ang: 2.75, s: 1.0, sleeve: INMATE_SLEEVE, curl: 0.5, thumb: 0.2 }; handBack(g, S2); handFingers(g, S2); }
-}, [...[0.1, 1.1, 2.1].map((t) => ({ t, k: "scratch", g: 0.9 })), { t: 2.7, k: "thunk", g: 0.8 }], { cx: 570, cy: 880, z: 1.8 });
+}, [...[0.1, 1.1, 2.1].map((t) => ({ t, k: "scratch", g: 0.9 })), { t: 2.7, k: "thunk", g: 0.8 }], { cx: 540, cy: 843, z: 1.75 });      // (v3: its grill on the screen exactly where shot 4's is, x 120-960 and y 640-1280: the grill jumped 60 px left and 80 up at the cut, the review of STOPP 2 point 3)
 
 // 6  "They turned prison raincoats into a raft": close on two raincoats' edges laid over each other; one hand holds them flat, the other pulls a
 //    needle and thread through, stitch by stitch along the seam; the stitches stay (v1c, the automation session: hands sewing in a close-up,
@@ -367,7 +369,8 @@ const s12 = (): Shot => {
 const s13 = (): Shot => propShot("a13", "13 Filten", 1.2, (g, t) => {
   fillAll(g, "#c98a5a"); g.save(); g.globalCompositeOperation = "lighter"; glow(g, 700, 600, 700, "rgba(255,190,120,A)", 0.45); g.restore();
   for (let i = 0; i < 5; i++) poly(g, [[600 + i * 70, 0], [640 + i * 70, 0], [240 + i * 70, 1920], [200 + i * 70, 1920]], "rgba(255,230,180,0.18)", 0);
-  rect(g, 60, 1180, 960, 70, "#6b5442"); for (const lx of [80, 990]) { DRAWN.uprights.push({ what: "bed leg", foot: 2100, floor: 2100, x: lx }); rect(g, lx, 1250, 26, 850, "#6b5442"); }
+  // (v3: the legs in the picture, down out through its lower edge: the board floated with its legs outside the picture, the review of STOPP 2 point 1)
+  rect(g, 60, 1180, 960, 70, "#6b5442"); for (const lx of [175, 640]) { DRAWN.uprights.push({ what: "bed leg", foot: 2100, floor: 2100, x: lx }); rect(g, lx, 1250, 30, 850, "#6b5442"); }
   pillow(g, 360, 1140, 1.2); fakeHead(g, 360, 1070, 0.95, 1);
   // (v1g: the hand holds the blanket's folded edge from the first frame and folds it back 150 px over 1.15 s, about 12 px a frame; the fold is
   //  there all the time, never drawn in a frame)
@@ -418,8 +421,10 @@ const s15 = (): Shot => propShot("a15", "15 Affischerna", 2.0, (g, t) => {
   if (PLANT.mirror) { g.save(); g.translate(x, y); g.scale(-1, 1); poster(g, 0, 0, 0.03, 2, false); g.restore(); }      // (PLANT.mirror: the check's planted fault, its print drawn mirrored)
   else poster(g, x, y, -0.03, plain ? -1 : 2, false); DRAWN.things.push({ what: "poster 3", at: [x, y], carried: u < 1, look: plain ? "poster, blank" : "poster" });
   // (the hand holds the poster's top right corner, away from the printed face; when the poster reaches the board the thumb pushes a pin in there)
-  if (t >= 1.05) { ell(g, x + 100, y - 146, 12, 12, "#c0392b", OL * 0.5); DRAWN.things.push({ what: "pin", at: [x + 100, y - 146], carried: false, look: "pin" }); }
-  if (!PLANT.nohand && away < 1) { const H: HandSpec = { id: "poster", x: x + 150 + away * 200, y: y - 150 - away * 20, ang: Math.PI * 0.92, s: 0.95, sleeve: GUARD_SLEEVE, curl: 0.5, thumb: 0.9 }; handBack(g, H); handFingers(g, H); }
+  // (v3: the pin at the top middle as on the other two, the hand holding the poster there from the right: a poster hanging straight from a corner
+  //  pin is impossible on an upright board, the review of STOPP 2 point 2)
+  if (t >= 1.05) { ell(g, x, y - 150, 12, 12, "#c0392b", OL * 0.5); DRAWN.things.push({ what: "pin", at: [x, y - 150], carried: false, look: "pin" }); }
+  if (!PLANT.nohand && away < 1) { const H: HandSpec = { id: "poster", x: x + 62 + away * 260, y: y - 150, ang: Math.PI, s: 0.95, sleeve: GUARD_SLEEVE, curl: 0.5, thumb: 0.9 }; handBack(g, H); handFingers(g, H); }
 }, [{ t: 1.05, k: "tap", g: 1.0 }, { t: 0.2, k: "paper", g: 0.8 }], { cx: 600, cy: 760, z: 1.25 });
 
 // 16 the empty bay in the morning light: the camera glides over the water toward the city, and the wind carries a poster off the city's shore

@@ -7,7 +7,7 @@ set -e
 cd "$(dirname "$0")/.."
 V=${V:?set V, e.g. V=v1}; OUT=../leverans/alcatraz; mkdir -p "$OUT" out/craft/alcatraz
 F="$OUT/three-men-vanished-from-alcatraz-$V.mp4"; P="$OUT/three-men-vanished-from-alcatraz-$V-telefon.mp4"
-test ! -e "$F" || { echo "exists: $F (a new V for a new version)"; exit 1; }
+test ! -e "$F" || test -n "$REPLACE_UNSENT" || { echo "exists: $F (a new V for a new version; REPLACE_UNSENT=1 only for a version never sent)"; exit 1; }
 export REMOTION_TMP="C:/Users/sweje/AppData/Local/Temp/remotion-tmp"
 BIG=out/craft/alcatraz/render-2x-$V.mp4
 MEM_START=8 MEM_LOG=out/craft/alcatraz/render-$V.log bash scripts/mem_guard.sh npx remotion render src/index.ts Alcatraz "$BIG" --scale 2 --gl=angle --codec h264 --crf 10 --x264-preset veryfast --concurrency 1 --muted --browser-executable "C:/Program Files/Google/Chrome/Application/chrome.exe" < /dev/null > out/craft/alcatraz/render-$V.out 2>&1 || { tail -5 out/craft/alcatraz/render-$V.out; exit 1; }

@@ -21,9 +21,11 @@ export const paintShot = (g: CanvasRenderingContext2D, c: Shot, t: number) => {
   c.front?.(g, t, figs);
 };
 const paintText = (g: CanvasRenderingContext2D, t: number) => {
-  if (t < TEXT.t0 || t >= TEXT.t1) return;
-  g.setTransform(1, 0, 0, 1, 0, 0); g.font = "900 80px 'Arial Black', Arial, sans-serif"; g.textAlign = "center"; g.lineJoin = "round";
+  const tail = FILM_S - TEXT.loopIn, al = t >= TEXT.t0 && t < TEXT.t1 ? 1 : t >= tail ? Math.min(1, (t - tail) / (TEXT.loopIn - 0.12)) : 0;
+  if (al <= 0) return;
+  g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = al; g.font = "900 80px 'Arial Black', Arial, sans-serif"; g.textAlign = "center"; g.lineJoin = "round";
   TEXT.lines.forEach((l, i) => { const y = 300 + i * 100; g.lineWidth = 18; g.strokeStyle = "#141018"; g.strokeText(l, FM.W / 2, y); g.fillStyle = "#fff4c2"; g.fillText(l, FM.W / 2, y); });
+  g.globalAlpha = 1;
 };
 
 export const AlcatrazFilm: React.FC<{ opening?: string; seconds?: number; muted?: boolean }> = ({ opening = "A", muted = false }) => {

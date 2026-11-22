@@ -92,7 +92,7 @@ const fakeHead = (g: G, x: number, y: number, s: number, light = 0, hair = "#5a3
 const pillow = (g: G, x: number, y: number, s: number) => rrect(g, x - 150 * s, y - 60 * s, 300 * s, 120 * s, 50 * s, "#eef0f2");
 /** a blanket lying on a bed whose top is at support: registered for the check that a cloth never hangs below what holds it */
 /** the check's planted fault: drop > 0 lets a blanket hang that far below its bed's top (the first draft's shot 13) */
-export const PLANT = { drop: 0, hang: 0, pop: false, mirror: false, shortBars: false, snap: false, cut: false, nohand: false, swap: false, noScenery: false, longArm: false };
+export const PLANT = { drop: 0, hang: 0, pop: false, mirror: false, shortBars: false, snap: false, cut: false, nohand: false, swap: false, noScenery: false, longArm: false, jumpy: false, release: false };
 /** (v1b: a blanket lies on the bed and folds over its front edge by at most 30 px; hanging 220 px down it went through the bed's board, the
  *  independent review of STOPP 1 point 16. PLANT.hang: the check's planted fault, a blanket that long again) */
 const blanketOn = (g: G, x: number, w: number, top0: number, support: number, col = "#6f7f68", what = "blanket") => { const top = top0 + PLANT.drop, bottom = support + 30 + PLANT.hang; DRAWN.cloths.push({ what, top, support, bottom }); blanket(g, x, 0, w, top, col, bottom - top); };
@@ -137,7 +137,7 @@ const heldTorch = (g: G, hx: number, hy: number, ang: number, spot: P2 | null, l
 // 1  the cell at night, close: the fake head and its pillow fill the picture, the guard's hand with the torch at the lower right, its light on
 //    the head from frame 0 (the hook: the light hits the head in frame 1, condition 2; v1b: the head 50-80 % of the width and the hand in the
 //    picture, the review of STOPP 1 point 6: the head filled 18 %)
-const BED_Y = 1240, HEAD: P2 = [330, 1116], HEAD_S = 1.2;      // (the head 53 % of the picture's width in frame 1: 2 x 92 x 1.2 x 2.6 = 574 px)
+const BED_Y = 1240, HEAD: P2 = [330, 1116], HEAD_S = 1.2, S1_SPOT: P2 = [372, 1108], S1_HAND: P2 = [560, 1420];      // (the head 53 % of the picture's width in frame 1: 2 x 92 x 1.2 x 2.6 = 574 px)
 const cellClose = (g: G, light: number) => {
   cellWall(g, "#2b3346");
   rect(g, 60, BED_Y, 900, 60, "#5b4a3c"); for (const lx of [90, 900]) { DRAWN.uprights.push({ what: "bed leg", foot: 1700, floor: 1700, x: lx }); rect(g, lx, BED_Y + 60, 30, 1700 - BED_Y - 60, "#5b4a3c"); }
@@ -149,9 +149,11 @@ const cellCam = (t: number, t0 = 0) => ({ cx: 390, cy: 1150, z: 2.6 + 0.12 * smo
 const s01 = (): Shot => { const sh = propShot("a01", "1 Ficklampan", 1.8, (g, t) => {
   // (v1b, the hook: A's close framing with C's sweep, the light moving in frame 0 and on the head within 0.3 s, then settling on it; it stood
   //  nearly still for 1.8 s, the review of STOPP 1 and its independent review)
-  const u = smooth(Math.min(1, t / 0.3)), v = smooth((t - 0.3) / 1.2), sx = lerp(560, HEAD[0] + 30, u) - 30 * v, sy = lerp(1300, HEAD[1] - 6, u) - 4 * v;
-  cellClose(g, u);
-  const hx = lerp(600, 540, u), hy = lerp(1460, 1410, u), a = Math.atan2(sy - hy, sx - hx); heldTorch(g, hx, hy, a, [sx, sy], 1, 0.9);
+  // (v1g: the light on the head from frame 0, sliding slowly across it, at most about 6 px a frame, and the hand still: the sweep in from the
+  //  side was 100 px a frame and the flicker measure failed frames 2-7, the review of STOPP 1c)
+  const v = smooth(t / 1.8), sx = lerp(S1_SPOT[0], S1_SPOT[0] - 50, v), sy = lerp(S1_SPOT[1], S1_SPOT[1] - 8, v);
+  cellClose(g, 1);
+  const a = Math.atan2(sy - S1_HAND[1], sx - S1_HAND[0]); heldTorch(g, S1_HAND[0], S1_HAND[1], a, [sx, sy], 1, 0.9);
 }, [{ t: 0, k: "tap", g: 1.4 }]); sh.camera = (t) => cellCam(t); return sh; };
 
 // 2  extreme close-up of the guard's eyes narrowing (the guard's head on the rig, the camera pushing in on his eyes)
@@ -174,21 +176,17 @@ const s02 = (): Shot => {
 
 // 3  three cells in a row, the camera gliding along the bars while the guard's torch light passes over each bed (a head under a blanket in each)
 const s03 = (): Shot => propShot("a03", "3 Tre celler", 2.4, (g, t) => {
-  const pan = lerp(0, 1000, smooth(t / 2.4)), base = -pan;
+  // (v1g: three cells side by side in one still picture, a head in each bed, the torch's soft light gliding over them: the pan over repeating
+  //  bars made the flicker measure fail and showed a fourth sleeper, the review of STOPP 1c point 7)
   fillAll(g, "#262d3e");
-  for (let i = 0; i < 3; i++) { const x = base + 220 + i * 760;
-    rect(g, x - 40, 520, 700, 900, "#2f384c", OL);
-    // (v1b: the bed stands on legs on the floor and each head is a different man's: a slab floating 640 px over the floor, one head cloned,
-    //  the independent review of STOPP 1 points 14 and 27)
-    // (v1c: the floor at 1420, so the beds stand at a bed's height: on 430 px legs they looked like tables, the review of STOPP 1b point 11)
-    rect(g, x + 40, 1220, 560, 50, "#5b4a3c"); for (const lx of [x + 60, x + 560]) { DRAWN.uprights.push({ what: "bed leg", foot: 1420, floor: 1420, x: lx }); rect(g, lx, 1270, 24, 150, "#5b4a3c"); }
-    pillow(g, x + 170, 1190, 0.8); blanketOn(g, x + 240, 360, 1110, 1220); fakeHead(g, x + 170, 1120, 0.66, 0, ["#5a3a24", "#2e2a26", "#8a5a30"][i]);
-    rect(g, x + 676, 760, 40, 60, "#4a4f5c", OL * 0.6); g.save(); g.globalCompositeOperation = "lighter"; glow(g, x + 696, 790, 200, "rgba(255,220,150,A)", 0.25); g.restore(); }
-  // the torch's spot sweeping along the beds, a little ahead of the camera
-  const sx = 520 + pan * 1.1 - 100 + Math.sin(t * 2.2) * 40; g.save(); g.globalCompositeOperation = "lighter"; glow(g, sx, 1150, 210, "rgba(255,244,190,A)", 0.5); g.restore();
-  for (let i = 0; i < 3; i++) { const x = base + 220 + i * 760; for (let b = 0; b <= 6; b++) { DRAWN.uprights.push({ what: "bar", foot: 1420, floor: 1420, x: x - 30 + b * 112 }); rect(g, x - 30 + b * 112, -2000, 16, 3420, "#5d6675", OL * 0.7); } rect(g, x - 50, 560, 720, 20, "#5d6675", OL * 0.7); }
-  rect(g, -2000, 1420, 5000, 900, "#1c212e", 0); line(g, [[-2000, 1420], [3000, 1420]], 8);
-}, [{ t: 0.9, k: "drip", g: 0.8 }], { cx: 560, cy: 1120, z: 1.5 });
+  for (let i = 0; i < 3; i++) { const x = 40 + i * 340;
+    rect(g, x, 640, 320, 760, "#2f384c", OL);
+    rect(g, x + 20, 1240, 280, 30, "#5b4a3c"); for (const lx of [x + 30, x + 270]) { DRAWN.uprights.push({ what: "bed leg", foot: 1400, floor: 1400, x: lx }); rect(g, lx, 1270, 16, 130, "#5b4a3c"); }
+    pillow(g, x + 90, 1222, 0.42); blanketOn(g, x + 130, 170, 1196, 1240); fakeHead(g, x + 90, 1190, 0.36, 0, ["#5a3a24", "#2e2a26", "#8a5a30"][i]); }
+  const lx = lerp(160, 900, smooth(t / 2.4)); g.save(); g.globalCompositeOperation = "lighter"; glow(g, lx, 1200, 230, "rgba(255,244,190,A)", 0.45); g.restore();
+  for (let i = 0; i < 3; i++) { const x = 40 + i * 340; for (let bb = 0; bb <= 3; bb++) { DRAWN.uprights.push({ what: "bar", foot: 1400, floor: 1400, x: x + bb * 106 + 2 }); rect(g, x + bb * 106 - 4, -2000, 12, 3400, "#5d6675", OL * 0.6); } rect(g, x - 6, 700, 332, 14, "#5d6675", OL * 0.6); }
+  rect(g, -200, 1400, 1500, 700, "#1c212e", 0); line(g, [[-200, 1400], [1300, 1400]], 8);
+}, [{ t: 0.9, k: "drip", g: 0.8 }], { cx: 540, cy: 1000, z: 1.0 });
 
 // 4  "If the guards found the holes": the vent grill in the cell's wall at night, the guard's torch light sweeping along the wall, stopping on
 //    the grill a moment and moving on (v1c: no map: a hand on a map from the picture's edge needed an arm a metre long, and the map could not be
@@ -197,77 +195,90 @@ const s04 = (): Shot => propShot("a04", "4 Gallret i ljuset", 2.5, (g, t) => {
   cellWall(g, "#38425a"); for (let i = 0; i < 26; i++) ell(g, (i * 263) % 1080, (i * 571) % 1920, 6, 4, "#323b52", 0);
   grill(g, 330, 760, 420, 320); line(g, [[320, 750], [760, 750], [760, 1090], [320, 1090], [320, 750]], 5, "#2a3044");
   // the light: in from the left, along the wall, a stop on the grill (0.9-1.5 s), on to the right
-  const x = t < 0.9 ? lerp(-200, 540, smooth(t / 0.9)) : t < 1.5 ? 540 + Math.sin((t - 0.9) * 9) * 6 : lerp(540, 1300, smooth((t - 1.5) / 1.0)), y = 920 + Math.sin(t * 1.7) * 30;
+  // (v1g: closer, the grill large; the light slower, in from 240 and out to 860, a soft glow)
+  const x = t < 0.9 ? lerp(240, 540, smooth(t / 0.9)) : t < 1.5 ? 540 : lerp(540, 860, smooth((t - 1.5) / 1.0)), y = 920 + Math.sin(t * 1.7) * 10;
   g.save(); g.globalCompositeOperation = "lighter"; glow(g, x, y, 280, "rgba(255,244,190,A)", 0.55); glow(g, x, y, 140, "rgba(255,244,190,A)", 0.35); g.restore();
-}, [{ t: 0.9, k: "tap", g: 0.5 }], { cx: 540, cy: 920, z: 1.25 });
+}, [{ t: 0.9, k: "tap", g: 0.5 }], { cx: 540, cy: 920, z: 2.0 });
 
 // 5  hands: the homemade tool scraping along the vent grill's lower edge; then the grill comes loose and the other hand pulls it out (a dark hole
 //    behind). The camera close, so each arm leaves the picture within five hand lengths (v1c: arms up to 900 px long, the review of STOPP 1b
 //    point 8); the tool hand goes out through the edge when it is done (it vanished in a frame, point 1); the dust falls straight down from the
 //    tip and stays put where it fell (it slid sideways with the scraping, point 4)
 const s05 = (): Shot => propShot("a05", "5 Ventilen", 3.7, (g, t) => {
-  fillAll(g, "#8c8a84"); for (let i = 0; i < 40; i++) { const x = (i * 263) % 1080, y = (i * 571) % 1920; ell(g, x, y, 6, 4, "#7a7872", 0); }
-  const off = smooth((t - 2.7) / 0.8);
+  // (v1g: the same blue wall as shot 4, the same grill: a grey wall made it another place, the review of STOPP 1c point 6)
+  cellWall(g, "#38425a"); for (let i = 0; i < 26; i++) ell(g, (i * 263) % 1080, (i * 571) % 1920, 6, 4, "#323b52", 0);
+  const off = smooth((t - 2.6) / 1.1) * 0.45;      // (v1g: pulled out slowly, a little way, so no slat steps more than about 12 px a frame)
   rect(g, 300, 660, 480, 360, "#15171c"); line(g, [[290, 650], [790, 650], [790, 1030], [290, 1030], [290, 650]], 5, "#5f5d58");
   rect(g, 240, 1150, 600, 26, "#6f6d68", OL * 0.6);      // the ledge under the vent, where the dust settles
   g.save(); g.translate(540 + off * 260, 840 + off * 120); g.rotate(off * 0.35); grill(g, -240, -180, 480, 360); g.restore();
-  const tipAt = (tt: number) => { const k = (Math.min(tt, 2.7) * 1.6) % 2, u = k < 1 ? smooth(k) : smooth(2 - k); return lerp(330, 750, u); };
-  for (let k = 0; k < 44; k++) { const tk = 0.15 + k * 0.06; if (tk > 2.7 || tk > t) continue; const x0 = tipAt(tk) + ((k * 37) % 24) - 12, age = t - tk, y = Math.min(1146, 1024 + age * age * 1400); ell(g, x0, y, 5, 4, "#d9d2c0", 0); }
-  const leave = PLANT.cut ? (t >= 2.7 ? 1 : 0) : smooth((t - 2.7) / 0.35), tx = tipAt(t) + leave * 500, ty = 1020 + leave * 700;      // (PLANT.cut: the check's planted fault, the hand gone in a frame)
+  // (v1g: short slow strokes, 110 px in 1 s, and the dust drifting down slowly: the fast strokes and falling grains stepped too far a frame)
+  const tipAt = (tt: number) => { const k = Math.min(tt, 2.6) % 2, u = k < 1 ? smooth(k) : smooth(2 - k); return lerp(480, 590, u); };
+  for (let k = 0; k < 30; k++) { const tk = 0.1 + k * 0.085; if (tk > 2.6 || tk > t) continue; const x0 = tipAt(tk) + ((k * 37) % 24) - 12, age = t - tk, y = Math.min(1144, 1028 + age * 110); ell(g, x0, y, 7, 6, "#d9d2c0", 0); }
+  // (v1g: the tool hand stays where it stopped, holding the tool, to the cut: leaving through the edge it had to move too fast. PLANT.cut: the
+  //  check's planted fault, the hand gone in a frame)
+  const leave = PLANT.cut && t >= 2.6 ? 1 : 0, tx = tipAt(t), ty = 1020;      // (PLANT.cut: the check's planted fault, the hand gone in a frame)
   if (leave < 1) { const H: HandSpec = { id: "tool", x: tx + 120, y: ty + 160, ang: -2.3, s: 1.1, sleeve: INMATE_SLEEVE, curl: 1 };
     handBack(g, H); g.save(); g.translate(tx, ty); g.rotate(-2.3 + Math.PI); rrect(g, -6, -8, 190, 16, 6, "#b9bec6", OL * 0.7); g.restore(); handFingers(g, H); }
-  { const cx = 780 + off * 230, cy = 660 + off * 180; const S2: HandSpec = { id: "steady", x: cx + 20, y: cy - 28, ang: 2.75, s: 1.0, sleeve: INMATE_SLEEVE, curl: 0.5, thumb: 0.2 }; handBack(g, S2); handFingers(g, S2); }
-}, [...[0.15, 0.78, 1.4, 2.03, 2.65].map((t) => ({ t, k: "scratch", g: 0.9 })), { t: 2.75, k: "thunk", g: 0.8 }], { cx: 570, cy: 880, z: 1.8 });
+  { const cx = 780 + off * 260, cy = 660 + off * 120; const S2: HandSpec = { id: "steady", x: cx + 20, y: cy - 28, ang: 2.75, s: 1.0, sleeve: INMATE_SLEEVE, curl: 0.5, thumb: 0.2 }; handBack(g, S2); handFingers(g, S2); }
+}, [...[0.1, 1.1, 2.1].map((t) => ({ t, k: "scratch", g: 0.9 })), { t: 2.7, k: "thunk", g: 0.8 }], { cx: 570, cy: 880, z: 1.8 });
 
 // 6  "They turned prison raincoats into a raft": close on two raincoats' edges laid over each other; one hand holds them flat, the other pulls a
 //    needle and thread through, stitch by stitch along the seam; the stitches stay (v1c, the automation session: hands sewing in a close-up,
 //    instead of coats carried in; each forearm leaves the picture after a short way)
 const coat = (g: G, plain = false) => { void plain; };
+const STITCH = 1.05;      // (s per stitch, two stitches: the needle's turn at the seam stepped the thread too far a frame at 0.75 s, the flicker measure on 1g)
 const s06 = (): Shot => propShot("a06", "6 Regnrockarna", 2.2, (g, t) => {
   fillAll(g, "#4a4f5a");
+  // (v1g: a collar and a whole sleeve show, so the cloth reads as raincoats, the review of STOPP 1c point 9)
   poly(g, [[-200, 600], [600, 560], [640, 1500], [-200, 1540]], "#c7b56a");      // the left coat
+  poly(g, [[60, 1180], [-200, 1260], [-200, 1420], [90, 1330]], "#b8a65c", OL * 0.8); rrect(g, 30, 1185, 60, 140, 20, "#a99854", OL * 0.7);      // its sleeve, out at the left edge, and the cuff
   poly(g, [[520, 540], [1300, 520], [1300, 1520], [560, 1500]], "#bba95e");      // the right coat, its edge over the left one
-  line(g, [[600, 560], [640, 1500]], OL * 0.6, "#8f7f42"); for (const y of [700, 900, 1100, 1300]) ell(g, 900, y, 10, 10, "#6b5c2c", 0);
-  // the stitches made so far, down the seam (one every 0.28 s)
-  const n = Math.min(7, Math.floor(t / 0.28)); for (let k = 0; k < n; k++) { const y = 640 + k * 120; line(g, [[560, y], [620, y + 20]], 7, "#3a2f1a"); }
-  // the holding hand on the left coat, from the left edge
-  hand(g, { id: "hold", x: 470, y: 1060, ang: 0.1, s: 1.1, sleeve: INMATE_SLEEVE, curl: 0.2, thumb: 0.3 });
-  // the sewing hand: at the next stitch, pulling the thread out to the right and up, and back
-  const k = Math.min(6, Math.floor(t / 0.28)), c = (t / 0.28) % 1, sy = 640 + k * 120, nx = 620 + Math.sin(c * Math.PI) * 220, ny = sy + 20 - Math.sin(c * Math.PI) * 90;
-  line(g, [[620, sy + 20], [nx, ny]], 4, "#3a2f1a");
+  poly(g, [[560, 540], [760, 480], [900, 530], [780, 600], [600, 610]], "#a99854", OL * 0.8);      // its collar
+  line(g, [[600, 560], [640, 1500]], OL * 0.6, "#8f7f42"); for (const y of [760, 960, 1160, 1360]) ell(g, 900, y, 10, 10, "#6b5c2c", 0);
+  // (v1g: the hand moves on smoothly from stitch to stitch: the needle goes in at the seam at the start of each cycle, the stitch shows from then
+  //  on, and the thread runs from the needle to the newest stitch; the hand jumped 150-250 px at each stitch, the review of STOPP 1c point 1.
+  //  PLANT.jumpy: the check's planted fault, the old stepping)
+  const cyc = t / STITCH, k = Math.min(1, Math.floor(cyc)), c = Math.min(cyc, 2) - k, base = (tt: number) => 760 + Math.min(tt / STITCH, 2) * 160;
+  const yIn = PLANT.jumpy ? 760 + k * 160 : base(t), nx = 620 + Math.sin(Math.min(1, c) * Math.PI) * 50, ny = yIn + 20 - Math.sin(Math.min(1, c) * Math.PI) * 28;
+  const done = Math.min(2, Math.floor(cyc) + 1); for (let j = 0; j < done; j++) { const y = base(j * STITCH); line(g, [[560, y], [620, y + 20]], 9, "#3a2f1a"); }
+  const last = base(Math.min(1, Math.floor(cyc)) * STITCH) + 20;
+  line(g, [[620, last], [nx, ny]], 14, "#3a2f1a");      // the thread, thick enough to keep a frame's step inside it
   const H: HandSpec = { id: "sew", x: nx + 40, y: ny + 10, ang: Math.PI - 0.3, s: 1.1, sleeve: INMATE_SLEEVE, curl: 0.8, thumb: 0.9 };
-  handBack(g, H); line(g, [[nx - 10, ny], [nx + 40, ny + 8]], 5, "#c9ccd2"); handFingers(g, H);
-}, [0.28, 0.56, 0.84, 1.12, 1.4, 1.68].map((t) => ({ t, k: "tap", g: 0.35 })), { cx: 600, cy: 1040, z: 1.5 });
+  handBack(g, H); line(g, [[nx - 10, ny], [nx + 40, ny + 8]], 7, "#c9ccd2"); handFingers(g, H);
+  hand(g, { id: "hold", x: 470, y: 1000, ang: 0.1, s: 1.1, sleeve: INMATE_SLEEVE, curl: 0.2, thumb: 0.3 });
+}, [0, 1.05].map((t) => ({ t, k: "tap", g: 0.35 })), { cx: 600, cy: 1040, z: 1.5 });
 
 // 7  the fake head laid on the pillow by two hands holding it low at its sides; they let go and go out through the picture's sides; a hand from the
 //    right takes the blanket's edge and slides it up the bed to the head, then goes back out (v1c: the hands left in a frame, point 1)
 const s07 = (): Shot => propShot("a07", "7 Huvudet på kudden", 1.2, (g, t) => {
+  // (v1g: two hands lower the head onto the pillow slowly and keep hold of it to the cut; the blanket is up already, still: the hand pulling it
+  //  jumped back and vanished in a frame and the blanket was redrawn, the review of STOPP 1c point 3)
   cellWall(g, "#30384a"); rect(g, 60, 1180, 960, 70, "#5b4a3c"); for (const lx of [80, 990]) { DRAWN.uprights.push({ what: "bed leg", foot: 2100, floor: 2100, x: lx }); rect(g, lx, 1250, 26, 850, "#5b4a3c"); }
-  pillow(g, 360, 1140, 1.2);
-  const u = smooth(t / 0.5), hy = lerp(960, 1070, u), off = smooth((t - 0.55) / 0.3) * 420;
-  const pull = smooth((t - 0.6) / 0.4), bx = lerp(820, 470, pull), out = smooth((t - 1.0) / 0.2);
-  blanketOn(g, bx, 1060 - bx + 470, 1062, 1180);
+  pillow(g, 360, 1140, 1.2); blanketOn(g, 470, 560, 1062, 1180);
+  const u = smooth(t / 1.0), hy = lerp(1010, 1070, u);
   DRAWN.things.push({ what: "head", at: [360, hy], carried: u < 1, look: "head" });
-  if (off < 420) { const L: HandSpec = { id: "headL", x: 240 - off, y: hy + 62, ang: 0.35, s: 0.9, sleeve: INMATE_SLEEVE, curl: 0.35 }, R: HandSpec = { id: "headR", x: 480 + off, y: hy + 62, ang: Math.PI - 0.35, s: 0.9, sleeve: INMATE_SLEEVE, curl: 0.35 };
-    handBack(g, L); handBack(g, R); fakeHead(g, 360, hy, 0.95); handFingers(g, L); handFingers(g, R); } else fakeHead(g, 360, 1070, 0.95);
-  const come = smooth((t - 0.4) / 0.2);
-  if (come > 0 && out < 1) { const H: HandSpec = { id: "blanket", x: lerp(bx + 420, bx + 40, come) + out * 600, y: 1080, ang: Math.PI, s: 0.9, sleeve: INMATE_SLEEVE, curl: 1, thumb: 0.2 }; handBack(g, H); handFingers(g, H); }
-}, [{ t: 0.5, k: "sack", g: 0.7 }, { t: 0.7, k: "flap", g: 0.5 }], { cx: 410, cy: 1110, z: 1.6 });
+  const L: HandSpec = { id: "headL", x: 240, y: hy + 62, ang: 0.35, s: 0.9, sleeve: INMATE_SLEEVE, curl: 0.35 }, R: HandSpec = { id: "headR", x: 480, y: hy + 62, ang: Math.PI - 0.35, s: 0.9, sleeve: INMATE_SLEEVE, curl: 0.35 };
+  handBack(g, L); handBack(g, R); fakeHead(g, 360, hy, 0.95); handFingers(g, L); handFingers(g, R);
+}, [{ t: 1.0, k: "sack", g: 0.7 }], { cx: 410, cy: 1110, z: 1.6 });
 
 // 8  the roof hatch opened from inside (the shot type 08, open a door, with the hatch as the door), seen from below: the hand on the lid's edge,
 //    pushing it up a third of the way; the lid swings on open by itself and the hand goes back down out of the picture (v1c: the hand followed the
 //    lid up on an arm 900 px long, the review of STOPP 1b point 8; PLANT.longArm: the check's planted fault, the hand on the lid all the way)
 const s08 = (): Shot => propShot("a08", "8 Takluckan", 1.4, (g, t) => {
+  // (v1g: the hand pushes the lid up 40 % over 1.2 s and holds it there: the lid went on up after the hand had let go, the review of STOPP 1c
+  //  point 2; and slowly, so no edge steps more than about 12 px a frame. PLANT.release: the check's planted fault, the lid going on alone)
   fillAll(g, "#2a3040");
-  const push = smooth((t - 0.2) / 0.45), swing = smooth((t - 0.6) / 0.5), open = 0.2 * push + 0.8 * swing, x0 = 280, x1 = 800, y0 = 520, y1 = 1000;
+  const reach = PLANT.longArm ? 0.85 : 0.4, push = smooth((t - 0.1) / 1.2), open = reach * push + (PLANT.release ? 0.4 * smooth((t - 0.6) / 0.6) : 0),      // (PLANT.longArm: the check's planted fault, the hand following the lid to 85 %)
+  x0 = 280, x1 = 800, y0 = 520, y1 = 1000;
   rect(g, x0 - 30, y0 - 30, x1 - x0 + 60, y1 - y0 + 60, "#4b5163");
   poly(g, [[x0, y0], [x1, y0], [x1, y1], [x0, y1]], "#0f1730", OL);
-  ell(g, 640, 640, 46, 46, "#f4f0d6", OL * 0.6); for (const [sx, sy] of [[360, 600], [470, 880], [720, 900], [560, 560]]) ell(g, sx, sy, 4, 4, "#f4f0d6", 0);
-  g.save(); g.globalCompositeOperation = "lighter"; glow(g, 640, 900, 520 * open, "rgba(170,190,255,A)", 0.25 * open); g.restore();
+  ell(g, 640, 820, 46, 46, "#f4f0d6", OL * 0.6); for (const [sx, sy] of [[360, 900], [470, 960], [720, 940], [560, 880]]) ell(g, sx, sy, 4, 4, "#f4f0d6", 0);
+  g.save(); g.globalCompositeOperation = "lighter"; glow(g, 640, 900, 420 * open + 1, "rgba(170,190,255,A)", 0.3 * open); g.restore();
   const ly = lerp(y1, y0 + 30, open); poly(g, [[x0, y0], [x1, y0], [x1, ly], [x0, ly]], "#6b6f7c"); line(g, [[x0 + 30, (y0 + ly) / 2], [x1 - 30, (y0 + ly) / 2]], OL * 0.6, "#4b4f5a");
-  const down = PLANT.longArm ? 0 : smooth((t - 0.68) / 0.3), hyOn = lerp(y1, y0 + 30, PLANT.longArm ? open : 0.2 * push) + 34;
-  if (down < 1) { const H: HandSpec = { id: "hatch", x: 560, y: hyOn + down * 700, ang: -1.57, s: 1.15, sleeve: INMATE_SLEEVE, curl: 0.55, thumb: 0.4 }; handBack(g, H); if (down === 0) line(g, [[x0, ly], [x1, ly]], OL); handFingers(g, H); }
-}, [{ t: 0.2, k: "thunk", g: 1.0 }, { t: 0.6, k: "whoosh", g: 0.4, dur: 0.6 }], { cx: 540, cy: 640, z: 1.45 });
+  DRAWN.things.push({ what: "lid", at: [540, ly], carried: true, look: "lid" });
+  const down = PLANT.release ? smooth((t - 0.6) / 0.3) : 0, hy = lerp(y1, y0 + 30, reach * push) + 34 + down * 500;
+  if (down < 1) { const H: HandSpec = { id: "hatch", x: 560, y: hy, ang: -1.57, s: 1.15, sleeve: INMATE_SLEEVE, curl: 0.55, thumb: 0.4 }; handBack(g, H); if (!down) line(g, [[x0, ly], [x1, ly]], OL); handFingers(g, H); }
+}, [{ t: 0.1, k: "thunk", g: 1.0 }, { t: 0.5, k: "whoosh", g: 0.4, dur: 0.6 }], { cx: 540, cy: 600, z: 1.45 });
 
 // 9  the roof in moonlight: three men walking bent low in a row, whole and apart (the shot type 02, walk), the searchlight's beam sweeping across
 //    the sky over them and missing them. A wide shot: three whole figures with air between them fill a third of the height in 9:16 (the review
@@ -277,9 +288,12 @@ const s09 = (): Shot => {
   const seconds = 1.6, cast: Cast[] = [];
   // (v1c, the automation session: they stand still, crouched, while the light sweeps over them; no walking, so no walking on the spot)
   for (let i = 0; i < 3; i++) { const m = figure("sir", -0.55 + i * 0.52, 90, 0.2); m.stand(3);
-    ease(m, -1, { lean: 26, head: [0, 10, 0] }, 0.01, { face: { pupil: 1, gaze: [0.5, -0.2] } }); cast.push({ name: `man${i}`, m, who: "sir", look: MOON, seed: 20 + i, armWipe: false, hands: { L: [[0, "fist"]], R: [[0, "fist"]] } }); }
+    ease(m, -1, { lean: 26, head: [0, 10, 0] }, 0.01, { face: { pupil: 1, gaze: [0.5, -0.2] } }); // (v1g: three different men, caps and hair and skin of their own: they were clones, the review of STOPP 1c point 8)
+    const look: Look = { ...MOON, col: { ...MOON.col!, ...[{}, { cap: "#4a3a2c", skin: "#c9ab9c", hair: "#5a3a24" }, { cap: "#3b4a40", skin: "#e2cbbd", hair: "#8a6a40" }][i] }, band: ["#262c3a", "#4a3a2c", "#3b4a40"][i] };
+    cast.push({ name: `man${i}`, m, who: "sir", look, seed: 20 + i, armWipe: false, hands: { L: [[0, "fist"]], R: [[0, "fist"]] } }); }
   // (the camera follows the group's middle, so the three stay whole and apart in a frame a third of whose height they fill)
-  const c0 = fitCam(cast, seconds, 1.2), camAt = (t: number) => ({ ...c0 }); const cam = c0; void castAt;
+  // (v1g: the camera lower, the men in the picture's lower part and the sky with the searchlight above: 45 % of the picture was empty roof)
+  const cf = fitCam(cast, seconds, 1.2), c0 = { ...cf, cy: cf.cy + 260 }, camAt = (t: number) => ({ ...c0 }); const cam = c0; void castAt;
   return { id: "a09", title: "9 Taket", seconds, cast, events: {}, shot: "wide", camera: camAt,
     ownBg: (g, t) => { const cam = camAt(t); fillAll(g, "#121a33"); const mx = cam.cx + 260, my = ROOF - 900; ell(g, mx, my, 60, 60, "#f4f0d6", OL * 0.6); g.save(); g.globalCompositeOperation = "lighter"; glow(g, mx, my, 360, "rgba(170,190,255,A)", 0.3);
       // the searchlight: from a tower off the left edge, a bright beam sweeping across the sky above their heads and passing them
@@ -303,11 +317,13 @@ const s09 = (): Shot => {
 //    session: the simplest form; the shadows and the hands could not be made faultless tonight)
 const PIPE_X = 540;
 const s10 = (): Shot => propShot("a10", "10 Röret", 1.5, (g, t) => {
-  const camY = smooth(t / 1.5) * 380;
+  // (v1g: 150 px in 1.5 s, at most about 6 px a frame, and bricks of two shades with no thin joints: the joints and the fast ride made the flicker
+  //  measure fail, the review of STOPP 1c)
+  const camY = smooth(t / 1.5) * 100;      // (v1g: 100 px, under 4 px a frame: at 150 frame 579 had 2 026 flickering pixels)
   fillAll(g, "#56607a"); g.save(); g.translate(0, -camY);
-  for (let y = -200; y < 2800; y += 70) for (let x = (Math.round(y / 70) % 2) ? 0 : 60; x < 1100; x += 120) rect(g, x, y, 116, 66, "#5c6782", 2);
+  for (let y = -200; y < 2800; y += 90) for (let x = (Math.round(y / 90) % 2) ? -60 : 0, n = 0; x < 1100; x += 120, n++) { g.fillStyle = (n + Math.round(y / 90)) % 2 ? "#5e6884" : "#525c77"; g.fillRect(x, y, 120, 90); }
   rect(g, PIPE_X - 34, -400, 68, 3600, "#6f7684", OL); for (let y = 100; y < 3200; y += 420) rect(g, PIPE_X - 56, y, 112, 26, "#555c69", OL * 0.7);
-  rect(g, -100, 2160, 1300, 1000, "#16233f", 0); for (let r = 0; r < 4; r++) { const y = 2200 + r * 80; g.beginPath(); for (let x = -40; x <= 1120; x += 20) { const yy = y + Math.sin(x / 60 + t * 1.5 + r) * 6; x === -40 ? g.moveTo(x, yy) : g.lineTo(x, yy); } g.lineWidth = 4; g.strokeStyle = "rgba(140,170,220,0.35)"; g.stroke(); }
+  rect(g, -100, 1700, 1300, 1000, "#16233f", 0); for (let r = 0; r < 4; r++) { const y = 1740 + r * 80; g.beginPath(); for (let x = -40; x <= 1120; x += 20) { const yy = y + Math.sin(x / 60 + t * 1.5 + r) * 6; x === -40 ? g.moveTo(x, yy) : g.lineTo(x, yy); } g.lineWidth = 4; g.strokeStyle = "rgba(140,170,220,0.35)"; g.stroke(); }
   g.restore();
   g.save(); g.globalCompositeOperation = "lighter"; glow(g, 900, 300, 900, "rgba(150,170,230,A)", 0.15); g.restore();
 }, [], { cx: 540, cy: 1120, z: 1.25 });
@@ -322,7 +338,7 @@ const manInRaft = (g: G, x: number, y: number) => {
   ell(g, x + 2, y - 34, 8, 6, MOON.col!.nose, OL * 0.5); };
 const raft = (g: G, x: number, y: number, s: number, rot: number) => {
   g.save(); g.translate(x, y); g.rotate(rot); g.scale(s, s);
-  for (let i = 0; i < 3; i++) manInRaft(g, -140 + i * 140, -46);
+  for (let i = 0; i < 3; i++) manInRaft(g, -140 + i * 140, -92);      // (v1g: higher, so their shoulders show above the rim, the review of STOPP 1c point 5)
   rrect(g, -230, -40, 460, 90, 44, "#b8a65e"); for (const xx of [-120, 0, 120]) line(g, [[xx, -36], [xx, 46]], OL * 0.5, "#8f7f42"); line(g, [[-200, 4], [200, 4]], OL * 0.5, "#8f7f42");
   g.restore(); };
 const waves = (g: G, t: number, y0: number, col = "#16233f") => { fillAll(g, "#0b1226"); rect(g, -100, y0, 1300, 2000, col, 0);
@@ -354,10 +370,12 @@ const s13 = (): Shot => propShot("a13", "13 Filten", 1.2, (g, t) => {
   for (let i = 0; i < 5; i++) poly(g, [[600 + i * 70, 0], [640 + i * 70, 0], [240 + i * 70, 1920], [200 + i * 70, 1920]], "rgba(255,230,180,0.18)", 0);
   rect(g, 60, 1180, 960, 70, "#6b5442"); for (const lx of [80, 990]) { DRAWN.uprights.push({ what: "bed leg", foot: 2100, floor: 2100, x: lx }); rect(g, lx, 1250, 26, 850, "#6b5442"); }
   pillow(g, 360, 1140, 1.2); fakeHead(g, 360, 1070, 0.95, 1);
-  const come = smooth(t / 0.22), u = smooth((t - 0.25) / 0.65), bx = lerp(250, 560, u);
+  // (v1g: the hand holds the blanket's folded edge from the first frame and folds it back 150 px over 1.15 s, about 12 px a frame; the fold is
+  //  there all the time, never drawn in a frame)
+  const u = smooth((t - 0.03) / 1.15), bx = lerp(262, 412, u);
   blanketOn(g, bx, 760 - (bx - 250), 1030, 1180, "#7b8a72");
-  const H: HandSpec = { id: "guard", x: bx + 24, y: lerp(700, 1000, come), ang: 1.62, s: 1.0, sleeve: GUARD_SLEEVE, curl: 1, thumb: 0.1 };
-  handBack(g, H); if (come >= 1) rrect(g, bx - 18, 1030, 46, 175, 16, "#93a38a", OL * 0.8); handFingers(g, H);
+  const H: HandSpec = { id: "guard", x: bx + 24, y: 1000, ang: 1.62, s: 1.0, sleeve: GUARD_SLEEVE, curl: 1, thumb: 0.1 };
+  handBack(g, H); rrect(g, bx - 18, 1030, 46, 175, 16, "#93a38a", OL * 0.8); handFingers(g, H);
 }, [{ t: 0.25, k: "flap", g: 1.0 }], { cx: 420, cy: 1200, z: 1.9 });
 
 // 14 the guard is frightened (the shot type 06, react): he jerks back, eyes wide, while the alarm light flashes red
@@ -377,24 +395,28 @@ const s14 = (): Shot => {
 // 15 hands put up three wanted posters on a board: the third comes in from the right with the hand holding its left edge (the hand first, in the
 //    same frame as the poster), is pressed on, and the hand goes back out (v1c: the poster slid in before the hand, the review of STOPP 1b point 2;
 //    PLANT.nohand: the check's planted fault, the poster moving with no hand)
-const poster = (g: G, x: number, y: number, rot: number, face: number) => { g.save(); g.translate(x, y); g.rotate(rot);
+const poster = (g: G, x: number, y: number, rot: number, face: number, pinned = true) => { g.save(); g.translate(x, y); g.rotate(rot);
   { const m = g.getTransform(), mir = m.a * m.d - m.b * m.c < 0; DRAWN.prints.push({ what: "poster", mirrored: mir && PLANT.mirror });
     if (mir && !PLANT.mirror) { rect(g, -130, -170, 260, 340, "#e2d8bc"); line(g, [[-90, -120], [90, -120]], 4, "#cfc3a3"); g.restore(); return; } }
   rect(g, -130, -170, 260, 340, "#efe6cc"); g.fillStyle = INK; g.font = "bold 46px Arial"; g.textAlign = "center"; g.fillText("WANTED", 0, -110);
-  if (face < 0) { ell(g, 0, -150, 10, 10, "#c0392b", OL * 0.5); g.restore(); return; }
+  if (face < 0) { if (pinned) ell(g, 0, -150, 10, 10, "#c0392b", OL * 0.5); g.restore(); return; }
   ell(g, 0, 10, 64, 66, "#e7c39f", OL * 0.7); poly(g, [[-66, 0], [-60, -46], [0, -66], [60, -46], [66, 0], [40, -30], [-40, -30]], ["#3a2a20", "#6b4a2e", "#2e2a26"][face], OL * 0.6);
   for (const sx of [-24, 24]) ell(g, sx, 4, 7, 7, INK, 0); line(g, [[-18, 42], [18, 42]], OL * 0.6);
-  ell(g, 0, -150, 10, 10, "#c0392b", OL * 0.5); g.restore(); };
+  if (pinned) ell(g, 0, -150, 10, 10, "#c0392b", OL * 0.5); g.restore(); };
 const s15 = (): Shot => propShot("a15", "15 Affischerna", 2.0, (g, t) => {
+  // (v1g: the poster comes in slowly from the edge with the hand holding its left edge, the pin is pushed in by the thumb when it reaches the board,
+  //  and the hand keeps to the edge, never over the printed face: the pin was in it while carried and the fist lay on the face, the review of
+  //  STOPP 1c point 4)
   fillAll(g, "#a0784f"); for (let i = 0; i < 60; i++) ell(g, (i * 211) % 1080, (i * 433) % 1920, 6, 6, "#8d6a45", 0);
   poster(g, 340, 700, -0.05, 0); poster(g, 595, 760, 0.04, 1);
-  const u = smooth(t / 0.75), x = lerp(1400, 840, u), y = lerp(780, 720, u), out = smooth((t - 1.0) / 0.35);
-  // (the check's planted faults: PLANT.pop, the poster in place from 0.5 s with no hand; PLANT.swap, its face missing until it is pressed on)
+  const u = smooth(t / 1.25), x = lerp(905, 840, u), y = lerp(728, 720, u);      // (in the picture from the first frame with the hand at it; slid the last bit)
   if (PLANT.pop) { if (t >= 0.5) { poster(g, 840, 720, -0.03, 2); DRAWN.things.push({ what: "poster 3", at: [840, 720], carried: false, look: "poster" }); } return; }
   const plain = PLANT.swap && u < 1;
-  poster(g, x, y, 0.06 * (1 - u) - 0.03, plain ? -1 : 2); DRAWN.things.push({ what: "poster 3", at: [x, y], carried: u < 1, look: plain ? "poster, blank" : "poster" });
-  if (!PLANT.nohand && out < 1) { const H: HandSpec = { id: "poster", x: x - 100 + out * 700, y: y - 40, ang: Math.PI, s: 0.95, sleeve: GUARD_SLEEVE, curl: 0.5, thumb: 0.9 }; handBack(g, H); handFingers(g, H); }
-}, [{ t: 0.8, k: "tap", g: 1.0 }, { t: 0.2, k: "paper", g: 0.8 }], { cx: 600, cy: 760, z: 1.25 });
+  poster(g, x, y, -0.03, plain ? -1 : 2, false); DRAWN.things.push({ what: "poster 3", at: [x, y], carried: u < 1, look: plain ? "poster, blank" : "poster" });
+  // (the hand holds the poster's top right corner, away from the printed face; when the poster reaches the board the thumb pushes a pin in there)
+  if (t >= 1.3) { ell(g, x + 100, y - 146, 11, 11, "#c0392b", OL * 0.5); DRAWN.things.push({ what: "pin", at: [x + 100, y - 146], carried: false, look: "pin" }); }
+  if (!PLANT.nohand) { const H: HandSpec = { id: "poster", x: x + 150, y: y - 150, ang: Math.PI * 0.92, s: 0.95, sleeve: GUARD_SLEEVE, curl: 0.5, thumb: 0.9 }; handBack(g, H); handFingers(g, H); }
+}, [{ t: 1.3, k: "tap", g: 1.0 }, { t: 0.2, k: "paper", g: 0.8 }], { cx: 600, cy: 760, z: 1.25 });
 
 // 16 the empty bay in the morning light: the camera glides over the water toward the city, and the wind carries a poster off the city's shore
 //    across the sky, small by the city and growing as it comes toward us, its blank back showing when it turns
@@ -404,8 +426,9 @@ const s16 = (): Shot => propShot("a16", "16 Bukten", 2.1, (g, t) => {
   for (let i = 0; i < 14; i++) { const x = 60 + i * 74 + dx * 0.3, h = 60 + ((i * 37) % 90); rect(g, x, 980 - h, 60, h, "#c4a088", OL * 0.5); for (let w = 14; w < h - 10; w += 24) ell(g, x + 30, 980 - h + w, 6, 5, "#f7dcb0", 0); }
   rect(g, -100, 980, 1300, 1000, "#7fa6c2", 0); line(g, [[-100, 980], [1200, 980]], 8);
   for (let r = 0; r < 8; r++) { const y = 1060 + r * 120; g.beginPath(); for (let x = -40; x <= 1120; x += 20) { const yy = y + Math.sin(x / 70 + t * 1.5 + r) * 7; x === -40 ? g.moveTo(x + dx, yy) : g.lineTo(x + dx, yy); } g.lineWidth = 4; g.strokeStyle = "rgba(255,255,255,0.4)"; g.stroke(); }
-  const u = smooth(t / 2.1), px2 = lerp(860, 160, u), py = lerp(930, 380, u) + Math.sin(t * 4) * 20 * u, sc = lerp(0.12, 0.62, u);
-  g.save(); g.translate(px2, py); g.rotate(-t * 1.8); g.scale(sc, sc * Math.cos(t * 2.6 + 0.4)); poster(g, 0, 0, 0, 0); g.restore();
+  // (v1g: slower, a shorter way and a slower turn, so its print steps under about 12 px a frame)
+  const u = smooth(t / 2.1), px2 = lerp(820, 420, u), py = lerp(930, 560, u) + Math.sin(t * 2) * 10 * u, sc = lerp(0.14, 0.5, u);
+  g.save(); g.translate(px2, py); g.rotate(-t * 0.7); g.scale(sc, sc * Math.cos(t * 1.2 + 0.4)); poster(g, 0, 0, 0, 0); g.restore();
   DRAWN.things.push({ what: "poster in the wind", at: [px2, py], carried: false, look: "poster" });
 }, [{ t: 0.1, k: "flap", g: 0.7 }]);
 
@@ -413,9 +436,10 @@ const s16 = (): Shot => propShot("a16", "16 Bukten", 2.1, (g, t) => {
 //    the blanket to the head, and the guard's hand coming in at the lower right: to the first frame of shot 1 (the same camera and place) (v1c: it
 //    stood still for 2 s, the review of STOPP 1b point 15)
 const s17 = (): Shot => { const sh = propShot("a17", "17 Loopen", 2.5, (g, t) => {
-  const u = smooth((t - 0.3) / 2.2), sx = lerp(1000, 560, u), sy = lerp(1480, 1300, u);
-  cellClose(g, 0);
-  if (u > 0) { const hx = lerp(820, 600, u), hy = lerp(1700, 1460, u), a = Math.atan2(sy - hy, sx - hx); heldTorch(g, hx, hy, a, [sx, sy], Math.min(1, u * 2), 0.9); }
+  // (v1g: slower, about 8 px a frame at most, so the flicker measure passes)
+  const u = smooth((t - 0.3) / 2.2), sx = lerp(560, S1_SPOT[0], u), sy = lerp(1260, S1_SPOT[1], u);
+  cellClose(g, u > 0.5 ? 1 : 0);
+  if (u > 0) { const hx = lerp(690, S1_HAND[0], u), hy = lerp(1560, S1_HAND[1], u), a = Math.atan2(sy - hy, sx - hx); heldTorch(g, hx, hy, a, [sx, sy], Math.min(1, u * 1.5), 0.9); }
 }); sh.camera = (t) => { const c = cellCam(1.8); return { ...c, cx: lerp(430, 390, smooth(t / 2.5)), z: lerp(2.5, 2.6, smooth(t / 2.5)) }; }; return sh; };
 
 export const SHOTS: Record<string, () => Shot> = { a01: s01, a02: s02, a03: s03, a04: s04, a05: s05, a06: s06, a07: s07, a08: s08, a09: s09, a10: s10, a11: s11, a12: s12, a13: s13, a14: s14, a15: s15, a16: s16, a17: s17 };

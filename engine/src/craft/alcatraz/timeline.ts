@@ -12,4 +12,6 @@ export const OPENINGS: Record<string, ([string, number] | [string, number, numbe
   B: [["a02", 0, 0.3], ["a01", 1.0], ["a03", 3.4], ...CUTS.slice(3)],
   C: [["a17", 0, 1.9], ["a01", 0.6], ["a02", 1.9], ...CUTS.slice(2)],
 };
-export const TEXT: { t0: number; t1: number; lines: string[] } = { t0: 0, t1: 3.2, lines: ["THE GUARD'S TORCH", "HIT THE PILLOW"] };
+/** loopIn: the text fades in over the film's last loopIn s, so the last frame meets the first (which has the text) and the loop does not jump: without
+ *  it 5.4 % of the picture changed at the loop, over the film's own 95th percentile (the flicker measure on 1g) */
+export const TEXT: { t0: number; t1: number; lines: string[]; loopIn: number } = { t0: 0, t1: 3.2, lines: ["THE GUARD'S TORCH", "HIT THE PILLOW"], loopIn: 0.45 };

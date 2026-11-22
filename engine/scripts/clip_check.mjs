@@ -67,6 +67,8 @@ for (const id of ids) {
   if (PL === "swap") ALC_PLANT.swap = true;
   if (PL === "on-the-spot") ALC_PLANT.noScenery = true;
   if (PL === "long-arm") ALC_PLANT.longArm = true;
+  if (PL === "hand-jump") ALC_PLANT.jumpy = true;
+  if (PL === "let-go") ALC_PLANT.release = true;
   if (PL === "jitter") for (const cm of c.cast) { const f0 = cm.pose; cm.pose = (t, p, h) => { const q = f0 ? f0(t, p, h) : p, f = Math.round(t * FM.FPS); return t > 1.4 && t < 2.0 ? { ...q, armL: [[q.armL[0][0], q.armL[0][1]], [q.armL[1][0] + (f % 2 ? 4 : -4), q.armL[1][1]]] } : q; }; }
   if (PL === "start-pop") for (const cm of c.cast) for (const l of cm.m.layers ?? []) if (l.pose && l.pose.pz !== undefined) l.glide = false;
   if (PL === "point-long") for (const p of c.points ?? []) p.t1 = p.t0 + 1.5;
@@ -116,12 +118,17 @@ for (const id of ids) {
       prev.things = now;
       // (v1c) pop-out: a hand that was in the picture last frame and is gone now left through the edge (its wrist outside the picture last frame)
       const sl0 = (prev.sleeves ??= new Map()), sl1 = new Map(DRAWN.sleeves.filter((q) => q.id).map((q) => [q.id, q]));
-      for (const [id, q] of sl0) if (!sl1.has(id) && inside(q.wrist)) faults.push(`${f}: the hand "${id}" vanishes inside the picture instead of leaving through its edge`);
+      // (v1g: the whole hand counts, its wrist within a hand's size of the picture: a hand 150 px inside the edge vanished unseen, the review of STOPP 1c)
+      const nearPic = (q, r) => { const [x, y] = P(q); return x > -r && x < FM.W + r && y > -r && y < FM.H + r; };
+      for (const [id, q] of sl0) if (!sl1.has(id) && nearPic(q.wrist, 60 * q.s * cam.z)) faults.push(`${f}: the hand "${id}" vanishes inside the picture instead of leaving through its edge`);
+      // (v1g) (a) a hand never jumps: its wrist moves at most 60 px in the picture from one frame to the next inside a shot
+      for (const [id, q] of sl1) { const o = sl0.get(id); if (!o) continue; const [x0, y0] = P(o.wrist), [x1, y1] = P(q.wrist), d = Math.hypot(x1 - x0, y1 - y0); stat.handStep = Math.max(stat.handStep ?? 0, d);
+        if (d > 60) faults.push(`${f}: the hand "${id}" jumps ${d.toFixed(0)} px in one frame`); }
       prev.sleeves = sl1;
       // (v1c) a carried thing moves only with a hand at it; a thing keeps its drawing from one frame to the next
       const th0 = (prev.thingAt ??= new Map()), th1 = new Map(DRAWN.things.map((q) => [q.what, q]));
       for (const [w, q] of th1) { const o = th0.get(w); if (!o) continue;
-        if (q.carried && Math.hypot(q.at[0] - o.at[0], q.at[1] - o.at[1]) > 1 && inside(q.at) && !DRAWN.sleeves.some((sl) => Math.hypot(sl.wrist[0] - q.at[0], sl.wrist[1] - q.at[1]) < 320)) faults.push(`${f}: the ${w} moves with no hand at it`);
+        if (q.carried && Math.hypot(q.at[0] - o.at[0], q.at[1] - o.at[1]) > 1 && inside(q.at) && !DRAWN.sleeves.some((sl) => Math.hypot(sl.wrist[0] - q.at[0], sl.wrist[1] - q.at[1]) < 260)) faults.push(`${f}: the ${w} moves with no hand at it`);
         if (o.look && q.look && o.look !== q.look) faults.push(`${f}: the ${w} changes its drawing in one frame (${o.look} -> ${q.look})`); }
       prev.thingAt = th1;
       // (v1c) a visible arm is at most 3.5 hand lengths (107 units x its size each) from the wrist to the picture's edge

@@ -1,6 +1,8 @@
-# Ljudlista, Alcatraz 1962 v1 (ur out/craft/alcatraz/sounds-A.json, samma tidslinje som bilden)
+# Ljudlista, Alcatraz 1962 v2b (samma bild som v2; ur out/craft/alcatraz/sounds-A.json, samma tidslinje som bilden)
 
 Rösten: George (ElevenLabs), tolv meningar som börjar på 0.00, 2.01, 3.57, 5.99, 8.50, 12.06, 15.13, 18.13, 22.65, 25.00, 27.21, 29.22 s, −16 LUFS.
+
+**Ändrat från v2:** flap i ruta 825 (27,5 s) är borttaget. Det hörde till affischen som flög i bild 16, och den är borta (granskningen av STOPP 2). Se `ljud-v2-v2b.txt`.
 
 | Ruta | Tid (s) | Ljud | Vad det är |
 |---|---|---|---|
@@ -21,7 +23,6 @@ Rösten: George (ElevenLabs), tolv meningar som börjar på 0.00, 2.01, 3.57, 5.
 | 689 | 22.93 | flap | tyg som slår eller viks |
 | 769 | 25.60 | paper | papper som dras |
 | 795 | 26.47 | tap | ett torrt klick (ficklampan, nålen) |
-| 826 | 27.50 | flap | tyg som slår eller viks |
 
 **Bäddar:**
 - wind: rutor 463–504 (15.4–16.8 s)
@@ -37,4 +38,4 @@ Rösten: George (ElevenLabs), tolv meningar som börjar på 0.00, 2.01, 3.57, 5.
 
 **Inget som låter som en fis**: inga gnissel (creak) och inga låga, brummande eller blöta ljud (squelch). Det lägsta är rumsbruset och vågorna.
 
-Mixen: -14.4 LUFS, true peak -5.2 dBTP före AAC. Första ljudet i den färdiga mp4:an ligger på 0,000 s, med toppen 0,37 i ruta 1 (ingangskontroller.txt).
+Mixen: -14.4 LUFS, true peak -5.2 dBTP före AAC. Första ljudet i den färdiga v2b-mp4:an ligger på 0,000 s, med toppen 0,36 i ruta 1 (ingangskontroller-v2b.txt).

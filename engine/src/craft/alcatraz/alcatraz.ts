@@ -432,7 +432,7 @@ const s16 = (): Shot => propShot("a16", "16 Bukten", 2.1, (g, t) => {
   // (v1h: the waves drawn to past both edges, the review of 1g point 3)
   for (let r = 0; r < 8; r++) { const y = 1060 + r * 120; g.beginPath(); for (let x = -40; x <= 1320; x += 20) { const yy = y + Math.sin(x / 70 + t * 1.5 + r) * 7; x === -40 ? g.moveTo(x + dx, yy) : g.lineTo(x + dx, yy); } g.lineWidth = 4; g.strokeStyle = "rgba(255,255,255,0.4)"; g.stroke(); }
   // (v1h, the automation session: no poster flying; the bay and the city, the waves moving)
-}, [{ t: 0.1, k: "flap", g: 0.7 }]);
+}, []);      // (v2b: no flap: it was the flying poster's, which is gone, the review of STOPP 2)
 
 // 17 the loop: the head on the pillow in the dark, the camera gliding slowly in, the torch's light coming in early from the right and creeping up
 //    the blanket to the head, and the guard's hand coming in at the lower right: to the first frame of shot 1 (the same camera and place) (v1c: it

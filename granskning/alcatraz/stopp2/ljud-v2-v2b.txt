@@ -1,0 +1,6 @@
+The mix of v2 against v2b (the flap at frame 825, 27.47 s, taken out), decoded from the two mp4s; the difference per half second (RMS):
+    0.0- 0.5 s: 0.0411
+   27.0-27.5 s: 0.0010   <- the flap
+   27.5-28.0 s: 0.0057   <- the flap
+   28.0-28.5 s: 0.0023
+everywhere else under 0.002 (the codec and a 0.0 dB change of the whole mix).

@@ -37,6 +37,14 @@ const lids = (k: Ink, cx: number, cy: number, rx: number, ry: number, lid: numbe
     k.shape([[cx - rx - 6, cy + ry + 8], [cx + rx + 6, cy + ry + 8], ...e.slice().reverse()], skin, 0); ln(k, e); }
 };
 type EyeFn = (k: Ink, cx: number, cy: number, s: number, r: FR, skin: string, nose: number) => void;
+/** the pupil's place in the eye as drawn (-1..1 each way), kept inside the eye: the gaze's two parts were each taken to the edge, so a gaze
+ *  down and to the side ([1, 0.9]) put the pupil outside the oval, clipped away, and both eyes stood empty (the shot types v4 draft, 06).
+ *  clamp = false gives the pupil as it was (the check's planted fault) */
+export const pupilIn = (g: P2, clamp = true): P2 => { const m = Math.hypot(g[0], g[1]); return clamp && m > 1 ? [g[0] / m, g[1] / m] : g; };
+/** the gaze an eye is drawn with in a view (as sirFront, sirQ and sirSide pass it): mirrored with the head, a three-quarter head looking
+ *  the way it faces, a profile eye never looking back into the head */
+export const drawnGaze = (view: "front" | "q" | "side", flip: boolean, gaze: P2): P2 => { const g: P2 = view !== "front" && flip ? [-gaze[0], gaze[1]] : gaze;
+  return view === "q" ? [Math.min(1, 0.45 + 0.7 * Math.max(0, g[0])), g[1]] : view === "side" ? [Math.max(0.35, g[0]), g[1]] : g; };
 /** A: a tall white oval with a big round black pupil */
 const eyeA: EyeFn = (k, cx, cy, s, r, skin, nose) => {
   const rx = 30 * s, ry = 40 * s * (1 + 0.15 * r.wide);
@@ -46,7 +54,7 @@ const eyeA: EyeFn = (k, cx, cy, s, r, skin, nose) => {
   const ball = ellPts(cx, cy, rx, ry, 0, 0, 360, 40);
   fl(k, ball, WHITE);
   // (the pupil travels to the eye's edge: at three-quarter, looking at Ada, it stayed near the middle and he seemed to look at the lens)
-  k.clip(ball, () => { const pr = 16 * s * r.pupil; k.dot(cx + r.gaze[0] * (rx - pr * 0.72 - 2 * s), cy + 4 * s + r.gaze[1] * (ry - pr * 0.8 - 3 * s), pr);
+  k.clip(ball, () => { const pr = 16 * s * r.pupil, gp = pupilIn(r.gaze); k.dot(cx + gp[0] * (rx - pr * 0.72 - 2 * s), cy + 4 * s + gp[1] * (ry - pr * 0.8 - 3 * s), pr);
     // (the smiling lower lid grows with the smile from 0.3 to 0.7: switched on at 0.5 it jumped, the eyes from heavy to wide in one
     //  frame, the review of the shot types v1)
     lids(k, cx, cy, rx, ry, r.lid, 0.3 * r.smile * Math.max(0, Math.min(1, (r.smile - 0.3) / 0.4)), skin); });

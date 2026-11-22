@@ -1,0 +1,364 @@
+{
+ "note": "Alcatraz in the new style (the style test is its first 9.6 s). World in metres, Blender axes: x right, y into the cell (the bars at y=0, the back wall at y=2.9), z up, the floor z=0. Read by engine/blender/alcatraz3d/set.py (cameras, lights) and by Alcatraz3D.tsx and the checks (figures, floor). Times in seconds. No figure ever has a solid in front of it (the rule of 18 Nov: nothing cuts a figure); the depth check proves it per frame.",
+ "fps": 30,
+ "W": 1080,
+ "H": 1920,
+ "shots": [
+  {
+   "id": "n01",
+   "t0": 0,
+   "t1": 1.9,
+   "what": "the fake head on the pillow; the torch through the bars already on it in frame 1, the bars' shadows on the bed",
+   "cam": {
+    "from": [
+     [
+      -0.42,
+      1.62,
+      0.98
+     ],
+     [
+      -0.48,
+      1.78,
+      0.94
+     ]
+    ],
+    "at": [
+     -0.81,
+     2.45,
+     0.75
+    ],
+    "lens": 40,
+    "focus": "head",
+    "fstop": 2.0
+   },
+   "torch": {
+    "from": [
+     [
+      -0.05,
+      -0.55,
+      1.25
+     ],
+     [
+      -0.12,
+      -0.55,
+      1.25
+     ]
+    ],
+    "at": [
+     [
+      -0.76,
+      2.4,
+      0.76
+     ],
+     [
+      -0.82,
+      2.45,
+      0.76
+     ]
+    ],
+    "power": 260
+   },
+   "figs": [],
+   "fg": []
+  },
+  {
+   "id": "n02",
+   "t0": 1.9,
+   "t1": 3.2,
+   "what": "over the guard's shoulder (his back and cap, dark and soft at the edge): his torch on the fake head through the bars; he says goodnight to it (Daniel, [OWN])",
+   "cam": {
+    "from": [
+     [
+      0.12,
+      -1.3,
+      1.62
+     ],
+     [
+      0.06,
+      -1.22,
+      1.6
+     ]
+    ],
+    "at": [
+     -0.8,
+     2.42,
+     0.62
+    ],
+    "lens": 40,
+    "focus": "head",
+    "fstop": 2.4
+   },
+   "torch": {
+    "from": [
+     [
+      -0.05,
+      -0.62,
+      1.18
+     ],
+     [
+      -0.05,
+      -0.62,
+      1.18
+     ]
+    ],
+    "at": [
+     [
+      -0.8,
+      2.45,
+      0.76
+     ],
+     [
+      -0.8,
+      2.45,
+      0.76
+     ]
+    ],
+    "power": 260
+   },
+   "figs": [
+    {
+     "name": "guard",
+     "look": "GUARD",
+     "at": [
+      0.32,
+      -0.92
+     ],
+     "facing": "away",
+     "ots": true
+    }
+   ],
+   "fg": []
+  },
+  {
+   "id": "n03",
+   "t0": 3.2,
+   "t1": 4.6,
+   "what": "the guard in the tier, pleased, his light still on the cell: the head was fake (the narrator over his smile)",
+   "cam": {
+    "from": [
+     [
+      1.62,
+      -2.62,
+      1.25
+     ],
+     [
+      1.52,
+      -2.52,
+      1.24
+     ]
+    ],
+    "at": [
+     -0.12,
+     -0.62,
+     1.0
+    ],
+    "lens": 32,
+    "focus": "guard",
+    "fstop": 2.4
+   },
+   "torch": {
+    "from": [
+     [
+      -0.3,
+      -0.4,
+      1.1
+     ],
+     [
+      -0.3,
+      -0.4,
+      1.1
+     ]
+    ],
+    "at": [
+     [
+      -0.8,
+      2.45,
+      0.76
+     ],
+     [
+      -0.7,
+      2.45,
+      0.7
+     ]
+    ],
+    "power": 0
+   },
+   "figs": [
+    {
+     "name": "guard",
+     "look": "GUARD",
+     "at": [
+      -0.12,
+      -0.62
+     ],
+     "facing": "cell"
+    }
+   ],
+   "fg": []
+  },
+  {
+   "id": "n04",
+   "t0": 4.6,
+   "t1": 6.9,
+   "what": "across the cellhouse: three tiers, a cell on each, a fake head asleep in every bed; the light of the guard (off the right edge) on the middle one; the camera drifting",
+   "cam": {
+    "from": [
+     [
+      0.15,
+      -6.9,
+      4.3
+     ],
+     [
+      -0.15,
+      -6.8,
+      4.25
+     ]
+    ],
+    "at": [
+     -0.1,
+     1.2,
+     4.3
+    ],
+    "lens": 17,
+    "focus": [
+     -0.8,
+     2.45,
+     3.6
+    ],
+    "fstop": 8
+   },
+   "torch": {
+    "from": [
+     [
+      3.7,
+      -0.95,
+      4.05
+     ],
+     [
+      3.4,
+      -0.95,
+      4.05
+     ]
+    ],
+    "at": [
+     [
+      -0.55,
+      2.45,
+      3.62
+     ],
+     [
+      -0.8,
+      2.45,
+      3.62
+     ]
+    ],
+    "power": 320
+   },
+   "figs": [],
+   "fg": []
+  },
+  {
+   "id": "n05",
+   "t0": 6.9,
+   "t1": 9.5,
+   "what": "before the night, in his cell: the guard's light sweeps the wall and stops a hand from the vent; he freezes, sweats and goes pale",
+   "cam": {
+    "from": [
+     [
+      -0.25,
+      0.3,
+      1.05
+     ],
+     [
+      -0.18,
+      0.38,
+      1.03
+     ]
+    ],
+    "at": [
+     0.3,
+     2.5,
+     0.95
+    ],
+    "lens": 18,
+    "focus": "inmate",
+    "fstop": 4.0
+   },
+   "torch": {
+    "from": [
+     [
+      0.6,
+      -0.7,
+      1.25
+     ],
+     [
+      0.9,
+      -0.7,
+      1.25
+     ]
+    ],
+    "at": [
+     [
+      0.78,
+      2.9,
+      1.35
+     ],
+     [
+      0.88,
+      2.9,
+      0.66
+     ]
+    ],
+    "power": 220
+   },
+   "figs": [
+    {
+     "name": "inmate",
+     "look": "INMATE",
+     "at": [
+      0.3,
+      2.3
+     ],
+     "facing": "camera"
+    }
+   ],
+   "fg": []
+  }
+ ],
+ "voice": [
+  {
+   "who": "george",
+   "line": 1,
+   "t": 0.0
+  },
+  {
+   "who": "daniel",
+   "take": "g01",
+   "text": "Goodnight, sunshine.",
+   "t": 2.05
+  },
+  {
+   "who": "george",
+   "line": 2,
+   "t": 3.3
+  },
+  {
+   "who": "george",
+   "line": 3,
+   "t": 4.8
+  },
+  {
+   "who": "george",
+   "line": 4,
+   "t": 7.05
+  }
+ ],
+ "text": {
+  "t0": 0,
+  "t1": 3.0,
+  "lines": [
+   "THE GUARD'S TORCH",
+   "HIT THE PILLOW"
+  ]
+ }
+}

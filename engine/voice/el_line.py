@@ -5,7 +5,7 @@
 import json, os, re, sys, urllib.request
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-N = json.load(open(os.path.join(HERE, "narrator.json"), encoding="utf-8"))
+N = json.load(open(os.path.join(HERE, os.environ.get("VOICE_FILE", "narrator.json")), encoding="utf-8"))      # (VOICE_FILE=partner.json: Daniel, the partner)
 API = "https://api.elevenlabs.io/v1"
 
 

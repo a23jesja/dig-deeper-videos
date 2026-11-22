@@ -1,0 +1,5 @@
+plant: None
+== n03: 42 frames; feet at most 0.00 px off the floor point; shadow at most 8.09 px off it; joints at most 2.3 px a frame; a solid in front of a figure: none
+   A3D CHECK OK
+== n05: 78 frames; feet at most 0.00 px off the floor point; shadow at most 5.03 px off it; joints at most 2.3 px a frame; a solid in front of a figure: none
+   A3D CHECK OK

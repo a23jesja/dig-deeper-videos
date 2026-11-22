@@ -1,0 +1,16 @@
+{
+ "_why": "Jesper 2026-11-22 to the automation session: \"Den andra rösten kan vara Daniel från elevenlabs\". The partner's voice beside George (the narrator and Sir); the same settings as George.",
+ "provider": "elevenlabs",
+ "voice_name": "Daniel",
+ "voice_id": "onwK4e9ZLuTAKqWW03F9",
+ "voice_kind": "ElevenLabs premade voice (not a library voice from another user)",
+ "model_id": "eleven_multilingual_v2",
+ "output_format": "mp3_44100_128",
+ "voice_settings": "the voice's own defaults (none sent), as in the voice test of 2026-11-21",
+ "takes_per_sentence": 3,
+ "pick": "the take faster-whisper small.en hears with the fewest word errors",
+ "gap_between_sentences_s": 0.3,
+ "loudness_lufs": -16,
+ "key": "read from the environment variable ELEVENLABS_API_KEY only; never written anywhere",
+ "credits": "pre-count characters x takes before every call, read character_count before and after; Starter has 40 000 a month"
+}

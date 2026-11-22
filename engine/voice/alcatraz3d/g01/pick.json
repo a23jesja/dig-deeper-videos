@@ -1,0 +1,24 @@
+{
+ "line": "Goodnight, sunshine.",
+ "take": 0,
+ "word_errors": 1.0,
+ "words": [
+  {
+   "w": "Good",
+   "a": 0.0,
+   "b": 0.2
+  },
+  {
+   "w": "night",
+   "a": 0.2,
+   "b": 0.38
+  },
+  {
+   "w": "sunshine.",
+   "a": 0.38,
+   "b": 0.78
+  }
+ ],
+ "character_count_before": 2788,
+ "character_count_after": 2788
+}

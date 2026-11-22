@@ -1,0 +1,14 @@
+pre-count: 20 characters x 3 takes = 60 (cap 60)
+character_count before: 2788 of 40000
+character_count after: 2788 (used 0)
+take0: 'Good night sunshine.' word errors 1.00
+take1: 'Good night, sunshine.' word errors 1.00
+take2: 'Good night, sunshine.' word errors 1.00
+picked take0
+pre-count: 25 characters x 3 takes = 75 (cap 75)
+character_count before: 2812 of 40000
+character_count after: 2812 (used 0)
+take0: 'Rise and shine sunshine.' word errors 0.00
+take1: 'Rise and shine, sunshine.' word errors 0.00
+take2: 'Rise and shine, sunshine.' word errors 0.00
+picked take0

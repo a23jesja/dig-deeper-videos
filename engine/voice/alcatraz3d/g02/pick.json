@@ -1,0 +1,29 @@
+{
+ "line": "Rise and shine, sunshine.",
+ "take": 0,
+ "word_errors": 0.0,
+ "words": [
+  {
+   "w": "Rise",
+   "a": 0.0,
+   "b": 0.3
+  },
+  {
+   "w": "and",
+   "a": 0.3,
+   "b": 0.52
+  },
+  {
+   "w": "shine",
+   "a": 0.52,
+   "b": 0.8
+  },
+  {
+   "w": "sunshine.",
+   "a": 0.8,
+   "b": 1.26
+  }
+ ],
+ "character_count_before": 2812,
+ "character_count_after": 2812
+}

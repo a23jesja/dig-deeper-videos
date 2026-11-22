@@ -13,7 +13,7 @@ export type Face = { gaze?: P2; lid?: number; wide?: number; brow?: number; mout
    *  picture); teeth 0..1 = clenched teeth shown in a grimace */ squeeze?: number; tear?: number; smirk?: number; teeth?: number;
   /** sad brows 0..1: the inner ends up and the outer ends down */ sad?: number };
 /** sway = how far loose things (the hem of a coat or skirt, the cap, the chain) trail behind the way the figure faces, -1..1 */
-export type FigOpts = { who?: Who; face?: Face; handL?: HandKind; handR?: HandKind; prop?: "cane" | "loaf" | null; capLift?: number; sway?: number;
+export type FigOpts = { who?: Who; face?: Face; handL?: HandKind; handR?: HandKind; prop?: "cane" | "loaf" | null; capLift?: number; sway?: number; /** false: no far-arm sweep between front and side (a figure that stands turned, not turning) */ armWipe?: boolean;
   /** the hat is not on the head (it flew off in a fall and is drawn by the scene where it lies) */
   hatOff?: boolean;
   /** false = no knee drape: seated, the garment below the waist hangs along the spine as it did before 20 Nov (the proof's planted fault) */

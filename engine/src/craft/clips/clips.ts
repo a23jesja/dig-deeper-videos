@@ -161,7 +161,8 @@ const c05 = (): Clip => {
   // (v5: the easy point rises straight from his side to the forearm out, the hand staying near him and well short of the ship)
   const aim = (t: number, p: Pose): Pose => { const w = env(t, UP, HOLD0 - UP, HOLD1, DOWN - HOLD1); return w <= 0 ? p : { ...p, armL: lerpArm(p.armL, heldArm(), w) }; };
   // (blink seed 7: he blinks at 0.47 s and 3.37 s, never during the look and the point; it fell in the point, the review of v3)
-  const cast: Cast[] = [{ name: "sir", m: sir, who: "sir", seed: 7, pose: aim, hands: { R: [[0, "relaxed"]], L: [[0, "relaxed"], [P_ON, "point"], [P_OFF, "fist"]] } }];
+  // (he stands turned, not turning: no far-arm sweep, the order of v4)
+  const cast: Cast[] = [{ name: "sir", m: sir, who: "sir", seed: 7, armWipe: false, pose: aim, hands: { R: [[0, "relaxed"]], L: [[0, "relaxed"], [P_ON, "point"], [P_OFF, "fist"]] } }];
   const cam = fitCam(cast, 4.0, 2.4, [[SHIP[0] + 30 * SHIP_S + 20, SHIP[1] - 46 * SHIP_S], [SHIP[0] - 30 * SHIP_S, SHIP[1] + 22 * SHIP_S]]);
   const harbour = (g: G) => {
     rect(g, -40, -40, 1160, 2000, "#9ad3e6", 0); rect(g, -40, HORIZON, 1160, LINE_TOP - HORIZON + 6, "#2f7fb3", 0);
@@ -219,7 +220,7 @@ const c06 = (): Clip => {
   const guarded = (t: number, p: Pose): Pose => { const w1 = env(t, T_SCARED, T_UP, 99, 0.1); if (w1 <= 0) return p; const a = armsAt(95), b = armsAt(150), w2 = env(t, T_SCARED + T_UP, T_OUT, 99, 0.1);
     const g = { armL: lerpArm(a.armL, b.armL, w2), armR: lerpArm(a.armR, b.armR, w2) };
     return shake(t, { ...p, armL: lerpArm(p.armL, g.armL, w1), armR: lerpArm(p.armR, g.armR, w1) }); };
-  const cast: Cast[] = [{ name: "sir", m: sir, who: "sir", pose: guarded, hands: { L: [[0, "relaxed"], [T_SCARED + 0.08, "fist"], [T_SCARED + 0.16, "open"]], R: [[0, "relaxed"], [T_SCARED + 0.08, "fist"], [T_SCARED + 0.16, "open"]] } }];
+  const cast: Cast[] = [{ name: "sir", m: sir, who: "sir", armWipe: false, pose: guarded, hands: { L: [[0, "relaxed"], [T_SCARED + 0.08, "fist"], [T_SCARED + 0.16, "open"]], R: [[0, "relaxed"], [T_SCARED + 0.08, "fist"], [T_SCARED + 0.16, "open"]] } }];
   // (it stops 0.22 m right of the middle, well inside: it ended 10-20 px from the edge, the review of v2; the camera holds Sir and the crab)
   const crabEnd = px(0.30), cam = fitCam(cast, 4.0, 1.75, [[crabEnd + 75 * CRAB_S, LINE_TOP - 95 * CRAB_S], [crabEnd - 75 * CRAB_S, FM.GY + 60]]);
   const crabStart = viewOf(cam).x1 + 75 * CRAB_S + 20;

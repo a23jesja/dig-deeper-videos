@@ -217,7 +217,7 @@ const drawFlat = (c: FlatSpec) => (k: Ink, sk: Sk, o: FigOpts) => {
   //  front of it in one frame: it is drawn behind, and the part of it that lies over the body is shown from the body's far edge inward as he
   //  turns toward the lens. Switched at 30 degrees, the far arm changed layer in one frame in the turns of 03, Jesper on v4, "Ja")
   const as = Math.abs(sk.sin);
-  if (!other && as > ARM_WIPE[0] && as < ARM_WIPE[1]) {
+  if (!other && o.armWipe !== false && as > ARM_WIPE[0] && as < ARM_WIPE[1]) {
     const far = sk.far, near = sk.near; arm(far); leg(far); leg(near); torso(); head();
     // (the line sweeps the whole figure, from past its far side (nothing shown over it: the side's order, the far arm under everything) to past
     //  its near side (all of it: the front's order, the far arm over the legs too); swept over the body alone, the far arm went from under the
@@ -227,6 +227,9 @@ const drawFlat = (c: FlatSpec) => (k: Ink, sk: Sk, o: FigOpts) => {
     const side = Math.sign(J(sk, "sh", far)[0] - J(sk, "sh", near)[0]) || 1, xFar = side > 0 ? x1 : x0, xNear = side > 0 ? x0 : x1, line = xFar + (xNear - xFar) * u, B9 = 1e4;
     const half: P2[] = side > 0 ? [[line, -B9], [B9, -B9], [B9, B9], [line, B9]] : [[-B9, -B9], [line, -B9], [line, B9], [-B9, B9]];
     k.clip(half, () => arm(far));
+    // (the cut drawn as the coat's edge where it crosses the sleeve, inside the body: without it the sleeve looked sliced by an unseen line, v5 draft)
+    if (u > 0 && u < 1) { const S2 = J(sk, "sh", far), E2 = J(sk, "el", far), W2 = J(sk, "wr", far);
+      k.clip(torsoPoly, () => { for (const piece of limb(S2, E2, W2, B.arm)) k.clip(piece, () => k.line([[line, -B9], [line, B9]], k.ol)); }); }
     arm(near); return;
   }
   layers(sk, { arm, leg, torso, head });

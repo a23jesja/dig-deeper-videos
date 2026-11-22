@@ -82,8 +82,12 @@ const c03 = (): Clip => {
   sir.stand(0.55); ease(sir, 0.4, { head: [8, 3, 0] }, 0.15, { face: { pupil: 1, smile: 0.3 } });
   // (v5: the slower turns, 1.3 and 1.0 s, so each three-quarter step stands longer: Jesper on v4, "Ja"; v4 kept v3's 1.0 and 0.8 s)
   const T1 = sir.t; sir.turn(-90, 1.3, 0.015); ease(sir, T1, { head: [0, 0, 0] }, 0.4);
-  sir.stand(0.7); ease(sir, sir.t - 0.15, { head: [-8, 3, 0] }, 0.15);
-  const T2 = sir.t; sir.turn(-52, 1.0, 0.015); ease(sir, T2, { head: [0, 0, 0] }, 0.4);
+  sir.stand(0.7);      // (v8: no glance before the second turn: the first turn backwards ends where it began, the head eased to [8, 3, 0] in its last 0.4 s)
+  // (v8, Jesper's choice b on the review of v7: the second turn is the first one backwards, from the front back to profile right in the same
+  //  1.3 s, so the far arm is swept through the same angles as in the first turn's clean frames 37-46 (frame f of the first turn and 132 - f
+  //  of the second stand at the same point of the turn); turned on to three-quarter left the sweep crossed the watch and its chain, double
+  //  outlines, a step in the shoulder, a black half-disc for the watch and a notch at the cuff, the review of v7)
+  const T2 = sir.t; sir.turn(90, 1.3, 0.015); ease(sir, T2 + 1.3 - 0.4, { head: [8, 3, 0] }, 0.4);
   sir.stand(3);
   return { id: "c03", title: "03 Vända sig", seconds: 4.6, events: { T1, T2 }, bg: 0, bgOpts: { spade: false, pit: false }, shot: "full", camera: () => full(px(0)),
     cast: [{ name: "sir", m: sir, who: "sir", hands: { L: [[0, "relaxed"]], R: [[0, "relaxed"]] } }] };

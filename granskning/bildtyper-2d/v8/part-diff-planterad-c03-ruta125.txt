@@ -1,0 +1,11 @@
+125 sir.armL: the picture changes 37.1 (its usual 2.6) while its joints moved 0.9 px
+125 sir.armR: the picture changes 35.4 (its usual 4.2) while its joints moved 0.9 px
+125 sir.legL: the picture changes 17.0 (its usual 3.2) while its joints moved 0.9 px
+125 sir.legR: the picture changes 16.8 (its usual 2.8) while its joints moved 0.9 px
+125 sir.torso: the picture changes 23.2 (its usual 3.4) while its joints moved 0.9 px
+126 sir.armL: the picture changes 37.2 (its usual 2.6) while its joints moved 0.9 px
+126 sir.armR: the picture changes 35.2 (its usual 4.2) while its joints moved 0.9 px
+126 sir.legL: the picture changes 16.9 (its usual 3.2) while its joints moved 0.9 px
+126 sir.legR: the picture changes 16.7 (its usual 2.8) while its joints moved 0.9 px
+126 sir.torso: the picture changes 23.2 (its usual 3.4) while its joints moved 0.9 px
+PART DIFF FAILED: 10 (03-vanda-sig-v8.mp4, planted)

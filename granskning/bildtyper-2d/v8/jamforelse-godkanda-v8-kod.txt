@@ -1,0 +1,16 @@
+The approved clips against renders of the v8 code, frame by frame (each rendered as the deliveries are: twice the size at CRF 10, lanczos down, CRF 16). A pixel differs when R, G or B differs by more than 24; 'largest difference' is over every pixel.
+
+01-sta-och-prata-v6.mp4: 138 frames, 01-sta-och-prata-v8kod.mp4: 138 frames
+  total 0 px over 24 in 138 frames, largest difference anywhere 0
+02-ga-v5.mp4: 141 frames, 02-ga-v8kod.mp4: 141 frames
+  total 0 px over 24 in 141 frames, largest difference anywhere 0
+04-halla-med-bada-handerna-v4.mp4: 132 frames, 04-halla-med-bada-handerna-v8kod.mp4: 132 frames
+  total 0 px over 24 in 132 frames, largest difference anywhere 0
+05-peka-v7.mp4: 120 frames, 05-peka-v8kod.mp4: 120 frames
+  total 0 px over 24 in 120 frames, largest difference anywhere 0
+06-reagera-v7.mp4: 120 frames, 06-reagera-v8kod.mp4: 120 frames
+  total 0 px over 24 in 120 frames, largest difference anywhere 0
+07-sitta-v5.mp4: 132 frames, 07-sitta-v8kod.mp4: 132 frames
+  total 0 px over 24 in 132 frames, largest difference anywhere 0
+08-oppna-en-dorr-v4.mp4: 132 frames, 08-oppna-en-dorr-v8kod.mp4: 132 frames
+  total 0 px over 24 in 132 frames, largest difference anywhere 0

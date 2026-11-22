@@ -199,8 +199,9 @@ const drawFlat = (c: FlatSpec) => (k: Ink, sk: Sk, o: FigOpts) => {
     // (the monocle on his right eye only: seen from his left side it is behind his head, and so is its chain)
     // (the chain ends in a small gold button on the coat: it ended loose on the cloth, the review of the shot types v2)
     const clasp = (p: P2) => fl(k, ellPts(p[0], p[1], 8, 8), "#e8c45a");
-    // (in profile the chain ends on the waistcoat's front, at the coat's edge: at 0.7 of its depth it ended inside the coat's shoulder, v3)
-    if (view === "side") { if (!flip) { const a = w(c.chainSide[0]), b = Fr.T(dz * 0.95 * d, c.chainEnd[1] - 10); chainAt(k, a, b, [(a[0] + b[0]) / 2 - 14 * d, (a[1] + b[1]) / 2 + 26], c.chainW); clasp(b); } }
+    // (in profile the chain ends on the waistcoat's front, at the coat's edge: at 0.7 of its depth it ended inside the coat's shoulder, v3;
+    //  22 over the end used from the front and at three-quarter, which stays as Jesper approved it in v3)
+    if (view === "side") { if (!flip) { const a = w(c.chainSide[0]), b = Fr.T(dz * 0.95 * d, c.chainEnd[1] - 22); chainAt(k, a, b, [(a[0] + b[0]) / 2 - 14 * d, (a[1] + b[1]) / 2 + 26], c.chainW); clasp(b); } }
     else if (view === "q") { const q = c.chainQ![flip ? "far" : "near"], a = w(q[0]); chainAt(k, a, end, w(q[1]), c.chainW); clasp(end); }
     else { const tx = sn * c.turn; chainAt(k, w([c.chainFront[0][0] + tx, c.chainFront[0][1]]), end, w([c.chainFront[1][0] + tx, c.chainFront[1][1]]), c.chainW); clasp(end); }
   };
@@ -230,7 +231,7 @@ const A_SPEC: FlatSpec = {
     B: { rows: [[-34, 58, 50, 46], [0, 66, 64, 50], [50, 74, 76, 52], [100, 70, 66, 48], [132, 62, 50, 42], [150, 40, 34, 30], [162, 22, 22, 20]], arm: [23, 19, 17], leg: [27, 23, 20], shoeW: 42, neck: 0 } },
   other: { P: { thigh: 66, shin: 60, ankle: 16, foot: 80, hipW: 34, shW: 50, spine: 140, shDrop: 16, neck: 4, head: 244, upper: 66, fore: 62, hand: 54 },
     B: { rows: [[-80, 80, 66, 62], [-40, 66, 56, 52], [0, 52, 44, 40], [60, 42, 38, 32], [110, 52, 40, 34], [128, 40, 30, 26], [148, 20, 20, 18]], arm: [19, 16, 14], leg: [15, 13, 11], shoeW: 34, neck: 0 } },
-  col: CA, chainFront: [[-74, -92], [-96, -2]], chainSide: [[42, -74], [40, 10]], chainEnd: [-34, 52], chainW: 4.5, vest: [150, -4, 36],
+  col: CA, chainFront: [[-74, -92], [-96, -2]], chainSide: [[42, -74], [40, 10]], chainEnd: [-34, 64], chainW: 4.5, vest: [150, -4, 36],
   sirFront: (k, r, tx, lift) => {
     for (const s of [-1, 1]) fl(k, ellPts(s * 126, -118, 24, 30), CA.skin);
     fl(k, ellPts(0, -128, 128, 132, 0, 0, 360, 60), CA.skin);

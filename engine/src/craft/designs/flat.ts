@@ -6,7 +6,7 @@
 //   the sheet: craft/FlatStyle.tsx
 import { Ink, P2, sym, spline, ellPts, seg, mid, add } from "../ink";
 import { Sk, Side, Props } from "../rig";
-import { Design, FigOpts, Face, Who, frame, torsoPts, J, limb, handAt, shoePts, layers, headPose, headToWorld } from "./common";
+import { Design, FigOpts, Face, Who, frame, torsoPts, J, limb, handAt, shoePts, layers, headPose, headToWorld, seated } from "./common";
 
 type F = ReturnType<typeof frame>;
 export const TURQ = "#1fb3a6";
@@ -130,9 +130,12 @@ export type FlatSpec = {
 
 const drawFlat = (c: FlatSpec) => (k: Ink, sk: Sk, o: FigOpts) => {
   const other = o.who === "baker", { P: _p, B } = other ? c.other : c.sir, Fr = frame(sk), P = sk.P, r = rd(o.face ?? {}), hp = headPose(sk), C = c.col;
-  void _p; const front = sk.cos > 0.35, sideOn = Math.abs(sk.sin) > 0.6, d = Math.sign(sk.sin) || 1;
+  void _p; const front = sk.cos > 0.35, sideOn = Math.abs(sk.sin) > 0.6, d = Math.sign(sk.sin) || 1, sit = other ? 0 : seated(sk);
   const leg = (s: Side) => {
-    k.group(limb(J(sk, "hip", s), J(sk, "kn", s), J(sk, "an", s), B.leg), other ? C.stock : C.trous);
+    // (seated, in profile: the trousers' seat behind the hips, down to the seat's top, drawn with the far leg so the near thigh lies over it;
+    //  with the coat's hem up off the lap there was a gap between the coat and the seat behind him, and he seemed to hover)
+    const seatPad = sit > 0 && sideOn && s === sk.far ? [ellPts(...Fr.Q(0, -16, 2), 30 + 8 * sit, B.leg[0] * 0.98)] : [];
+    k.group([...limb(J(sk, "hip", s), J(sk, "kn", s), J(sk, "an", s), B.leg), ...seatPad], other ? C.stock : C.trous);
     const sh = shoeDrawn(sk, s, B.shoeW); fl(k, sh.pts, C.shoe); k.line([sh.a, sh.b], k.ol * 0.9, k.ink, "butt");
   };
   const arm = (s: Side) => {
@@ -146,7 +149,11 @@ const drawFlat = (c: FlatSpec) => (k: Ink, sk: Sk, o: FigOpts) => {
     // (the coat's hem comes up as the thighs bend toward level, so a seated figure's thighs show on the seat: hanging 34 under the hip the
     //  coat covered them and its hem sank in front of the seat, the review of the shot types v2)
     const flexOf = (s: Side) => { const h = J(sk, "hip", s), kn = J(sk, "kn", s); return Math.abs(Math.atan2(Math.abs(kn[0] - h[0]), kn[1] - h[1])) * (180 / Math.PI); };
-    const flex = Math.max(0, Math.min(1, (Math.max(flexOf("L"), flexOf("R")) - 35) / 45)), rows = B.rows.map((q, i) => (i === 0 ? [q[0] + 30 * flex, ...q.slice(1)] : q));
+    const flex = Math.max(0, Math.min(1, (Math.max(flexOf("L"), flexOf("R")) - 35) / 45));
+    // (seated, the hem comes up above the thighs and the coat's front falls back off the lap, so the whole thigh shows level on the seat:
+    //  with the hem 4 under the hip and the front 50 deep, the coat covered the thighs to the knees and he read as squatting, Jesper on the
+    //  shot types v3: "låren vilar ovanpå den, fötterna i marken framför. Inte på huk")
+    const l0 = B.rows[0][0] + 30 * flex, rows = B.rows.map((q, i) => (i === 0 ? [l0 + sit * (30 - l0), q[1], q[2] - sit * 30, q[3]] : i === 1 ? [q[0] + sit * 44, q[1], q[2] - sit * 14, q[3]] : q));
     const t = torsoPts(sk, rows), dz = Math.max(...B.rows.map((q) => q[2])) * 0.8;
     const Q = (l: number, a: number) => Fr.Q(l, dz, a);
     if (other) {

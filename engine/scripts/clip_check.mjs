@@ -25,10 +25,10 @@
 //     node scripts/clip_check.mjs <clip id | all>     (from engine/)   CLIP_PLANT=<fault> plants one fault (see below)
 import * as esbuild from "esbuild"; import fs from "node:fs"; import path from "node:path"; import { pathToFileURL } from "node:url";
 const out = path.resolve("out/clip_model.mjs");
-fs.writeFileSync("out/_clip_entry.ts", 'export * from "../src/craft/clips/clipKit"; export { CLIPS, CRAB, GUARD } from "../src/craft/clips/clips"; export { SHOTS } from "../src/craft/alcatraz/alcatraz"; export { Ink } from "../src/craft/ink"; export { ease } from "../src/craft/stage/acting"; export { pupilIn, drawnGaze, qPupils, FACE } from "../src/craft/designs/flat"; export { handFlip, SHOE } from "../src/craft/designs/common"; export { PIVOT } from "../src/craft/motion";\n');
+fs.writeFileSync("out/_clip_entry.ts", 'export * from "../src/craft/clips/clipKit"; export { CLIPS, CRAB, GUARD } from "../src/craft/clips/clips"; export { SHOTS, DRAWN, SLEEVE, PLANT as ALC_PLANT } from "../src/craft/alcatraz/alcatraz"; export { Ink } from "../src/craft/ink"; export { ease } from "../src/craft/stage/acting"; export { pupilIn, drawnGaze, qPupils, FACE } from "../src/craft/designs/flat"; export { handFlip, SHOE } from "../src/craft/designs/common"; export { PIVOT } from "../src/craft/motion";\n');
 await esbuild.build({ entryPoints: ["out/_clip_entry.ts"], bundle: true, format: "esm", platform: "node", outfile: out, logLevel: "error", loader: { ".json": "json" } });
 const M = await import(pathToFileURL(out).href); fs.rmSync(out); fs.rmSync("out/_clip_entry.ts");
-const { SHOTS, CLIPS: LIB, CRAB, GUARD, Ink, castAt, FM, scaleOf, footY, D, shoeDrawn, FLAT_SPECS, viewOf, heightOf, drawnHandKind, figBox, pupilIn, drawnGaze, thighUnder, handFlip, SHOE, PIVOT, qPupils, FACE } = M;
+const { SHOTS, DRAWN, SLEEVE, ALC_PLANT, CLIPS: LIB, CRAB, GUARD, Ink, castAt, FM, scaleOf, footY, D, shoeDrawn, FLAT_SPECS, viewOf, heightOf, drawnHandKind, figBox, pupilIn, drawnGaze, thighUnder, handFlip, SHOE, PIVOT, qPupils, FACE } = M;
 // (alcatraz: the shots of the Alcatraz film, src/craft/alcatraz/alcatraz.ts, checked as the library's clips are)
 const CLIPS = { ...LIB, ...SHOTS }, LINE_TOP = FM.GY - FM.LINE / 2, ids = process.argv[2] === "alcatraz" ? Object.keys(SHOTS) : process.argv[2] && process.argv[2] !== "all" ? [process.argv[2]] : Object.keys(LIB);
 const PL = process.env.CLIP_PLANT;
@@ -36,7 +36,7 @@ const PL = process.env.CLIP_PLANT;
 const mockCtx = () => { let m = [1, 0, 0, 1, 0, 0]; const st = [], mul = (a, b) => [a[0] * b[0] + a[2] * b[1], a[1] * b[0] + a[3] * b[1], a[0] * b[2] + a[2] * b[3], a[1] * b[2] + a[3] * b[3], a[0] * b[4] + a[2] * b[5] + a[4], a[1] * b[4] + a[3] * b[5] + a[5]];
   const api = { save() { st.push(m.slice()); }, restore() { m = st.pop() ?? m; }, translate(x, y) { m = mul(m, [1, 0, 0, 1, x, y]); }, rotate(r) { const c = Math.cos(r), s = Math.sin(r); m = mul(m, [c, s, -s, c, 0, 0]); }, scale(x, y) { m = mul(m, [x, 0, 0, y, 0, 0]); },
     transform(a, b, c, d, e, f) { m = mul(m, [a, b, c, d, e, f]); }, setTransform(a, b, c, d, e, f) { m = typeof a === "object" ? [a.a, a.b, a.c, a.d, a.e, a.f] : [a, b, c, d, e, f]; }, resetTransform() { m = [1, 0, 0, 1, 0, 0]; },
-    getTransform() { return { a: m[0], b: m[1], c: m[2], d: m[3], e: m[4], f: m[5] }; }, measureText() { return { width: 0 }; } };
+    getTransform() { return { a: m[0], b: m[1], c: m[2], d: m[3], e: m[4], f: m[5] }; }, createLinearGradient() { return { addColorStop() {} }; }, createRadialGradient() { return { addColorStop() {} }; }, measureText() { return { width: 0 }; } };
   return new Proxy(api, { get: (t, k) => (k in t ? t[k] : () => {}), set: () => true }); };
 let failed = 0;
 const viewName = (sk) => { const s = Math.sin((sk.faceYaw * Math.PI) / 180), a = Math.abs(s); return a < 0.45 ? "front" : (a < 0.85 ? "q" : "side") + (s < 0 ? "-left" : "-right"); };
@@ -44,6 +44,7 @@ const handDeg = (sk, s) => { const w = sk.j[`wr${s}`], t = sk.j[`tip${s}`], e = 
 for (const id of ids) {
   // (set before the clip is made: its camera is fitted to every frame as it is made, which finds the guard)
   if (PL === "pipe-hand") { GUARD.farOut = 25; GUARD.farDown = 66; }
+  if (PL === "pose-snap") ALC_PLANT.snap = true;
   const c = CLIPS[id]();
   // ---- planted faults ----
   // (the crate of v4: its top set from half of the thighs' half-width, 13.5 x scale higher than the thighs' drawn underside)
@@ -55,6 +56,12 @@ for (const id of ids) {
   if (PL === "shoe-tilt") { SHOE.blend = false; PIVOT.heel = false; }
   if (PL === "pupil-nose") FACE.pupilClear = false;
   if (PL === "cuff-notch") FACE.cuffSwap = false;
+  if (PL === "arm-short") SLEEVE.len = 260;
+  if (PL === "cloth-drop") ALC_PLANT.drop = 250;
+  if (PL === "cloth-through") ALC_PLANT.hang = 190;
+  if (PL === "pop-in") ALC_PLANT.pop = true;
+  if (PL === "mirror-print") ALC_PLANT.mirror = true;
+  if (PL === "short-bars") ALC_PLANT.shortBars = true;
   if (PL === "jitter") for (const cm of c.cast) { const f0 = cm.pose; cm.pose = (t, p, h) => { const q = f0 ? f0(t, p, h) : p, f = Math.round(t * FM.FPS); return t > 1.4 && t < 2.0 ? { ...q, armL: [[q.armL[0][0], q.armL[0][1]], [q.armL[1][0] + (f % 2 ? 4 : -4), q.armL[1][1]]] } : q; }; }
   if (PL === "start-pop") for (const cm of c.cast) for (const l of cm.m.layers ?? []) if (l.pose && l.pose.pz !== undefined) l.glide = false;
   if (PL === "point-long") for (const p of c.points ?? []) p.t1 = p.t0 + 1.5;
@@ -86,6 +93,27 @@ for (const id of ids) {
   const prev = {}, prevPupil = {}, runs = {}, track = {}, standY = {}, lids = {}, hands = {}, joints = {}, mono = {}, pointRun = {}, hover = {}, pipe = {}, viewLog = {};
   const J = (g, j) => { const q = g.sk.j[j], s = scaleOf(g.who); return [g.x + q[0] * s, footY(g.who) + q[1] * s]; };
   for (let f = 0; f < F; f++) { const t = f / FM.FPS, figs = figsAtT(t, f), cam = c.camera(t), V = viewOf(cam);
+    // (Alcatraz, v1b) what the frame's drawing puts down: a forearm without a body leaves the picture through its edge (its sleeve's far end
+    //  outside the picture), and a blanket lies on its bed, never hanging below the bed's top (the review of STOPP 1, points 1 and 2)
+    if (SHOTS[c.id]) { for (const k of Object.keys(DRAWN)) DRAWN[k].length = 0; const mk = mockCtx(); c.ownBg?.(mk, t); c.back?.(mk, t); c.front?.(mk, t, figs);
+      for (const sl of DRAWN.sleeves) { const X = (sl.end[0] - cam.cx) * cam.z + FM.W / 2, Y = (sl.end[1] - cam.cy) * cam.z + FM.H / 2, W2 = (sl.wrist[0] - cam.cx) * cam.z + FM.W / 2, H2 = (sl.wrist[1] - cam.cy) * cam.z + FM.H / 2;
+        const inPic = (x, y) => x > 0 && x < FM.W && y > 0 && y < FM.H; if (inPic(W2, H2) && inPic(X, Y)) faults.push(`${f}: a forearm ends inside the picture (its sleeve stops at ${X.toFixed(0)}, ${Y.toFixed(0)})`); }
+      for (const cl of DRAWN.cloths) { if (cl.top > cl.support + 2) faults.push(`${f}: the ${cl.what} hangs ${(cl.top - cl.support).toFixed(0)} px below the top of what it lies on`);
+        // (b) a thing through another: a cloth folds over its support's front edge by 40 px at most, never down through the board under it
+        if (cl.bottom > cl.support + 40) faults.push(`${f}: the ${cl.what} goes ${(cl.bottom - cl.support).toFixed(0)} px down through the front of what it lies on`); }
+      const P = (q) => [(q[0] - cam.cx) * cam.z + FM.W / 2, (q[1] - cam.cy) * cam.z + FM.H / 2], inside = (q) => { const [x, y] = P(q); return x > 0 && x < FM.W && y > 0 && y < FM.H; };
+      // (f) an upright (a bar, a bed's leg) stands on its floor or runs out of the picture: never ending in the air
+      for (const u of DRAWN.uprights) if (u.foot < u.floor - 2 && inside([u.x, u.foot])) faults.push(`${f}: a ${u.what} ends ${(u.floor - u.foot).toFixed(0)} px above the floor, in the air`);
+      // (c) a thing that comes (a coat, a poster, the boat, the head) first shows outside the picture, or with a hand at it
+      const seen = (prev.things ??= new Set()), now = new Set();
+      for (const th of DRAWN.things) { now.add(th.what); if (seen.has(th.what) || f === 0) continue; const near = DRAWN.sleeves.some((sl) => Math.hypot(sl.wrist[0] - th.at[0], sl.wrist[1] - th.at[1]) < 260);
+        if (inside(th.at) && !near) faults.push(`${f}: the ${th.what} pops into the picture with no hand at it`); }
+      prev.things = now;
+      // (e) print (a poster's front) is never drawn mirrored
+      for (const pr of DRAWN.prints) if (pr.mirrored) faults.push(`${f}: the ${pr.what}'s print is drawn mirrored`); }
+    // (d) a face never jumps in one frame: wide eyes, the mouth, the brows and the smile change by under 0.3 a frame (06 react over several frames)
+    for (const g of figs) { const fc = g.o.face ?? {}, q = prev["face" + g.name]; prev["face" + g.name] = fc;
+      if (q) for (const k of ["wide", "mouth", "brow", "smile"]) { const d = Math.abs((fc[k] ?? 0) - (q[k] ?? 0)); if (d > 0.3) faults.push(`${f} ${g.name}: the face's ${k} jumps ${d.toFixed(2)} in one frame`); } }
     for (const g of figs) { const sc = scaleOf(g.who), feet = {}, gap = {}, shoes = {}, running = c.running?.(g.name, t) ?? false;
       for (const s of ["L", "R"]) { const W = g.who === "sir" ? FLAT_SPECS[0].sir.B.shoeW : FLAT_SPECS[0].other.B.shoeW, sh = shoeDrawn(g.sk, s, W, true), ink = 0.85 * D.ol * sc;
         const P = sh.pts.map((q) => [g.x + q[0] * sc, footY(g.who) + q[1] * sc]); shoes[s] = { x0: Math.min(...P.map((q) => q[0])), x1: Math.max(...P.map((q) => q[0])), y0: Math.min(...P.map((q) => q[1])), y1: Math.max(...P.map((q) => q[1])) + ink };
@@ -192,7 +220,7 @@ for (const id of ids) {
       { const away = c.offFrameOK?.(g.name, t), mx = 0.03 * (V.x1 - V.x0), my = 0.03 * (V.y1 - V.y0), B = figBox(g);
         const o = Math.max(0, ...B.map(([x, y]) => Math.max(V.x0 + mx - x, x - (V.x1 - mx), V.y0 + my - y, y - (V.y1 - my))));
         if (!away) { stat.edge = Math.max(stat.edge, o); if (o > 0) faults.push(`${f} ${g.name}: the figure ${o.toFixed(0)} px past the picture's margin`); }
-        const tall = FM.PPM * heightOf(g.who) * cam.z, need = c.shot === "medium" ? 0.7 : 0.5; stat.fill = Math.min(stat.fill, tall / FM.H);
+        const tall = FM.PPM * heightOf(g.who) * cam.z, need = c.shot === "medium" ? 0.7 : c.shot === "wide" ? 0.3 : 0.5; stat.fill = Math.min(stat.fill, tall / FM.H);
         if (!away && tall < need * FM.H) faults.push(`${f} ${g.name}: a ${c.shot} shot with the figure ${((tall / FM.H) * 100).toFixed(0)} % of the picture's height (needs ${need * 100} %)`);
         if (!away && c.shot === "full" && Math.max(J(g, "heelL")[1], J(g, "heelR")[1]) > V.y1) faults.push(`${f} ${g.name}: a full shot with the feet out of the picture`); }
       (track[g.name] ??= []).push([...J(g, "skull"), ...J(g, "pelvis")]);

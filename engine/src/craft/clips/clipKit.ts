@@ -146,7 +146,7 @@ export type Clip = { id: string; title: string; seconds: number; cast: Cast[]; e
   /** after each figure is drawn (a held thing, a thumb over it) */
   over?: (g: CanvasRenderingContext2D, t: number, f: Fig) => void;
   seats?: Seat[]; appear?: Appear[]; points?: Point[]; contacts?: Contact[]; bg?: number; bgOpts?: { spade?: boolean; pit?: boolean };
-  camera: (t: number) => Cam; shot: "medium" | "full"; solids?: Solid[]; door?: { h: number };
+  camera: (t: number) => Cam; shot: "medium" | "full" | "wide"; solids?: Solid[]; door?: { h: number };
   /** things standing on the figures' own ground line (a crate, a bollard): no shoe may overlap them, or which is in front cannot be read */
   groundProps?: { name: string; x0: number; x1: number }[];
   /** a clip that draws its own background (bg -1) */

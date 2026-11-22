@@ -1,0 +1,39 @@
+{
+ "line": "At sunrise, the guards found out.\r",
+ "take": 1,
+ "word_errors": 0.0,
+ "words": [
+  {
+   "w": "At",
+   "a": 0.0,
+   "b": 0.18
+  },
+  {
+   "w": "sunrise,",
+   "a": 0.18,
+   "b": 0.58
+  },
+  {
+   "w": "the",
+   "a": 0.84,
+   "b": 0.9
+  },
+  {
+   "w": "guards",
+   "a": 0.9,
+   "b": 1.14
+  },
+  {
+   "w": "found",
+   "a": 1.14,
+   "b": 1.38
+  },
+  {
+   "w": "out.",
+   "a": 1.38,
+   "b": 1.7
+  }
+ ],
+ "character_count_before": 2344,
+ "character_count_after": 2344
+}

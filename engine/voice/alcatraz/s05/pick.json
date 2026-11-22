@@ -1,0 +1,69 @@
+{
+ "line": "They dug out the air vents in their cells with homemade tools.\r",
+ "take": 0,
+ "word_errors": 0.0,
+ "words": [
+  {
+   "w": "They",
+   "a": 0.0,
+   "b": 0.22
+  },
+  {
+   "w": "dug",
+   "a": 0.22,
+   "b": 0.4
+  },
+  {
+   "w": "out",
+   "a": 0.4,
+   "b": 0.6
+  },
+  {
+   "w": "the",
+   "a": 0.6,
+   "b": 0.76
+  },
+  {
+   "w": "air",
+   "a": 0.76,
+   "b": 0.96
+  },
+  {
+   "w": "vents",
+   "a": 0.96,
+   "b": 1.22
+  },
+  {
+   "w": "in",
+   "a": 1.22,
+   "b": 1.42
+  },
+  {
+   "w": "their",
+   "a": 1.42,
+   "b": 1.56
+  },
+  {
+   "w": "cells",
+   "a": 1.56,
+   "b": 1.86
+  },
+  {
+   "w": "with",
+   "a": 1.86,
+   "b": 2.1
+  },
+  {
+   "w": "homemade",
+   "a": 2.1,
+   "b": 2.46
+  },
+  {
+   "w": "tools.",
+   "a": 2.46,
+   "b": 3.02
+  }
+ ],
+ "character_count_before": 2344,
+ "character_count_after": 2344
+}

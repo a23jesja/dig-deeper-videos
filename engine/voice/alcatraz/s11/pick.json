@@ -1,0 +1,39 @@
+{
+ "line": "Nobody knows if they made it.\r",
+ "take": 0,
+ "word_errors": 0.0,
+ "words": [
+  {
+   "w": "Nobody",
+   "a": 0.0,
+   "b": 0.26
+  },
+  {
+   "w": "knows",
+   "a": 0.26,
+   "b": 0.54
+  },
+  {
+   "w": "if",
+   "a": 0.54,
+   "b": 0.74
+  },
+  {
+   "w": "they",
+   "a": 0.74,
+   "b": 0.86
+  },
+  {
+   "w": "made",
+   "a": 0.86,
+   "b": 1.1
+  },
+  {
+   "w": "it.",
+   "a": 1.1,
+   "b": 1.3
+  }
+ ],
+ "character_count_before": 2344,
+ "character_count_after": 2344
+}

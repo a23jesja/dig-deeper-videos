@@ -1,0 +1,39 @@
+{
+ "line": "The guard's torch hit the pillow.\r",
+ "take": 0,
+ "word_errors": 0.0,
+ "words": [
+  {
+   "w": "The",
+   "a": 0.0,
+   "b": 0.18
+  },
+  {
+   "w": "guard's",
+   "a": 0.18,
+   "b": 0.56
+  },
+  {
+   "w": "torch",
+   "a": 0.56,
+   "b": 0.84
+  },
+  {
+   "w": "hit",
+   "a": 0.84,
+   "b": 1.08
+  },
+  {
+   "w": "the",
+   "a": 1.08,
+   "b": 1.24
+  },
+  {
+   "w": "pillow.",
+   "a": 1.24,
+   "b": 1.48
+  }
+ ],
+ "character_count_before": 2176,
+ "character_count_after": 2176
+}

@@ -1,0 +1,39 @@
+{
+ "line": "Three men were gone from Alcatraz.\r",
+ "take": 0,
+ "word_errors": 0.0,
+ "words": [
+  {
+   "w": "Three",
+   "a": 0.0,
+   "b": 0.3
+  },
+  {
+   "w": "men",
+   "a": 0.3,
+   "b": 0.48
+  },
+  {
+   "w": "were",
+   "a": 0.48,
+   "b": 0.66
+  },
+  {
+   "w": "gone",
+   "a": 0.66,
+   "b": 0.88
+  },
+  {
+   "w": "from",
+   "a": 0.88,
+   "b": 1.12
+  },
+  {
+   "w": "Alcatraz.",
+   "a": 1.12,
+   "b": 1.68
+  }
+ ],
+ "character_count_before": 2176,
+ "character_count_after": 2176
+}

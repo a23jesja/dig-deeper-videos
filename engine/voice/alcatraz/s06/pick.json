@@ -1,0 +1,44 @@
+{
+ "line": "They turned prison raincoats into a raft.\r",
+ "take": 0,
+ "word_errors": 0.0,
+ "words": [
+  {
+   "w": "They",
+   "a": 0.0,
+   "b": 0.2
+  },
+  {
+   "w": "turned",
+   "a": 0.2,
+   "b": 0.46
+  },
+  {
+   "w": "prison",
+   "a": 0.46,
+   "b": 0.82
+  },
+  {
+   "w": "raincoats",
+   "a": 0.82,
+   "b": 1.44
+  },
+  {
+   "w": "into",
+   "a": 1.44,
+   "b": 1.62
+  },
+  {
+   "w": "a",
+   "a": 1.62,
+   "b": 1.8
+  },
+  {
+   "w": "raft.",
+   "a": 1.8,
+   "b": 2.1
+  }
+ ],
+ "character_count_before": 2344,
+ "character_count_after": 2344
+}

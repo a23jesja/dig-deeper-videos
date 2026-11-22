@@ -14,6 +14,10 @@ const GOLD = "#e8b630", MOUTH = "#5b1f2a", TONGUE = "#e46a6a", TEAR = "#7cc8ee",
 /** the face check's switch (scripts/face_order.mjs): false draws the nose before the monocle's ring at three-quarter, as in v4 */
 /** cuffSwap: the far hand changes layer in a turn as the sweep passes the coat's edge at the cuff (false: at HAND_SWAP, v6/v7 draft, a notch) */
 export const FACE = { noseLast: true, qMoustache: true, pupilClear: true, earSliver: true, chainBehindPipe: true, cuffSwap: true };
+/** the look being drawn (drawFlat sets it for each figure): Sir's own unless the figure has a Look (common.ts) */
+const LOOK = { col: null as null | Record<string, string>, band: null as null | string, badge: null as null | string, mono: true, pipe: true, moustache: true, brow: null as null | string };
+/** a colour of the figure being drawn: the Look's, else the spec's */
+const lc = (k: string, base: string) => (LOOK.col && LOOK.col[k]) || base;
 /** the three-quarter nose's ellipse, head-local, with half its outline */
 const Q_NOSE = [104, -84, 17 + 4.5, 14 + 4.5];
 /** the three-quarter pipe as last drawn (its corner, way and droop), drawn again over the monocle's chain (see the head) */
@@ -141,7 +145,8 @@ const chainAt = (k: Ink, a: P2, b: P2, bow: P2, w: number) => band(k, spline([a,
 const capFront = (k: Ink, hw: number, y0: number, top: number, col: string, brim: number) => {
   const cr = spline([[-hw * 1.06, y0 - 8], [-hw * 1.14, y0 - (y0 - top) * 0.5], [-hw * 0.82, top + 14], [0, top], [hw * 0.86, top + 10], [hw * 1.16, y0 - (y0 - top) * 0.52], [hw * 1.08, y0 - 8], [0, y0]]);
   fl(k, cr, col);
-  fl(k, [[-hw * 1.04, y0 - 30], [hw * 1.06, y0 - 30], [hw * 1.02, y0 - 6], [-hw * 1.0, y0 - 6]], TURQ);
+  fl(k, [[-hw * 1.04, y0 - 30], [hw * 1.06, y0 - 30], [hw * 1.02, y0 - 6], [-hw * 1.0, y0 - 6]], LOOK.band ?? TURQ);
+  if (LOOK.badge) fl(k, [[0, y0 - 52], [16, y0 - 40], [10, y0 - 20], [-10, y0 - 20], [-16, y0 - 40]], LOOK.badge);
   fl(k, spline([[-hw * 0.95, y0 - 10], [0, y0 + brim], [hw * 0.95, y0 - 10], [hw * 0.8, y0 - 4], [0, y0 + brim * 0.45], [-hw * 0.8, y0 - 4]]), col);
   fl(k, ellPts(0, top + 3, hw * 0.12, hw * 0.06), col);
 };
@@ -150,7 +155,8 @@ const capSide = (k: Ink, back: number, front: number, y0: number, top: number, c
   fl(k, spline([[front + brim, y0 - 2], [front + brim * 0.85, y0 - 16], [front - 10, y0 - 22], [front - 4, y0 + 2]]), col);
   const cr = spline([[back - 6, y0 - 4], [back - 12, y0 - (y0 - top) * 0.55], [back + (front - back) * 0.25, top + 4], [back + (front - back) * 0.6, top], [front + 18, top + (y0 - top) * 0.32], [front + 24, y0 - 14], [front, y0 - 4]]);
   fl(k, cr, col);
-  fl(k, [[back - 4, y0 - 30], [front + 20, y0 - 30], [front + 16, y0 - 6], [back - 2, y0 - 6]], TURQ);
+  fl(k, [[back - 4, y0 - 30], [front + 20, y0 - 30], [front + 16, y0 - 6], [back - 2, y0 - 6]], LOOK.band ?? TURQ);
+  if (LOOK.badge) fl(k, [[front - 6, y0 - 52], [front + 8, y0 - 40], [front + 4, y0 - 20], [front - 14, y0 - 20], [front - 18, y0 - 40]], LOOK.badge);
 };
 
 // ---------------- the specification of one direction ----------------
@@ -172,7 +178,8 @@ export type FlatSpec = {
 };
 
 const drawFlat = (c: FlatSpec) => (k: Ink, sk: Sk, o: FigOpts) => {
-  const other = o.who === "baker", { P: _p, B } = other ? c.other : c.sir, Fr = frame(sk), P = sk.P, r = rd(o.face ?? {}), hp = headPose(sk), C = c.col;
+  const lk = o.look; LOOK.col = lk?.col ?? null; LOOK.band = lk?.band ?? null; LOOK.badge = lk?.badge ?? null; LOOK.mono = lk?.mono ?? true; LOOK.pipe = lk?.pipe ?? true; LOOK.moustache = lk?.moustache ?? true; LOOK.brow = lk?.brow ?? null;
+  const other = o.who === "baker", { P: _p, B } = other ? c.other : c.sir, Fr = frame(sk), P = sk.P, r = rd(o.face ?? {}), hp = headPose(sk), C = (lk?.col ? { ...c.col, ...lk.col } : c.col) as Col;
   void _p; const front = sk.cos > 0.35, sideOn = Math.abs(sk.sin) > 0.6, d = Math.sign(sk.sin) || 1, sit = other ? 0 : seated(sk);
   const leg = (s: Side) => {
     // (seated, in profile: the trousers' seat behind the hips, down to the seat's top, drawn with the far leg so the near thigh lies over it;
@@ -230,7 +237,7 @@ const drawFlat = (c: FlatSpec) => (k: Ink, sk: Sk, o: FigOpts) => {
       if (other) (view === "side" ? c.otherSide(k, rv) : view === "q" ? c.otherQ!(k, rv) : c.otherFront(k, rv, sn * c.turn));
       else (view === "side" ? c.sirSide(k, rv, o.capLift ?? 0, !flip) : view === "q" ? c.sirQ!(k, rv, o.capLift ?? 0, flip ? "far" : "near") : c.sirFront(k, rv, sn * c.turn, o.capLift ?? 0));
     });
-    if (other) return;
+    if (other || !LOOK.mono) return;
     const w = headToWorld(sk, view !== "front" && flip), dz = Math.max(...B.rows.map((q) => q[2])), end = Fr.Q(c.chainEnd[0], dz * 0.8, c.chainEnd[1]);
     // (the monocle on his right eye only: seen from his left side it is behind his head, and so is its chain)
     // (the chain ends in a small gold button on the coat: it ended loose on the cloth, the review of the shot types v2)
@@ -353,9 +360,9 @@ const A_SPEC: FlatSpec = {
     B: { rows: [[-80, 80, 66, 62], [-40, 66, 56, 52], [0, 52, 44, 40], [60, 42, 38, 32], [110, 52, 40, 34], [128, 40, 30, 26], [148, 20, 20, 18]], arm: [19, 16, 14], leg: [15, 13, 11], shoeW: 34, neck: 0 } },
   col: CA, chainFront: [[-74, -92], [-96, -2]], chainSide: [[42, -74], [40, 10]], chainEnd: [-34, 64], chainW: 4.5, vest: [150, -4, 36],
   sirFront: (k, r, tx, lift) => {
-    for (const s of [-1, 1]) fl(k, ellPts(s * 126, -118, 24, 30), CA.skin);
-    fl(k, ellPts(0, -128, 128, 132, 0, 0, 360, 60), CA.skin);
-    for (const s of [-1, 1]) { const [i, o] = browEnds(r, s * 46 + tx, -172, 1, 20, s); k.line([i, o], 15 + k.ol * 1.7); k.line([i, o], 15, CA.hair); }
+    for (const s of [-1, 1]) fl(k, ellPts(s * 126, -118, 24, 30), lc('skin', CA.skin));
+    fl(k, ellPts(0, -128, 128, 132, 0, 0, 360, 60), lc('skin', CA.skin));
+    for (const s of [-1, 1]) { const [i, o] = browEnds(r, s * 46 + tx, -172, 1, 20, s); k.line([i, o], 15 + k.ol * 1.7); k.line([i, o], 15, LOOK.brow ?? CA.hair); }
     // (the eyes and the monocle are drawn after the mouth, the pipe and the moustache, below: drawn before, the moustache lay over the eyes'
     //  lower edge and the monocle's ring while the monocle's cord lay on top, the independent review of the motion test v4)
     // (the mouth always shows under the moustache, closed a small dark mouth, so it can move with the voice; the pipe sits in its corner:
@@ -368,47 +375,47 @@ const A_SPEC: FlatSpec = {
     //  opens: it stayed under the moustache while the mouth gaped, the review of the shot types v1)
     const m0 = Math.max(r.mouth, 0.2);
     mouthAt(k, tx + r.smirk * 4, -52, mw, 1, { ...r, mouth: m0 }, "#e0806e");
-    pipeAt(k, [tx + mw - 2, -48 + 61 * (m0 - 0.2) * 0.45 + cornerDown(r, 1)], 1, 1, droopOf(r));
+    if (LOOK.pipe) pipeAt(k, [tx + mw - 2, -48 + 61 * (m0 - 0.2) * 0.45 + cornerDown(r, 1)], 1, 1, droopOf(r));
     // (v6: turned toward three-quarter, the half on the side he turns to is shortened just enough to stay inside the head: at tx 15 its tip went
     //  6 past the outline. At tx 0, as in 01 and 04, nothing changes)
     const sideK = Math.min(1, (118 - Math.abs(tx)) / 112), R = MOUS_A.map(([x, y]) => [x * (tx > 0 ? sideK : 1), y] as P2), Lh = mirror(MOUS_A).map(([x, y]) => [x * (tx < 0 ? sideK : 1), y] as P2);
-    fl(k, at(spline([...R, ...Lh.reverse()]), tx), CA.hair);
-    for (const s of [-1, 1]) eyeA(k, s * 46 + tx, -118, 1, r, CA.skin, -s);
-    monoRing(k, -46 + tx, -118, 42, 52, 7);
-    fl(k, ellPts(tx, -84, 17, 14), CA.nose);
+    if (LOOK.moustache) fl(k, at(spline([...R, ...Lh.reverse()]), tx), lc('hair', CA.hair));
+    for (const s of [-1, 1]) eyeA(k, s * 46 + tx, -118, 1, r, lc('skin', CA.skin), -s);
+    if (LOOK.mono) monoRing(k, -46 + tx, -118, 42, 52, 7);
+    fl(k, ellPts(tx, -84, 17, 14), lc('nose', CA.nose));
     tearAt(k, tx + 54, -82, 1, r.tear); tearAt(k, tx - 38, -82, 0.9, r.tear * 0.7);
-    k.g.save(); k.g.translate(-lift * 12, -lift * 50); capFront(k, 124, -206, -312, CA.cap, 12); k.g.restore();
+    k.g.save(); k.g.translate(-lift * 12, -lift * 50); capFront(k, 124, -206, -312, lc('cap', CA.cap), 12); k.g.restore();
   },
   sirSide: (k, r, lift, mono = true) => {
-    fl(k, ellPts(0, -128, 124, 132, 0, 0, 360, 60), CA.skin);
-    ear(k, -34, -112, 22, 30, CA.skin);
-    const [i, o] = browEnds(r, 66, -172, 0.9, 18, -1); k.line([i, o], 14 + k.ol * 1.7); k.line([i, o], 14, CA.hair);      // (side -1: the brow's inner end toward the nose; the other way a scared brow read as cross in profile)
+    fl(k, ellPts(0, -128, 124, 132, 0, 0, 360, 60), lc('skin', CA.skin));
+    ear(k, -34, -112, 22, 30, lc('skin', CA.skin));
+    const [i, o] = browEnds(r, 66, -172, 0.9, 18, -1); k.line([i, o], 14 + k.ol * 1.7); k.line([i, o], 14, LOOK.brow ?? CA.hair);      // (side -1: the brow's inner end toward the nose; the other way a scared brow read as cross in profile)
     // (from the side the pipe's mouthpiece is in the mouth under the moustache, not at the moustache's tip: Jesper choosing A. The mouth is drawn
     //  after the stem, so it shows in profile too: it was hidden by the moustache and the pipe while he walked in, the review of the motion test)
-    pipeAt(k, [104, -40], 1, 1, droopOf(r));
+    if (LOOK.pipe) pipeAt(k, [104, -40], 1, 1, droopOf(r));
     mouthAt(k, 92, -40, 14 * (1 + 0.4 * r.mouth), 0.9, { ...r, mouth: Math.max(r.mouth, 0.16) }, "#e0806e");
-    fl(k, spline([[70, -72], [108, -76], [130, -80], [140, -100], [151, -94], [140, -66], [112, -58], [74, -62]]), CA.hair);
-    eyeA(k, 66, -118, 0.9, { ...r, gaze: [Math.max(0.35, r.gaze[0]), r.gaze[1]] }, CA.skin, 1);      // (after the moustache, as front and three-quarter)
-    if (mono) monoRing(k, 66, -118, 36, 50, 7);
-    fl(k, ellPts(126, -82, 19, 16), CA.nose);
+    if (LOOK.moustache) fl(k, spline([[70, -72], [108, -76], [130, -80], [140, -100], [151, -94], [140, -66], [112, -58], [74, -62]]), lc('hair', CA.hair));
+    eyeA(k, 66, -118, 0.9, { ...r, gaze: [Math.max(0.35, r.gaze[0]), r.gaze[1]] }, lc('skin', CA.skin), 1);      // (after the moustache, as front and three-quarter)
+    if (mono && LOOK.mono) monoRing(k, 66, -118, 36, 50, 7);
+    fl(k, ellPts(126, -82, 19, 16), lc('nose', CA.nose));
     tearAt(k, 72, -82, 1, r.tear);
-    k.g.save(); k.g.translate(-lift * 40, -lift * 50); k.g.rotate(-lift * 0.25); capSide(k, -128, 112, -206, -312, CA.cap, 52); k.g.restore();
+    k.g.save(); k.g.translate(-lift * 40, -lift * 50); k.g.rotate(-lift * 0.25); capSide(k, -128, 112, -206, -312, lc('cap', CA.cap), 52); k.g.restore();
   },
   // three-quarter, facing the picture's right: the near eye (his right) full, the far eye narrower by the edge, the nose by the edge, the near
   // half of the moustache long and the far one short, the near ear on the head's left
   sirQ: (k, r, lift, mono) => {
     // (the far ear just showing past the cheek: from the front both ears popped out in one frame, the review of v2. v6: larger and further out,
     //  so its skin shows past the cheek: at 120 with 12 only its outline came out, a black half-moon at the head's edge, the review of v6)
-    if (FACE.earSliver) ear(k, 126, -114, 17, 25, CA.skin); else ear(k, 120, -114, 12, 22, CA.skin);
-    fl(k, ellPts(0, -128, 126, 132, 0, 0, 360, 60), CA.skin);
-    ear(k, -92, -114, 20, 28, CA.skin);
-    for (const [x, hw] of [[10, 20], [74, 14]] as [number, number][]) { const [i, o] = browEnds(r, x, -172, 1, hw, x < 40 ? -1 : 1); k.line([i, o], 15 + k.ol * 1.7); k.line([i, o], 15, CA.hair); }
+    if (FACE.earSliver) ear(k, 126, -114, 17, 25, lc('skin', CA.skin)); else ear(k, 120, -114, 12, 22, lc('skin', CA.skin));
+    fl(k, ellPts(0, -128, 126, 132, 0, 0, 360, 60), lc('skin', CA.skin));
+    ear(k, -92, -114, 20, 28, lc('skin', CA.skin));
+    for (const [x, hw] of [[10, 20], [74, 14]] as [number, number][]) { const [i, o] = browEnds(r, x, -172, 1, hw, x < 40 ? -1 : 1); k.line([i, o], 15 + k.ol * 1.7); k.line([i, o], 15, LOOK.brow ?? CA.hair); }
     // (a three-quarter head looks the way it faces: the pupils start 0.45 toward that side and the gaze adds to it. At the gaze alone the near
     //  pupil sat in the eye's middle while he pointed at Ada and he seemed to look into the lens, the review of v3)
     const gz: P2 = [Math.min(1, 0.45 + 0.7 * Math.max(0, r.gaze[0])), r.gaze[1]];
     // (v1-v4: the monocle's ring was drawn after the nose, the review of the shot types v1; v5: the nose last, below)
-    const eyesAndMono = () => { eyeA(k, 10, -118, 1, { ...r, gaze: gz }, CA.skin, 1); eyeA(k, 76, -118, 0.8, { ...r, gaze: gz }, CA.skin, -1, Q_NOSE); };
-    const ring = () => { if (mono === "near") monoRing(k, 10, -118, 42, 52, 7); else monoRing(k, 76, -118, 34, 44, 7); };
+    const eyesAndMono = () => { eyeA(k, 10, -118, 1, { ...r, gaze: gz }, lc('skin', CA.skin), 1); eyeA(k, 76, -118, 0.8, { ...r, gaze: gz }, lc('skin', CA.skin), -1, Q_NOSE); };
+    const ring = () => { if (!LOOK.mono) return; if (mono === "near") monoRing(k, 10, -118, 42, 52, 7); else monoRing(k, 76, -118, 34, 44, 7); };
     // (the mouth nearer the head's middle, kept inside the head's outline with a narrow chin under it, its open height 0.8 of the front's: at
     //  the nose's side the jaw curves up and the open mouth and its lip went out past the outline, over the collar; closed it shows below the
     //  moustache as clearly as from the front. The review of the motion test v3)
@@ -424,19 +431,19 @@ const A_SPEC: FlatSpec = {
     //  (drawn mirrored) it is the near one, at the mouth's back, the stem going out the same way on the screen as from the front. It jumped
     //  to the other corner in one frame, the review of v2)
     const pa: P2 = mono === "far" ? [62 - mw + 2, my + 4 + 61 * 0.8 * (m0 - 0.2) * 0.45 + cornerDown(r, 0.8)] : [62 + mw - 2, my + 4 + 61 * 0.8 * (m0 - 0.2) * 0.45 + cornerDown(r, 0.8)];
-    pipeAt(k, pa, 1, mono === "far" ? -1 : 1, droopOf(r)); Q_PIPE.at = [pa, mono === "far" ? -1 : 1, droopOf(r)];
+    if (LOOK.pipe) { pipeAt(k, pa, 1, mono === "far" ? -1 : 1, droopOf(r)); Q_PIPE.at = [pa, mono === "far" ? -1 : 1, droopOf(r)]; } else Q_PIPE.at = null;
     // (the far half 0.6 of the near one: at 0.34 the moustache doubled in size the frame the head turned to the front, the review of v2)
     // (the far half 0.5, the whole moustache 6 nearer the middle: at 0.6 from 84 its tip and the pipe came close to the head's outline, v3)
     // (v6: see qMoustache)
     const { near, far } = qMoustache();
-    fl(k, spline([...far, ...[...near].reverse()]), CA.hair);
+    if (LOOK.moustache) fl(k, spline([...far, ...[...near].reverse()]), lc('hair', CA.hair));
     eyesAndMono();      // (after the moustache: the eyes and the monocle over it, the cord over them as before)
     // (v5: the nose over the eyes and the monocle's ring in every view, as from the front and in profile: turned to his left the ring on the
     //  far eye lay over the nose, Jesper on the shot types v4, "Ja"; this undoes the order the review of v1 asked for. FACE.noseLast = false
     //  is the check's planted fault, the order of v4)
-    if (FACE.noseLast) { ring(); fl(k, ellPts(104, -84, 17, 14), CA.nose); } else { fl(k, ellPts(104, -84, 17, 14), CA.nose); ring(); }
+    if (FACE.noseLast) { ring(); fl(k, ellPts(104, -84, 17, 14), lc('nose', CA.nose)); } else { fl(k, ellPts(104, -84, 17, 14), lc('nose', CA.nose)); ring(); }
     tearAt(k, 84, -82, 0.9, r.tear); tearAt(k, 18, -82, 1, r.tear * 0.7);
-    k.g.save(); k.g.translate(-lift * 20 + 18, -lift * 50); capFront(k, 124, -206, -312, CA.cap, 12); k.g.restore();
+    k.g.save(); k.g.translate(-lift * 20 + 18, -lift * 50); capFront(k, 124, -206, -312, lc('cap', CA.cap), 12); k.g.restore();
   },
   otherQ: (k, r) => {
     fl(k, ellPts(-56, -252, 42, 40), ADA_HAIR_A);

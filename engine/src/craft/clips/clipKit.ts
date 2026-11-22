@@ -31,7 +31,7 @@ export type HS = [number, HandKind][];
 export const handAt = (hs: HS, t: number) => { let k = hs[0][1]; for (const [t0, v] of hs) if (t >= t0) k = v; return k; };
 export type Fig = { name: string; who: Who; x: number; sk: Sk; o: FigOpts };
 export type Mouth = { t0: number; len: number; mouth: number[] };
-export type Cast = { name: string; m: MM; who: Who; hands?: { L: HS; R: HS }; mouth?: Mouth; seed?: number; armWipe?: boolean;
+export type Cast = { name: string; m: MM; who: Who; hands?: { L: HS; R: HS }; mouth?: Mouth; seed?: number; armWipe?: boolean; look?: import("../designs/common").Look;
   /** a change to the pose after the play (a hand put on a handle, a thing held), the last word on the arms */
   pose?: (t: number, p: Pose, heading: number) => Pose };
 
@@ -56,7 +56,7 @@ export const castAt = (cast: Cast[], t: number): Fig[] => cast.map((c) => {
   const fix = (l: Pose["legL"]) => (l && (l as { th?: unknown }).th === undefined ? { ...l, x: ((l as { x?: number }).x ?? 0) - hipLL(c.who) } : l);
   let pose = { ...a.pose, legL: fix(a.pose.legL), legR: fix(a.pose.legR) } as Pose;
   if (c.pose) pose = c.pose(t, pose, a.heading);
-  return { name: c.name, who: c.who, x: px(a.at[0]), sk: solve(D.props(c.who), pose, a.heading), o: { ...a.o, ...(c.hands ? { handL: handAt(c.hands.L, t), handR: handAt(c.hands.R, t) } : {}), face, ...(c.armWipe === false ? { armWipe: false } : {}) } };
+  return { name: c.name, who: c.who, x: px(a.at[0]), sk: solve(D.props(c.who), pose, a.heading), o: { ...a.o, ...(c.hands ? { handL: handAt(c.hands.L, t), handR: handAt(c.hands.R, t) } : {}), face, ...(c.armWipe === false ? { armWipe: false } : {}), ...(c.look ? { look: c.look } : {}) } };
 });
 
 /** a joint of a figure in picture pixels */

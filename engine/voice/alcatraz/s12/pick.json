@@ -1,0 +1,44 @@
+{
+ "line": "Somewhere, three fake heads are still asleep.\r",
+ "take": 0,
+ "word_errors": 0.0,
+ "words": [
+  {
+   "w": "Somewhere",
+   "a": 0.0,
+   "b": 0.38
+  },
+  {
+   "w": "three",
+   "a": 0.38,
+   "b": 0.72
+  },
+  {
+   "w": "fake",
+   "a": 0.72,
+   "b": 1.0
+  },
+  {
+   "w": "heads",
+   "a": 1.0,
+   "b": 1.34
+  },
+  {
+   "w": "are",
+   "a": 1.34,
+   "b": 1.48
+  },
+  {
+   "w": "still",
+   "a": 1.48,
+   "b": 1.68
+  },
+  {
+   "w": "asleep.",
+   "a": 1.68,
+   "b": 2.04
+  }
+ ],
+ "character_count_before": 2344,
+ "character_count_after": 2344
+}

@@ -1,0 +1,54 @@
+{
+ "line": "If the guards found the holes, it was over.\r",
+ "take": 0,
+ "word_errors": 0.0,
+ "words": [
+  {
+   "w": "If",
+   "a": 0.0,
+   "b": 0.16
+  },
+  {
+   "w": "the",
+   "a": 0.16,
+   "b": 0.34
+  },
+  {
+   "w": "guards",
+   "a": 0.34,
+   "b": 0.56
+  },
+  {
+   "w": "found",
+   "a": 0.56,
+   "b": 0.82
+  },
+  {
+   "w": "the",
+   "a": 0.82,
+   "b": 1.0
+  },
+  {
+   "w": "holes,",
+   "a": 1.0,
+   "b": 1.3
+  },
+  {
+   "w": "it",
+   "a": 1.34,
+   "b": 1.48
+  },
+  {
+   "w": "was",
+   "a": 1.48,
+   "b": 1.6
+  },
+  {
+   "w": "over.",
+   "a": 1.6,
+   "b": 1.92
+  }
+ ],
+ "character_count_before": 2176,
+ "character_count_after": 2176
+}

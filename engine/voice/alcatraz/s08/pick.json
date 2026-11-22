@@ -1,0 +1,64 @@
+{
+ "line": "Then they climbed down and pushed off into the dark bay.\r",
+ "take": 0,
+ "word_errors": 0.0,
+ "words": [
+  {
+   "w": "Then",
+   "a": 0.0,
+   "b": 0.24
+  },
+  {
+   "w": "they",
+   "a": 0.24,
+   "b": 0.42
+  },
+  {
+   "w": "climbed",
+   "a": 0.42,
+   "b": 0.6
+  },
+  {
+   "w": "down",
+   "a": 0.6,
+   "b": 0.96
+  },
+  {
+   "w": "and",
+   "a": 0.96,
+   "b": 1.18
+  },
+  {
+   "w": "pushed",
+   "a": 1.18,
+   "b": 1.36
+  },
+  {
+   "w": "off",
+   "a": 1.36,
+   "b": 1.6
+  },
+  {
+   "w": "into",
+   "a": 1.6,
+   "b": 1.78
+  },
+  {
+   "w": "the",
+   "a": 1.78,
+   "b": 1.96
+  },
+  {
+   "w": "dark",
+   "a": 1.96,
+   "b": 2.2
+  },
+  {
+   "w": "bay.",
+   "a": 2.2,
+   "b": 2.52
+  }
+ ],
+ "character_count_before": 2344,
+ "character_count_after": 2344
+}

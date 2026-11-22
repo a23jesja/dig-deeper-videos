@@ -1,0 +1,39 @@
+{
+ "line": "The head on it was fake.\r",
+ "take": 0,
+ "word_errors": 0.0,
+ "words": [
+  {
+   "w": "The",
+   "a": 0.0,
+   "b": 0.18
+  },
+  {
+   "w": "head",
+   "a": 0.18,
+   "b": 0.32
+  },
+  {
+   "w": "on",
+   "a": 0.32,
+   "b": 0.44
+  },
+  {
+   "w": "it",
+   "a": 0.44,
+   "b": 0.58
+  },
+  {
+   "w": "was",
+   "a": 0.58,
+   "b": 0.72
+  },
+  {
+   "w": "fake.",
+   "a": 0.72,
+   "b": 1.02
+  }
+ ],
+ "character_count_before": 2176,
+ "character_count_after": 2176
+}

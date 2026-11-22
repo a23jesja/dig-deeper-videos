@@ -1,0 +1,8 @@
+key in the environment: yes (its value is never printed)
+repo, tracked files (video, audio and pictures left out): 792 files, the key 0 times, key-shaped strings 0
+repo, untracked files (not ignored) (video, audio and pictures left out): 419 files, the key 0 times, key-shaped strings 0
+scratchpad (changed in the last 8 h): 14 files, the key 0 times, key-shaped strings 0
+Remotion temp (changed in the last 8 h): 0 files, the key 0 times, key-shaped strings 0
+logs: engine/out/craft/alcatraz: 10 files, the key 0 times, key-shaped strings 0
+voice: engine/voice/alcatraz (run.log, pick.json): 16 files, the key 0 times, key-shaped strings 0
+the last 30 commits on every branch (git log -p): the key 0 times, key-shaped strings 0

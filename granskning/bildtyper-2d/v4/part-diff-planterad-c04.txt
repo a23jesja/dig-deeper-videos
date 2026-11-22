@@ -1,0 +1,16 @@
+49 sir.armL: the picture changes 6.2 (its usual 1.0) while its joints moved 2.8 px
+49 sir.armR: the picture changes 6.0 (its usual 1.3) while its joints moved 2.9 px
+50 sir.armR: the picture changes 6.0 (its usual 1.3) while its joints moved 3.0 px
+51 sir.armL: the picture changes 6.3 (its usual 1.0) while its joints moved 2.0 px
+52 sir.armL: the picture changes 6.2 (its usual 1.0) while its joints moved 3.1 px
+53 sir.armL: the picture changes 6.0 (its usual 1.0) while its joints moved 3.2 px
+66 sir.armR: the picture changes 7.5 (its usual 1.3) while its joints moved 1.7 px
+67 sir.armR: the picture changes 7.5 (its usual 1.3) while its joints moved 1.8 px
+88 sir.armR: the picture changes 6.0 (its usual 1.3) while its joints moved 2.2 px
+89 sir.armR: the picture changes 6.3 (its usual 1.3) while its joints moved 2.2 px
+90 sir.armR: the picture changes 6.5 (its usual 1.3) while its joints moved 3.2 px
+91 sir.armR: the picture changes 6.3 (its usual 1.3) while its joints moved 3.6 px
+92 sir.armR: the picture changes 6.4 (its usual 1.3) while its joints moved 3.0 px
+93 sir.armR: the picture changes 6.2 (its usual 1.3) while its joints moved 2.9 px
+94 sir.armR: the picture changes 6.0 (its usual 1.3) while its joints moved 2.8 px
+PART DIFF FAILED: 15 (04-halla-med-bada-handerna-v4.mp4, planted)

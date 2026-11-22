@@ -1,0 +1,50 @@
+== c01 01-sta-och-prata-v4.mp4
+PART DIFF OK (01-sta-och-prata-v4.mp4)
+exit 0
+== c02 02-ga-v4.mp4
+PART DIFF OK (02-ga-v4.mp4)
+exit 0
+== c03 03-vanda-sig-v4.mp4
+43 sir.armR: the picture changes 7.5 (its usual 2.3) while its joints moved 3.4 px
+77 sir.armR: the picture changes 7.2 (its usual 2.3) while its joints moved 3.0 px
+78 sir.armR: the picture changes 8.0 (its usual 2.3) while its joints moved 3.3 px
+79 sir.armR: the picture changes 9.3 (its usual 2.3) while its joints moved 3.6 px
+PART DIFF FAILED: 4 (03-vanda-sig-v4.mp4)
+exit 0
+== c04 04-halla-med-bada-handerna-v4.mp4
+49 sir.armL: the picture changes 6.2 (its usual 1.0) while its joints moved 2.8 px
+49 sir.armR: the picture changes 6.0 (its usual 1.3) while its joints moved 2.9 px
+50 sir.armR: the picture changes 6.0 (its usual 1.3) while its joints moved 3.0 px
+51 sir.armL: the picture changes 6.3 (its usual 1.0) while its joints moved 2.0 px
+52 sir.armL: the picture changes 6.2 (its usual 1.0) while its joints moved 3.1 px
+53 sir.armL: the picture changes 6.0 (its usual 1.0) while its joints moved 3.2 px
+88 sir.armR: the picture changes 6.0 (its usual 1.3) while its joints moved 2.2 px
+89 sir.armR: the picture changes 6.3 (its usual 1.3) while its joints moved 2.2 px
+90 sir.armR: the picture changes 6.5 (its usual 1.3) while its joints moved 3.2 px
+91 sir.armR: the picture changes 6.3 (its usual 1.3) while its joints moved 3.6 px
+92 sir.armR: the picture changes 6.4 (its usual 1.3) while its joints moved 3.0 px
+93 sir.armR: the picture changes 6.2 (its usual 1.3) while its joints moved 2.9 px
+94 sir.armR: the picture changes 6.0 (its usual 1.3) while its joints moved 2.8 px
+PART DIFF FAILED: 13 (04-halla-med-bada-handerna-v4.mp4)
+exit 0
+== c05 05-peka-v4.mp4
+PART DIFF OK (05-peka-v4.mp4)
+exit 0
+== c06 06-reagera-v4.mp4
+73 sir.head: the picture changes 13.0 (its usual 1.7) while its joints moved 2.6 px
+73 sir.torso: the picture changes 7.1 (its usual 2.2) while its joints moved 2.6 px
+78 sir.head: the picture changes 10.3 (its usual 1.7) while its joints moved 2.0 px
+PART DIFF FAILED: 3 (06-reagera-v4.mp4)
+exit 0
+== c07 07-sitta-v4.mp4
+PART DIFF OK (07-sitta-v4.mp4)
+exit 0
+== c08 08-oppna-en-dorr-v4.mp4
+15 sir.armL: the picture changes 6.9 (its usual 1.9) while its joints moved 3.7 px
+15 sir.head: the picture changes 7.4 (its usual 1.1) while its joints moved 3.7 px
+15 sir.torso: the picture changes 7.7 (its usual 1.4) while its joints moved 3.7 px
+19 sir.armL: the picture changes 7.0 (its usual 1.9) while its joints moved 3.6 px
+19 sir.head: the picture changes 7.0 (its usual 1.1) while its joints moved 3.6 px
+19 sir.torso: the picture changes 7.5 (its usual 1.4) while its joints moved 3.6 px
+PART DIFF FAILED: 6 (08-oppna-en-dorr-v4.mp4)
+exit 0

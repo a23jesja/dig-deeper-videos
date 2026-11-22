@@ -1,0 +1,13 @@
+15 sir.armL: the picture changes 6.9 (its usual 1.9) while its joints moved 3.7 px
+15 sir.head: the picture changes 7.4 (its usual 1.1) while its joints moved 3.7 px
+15 sir.torso: the picture changes 7.7 (its usual 1.4) while its joints moved 3.7 px
+19 sir.armL: the picture changes 7.0 (its usual 1.9) while its joints moved 3.6 px
+19 sir.head: the picture changes 7.0 (its usual 1.1) while its joints moved 3.6 px
+19 sir.torso: the picture changes 7.5 (its usual 1.4) while its joints moved 3.6 px
+66 sir.armL: the picture changes 11.0 (its usual 1.9) while its joints moved 3.7 px
+66 sir.armR: the picture changes 13.3 (its usual 3.5) while its joints moved 3.7 px
+66 sir.torso: the picture changes 7.4 (its usual 1.4) while its joints moved 3.7 px
+67 sir.armL: the picture changes 10.6 (its usual 1.9) while its joints moved 3.7 px
+67 sir.armR: the picture changes 12.5 (its usual 3.5) while its joints moved 3.7 px
+67 sir.torso: the picture changes 7.3 (its usual 1.4) while its joints moved 3.7 px
+PART DIFF FAILED: 12 (08-oppna-en-dorr-v4.mp4, planted)

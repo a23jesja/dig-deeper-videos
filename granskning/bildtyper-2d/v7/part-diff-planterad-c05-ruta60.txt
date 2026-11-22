@@ -1,0 +1,7 @@
+60 sir.armR: the picture changes 31.7 (its usual 1.5) while its joints moved 0.5 px
+60 sir.legR: the picture changes 11.5 (its usual 0.5) while its joints moved 0.5 px
+60 sir.torso: the picture changes 9.5 (its usual 1.7) while its joints moved 0.5 px
+61 sir.armR: the picture changes 32.0 (its usual 1.5) while its joints moved 0.6 px
+61 sir.legR: the picture changes 11.4 (its usual 0.5) while its joints moved 0.6 px
+61 sir.torso: the picture changes 9.7 (its usual 1.7) while its joints moved 0.6 px
+PART DIFF FAILED: 6 (05-peka-v7.mp4, planted)

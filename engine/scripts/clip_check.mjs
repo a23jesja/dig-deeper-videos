@@ -53,6 +53,7 @@ for (const id of ids) {
   if (PL === "point-aim") for (const p of c.points ?? []) { const g = castAt(c.cast, p.t0)[0], sh = M.jointPx(g, `sh${p.side}`); p.target = [p.target[0], p.target[1] - 0.8 * Math.abs(p.target[0] - sh[0])]; p.horizon = p.target[1]; }
   if (PL === "shoe-tilt") { SHOE.blend = false; PIVOT.heel = false; }
   if (PL === "pupil-nose") FACE.pupilClear = false;
+  if (PL === "cuff-notch") FACE.cuffSwap = false;
   if (PL === "jitter") for (const cm of c.cast) { const f0 = cm.pose; cm.pose = (t, p, h) => { const q = f0 ? f0(t, p, h) : p, f = Math.round(t * FM.FPS); return t > 1.4 && t < 2.0 ? { ...q, armL: [[q.armL[0][0], q.armL[0][1]], [q.armL[1][0] + (f % 2 ? 4 : -4), q.armL[1][1]]] } : q; }; }
   if (PL === "start-pop") for (const cm of c.cast) for (const l of cm.m.layers ?? []) if (l.pose && l.pose.pz !== undefined) l.glide = false;
   if (PL === "point-long") for (const p of c.points ?? []) p.t1 = p.t0 + 1.5;
@@ -154,7 +155,12 @@ for (const id of ids) {
       if (g.who === "sir") { const ink = new Ink(mockCtx()); D.draw(ink, g.sk, g.o); const pb = ink.marks.pipe;
         if (pb) for (const s of ["L", "R"]) { const w = g.sk.j[`wr${s}`], tp = g.sk.j[`tip${s}`], hc = [(w[0] + tp[0]) / 2, (w[1] + tp[1]) / 2], hr = g.sk.P.hand * 0.42;
           const dmin = Math.min(...[w, hc, tp].map((q) => Math.hypot(q[0] - pb[0], q[1] - pb[1]))) - (24 + hr + 30); stat.pipeHand = Math.min(stat.pipeHand ?? 1e9, dmin);
-          if (dmin < 0) faults.push(`${f} ${g.name}: the pipe's bowl on the ${s} hand (${(-dmin).toFixed(0)} units into it)`); } }
+          if (dmin < 0) faults.push(`${f} ${g.name}: the pipe's bowl on the ${s} hand (${(-dmin).toFixed(0)} units into it)`); }
+        // (v7) in a turn's sweep: the far arm's lower part (with the hand) in front of the coat or under it, whichever leaves the smaller step
+        //  where the sleeve meets the coat's edge at its border: a notch at the cuff where the coat's edge stopped, 03 v7 render frames 90-93
+        //  and 40, and the review of v6. The step (units across the arm) never more than the least the sweep allows there, plus 2
+        const ca = ink.marks.cuffA, cs = ink.marks.cuffStep, cm = ink.marks.cuffMin; if (ca && cs && cm) { const st = cs[0] - ca[0], mn = cm[0] - ca[0]; stat.cuff = Math.max(stat.cuff ?? 0, st);
+          if (st > mn + 2) faults.push(`${f} ${g.name}: the far arm's lower part on the wrong side of the coat, a step of ${st.toFixed(0)} units at its border (${mn.toFixed(0)} the least)`); } }
       // hands: the drawing that shows, and how far the wrist moved
       for (const s of ["L", "R"]) { const kind = drawnHandKind(g.o[`hand${s}`] ?? "relaxed", handDeg(g.sk, s)), w = J(g, `wr${s}`), h = (hands[g.name + s] ??= []); h.push({ kind, w });
         if (h.length >= 3) { const [a, b, cc] = h.slice(-3), mv = Math.hypot(cc.w[0] - b.w[0], cc.w[1] - b.w[1]), mv0 = Math.hypot(b.w[0] - a.w[0], b.w[1] - a.w[1]);

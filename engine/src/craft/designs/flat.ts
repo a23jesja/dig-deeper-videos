@@ -12,7 +12,8 @@ type F = ReturnType<typeof frame>;
 export const TURQ = "#1fb3a6";
 const GOLD = "#e8b630", MOUTH = "#5b1f2a", TONGUE = "#e46a6a", TEAR = "#7cc8ee", WHITE = "#ffffff";
 /** the face check's switch (scripts/face_order.mjs): false draws the nose before the monocle's ring at three-quarter, as in v4 */
-export const FACE = { noseLast: true, qMoustache: true, pupilClear: true, earSliver: true, chainBehindPipe: true };
+/** cuffSwap: the far hand changes layer in a turn as the sweep passes the coat's edge at the cuff (false: at HAND_SWAP, v6/v7 draft, a notch) */
+export const FACE = { noseLast: true, qMoustache: true, pupilClear: true, earSliver: true, chainBehindPipe: true, cuffSwap: true };
 /** the three-quarter nose's ellipse, head-local, with half its outline */
 const Q_NOSE = [104, -84, 17 + 4.5, 14 + 4.5];
 /** the three-quarter pipe as last drawn (its corner, way and droop), drawn again over the monocle's chain (see the head) */
@@ -270,12 +271,53 @@ const drawFlat = (c: FlatSpec) => (k: Ink, sk: Sk, o: FigOpts) => {
     const outside = (fn: () => void) => { const g = k.g; g.save(); g.beginPath(); g.rect(-B9, -B9, 2 * B9, 2 * B9); k.trace(handPts); g.clip("evenodd"); fn(); g.restore(); };
     // (the hand changes layer where it lies least under the coat's edge: about 16 % of it at |sin| 0.35, against 25 % at the sweep's ends; it
     //  overlaps the coat somewhere all through the turn, so this is the smallest change the hand can make, as the review of v5 allowed)
-    const handShown = as < HAND_SWAP;
-    outside(() => k.clip(half, () => arm(far)));
-    if (handShown) k.clip(handPts, () => arm(far));
+    // (v7: the hand changes layer as the sweep line passes the coat's edge at the cuff's height: while the line is inside that edge the sleeve
+    //  just above the cuff lies over the coat, so the hand does too; past it nothing of the sleeve there lies over the coat, and the hand goes
+    //  under it with no step. At a set |sin| (0.35) the sleeve still lay over the coat above the cuff while the coat covered the hand below:
+    //  a notch at the cuff, the review of v6 and the v7 render. HAND_SWAP is kept for a cuff off the coat, where nothing overlaps)
+    // (tested across the sleeve's whole width at the cuff, where the hand's part meets the rest of the arm: the coat widens above the cuff,
+    //  and tested at one height the sleeve still lay over a sliver of it, a small step and a short line at the cuff, 03 frames 92-93 of the v7 render)
+    const inPoly = (P: P2[], x: number, y: number) => { let c = false; for (let i = 0, j = P.length - 1; i < P.length; j = i++) { const [xi, yi] = P[i], [xj, yj] = P[j]; if ((yi > y) !== (yj > y) && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) c = !c; } return c; };
+    // (how much of an edge across the forearm at c, the hand's width each side, lies on the coat where the sweep shows the arm over it)
+    // (on the edge across the forearm at c, within w each side of the arm's line: how much of the coat (its outline counted, half of its stroke
+    //  lies outside the polygon) lies where the sweep shows the arm over it, and how much where it does not)
+    const onCoat = (x: number, y: number) => inPoly(torsoPoly, x, y) || inPoly(torsoPoly, x + 10, y) || inPoly(torsoPoly, x - 10, y);
+    const coatAt = (c: P2, w: number) => { let o = 0, n = 0; for (let i = 0; i < 25; i++) { const v = -w + (2 * w * i) / 24, x = c[0] + nn[0] * v, y = c[1] + nn[1] * v; if (onCoat(x, y)) { if (side > 0 ? x > line : x < line) o += (2 * w) / 24; else n += (2 * w) / 24; } } return { o, n }; };
+    // (v7: a hand under the coat keeps the forearm's lower part with it, from 0.7 of the way from the elbow, where the sleeve is all there is:
+    //  an edge across the arm drawn through a soft clip shows the layers under it, and across the cuff and the hand the sleeve's brown showed as
+    //  a thin line over the skin, v7 render frames 87-94)
+    const c1: P2 = [E0[0] + dd[0] * 0.7 * ewL, E0[1] + dd[1] * 0.7 * ewL], LB = 0.3 * ewL + 2 * HR;
+    const behindPts: P2[] = [[c1[0] + nn[0] * HR, c1[1] + nn[1] * HR], [c1[0] - nn[0] * HR, c1[1] - nn[1] * HR], [c1[0] - nn[0] * HR + dd[0] * LB, c1[1] - nn[1] * HR + dd[1] * LB], [c1[0] + nn[0] * HR + dd[0] * LB, c1[1] + nn[1] * HR + dd[1] * LB]];
+    // (v7: the arm in front from c1 or under the coat from c1, whichever leaves less of a step where the sleeve meets the coat's edge at c1:
+    //  in front, the coat's edge stops at the sleeve where the sweep does not yet show it (n); under it, the sleeve covers the edge where the
+    //  sweep shows it (o). The sweep crosses the arm one way, so the choice changes once. With the arm off the coat there, at HAND_SWAP.
+    //  (in front from c1 at the first sight of the coat in the sweep, its outline stopped in a corner on the waistcoat, v7 render frame 40)
+    const W1 = B.arm[1] + 8, { o: o1, n: n1 } = coatAt(c1, W1);
+    const handShown = !FACE.cuffSwap || o1 + n1 === 0 || o1 === n1 ? as < HAND_SWAP : o1 > n1;
+    // (for the check: the step left at c1 and the least the sweep allows there, marked as points apart)
+    k.mark("cuffA", 0, 0); k.mark("cuffStep", handShown ? n1 : o1, 0); k.mark("cuffMin", Math.min(o1, n1), 0);
+    // (v7: the arm drawn whole on a canvas of its own and laid on through the clip: drawn through the clip shape by shape, its outline (a
+    //  dark shape under the fill) showed at the clip's soft edge as a thin line across the sleeve, v7 render frames 40-42 and 92-94)
+    const flatten = (setClip: (g: CanvasRenderingContext2D) => void, fn: () => void) => { const g = k.g, cv = (g as unknown as { canvas?: { width: number; height: number } }).canvas, Off = (globalThis as unknown as { OffscreenCanvas?: new (w: number, h: number) => { getContext(t: "2d"): CanvasRenderingContext2D } }).OffscreenCanvas;
+      if (!cv || !Off || !cv.width) { g.save(); setClip(g); fn(); g.restore(); return; }
+      const off = new Off(cv.width, cv.height), og = off.getContext("2d"); og.setTransform(g.getTransform()); k.g = og; try { fn(); } finally { k.g = g; }
+      g.save(); setClip(g); g.setTransform(1, 0, 0, 1, 0, 0); g.drawImage(off as unknown as CanvasImageSource, 0, 0); g.restore(); };
+    const without = (pts: P2[], fn: () => void) => { const g = k.g; g.save(); g.beginPath(); g.rect(-B9, -B9, 2 * B9, 2 * B9); k.trace(pts); g.clip("evenodd"); fn(); g.restore(); };
+    // (v7: in front, the sleeve and the hand are shown through one clip, their union: two clips meeting at the cuff, each with a soft edge, let
+    //  the coat under them show through as a thin dashed line across the hand, the v7 render)
+    const area = (P2s: P2[]) => P2s.reduce((a, p, i) => { const q = P2s[(i + 1) % P2s.length]; return a + p[0] * q[1] - q[0] * p[1]; }, 0);
+    // (v7: in front, the hand takes the forearm's lower part with it, from c1 as under the coat: from the cuff's end the hand's top above it
+    //  stayed under the coat, a notch in its outline, v7 render frame 92)
+    const hp = Math.sign(area(behindPts)) === Math.sign(area(half)) ? behindPts : [...behindPts].reverse();
+    if (!FACE.cuffSwap) { outside(() => k.clip(half, () => arm(far))); if (handShown) k.clip(handPts, () => arm(far)); }
+    else if (handShown) flatten((g) => { g.beginPath(); k.trace(half); k.trace(hp); g.clip("nonzero"); }, () => arm(far));
+    else flatten((g) => { g.beginPath(); g.rect(-B9, -B9, 2 * B9, 2 * B9); k.trace(behindPts); g.clip("evenodd"); g.beginPath(); k.trace(half); g.clip(); }, () => arm(far));
     // (the cut drawn as the coat's edge where it crosses the sleeve, inside the body, never over the hand: without it the sleeve looked sliced)
-    if (u > 0 && u < 1) { const S2 = J(sk, "sh", far), E2 = J(sk, "el", far);
-      outside(() => k.clip(torsoPoly, () => { for (const piece of limb(S2, E2, W2, B.arm)) k.clip(piece, () => k.line([[line, -B9], [line, B9]], k.ol)); })); }
+    // (v7: kept off a circle round the hand too: the line's stroke reached over the hand's top above the cuff, a small dark square in it, v7
+    //  render frames 91-92; and off the forearm's part under the coat when the hand is there)
+    const HC = Math.max(Math.hypot(hc[0] - W2[0], hc[1] - W2[1]), P.hand * 0.6) + 12, circ: P2[] = Array.from({ length: 24 }, (_, i) => [hc[0] + HC * Math.cos((i * Math.PI) / 12), hc[1] + HC * Math.sin((i * Math.PI) / 12)] as P2);
+    if (u > 0 && u < 1) { const S2 = J(sk, "sh", far), E2 = J(sk, "el", far), cutLine = () => k.clip(torsoPoly, () => { for (const piece of limb(S2, E2, W2, B.arm)) k.clip(piece, () => k.line([[line, -B9], [line, B9]], k.ol)); });
+      if (!FACE.cuffSwap) outside(cutLine); else without(behindPts, () => without(circ, cutLine)); }
     arm(near); return;
   }
   layers(sk, { arm, leg, torso, head });

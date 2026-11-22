@@ -255,8 +255,10 @@ const c06 = (): Clip => {
       // (v6: the eyes 5 nearer the middle and 2 lower, and the claws resting 0.3 out and waving outward only, so a closing claw never covers an
       //  eye: worked out in the claw's own frame, clear by 1.25 or more at rest and more as it waves; the left claw covered the left eye, v6)
       for (const s of [-1, 1]) { g.beginPath(); g.moveTo(s * 9, -56); g.lineTo(s * 7, -67); g.lineWidth = 5; g.strokeStyle = INK; g.stroke(); g.beginPath(); g.arc(s * 7, -74, 8, 0, Math.PI * 2); g.fillStyle = "#fff8d0"; g.fill(); g.lineWidth = 4; g.stroke(); g.beginPath(); g.arc(s * 7 - 3, -74, 3.5, 0, Math.PI * 2); g.fillStyle = INK; g.fill(); }
-      const wave = walking ? 0 : Math.sin((t - CRAB_STOP) * 9) * 0.35;
-      for (const s of [-1, 1]) { g.save(); g.translate(s * 34, -50); g.rotate(s * -0.3 + (s < 0 ? -Math.abs(wave) : 0)); g.beginPath(); g.moveTo(0, 0); g.lineTo(s * 8, -26); g.lineWidth = 7; g.strokeStyle = INK; g.stroke();
+      // (v7: outward as sin squared, smooth where it turns back: as |sin| it turned back in a sharp point, and the claw on that frame differed
+      //  from the frames before and after while those two were alike, flicker every 21 frames, v7 render)
+      const wave = walking ? 0 : Math.sin((t - CRAB_STOP) * 9) ** 2 * 0.35;
+      for (const s of [-1, 1]) { g.save(); g.translate(s * 34, -50); g.rotate(s * -0.3 + (s < 0 ? -wave : 0)); g.beginPath(); g.moveTo(0, 0); g.lineTo(s * 8, -26); g.lineWidth = 7; g.strokeStyle = INK; g.stroke();
         g.beginPath(); g.ellipse(s * 10, -40, 13, 17, 0, 0, Math.PI * 2); g.fillStyle = "#e0553d"; g.fill(); g.lineWidth = 6; g.stroke(); g.beginPath(); g.moveTo(s * 10, -40); g.lineTo(s * 10, -56); g.lineWidth = 6; g.stroke(); g.restore(); }
       g.restore(); } };
 };

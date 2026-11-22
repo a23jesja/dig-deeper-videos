@@ -1,0 +1,18 @@
+flicker check: out/craft/bildtyper/v7/flimmer-planterad-c05.mp4
+frames checked: 118 (1 to 118; the first and last have no neighbour on one side)
+a pixel flickers when it differs by more than 40 (of 255, in R, G or B) from the frame before and the frame after, while those two differ by less than 16
+fails: more than 2000 flickering pixels in a frame, more than 40 in an eye's circle, more than 150 in a box of text
+eye circles per frame: 118 in all; text boxes: 0
+largest: picture 54902 pixels (frame 27), eye 54900 (frame 27), text 0 (frame 1)
+movement taken out: a pixel is movement when steps v0 and v1 of at most 12 px explain it (the frame before v0 behind and the frame after v1 ahead both match its 5 x 5 patch, mean grey difference under 14; v0 and v1 point the same way and differ by at most 0.25 of the longer, or 2 px) and its patch is not flat (grey levels vary by 10 or more)
+raw (before movement is taken out): largest picture 54913, eye 54906, text 0; frames over the limits raw: 14
+median picture count: 2
+the loop (last frame to first): 7.4 % of the picture changes; inside the shots the median frame change is 1.0 % and 95 % are 2.2 % or less (a pixel changes by more than 24)
+
+FAIL: 6 frames
+  frame 18 (0.60 s): 93 pixels flicker in an eye (at most 40)
+  frame 20 (0.67 s): 92 pixels flicker in an eye (at most 40)
+  frame 21 (0.70 s): 45 pixels flicker in an eye (at most 40)
+  frame 27 (0.90 s): 54902 pixels flicker in the picture (at most 2000); 54900 pixels flicker in an eye (at most 40)
+  frame 28 (0.93 s): 42 pixels flicker in an eye (at most 40)
+  frame 119 (3.97 s): the loop: 7.4 % of the picture changes from the last frame to the first (95 % of frame changes inside the shots are 2.2 % or less)

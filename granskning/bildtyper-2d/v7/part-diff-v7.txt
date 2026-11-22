@@ -1,0 +1,25 @@
+== 03-vanda-sig-v7
+49 sir.armR: the picture changes 7.7 (its usual 2.4) while its joints moved 3.4 px
+78 sir.legR: the picture changes 7.5 (its usual 1.4) while its joints moved 1.8 px
+88 sir.armR: the picture changes 7.8 (its usual 2.4) while its joints moved 3.0 px
+89 sir.armR: the picture changes 10.4 (its usual 2.4) while its joints moved 2.5 px
+90 sir.armR: the picture changes 10.9 (its usual 2.4) while its joints moved 2.6 px
+91 sir.armR: the picture changes 12.3 (its usual 2.4) while its joints moved 3.1 px
+92 sir.armR: the picture changes 18.1 (its usual 2.4) while its joints moved 2.6 px
+92 sir.legR: the picture changes 9.1 (its usual 1.4) while its joints moved 3.5 px
+93 sir.armR: the picture changes 10.6 (its usual 2.4) while its joints moved 2.7 px
+94 sir.armR: the picture changes 8.5 (its usual 2.4) while its joints moved 2.8 px
+95 sir.armR: the picture changes 7.6 (its usual 2.4) while its joints moved 3.0 px
+103 sir.armL: the picture changes 7.0 (its usual 2.1) while its joints moved 3.9 px
+PART DIFF FAILED: 12 (03-vanda-sig-v7.mp4)
+== 05-peka-v7
+PART DIFF OK (05-peka-v7.mp4)
+== 06-reagera-v7
+69 sir.head: the picture changes 7.3 (its usual 2.2) while its joints moved 3.6 px
+72 sir.head: the picture changes 10.2 (its usual 2.2) while its joints moved 3.6 px
+73 sir.head: the picture changes 9.7 (its usual 2.2) while its joints moved 1.8 px
+74 sir.head: the picture changes 10.3 (its usual 2.2) while its joints moved 3.8 px
+77 sir.head: the picture changes 8.8 (its usual 2.2) while its joints moved 3.7 px
+78 sir.head: the picture changes 7.1 (its usual 2.2) while its joints moved 1.5 px
+79 sir.head: the picture changes 6.7 (its usual 2.2) while its joints moved 3.6 px
+PART DIFF FAILED: 7 (06-reagera-v7.mp4)

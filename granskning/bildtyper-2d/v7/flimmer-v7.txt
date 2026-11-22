@@ -1,0 +1,76 @@
+== 03-vanda-sig-v7
+flicker check: ../leverans/bildtyper-2d/03-vanda-sig-v7.mp4
+frames checked: 136 (1 to 136; the first and last have no neighbour on one side)
+a pixel flickers when it differs by more than 40 (of 255, in R, G or B) from the frame before and the frame after, while those two differ by less than 16
+fails: more than 2000 flickering pixels in a frame, more than 40 in an eye's circle, more than 150 in a box of text
+eye circles per frame: 136 in all; text boxes: 0
+largest: picture 3429 pixels (frame 33), eye 2142 (frame 43), text 0 (frame 1)
+movement taken out: a pixel is movement when steps v0 and v1 of at most 12 px explain it (the frame before v0 behind and the frame after v1 ahead both match its 5 x 5 patch, mean grey difference under 14; v0 and v1 point the same way and differ by at most 0.25 of the longer, or 2 px) and its patch is not flat (grey levels vary by 10 or more)
+raw (before movement is taken out): largest picture 3874, eye 2238, text 0; frames over the limits raw: 21
+median picture count: 5
+the loop (last frame to first): 15.3 % of the picture changes; inside the shots the median frame change is 1.3 % and 95 % are 3.1 % or less (a pixel changes by more than 24)
+
+FAIL: 11 frames
+  frame 17 (0.57 s): 45 pixels flicker in an eye (at most 40)
+  frame 32 (1.07 s): 3000 pixels flicker in the picture (at most 2000); 1087 pixels flicker in an eye (at most 40)
+  frame 33 (1.10 s): 3429 pixels flicker in the picture (at most 2000); 1116 pixels flicker in an eye (at most 40)
+  frame 42 (1.40 s): 1091 pixels flicker in an eye (at most 40)
+  frame 43 (1.43 s): 3252 pixels flicker in the picture (at most 2000); 2142 pixels flicker in an eye (at most 40)
+  frame 62 (2.07 s): 86 pixels flicker in an eye (at most 40)
+  frame 63 (2.10 s): 71 pixels flicker in an eye (at most 40)
+  frame 65 (2.17 s): 156 pixels flicker in an eye (at most 40)
+  frame 76 (2.53 s): 63 pixels flicker in an eye (at most 40)
+  frame 91 (3.03 s): 2064 pixels flicker in the picture (at most 2000); 1211 pixels flicker in an eye (at most 40)
+  frame 137 (4.57 s): the loop: 15.3 % of the picture changes from the last frame to the first (95 % of frame changes inside the shots are 3.1 % or less)
+== 05-peka-v7
+flicker check: ../leverans/bildtyper-2d/05-peka-v7.mp4
+frames checked: 118 (1 to 118; the first and last have no neighbour on one side)
+a pixel flickers when it differs by more than 40 (of 255, in R, G or B) from the frame before and the frame after, while those two differ by less than 16
+fails: more than 2000 flickering pixels in a frame, more than 40 in an eye's circle, more than 150 in a box of text
+eye circles per frame: 118 in all; text boxes: 0
+largest: picture 1750 pixels (frame 37), eye 104 (frame 18), text 0 (frame 1)
+movement taken out: a pixel is movement when steps v0 and v1 of at most 12 px explain it (the frame before v0 behind and the frame after v1 ahead both match its 5 x 5 patch, mean grey difference under 14; v0 and v1 point the same way and differ by at most 0.25 of the longer, or 2 px) and its patch is not flat (grey levels vary by 10 or more)
+raw (before movement is taken out): largest picture 1767, eye 262, text 0; frames over the limits raw: 11
+median picture count: 1
+the loop (last frame to first): 7.3 % of the picture changes; inside the shots the median frame change is 1.0 % and 95 % are 2.2 % or less (a pixel changes by more than 24)
+
+FAIL: 3 frames
+  frame 18 (0.60 s): 104 pixels flicker in an eye (at most 40)
+  frame 20 (0.67 s): 102 pixels flicker in an eye (at most 40)
+  frame 119 (3.97 s): the loop: 7.3 % of the picture changes from the last frame to the first (95 % of frame changes inside the shots are 2.2 % or less)
+== 06-reagera-v7
+flicker check: ../leverans/bildtyper-2d/06-reagera-v7.mp4
+frames checked: 118 (1 to 118; the first and last have no neighbour on one side)
+a pixel flickers when it differs by more than 40 (of 255, in R, G or B) from the frame before and the frame after, while those two differ by less than 16
+fails: more than 2000 flickering pixels in a frame, more than 40 in an eye's circle, more than 150 in a box of text
+eye circles per frame: 118 in all; text boxes: 0
+largest: picture 14741 pixels (frame 41), eye 4774 (frame 41), text 0 (frame 1)
+movement taken out: a pixel is movement when steps v0 and v1 of at most 12 px explain it (the frame before v0 behind and the frame after v1 ahead both match its 5 x 5 patch, mean grey difference under 14; v0 and v1 point the same way and differ by at most 0.25 of the longer, or 2 px) and its patch is not flat (grey levels vary by 10 or more)
+raw (before movement is taken out): largest picture 16824, eye 5662, text 0; frames over the limits raw: 33
+median picture count: 272
+the loop (last frame to first): 13.7 % of the picture changes; inside the shots the median frame change is 1.3 % and 95 % are 3.5 % or less (a pixel changes by more than 24)
+
+FAIL: 23 frames
+  frame 23 (0.77 s): 2169 pixels flicker in the picture (at most 2000)
+  frame 24 (0.80 s): 2207 pixels flicker in the picture (at most 2000)
+  frame 25 (0.83 s): 2402 pixels flicker in the picture (at most 2000)
+  frame 26 (0.87 s): 3979 pixels flicker in the picture (at most 2000)
+  frame 27 (0.90 s): 3957 pixels flicker in the picture (at most 2000)
+  frame 28 (0.93 s): 3818 pixels flicker in the picture (at most 2000)
+  frame 29 (0.97 s): 4223 pixels flicker in the picture (at most 2000)
+  frame 30 (1.00 s): 3342 pixels flicker in the picture (at most 2000)
+  frame 31 (1.03 s): 2484 pixels flicker in the picture (at most 2000)
+  frame 33 (1.10 s): 2261 pixels flicker in the picture (at most 2000)
+  frame 35 (1.17 s): 70 pixels flicker in an eye (at most 40)
+  frame 38 (1.27 s): 240 pixels flicker in an eye (at most 40)
+  frame 39 (1.30 s): 9192 pixels flicker in the picture (at most 2000); 3203 pixels flicker in an eye (at most 40)
+  frame 40 (1.33 s): 14389 pixels flicker in the picture (at most 2000); 4699 pixels flicker in an eye (at most 40)
+  frame 41 (1.37 s): 14741 pixels flicker in the picture (at most 2000); 4774 pixels flicker in an eye (at most 40)
+  frame 42 (1.40 s): 11816 pixels flicker in the picture (at most 2000); 3977 pixels flicker in an eye (at most 40)
+  frame 43 (1.43 s): 3699 pixels flicker in the picture (at most 2000); 892 pixels flicker in an eye (at most 40)
+  frame 44 (1.47 s): 2049 pixels flicker in the picture (at most 2000)
+  frame 70 (2.33 s): 49 pixels flicker in an eye (at most 40)
+  frame 71 (2.37 s): 50 pixels flicker in an eye (at most 40)
+  frame 75 (2.50 s): 49 pixels flicker in an eye (at most 40)
+  frame 76 (2.53 s): 64 pixels flicker in an eye (at most 40)
+  frame 119 (3.97 s): the loop: 13.7 % of the picture changes from the last frame to the first (95 % of frame changes inside the shots are 3.5 % or less)

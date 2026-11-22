@@ -29,5 +29,31 @@ for (const [name, draw] of Object.entries(views)) { const { ctx, log } = record(
   const area = (P) => { let all = 0, vis = 0, out = 0; for (let x = -160; x <= 200; x++) for (let y = -200; y <= 0; y++) if (inPoly(P, x, y)) { all++; if (!head(x, y)) out++; else if (!nose(x, y)) vis++; } return { all, vis, out }; };
   const N = area(near), F = area(far), r = F.vis / N.vis, okR = r >= 0.58, okOut = F.out <= 0.02 * F.all && N.out <= 0.02 * N.all; if (!okR || !okOut) bad++;
   console.log(`three-quarter moustache: the far half shows ${(100 * r).toFixed(0)} % of the near half (58 % or more); outside the head's outline: far ${(100 * F.out / F.all).toFixed(1)} %, near ${(100 * N.out / N.all).toFixed(1)} % (2 % at most): ${okR && okOut ? "OK" : "FAIL"}`); }
-console.log(bad ? `FACE ORDER FAILED: ${bad} check(s)` : "FACE ORDER OK: the nose over the eyes and the monocle's ring in every view, both halves of the moustache showing at three-quarter");
+// (v6) no part of the face outside the head's outline: the eye whites, the moustache, the brows and the mouth (found by their colours in what
+// the drawing fills and strokes) inside the head's ellipse, from the front (turned up to its limit either way) and at three-quarter both ways;
+// in profile the eye alone (there the nose, the moustache and the mouth make the head's outline). The ears, the nose and the pipe reach the
+// outline by design and are not counted. (The review of v6 saw a black half-moon at the head's edge at three-quarter: the far ear, its outline
+// only past the cheek; it now shows its skin, FACE.earSliver)
+{ const HAIR = "#4a2e1e", MOUTHC = "#5b1f2a", rec = () => { const log = []; let fillStyle = "", strokeStyle = "", lw = 1, path = [];
+    const ctx = new Proxy({}, { get: (_t, k) => {
+      if (k === "beginPath") return () => { path = []; }; if (k === "moveTo" || k === "lineTo") return (x, y) => path.push([x, y]);
+      if (k === "quadraticCurveTo") return (a, b, x, y) => path.push([x, y]); if (k === "bezierCurveTo") return (a, b, c2, d, x, y) => path.push([x, y]);
+      if (k === "ellipse") return (x, y, rx, ry) => { for (let i = 0; i < 24; i++) { const t = (i / 24) * Math.PI * 2; path.push([x + rx * Math.cos(t), y + ry * Math.sin(t)]); } };
+      if (k === "arc") return (x, y, r) => { for (let i = 0; i < 24; i++) { const t = (i / 24) * Math.PI * 2; path.push([x + r * Math.cos(t), y + r * Math.sin(t)]); } };
+      if (k === "fill") return () => log.push(["fill", String(fillStyle).toLowerCase(), path.slice(), 0]); if (k === "stroke") return () => log.push(["stroke", String(strokeStyle).toLowerCase(), path.slice(), lw]);
+      if (k === "fillStyle") return fillStyle; if (k === "strokeStyle") return strokeStyle; if (k === "lineWidth") return lw;
+      if (k === "getTransform") return () => ({ a: 1, b: 0, c: 0, d: 1, e: 0, f: 0 }); if (k === "measureText") return () => ({ width: 0 }); return () => {}; },
+      set: (_t, k, v) => { if (k === "fillStyle") fillStyle = v; if (k === "strokeStyle") strokeStyle = v; if (k === "lineWidth") lw = v; return true; } });
+    return { ctx, log }; };
+  const parts = { "#ffffff": "an eye", [HAIR]: "the moustache or a brow", [MOUTHC]: "the mouth" }, inHead = (x, y, pad) => ((Math.abs(x) - pad) / 126) ** 2 + ((y + 128) / 132) ** 2 <= 1 || (Math.abs(x) <= pad);
+  const vs = [["front, turned left", (k) => S.sirFront(k, face, -15.3, 0), null], ["front", (k) => S.sirFront(k, face, 0, 0), null], ["front, turned right", (k) => S.sirFront(k, face, 15.3, 0), null],
+    ["three-quarter right", (k) => S.sirQ(k, face, 0, "near"), null], ["three-quarter left", (k) => S.sirQ(k, face, 0, "far"), null], ["profile", (k) => S.sirSide(k, face, 0, true), "#ffffff"]];
+  let worst = 0, where = "";
+  for (const [name, draw, only] of vs) { const { ctx, log } = rec(); draw(new M.Ink(ctx));
+    for (const [, col, pts, w] of log) { if (!parts[col] || (only && col !== only)) continue; const pad = w / 2;
+      for (const [x, y] of pts) { if (inHead(x, y, 0)) continue; const out = Math.hypot(x, y + 128) - 126 * Math.hypot(x / 126, (y + 128) / 132) ** -1 * Math.hypot(x / 126, (y + 128) / 132); void out;
+        const sc = Math.hypot(x / 126, (y + 128) / 132), d = Math.hypot(x, y + 128) * (1 - 1 / sc) + pad; if (d > worst) { worst = d; where = `${parts[col]} at ${name}`; } } } }
+  const okOut = worst <= 3; if (!okOut) bad++;
+  console.log(`face inside the head: ${okOut ? "OK" : "FAIL"}, the farthest part ${worst.toFixed(1)} units past the outline${where ? " (" + where + ")" : ""} (3 at most)`); }
+console.log(bad ? `FACE ORDER FAILED: ${bad} check(s)` : "FACE ORDER OK: the nose over the eyes and the monocle's ring in every view, both halves of the moustache showing at three-quarter, the face inside the head");
 process.exit(bad ? 1 : 0);

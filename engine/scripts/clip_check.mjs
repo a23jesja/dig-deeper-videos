@@ -25,10 +25,10 @@
 //     node scripts/clip_check.mjs <clip id | all>     (from engine/)   CLIP_PLANT=<fault> plants one fault (see below)
 import * as esbuild from "esbuild"; import fs from "node:fs"; import path from "node:path"; import { pathToFileURL } from "node:url";
 const out = path.resolve("out/clip_model.mjs");
-fs.writeFileSync("out/_clip_entry.ts", 'export * from "../src/craft/clips/clipKit"; export { CLIPS, CRAB, GUARD } from "../src/craft/clips/clips"; export { Ink } from "../src/craft/ink"; export { ease } from "../src/craft/stage/acting"; export { pupilIn, drawnGaze } from "../src/craft/designs/flat"; export { handFlip, SHOE } from "../src/craft/designs/common"; export { PIVOT } from "../src/craft/motion";\n');
+fs.writeFileSync("out/_clip_entry.ts", 'export * from "../src/craft/clips/clipKit"; export { CLIPS, CRAB, GUARD } from "../src/craft/clips/clips"; export { Ink } from "../src/craft/ink"; export { ease } from "../src/craft/stage/acting"; export { pupilIn, drawnGaze, qPupils, FACE } from "../src/craft/designs/flat"; export { handFlip, SHOE } from "../src/craft/designs/common"; export { PIVOT } from "../src/craft/motion";\n');
 await esbuild.build({ entryPoints: ["out/_clip_entry.ts"], bundle: true, format: "esm", platform: "node", outfile: out, logLevel: "error", loader: { ".json": "json" } });
 const M = await import(pathToFileURL(out).href); fs.rmSync(out); fs.rmSync("out/_clip_entry.ts");
-const { CLIPS, CRAB, GUARD, Ink, castAt, FM, scaleOf, footY, D, shoeDrawn, FLAT_SPECS, viewOf, heightOf, drawnHandKind, figBox, pupilIn, drawnGaze, thighUnder, handFlip, SHOE, PIVOT } = M;
+const { CLIPS, CRAB, GUARD, Ink, castAt, FM, scaleOf, footY, D, shoeDrawn, FLAT_SPECS, viewOf, heightOf, drawnHandKind, figBox, pupilIn, drawnGaze, thighUnder, handFlip, SHOE, PIVOT, qPupils, FACE } = M;
 const LINE_TOP = FM.GY - FM.LINE / 2, ids = process.argv[2] && process.argv[2] !== "all" ? [process.argv[2]] : Object.keys(CLIPS);
 const PL = process.env.CLIP_PLANT;
 // a stand-in canvas that keeps only the transform, to draw a figure and read the places its drawing marks (the pipe's bowl)
@@ -52,6 +52,7 @@ for (const id of ids) {
   if (PL === "point-touch") for (const p of c.points ?? []) if (p.box) { const g = castAt(c.cast, p.t0 + 0.2)[0], tp = M.jointPx(g, `tip${p.side}`); p.box = [tp[0] + 15, p.box[1], tp[0] + 15 + (p.box[2] - p.box[0]), p.box[3]]; }
   if (PL === "point-aim") for (const p of c.points ?? []) { const g = castAt(c.cast, p.t0)[0], sh = M.jointPx(g, `sh${p.side}`); p.target = [p.target[0], p.target[1] - 0.8 * Math.abs(p.target[0] - sh[0])]; p.horizon = p.target[1]; }
   if (PL === "shoe-tilt") { SHOE.blend = false; PIVOT.heel = false; }
+  if (PL === "pupil-nose") FACE.pupilClear = false;
   if (PL === "jitter") for (const cm of c.cast) { const f0 = cm.pose; cm.pose = (t, p, h) => { const q = f0 ? f0(t, p, h) : p, f = Math.round(t * FM.FPS); return t > 1.4 && t < 2.0 ? { ...q, armL: [[q.armL[0][0], q.armL[0][1]], [q.armL[1][0] + (f % 2 ? 4 : -4), q.armL[1][1]]] } : q; }; }
   if (PL === "start-pop") for (const cm of c.cast) for (const l of cm.m.layers ?? []) if (l.pose && l.pose.pz !== undefined) l.glide = false;
   if (PL === "point-long") for (const p of c.points ?? []) p.t1 = p.t0 + 1.5;
@@ -132,6 +133,11 @@ for (const id of ids) {
         // (v4: the pupil inside the eye as drawn: a gaze down and to the side put it outside the oval and both eyes stood empty, 06 draft)
         const gz = pupilIn(drawnGaze(v.split("-")[0], v.endsWith("-left"), fc.gaze ?? [0, 0]), PL !== "pupil-out"), gm = Math.hypot(gz[0], gz[1]); stat.gaze = Math.max(stat.gaze ?? 0, gm);
         if (gm > 1.001) faults.push(`${f} ${g.name}: the pupil drawn ${((gm - 1) * 100).toFixed(0)} % past the eye's inner edge (an empty eye)`); }
+      // (v6) at three-quarter no pupil under the nose (drawn over the eyes): the far pupil's circle clear of the nose's ellipse and its outline
+      //  (06: looking down and right, the far pupil went under the nose and the eye stood empty from frame 44, the review of v6)
+      if (g.who === "sir" && v.startsWith("q") && lid < 0.9) { const fc2 = g.o.face ?? {}, gz2 = fc2.gaze ?? [0, 0], q = qPupils({ ...fc2, gaze: v.endsWith("-left") ? [-gz2[0], gz2[1]] : gz2 }), [nx, ny, nrx, nry] = q.nose;
+        let cov = 0; for (let i = 0; i < 36; i++) { const a = (i / 36) * Math.PI * 2, px = q.far.x + Math.cos(a) * q.far.pr * 0.9, py = q.far.y + Math.sin(a) * q.far.pr * 0.9; if (((px - nx) / nrx) ** 2 + ((py - ny) / nry) ** 2 <= 1) cov++; }
+        if (cov > 0) faults.push(`${f} ${g.name}: the far pupil ${Math.round((100 * cov) / 36)} % under the nose`); }
       // (v5) a raised open hand shows its palm with the thumb toward the body's middle (06: both raised hands had the same drawing, the near
       //  one thumb out, reading as a left hand or its back, the review of v4)
       for (const s of ["L", "R"]) { const kind = g.o[`hand${s}`] ?? "relaxed"; if (kind !== "open") continue; const hf = handFlip(g.sk, s, kind, PL === "thumb-out"), r = (hf.d * Math.PI) / 180;
@@ -147,7 +153,7 @@ for (const id of ids) {
       //  (06: from frame 77 the bowl lay on the raised hand's thumb and sleeve, their outlines running together, the review of v5)
       if (g.who === "sir") { const ink = new Ink(mockCtx()); D.draw(ink, g.sk, g.o); const pb = ink.marks.pipe;
         if (pb) for (const s of ["L", "R"]) { const w = g.sk.j[`wr${s}`], tp = g.sk.j[`tip${s}`], hc = [(w[0] + tp[0]) / 2, (w[1] + tp[1]) / 2], hr = g.sk.P.hand * 0.42;
-          const dmin = Math.min(...[w, hc, tp].map((q) => Math.hypot(q[0] - pb[0], q[1] - pb[1]))) - (24 + hr + 22); stat.pipeHand = Math.min(stat.pipeHand ?? 1e9, dmin);
+          const dmin = Math.min(...[w, hc, tp].map((q) => Math.hypot(q[0] - pb[0], q[1] - pb[1]))) - (24 + hr + 30); stat.pipeHand = Math.min(stat.pipeHand ?? 1e9, dmin);
           if (dmin < 0) faults.push(`${f} ${g.name}: the pipe's bowl on the ${s} hand (${(-dmin).toFixed(0)} units into it)`); } }
       // hands: the drawing that shows, and how far the wrist moved
       for (const s of ["L", "R"]) { const kind = drawnHandKind(g.o[`hand${s}`] ?? "relaxed", handDeg(g.sk, s)), w = J(g, `wr${s}`), h = (hands[g.name + s] ??= []); h.push({ kind, w });

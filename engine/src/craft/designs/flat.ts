@@ -238,7 +238,7 @@ export const shoeDrawn = (sk: Sk, side: Side, W: number, clamp = true) => {
   //  5-11 px above the line, a floating foot, the independent review of v4. The shoe comes down until its lowest point is on the line)
   const touch = clamp && Math.max(sk.j[`heel${side}`][1], sk.j[`toe${side}`][1]) > -0.5, low = Math.max(...sh.pts.map((p) => p[1])), dy = touch && low < 0 ? -low : 0;
   const cl = (p: P2): P2 => [p[0], clamp ? Math.min(p[1] + dy, 0) : p[1]];
-  return { pts: sh.pts.map(cl), a: cl(sh.O), b: cl(add(sh.O, sh.ex, sh.span)) };
+  return { pts: sh.pts.map(cl), a: cl(sh.O), b: cl(add(sh.O, sh.ex, sh.span)), kk: sh.kk };
 };
 const design = (c: FlatSpec): Design => ({ id: c.id, name: c.name, ol: c.ol, faceW: c.faceW, props: (w: Who) => (w === "baker" ? c.other.P : c.sir.P), draw: drawFlat(c) });
 

@@ -98,13 +98,19 @@ export const handAt = (k: Ink, sk: Sk, side: Side, kind: HandKind, col: string, 
 
 /** a shoe from any side: side-on it is a shoe in profile, toward the lens a rounded toe cap; it follows the heel and toe of the skeleton.
  *  returns the outline (for extra marks); hA / hT = height at the ankle and over the toes, as fractions of the foot length */
-export const shoePts = (sk: Sk, side: Side, W: number, hA = 0.36, hT = 0.2, cut = false): { pts: P2[]; O: P2; ex: P2; up: P2; span: number } => {
+/** the shoe check's switch (clip_check shoe-tilt plant) */
+export const SHOE = { blend: true };
+export const shoePts = (sk: Sk, side: Side, W: number, hA = 0.36, hT = 0.2, cut = false): { pts: P2[]; O: P2; ex: P2; up: P2; span: number; kk: number } => {
   const h = J(sk, "heel", side), t = J(sk, "toe", side), L = sk.P.foot, e = sub(t, h), kk = clamp(len(e) / L, 0, 1), dirx = e[0] >= 0 ? 1 : -1;
-  const ex: P2 = kk > 0.25 ? unit(e) : [dirx, 0], up: P2 = ex[0] >= 0 ? [ex[1], -ex[0]] : [-ex[1], ex[0]], pad = (W * (1 - kk)) / 2, span = len(e) + 2 * pad;
+  // (v5: the shoe's tilt along the heel-to-toe line grows with how much of the foot shows, from none at 0.6 to whole at 0.95:
+  //  switched on at a quarter, a foot seen short with its heel up (turning on its ball) was drawn tilted 35 degrees on a corner of its sole,
+  //  and jumped from level to tilted in one frame, 03, the review of v4. SHOE.blend = false is the check's planted fault, the switch of v4)
+  const wt = SHOE.blend ? (() => { const v = clamp((kk - 0.6) / 0.35, 0, 1); return v * v * (3 - 2 * v); })() : kk > 0.25 ? 1 : 0, full: P2 = len(e) > 1e-6 ? unit(e) : [dirx, 0];
+  const ex: P2 = wt > 0 ? unit([dirx * (1 - wt) + full[0] * wt, full[1] * wt]) : [dirx, 0], up: P2 = ex[0] >= 0 ? [ex[1], -ex[0]] : [-ex[1], ex[0]], pad = (W * (1 - kk)) / 2, span = len(e) + 2 * pad;
   const O = add(h, ex, -pad), prof: [number, number][] = [[0, 0.3], [0.03, 0.75], [0.1, 1], [0.44, 1], [0.6, 0.72], [0.8, hT / hA], [0.95, (hT / hA) * 0.8], [1, 0.3]];
   const top = prof.map(([u, hh]) => { const sy = lerp(Math.sin(Math.PI * clamp(u, 0.04, 0.96)) ** 0.6, hh, kk); return add(add(O, ex, u * span), up, sy * hA * L); });
   const pts = [O, ...top, add(O, ex, span)];
-  return { pts: cut ? pts : [O, ...spline(top, false, 4), add(O, ex, span)], O, ex, up, span };
+  return { pts: cut ? pts : [O, ...spline(top, false, 4), add(O, ex, span)], O, ex, up, span, kk };
 };
 /** a leather shoe with a sole and a heel */
 export const shoe = (k: Ink, sk: Sk, side: Side, col: string, W: number, o: { hA?: number; hT?: number; cut?: boolean; sole?: string; cap?: boolean } = {}) => {

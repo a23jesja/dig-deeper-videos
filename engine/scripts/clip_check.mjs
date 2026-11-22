@@ -25,10 +25,10 @@
 //     node scripts/clip_check.mjs <clip id | all>     (from engine/)   CLIP_PLANT=<fault> plants one fault (see below)
 import * as esbuild from "esbuild"; import fs from "node:fs"; import path from "node:path"; import { pathToFileURL } from "node:url";
 const out = path.resolve("out/clip_model.mjs");
-fs.writeFileSync("out/_clip_entry.ts", 'export * from "../src/craft/clips/clipKit"; export { CLIPS, CRAB } from "../src/craft/clips/clips"; export { ease } from "../src/craft/stage/acting"; export { pupilIn, drawnGaze } from "../src/craft/designs/flat"; export { handFlip } from "../src/craft/designs/common";\n');
+fs.writeFileSync("out/_clip_entry.ts", 'export * from "../src/craft/clips/clipKit"; export { CLIPS, CRAB } from "../src/craft/clips/clips"; export { ease } from "../src/craft/stage/acting"; export { pupilIn, drawnGaze } from "../src/craft/designs/flat"; export { handFlip, SHOE } from "../src/craft/designs/common";\n');
 await esbuild.build({ entryPoints: ["out/_clip_entry.ts"], bundle: true, format: "esm", platform: "node", outfile: out, logLevel: "error", loader: { ".json": "json" } });
 const M = await import(pathToFileURL(out).href); fs.rmSync(out); fs.rmSync("out/_clip_entry.ts");
-const { CLIPS, CRAB, castAt, FM, scaleOf, footY, D, shoeDrawn, FLAT_SPECS, viewOf, heightOf, drawnHandKind, figBox, pupilIn, drawnGaze, thighUnder, handFlip } = M;
+const { CLIPS, CRAB, castAt, FM, scaleOf, footY, D, shoeDrawn, FLAT_SPECS, viewOf, heightOf, drawnHandKind, figBox, pupilIn, drawnGaze, thighUnder, handFlip, SHOE } = M;
 const LINE_TOP = FM.GY - FM.LINE / 2, ids = process.argv[2] && process.argv[2] !== "all" ? [process.argv[2]] : Object.keys(CLIPS);
 const PL = process.env.CLIP_PLANT;
 let failed = 0;
@@ -43,6 +43,7 @@ for (const id of ids) {
   if (PL === "hand-head") for (const cm of c.cast) { const f0 = cm.pose; cm.pose = (t, p, h) => { const q = f0 ? f0(t, p, h) : p; return t > 2.0 ? { ...q, armL: [[20, 20], [150, 10]] } : q; }; }
   if (PL === "point-touch") for (const p of c.points ?? []) if (p.box) { const g = castAt(c.cast, p.t0 + 0.2)[0], tp = M.jointPx(g, `tip${p.side}`); p.box = [tp[0] + 15, p.box[1], tp[0] + 15 + (p.box[2] - p.box[0]), p.box[3]]; }
   if (PL === "point-aim") for (const p of c.points ?? []) { const g = castAt(c.cast, p.t0)[0], sh = M.jointPx(g, `sh${p.side}`); p.target = [p.target[0], p.target[1] - 0.8 * Math.abs(p.target[0] - sh[0])]; p.horizon = p.target[1]; }
+  if (PL === "shoe-tilt") SHOE.blend = false;
   if (PL === "jitter") for (const cm of c.cast) { const f0 = cm.pose; cm.pose = (t, p, h) => { const q = f0 ? f0(t, p, h) : p, f = Math.round(t * FM.FPS); return t > 1.4 && t < 2.0 ? { ...q, armL: [[q.armL[0][0], q.armL[0][1]], [q.armL[1][0] + (f % 2 ? 4 : -4), q.armL[1][1]]] } : q; }; }
   if (PL === "start-pop") for (const cm of c.cast) for (const l of cm.m.layers ?? []) if (l.pose && l.pose.pz !== undefined) l.glide = false;
   if (PL === "point-long") for (const p of c.points ?? []) p.t1 = p.t0 + 1.5;
@@ -79,6 +80,10 @@ for (const id of ids) {
         const P = sh.pts.map((q) => [g.x + q[0] * sc, footY(g.who) + q[1] * sc]); shoes[s] = { x0: Math.min(...P.map((q) => q[0])), x1: Math.max(...P.map((q) => q[0])), y0: Math.min(...P.map((q) => q[1])), y1: Math.max(...P.map((q) => q[1])) + ink };
         const past = shoes[s].y1 - LINE_TOP; gap[s] = -past; stat.shoe = Math.max(stat.shoe, past);
         if (past > 0.75) faults.push(`${f} ${g.name}: the ${s} shoe ${past.toFixed(1)} px into the ground line`);
+        // (v5) a shoe seen short (under four fifths of its length) on the ground is not drawn tilted on a corner of its sole: its sole line within
+        //  15 degrees of level (03: turning on its ball the far shoe stood 35 degrees on a corner, the independent review of v4)
+        if (sh.kk < 0.8 && past > -1.5) { const tilt = Math.abs(Math.atan2(sh.b[1] - sh.a[1], Math.abs(sh.b[0] - sh.a[0]) || 1e-6)) * 180 / Math.PI; stat.shoeTilt = Math.max(stat.shoeTilt ?? 0, tilt);
+          if (tilt > 15) faults.push(`${f} ${g.name}: the ${s} shoe, seen short, stands ${tilt.toFixed(0)} degrees on a corner of its sole`); }
         const H = J(g, `heel${s}`), T = J(g, `toe${s}`), hd = Math.abs(g.sk.j[`heel${s}`][1]) * sc < 0.5, td = Math.abs(g.sk.j[`toe${s}`][1]) * sc < 0.5;
         feet[s] = { down: hd || td, kind: hd && td ? "ball" : td ? "toe" : "heel", B: hd && td ? H[0] + (T[0] - H[0]) * 0.73 : td ? T[0] : H[0] };
         const k = g.name + s, p = prev[k]; if (p && p.down && feet[s].down && p.kind === feet[s].kind) { const d = Math.abs(feet[s].B - p.B); stat.slide = Math.max(stat.slide, d); if (d > 2) faults.push(`${f} ${g.name}: the ${s} foot slides ${d.toFixed(1)} px`); }

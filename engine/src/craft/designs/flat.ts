@@ -219,10 +219,14 @@ const drawFlat = (c: FlatSpec) => (k: Ink, sk: Sk, o: FigOpts) => {
   const as = Math.abs(sk.sin);
   if (!other && as > ARM_WIPE[0] && as < ARM_WIPE[1]) {
     const far = sk.far, near = sk.near; arm(far); leg(far); leg(near); torso(); head();
-    const u = (ARM_WIPE[1] - as) / (ARM_WIPE[1] - ARM_WIPE[0]), xs = torsoPoly.map((p) => p[0]), x0 = Math.min(...xs), x1 = Math.max(...xs);
+    // (the line sweeps the whole figure, from past its far side (nothing shown over it: the side's order, the far arm under everything) to past
+    //  its near side (all of it: the front's order, the far arm over the legs too); swept over the body alone, the far arm went from under the
+    //  legs to over them in one frame where the front's order took over, v5 draft)
+    const u = (ARM_WIPE[1] - as) / (ARM_WIPE[1] - ARM_WIPE[0]), m = P.hand + 20;
+    const xs = [...torsoPoly.map((p) => p[0]), ...["sh", "el", "wr", "tip", "kn", "an", "hip"].flatMap((n) => [J(sk, n, far)[0], J(sk, n, near)[0]])], x0 = Math.min(...xs) - m, x1 = Math.max(...xs) + m;
     const side = Math.sign(J(sk, "sh", far)[0] - J(sk, "sh", near)[0]) || 1, xFar = side > 0 ? x1 : x0, xNear = side > 0 ? x0 : x1, line = xFar + (xNear - xFar) * u, B9 = 1e4;
     const half: P2[] = side > 0 ? [[line, -B9], [B9, -B9], [B9, B9], [line, B9]] : [[-B9, -B9], [line, -B9], [line, B9], [-B9, B9]];
-    k.clip(torsoPoly, () => k.clip(half, () => arm(far)));
+    k.clip(half, () => arm(far));
     arm(near); return;
   }
   layers(sk, { arm, leg, torso, head });

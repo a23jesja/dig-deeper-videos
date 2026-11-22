@@ -151,8 +151,9 @@ def plant(src, dst, regions):
     A = next(t for t in sorted(quiet) if regions.get(t, {}).get("eyes") and t > 20)
     # (a speech bubble where there is one standing still, else a caption)
     bub = [t for t in sorted(quiet) if regions.get(t, {}).get("bub") and t > A + 10 and t - 1 in quiet and t + 1 in quiet and regions.get(t - 1, {}).get("bub")]
-    B = bub[len(bub) // 2] if bub else next(t for t in sorted(quiet) if regions.get(t, {}).get("text") and t > A + 10 and t - 1 in quiet and t + 1 in quiet)
-    box = (regions[B].get("bub") or regions[B]["text"])[0]
+    # (no text in the picture, the shot-type clips: the eye alone is planted)
+    B = bub[len(bub) // 2] if bub else next((t for t in sorted(quiet) if regions.get(t, {}).get("text") and t > A + 10 and t - 1 in quiet and t + 1 in quiet), None)
+    box = (regions[B].get("bub") or regions[B]["text"])[0] if B is not None else None
     out = subprocess.Popen(["ffmpeg", "-nostdin", "-v", "error", "-y", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}", "-r", "30", "-i", "-",
                             "-c:v", "libx264", "-crf", "17", "-pix_fmt", "yuv420p", dst], stdin=subprocess.PIPE)
     for F, fr in enumerate(frames(src)):
@@ -162,7 +163,7 @@ def plant(src, dst, regions):
             skin = fr[max(0, y + 2 * r), x].copy()      # the cheek below the eye
             d = (XX - x) ** 2 + (YY - y) ** 2
             fr[d <= r * r] = skin; fr[(d <= r * r) & (d >= (r - 3) ** 2)] = (20, 16, 18)
-        if F == B:
+        if B is not None and F == B:
             x0, y0, x1, y1 = box; x0, y0 = max(0, x0), max(0, y0); x1, y1 = min(W - 3, x1), min(H, y1)
             fr[y0:y1, x0 + 3:x1 + 3] = fr[y0:y1, x0:x1].copy()
         out.stdin.write(fr.tobytes())
@@ -180,7 +181,7 @@ def main():
             if line.startswith("{"): r = json.loads(line); regions[r["F"]] = r
     if plant_to:
         A, B = plant(video, plant_to, regions)
-        print(f"planted: an empty eye ring on frame {A} ({A / 30:.2f} s), {'a speech bubble' if regions[B].get('bub') else 'a caption'} moved 3 px to the right on frame {B} ({B / 30:.2f} s) -> {plant_to}")
+        print(f"planted: an empty eye ring on frame {A} ({A / 30:.2f} s)" + (f", {'a speech bubble' if regions[B].get('bub') else 'a caption'} moved 3 px to the right on frame {B} ({B / 30:.2f} s)" if B is not None else " (no text in the picture)") + f" -> {plant_to}")
         return
     rows, fails = check(video, regions)
     L = [f"flicker check: {video}", f"frames checked: {len(rows)} (1 to {len(rows)}; the first and last have no neighbour on one side)",

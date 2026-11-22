@@ -49,7 +49,9 @@ for (const id of ids) {
   if (PL === "framing") { const cam0 = c.camera; c.camera = (t) => ({ ...cam0(t), z: 1 }); }
   if (PL === "tight") { const cam0 = c.camera; c.camera = (t) => ({ ...cam0(t), z: cam0(t).z * 1.25 }); }
   if (PL === "ground-prop") c.groundProps = [{ name: "bollard", x0: castAt(c.cast, 0)[0].x - 80, x1: castAt(c.cast, 0)[0].x - 10 }];
-  if (PL === "crab-edge") for (const a of c.appear ?? []) { const f0 = a.at; a.at = (t) => { const p = f0(t); return p ? [Math.max(p[0], viewOf(c.camera(t)).x1 - 30), p[1]] : p; }; }
+  // (the claws' tips move with it: planted on the body alone, the tips the rule measures stayed inside, v4)
+  if (PL === "crab-edge") for (const a of c.appear ?? []) { const f0 = a.at, p0 = a.points; a.at = (t) => { const p = f0(t); return p ? [Math.max(p[0], viewOf(c.camera(t)).x1 - 30), p[1]] : p; };
+    if (p0) a.points = (t) => { const p = f0(t), q = a.at(t); return p && q ? p0(t).map(([x, y]) => [x + q[0] - p[0], y]) : p0(t); }; }
   if (PL === "turn-v1" && id === "c03") {      // (the v1 turn: lifted feet, 0.6 s each, ending in profile to the left)
     const sir = M.figure("sir", 0, 90); sir.stand(0.55); sir.turn(-90, 0.6, 0.18); sir.stand(0.9); sir.turn(-90, 0.6, 0.18); sir.stand(3); c.cast[0].m = sir; }
   const lift = (g, names, dy) => { const sc = scaleOf(g.who); for (const n of names) g.sk.j[n] = [g.sk.j[n][0], g.sk.j[n][1] - dy / sc]; };

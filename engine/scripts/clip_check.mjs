@@ -62,6 +62,11 @@ for (const id of ids) {
   if (PL === "pop-in") ALC_PLANT.pop = true;
   if (PL === "mirror-print") ALC_PLANT.mirror = true;
   if (PL === "short-bars") ALC_PLANT.shortBars = true;
+  if (PL === "pop-out") ALC_PLANT.cut = true;
+  if (PL === "no-hand") ALC_PLANT.nohand = true;
+  if (PL === "swap") ALC_PLANT.swap = true;
+  if (PL === "on-the-spot") ALC_PLANT.noScenery = true;
+  if (PL === "long-arm") ALC_PLANT.longArm = true;
   if (PL === "jitter") for (const cm of c.cast) { const f0 = cm.pose; cm.pose = (t, p, h) => { const q = f0 ? f0(t, p, h) : p, f = Math.round(t * FM.FPS); return t > 1.4 && t < 2.0 ? { ...q, armL: [[q.armL[0][0], q.armL[0][1]], [q.armL[1][0] + (f % 2 ? 4 : -4), q.armL[1][1]]] } : q; }; }
   if (PL === "start-pop") for (const cm of c.cast) for (const l of cm.m.layers ?? []) if (l.pose && l.pose.pz !== undefined) l.glide = false;
   if (PL === "point-long") for (const p of c.points ?? []) p.t1 = p.t0 + 1.5;
@@ -109,11 +114,34 @@ for (const id of ids) {
       for (const th of DRAWN.things) { now.add(th.what); if (seen.has(th.what) || f === 0) continue; const near = DRAWN.sleeves.some((sl) => Math.hypot(sl.wrist[0] - th.at[0], sl.wrist[1] - th.at[1]) < 260);
         if (inside(th.at) && !near) faults.push(`${f}: the ${th.what} pops into the picture with no hand at it`); }
       prev.things = now;
+      // (v1c) pop-out: a hand that was in the picture last frame and is gone now left through the edge (its wrist outside the picture last frame)
+      const sl0 = (prev.sleeves ??= new Map()), sl1 = new Map(DRAWN.sleeves.filter((q) => q.id).map((q) => [q.id, q]));
+      for (const [id, q] of sl0) if (!sl1.has(id) && inside(q.wrist)) faults.push(`${f}: the hand "${id}" vanishes inside the picture instead of leaving through its edge`);
+      prev.sleeves = sl1;
+      // (v1c) a carried thing moves only with a hand at it; a thing keeps its drawing from one frame to the next
+      const th0 = (prev.thingAt ??= new Map()), th1 = new Map(DRAWN.things.map((q) => [q.what, q]));
+      for (const [w, q] of th1) { const o = th0.get(w); if (!o) continue;
+        if (q.carried && Math.hypot(q.at[0] - o.at[0], q.at[1] - o.at[1]) > 1 && inside(q.at) && !DRAWN.sleeves.some((sl) => Math.hypot(sl.wrist[0] - q.at[0], sl.wrist[1] - q.at[1]) < 320)) faults.push(`${f}: the ${w} moves with no hand at it`);
+        if (o.look && q.look && o.look !== q.look) faults.push(`${f}: the ${w} changes its drawing in one frame (${o.look} -> ${q.look})`); }
+      prev.thingAt = th1;
+      // (v1c) a visible arm is at most 3.5 hand lengths (107 units x its size each) from the wrist to the picture's edge
+      const V2 = viewOf(cam);
+      for (const sl of DRAWN.sleeves) { if (!inside(sl.wrist)) continue; const dx = sl.end[0] - sl.wrist[0], dy = sl.end[1] - sl.wrist[1], L = Math.hypot(dx, dy) || 1;
+        let lo = 0, hi = 1; for (let it = 0; it < 30; it++) { const m = (lo + hi) / 2, q = [sl.wrist[0] + dx * m, sl.wrist[1] + dy * m]; if (q[0] > V2.x0 && q[0] < V2.x1 && q[1] > V2.y0 && q[1] < V2.y1) lo = m; else hi = m; }
+        const vis = lo * L, limN = +(process.env.ARM_LIM ?? 3.5), lim = limN * 107 * sl.s;      // (3.5 hand lengths: the automation session, a forearm leaves the picture after a short way) stat.arm = Math.max(stat.arm ?? 0, vis / (107 * sl.s));
+        if (vis > lim) faults.push(`${f}: the arm "${sl.id}" shows ${(vis / (107 * sl.s)).toFixed(1)} hand lengths in the picture (${limN} at most)`); }
       // (e) print (a poster's front) is never drawn mirrored
       for (const pr of DRAWN.prints) if (pr.mirrored) faults.push(`${f}: the ${pr.what}'s print is drawn mirrored`); }
+    // (v1c) no walking on the spot: when the camera follows walking figures, something still in the world passes behind them
+    if (SHOTS[c.id] && figs.length) { const cx0 = prev.camX, moving = figs.some((g) => prev["x" + g.name] !== undefined && Math.abs(g.x - prev["x" + g.name]) > 0.5);
+      if (cx0 !== undefined && Math.abs(cam.cx - cx0) > 0.5 && moving) { const P2 = (q) => [(q[0] - cam.cx) * cam.z + FM.W / 2, (q[1] - cam.cy) * cam.z + FM.H / 2];
+        if (!DRAWN.scenery.some((sc) => { const [x, y] = P2(sc.at); return x > 0 && x < FM.W && y > 0 && y < FM.H; })) faults.push(`${f}: walking on the spot: the camera follows them and nothing still passes behind them`); }
+      prev.camX = cam.cx; for (const g of figs) prev["x" + g.name] = g.x; }
     // (d) a face never jumps in one frame: wide eyes, the mouth, the brows and the smile change by under 0.3 a frame (06 react over several frames)
     for (const g of figs) { const fc = g.o.face ?? {}, q = prev["face" + g.name]; prev["face" + g.name] = fc;
-      if (q) for (const k of ["wide", "mouth", "brow", "smile"]) { const d = Math.abs((fc[k] ?? 0) - (q[k] ?? 0)); if (d > 0.3) faults.push(`${f} ${g.name}: the face's ${k} jumps ${d.toFixed(2)} in one frame`); } }
+      // (the mouth not counted while the figure speaks: a lip-synced mouth opens 0.7 in a frame on a syllable, 01)
+      const talks = !!c.cast.find((cc) => cc.name === g.name)?.mouth;
+      if (q) for (const k of talks ? ["wide", "brow", "smile"] : ["wide", "mouth", "brow", "smile"]) { const d = Math.abs((fc[k] ?? 0) - (q[k] ?? 0)); if (d > 0.3) faults.push(`${f} ${g.name}: the face's ${k} jumps ${d.toFixed(2)} in one frame`); } }
     for (const g of figs) { const sc = scaleOf(g.who), feet = {}, gap = {}, shoes = {}, running = c.running?.(g.name, t) ?? false;
       for (const s of ["L", "R"]) { const W = g.who === "sir" ? FLAT_SPECS[0].sir.B.shoeW : FLAT_SPECS[0].other.B.shoeW, sh = shoeDrawn(g.sk, s, W, true), ink = 0.85 * D.ol * sc;
         const P = sh.pts.map((q) => [g.x + q[0] * sc, footY(g.who) + q[1] * sc]); shoes[s] = { x0: Math.min(...P.map((q) => q[0])), x1: Math.max(...P.map((q) => q[0])), y0: Math.min(...P.map((q) => q[1])), y1: Math.max(...P.map((q) => q[1])) + ink };

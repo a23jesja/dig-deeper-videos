@@ -15,7 +15,7 @@ export type Face = { gaze?: P2; lid?: number; wide?: number; brow?: number; mout
 /** sway = how far loose things (the hem of a coat or skirt, the cap, the chain) trail behind the way the figure faces, -1..1 */
 /** a character's look on the flat rig (the guard, the inmates of Alcatraz): its colours, the cap's band, and what of Sir's it leaves out.
  *  Nothing set = Sir as he is (the approved shot types unchanged) */
-export type Look = { col?: Record<string, string>; band?: string; badge?: string; mono?: boolean; pipe?: boolean; moustache?: boolean; brow?: string };
+export type Look = { col?: Record<string, string>; band?: string; badge?: string; mono?: boolean; pipe?: boolean; moustache?: boolean; brow?: string; brim?: number };
 export type FigOpts = { look?: Look; who?: Who; face?: Face; handL?: HandKind; handR?: HandKind; prop?: "cane" | "loaf" | null; capLift?: number; sway?: number; /** false: no far-arm sweep between front and side (a figure that stands turned, not turning) */ armWipe?: boolean;
   /** the hat is not on the head (it flew off in a fall and is drawn by the scene where it lies) */
   hatOff?: boolean;

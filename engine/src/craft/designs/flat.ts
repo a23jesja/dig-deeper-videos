@@ -15,7 +15,7 @@ const GOLD = "#e8b630", MOUTH = "#5b1f2a", TONGUE = "#e46a6a", TEAR = "#7cc8ee",
 /** cuffSwap: the far hand changes layer in a turn as the sweep passes the coat's edge at the cuff (false: at HAND_SWAP, v6/v7 draft, a notch) */
 export const FACE = { noseLast: true, qMoustache: true, pupilClear: true, earSliver: true, chainBehindPipe: true, cuffSwap: true };
 /** the look being drawn (drawFlat sets it for each figure): Sir's own unless the figure has a Look (common.ts) */
-const LOOK = { col: null as null | Record<string, string>, band: null as null | string, badge: null as null | string, mono: true, pipe: true, moustache: true, brow: null as null | string };
+const LOOK = { col: null as null | Record<string, string>, band: null as null | string, badge: null as null | string, mono: true, pipe: true, moustache: true, brow: null as null | string, brim: 52 };
 /** a colour of the figure being drawn: the Look's, else the spec's */
 const lc = (k: string, base: string) => (LOOK.col && LOOK.col[k]) || base;
 /** the three-quarter nose's ellipse, head-local, with half its outline */
@@ -178,7 +178,7 @@ export type FlatSpec = {
 };
 
 const drawFlat = (c: FlatSpec) => (k: Ink, sk: Sk, o: FigOpts) => {
-  const lk = o.look; LOOK.col = lk?.col ?? null; LOOK.band = lk?.band ?? null; LOOK.badge = lk?.badge ?? null; LOOK.mono = lk?.mono ?? true; LOOK.pipe = lk?.pipe ?? true; LOOK.moustache = lk?.moustache ?? true; LOOK.brow = lk?.brow ?? null;
+  const lk = o.look; LOOK.col = lk?.col ?? null; LOOK.band = lk?.band ?? null; LOOK.badge = lk?.badge ?? null; LOOK.mono = lk?.mono ?? true; LOOK.pipe = lk?.pipe ?? true; LOOK.moustache = lk?.moustache ?? true; LOOK.brow = lk?.brow ?? null; LOOK.brim = lk?.brim ?? 52;
   const other = o.who === "baker", { P: _p, B } = other ? c.other : c.sir, Fr = frame(sk), P = sk.P, r = rd(o.face ?? {}), hp = headPose(sk), C = (lk?.col ? { ...c.col, ...lk.col } : c.col) as Col;
   void _p; const front = sk.cos > 0.35, sideOn = Math.abs(sk.sin) > 0.6, d = Math.sign(sk.sin) || 1, sit = other ? 0 : seated(sk);
   const leg = (s: Side) => {
@@ -399,7 +399,7 @@ const A_SPEC: FlatSpec = {
     if (mono && LOOK.mono) monoRing(k, 66, -118, 36, 50, 7);
     fl(k, ellPts(126, -82, 19, 16), lc('nose', CA.nose));
     tearAt(k, 72, -82, 1, r.tear);
-    k.g.save(); k.g.translate(-lift * 40, -lift * 50); k.g.rotate(-lift * 0.25); capSide(k, -128, 112, -206, -312, lc('cap', CA.cap), 52); k.g.restore();
+    k.g.save(); k.g.translate(-lift * 40, -lift * 50); k.g.rotate(-lift * 0.25); capSide(k, -128, 112, -206, -312, lc('cap', CA.cap), LOOK.brim); k.g.restore();
   },
   // three-quarter, facing the picture's right: the near eye (his right) full, the far eye narrower by the edge, the nose by the edge, the near
   // half of the moustache long and the far one short, the near ear on the head's left

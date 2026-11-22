@@ -1,0 +1,41 @@
+Uttalskontroll, Alcatraz (George). Whisper small.en har lyssnat på varje vald tagning; ordfel = andel ord som inte stämmer mot manus.
+
+ 1. manus: The guard's torch hit the pillow.
+    hört:  The guard's torch hit the pillow.
+    ordfel 0.00
+ 2. manus: The head on it was fake.
+    hört:  The head on it was fake.
+    ordfel 0.00
+ 3. manus: Three men were gone from Alcatraz.
+    hört:  Three men were gone from Alcatraz.
+    ordfel 0.00   riskord: Alcatraz
+ 4. manus: If the guards found the holes, it was over.
+    hört:  If the guards found the holes, it was over.
+    ordfel 0.00
+ 5. manus: They dug out the air vents in their cells with homemade tools.
+    hört:  They dug out the air vents in their cells with homemade tools.
+    ordfel 0.00   riskord: homemade, vents
+ 6. manus: They turned prison raincoats into a raft.
+    hört:  They turned prison raincoats into a raft.
+    ordfel 0.00   riskord: raincoats, raft
+ 7. manus: On the night of June eleventh, they climbed up to the roof.
+    hört:  On the night of June 11, they climbed up to the roof.
+    ordfel 0.08   riskord: June, eleventh
+ 8. manus: Then they climbed down and pushed off into the dark bay.
+    hört:  Then they climbed down and pushed off into the dark bay.
+    ordfel 0.00   riskord: bay
+ 9. manus: At sunrise, the guards found out.
+    hört:  At sunrise, the guards found out.
+    ordfel 0.00
+10. manus: The three men were never seen again.
+    hört:  The three men were never seen again.
+    ordfel 0.00
+11. manus: Nobody knows if they made it.
+    hört:  Nobody knows if they made it.
+    ordfel 0.00
+12. manus: Somewhere, three fake heads are still asleep.
+    hört:  Somewhere three fake heads are still asleep.
+    ordfel 0.00   riskord: Somewhere
+
+Lyssningsfilen lyssna-riskord.wav har meningarna med riskorden i ordning: 3 (Alcatraz), 5 (homemade, vents), 6 (raincoats, raft), 7 (June eleventh), 8 (bay), 12 (Somewhere).
+Mening 7: Whisper skriver "June 11", som är dess sätt att skriva "June eleventh"; om George säger "eleventh" eller "eleven" kan jag inte höra. Det ska lyssnas på.

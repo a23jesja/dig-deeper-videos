@@ -12,7 +12,13 @@ type F = ReturnType<typeof frame>;
 export const TURQ = "#1fb3a6";
 const GOLD = "#e8b630", MOUTH = "#5b1f2a", TONGUE = "#e46a6a", TEAR = "#7cc8ee", WHITE = "#ffffff";
 /** the face check's switch (scripts/face_order.mjs): false draws the nose before the monocle's ring at three-quarter, as in v4 */
-export const FACE = { noseLast: true };
+export const FACE = { noseLast: true, qMoustache: true };
+/** the three-quarter moustache, the near half and the far: both inside the head's outline, the far one about 60 % of the near one as it shows
+ *  past the nose (v6: centred 52, the far half 0.55 wide and 1.2 tall, both 6 lower, the near half 0.82; at 78 with the far half 0.5 wide the
+ *  nose covered all but 18 % of it and "halva försvinner när han vrider på huvudet", Jesper before and the review of v5). FACE.qMoustache =
+ *  false gives the v5 moustache, the face check's planted fault */
+export const qMoustache = () => { const Q = FACE.qMoustache ? { cx: 52, sx: 0.55, sy: 1.2, dy: 6, ns: 0.82 } : { cx: 78, sx: 0.5, sy: 1, dy: 0, ns: 1 };
+  return { near: mirror(MOUS_A).map(([x, y]) => [x * Q.ns + Q.cx, y + Q.dy] as P2), far: MOUS_A.map(([x, y]) => [x * Q.sx + Q.cx, -80 + (y + 80) * Q.sy + Q.dy] as P2) }; };
 
 /** a flat shape with the even outline: the ink is drawn under the fill, so the same width shows outside every part */
 const fl = (k: Ink, pts: P2[], col: string) => k.group([pts], col);
@@ -96,7 +102,7 @@ const pipeAt = (k: Ink, a: P2, s: number, d = 1, droop = 0) => {
     const b: P2 = [62 * s * d, 16 * s];
     band(k, [[0, 0], b], 11 * s, "#3b2416");
     const bowl: P2[] = [[b[0] - 13 * s * d, b[1] - 36 * s], [b[0] + 19 * s * d, b[1] - 36 * s], [b[0] + 15 * s * d, b[1] + 8 * s], [b[0] - 10 * s * d, b[1] + 8 * s]];
-    fl(k, bowl, "#8a4b26"); k.line([bowl[0], bowl[1]], 8 * s, k.ink); });
+    fl(k, bowl, "#8a4b26"); k.line([bowl[0], bowl[1]], 8 * s, k.ink); k.mark("pipe", b[0] + 3 * s * d, b[1] - 14 * s); });      // (the bowl's middle, for the check that no hand touches it)
 };
 // (clenched teeth hold the pipe: it tips half as far; tipped all the way its bowl lay on the raised hand in 06, the review of the shot types v4)
 const droopOf = (r: FR) => Math.max(0, Math.min(1, r.wide)) * (1 - 0.5 * Math.max(0, Math.min(1, r.teeth)));
@@ -230,10 +236,18 @@ const drawFlat = (c: FlatSpec) => (k: Ink, sk: Sk, o: FigOpts) => {
     const side = Math.sign(J(sk, "sh", far)[0] - J(sk, "sh", near)[0]) || 1, xFar = side > 0 ? x1 : x0, xNear = side > 0 ? x0 : x1, aOut = side > 0 ? a1 : a0, aIn = side > 0 ? a0 : a1;
     const line = u < 0.1 ? xFar + (aOut - xFar) * (u / 0.1) : u < 0.9 ? aOut + (aIn - aOut) * ((u - 0.1) / 0.8) : aIn + (xNear - aIn) * ((u - 0.9) / 0.1), B9 = 1e4;
     const half: P2[] = side > 0 ? [[line, -B9], [B9, -B9], [B9, B9], [line, B9]] : [[-B9, -B9], [line, -B9], [line, B9], [-B9, B9]];
-    k.clip(half, () => arm(far));
-    // (the cut drawn as the coat's edge where it crosses the sleeve, inside the body: without it the sleeve looked sliced by an unseen line, v5 draft)
-    if (u > 0 && u < 1) { const S2 = J(sk, "sh", far), E2 = J(sk, "el", far), W2 = J(sk, "wr", far);
-      k.clip(torsoPoly, () => { for (const piece of limb(S2, E2, W2, B.arm)) k.clip(piece, () => k.line([[line, -B9], [line, B9]], k.ol)); }); }
+    // (v6: the hand is left out of the sweep: the sleeve is swept, the hand changes layer whole as the line passes its middle, and no line is
+    //  drawn over it; swept with the arm, the hand was cut straight through and a thin line ran across it, the review of v5)
+    const W2 = J(sk, "wr", far), T2 = J(sk, "tip", far), hc: P2 = [(W2[0] + T2[0]) / 2, (W2[1] + T2[1]) / 2], hr = P.hand * 0.62 + k.ol, handPts = ellPts(hc[0], hc[1], hr, hr);
+    const outside = (fn: () => void) => { const g = k.g; g.save(); g.beginPath(); g.rect(-B9, -B9, 2 * B9, 2 * B9); k.trace(handPts); g.clip("evenodd"); fn(); g.restore(); };
+    // (the hand changes layer where it lies least under the coat's edge: about 16 % of it at |sin| 0.35, against 25 % at the sweep's ends; it
+    //  overlaps the coat somewhere all through the turn, so this is the smallest change the hand can make, as the review of v5 allowed)
+    const handShown = as < HAND_SWAP;
+    outside(() => k.clip(half, () => arm(far)));
+    if (handShown) k.clip(handPts, () => arm(far));
+    // (the cut drawn as the coat's edge where it crosses the sleeve, inside the body, never over the hand: without it the sleeve looked sliced)
+    if (u > 0 && u < 1) { const S2 = J(sk, "sh", far), E2 = J(sk, "el", far);
+      outside(() => k.clip(torsoPoly, () => { for (const piece of limb(S2, E2, W2, B.arm)) k.clip(piece, () => k.line([[line, -B9], [line, B9]], k.ol)); })); }
     arm(near); return;
   }
   layers(sk, { arm, leg, torso, head });
@@ -241,6 +255,8 @@ const drawFlat = (c: FlatSpec) => (k: Ink, sk: Sk, o: FigOpts) => {
 /** where the far arm comes out from behind the body in a turn (|sin| of the facing); [0, 0] switches it in one frame at 0.5 (the v4 order,
  *  the bytes check's planted fault) */
 export const ARM_WIPE: [number, number] = [0.15, 0.8];
+/** where the far hand changes layer in a turn (|sin|): front's order under it, the side's over it */
+export const HAND_SWAP = 0.35;
 /** a shoe as drawn: no part of it below the ground line (y = 0): turning, lifting or setting down a foot, its toe went 5-10 px through the
  *  line (the review of the motion test). clamp = false gives the shoe as it was (the check's planted fault) */
 export const shoeDrawn = (sk: Sk, side: Side, W: number, clamp = true) => {
@@ -336,8 +352,9 @@ const A_SPEC: FlatSpec = {
     else pipeAt(k, [62 + mw - 2, my + 4 + 61 * 0.8 * (m0 - 0.2) * 0.45 + cornerDown(r, 0.8)], 1, 1, droopOf(r));
     // (the far half 0.6 of the near one: at 0.34 the moustache doubled in size the frame the head turned to the front, the review of v2)
     // (the far half 0.5, the whole moustache 6 nearer the middle: at 0.6 from 84 its tip and the pipe came close to the head's outline, v3)
-    const near = mirror(MOUS_A).map(([x, y]) => [x * 1.0 + 78, y] as P2), far = MOUS_A.map(([x, y]) => [x * 0.5 + 78, y] as P2);
-    fl(k, spline([...far, ...near.reverse()]), CA.hair);
+    // (v6: see qMoustache)
+    const { near, far } = qMoustache();
+    fl(k, spline([...far, ...[...near].reverse()]), CA.hair);
     eyesAndMono();      // (after the moustache: the eyes and the monocle over it, the cord over them as before)
     // (v5: the nose over the eyes and the monocle's ring in every view, as from the front and in profile: turned to his left the ring on the
     //  far eye lay over the nose, Jesper on the shot types v4, "Ja"; this undoes the order the review of v1 asked for. FACE.noseLast = false

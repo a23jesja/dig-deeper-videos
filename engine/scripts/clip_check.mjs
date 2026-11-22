@@ -25,16 +25,24 @@
 //     node scripts/clip_check.mjs <clip id | all>     (from engine/)   CLIP_PLANT=<fault> plants one fault (see below)
 import * as esbuild from "esbuild"; import fs from "node:fs"; import path from "node:path"; import { pathToFileURL } from "node:url";
 const out = path.resolve("out/clip_model.mjs");
-fs.writeFileSync("out/_clip_entry.ts", 'export * from "../src/craft/clips/clipKit"; export { CLIPS, CRAB } from "../src/craft/clips/clips"; export { ease } from "../src/craft/stage/acting"; export { pupilIn, drawnGaze } from "../src/craft/designs/flat"; export { handFlip, SHOE } from "../src/craft/designs/common"; export { PIVOT } from "../src/craft/motion";\n');
+fs.writeFileSync("out/_clip_entry.ts", 'export * from "../src/craft/clips/clipKit"; export { CLIPS, CRAB, GUARD } from "../src/craft/clips/clips"; export { Ink } from "../src/craft/ink"; export { ease } from "../src/craft/stage/acting"; export { pupilIn, drawnGaze } from "../src/craft/designs/flat"; export { handFlip, SHOE } from "../src/craft/designs/common"; export { PIVOT } from "../src/craft/motion";\n');
 await esbuild.build({ entryPoints: ["out/_clip_entry.ts"], bundle: true, format: "esm", platform: "node", outfile: out, logLevel: "error", loader: { ".json": "json" } });
 const M = await import(pathToFileURL(out).href); fs.rmSync(out); fs.rmSync("out/_clip_entry.ts");
-const { CLIPS, CRAB, castAt, FM, scaleOf, footY, D, shoeDrawn, FLAT_SPECS, viewOf, heightOf, drawnHandKind, figBox, pupilIn, drawnGaze, thighUnder, handFlip, SHOE, PIVOT } = M;
+const { CLIPS, CRAB, GUARD, Ink, castAt, FM, scaleOf, footY, D, shoeDrawn, FLAT_SPECS, viewOf, heightOf, drawnHandKind, figBox, pupilIn, drawnGaze, thighUnder, handFlip, SHOE, PIVOT } = M;
 const LINE_TOP = FM.GY - FM.LINE / 2, ids = process.argv[2] && process.argv[2] !== "all" ? [process.argv[2]] : Object.keys(CLIPS);
 const PL = process.env.CLIP_PLANT;
+// a stand-in canvas that keeps only the transform, to draw a figure and read the places its drawing marks (the pipe's bowl)
+const mockCtx = () => { let m = [1, 0, 0, 1, 0, 0]; const st = [], mul = (a, b) => [a[0] * b[0] + a[2] * b[1], a[1] * b[0] + a[3] * b[1], a[0] * b[2] + a[2] * b[3], a[1] * b[2] + a[3] * b[3], a[0] * b[4] + a[2] * b[5] + a[4], a[1] * b[4] + a[3] * b[5] + a[5]];
+  const api = { save() { st.push(m.slice()); }, restore() { m = st.pop() ?? m; }, translate(x, y) { m = mul(m, [1, 0, 0, 1, x, y]); }, rotate(r) { const c = Math.cos(r), s = Math.sin(r); m = mul(m, [c, s, -s, c, 0, 0]); }, scale(x, y) { m = mul(m, [x, 0, 0, y, 0, 0]); },
+    transform(a, b, c, d, e, f) { m = mul(m, [a, b, c, d, e, f]); }, setTransform(a, b, c, d, e, f) { m = typeof a === "object" ? [a.a, a.b, a.c, a.d, a.e, a.f] : [a, b, c, d, e, f]; }, resetTransform() { m = [1, 0, 0, 1, 0, 0]; },
+    getTransform() { return { a: m[0], b: m[1], c: m[2], d: m[3], e: m[4], f: m[5] }; }, measureText() { return { width: 0 }; } };
+  return new Proxy(api, { get: (t, k) => (k in t ? t[k] : () => {}), set: () => true }); };
 let failed = 0;
 const viewName = (sk) => { const s = Math.sin((sk.faceYaw * Math.PI) / 180), a = Math.abs(s); return a < 0.45 ? "front" : (a < 0.85 ? "q" : "side") + (s < 0 ? "-left" : "-right"); };
 const handDeg = (sk, s) => { const w = sk.j[`wr${s}`], t = sk.j[`tip${s}`], e = sk.j[`el${s}`], [a, b] = Math.hypot(t[0] - w[0], t[1] - w[1]) > 6 ? [w, t] : [e, w]; return (Math.atan2(b[1] - a[1], b[0] - a[0]) * 180) / Math.PI; };
 for (const id of ids) {
+  // (set before the clip is made: its camera is fitted to every frame as it is made, which finds the guard)
+  if (PL === "pipe-hand") { GUARD.farOut = 25; GUARD.farDown = 66; }
   const c = CLIPS[id]();
   // ---- planted faults ----
   // (the crate of v4: its top set from half of the thighs' half-width, 13.5 x scale higher than the thighs' drawn underside)
@@ -135,6 +143,12 @@ for (const id of ids) {
         for (const s of ["L", "R"]) { const e = J(g, `el${s}`), w = J(g, `wr${s}`), tp = J(g, `tip${s}`), pts = [w, tp, [(e[0] + w[0]) / 2, (e[1] + w[1]) / 2]];
           const dmin = Math.min(...pts.map((q) => Math.hypot(q[0] - hc[0], q[1] - hc[1]) - hr - 18 * sc)); stat.handHead = Math.min(stat.handHead ?? 1e9, dmin);
           if (dmin < 0 && !(c.handHeadOK?.(t))) faults.push(`${f} ${g.name}: the ${s} hand or forearm ${(-dmin).toFixed(0)} px into the head`); } }
+      // (v6) no hand on the pipe: the pipe's bowl (as the drawing marks it) clear of both hands by the bowl's and the hand's size and a little air
+      //  (06: from frame 77 the bowl lay on the raised hand's thumb and sleeve, their outlines running together, the review of v5)
+      if (g.who === "sir") { const ink = new Ink(mockCtx()); D.draw(ink, g.sk, g.o); const pb = ink.marks.pipe;
+        if (pb) for (const s of ["L", "R"]) { const w = g.sk.j[`wr${s}`], tp = g.sk.j[`tip${s}`], hc = [(w[0] + tp[0]) / 2, (w[1] + tp[1]) / 2], hr = g.sk.P.hand * 0.42;
+          const dmin = Math.min(...[w, hc, tp].map((q) => Math.hypot(q[0] - pb[0], q[1] - pb[1]))) - (24 + hr + 22); stat.pipeHand = Math.min(stat.pipeHand ?? 1e9, dmin);
+          if (dmin < 0) faults.push(`${f} ${g.name}: the pipe's bowl on the ${s} hand (${(-dmin).toFixed(0)} units into it)`); } }
       // hands: the drawing that shows, and how far the wrist moved
       for (const s of ["L", "R"]) { const kind = drawnHandKind(g.o[`hand${s}`] ?? "relaxed", handDeg(g.sk, s)), w = J(g, `wr${s}`), h = (hands[g.name + s] ??= []); h.push({ kind, w });
         if (h.length >= 3) { const [a, b, cc] = h.slice(-3), mv = Math.hypot(cc.w[0] - b.w[0], cc.w[1] - b.w[1]), mv0 = Math.hypot(b.w[0] - a.w[0], b.w[1] - a.w[1]);

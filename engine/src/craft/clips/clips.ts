@@ -175,8 +175,8 @@ const c06 = (): Clip => {
   // (v4: one reaction, afraid, all the way: Jesper on v3, "en tydlig reaktion (rädd ELLER förtjust, inte båda)". The hands by his face read
   //  as delight, and the face eased toward curiosity as he looked down. Now he jerks back, the hands up in front of his chest as a guard,
   //  palms toward the crab, the face afraid, and he stays afraid: leaning away, the guard up and trembling, the brows up, the mouth a grimace)
-  ease(sir, T_SCARED, { lean: -10, py: -0.04, armL: [[14, 52], [118, 10]], armR: [[18, 38], [122, 10]], head: [8, -8, 0] }, 0.22, { face: { ...SCARED, gaze: [0.8, 0.6] } });
-  ease(sir, 2.2, { lean: -8, py: -0.05, armL: [[12, 48], [114, 10]], armR: [[16, 34], [118, 10]], head: [14, 14, 0] }, 0.5, { face: { ...SCARED, pupil: 0.45, mouth: 0.4, gaze: [0.8, 0.9] } });
+  ease(sir, T_SCARED, { lean: -10, py: -0.04, armL: [[14, 52], [118, 10]], armR: [[18, 38], [122, 10]], head: [8, -8, 0] }, 0.22, { face: { ...SCARED, pupil: 0.62, gaze: [0.4, 0.5] } });      // (the pupils small but whole, inside the eye: at 0.45 and [0.8, 0.9] they sat on the rim and the near eye read empty at phone size)
+  ease(sir, 2.2, { lean: -8, py: -0.05, armL: [[12, 48], [114, 10]], armR: [[16, 34], [118, 10]], head: [14, 14, 0] }, 0.5, { face: { ...SCARED, pupil: 0.58, mouth: 0.4, gaze: [0.3, 0.6] } });
   // (the guard trembles a little once it is up: 2 degrees at 7 Hz, so the held fear is never dead still)
   const shake = (t: number, p: Pose): Pose => { const w = env(t, T_SCARED + 0.3, 0.3, 99, 0.1); if (w <= 0) return p; const d = 2 * w * Math.sin(t * 2 * Math.PI * 7);
     const sh = (a: Pose["armL"], k: number): Pose["armL"] => [[a![0][0] + d * k, a![0][1]], [a![1][0] - d * k, a![1][1]]];

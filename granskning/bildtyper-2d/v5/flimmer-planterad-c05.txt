@@ -1,0 +1,23 @@
+planted: an empty eye ring on frame 45 (1.50 s) (no text in the picture) -> out/craft/bildtyper/v5/flimmer-planterad-c05.mp4
+flicker check: out/craft/bildtyper/v5/flimmer-planterad-c05.mp4
+frames checked: 118 (1 to 118; the first and last have no neighbour on one side)
+a pixel flickers when it differs by more than 40 (of 255, in R, G or B) from the frame before and the frame after, while those two differ by less than 16
+fails: more than 2000 flickering pixels in a frame, more than 40 in an eye's circle, more than 150 in a box of text
+eye circles per frame: 118 in all; text boxes: 0
+largest: picture 107113 pixels (frame 45), eye 107113 (frame 45), text 0 (frame 1)
+movement taken out: a pixel is movement when steps v0 and v1 of at most 12 px explain it (the frame before v0 behind and the frame after v1 ahead both match its 5 x 5 patch, mean grey difference under 14; v0 and v1 point the same way and differ by at most 0.25 of the longer, or 2 px) and its patch is not flat (grey levels vary by 10 or more)
+raw (before movement is taken out): largest picture 107118, eye 107115, text 0; frames over the limits raw: 11
+median picture count: 3
+the loop (last frame to first): 12.7 % of the picture changes; inside the shots the median frame change is 1.5 % and 95 % are 3.0 % or less (a pixel changes by more than 24)
+
+FAIL: 10 frames
+  frame 15 (0.50 s): 49 pixels flicker in an eye (at most 40)
+  frame 17 (0.57 s): 49 pixels flicker in an eye (at most 40)
+  frame 18 (0.60 s): 45 pixels flicker in an eye (at most 40)
+  frame 36 (1.20 s): 4675 pixels flicker in the picture (at most 2000)
+  frame 37 (1.23 s): 5190 pixels flicker in the picture (at most 2000)
+  frame 38 (1.27 s): 4236 pixels flicker in the picture (at most 2000)
+  frame 39 (1.30 s): 2137 pixels flicker in the picture (at most 2000)
+  frame 45 (1.50 s): 107113 pixels flicker in the picture (at most 2000); 107113 pixels flicker in an eye (at most 40)
+  frame 66 (2.20 s): 4008 pixels flicker in the picture (at most 2000)
+  frame 119 (3.97 s): the loop: 12.7 % of the picture changes from the last frame to the first (95 % of frame changes inside the shots are 3.0 % or less)

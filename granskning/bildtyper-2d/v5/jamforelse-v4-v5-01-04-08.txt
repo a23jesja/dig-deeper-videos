@@ -1,0 +1,106 @@
+v4 against the v5 code, frame by frame, for 01, 04 and 08. A pixel differs when R, G or B differs by more than 24.
+
+== 01-sta-och-prata: v4 138 frames, v5 code 138 frames
+  frame  40:    234 px differ
+  frame  41:    112 px differ
+  frame  42:     81 px differ
+  frame  43:      1 px differ
+  frame  44:     21 px differ
+  frame  45:     19 px differ
+  frame  46:     27 px differ
+  frame  47:      1 px differ
+  frame  48:     10 px differ
+  frame  49:     11 px differ
+  frame  50:      4 px differ
+  frame  52:      9 px differ
+  frame  53:     11 px differ
+  frame  54:     21 px differ
+  frame  55:      4 px differ
+  frame  56:     23 px differ
+  frame  57:     18 px differ
+  frame  58:     22 px differ
+  frame  59:      2 px differ
+  frame  60:     29 px differ
+  frame  61:     14 px differ
+  frame  62:     40 px differ
+  frame  63:      8 px differ
+  frame  64:     71 px differ
+  frame  65:     79 px differ
+  frame  66:    131 px differ
+  frame  67:    182 px differ
+  frame  68:    235 px differ
+  frame  69:    102 px differ
+  frame  70:     65 px differ
+  frame  71:     54 px differ
+  frame  72:     43 px differ
+  frame  73:     25 px differ
+  frame  74:     34 px differ
+  frame  75:      5 px differ
+  frame  76:     36 px differ
+  frame  77:     14 px differ
+  frame  78:     30 px differ
+  frame  79:      5 px differ
+  frame  80:     18 px differ
+  frame  81:     25 px differ
+  frame  82:     29 px differ
+  frame  83:      5 px differ
+  frame  84:     47 px differ
+  frame  85:     39 px differ
+  frame  86:     64 px differ
+  frame  87:     11 px differ
+  frame  88:    132 px differ
+  frame  89:  10688 px differ; 266,969-507,1158 (10661 px)
+  frame  90:  10126 px differ; 265,936-506,1134 (10092 px)
+  frame  91:  10560 px differ; 266,928-507,1124 (10559 px)
+  frame  92:  10583 px differ; 266,926-508,1123 (10567 px)
+  frame  93:  10568 px differ; 266,927-508,1123 (10558 px)
+  frame  94:  10596 px differ; 266,927-508,1123 (10587 px)
+  frame  95:  10552 px differ; 266,927-507,1123 (10551 px)
+  frame  96:  10596 px differ; 266,927-506,1123 (10572 px)
+  frame  97:  10588 px differ; 266,927-506,1123 (10567 px)
+  frame  98:  10630 px differ; 266,927-506,1123 (10594 px)
+  frame  99:  10538 px differ; 265,927-506,1123 (10535 px)
+  frame 100:  10610 px differ; 264,927-506,1123 (10574 px)
+  frame 101:  10537 px differ; 264,928-504,1125 (10527 px)
+  frame 102:   9997 px differ; 262,938-504,1139 (9971 px); 410,944-449,972 (191 px)
+  frame 103:  10468 px differ; 262,963-504,1153 (10463 px)
+  frame 104:  10684 px differ; 263,996-504,1192 (10658 px)
+  frame 105:     60 px differ
+  frame 106:    120 px differ
+  frame 107:     10 px differ
+  frame 108:     26 px differ
+  frame 109:     18 px differ
+  frame 110:     42 px differ
+  frame 111:      4 px differ
+  frame 112:     29 px differ
+  frame 113:     13 px differ
+  frame 114:     25 px differ
+  frame 116:     29 px differ
+  frame 117:     10 px differ
+  frame 118:     19 px differ
+  frame 120:     40 px differ
+  frame 121:     12 px differ
+  frame 122:     29 px differ
+  frame 123:      1 px differ
+  frame 124:     23 px differ
+  frame 125:     13 px differ
+  frame 126:     41 px differ
+  frame 127:      1 px differ
+  frame 128:     21 px differ
+  frame 129:     21 px differ
+  frame 130:     38 px differ
+  frame 131:      9 px differ
+  frame 132:     21 px differ
+  frame 133:     20 px differ
+  frame 134:     29 px differ
+  frame 135:     22 px differ
+  frame 136:     27 px differ
+  frame 137:     64 px differ
+  frames with any difference: 95 of 138; largest 10688 px
+
+== 04-halla-med-bada-handerna: v4 132 frames, v5 code 132 frames
+  frames with any difference: 0 of 132; largest 0 px
+
+== 08-oppna-en-dorr: v4 132 frames, v5 code 132 frames
+  frames with any difference: 0 of 132; largest 0 px
+

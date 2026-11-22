@@ -1,0 +1,13 @@
+120 sir.armL: the picture changes 34.4 (its usual 1.3) while its joints moved 1.1 px
+120 sir.armR: the picture changes 34.4 (its usual 1.4) while its joints moved 1.1 px
+120 sir.head: the picture changes 6.3 (its usual 0.9) while its joints moved 1.1 px
+120 sir.legL: the picture changes 11.0 (its usual 1.0) while its joints moved 1.1 px
+120 sir.legR: the picture changes 11.0 (its usual 1.0) while its joints moved 1.1 px
+120 sir.torso: the picture changes 26.6 (its usual 1.0) while its joints moved 1.1 px
+121 sir.armL: the picture changes 34.1 (its usual 1.3) while its joints moved 0.7 px
+121 sir.armR: the picture changes 34.2 (its usual 1.4) while its joints moved 0.7 px
+121 sir.head: the picture changes 6.3 (its usual 0.9) while its joints moved 0.7 px
+121 sir.legL: the picture changes 11.0 (its usual 1.0) while its joints moved 0.7 px
+121 sir.legR: the picture changes 10.8 (its usual 1.0) while its joints moved 0.7 px
+121 sir.torso: the picture changes 26.5 (its usual 1.0) while its joints moved 0.7 px
+PART DIFF FAILED: 12 (07-sitta-v5.mp4, planted)

@@ -1,0 +1,32 @@
+== c01 01 Stå och prata (4.60 s, 138 frames, medium shot)
+   views: sir front 0-137
+   shoe past the line's top at most 0.0 px, slide at most 0.0 px; pupils min 100 %, gaze at most 0 % of the way to the eye's edge, step max 0 %; largest joint move in a frame 27 px; figure 72 % of the height; head past the edge 0 px
+   CLIP CHECK OK
+== c02 02 Gå (4.70 s, 141 frames, full shot)
+   views: sir side-right 0-140
+   shoe past the line's top at most 0.0 px, slide at most 0.0 px; pupils min 100 %, gaze at most 35 % of the way to the eye's edge, step max 0 %; largest joint move in a frame 31 px; figure 55 % of the height; head past the edge 0 px
+   CLIP CHECK OK
+== c03 03 Vända sig (4.60 s, 138 frames, full shot)
+   views: sir side-right 0-32 | q-right 33-42 | front 43-91 | q-left 92-137
+   shoe past the line's top at most 0.0 px, slide at most 0.0 px; pupils min 100 %, gaze at most 45 % of the way to the eye's edge, step max 0 %; largest joint move in a frame 7 px; figure 55 % of the height; head past the edge 0 px
+   CLIP CHECK OK
+== c04 04 Hålla med båda händerna (4.40 s, 132 frames, medium shot)
+   views: sir front 0-131
+   shoe past the line's top at most 0.0 px, slide at most 0.0 px; pupils min 100 %, gaze at most 80 % of the way to the eye's edge, step max 0 %; largest joint move in a frame 2 px; figure 82 % of the height; head past the edge 0 px; contacts off at most 0.5 px
+   CLIP CHECK OK
+== c05 05 Peka (4.00 s, 120 frames, medium shot)
+   views: sir q-right 0-119
+   shoe past the line's top at most 0.0 px, slide at most 0.0 px; pupils min 100 %, gaze at most 100 % of the way to the eye's edge, step max 0 %; largest joint move in a frame 13 px; figure 70 % of the height; head past the edge 0 px; point held 0.75 s, finger out 30 frames, aimed within 2 degrees, the hand at least 162 px from the target in the picture
+   CLIP CHECK OK
+== c06 06 Reagera (4.00 s, 120 frames, full shot)
+   views: sir q-right 0-119
+   shoe past the line's top at most 0.0 px, slide at most 0.0 px; pupils min 58 %, gaze at most 100 % of the way to the eye's edge, step max 8 %; largest joint move in a frame 34 px; figure 50 % of the height; head past the edge 0 px; nearest hand to the crab 81 px, its feet on the ground slide at most 0.00 px
+   CLIP CHECK OK
+== c07 07 Sitta (4.40 s, 132 frames, full shot)
+   views: sir side-left 0-131
+   shoe past the line's top at most 0.0 px, slide at most 0.0 px; pupils min 100 %, gaze at most 35 % of the way to the eye's edge, step max 0 %; largest joint move in a frame 5 px; figure 70 % of the height; head past the edge 0 px; seat off at most 0.9 px
+   CLIP CHECK OK
+== c08 08 Öppna en dörr (4.40 s, 132 frames, full shot)
+   views: sir side-right 0-131
+   shoe past the line's top at most 0.0 px, slide at most 0.0 px; pupils min 100 %, gaze at most 46 % of the way to the eye's edge, step max 0 %; largest joint move in a frame 16 px; figure 52 % of the height; head past the edge 0 px; contacts off at most 0.7 px; door 940 px
+   CLIP CHECK OK

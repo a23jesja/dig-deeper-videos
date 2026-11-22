@@ -1,0 +1,12 @@
+2e71233620fdfeadb29e69725588da62 *01-sta-och-prata-v5-telefon.mp4
+527be516cde6c1311604a2ebbe132c5e *01-sta-och-prata-v5.mp4
+e1f8336aaf266142309d480e9666951f *02-ga-v5-telefon.mp4
+80a8c568f81b3dde81987fb13764474b *02-ga-v5.mp4
+0ff29b248125291b4abef0d3a80f4573 *03-vanda-sig-v5-telefon.mp4
+72b39bede2597fb46b1379a886790c01 *03-vanda-sig-v5.mp4
+b15f04d0f96c119a2d090491bbd3ea3a *05-peka-v5-telefon.mp4
+db7998e954673b11c09cc8986da314ee *05-peka-v5.mp4
+f2ac5f08db3049e52f47e9ff5b38bff1 *06-reagera-v5-telefon.mp4
+9af9ede12ac554f5f03670ff148dd64e *06-reagera-v5.mp4
+504a6eaddf52e41d6ca31c7ccef94a65 *07-sitta-v5-telefon.mp4
+496e2557eb357f9a5def568b1441af4c *07-sitta-v5.mp4

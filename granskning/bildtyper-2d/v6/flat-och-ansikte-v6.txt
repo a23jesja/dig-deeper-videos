@@ -1,0 +1,14 @@
+events (s): T_TURN 1.76, T_POINT 2.46, T_SNAKE 5.00, T_SCARED 5.45, T_RUN_TURN 5.93, T_RUN 6.33, T_ADA_TURN 6.23, T_ADA_POINT 6.78, T_GONE 7.40, LINE 3.10, LINE_END 5.15, END 8.40
+shoe outline past the line's top edge at most 0.0 px; smallest pupil 50 %, largest pupil change in a frame 15 %; nearest hand to the snake 49 px
+head past the picture's edge at most 1350 px (Sir walking in and running out not counted)
+largest sink 0.0 px, largest slide of a foot on the ground 0.0 px between two frames
+FLAT CHECK OK: feet on the ground line, none sunk, none sliding, never both off the ground except in the run
+sir: side-right 0-61 | q-right 62-65 | front 66-80 | q-right 81-164 | front 165-183 | q-left 184-187 | side-left 188-251
+ada: front 0-106 | q-left 107-166 | front 167-190 | q-left 191-198 | side-left 199-251
+VIEWS OK: every turn goes through a three-quarter drawing held 2 frames or more
+front: nose drawn at step 33, the last eye white at 26, the last of the ring at 31: nose on top
+three-quarter right (monocle near): nose drawn at step 35, the last eye white at 28, the last of the ring at 33: nose on top
+three-quarter left (monocle far): nose drawn at step 35, the last eye white at 28, the last of the ring at 33: nose on top
+profile right: nose drawn at step 25, the last eye white at 18, the last of the ring at 23: nose on top
+three-quarter moustache: the far half shows 63 % of the near half (58 % or more); outside the head's outline: far 0.1 %, near 0.0 % (2 % at most): OK
+FACE ORDER OK: the nose over the eyes and the monocle's ring in every view, both halves of the moustache showing at three-quarter

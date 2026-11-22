@@ -7,11 +7,14 @@
 import json, subprocess, sys
 import numpy as np
 V, P = sys.argv[1], json.load(open(sys.argv[2])); plant = len(sys.argv) > 3 and sys.argv[3] == "plant"
+PF = int(sys.argv[4]) if len(sys.argv) > 4 else None      # (the planted patch's frame; default the clip's middle)
 raw = subprocess.run(["ffmpeg", "-v", "error", "-nostdin", "-i", V, "-f", "rawvideo", "-pix_fmt", "gray", "-"], capture_output=True, check=True).stdout
 A = np.frombuffer(raw, np.uint8).reshape(-1, 1920, 1080).astype(np.int16); n = min(len(A), len(P["frames"]))
 if plant:      # a planted fault: a dark patch on one arm in one frame (a thing that pops in for a frame)
-    k = sorted(P["frames"][n // 2])[0]; k = [p for p in P["frames"][n // 2] if p.endswith("armR")][0]; x0, y0, x1, y1 = P["frames"][n // 2][k]["box"]
-    cx, cy = max(0, (x0 + x1) // 2), max(0, (y0 + y1) // 2); A = A.copy(); under = A[n // 2, cy - 30:cy + 30, cx - 30:cx + 30]; A[n // 2, cy - 30:cy + 30, cx - 30:cx + 30] = 235 if under.mean() < 128 else 20      # (light on dark, dark on light: a dark patch on the dark chest in 04 hardly changed the picture, v4)
+    PM = PF if PF is not None else n // 2; k = [p for p in P["frames"][PM] if p.endswith("armR")][0]; x0, y0, x1, y1 = P["frames"][PM][k]["box"]
+    # (v5: the patch a quarter of the part's box, about a sleeve changing layer: a 60 px patch in a big box (07's arm, 376 x 524) changed its
+    #  mean by 2.5, under the 6 the check needs; things that small in a part that big are not caught)
+    cx, cy = max(0, (x0 + x1) // 2), max(0, (y0 + y1) // 2); hx, hy = max(30, (x1 - x0) // 4), max(30, (y1 - y0) // 4); A = A.copy(); under = A[PM, cy - hy:cy + hy, cx - hx:cx + hx]; A[PM, cy - hy:cy + hy, cx - hx:cx + hx] = 235 if under.mean() < 128 else 20      # (light on dark, dark on light: a dark patch on the dark chest in 04 hardly changed the picture, v4)
 parts = sorted(k for k in P["frames"][0].keys() if not (k.endswith(".eyes") or k.endswith(".mouth"))); D = {p: [] for p in parts}
 for f in range(1, n):
     for p in parts:

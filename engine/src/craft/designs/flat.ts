@@ -224,7 +224,11 @@ const drawFlat = (c: FlatSpec) => (k: Ink, sk: Sk, o: FigOpts) => {
     //  legs to over them in one frame where the front's order took over, v5 draft)
     const u = (ARM_WIPE[1] - as) / (ARM_WIPE[1] - ARM_WIPE[0]), m = P.hand + 20;
     const xs = [...torsoPoly.map((p) => p[0]), ...["sh", "el", "wr", "tip", "kn", "an", "hip"].flatMap((n) => [J(sk, n, far)[0], J(sk, n, near)[0]])], x0 = Math.min(...xs) - m, x1 = Math.max(...xs) + m;
-    const side = Math.sign(J(sk, "sh", far)[0] - J(sk, "sh", near)[0]) || 1, xFar = side > 0 ? x1 : x0, xNear = side > 0 ? x0 : x1, line = xFar + (xNear - xFar) * u, B9 = 1e4;
+    // (the line spends most of the turn crossing the far arm itself, from its outer edge to its inner, and the rest passing the figure beyond
+    //  it: swept evenly over the whole figure it crossed the sleeve in a frame or two, a jump again, v5 draft)
+    const ax = ["sh", "el", "wr", "tip"].map((n) => J(sk, n, far)[0]), aw = B.arm[0], a0 = Math.min(...ax) - aw, a1 = Math.max(...ax) + aw;
+    const side = Math.sign(J(sk, "sh", far)[0] - J(sk, "sh", near)[0]) || 1, xFar = side > 0 ? x1 : x0, xNear = side > 0 ? x0 : x1, aOut = side > 0 ? a1 : a0, aIn = side > 0 ? a0 : a1;
+    const line = u < 0.1 ? xFar + (aOut - xFar) * (u / 0.1) : u < 0.9 ? aOut + (aIn - aOut) * ((u - 0.1) / 0.8) : aIn + (xNear - aIn) * ((u - 0.9) / 0.1), B9 = 1e4;
     const half: P2[] = side > 0 ? [[line, -B9], [B9, -B9], [B9, B9], [line, B9]] : [[-B9, -B9], [line, -B9], [line, B9], [-B9, B9]];
     k.clip(half, () => arm(far));
     // (the cut drawn as the coat's edge where it crosses the sleeve, inside the body: without it the sleeve looked sliced by an unseen line, v5 draft)
@@ -236,7 +240,7 @@ const drawFlat = (c: FlatSpec) => (k: Ink, sk: Sk, o: FigOpts) => {
 };
 /** where the far arm comes out from behind the body in a turn (|sin| of the facing); [0, 0] switches it in one frame at 0.5 (the v4 order,
  *  the bytes check's planted fault) */
-export const ARM_WIPE: [number, number] = [0.4, 0.6];
+export const ARM_WIPE: [number, number] = [0.15, 0.8];
 /** a shoe as drawn: no part of it below the ground line (y = 0): turning, lifting or setting down a foot, its toe went 5-10 px through the
  *  line (the review of the motion test). clamp = false gives the shoe as it was (the check's planted fault) */
 export const shoeDrawn = (sk: Sk, side: Side, W: number, clamp = true) => {

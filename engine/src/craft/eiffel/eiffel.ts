@@ -350,9 +350,9 @@ const s07b = (): Shot => { const seconds = 0.8;
   // (the shock face with the hands up: calm faces read as reaching, the independent review of v11)
   const DX = [0, 0.77], looks = [BENCH2, YOUNG];
   const ms = DX.map((xm, i) => { const fc = i === 1 ? { ...FACES.delighted, gaze: [-0.6, 0] as [number, number] } : { ...FACES.calm, gaze: [-0.6, 0] as [number, number] }, mm = seated(`d${i}`, xm, [6, 0, 0], fc);
-    ease(mm, 0.02 + i * 0.26, { ...SIT, head: [2, -10, 0] } as Partial<Pose>, 0.34, { face: { ...FACES.shock, gaze: [-0.8, -0.2] } }); return mm; });
+    ease(mm, 0.0 + i * 0.32, { ...SIT, head: [2, -10, 0] } as Partial<Pose>, 0.34, { face: { ...FACES.shock, gaze: [-0.8, -0.2] } }); return mm; });
   // (and their hands come up, 06 whole: the jerk alone read at 360 px as two men looking up, the independent review of v11; up over 0.4 s, slower than the policeman's 0.2, which failed the flicker measure here)
-  const cast: Cast[] = ms.map((mm, i) => { const kh = kneesHook(DX[i]), gd = guard(`d${i}`, mm, DX[i], 0.02 + i * 0.26, 0.34, 0.1); return { name: `d${i}`, m: mm, who: "sir", look: looks[i], seed: 30 + i, armWipe: false, pose: (t: number, p: Pose, hd: number) => gd(t, kh(t, p, hd)), hands: { L: [[0, "open"]], R: [[0, "open"]] } } as Cast; });
+  const cast: Cast[] = ms.map((mm, i) => { const kh = kneesHook(DX[i]), gd = guard(`d${i}`, mm, DX[i], 0.0 + i * 0.32, 0.34, 0.1); return { name: `d${i}`, m: mm, who: "sir", look: looks[i], seed: 30 + i, armWipe: false, pose: (t: number, p: Pose, hd: number) => gd(t, kh(t, p, hd)), hands: { L: [[0, "open"]], R: [[0, "open"]] } } as Cast; });
   const seats = cast.map((c, i) => seatOf({ ...c, pose: kneesHook(DX[i]) })), top = Math.max(...seats.map((q) => q.top)); for (const q of seats) q.top = top;
   const x0 = Math.min(...seats.map((q) => q.x0)) - 10, x1 = Math.max(...seats.map((q) => q.x1)) + 10;
   const c1 = fitCam(cast, seconds, ZH(0.62), [], () => false, 0.035), c0 = camFeet(c1.cx, c1.z, 0.8), cam = () => c0;

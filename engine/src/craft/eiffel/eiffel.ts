@@ -349,6 +349,10 @@ const s13 = (): Shot => { const seconds = 1.8, x0 = -0.22, m = figure("sir", x0,
   return { id: "e13", title: "13 Han försvinner", seconds, cast, events: {}, shot: "wide", camera: () => cam, offFrameOK: (n, t) => t > 0.9,
     ownBg: (g) => { suite(g, cam, SUITE); rect(g, door.x, door.top, door.w, LINE_TOP - door.top, "#1e1820"); g.lineWidth = 16; g.strokeStyle = "#e9dcc4"; g.strokeRect(door.x - 8, door.top - 8, door.w + 16, LINE_TOP - door.top + 8);
       poly(g, [[door.x + door.w, door.top], [door.x + door.w + 70, door.top + 30], [door.x + door.w + 70, LINE_TOP - 10], [door.x + door.w, LINE_TOP]], "#7a4a34"); },
+    // (the money in his near hand as he walks: the dealer's cheque (squiggles, no numbers), drawn before him so his fist's fingers lie over it,
+    //  following the hand along the forearm's line; the review: "he vanished with the money" showed only the bribe's envelope)
+    back: (g, t) => { const f = castAt(cast, t)[0], wr = jointPx(f, "wrL"), tp = jointPx(f, "tipL"), a = Math.atan2(tp[1] - wr[1], tp[0] - wr[0]), hx = wr[0] + (tp[0] - wr[0]) * 0.55, hy = wr[1] + (tp[1] - wr[1]) * 0.55;
+      g.save(); g.translate(hx, hy); g.rotate(a + Math.PI / 2); cheque(g, -75, -8, 150, 80); g.restore(); },
     over: (g, t, f) => { const nk = jointPx(f, "neck"), pel = jointPx(f, "pelvis"); pocketEnvelope(g, nk[0] + (pel[0] - nk[0]) * 0.3 + 18, nk[1] + (pel[1] - nk[1]) * 0.32, 0.85); } } as Shot; };
 
 // 14 "The dealer was too embarrassed to tell the police.": the young dealer holds the letter at his chest (04), its blank back to us, his

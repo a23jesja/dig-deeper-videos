@@ -23,6 +23,15 @@ export const fakeHead = (g: G, x: number, y: number, s: number, light = 0, hair 
   line(g, [[-14, 60], [14, 60]], OL * 0.7);
   g.restore(); };
 
+/** the fake head's painted features alone (the same lines as fakeHead), to draw again over light laid on its face */
+export const fakeHeadFeatures = (g: G, x: number, y: number, s: number) => {
+  g.save(); g.translate(x, y); g.scale(s, s);
+  for (const sx of [-34, 34]) line(g, [[sx - 16, 10], [sx, 16], [sx + 16, 10]], OL * 0.8);
+  ell(g, 0, 34, 10, 8, "#e0a68c", OL * 0.7);
+  line(g, [[-14, 60], [14, 60]], OL * 0.7);
+  line(g, [[96, -10], [70, -50], [20, -70], [-30, -66], [-74, -40], [-96, -6]]);      // (the hair's edge over the face)
+  g.restore(); };
+
 /** v4's cone: from (x0, y0) to a spot at (x1, y1) of radius r, fading before the spot, the spot a soft glow */
 export const cone = (g: G, x0: number, y0: number, x1: number, y1: number, r: number, a: number) => {
   const dx = x1 - x0, dy = y1 - y0, l = Math.hypot(dx, dy) || 1, nx = -dy / l, ny = dx / l;

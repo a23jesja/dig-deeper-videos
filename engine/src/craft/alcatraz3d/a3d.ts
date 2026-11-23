@@ -14,7 +14,7 @@ import SPEC from "./film.json";
 import { CAMS as CAMS0 } from "./cams";
 import MOUTH_G01 from "./mouth-g01.json";
 import MOUTH_G02 from "./mouth-g02.json";
-import { heldTorch, cone, fakeHead } from "./flatprops";
+import { heldTorch, cone, fakeHead, fakeHeadFeatures } from "./flatprops";
 
 type G = CanvasRenderingContext2D;
 type P2 = [number, number];
@@ -279,7 +279,10 @@ export const handTorch = (g: G, id: string, fr: number) => {
   fakeHead(g, C[0], cy, hs, 1);
   // (the torch's light on the face, as in v4: a soft warm glow inside the face's outline, the outline itself left alone)
   g.save(); g.beginPath(); g.ellipse(C[0], cy, 84 * hs, 88 * hs, 0, 0, Math.PI * 2); g.clip(); g.globalCompositeOperation = "screen";
-  const gl = g.createRadialGradient(C[0] + 20 * hs, cy + 30 * hs, 0, C[0] + 20 * hs, cy + 30 * hs, 110 * hs); gl.addColorStop(0, "rgba(255,236,170,0.28)"); gl.addColorStop(1, "rgba(255,236,170,0)"); g.fillStyle = gl; g.fillRect(C[0] - 120 * hs, cy - 120 * hs, 240 * hs, 240 * hs); g.restore();
+  // (v12h: the light floods the face as in v4, strongest where the beam comes from; the painted features drawn again over it, so the ink stays
+  //  dark: the independent review of v12g, the torch light missed the face)
+  const gl = g.createRadialGradient(C[0] + 25 * hs, cy + 35 * hs, 0, C[0] + 25 * hs, cy + 35 * hs, 125 * hs); gl.addColorStop(0, "rgba(255,244,196,0.75)"); gl.addColorStop(0.55, "rgba(255,240,186,0.4)"); gl.addColorStop(1, "rgba(255,236,170,0.05)"); g.fillStyle = gl; g.fillRect(C[0] - 130 * hs, cy - 130 * hs, 260 * hs, 260 * hs); g.restore();
+  fakeHeadFeatures(g, C[0], cy, hs);
   const lens = heldTorch(g, hx, hy, a, null, 0, sc); g.restore();
   return { lens, spot: [q[0], q[1]] as P2, hand: [hx, hy] as P2, ang: a }; };
 /** v12c, shot 4: each dummy's own lamp lifts its head over the night grade (Alcatraz3D.tsx NIGHT darkens the plate): a soft warm glow on the

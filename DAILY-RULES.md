@@ -48,6 +48,18 @@ Overrides every older look section below (the emu look, the 3D cabin lighting, t
   plane with contact shadows, so the solid and foot checks still see everything. Until the test is approved the
   frozen look above applies unchanged.
 
+## Flawless but boring is also a fail (Jesper 2026-11-23, on Alcatraz v4 flat)
+"Det hände för lite, gubbarna syns för lite, vad de gör hur de gick till, för lite detaljer och känns väldigt
+tråkig och slappt gjord." Alcatraz v4 passed every check because it avoided everything hard: hands instead of people,
+far shots instead of faces, empty places instead of action. That is not allowed either.
+- **The people in the story are on screen, doing the story:** we see the main characters' faces and see them do each
+  step (dig, build, sneak, climb, paddle, discover), not only their hands or the place afterwards.
+- **Every step the voice tells is shown as an action with detail:** the tool, the material, the effort, the risk.
+- **A shot type the story needs and the library lacks is built and approved,** not replaced by a hand close-up or an
+  empty shot. Missing motions are added to the library (dig, scrape, climb, sneak, carry, paddle, sew, paint).
+- **The reviewer fails a video that is correct but lifeless:** if a viewer would ask "where are the people?" or the
+  picture stands still while the voice tells action, it fails.
+
 ## Story first: something happens (Jesper 2026-11-21)
 Jesper's verdict on the reference Shorts: they win because a lot happens, there are action scenes, it is clearly
 explained and it entertains. Ours have been calm explanations. From now on every Short and long video is a story:

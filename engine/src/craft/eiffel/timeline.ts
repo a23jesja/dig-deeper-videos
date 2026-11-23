@@ -18,6 +18,6 @@ export const TEXT: { t0: number; t1: number; fade: number; lines: string[]; loop
 /** the hook lab's other two openings as 5 s clips: (d) the stamp's contact in frame 1; (b) the dealer holding up the cheque in frame 1 */
 export const OPENINGS: Record<string, { cuts: Cut[]; lines: [string, number][]; text: string[] }> = {
   C: { cuts: CUTS, lines: LINES, text: TEXT.lines },
-  D: { cuts: [["e01", 0, 0], ["e02", 1.6, 0], ["e03", 3.2, 0]], lines: [["g01", 0.0], ["g02", 1.7], ["g03", 3.3]], text: ["HE SOLD THE", "EIFFEL TOWER"] },
+  D: { cuts: [["e01", 0, 0], ["e02", 1.5, 0], ["e03", 3.2, 0]], lines: [["g01", 0.0], ["g02", 1.7], ["g03", 3.3]], text: ["HE SOLD THE", "EIFFEL TOWER"] },
   B: { cuts: [["e11", 0, 0], ["e02", 1.87, 0], ["e03", 3.73, 0]], lines: [["g17", 0.0], ["g18", 1.97], ["g03", 3.83]], text: ["SOMEBODY BOUGHT THE", "EIFFEL TOWER"] },
 };

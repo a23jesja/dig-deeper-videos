@@ -116,3 +116,8 @@ The Smithsonian article through the Internet Archive was not read: my session's 
 Quotes the review session gave from F and TIFO (line 7):
 - F: "the tearing down of the Eiffel Tower has become mandatory"; "sold to the highest bidder"
 - TIFO: "knock down the Eiffel Tower and sell it for scrap metal"
+
+## Added 23 Nov 2026 (v4b)
+- F: "was in fact … the winning bid" (from "his offer of [sum] … was in fact the winning bid"; the sum is left out because the sources disagree about it)
+- TIFO: "Andre Poisson winning the bid"
+- MF (line 6): "for sale to the highest bidder"

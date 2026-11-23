@@ -30,7 +30,7 @@ def hexc(h, a=1.0): h = h.lstrip("#"); c = [int(h[i:i + 2], 16) / 255 for i in (
 bpy.ops.wm.read_factory_settings(use_empty=True)
 sc = bpy.context.scene; sc.render.fps = FPS; sc.render.resolution_x = W; sc.render.resolution_y = H
 sc.render.resolution_percentage = 50 if DRAFT else 100
-sc.render.engine = "CYCLES"; sc.cycles.samples = 24 if DRAFT else (64 if TIERS else 96); sc.cycles.use_denoising = True
+sc.render.engine = "CYCLES"; sc.cycles.samples = 24 if DRAFT else int(os.environ.get("A3D_SAMPLES", 64 if TIERS else 96)); sc.cycles.use_denoising = True
 sc.cycles.seed = 7; sc.cycles.use_animated_seed = False      # the same noise every frame, so a still picture does not crawl (the flicker rule)
 sc.cycles.max_bounces = 6; sc.cycles.caustics_reflective = False; sc.cycles.caustics_refractive = False
 pr = bpy.context.preferences.addons["cycles"].preferences; pr.compute_device_type = "HIP"; pr.get_devices()
@@ -126,13 +126,13 @@ def cell(i, cx, z0=0.0, tag=""):
     box_(f"bedframe{i}", "bed", bx0, bx1, by0, by1, bz - 0.05, bz, BED_M, 0.01)
     for lx, ly in ((bx0 + 0.03, by0 + 0.03), (bx1 - 0.03, by0 + 0.03), (bx0 + 0.03, by1 - 0.03), (bx1 - 0.03, by1 - 0.03)): cyl_(f"bedleg{i}{lx:.2f}{ly:.2f}", "bed", lx, ly, 0.0, bz - 0.05, 0.018, BED_M, 10)
     box_(f"mattress{i}", "bed", bx0 + 0.01, bx1 - 0.01, by0 + 0.01, by1 - 0.01, bz, bz + 0.12, MATT, 0.04)
-    sphere_(f"pillow{i}", "bed", (cx - 0.81, by0 + 0.30, bz + 0.17), 0.21, PILL, 1.6, 0.9, 0.42)
+    box_(f"pillow{i}", "bed", cx - 1.1, cx - 0.52, by0 + 0.1, by0 + 0.5, bz + 0.1, bz + 0.22, PILL, 0.06)
     # the blanket over a body-shaped lump (the raincoats and towels under it), from the shoulders to the foot
     # (the blanket drapes over the mattress's sides and is turned down at the head in a pale fold: with a rounded top edge the bed read as a
     #  bathtub, the review of the style test point 4)
-    box_(f"blanket{i}", "bed", bx0 - 0.035, bx1 + 0.035, by0 + 0.40, by1 + 0.02, bz - 0.06, bz + 0.2, BLANK, 0.03)
-    box_(f"turndown{i}", "bed", bx0 - 0.04, bx1 + 0.04, by0 + 0.40, by0 + 0.52, bz - 0.06, bz + 0.215, mat("sheet", "#e4e0d4", 0.9, 12, 0.06, 0.2), 0.03)
-    sphere_(f"lump{i}", "bed", (cx - 0.81, by0 + 1.15, bz + 0.2), 0.22, BLANK, 1.45, 2.6, 0.42)
+    box_(f"blanket{i}", "bed", bx0 - 0.035, bx1 + 0.035, by0 + 0.35, by1 + 0.02, bz - 0.06, bz + 0.27, BLANK, 0.04)
+    box_(f"turndown{i}", "bed", bx0 - 0.04, bx1 + 0.04, by0 + 0.35, by0 + 0.46, bz - 0.06, bz + 0.285, mat("sheet", "#e4e0d4", 0.9, 12, 0.06, 0.2), 0.03)
+    sphere_(f"lump{i}", "bed", (cx - 0.81, by0 + 1.2, bz + 0.22), 0.22, BLANK, 1.45, 3.4, 0.3)      # (the body's hump, under the blanket's top: the blanket reaches the chin)
     # the fake head on the pillow, turned up: soap and plaster painted skin, real hair, the eyes shut
     hx, hy, hz = cx - 0.81, by0 + 0.27, bz + 0.31      # (sunk into the pillow, the blanket to the chin: no hard dark band under it, point 14)
     # (only the three who got out have a fake head, in the column of cells at x 0, one per tier; every other bed has a sleeper's lump under
@@ -147,7 +147,7 @@ def cell(i, cx, z0=0.0, tag=""):
             d = Vector((ex, 0.055, 0.08)).normalized() * 0.103; c = (hx + d.x / 0.92 * 0.92, hy + d.y, hz + d.z)
             o = cyl(f"lid{i}{ex}{tag}", "head", c[1], c[2] + z0, c[0] - 0.014, c[0] + 0.014, 0.0035, DARK, 8, axis="x")
     else:
-        sphere_(f"sleeper{i}", "bed", (cx - 0.81, hy + 0.12, bz + 0.2), 0.16, BLANK, 1.3, 1.2, 0.6)      # the blanket pulled over a sleeper's head
+        sphere_(f"sleeper{i}", "bed", (cx - 0.81, by0 + 0.95, bz + 0.2), 0.22, BLANK, 1.45, 4.4, 0.5)      # the blanket pulled over a sleeper, head and all: one long hump
     # the fold-down table on the right wall, a tin cup and a book on it
     box_(f"table{i}", "furniture", cx + 0.80, cx + 1.24, 1.55, 2.15, 0.70, 0.74, WOOD, 0.005)
     cyl_(f"cup{i}", "furniture", cx + 1.05, 1.72, 0.74, 0.84, 0.035, STEEL, 16)
@@ -212,7 +212,7 @@ def city(x0, x1, y, rnd, night=True):
         x += w + R.uniform(0.2, 1.5)
 if AREA in ("roof", "bay", "baymorning"):
     night = AREA != "baymorning"
-    bg.inputs[0].default_value = hexc("#22305e" if night else "#f2c9a0"); bg.inputs[1].default_value = 1.4 if night else 1.2
+    bg.inputs[0].default_value = hexc("#22305e" if night else "#e9b98f"); bg.inputs[1].default_value = 1.4 if night else 0.75
     ox = 100.0 if AREA == "roof" else 200.0
     moon = sphere("moon disc", "far", (ox + 22, 160, 30), 4.0, emis("moon glow", "#f4f0d6", 12.0)) if night else None
     sun = bpy.data.lights.new("sky light", "SUN"); sun.color = hexc("#8fb0ff" if night else "#ffd2a0")[:3]; sun.energy = 1.4 if night else 3.0; sun.angle = math.radians(3)
@@ -234,7 +234,7 @@ if AREA in ("bay", "baymorning"):
     me = bpy.data.meshes.new("sea"); bm = bmesh.new(); bmesh.ops.create_grid(bm, x_segments=300, y_segments=300, size=60); bm.to_mesh(me); bm.free()
     sea = bpy.data.objects.new("sea", me); sc.collection.objects.link(sea); sea.location = (BO, 40, 0)
     oc = sea.modifiers.new("ocean", "OCEAN"); oc.geometry_mode = "DISPLACE"; oc.size = 1.0; oc.spatial_size = 40; oc.wave_scale = 0.35; oc.choppiness = 0.6; oc.resolution = 10; oc.random_seed = 4
-    water = mat("water", "#13263c" if AREA == "bay" else "#4f6f86", 0.08, 2, 0.05, 0.0); water.node_tree.nodes["Principled BSDF"].inputs["Specular IOR Level"].default_value = 0.8
+    water = mat("water", "#13263c" if AREA == "bay" else "#35556e", 0.08, 2, 0.05, 0.0); water.node_tree.nodes["Principled BSDF"].inputs["Specular IOR Level"].default_value = 0.8
     sea.data.materials.append(water); OBJ["sea"] = "floor"
     for p in sea.data.polygons: p.use_smooth = True
     city(BO - 80, BO + 80, 150, 7, AREA == "bay")
@@ -267,7 +267,7 @@ if PLACE == "top":
     for k, dy in enumerate([-0.5, 0.5]): cyl(f"raft tube{k}", "raft", 0.6 + dy, 0.09, TO - 1.0, TO + 0.8, 0.09, COAT, 20, axis="x")
 if PLACE in ("bay",):
     COAT = mat("raincoat", "#b8a65c", 0.55, 10, 0.12, 0.25)
-    RAFT = [sphere("raft body", "raft", (0, 0, 0.08), 0.5, COAT, 1.8, 1.0, 0.18)] + [sphere(f"raft man{k}", "raft", (dx, 0, 0.32), 0.16, mat("silhouette", "#141820", 0.9, 4, 0.0, 0.0), 1.0, 1.0, 1.6) for k, dx in enumerate([-0.45, 0.0, 0.45])]
+    RAFT = [sphere("raft body", "raft", (0, 0, 0.08), 0.5, COAT, 1.8, 1.0, 0.18)] + [o for k, dx in enumerate([-0.45, 0.0, 0.45]) for o in (sphere(f"raft man{k}", "raft", (dx, 0, 0.27), 0.17, mat("silhouette", "#1a2030", 0.9, 4, 0.0, 0.0), 1.15, 0.9, 0.75), sphere(f"raft head{k}", "raft", (dx, 0, 0.47), 0.085, MATS["silhouette"]))]
     RAFT0 = [o.location.copy() for o in RAFT]
 if PLACE == "morning":
     bg.inputs[0].default_value = hexc("#ffd8b0"); bg.inputs[1].default_value = 0.6
@@ -282,10 +282,16 @@ if PLACE == "board":
         me = bpy.data.meshes.new(f"poster{k}"); bm = bmesh.new(); bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=0.5); bm.to_mesh(me); bm.free()
         uv = me.uv_layers.new(); 
         for poly in me.polygons:
-            for li in poly.loop_indices: v = me.vertices[me.loops[li].vertex_index].co; uv.data[li].uv = (v.x + 0.5, v.y + 0.5)
+            for li in poly.loop_indices: v = me.vertices[me.loops[li].vertex_index].co; uv.data[li].uv = (0.5 - v.x, v.y + 0.5)      # (seen from the front: the print the right way round, never mirrored)
         o = bpy.data.objects.new(f"poster{k}", me); sc.collection.objects.link(o); o.data.materials.append(m); OBJ[f"poster{k}"] = "board"
         o.location = (300.0 + px_, 1.96, 1.55 + (0.03 if k == 1 else 0)); o.rotation_euler = (math.radians(90), 0, math.radians(180 + (2 if k != 1 else -1.5) * (k - 1))); o.scale = (0.48, 0.64, 1)
         sphere(f"pin{k}", "board", (300.0 + px_, 1.94, 1.55 + 0.3 + (0.03 if k == 1 else 0)), 0.015, mat("pin", "#c0392b", 0.4, 5, 0.0, 0.0))
+
+SPOTS = []
+for k, sp in enumerate(next((x.get("spots", []) for x in SPEC["shots"] if x["id"] == WHICH), [])):
+    L = bpy.data.lights.new(f"dummy light{k}", "SPOT"); L.color = hexc("#ffd6a0")[:3]; L.spot_size = math.radians(sp.get("cone", 9)); L.spot_blend = 0.5; L.energy = 0
+    o = bpy.data.objects.new(f"dummy light{k}", L); sc.collection.objects.link(o); o.location = sp["from"]; tg = bpy.data.objects.new(f"dummy light target{k}", None); sc.collection.objects.link(tg); tg.location = sp["at"]
+    c = o.constraints.new("TRACK_TO"); c.target = tg; c.track_axis = "TRACK_NEGATIVE_Z"; c.up_axis = "UP_Y"; SPOTS.append(o)
 
 def ease(u): u = min(1, max(0, u)); return u * u * (3 - 2 * u)      # in and out, never linear (the smoothness of the order)
 def lerp3(a, b, u): return Vector(a).lerp(Vector(b), u)
@@ -304,6 +310,11 @@ def pose_shot(shot, t):
         R0, R1 = shot["raft"]["from"], shot["raft"]["to"]; rx, ry = R0[0] + (R1[0] - R0[0]) * u, R0[1] + (R1[1] - R0[1]) * u
         for o, l0 in zip(RAFT, RAFT0): o.location = (l0.x + rx, l0.y + ry, l0.z + 0.03 * math.sin(t * 2.1))
     T = shot["torch"]; torch.location = lerp3(T["from"][0], T["from"][1], u); tgt.location = lerp3(T["at"][0], T["at"][1], u); tl.energy = T["power"] * 9
+    tl.spot_size = math.radians(T.get("cone", 15))
+    sps = shot.get("spots", [])
+    for k, (L, sp) in enumerate(zip(SPOTS, sps)):
+        nxt = sps[k + 1]["on"] if k + 1 < len(sps) else 1e9
+        L.data.energy = sp["power"] * ease((t - sp["on"]) / 0.3) * (1 - 0.65 * ease((t - nxt) / 0.3))      # (one at a time: the last one lit is the bright one)
 
 def projection():
     """the 3 x 4 matrix taking a world point to (pixel x, pixel y, depth along the lens) * w"""

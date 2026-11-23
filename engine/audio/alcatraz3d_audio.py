@@ -10,7 +10,8 @@ sys.path.insert(0, HERE); sys.path.insert(0, os.path.join(HERE, "lib"))
 import craft_sfx as fx  # noqa: E402
 from dsp import SR, ns, dbg, rng, place, pan, integrated, true_peak, write_wav, st  # noqa: E402
 
-SPEC = json.load(open("src/craft/alcatraz3d/shots.json")); FPS = SPEC["fps"]; DUR = SPEC["shots"][-1]["t1"]
+FILM = len(sys.argv) > 1 and sys.argv[1] == "film"
+SPEC = json.load(open("src/craft/alcatraz3d/film.json" if FILM else "src/craft/alcatraz3d/shots.json")); FPS = SPEC["fps"]; DUR = SPEC["shots"][-1]["t1"]
 SPANS = json.load(open("voice/alcatraz/spans.json")); LINES = json.load(open("voice/alcatraz/lines.json"))
 
 def decode(f):
@@ -42,11 +43,19 @@ def main():
     S = {s["id"]: s for s in SPEC["shots"]}
     cues = [{"k": "tap", "f": 0, "g": 1.6, "p": 0.0}, {"k": "thunk", "f": 0, "g": 0.9, "p": 0.0},      # frame 1: the torch's click and a knock
             {"k": "drip", "f": int(5.4 * FPS), "g": 0.35, "p": 0.4}, {"k": "drip", "f": int(8.6 * FPS), "g": 0.3, "p": -0.3}]
-    spec = {"fps": FPS, "frames": int(DUR * FPS), "seed": 11, "cues": cues, "beds": []}
+    beds = []
+    if FILM:      # the whole film: the beds by place, each only under its own picture
+        for sid, k, gn in (("n08", "wind", 0.7), ("n09", "lap", 0.9), ("n13", "surf", 0.6), ("n13", "birds", 0.5)):
+            if sid in S: beds.append({"k": k, "f0": int(S[sid]["t0"] * FPS), "f1": int(S[sid]["t1"] * FPS), "g": gn})
+    spec = {"fps": FPS, "frames": int(DUR * FPS), "seed": 11, "cues": cues, "beds": beds}
     bus = fx.effects(spec)[:, :N]
     if bus.shape[1] < N: bus = np.pad(bus, ((0, 0), (0, N - bus.shape[1])))
     r = rng(5); tone = fx.rumble(DUR + 0.3, r)[:N] if hasattr(fx, "rumble") else np.zeros(N); tone = tone if tone.ndim == 2 else st(tone)
     t_sting = S["n05"]["t0"] + 0.95; place(bus, pan(sting(), 0.1), t_sting, dbg(-8))
+    if FILM and "n11" in S:      # the alarm while the guard goes red: two clean tones taking turns (the flat film's siren), and a sting as he sees it
+        d = S["n11"]["t1"] - S["n11"]["t0"]; n = ns(d); tt = np.arange(n) / SR; f = np.where(np.floor(tt / 0.32) % 2 > 0, 860.0, 640.0); ph = 2 * np.pi * np.cumsum(f) / SR
+        sir = (0.6 * np.sin(ph) + 0.2 * np.sin(2 * ph)) * np.clip(np.minimum(tt / 0.04, (d - tt) / 0.08), 0, 1) * 0.5
+        place(bus, pan(sir, 0.25), S["n11"]["t0"], dbg(-9)); place(bus, pan(sting(), -0.1), S["n11"]["t0"] + 0.4, dbg(-8))
     mix = bus * dbg(-14) + tone[:, :N] * dbg(-36) + st(voice)
     for _ in range(3):
         cur = integrated(mix)
@@ -55,10 +64,10 @@ def main():
     tp = true_peak(mix)
     if tp > -1: mix = mix * dbg(-1 - tp)
     mix = mix[:, : ns(DUR)]
-    write_wav("public/craft/alcatraz3d-prov.wav", mix)
+    write_wav("public/craft/alcatraz3d-film.wav" if FILM else "public/craft/alcatraz3d-prov.wav", mix)
     os.makedirs("out/alc3d", exist_ok=True)
-    json.dump({"voices": placed, "cues": cues, "sting": t_sting, "lufs": round(float(integrated(mix)), 1), "true_peak": round(float(true_peak(mix)), 1)}, open("out/alc3d/sounds.json", "w"), indent=1)
-    print("public/craft/alcatraz3d-prov.wav LUFS", round(float(integrated(mix)), 1), "peak", round(float(true_peak(mix)), 1)); [print(p) for p in placed]
+    json.dump({"voices": placed, "cues": cues, "sting": t_sting, "lufs": round(float(integrated(mix)), 1), "true_peak": round(float(true_peak(mix)), 1)}, open("out/alc3d/sounds-film.json" if FILM else "out/alc3d/sounds.json", "w"), indent=1)
+    print("film" if FILM else "prov", "LUFS", round(float(integrated(mix)), 1), "peak", round(float(true_peak(mix)), 1)); [print(p) for p in placed]
 
 if __name__ == "__main__":
     main()

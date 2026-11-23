@@ -10,6 +10,7 @@ const { SHOTS3D, WHO, PLANT3, placeOf, shadowPoly, castAt, scaleOf, footY, figBo
 const pl = process.env.A3D_PLANT; if (pl) PLANT3[pl] = true;
 const res = { plant: pl ?? null, shots: {} };
 for (const s of SHOTS3D) {
+  if (!fs.existsSync(`src/craft/alcatraz3d/cam/${s.id}.json`) || !fs.existsSync(`out/alc3d/${s.id}/map.npz`)) continue;      // (only shots Blender has rendered)
   const whos = WHO[s.id](), n = Math.round((s.t1 - s.t0) * FM.FPS), frames = [];
   for (let fr = 0; fr < n; fr++) { const t = fr / FM.FPS, figs = [];
     for (const w of whos) { const p = placeOf(s.id, fr, w), f = castAt([w.cast], t)[0], sc = scaleOf(f.who), S = (x, y) => [p.z * (x - p.cx) + FM.W / 2, p.z * (y - p.cy) + FM.H / 2];

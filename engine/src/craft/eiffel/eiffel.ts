@@ -72,7 +72,7 @@ const CON_SLEEVE = "#2c2c36", YOUNG_SLEEVE = "#cdb88c";
 /** the approved six faces (FlatStyle.tsx MINER, Jesper 20 Nov): smug, delighted, shock, hard squeeze, grimace, tear */
 export const FACES: Record<string, Face> = {
   smug: { lid: 0.55, smirk: 1, brow: -0.25, smile: 0.15, gaze: [0.7, 0], pupil: 1, mouth: 0 },
-  delighted: { smile: 1, mouth: 0, brow: 0.5, pupil: 1 },      // (the mouth shut: only Daniel's line is spoken in the picture, the independent review)
+  delighted: { smile: 0.3, mouth: 0, brow: 0.5, pupil: 1 },      // (smile 0.3: at 1 the rig opened a D-shaped grin with the tongue showing, which two independent reviews read as talking; non-speakers keep the mouth shut)      // (the mouth shut: only Daniel's line is spoken in the picture, the independent review)
   shock: { wide: 1, brow: 1, sad: 0.6, pupil: 0.5, mouth: 0.5, smile: -0.7 },
   squeeze: { squeeze: 1, smile: -0.6, mouth: 0.3, teeth: 1, brow: -0.4, pupil: 1 },
   calm: { pupil: 1, smile: 0.2, mouth: 0 },
@@ -374,7 +374,7 @@ const s13 = (): Shot => { const seconds = 1.8, x0 = 0.45, m = figure("sir", x0, 
   const v = viewOf(cam), door = { x: v.x1 - 330, top: LINE_TOP - 700, w: 260 };
   return { id: "e13", title: "13 Han försvinner", seconds, cast, events: {}, shot: "wide", camera: () => cam, offFrameOK: (n, t) => t > 0.8,
     ownBg: (g) => { suite(g, cam, SUITE); rect(g, door.x, door.top, door.w, LINE_TOP - door.top, "#1e1820"); g.lineWidth = 16; g.strokeStyle = "#e9dcc4"; g.strokeRect(door.x - 8, door.top - 8, door.w + 16, LINE_TOP - door.top + 8);
-      poly(g, [[door.x + door.w, door.top], [door.x + door.w + 70, door.top + 30], [door.x + door.w + 70, LINE_TOP - 10], [door.x + door.w, LINE_TOP]], "#7a4a34"); },
+      /* (no door leaf in the room: he walked over it, the fourth review; the door stands open outwards, only the dark opening shows) */ },
     // (the money in his near hand as he walks: the dealer's cheque (squiggles, no numbers), drawn before him so his fist's fingers lie over it,
     //  following the hand along the forearm's line; the review: "he vanished with the money" showed only the bribe's envelope)
     // (the money: the dealer's cheque and the bribe's envelope both up out of his breast pocket, moving with him: in his walking hand the
@@ -385,8 +385,8 @@ const s13 = (): Shot => { const seconds = 1.8, x0 = 0.45, m = figure("sir", x0, 
 // 14 "The dealer was too embarrassed to tell the police.": the young dealer holds the letter at his chest (04), its blank back to us, his
 //    eyes squeezed hard shut (the approved hard squeeze). Camera: a slow push-in.
 const s14 = (): Shot => { const seconds = 2.6, m = figure("sir", 0, 0); m.stand(seconds + 1);
-  ease(m, -1, { head: [0, 4, 0] }, 0.01, { face: FACES.squeeze }); ease(m, 1.2, { head: [0, 9, -4] }, 0.6, { face: { ...FACES.grimace, lid: 0.6 } });      // (the second beat: from the squeeze to the grimace, the head going down; the tear was drawn beside the nose, the independent review)
-  const h = holdSheet("young", m, 0, "back", false, false, (t: number) => -5 * env(t, 1.9, 0.5, 99, 0.3), 236);      // (the third beat: the letter sinks)
+  ease(m, -1, { head: [0, 4, 0] }, 0.01, { face: FACES.squeeze }); ease(m, 0.5, { head: [-8, 6, 3] }, 0.45, { face: FACES.squeeze }); ease(m, 1.2, { head: [4, 9, -4] }, 0.6, { face: { ...FACES.grimace, lid: 0.6 } }); ease(m, 2.0, { head: [0, 14, 0] }, 0.45, { face: { ...FACES.grimace, lid: 0.6, gaze: [0, 0.6] } });      // (the beats: he turns his head away (0.5 s), the grimace (1.2 s), the head drops and he looks down at the letter (2.0 s), the fourth review)      // (the second beat: from the squeeze to the grimace, the head going down; the tear was drawn beside the nose, the independent review)
+  const h = holdSheet("young", m, 0, "back", false, false, (t: number) => -16 * env(t, 1.9, 0.5, 99, 0.3), 236);      // (the third beat: the letter sinks)
   const cast: Cast[] = [{ name: "young", m, who: "sir", look: YOUNG, seed: 31, armWipe: false, pose: h.pose, hands: { L: [[0, "grip"]], R: [[0, "grip"]] } }];
   const c0 = fitCam(cast, seconds, 2.7, [], () => false, 0.06), cam = (t: number) => ({ ...c0, z: c0.z * lerp(0.97, 1, smooth(t / seconds)) });
   return { id: "e14", title: "14 Han skäms", seconds, cast, events: {}, shot: "medium", camera: cam, contacts: h.contacts, over: h.over, ownBg: (g, t) => suite(g, cam(t), SUITE) } as Shot; };
@@ -407,10 +407,11 @@ const s15 = (): Shot => { const seconds = 2.2, m = figure("sir", -0.36, 30); m.s
 // 16 "This time, another dealer told the police.": the police desk beside them; the grey dealer holds the letter up (04); the policeman
 //    stands (01, mouth shut) with the shock face and a small head move. Both whole on the floor, the feet in view. Camera: a slow push-in.
 const DESK = { x0: px(-0.08), x1: px(0.14) };
-const s16 = (): Shot => { const seconds = 2.4, a = figure("sir", 0.5, -25);      // (the grey dealer at the right with the letter, as in shot 15) a.stand(seconds + 1); ease(a, -1, { head: [-6, 2, 0] }, 0.01, { face: { ...FACES.calm, smile: -0.2, gaze: [-0.6, 0] } }); ease(a, 0.5, { head: [-6, -3, 0] }, 0.6, { face: { ...FACES.calm, smile: -0.2, gaze: [-0.7, 0] } });
-  const p = figure("sir", -0.42, 25); p.stand(seconds + 1); const SHOCK_P: Face = { ...FACES.shock, sad: 1, smile: -1, mouth: 0.55 };      // (the shock's open mouth and the corners right down: with the moustache a small mouth read as a smile, the independent reviews)
+const s16 = (): Shot => { const seconds = 2.4, a = figure("sir", 0.5, -25); a.stand(seconds + 1);      // (the grey dealer at the right with the letter, as in shot 15)
+  ease(a, -1, { head: [-6, 2, 0] }, 0.01, { face: { ...FACES.calm, smile: -0.2, gaze: [-0.6, 0] } }); ease(a, 0.5, { head: [-6, -3, 0] }, 0.6, { face: { ...FACES.calm, smile: -0.2, gaze: [-0.7, 0] } });
+  const p = figure("sir", -0.42, 12); p.stand(seconds + 1); const SHOCK_P: Face = { ...FACES.shock, sad: 1, smile: -1, mouth: 0.8 };      // (turned 12 and the head 8: the face stays in the front drawing, so the open mouth shows whole; in three-quarter it read as a small smile, the fourth review)      // (the shock's open mouth and the corners right down: with the moustache a small mouth read as a smile, the independent reviews)
   ease(p, -1, { head: [6, 0, 0] }, 0.01, { face: { ...FACES.calm, gaze: [0.6, 0] } }); ease(p, 1.1, { head: [8, -8, 0], lean: -9 }, 0.35, { face: SHOCK_P });      // (the beat: he reads it and jerks back in shock, 06's jerk)
-  ease(a, 1.7, { head: [-6, -2, 0] }, 0.4, { face: { ...FACES.grimace, gaze: [-0.7, 0] } });
+  ease(a, 1.7, { head: [-6, 4, 0] }, 0.4, { face: { ...FACES.calm, smile: -0.3, brow: -0.3, gaze: [-0.8, 0.1] } });      // (the beat: he looks up at the policeman, serious; the grimace read as smug in three-quarter, the fourth review)
   const h = holdSheet("grey", a, 0.5, "letter", false, false, (t: number) => 16 * env(t, 0.5, 0.5, 99, 0.4));      // (the second beat: he holds the letter up to the policeman)
   const cast: Cast[] = [{ name: "grey", m: a, who: "sir", look: GREY, seed: 41, armWipe: false, pose: h.pose, hands: { L: [[0, "grip"]], R: [[0, "grip"]] } },
     { name: "police", m: p, who: "sir", look: POLICE, seed: 51, armWipe: false, hands: { L: [[0, "relaxed"]], R: [[0, "relaxed"]] } }];
@@ -443,9 +444,11 @@ const s17 = (): Shot => { const seconds = 2.2, m = figure("sir", 0, 22); m.stand
 //    Sir, who is not in the film). Camera: a slow pull-back.
 const s18 = (): Shot => { const seconds = 1.7, m = figure("sir", -0.1, -38); m.stand(seconds + 1);      // (turned three-quarter left, a medium shot at night: shot 2's frontal evening set-up made the cut into the loop a jump cut)
   ease(m, -1, { head: [0, 0, 0] }, 0.01, { face: { ...FACES.smug, gaze: [0.3, 0] } }); ease(m, 0.3, { head: [0, -5, -4] }, 0.5, { face: { ...FACES.smug, gaze: [0.5, -0.2] } }); ease(m, 0.95, { head: [0, 2, 3] }, 0.45, { face: { ...FACES.delighted, gaze: [0, 0] } });      // (the beats: he looks up at the tower, then grins at us)
-  const cast: Cast[] = [{ name: "con", m, who: "sir", look: CON, seed: 9, armWipe: false, hands: { L: [[0, "relaxed"]], R: [[0, "relaxed"]] } }];
+  // (he holds the stamped SOLD paper, as in shot 2 that the loop cuts to: it popped into his hands at the cut, the fourth review; a small lift is a beat)
+  const h = holdSheet("con", m, -0.1, "sold", false, false, (t: number) => 10 * env(t, 0.95, 0.45, 99, 0.3));
+  const cast: Cast[] = [{ name: "con", m, who: "sir", look: CON, seed: 9, armWipe: false, pose: h.pose, hands: { L: [[0, "grip"]], R: [[0, "grip"]] } }];
   const c0 = fitCam(cast, seconds, 2.5, [], () => false, 0.06), cam = (t: number) => ({ ...c0, z: c0.z * lerp(1, 0.97, smooth(t / seconds)) });
-  return { id: "e18", title: "18 Han framför tornet", seconds, cast, events: {}, shot: "medium", camera: cam,
+  return { id: "e18", title: "18 Han framför tornet", seconds, cast, events: {}, shot: "medium", camera: cam, contacts: h.contacts, over: h.over,
     ownBg: (g, t) => { const c = cam(t), v = viewOf(c); eveningSky(g, v.y0 - 300, LINE_TOP - 200);      // (the evening, as shot 2, so time does not run backwards into the loop; three-quarter and closer, so the cut is not a jump cut)
       for (let i = 0; i < 12; i++) { const hx = v.x0 - 100 + i * 130, hh = 120 + ((i * 61) % 150); rect(g, hx, LINE_TOP - 200 - hh, 124, hh + 200, ["#5a4458", "#4e3c52", "#644a5c"][i % 3], OL * 0.5); }
       tower(g, c.cx - 230, LINE_TOP - 190, 900, "#4a3a50", OL * 0.8); g.fillStyle = "#3a3038"; g.fillRect(v.x0 - 300, LINE_TOP - 200, v.x1 - v.x0 + 600, 200); g.fillStyle = "#6a5a5e"; g.fillRect(v.x0 - 300, LINE_TOP, v.x1 - v.x0 + 600, v.y1 - LINE_TOP + 300); line(g, [[v.x0 - 300, FM.GY], [v.x1 + 300, FM.GY]], FM.LINE);

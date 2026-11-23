@@ -436,7 +436,7 @@ const s11b = (): Shot => { const seconds = 0.8, c = figure("sir", 0, -38);      
   ease(c, -1, { head: [-4, 2, 0] }, 0.01, { face: { ...FACES.smug, gaze: [-0.7, 0.2] } });
   ease(c, 0.05, { head: [-6, -6, 0], lean: -7 }, 0.3, { face: { ...FACES.delighted, brow: 0.8, gaze: [-0.8, 0.2] } });
   const cast: Cast[] = [{ name: "con", m: c, who: "sir", look: CON, seed: 2, armWipe: false, hands: { L: [[0, "relaxed"]], R: [[0, "relaxed"]] } }];
-  const c0 = fitCam(cast, seconds, ZH(0.62), [], () => false, 0.05), cam = (t: number) => ({ ...c0, z: c0.z * lerp(0.985, 1, smooth(t / seconds)) });
+  const c1 = fitCam(cast, seconds, ZH(0.62), [], () => false, 0.05), c0 = camFeet(c1.cx, c1.z, 0.9), cam = (t: number) => ({ ...c0, z: c0.z * lerp(0.985, 1, smooth(t / seconds)) });      // (low in the picture: in hook (b) the text lay over his cap)
   return { id: "e11b", title: "11b Bedragaren tar emot", seconds, cast, events: {}, shot: "full", camera: cam, ownBg: (g, t) => suite(g, cam(t), SUITE) } as Shot; };
 
 // 12 "The con man got a bribe too.": the con man holds the envelope with both hands at his chest (04, smug), the dealer beside him (01,

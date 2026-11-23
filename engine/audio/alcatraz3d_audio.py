@@ -1,6 +1,6 @@
 # The sound of Alcatraz in the new style (the style test: shots n01-n05, 9.3 s): George's lines and the guard's line (Daniel, [OWN]) on the
 # times in src/craft/alcatraz3d/shots.json ("voice"), never on top of each other; the torch's click and a dull knock in frame 1 (the hook
-# rule), the click when the guard puts his torch out, a far drip, a clean two-tone sting when the inmate freezes, a low room tone.
+# rule), a far drip, a clean two-tone sting when the inmate freezes, a low room tone.
 # No footsteps, no creaks, nothing that can sound like a fart. Voices at -16 LUFS each, the whole at -14 LUFS, true peak under -1 dB.
 #   python audio/alcatraz3d_audio.py      (from engine/)
 import json, os, subprocess, sys
@@ -41,7 +41,6 @@ def main():
     voice = vg * dbg(-16 - integrated(st(vg))) + vd * dbg(-16 - integrated(st(vd)))
     S = {s["id"]: s for s in SPEC["shots"]}
     cues = [{"k": "tap", "f": 0, "g": 1.6, "p": 0.0}, {"k": "thunk", "f": 0, "g": 0.9, "p": 0.0},      # frame 1: the torch's click and a knock
-            {"k": "tap", "f": int(S["n03"]["t0"] * FPS), "g": 0.9, "p": -0.2},                          # the guard puts his torch out
             {"k": "drip", "f": int(5.4 * FPS), "g": 0.35, "p": 0.4}, {"k": "drip", "f": int(8.6 * FPS), "g": 0.3, "p": -0.3}]
     spec = {"fps": FPS, "frames": int(DUR * FPS), "seed": 11, "cues": cues, "beds": []}
     bus = fx.effects(spec)[:, :N]

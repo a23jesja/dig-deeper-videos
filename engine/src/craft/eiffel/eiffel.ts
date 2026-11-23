@@ -250,7 +250,11 @@ const holdSheet = (name: string, m: ReturnType<typeof figure>, x: number, kind: 
       const w = lift(t) / LMAX; return { ...p, armL: lerpArm(ref.armL, top.armL, w), armR: lerpArm(ref.armR, top.armR, w) }; }
     return fixed ? { ...p, armL: ref.armL, armR: ref.armR } : solve2({ ...p, armL: ref.armL, armR: ref.armR }, heading, t); };
   let off0: P2 | null = null;
-  const carried = (f: Fig): P2 => { const a = jointPx(f, "wrL"), b = jointPx(f, "wrR"), mid: P2 = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2]; if (!off0) { const c0 = at(); off0 = [c0[0] - mid[0], c0[1] - mid[1]]; } return [mid[0] + off0[0], mid[1] + off0[1]]; };      // (the offset taken in the first frame drawn, at rest)
+  // (the offset from the hands to the thing, found from the figure at t = 0 (at rest), whatever frame is drawn first: taken from the first
+  //  frame drawn, it differed between the renderer's parallel chunks and the paper jumped, the flicker measure on v4)
+  const carried = (f: Fig): P2 => { const a = jointPx(f, "wrL"), b = jointPx(f, "wrR"), mid: P2 = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
+    if (!off0) { const f0 = castAt([{ name, m, who: "sir", pose: hold }], 0)[0], a0 = jointPx(f0, "wrL"), b0 = jointPx(f0, "wrR"), c0 = at(); off0 = [c0[0] - (a0[0] + b0[0]) / 2, c0[1] - (a0[1] + b0[1]) / 2]; }
+    return [mid[0] + off0[0], mid[1] + off0[1]]; };
   const over = (g: G, t: number, f: Fig) => { if (f.name !== name) return; const carry = fixed || LMAX !== 0, [cx, cy0] = carry ? carried(f) : at(), cy = cy0 - (carry ? 0 : lift(t)), x0 = cx - SHEET.w / 2, y0 = cy - SHEET.h / 2;
     if (kind === "sold") towerPaper(g, x0 - 10, y0 - 10, SHEET.w + 20, SHEET.h + 20, true); else if (kind === "news") newspaperHeld(g, x0, y0, SHEET.w, SHEET.h); else if (kind === "cheque") cheque(g, x0 - 10, cy - 46, SHEET.w + 20, 92); else if (kind === "envelope") envelopeHeld(g, x0, y0, SHEET.w, SHEET.h);
     else if (kind === "bid") { const bh = SHEET.h * 0.6, by = cy - bh / 2; rect(g, x0, by, SHEET.w, bh, "#f4ecd6", OL * 0.8); squiggles(g, x0 + SHEET.w * 0.1, by + bh * 0.18, SHEET.w * 0.8, 4, bh * 0.18, "#6a5a6a", 3.5); } else letter(g, x0, y0, SHEET.w, SHEET.h, kind === "back");      // (the bid shorter, so its top stays under his chin, the independent review)

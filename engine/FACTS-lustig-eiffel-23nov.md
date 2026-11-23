@@ -85,3 +85,34 @@ Every quote below was read on the live page, HTTP 200, on 23 Nov 2026 around 06:
 - **7,000 tons of metal:** MF only.
 - **"Sold twice":** the second attempt failed (MF, F, TIFO). The script says "tried again".
 - **The hotel's name:** the Crillon appears in TIFO and F, but not in MF. The script says only "a grand hotel".
+
+## Added 23 Nov 2026 (v2): EBSCO Research Starters, the library reference source
+
+**EB:** K. Edgington, "Victor Lustig", *EBSCO Research Starters* (Biography), 2024. https://www.ebsco.com/research-starters/biography/victor-lustig/ (HTTP 200, read 23 Nov 2026 about 07:00).
+
+Its works cited:
+- Boese, *Museum of Hoaxes* (Penguin Putnam 2002);
+- Farquhar, *A Treasury of Deception* (Penguin 2005);
+- James F. Johnson, *The Man Who Sold the Eiffel Tower* (Doubleday 1961), described as "A biography of Lustig by a former secret service agent involved in solving the counterfeiting case";
+- Sifakis, *Hoaxes and Scams* (Michael O'Mara 1994).
+
+The page says nothing about where the Eiffel story comes from or how reliable it is.
+
+The Smithsonian article through the Internet Archive was not read: my session's permission system refused that fetch, and I did not try to get round it.
+
+- **1925, Paris, the newspaper:** "In May, 1925, while staying in Paris, Lustig discovered a small newspaper article"; "discussing the maintenance expense on the Eiffel Tower and suggesting dismantling it as an alternative"
+- **False role:** "disguised himself as a deputy director general of the Ministère des Postes et Télégraphes"
+- **Stationery:** "Armed with the news item and forged stationery and credentials"
+- **Dealers and hotel:** "a group of scrap-metal dealers to whom he had written."; "At a meeting in the fashionable Hôtel de Crillon"
+- **Secrecy:** "move quickly and with discretion in order to avoid public disapproval"
+- **For scrap:** "the salvage rights to more than seven thousand tons of iron would be sold to the highest bidder"
+- **The buyer paid:** "Lustig was able to convince the purchaser to deliver a certified check for the entire amount of the sale"
+- **The bribe:** "he also extracted a bribe from the man"
+- **Too humiliated:** "the businessman was too humiliated to contact authorities upon his discovery of the fraud"
+- **Again, a month later:** "After one month, Lustig attempted to repeat the scheme; however, the second buyer proved less cooperative". This disagrees with MF's "Six months later", so the script says "Later".
+- **To the US:** "Lustig was forced to flee Europe for the United States"
+- **Not on the page:** Poisson's name, new in town, his low pay, and fleeing with the money (EB names no flight before the US).
+
+Quotes the review session gave from F and TIFO (line 7):
+- F: "the tearing down of the Eiffel Tower has become mandatory"; "sold to the highest bidder"
+- TIFO: "knock down the Eiffel Tower and sell it for scrap metal"

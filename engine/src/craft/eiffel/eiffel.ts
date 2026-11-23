@@ -156,7 +156,7 @@ const s01 = (): Shot => propShot("e01", "1 Stämpeln (SOLD)", 1.6, (g, t) => {
   // (lifted 40 px over 12 frames, 0.1-0.5 s; then on up off the mark over 0.95 s, so the whole SOLD shows: at most about 10 px a frame on the
   //  screen; aside it went 26 px a frame, scripts/eiffel_check.mjs)
   const u = smooth((t - 0.1) / 0.4), v = smooth((t - 0.5) / 0.95);
-  stampScene(g, STAMP_AT[0] + 20 * v, STAMP_AT[1] - 40 * u - 125 * v, true);
+  stampScene(g, STAMP_AT[0] + 85 * v, STAMP_AT[1] - 40 * u - 75 * v, true);      // (up and to the right: straight up, the sleeve rose behind the hook text's lower line in opening (d), where the text stays 3 s over this shot, the sixth review)
 }, [{ t: 0, k: "gavel", g: 1.2 }, { t: 0, k: "tap", g: 1.0 }], (t) => stampCam(t, 1.6));
 const s19 = (): Shot => propShot("e19", "19 Stämpeln på väg ner (loopen)", 0.73, (g, t) => {
   // (from the lifted place down to 3 px above the paper at the last frame, 0.67 s; contact is frame 1 of the film)

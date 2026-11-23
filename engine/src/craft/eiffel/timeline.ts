@@ -6,7 +6,7 @@
 // It ends on the same set-up just before frame 1 (shot 2 played from -0.73 s), so the loop meets it.
 /** a cut: [shot, start in the film, start inside the shot] */
 export type Cut = [string, number] | [string, number, number];
-export const CUTS: Cut[] = [["e02", 0], ["e01", 2.17], ["e03", 3.73], ["e04", 5.23], ["e05", 6.73], ["e06", 8.23], ["e07", 10.23], ["e08", 11.73], ["e09", 13.23],
+export const CUTS: Cut[] = [["e02", 0], ["e01", 2.17], ["e03", 3.67], ["e04", 5.23], ["e05", 6.68], ["e06", 8.23], ["e07", 10.23], ["e08", 11.73], ["e09", 13.23],
   ["e10", 14.73], ["e11", 16.23], ["e12", 17.83], ["e13", 19.73], ["e14", 21.53], ["e15", 24.13], ["e16", 26.33], ["e17", 28.73], ["e18", 30.73], ["e02", 32.43, -0.73]];
 export const FILM_S = 33.16;
 /** the lines: the take (voice/eiffel/<id>) and its speech onset in the film (s) */

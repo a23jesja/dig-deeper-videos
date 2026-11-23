@@ -331,8 +331,9 @@ const s07 = (): Shot => { const seconds = 0.8, c = figure("sir", -0.2, 46); c.st
   // (7a, the review of v10 and the independent review of v11: shot 7 in two cuts within its 1.5 s, so each reads at 360 px and nothing is
   //  small: the con man alone, turned to the dealers off the picture's right, lifts the sealed letter to show it (04's lift, 0-0.35 s))
   ease(c, -1, { head: [-6, 2, 0] }, 0.01, { face: { ...FACES.smug, gaze: [0.7, 0.1] } }); ease(c, 0.35, { head: [-6, -2, -3] }, 0.3, { face: { ...FACES.delighted, gaze: [0.7, 0] } });
+  // (seed 2: no blink in this short close shot; a blink at this size failed the flicker measure, v11)
   const h = holdSheet("con", c, -0.2, "letter", false, false, (t: number) => 16 * env(t, 0, 0.5, 99, 0.3));
-  const cast: Cast[] = [{ name: "con", m: c, who: "sir", look: CON, seed: 9, armWipe: false, pose: h.pose, hands: { L: [[0, "grip"]], R: [[0, "grip"]] } }];
+  const cast: Cast[] = [{ name: "con", m: c, who: "sir", look: CON, seed: 2, armWipe: false, pose: h.pose, hands: { L: [[0, "grip"]], R: [[0, "grip"]] } }];
   const c0 = fitCam(cast, seconds, 2.7, [], () => false, 0.06), cam = (t: number) => ({ ...c0, z: c0.z * lerp(0.98, 1, smooth(t / seconds)) });
   return { id: "e07", title: "7a Han visar brevet", seconds, cast, events: {}, shot: "medium", camera: cam, contacts: h.contacts, over: h.over, ownBg: (g, t) => suite(g, cam(t), SUITE) } as Shot; };
 const s07b = (): Shot => { const seconds = 0.8;

@@ -23,14 +23,11 @@ const scr = (cam, p) => [(p[0] - cam.cx) * cam.z + FM.W / 2, (p[1] - cam.cy) * c
 const track = (id, what) => { const s = SHOTS[id](), pts = [];
   for (let f = 0; f < Math.round(s.seconds * FM.FPS); f++) { const t = f / FM.FPS; for (const k of Object.keys(DRAWN)) DRAWN[k].length = 0; s.ownBg?.(mock(), t); const th = DRAWN.things.find((q) => q.what === what); pts.push(th ? scr(s.camera(t), th.at) : null); }
   return pts; };
-for (const id of ["e01", "e19"]) { const p = track(id, "stamp"); let mx = 0; for (let i = 1; i < p.length; i++) if (p[i] && p[i - 1]) mx = Math.max(mx, Math.hypot(p[i][0] - p[i - 1][0], p[i][1] - p[i - 1][1]));
+for (const id of ["e01"]) { const p = track(id, "stamp"); let mx = 0; for (let i = 1; i < p.length; i++) if (p[i] && p[i - 1]) mx = Math.max(mx, Math.hypot(p[i][0] - p[i - 1][0], p[i][1] - p[i - 1][1]));
   if (mx > 12) faults.push(`${id}: the stamp moves ${mx.toFixed(1)} px in a frame (12 at most)`); notes.push(`${id}: the stamp moves at most ${mx.toFixed(1)} px a frame on the screen`); }
 { const p = track("e01", "stamp"), lift = p[3][1] - p[15][1]; notes.push(`e01: frames 4-16 (the lift) raise the stamp ${lift.toFixed(0)} px on the screen (about 40 asked, at the zoom ${SHOTS.e01().camera(0.3).z.toFixed(2)})`); }
-{ const s = SHOTS.e19(), p = track("e19", "stamp"), last = p[p.length - 1], c0 = track("e01", "stamp")[0]; const above = c0[1] - last[1];
-  notes.push(`e19: its last frame ${above.toFixed(1)} px above the contact place of frame 1 (a few px: one frame before contact)`); if (above <= 0 || above > 12) faults.push(`e19: the last frame is ${above.toFixed(1)} px from contact`); }
-{ const s = SHOTS.e13(), ys = []; for (let f = 0; f < Math.round(s.seconds * FM.FPS); f++) { const t = f / FM.FPS, hop = t < 0.06 ? 0 : 10 * Math.max(0, Math.sin(Math.min(1, (t - 0.06) / 0.3) * Math.PI)) * (1 - Math.min(1, Math.max(0, (t - 0.06) / 0.45))); ys.push(hop * s.camera(t).z); }
-  let mx = 0, still = 0; for (let i = 1; i < ys.length; i++) { mx = Math.max(mx, Math.abs(ys[i] - ys[i - 1])); if (Math.abs(ys[i]) > 0.01) still = i / FM.FPS; }
-  notes.push(`e13: the cup moves at most ${mx.toFixed(1)} px a frame and is still from ${still.toFixed(2)} s`); if (mx > 12 || still > 0.5) faults.push("e13: the cup's hop too fast or too long"); }
+{ const last = M.CUTS[M.CUTS.length - 1]; notes.push(`the loop: the last shot is ${last[0]} from ${last[2]} s to ${(-1 / FM.FPS).toFixed(3)} s inside it, frame 1 is ${M.CUTS[0][0]} at 0 s (the same set-up, the nod's motion running on)`);
+  if (last[0] !== M.CUTS[0][0] || !(last[2] < 0) || Math.abs(M.FILM_S - last[1] + last[2]) > 1 / FM.FPS) faults.push(`the loop: the last shot does not end on frame 1's set-up (${JSON.stringify(last)}, film ${M.FILM_S})`); }
 { let full = 0; for (let f = 0; f < 200; f++) { if (textAlpha(f / FM.FPS) >= 0.999) full = (f + 1) / FM.FPS; else break; } notes.push(`text: ${TEXT.lines.join(" / ")} at full strength 0-${full.toFixed(2)} s (${(full / TEXT.lines.length).toFixed(2)} s a line)`); if (full < 3.0 - 1e-6) faults.push(`text: full for only ${full.toFixed(2)} s`); }
 { const low = ["thud", "step", "scuff", "creak", "rumble", "blast"]; for (const [id, f] of Object.entries(SHOTS)) for (const so of f().sounds ?? []) if (low.includes(so.k)) faults.push(`${id}: a low sound (${so.k})`);
   const s19 = SHOTS.e19().sounds ?? []; if (s19.length) faults.push("e19 has a sound"); notes.push(`sounds: frame 1 ${JSON.stringify((SHOTS.e01().sounds ?? []).filter((q) => q.t === 0).map((q) => q.k))}; shot 19 none`); }

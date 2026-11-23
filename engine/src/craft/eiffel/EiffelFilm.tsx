@@ -27,10 +27,10 @@ const paintText = (g: CanvasRenderingContext2D, t: number, lines: string[] = TEX
 export const EiffelFilm: React.FC<{ muted?: boolean }> = ({ muted = false }) => {
   const t = useCurrentFrame() / FM.FPS, { id, lt } = shotAt(t);
   return <AbsoluteFill style={{ background: "#101522" }}>
-    <canvas width={FM.W} height={FM.H} ref={(cv) => { if (cv) { const g = cv.getContext("2d")!; paintShot(g, BUILT[id], lt); paintText(g, t); } }} />
+    <canvas width={FM.W} height={FM.H} ref={(cv) => { if (cv) { const g = cv.getContext("2d")!; paintShot(g, BUILT[id], lt); paintText(g, t, TEXT.lines); } }} />
     {muted ? null : <Audio src={staticFile("craft/eiffel.wav")} />}
   </AbsoluteFill>; };
-/** the hook lab's openings (B, C): 5 s each, their own cuts, text and mix (public/craft/eiffel-hook-<b|c>.wav) */
+/** the hook lab's other openings (B, D): 5 s each, their own cuts, text and mix (public/craft/eiffel-hook-<b|c>.wav) */
 export const EiffelHook: React.FC<{ opening: string; muted?: boolean }> = ({ opening, muted = false }) => {
   const t = useCurrentFrame() / FM.FPS, O = OPENINGS[opening], { id, lt } = shotAt(t, O.cuts);
   return <AbsoluteFill style={{ background: "#101522" }}>

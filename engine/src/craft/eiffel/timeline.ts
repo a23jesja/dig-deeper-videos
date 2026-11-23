@@ -7,7 +7,7 @@
 /** a cut: [shot, start in the film, start inside the shot] */
 export type Cut = [string, number] | [string, number, number];
 export const CUTS: Cut[] = [["e02", 0], ["e01", 2.17], ["e03", 3.67], ["e04", 5.23], ["e05", 6.68], ["e06", 8.23], ["e07", 10.23], ["e07b", 10.98], ["e08", 11.73], ["e09", 13.23],
-  ["e10", 14.73], ["e11", 16.23], ["e12", 17.83], ["e13", 19.73], ["e14", 21.53], ["e15", 24.13], ["e16", 26.33], ["e17", 28.73], ["e18", 30.73], ["e02", 32.43, -0.73]];
+  ["e10", 14.73], ["e11", 16.23], ["e11b", 17.08], ["e12", 17.83], ["e13", 19.73], ["e14", 21.53], ["e15", 24.13], ["e16", 26.33], ["e16b", 27.48], ["e17", 28.73], ["e18", 30.73], ["e02", 32.43, -0.73]];
 export const FILM_S = 33.16;
 /** the lines: the take (voice/eiffel/<id>) and its speech onset in the film (s) */
 export const LINES: [string, number][] = [["g19", 0.0], ["g02", 2.27], ["g03", 3.83], ["g04", 6.83], ["g05", 8.33], ["g06", 10.38], ["d01", 13.38], ["g07", 14.83], ["g08", 16.33],
@@ -19,5 +19,5 @@ export const TEXT: { t0: number; t1: number; fade: number; lines: string[]; loop
 export const OPENINGS: Record<string, { cuts: Cut[]; lines: [string, number][]; text: string[] }> = {
   C: { cuts: CUTS, lines: LINES, text: TEXT.lines },
   D: { cuts: [["e01", 0, 0], ["e02", 1.5, 0], ["e03", 3.2, 0]], lines: [["g01", 0.0], ["g02", 1.7], ["g03", 3.3]], text: ["HE SOLD THE", "EIFFEL TOWER"] },
-  B: { cuts: [["e11", 0, 0], ["e02", 1.87, 0], ["e03", 3.73, 0]], lines: [["g17", 0.0], ["g18", 1.97], ["g03", 3.83]], text: ["SOMEBODY BOUGHT THE", "EIFFEL TOWER"] },
+  B: { cuts: [["e11", 0, 0], ["e11b", 0.85, 0], ["e02", 1.87, 0], ["e03", 3.73, 0]], lines: [["g17", 0.0], ["g18", 1.97], ["g03", 3.83]], text: ["SOMEBODY BOUGHT THE", "EIFFEL TOWER"] },
 };

@@ -3,13 +3,13 @@
 ## Filer
 
 - **Filmen:** `leverans/eiffel/who-sold-the-eiffel-tower-in-1925-v11.mp4`
-  - 1080×1920, 30 fps, 33,16 s, med ljud, 55 402 878 B.
-  - md5 177a29b2f83352b8c80546f7a7009dcd (`md5-v11.txt`).
+  - 1080×1920, 30 fps, 33,16 s, med ljud, 55 339 439 B.
+  - md5 a3131f92d843fa684a40a3e25473e818 (`md5-v11.txt`).
   - **Bithastigheten är 13,2 Mbit/s**, mätt med ffprobe på videoströmmen.
-- **Telefonkopian:** `leverans/eiffel/who-sold-the-eiffel-tower-in-1925-v11-telefon.mp4`, 4,6 MB, md5 98db92c74c2f5672785f87ced7850048.
+- **Telefonkopian:** `leverans/eiffel/who-sold-the-eiffel-tower-in-1925-v11-telefon.mp4`, 4,6 MB, md5 852333cce3d48a5561484d7fa5630820.
 - **Krokklippen:**
-  - `krok-d-v11.mp4`: md5 66553f4227338f88a485fe8124bea089, 12,4 Mbit/s. Stämpelbilden är nu 1,5 s (var 1,6).
-  - `krok-b-v11.mp4`: md5 0847420f25a87a1544796b2402179131, 14,0 Mbit/s. Texten går fri från båda mössorna.
+  - `krok-d-v11.mp4`: md5 a86b294574eb18c5666083e6a5aca854, 12,5 Mbit/s. Stämpelbilden är nu 1,5 s (var 1,6).
+  - `krok-b-v11.mp4`: md5 23d7f9cd53120f69712c7f76dc527cc7, 14,0 Mbit/s. Texten går fri från båda mössorna.
   - Krokklippen renderas nu som filmen, i dubbel storlek och skalade ned (CRF 4). I normal storlek flimrade en kant när gungningen i ruta 1 började. Den har nu klippet 11a/11b.
 - **Arken**, alla i `granskning/eiffel/film-v11/`:
   - `kontaktark-2-rutor-per-sekund.jpg`;
@@ -28,7 +28,17 @@
 
 **Det frysta utseendet** är orört: `git diff ad1a161` ger 0 rader i designs, rig, clips, ink, stage och alcatraz/.
 
-**Granskningen av v11 har skett i nio omgångar.** Ingen av versionerna har skickats till dig.
+**Granskningen av v11 har skett i tio omgångar.** Ingen av versionerna har skickats till dig.
+
+**Den nionde oberoende granskningen** (md5 177a…) godkände punkterna 2–5: inga omöjliga saker, blinkningarna, kroken och läsningen i 360 px. Den fällde kroppshandlingarna i bild 6, 9 och 15, och bild 3 låg på gränsen; gungningarna på 5–6° var för små.
+
+**Rättningarna:**
+- gungningarna är 8–9°, bugningen i bild 6 är 12° och den ivriga lutningen i bild 9 går till 28°;
+- bild 3 gungar medan han sänker tidningen.
+
+Ett blink som föll på gungningen i bild 3 är bortflyttat, eftersom det fällde flimmermåttet.
+
+
 
 **Den åttonde oberoende granskningen** (md5 79b5…) godkände punkt 2, alltså inga omöjliga saker: ingen tredje näve, inget papper mot en haka, inga överlapp och inget flimmer. Den fällde liveliness:
 - öppningen hade ingen läsbar kroppshandling på 66 rutor;
@@ -177,14 +187,14 @@ Tiderna gäller filmen i sekunder. Varje kroppshandling står med sin starttid. 
 |---|---|---|---|---|---|---|---|
 | 2 | 0–2,17 | This man sold the Eiffel Tower. | bedragaren, belåten → förtjust | **gungar belåtet åt sidan från ruta 1** (0,00) och tillbaka 0,75 med SOLD-papperet framför sig (04) | 60 % | 0,75 | 0 
 | 1 | 2,17–3,67 | It was never his. | bedragarens hand | stämpeln lyfts 2,27 och lyfts sedan uppåt och åt höger 2,67, så att SOLD syns | (handen) | 1,0 | 1,50 (handen) |
-| 3 | 3,67–5,23 | A newspaper said… | bedragaren, belåten → förtjust | sänker tidningen 40 px (04) 3,87 | 76 % | 1,4 | 0 |
+| 3 | 3,67–5,23 | A newspaper said… | bedragaren, belåten → förtjust | sänker tidningen och gungar (04) 3,87 | 76 % | 1,4 | 0 |
 | 4 | 5,23–6,68 | …cost too much to fix. | ingen (tidningens bild) | (det rostiga tornet) | – | – | 1,45 |
 | 5 | 6,68–8,23 | He was a con man. | bedragaren, belåten → förtjust | gungar åt ena sidan 6,83 och åt andra sidan med ett flin 7,53 | 73 % | 0,7 | 0 |
 | 6 | 8,23–10,23 | He pretended to be a government official. | bedragaren (vänd åt höger, fönstret bakom), belåten → förtjust | gungar 8,33; lyfter sigillbrevet (04) 8,38; bockar som en ämbetsman 9,18; rätar på sig 9,73 | 62 % | 0,8 | 0 |
 | 7a | 10,23–10,98 | He told scrap dealers… | bedragaren i halvbild (vänd åt höger, i vänstra tredjedelen), belåten → förtjust | gungar mot handlarna och lyfter sigillbrevet (04) 10,28 | 77 % | 0,75 | 0 |
 | 7b | 10,98–11,73 | (forts.) | två handlare, lugn och förtjust → chock | rycker tillbaka och sätter upp händerna i chock (06) 10,98 och 11,30 | 36 % | 0,4 | 0 |
 | 8 | 11,73–13,23 | …to bid for the tower's iron. | bedragaren, belåten | armen upp (05) 11,93; fingret ut 12,35; armen ned 12,71 | 53 % | 0,5 | 0 |
-| 9 | 13,23–14,73 | Do you deliver? (Daniel) | den unga handlaren, förtjust | håller budet stilla och lågt, fritt från munnen (04/07); läppsynk; lutar sig ivrigt fram 13,83 | 62 % | 0,9 | 0 |
+| 9 | 13,23–14,73 | Do you deliver? (Daniel) | den unga handlaren, förtjust | håller budet stilla och lågt, fritt från munnen (04/07); läppsynk; lutar sig ivrigt fram 13,78 | 62 % | 0,9 | 0 |
 | 10 | 14,73–16,23 | One dealer won. | vinnaren (förtjust) och förloraren (lugn → grimas) | vinnaren lyfter budet 14,88; förloraren rycker till (06) 15,33; vinnaren sätter sig stolt upp 15,63; förloraren lutar sig fram 15,78 | 36 % | 0,5 | 0 |
 | 11a | 16,23–17,08 | The dealer paid for the tower. | handlaren, förtjust | lutar sig fram och håller fram checken mot bedragaren utanför bilden (04) 16,28 | 61 % | 0,8 | 0 |
 | 11b | 17,08–17,83 | (forts.) | bedragaren, belåten → förtjust | rycker till med ett flin åt checken (06) 17,13 | 61 % | 0,7 | 0 |
@@ -213,17 +223,17 @@ Tiderna gäller filmen i sekunder. Varje kroppshandling står med sin starttid. 
   - Stämpeln rör sig högst 10,7 px per ruta.
   - Texten står 3,03 s, och loopen möts.
   - Inga låga ljud och inga fotsteg.
-- **Flimmer** (`film-v11/flimmer-v11-med-klippen.txt`): **0 fällda rutor** (största 1 927 px av högst 2 000).
+- **Flimmer** (`film-v11/flimmer-v11-med-klippen.txt`): **0 fällda rutor** (största 1 936 px av högst 2 000).
   - Verktyget har fått veta var klippen ligger (`regions-shots.jsonl`, från tidslinjen).
   - Utan klippen (`flimmer-v11.txt`) fälls bara rutorna 306, 351 och 921. Var och en är sista rutan före ett klipp (307, 352 och 922), där rutan före och rutan efter tillhör olika bilder.
-- **Flimmer i krokklippen:** 1 733 px i (d), och 1 169 px i (b) med dess klipp kända (`regions-krok-b.jsonl`). 0 fällda rutor.
+- **Flimmer i krokklippen**, med klippen kända (`regions-krok-d.jsonl`, `regions-krok-b.jsonl`): 1 131 px i (d) och 1 170 px i (b), alltså 0 fällda rutor.
 - **Ingång** (`ingangskontroller-v11.txt`):
   - ljud i ruta 1;
   - texten har 6 ord på 3,0 s, alltså 1,5 s per rad;
   - bilderna i sekund 0–10 är 1,4–2,2 s långa;
   - loopen ändrar 2,7 % av bilden.
 - **ElevenLabs:** 3 589 av 40 000, oförändrad.
-- **En nionde oberoende granskare** granskar den här filen. Svaret skickas separat.
+- **En tionde oberoende granskare** granskar den här filen. Svaret skickas separat.
 
 ## Att ta ställning till
 

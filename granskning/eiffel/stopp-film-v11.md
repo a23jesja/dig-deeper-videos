@@ -3,13 +3,13 @@
 ## Filer
 
 - **Filmen:** `leverans/eiffel/who-sold-the-eiffel-tower-in-1925-v11.mp4`
-  - 1080×1920, 30 fps, 33,16 s, med ljud, 55 919 262 B.
-  - md5 4a6f17b929301e3d5d746ae9e03b8697 (`md5-v11.txt`).
-  - **Bithastigheten är 13,3 Mbit/s**, mätt med ffprobe på videoströmmen.
-- **Telefonkopian:** `leverans/eiffel/who-sold-the-eiffel-tower-in-1925-v11-telefon.mp4`, 4,7 MB, md5 a95769586cd4286401856d427296eec2.
+  - 1080×1920, 30 fps, 33,16 s, med ljud, 55 458 832 B.
+  - md5 79b58bd44adf4879a118a44a574bbcab (`md5-v11.txt`).
+  - **Bithastigheten är 13,2 Mbit/s**, mätt med ffprobe på videoströmmen.
+- **Telefonkopian:** `leverans/eiffel/who-sold-the-eiffel-tower-in-1925-v11-telefon.mp4`, 4,6 MB, md5 2c11f92c3bd7e46ac9edad9fa97ab419.
 - **Krokklippen:**
-  - `krok-d-v11.mp4`: md5 ca16ed921a55834cfe1fe7f22cba4a61, 15,2 Mbit/s. Stämpelbilden är nu 1,5 s (var 1,6).
-  - `krok-b-v11.mp4`: md5 e840552481c37c7ebb6644829b14d71f, 15,1 Mbit/s. Den har nu klippet 11a/11b.
+  - `krok-d-v11.mp4`: md5 857ffc8b8884dbb0258308f1ce4ba6a0, 14,9 Mbit/s. Stämpelbilden är nu 1,5 s (var 1,6).
+  - `krok-b-v11.mp4`: md5 4257c6bc9c33f113c1bf8ccfa24894ee, 15,6 Mbit/s. Texten går fri från båda mössorna. Den har nu klippet 11a/11b.
 - **Arken**, alla i `granskning/eiffel/film-v11/`:
   - `kontaktark-2-rutor-per-sekund.jpg`;
   - `ark-360px-en-ruta-per-sekund.jpg`;
@@ -27,7 +27,18 @@
 
 **Det frysta utseendet** är orört: `git diff ad1a161` ger 0 rader i designs, rig, clips, ink, stage och alcatraz/.
 
-**Granskningen av v11 har skett i sju omgångar.** Ingen av versionerna har skickats till dig.
+**Granskningen av v11 har skett i åtta omgångar.** Ingen av versionerna har skickats till dig.
+
+**Den sjunde oberoende granskningen** (md5 4a6f…) fällde den tredje näven igen, i nästan alla bilder med papper. Felet var äldre än min regel om hakan: riggens egna nävar sitter där armarna slutar, en bit utanför papperets kant. Det syns redan i v6 (bild 6). Granskningen fällde också krok-b:s text, som låg över bedragarens mössa.
+
+**Rättningarna:**
+- **Papperet** görs nu lika brett som avståndet mellan riggens händer plus en näve på varje sida. Det täcker riggens nävar, och de ritade händerna håller kanterna i nävarnas höjd.
+- **Greppet** sänks högst 20 enheter, och lyften är mindre eller vända till sänkningar där överkanten annars skulle nå hakan. En kontroll i koden (`CHIN_SHORT`) visar 0 kvar i alla bilder.
+- **11a och 11b** står lägre i bilden, så att krok-b:s text går fri.
+
+Se `papper-och-hakor.jpg`.
+
+
 
 **Den sjätte oberoende granskningen** (md5 e583…) fällde:
 - **en tredje knytnäve vid papperen i de vinklade greppen.** Min regel om hakan hade flyttat greppet lägre än armarna når, och riggens egna nävar syntes bredvid papperet;
@@ -36,7 +47,13 @@
 
 **Rättningarna:**
 - **Greppet** ligger där armarna når, och papperet hänger lägre i händerna (högst 70 enheter), så att överkanten ändå hålls minst 24 under hakan. Se `papper-och-hakor.jpg`.
-- **Lyften** är 24–30 enheter och syns: öppningen 30, tidningen −50, bild 6 30, 7a 30, 11a 26, 16a 28 och bild 18 24.
+- **Lyften** (rättade igen efter den sjunde granskningen):
+  - öppningen sänker papperet mot oss, −28;
+  - tidningen −50;
+  - bild 6 20 och 7a 18;
+  - 11a 26;
+  - bild 15 och 16a sänker brevet, −18;
+  - bild 18 24.
 - **Bild 6** är vänd åt höger igen, med fönstret bakom sig. 7a ligger i vänstra tredjedelen.
 - **11a** står lägre i bilden, så att krok-b:s text går fri från mössan.
 
@@ -142,7 +159,7 @@ Tiderna gäller filmen i sekunder. Varje kroppshandling står med sin starttid. 
 
 | # | Tid | Replik | I fokus, ansikte | Kroppshandlingar (start, s) | Höjd | Längst utan (s) | Utan figur (s) |
 |---|---|---|---|---|---|---|---|
-| 2 | 0–2,17 | This man sold the Eiffel Tower. | bedragaren, belåten → förtjust | lyfter SOLD-papperet mot oss, 30 enheter (04) **0,00**; gungar belåtet åt sidan 1,05 | 60 % | 1,1 | 0 |
+| 2 | 0–2,17 | This man sold the Eiffel Tower. | bedragaren, belåten → förtjust | för fram SOLD-papperet mot oss, ned 28 enheter (04) **0,00**; gungar belåtet åt sidan 1,05 | 60 % | 1,1 | 0 |
 | 1 | 2,17–3,67 | It was never his. | bedragarens hand | stämpeln lyfts 2,27 och lyfts sedan uppåt och åt höger 2,67, så att SOLD syns | (handen) | 1,0 | 1,50 (handen) |
 | 3 | 3,67–5,23 | A newspaper said… | bedragaren, belåten → förtjust | sänker tidningen 40 px (04) 3,87 | 76 % | 1,4 | 0 |
 | 4 | 5,23–6,68 | …cost too much to fix. | ingen (tidningens bild) | (det rostiga tornet) | – | – | 1,45 |
@@ -180,17 +197,17 @@ Tiderna gäller filmen i sekunder. Varje kroppshandling står med sin starttid. 
   - Stämpeln rör sig högst 10,7 px per ruta.
   - Texten står 3,03 s, och loopen möts.
   - Inga låga ljud och inga fotsteg.
-- **Flimmer** (`film-v11/flimmer-v11-med-klippen.txt`): **0 fällda rutor** (största 1 929 px av högst 2 000).
+- **Flimmer** (`film-v11/flimmer-v11-med-klippen.txt`): **0 fällda rutor** (största 1 942 px av högst 2 000).
   - Verktyget har fått veta var klippen ligger (`regions-shots.jsonl`, från tidslinjen).
   - Utan klippen (`flimmer-v11.txt`) fälls bara rutorna 351 och 921. Båda är sista rutan före ett klipp (352 och 922), där rutan före och rutan efter tillhör olika bilder.
-- **Flimmer i krokklippen:** 916 px i (d) och 1 395 px i (b), alltså 0 fällda rutor.
+- **Flimmer i krokklippen:** 800 px i (d) och 1 048 px i (b), alltså 0 fällda rutor.
 - **Ingång** (`ingangskontroller-v11.txt`):
   - ljud i ruta 1;
   - texten har 6 ord på 3,0 s, alltså 1,5 s per rad;
   - bilderna i sekund 0–10 är 1,4–2,2 s långa;
   - loopen ändrar 2,9 % av bilden.
 - **ElevenLabs:** 3 589 av 40 000, oförändrad.
-- **En sjunde oberoende granskare** granskar den här filen. Svaret skickas separat.
+- **En åttonde oberoende granskare** granskar den här filen. Svaret skickas separat.
 
 ## Att ta ställning till
 

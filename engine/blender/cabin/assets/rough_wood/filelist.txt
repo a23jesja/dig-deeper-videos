@@ -1,0 +1,6 @@
+rough_wood_diff_2k.jpg	2223327	f5f9c55696f047ceaa49dc97c5aa5526	https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/rough_wood/rough_wood_diff_2k.jpg
+rough_wood_nor_gl_2k.jpg	2520021	62594f2d00eb246581b9d4fde30209f1	https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/rough_wood/rough_wood_nor_gl_2k.jpg
+rough_wood_rough_2k.jpg	810338	832d6d549a8e76c16b9af2586f429d6c	https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/rough_wood/rough_wood_rough_2k.jpg
+rough_wood_ao_2k.jpg	1542203	e75813ed06185a5f1cecd4b6e2c082f0	https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/rough_wood/rough_wood_ao_2k.jpg
+rough_wood_arm_2k.jpg	575486	2f6ee37ee8810aeeb72a14a7d345ba9f	https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/rough_wood/rough_wood_arm_2k.jpg
+rough_wood_disp_2k.jpg	418227	4e04c41245146e21ca500ff72eac74d9	https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/rough_wood/rough_wood_disp_2k.jpg

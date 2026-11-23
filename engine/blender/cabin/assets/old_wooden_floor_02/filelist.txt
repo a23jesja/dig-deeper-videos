@@ -1,0 +1,6 @@
+old_wooden_floor_02_diff_2k.jpg	3473257	67d884bf7bd011fac3bb711db9f1baa3	https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/old_wooden_floor_02/old_wooden_floor_02_diff_2k.jpg
+old_wooden_floor_02_nor_gl_2k.jpg	2455839	145e5193a9e3945d959fa101bbbb4c9b	https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/old_wooden_floor_02/old_wooden_floor_02_nor_gl_2k.jpg
+old_wooden_floor_02_rough_2k.jpg	1205461	6feeaa79b245928f53ac54133e0ef562	https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/old_wooden_floor_02/old_wooden_floor_02_rough_2k.jpg
+old_wooden_floor_02_ao_2k.jpg	1885883	520bcf08e09a4006bbd6c70b9ae6319f	https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/old_wooden_floor_02/old_wooden_floor_02_ao_2k.jpg
+old_wooden_floor_02_arm_2k.jpg	1849709	1631f83d268005dddf62f85905c8f7c5	https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/old_wooden_floor_02/old_wooden_floor_02_arm_2k.jpg
+old_wooden_floor_02_disp_2k.jpg	477541	106e32d70d8b13f9ac450695a58b9d2f	https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/old_wooden_floor_02/old_wooden_floor_02_disp_2k.jpg

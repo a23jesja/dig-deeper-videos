@@ -1,0 +1,6 @@
+dark_wooden_planks_diff_2k.jpg	2884395	e6ae2fe585184c16343c56b833eddbf8	https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/dark_wooden_planks/dark_wooden_planks_diff_2k.jpg
+dark_wooden_planks_nor_gl_2k.jpg	2930852	c7b2e77045b0983cd7c9c408c0361a59	https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/dark_wooden_planks/dark_wooden_planks_nor_gl_2k.jpg
+dark_wooden_planks_rough_2k.jpg	2737535	9999def4fb6e250016bb21e2d4625a55	https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/dark_wooden_planks/dark_wooden_planks_rough_2k.jpg
+dark_wooden_planks_ao_2k.jpg	1185013	fe00f4b36579ced73848bc77fb9903c0	https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/dark_wooden_planks/dark_wooden_planks_ao_2k.jpg
+dark_wooden_planks_arm_2k.jpg	3171369	7e25bc0cd9f2cb69bdd47b81c6b31a97	https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/dark_wooden_planks/dark_wooden_planks_arm_2k.jpg
+dark_wooden_planks_disp_2k.jpg	505826	71a4233192088778f4ef5a04fe5ab80f	https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/dark_wooden_planks/dark_wooden_planks_disp_2k.jpg

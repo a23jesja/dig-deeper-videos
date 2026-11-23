@@ -1,0 +1,5 @@
+carved_wooden_plate_1k.gltf	2836	c4866bc4fcdf070b992f9b35acf8d13e	https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/carved_wooden_plate/carved_wooden_plate_1k.gltf
+textures/carved_wooden_plate_diff_1k.jpg	476516	f4c0f569c128db22906a209905cf3e90	https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/carved_wooden_plate/carved_wooden_plate_diff_1k.jpg
+textures/carved_wooden_plate_arm_1k.jpg	450417	e9a523f6b0a9851b7b9e9855fa83f896	https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/carved_wooden_plate/carved_wooden_plate_arm_1k.jpg
+textures/carved_wooden_plate_nor_gl_1k.jpg	582309	b492a0465ff80fc5aff3433991fdc554	https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/carved_wooden_plate/carved_wooden_plate_nor_gl_1k.jpg
+carved_wooden_plate.bin	52160	70499c8019359d859577d9f7eef46091	https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/carved_wooden_plate/carved_wooden_plate.bin

@@ -1,0 +1,5 @@
+wooden_candlestick_1k.gltf	2799	26894e96c7c914a995c3a5151c875a4e	https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/wooden_candlestick/wooden_candlestick_1k.gltf
+textures/wooden_candlestick_diff_1k.jpg	768160	8255433d6733f67ccb22261a762387b7	https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/wooden_candlestick/wooden_candlestick_diff_1k.jpg
+textures/wooden_candlestick_nor_gl_1k.jpg	530930	a38b0c3b142db55c9bc827f22d890b6a	https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/wooden_candlestick/wooden_candlestick_nor_gl_1k.jpg
+wooden_candlestick.bin	6177600	7558341c1d272937b6ca9e18ccee8ce2	https://dl.polyhaven.org/file/ph-assets/Models/gltf/4k/wooden_candlestick/wooden_candlestick.bin
+textures/wooden_candlestick_arm_1k.jpg	949583	5415bd35901d9f9fd088501c6dfcdfc6	https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/wooden_candlestick/wooden_candlestick_arm_1k.jpg

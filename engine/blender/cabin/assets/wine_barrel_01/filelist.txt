@@ -1,0 +1,5 @@
+wine_barrel_01_1k.gltf	6673	5397e6d959dd3ef20d1fc14436d0eb70	https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/wine_barrel_01/wine_barrel_01_1k.gltf
+wine_barrel_01.bin	385912	84f578460020912056a1e3fbe3ec1b97	https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/wine_barrel_01/wine_barrel_01.bin
+textures/wine_barrel_01_diff_1k.jpg	195980	fdea9538acf01a04a61626919a84b3fb	https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/wine_barrel_01/wine_barrel_01_diff_1k.jpg
+textures/wine_barrel_01_arm_1k.jpg	172531	2f0cc81ac07fdbe8c22927feac722927	https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/wine_barrel_01/wine_barrel_01_arm_1k.jpg
+textures/wine_barrel_01_nor_gl_1k.jpg	163587	6b3ce558fa74d3760fa0192dfc4564a3	https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/wine_barrel_01/wine_barrel_01_nor_gl_1k.jpg

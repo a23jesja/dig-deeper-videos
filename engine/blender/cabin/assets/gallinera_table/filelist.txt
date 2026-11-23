@@ -1,0 +1,5 @@
+gallinera_table_1k.gltf	5632	1eaaadfdefe54461f1bd5cbc00ea2eab	https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/gallinera_table/gallinera_table_1k.gltf
+textures/gallinera_table_diff_1k.jpg	463239	27b6f5cbc368e95208d20abb00e6765c	https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/gallinera_table/gallinera_table_diff_1k.jpg
+textures/gallinera_table_nor_gl_1k.jpg	612683	b9a47910678cff4dcb9ad45c9e6a252c	https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/gallinera_table/gallinera_table_nor_gl_1k.jpg
+textures/gallinera_table_arm_1k.jpg	566556	a6602d77630739efa5873959f5f18e19	https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/gallinera_table/gallinera_table_arm_1k.jpg
+gallinera_table.bin	190608	a9819f97fb9124dd2b0745bdab88bbff	https://dl.polyhaven.org/file/ph-assets/Models/gltf/4k/gallinera_table/gallinera_table.bin

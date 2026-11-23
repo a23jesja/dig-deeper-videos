@@ -1,0 +1,6 @@
+beam_wall_01_diff_2k.jpg	858270	0d39a021dd309ad98840122dc613ac58	https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/beam_wall_01/beam_wall_01_diff_2k.jpg
+beam_wall_01_nor_gl_2k.jpg	487608	2a8bfaada245ac43afda4bc639f47c82	https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/beam_wall_01/beam_wall_01_nor_gl_2k.jpg
+beam_wall_01_rough_2k.jpg	386250	5097ba020a79446171ceb0388d929e8f	https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/beam_wall_01/beam_wall_01_rough_2k.jpg
+beam_wall_01_ao_2k.jpg	523105	1efd3a31392e58e44ffd585d5b8592d9	https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/beam_wall_01/beam_wall_01_ao_2k.jpg
+beam_wall_01_arm_2k.jpg	393337	1532585d4d050923af4c284dcb6a336a	https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/beam_wall_01/beam_wall_01_arm_2k.jpg
+beam_wall_01_disp_2k.jpg	164362	36f3a00bec02e38be6756f883d1b3f16	https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/beam_wall_01/beam_wall_01_disp_2k.jpg

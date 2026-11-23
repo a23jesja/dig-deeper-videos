@@ -1,0 +1,5 @@
+wooden_stool_01_1k.gltf	2715	6a3c9169ce7ade1796efca8b88c75c50	https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/wooden_stool_01/wooden_stool_01_1k.gltf
+textures/wooden_stool_01_diff_1k.jpg	233863	11e0ab4da421bf248e8d9de2c34a95fb	https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/wooden_stool_01/wooden_stool_01_diff_1k.jpg
+textures/wooden_stool_01_rough_1k.jpg	203406	339c0ab3c8c1618a0ebcd281004ea5ba	https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/wooden_stool_01/wooden_stool_01_rough_1k.jpg
+wooden_stool_01.bin	290924	883e9617a69e90be7e19447dca83041c	https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/wooden_stool_01/wooden_stool_01.bin
+textures/wooden_stool_01_nor_gl_1k.jpg	230812	99541327d77d7f8a740aad45ff86760f	https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/wooden_stool_01/wooden_stool_01_nor_gl_1k.jpg

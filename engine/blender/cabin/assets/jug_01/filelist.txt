@@ -1,0 +1,5 @@
+jug_01_1k.gltf	2612	b8b3c0c9faf48e2370485a04288da9c4	https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/jug_01/jug_01_1k.gltf
+jug_01.bin	137084	f4818dd15e25681e1fcf718c9c488998	https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/jug_01/jug_01.bin
+textures/jug_01_diff_1k.jpg	423757	ffe6e4999d473e6969c1432fa1ea5e21	https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/jug_01/jug_01_diff_1k.jpg
+textures/jug_01_nor_gl_1k.jpg	86094	51321fce3679b61a41c9267f18d5ef12	https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/jug_01/jug_01_nor_gl_1k.jpg
+textures/jug_01_arm_1k.jpg	578188	ca8d04eb674fb6c77582383cde180319	https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/jug_01/jug_01_arm_1k.jpg

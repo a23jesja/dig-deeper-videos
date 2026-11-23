@@ -1,0 +1,5 @@
+treasure_chest_1k.gltf	8584	7bfc4b335cff3e2641c8b9e55dbee0a2	https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/treasure_chest/treasure_chest_1k.gltf
+textures/treasure_chest_arm_1k.jpg	958484	ffb1a453af7e91fb63c1ec51da29832a	https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/treasure_chest/treasure_chest_arm_1k.jpg
+textures/treasure_chest_diff_1k.jpg	812089	59a684377b91eed5cb0cf44fad6b1089	https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/treasure_chest/treasure_chest_diff_1k.jpg
+textures/treasure_chest_nor_gl_1k.jpg	893221	5ce2977f7417f17575b92873a56a3c4f	https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/treasure_chest/treasure_chest_nor_gl_1k.jpg
+treasure_chest.bin	2811372	c955b1084bb3f7c8cea414bdf1a89845	https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/treasure_chest/treasure_chest.bin

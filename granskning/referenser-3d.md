@@ -4,7 +4,7 @@ Described in our own words from screen recordings Jesper sent in chat. No stills
 them are copied or stored here. Use this as the measuring stick: for every shot of ours, ask whether it could sit
 in one of these videos. Numbers are estimates from contact sheets at 2 frames per second.
 
-## What all four share
+## What all of them share
 
 - **A figure in focus about 90 % of the time.** Shots without a figure are short (under 2 s): a map, a sign, a
   vehicle in motion, an object close-up.
@@ -26,7 +26,7 @@ in one of these videos. Numbers are estimates from contact sheets at 2 frames pe
 |---|---|---|---|---|
 | Builder at the steps | 60-80 % | slow push-in, slightly low | warm sun from the side, columns blurred | swings a hammer, then measures with a folding rule, smug grin |
 | King climbs | 80-100 % (cut at chest or legs) | low angle, follows him | same warm light | steps up, trips on one step, falls forward |
-| King reacts | 50-70 % | over the builder's shoulder (builder's back as a dark shape in the foreground) | sunlit arch behind | face goes red, then purple with small flames, shouts a line |
+| King reacts | 50-70 % | over the builder's shoulder (his back drawn in the foreground: the back of his cap and his hair, his overalls, in the scene's light and a little darker and softer; not a black cut-out) | sunlit arch behind | face goes red, then purple with small flames, shouts a line |
 | Guards | 60 % | medium two-shot | darker corridor | one winks, the other stares |
 
 Faces: very large expression changes (colour change, flames, sweat, grin). Props: stone steps with wear, columns,
@@ -67,6 +67,23 @@ Rigid things (planes) carry the action; people act only with their faces in the 
 | Aerial map | tiny figures | top-down drift | soft | river, bridge, city and two armies |
 
 Crowds: many small simple figures in wide shots, two or three faces in close shots.
+
+## 5. The soldier who hid that she was a girl (sent again by Jesper on 23 Nov evening with the other four as mp4)
+
+Fully flat 2D (not 3D), but the acting and framing level is the same and is part of the bar:
+
+| Shot | Figure height | Camera | Light and depth | What happens |
+|---|---|---|---|---|
+| Soldiers in a trench | 40-50 %, three in a row | slow slide | dusk sky, fires behind | they fire, smoke and dirt fly |
+| The soldier, close | face 60-90 % of the width | push-in | same dusk | a wink, then a worried look with a sweat drop, then dirt hits his face, eyes wide |
+| Over the shoulder at the doctor's tent | doctor 30 %, shoulder in front 40 % | still | daylight | the doctor in the door |
+| The reveal | face fills the frame | quick push | same | squeezed eyes, then wide eyes and an open mouth, then a sly grin with blushing cheeks |
+| A village, a rider with a letter | 50-60 % | slow push | bright noon | the rider hands down the call-up paper, the girl's face falls |
+| The paper | a hand holding it fills the frame | push-in | warm | the document's seal |
+| At night by the mirror | 50 % | still | moon and a candle | scissors at her braid |
+
+What it adds to the bar: the face changes on almost every word (a wink, a sweat drop, eyes squeezed, wide eyes, a grin
+with blushing cheeks), close-ups where the face fills most of the frame, and a held object filling the frame.
 
 ## How to use this in a STOPP
 

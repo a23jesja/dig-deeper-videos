@@ -1,0 +1,5 @@
+wooden_crate_01_1k.gltf	5612	33df4d2ae00186d4b64e878466c9e22e	https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/wooden_crate_01/wooden_crate_01_1k.gltf
+textures/wooden_crate_01_diff_1k.jpg	711292	266e0462d06e77c5745f66e89820544f	https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/wooden_crate_01/wooden_crate_01_diff_1k.jpg
+textures/wooden_crate_01_nor_gl_1k.jpg	594076	e31626a1fcf6f7062c2ffd9fc982b942	https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/wooden_crate_01/wooden_crate_01_nor_gl_1k.jpg
+wooden_crate_01.bin	189408	8318f76b0c24b5538ce23051dbcb79a0	https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/wooden_crate_01/wooden_crate_01.bin
+textures/wooden_crate_01_arm_1k.jpg	776699	67c4aeb1154af98f95516b21ef62291c	https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/wooden_crate_01/wooden_crate_01_arm_1k.jpg

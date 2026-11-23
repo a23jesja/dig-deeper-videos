@@ -1,0 +1,5 @@
+seadogs_compass_1k.gltf	6060	0318994a5051b7db8510ba096f9b5f89	https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/seadogs_compass/seadogs_compass_1k.gltf
+textures/seadogs_compass_nor_gl_1k.jpg	674750	2cd1f97104e1d1b0f31585d356ccf0b7	https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/seadogs_compass/seadogs_compass_nor_gl_1k.jpg
+textures/seadogs_compass_diff_1k.jpg	727504	187da0dfe1009489de22f0386296e617	https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/seadogs_compass/seadogs_compass_diff_1k.jpg
+textures/seadogs_compass_arm_1k.jpg	901867	3a5bf5169a5360e13840818d5ae09f95	https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/seadogs_compass/seadogs_compass_arm_1k.jpg
+seadogs_compass.bin	385520	b982d0f8af97355aa77d920439b48823	https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/seadogs_compass/seadogs_compass.bin

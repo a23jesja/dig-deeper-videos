@@ -1,0 +1,5 @@
+barrel_03_1k.gltf	2638	204eec2159a38a1dc4b826ef255f9468	https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/barrel_03/barrel_03_1k.gltf
+textures/barrel_03_diff_1k.jpg	149997	6e77dc1af60c48787fd80dbbcf125040	https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/barrel_03/barrel_03_diff_1k.jpg
+barrel_03.bin	44872	6993587e3ef8e0603334e615ab292288	https://dl.polyhaven.org/file/ph-assets/Models/gltf/4k/barrel_03/barrel_03.bin
+textures/barrel_03_nor_gl_1k.jpg	126707	fd181365eb7397d55773987d145f0420	https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/barrel_03/barrel_03_nor_gl_1k.jpg
+textures/barrel_03_arm_1k.jpg	249922	3520338e30b4d257745db34848098688	https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/barrel_03/barrel_03_arm_1k.jpg

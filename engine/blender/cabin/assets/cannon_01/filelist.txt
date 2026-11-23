@@ -1,0 +1,5 @@
+cannon_01_1k.gltf	31121	6578cfbfc3bf42734ea00f9f1aa5e1e7	https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/cannon_01/cannon_01_1k.gltf
+textures/cannon_01_nor_gl_1k.jpg	758209	9933928d38f239cbb08dca4bc5dd7e90	https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/cannon_01/cannon_01_nor_gl_1k.jpg
+textures/cannon_01_diff_1k.jpg	729247	2eda5b5c98962d0be24762f3c2a34c41	https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/cannon_01/cannon_01_diff_1k.jpg
+textures/cannon_01_arm_1k.jpg	837622	cb18f80585f0bf5e8e9d97d9908ea063	https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/cannon_01/cannon_01_arm_1k.jpg
+cannon_01.bin	1143768	1fe0c83db682df2b970bb2e0df481e5a	https://dl.polyhaven.org/file/ph-assets/Models/gltf/8k/cannon_01/cannon_01.bin

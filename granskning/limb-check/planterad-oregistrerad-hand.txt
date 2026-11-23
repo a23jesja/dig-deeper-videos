@@ -1,0 +1,2 @@
+  GUARD src/craft/_planted_guard.ts:2: the rig's hand drawn outside the rig without a DRAWN.heldHands registration
+LIMB CHECK FAILED: the guard found 1 unregistered hand drawing(s)

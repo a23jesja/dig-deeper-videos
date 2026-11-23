@@ -10,8 +10,35 @@
 //   node scripts/limb_check.mjs eiffel|alcatraz|clips            the current code
 //   node scripts/limb_check.mjs eiffel@<commit>                    an earlier eiffel.ts (its drawn hands registered by the same rule)
 //   node scripts/limb_check.mjs eiffel --plant three|four          a planted third hand, or v10's two edge hands: must fail
+//   node scripts/limb_check.mjs eiffel --plant-guard               a planted unregistered hand in src/: the guard must fail
 import * as esbuild from "esbuild"; import fs from "node:fs"; import path from "node:path"; import { pathToFileURL } from "node:url"; import { execSync } from "node:child_process";
 const arg = process.argv[2] ?? "eiffel", plant = process.argv.includes("--plant") ? process.argv[process.argv.indexOf("--plant") + 1] : null;
+// ---- the guard (the reviewer, 23 Nov): the count above sees only hands the rig draws or the registry knows, so every file under src/ is read
+// first and the run fails on any hand drawn outside the rig without going through the registry:
+//   - a function that draws a hand (handBack, heldTorch, hand, or any function whose name ends in "hand"/"Hand" and fills a shape) must push to
+//     DRAWN.sleeves or DRAWN.heldHands in its body;
+//   - a call to the rig's own handAt(k, ...) or ink's hand(k, ...) outside the rig (designs/, ink.ts, rig.ts, stage/) must have a
+//     DRAWN.heldHands push within 3 lines;
+//   - handFingers (the fingers in front of a held thing) only after a handBack of the same hand within 3 lines.
+// --plant-guard adds a file with an unregistered hand: it must fail.
+{
+  const RIG = /^src[\\/]craft[\\/](designs[\\/]|ink\.ts$|rig\.ts$|stage[\\/])/;
+  const files = []; const walk = (d) => { for (const e of fs.readdirSync(d, { withFileTypes: true })) { const f = path.join(d, e.name); if (e.isDirectory()) walk(f); else if (/\.tsx?$/.test(e.name) && !/_limb_tmp/.test(e.name)) files.push(f); } }; walk("src");
+  const texts = files.map((f) => [path.relative(".", f), fs.readFileSync(f, "utf8")]);
+  if (process.argv.includes("--plant-guard")) texts.push(["src/craft/_planted_guard.ts", 'import { handAt } from "../designs/common";\nexport const planted = (k: any, sk: any) => { handAt(k, sk, "L", "fist", "#f7c9a3"); };\n']);
+  const gfaults = [], drawFns = {};
+  for (const [f, t] of texts) { if (RIG.test(f)) continue; const L = t.split("\n");
+    L.forEach((l, i) => { const m = l.match(/(?:export )?const (handBack|heldTorch|hand|\w*[hH]and) = \(/); if (!m || /handAt|handsAt|carried/.test(m[1])) return;
+      const body = L.slice(i, i + 12).join("\n"), draws = /\.fill\(|fl\(|ell\(|poly\(|handBack\(|rrect\(/.test(body); if (!draws) return;
+      drawFns[m[1]] = drawFns[m[1]] || []; drawFns[m[1]].push({ f, i: i + 1, reg: /DRAWN\.sleeves\.push|heldHands/.test(body) || (m[1] !== "handBack" && /handBack\(/.test(body.replace(/const \w+ = \(/, ""))) }); }); }      // (a helper drawing through a registering handBack is registered)
+  for (const [fn, defs] of Object.entries(drawFns)) for (const d of defs) if (!d.reg) gfaults.push(`${d.f}:${d.i}: ${fn} draws a hand without registering it (DRAWN.sleeves or DRAWN.heldHands)`);
+  for (const [f, t] of texts) { if (RIG.test(f)) continue; const L = t.split("\n");
+    L.forEach((l, i) => { const near = L.slice(Math.max(0, i - 3), i + 4).join("\n");
+      if (/\bhandAt\(k\b|[^.\w]hand\(k\b/.test(l) && !/heldHands/.test(near)) gfaults.push(`${f}:${i + 1}: the rig's hand drawn outside the rig without a DRAWN.heldHands registration`);
+      for (const m of l.matchAll(/handFingers\((\w+), (\w+)\)/g)) if (!new RegExp(`handBack\\(${m[1]}, ${m[2]}\\)`).test(L.slice(Math.max(0, i - 3), i + 1).join("\n"))) gfaults.push(`${f}:${i + 1}: handFingers(${m[2]}) without its handBack`); }); }
+  if (gfaults.length) { for (const g of gfaults) console.log("  GUARD " + g); console.log(`LIMB CHECK FAILED: the guard found ${gfaults.length} unregistered hand drawing(s)`); process.exit(1); }
+  console.log(`guard: ${texts.length} files read, every hand drawn outside the rig is registered`);
+}
 let eifFile = "../src/craft/eiffel/eiffel", tmp = null;
 if (arg.startsWith("eiffel@")) {
   // an earlier version: its file, with the hands its hold drew at the paper's edges registered (the same rule the current code follows)

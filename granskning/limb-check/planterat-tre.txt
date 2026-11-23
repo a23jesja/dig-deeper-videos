@@ -1,3 +1,4 @@
+guard: 39 files read, every hand drawn outside the rig is registered
 eiffel planted three: 22 shots, 1021 frames: e01 OK, e02 132 faults, e03 96 faults, e04 OK, e05 OK, e06 120 faults, e07 48 faults, e07b OK, e08 OK, e09 90 faults, e10 96 faults, e11 52 faults, e11b OK, e12 114 faults, e13 OK, e14 156 faults, e15 132 faults, e16 70 faults, e16b OK, e17 OK, e18 102 faults, e19 OK
   e02 con: 3 hands seen (2 on the arms, 1 drawn besides)  (66 frames)
   e02 con: a hand 3.1 hand lengths from the end of an arm (not joined to its arm)  (19 frames)

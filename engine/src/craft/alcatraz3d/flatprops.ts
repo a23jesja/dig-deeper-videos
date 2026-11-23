@@ -2,6 +2,7 @@
 // shut eyes, hair), the guard's hand holding the torch by the grip rule (palm and thumb behind, the shaft over the palm, four fingers round it
 // in front) and the light's cone with its soft spot. Used by the style test v12: the fake head as a picture on a card in the Blender set (so
 // the bars and the light treat it as a thing in the cell, and every face is flat Knopp), the hand and the torch over the plate.
+import { DRAWN } from "../alcatraz/alcatraz";
 type G = CanvasRenderingContext2D;
 type P2 = [number, number];
 const INK = "#241726", OL = 9;
@@ -42,7 +43,7 @@ export const cone = (g: G, x0: number, y0: number, x1: number, y1: number, r: nu
 
 /** v4's hand: the back (sleeve to past the picture's edge, cuff, palm, thumb) behind the held thing, the fingers in front of it */
 type HandSpec = { x: number; y: number; ang: number; s: number; sleeve: string; cuff?: string; curl?: number; thumb?: number; sleeveLen?: number };
-const handBack = (g: G, h: HandSpec) => { const L = h.sleeveLen ?? 3000;
+const handBack = (g: G, h: HandSpec) => { const L = h.sleeveLen ?? 3000; DRAWN.sleeves.push({ id: "flatprops", s: h.s, wrist: [h.x, h.y], end: [h.x - Math.cos(h.ang) * L * h.s, h.y - Math.sin(h.ang) * L * h.s] });      // (registered for scripts/limb_check.mjs, DAILY-RULES Impossible things 10)
   g.save(); g.translate(h.x, h.y); g.rotate(h.ang); g.scale(h.s, h.s);
   if (L > 0) poly(g, [[-L, -34], [-40, -40], [-40, 40], [-L, 34]], h.sleeve);
   if (L > 0) rrect(g, -52, -40, 26, 80, 8, h.cuff ?? "#fffaf0");

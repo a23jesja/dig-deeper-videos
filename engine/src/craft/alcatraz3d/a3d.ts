@@ -238,12 +238,18 @@ export const beamTo = (g: G, id: string, fr: number) => {
     const a3 = L.world, u = (BARS_Y - a3[1]) / ((T[1] - a3[1]) || 1e-6); if (!(u > 0 && u < 1)) continue;
     const M = project(id, fr, [a3[0] + (T[0] - a3[0]) * u, BARS_Y, a3[2] + (T[2] - a3[2]) * u]), ux = (q[0] - A[0]) / (len || 1), uy = (q[1] - A[1]) / (len || 1), nx = -uy, ny = ux;
     const tm = Math.hypot(M[0] - A[0], M[1] - A[1]) / (len || 1), w = (t: number) => (8 + (r - 8) * t / 0.85);      // (v12b: just the beam's own width: wider, the drawn bars showed beside it, the independent review)
+    // (v12d: the clip is the cone's own shape, as cone() draws it (its widest layer to 0.85 of the way, then the round glow at the spot),
+    //  from the bar plane on: a wider clip showed the drawn bars beside the beam, the independent review)
+    const E: P2 = [A[0] + ux * len * 0.85, A[1] + uy * len * 0.85], tmc = Math.min(tm, 0.85), Mc: P2 = [A[0] + ux * len * tmc, A[1] + uy * len * tmc];
     g.save(); g.setTransform(1, 0, 0, 1, 0, 0); g.beginPath();
-    g.moveTo(M[0] + nx * w(tm), M[1] + ny * w(tm)); g.lineTo(q[0] + nx * w(1) + ux * r * 1.7, q[1] + ny * w(1) + uy * r * 1.7); g.lineTo(q[0] - nx * w(1) + ux * r * 1.7, q[1] - ny * w(1) + uy * r * 1.7); g.lineTo(M[0] - nx * w(tm), M[1] - ny * w(tm)); g.closePath(); g.clip();
-    g.strokeStyle = "#3b414d"; g.lineCap = "butt";
+    g.moveTo(Mc[0] + nx * w(tmc), Mc[1] + ny * w(tmc)); g.lineTo(E[0] + nx * r, E[1] + ny * r); g.lineTo(E[0] - nx * r, E[1] - ny * r); g.lineTo(Mc[0] - nx * w(tmc), Mc[1] - ny * w(tmc)); g.closePath();
+    g.moveTo(q[0] + r * 1.3, q[1]); g.arc(q[0], q[1], r * 1.3, 0, Math.PI * 2); g.clip("nonzero");
+    // (the half-plane beyond the bar plane only: the part of the glow nearer the lamp than M is left alone)
+    g.beginPath(); g.moveTo(M[0] + nx * 4000, M[1] + ny * 4000); g.lineTo(M[0] + nx * 4000 + ux * 4000, M[1] + ny * 4000 + uy * 4000); g.lineTo(M[0] - nx * 4000 + ux * 4000, M[1] - ny * 4000 + uy * 4000); g.lineTo(M[0] - nx * 4000, M[1] - ny * 4000); g.closePath(); g.clip();
+    g.strokeStyle = "#1a1c2c"; g.lineCap = "butt";
     // (each bar as the plate draws it: a dark edge and a pale steel middle, so it runs on unbroken where it crosses the beam)
     for (let k = 0; k <= 19; k++) { const x = -1.19 + k * (2.38 / 19), b0 = project(id, fr, [x, BARS_Y, 0]), b1 = project(id, fr, [x, BARS_Y, 2.35]), bw = Math.max(1.5, 0.019 * FOCAL(id) / ((b0[2] + b1[2]) / 2));
-      for (const [col, ww] of [["#38323f", 1]] as [string, number][]) { g.strokeStyle = col; g.lineWidth = bw * ww; g.beginPath(); g.moveTo(b0[0], b0[1]); g.lineTo(b1[0], b1[1]); g.stroke(); } }
+      for (const [col, ww] of [["#18182a", 1]] as [string, number][])      /* (the plate's bar under the night tone, which is under this canvas) */ { g.strokeStyle = col; g.lineWidth = bw * ww; g.beginPath(); g.moveTo(b0[0], b0[1]); g.lineTo(b1[0], b1[1]); g.stroke(); } }
     g.strokeStyle = "#3b414d";
     for (const zb of [0.12, 1.05, 2.0]) { const p0 = project(id, fr, [-1.25, -0.02, zb + 0.025]), p1 = project(id, fr, [1.25, -0.02, zb + 0.025]); g.lineWidth = Math.max(2, 0.05 * FOCAL(id) / ((p0[2] + p1[2]) / 2)); g.beginPath(); g.moveTo(p0[0], p0[1]); g.lineTo(p1[0], p1[1]); g.stroke(); }
     g.restore(); } };

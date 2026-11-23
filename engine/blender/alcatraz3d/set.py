@@ -167,8 +167,9 @@ def cell(i, cx, z0=0.0, tag=""):
         # (v12: the fake head is the flat v4's drawing on a card standing on the pillow and turned to the lens, so every face is flat Knopp and
         #  the bars, the blanket and the light treat it as a thing in the cell: the automation session's condition for round 4. It stands in
         #  the gap between two bars, x -0.75, so the lens of shot 1 can look at it between them)
-        cf = SHOT0.get("cardFront", 0.0) if z0 < 5.0 else 0.0      # (v12b: not on the top tier, which the lens sees from below: moved forward it sat on the bed's head rail, the independent review)
-        dummy_card(f"dummy{i}{tag}", (cx + DUMMY[0] - CELLS[1], DUMMY[1] - cf, DUMMY[2] + z0 + 0.25 * cf), int(z0 // 2.8) % 3)      # (cardFront: shot 4's cards at the pillow's front, so its raised front no longer covers the chins)
+        cf = SHOT0.get("cardFront", 0.0) if z0 < 5.0 else 0.0
+        up = 0.07 if (z0 >= 5.0 and SHOT0.get("cardFront")) else 0.0      # (v12d: the top one a little higher on its pillow, so the bed's end rail no longer hides its chin, the independent review)      # (v12b: not on the top tier, which the lens sees from below: moved forward it sat on the bed's head rail, the independent review)
+        dummy_card(f"dummy{i}{tag}", (cx + DUMMY[0] - CELLS[1], DUMMY[1] - cf, DUMMY[2] + z0 + 0.25 * cf + up), int(z0 // 2.8) % 3)      # (cardFront: shot 4's cards at the pillow's front, so its raised front no longer covers the chins)
     else:
         sphere_(f"sleeper{i}", "bed", (cx - 0.81, by0 + 0.95, bz + 0.2), 0.22, BLANK, 1.45, 4.4, 0.5)      # the blanket pulled over a sleeper, head and all: one long hump
     # the fold-down table on the right wall, a tin cup and a book on it

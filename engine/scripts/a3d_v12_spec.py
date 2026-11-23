@@ -21,7 +21,7 @@ def edit(s):
     if i == "n02":      # simpler: the lamp held still on the head (no sweep); the cone whole from the lens to the head
         # (the lens moved left, so the guard stands right and the dummy far left of his lamp: the lamp covered the dummy in the first draft)
         s["torch"]["at"] = [HEAD, HEAD]; s["torch"]["blend"] = 0.9; s["cardGlow"] = 0.7; s["lamps"] = 0.45      # (v12b: night, the lit ceiling read as day)
-        s["cam"] = {"from": [[-0.30, -3.0, 1.35], [-0.27, -2.95, 1.34]], "at": [0.25, 0, 1.0], "lens": 16, "focus": "guard", "fstop": 3.2}
+        s["cam"] = {"from": [[-0.30, -3.0, 1.35], [-0.27, -2.95, 1.34]], "at": [0.34, 0, 1.22], "lens": 17.5, "focus": "guard", "fstop": 3.2}      # (v12d: less empty floor, the dummy larger, the independent review)
     if i == "n04":      # the three heads readable at phone size: the cards glow a little more, the spots on their faces
         for k, sp in enumerate(s["spots"]): sp["at"] = [HEAD[0], HEAD[1], HEAD[2] + k * 2.85]
         s["cardGlow"] = 1.3; s["cardScale"] = 1.5; s["lamps"] = 0.5; s["cardFront"] = 0.12; s["cam"]["lens"] = 19; s["cam"]["from"] = [[0.2, -6.5, 5.95], [0, -6.4, 5.92]]      # (further back: the gallery slab cut the bottom dummy's head)

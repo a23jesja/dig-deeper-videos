@@ -148,7 +148,7 @@ const PAPER = { x: 330, y: 760, w: 420, h: 540 }, STAMP_AT: P2 = [PAPER.x + PAPE
 const stampScene = (g: G, sx: number, sy: number, sold: boolean) => { tableTop(g); towerModel(g, 900, 1300, 460);
   towerPaper(g, PAPER.x, PAPER.y, PAPER.w, PAPER.h, sold);
   // (the hand on the stamp's handle from above-right, the forearm out through the picture's top edge)
-  const H: HandSpec = { id: "stamp", x: sx + 70, y: sy - 200, ang: Math.PI * 0.92, s: 1.35, sleeve: CON_SLEEVE, curl: 0.9, thumb: 0.5 };      // (the fist on the handle's top, the forearm out through the right edge, nearly level: at 0.8 pi the sleeve rose into the hook text's line ends, the fifth review)
+  const H: HandSpec = { id: "stamp", x: sx + 70, y: sy - 200, ang: Math.PI * 0.95, s: 1.35, sleeve: CON_SLEEVE, curl: 0.9, thumb: 0.5 };      // (the fist on the handle's top, the forearm out through the right edge, nearly level: at 0.8 pi the sleeve rose into the hook text's line ends, the fifth review)
   stamp(g, sx, sy, 1.2); DRAWN.things.push({ what: "stamp", at: [sx, sy], carried: true, look: "stamp" }); handBack(g, H); handFingers(g, H); };
 const stampCam = (t: number, sec: number) => ({ cx: 590, cy: 1010, z: lerp(1.55, 1.62, smooth(t / sec)) });
 const s01 = (): Shot => propShot("e01", "1 Stämpeln (SOLD)", 1.6, (g, t) => {
@@ -156,7 +156,7 @@ const s01 = (): Shot => propShot("e01", "1 Stämpeln (SOLD)", 1.6, (g, t) => {
   // (lifted 40 px over 12 frames, 0.1-0.5 s; then on up off the mark over 0.95 s, so the whole SOLD shows: at most about 10 px a frame on the
   //  screen; aside it went 26 px a frame, scripts/eiffel_check.mjs)
   const u = smooth((t - 0.1) / 0.4), v = smooth((t - 0.5) / 0.95);
-  stampScene(g, STAMP_AT[0] + 85 * v, STAMP_AT[1] - 40 * u - 75 * v, true);      // (up and to the right: straight up, the sleeve rose behind the hook text's lower line in opening (d), where the text stays 3 s over this shot, the sixth review)
+  stampScene(g, STAMP_AT[0] + 85 * v, STAMP_AT[1] - 40 * u - 95 * v, true);      // (up and to the right: straight up, the sleeve rose behind the hook text's lower line in opening (d), where the text stays 3 s over this shot, the sixth review)
 }, [{ t: 0, k: "gavel", g: 1.2 }, { t: 0, k: "tap", g: 1.0 }], (t) => stampCam(t, 1.6));
 const s19 = (): Shot => propShot("e19", "19 Stämpeln på väg ner (loopen)", 0.73, (g, t) => {
   // (from the lifted place down to 3 px above the paper at the last frame, 0.67 s; contact is frame 1 of the film)

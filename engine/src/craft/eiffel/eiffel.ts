@@ -219,7 +219,8 @@ const s05 = (): Shot => { const seconds = 1.6, m = figure("sir", -0.1, 62); m.st
   m.turn(-50, 0.75, 0.015); m.stand(seconds + 1);
   ease(m, -1, { head: [0, 2, 0] }, 0.01, { face: { ...FACES.smug, gaze: [0.5, 0] } });
   ease(m, 1.0, { head: [0, -3, -3], lean: -6 }, 0.35, { face: { ...FACES.delighted, gaze: [0, 0] } });
-  const cast: Cast[] = [{ name: "con", m, who: "sir", look: CON, seed: 9, armWipe: false, hands: { L: [[0, "relaxed"]], R: [[0, "relaxed"]] } }];
+  const cast: Cast[] = [{ name: "con", m, who: "sir", look: CON, seed: 1,      // (seed 1: no blink during the turn; with 9 a blink fell on the turn and the eyes shut as the head changed drawings, flicker on v11)
+     armWipe: false, hands: { L: [[0, "relaxed"]], R: [[0, "relaxed"]] } }];
   const tx0 = px(0.3), tx1 = px(0.84), c0 = fitCam(cast, seconds, 2.7, [], () => false, 0.06);
   const cam = (t: number) => ({ ...c0, z: c0.z * lerp(0.95, 1, smooth(t / seconds)) });
   return { id: "e05", title: "5 Bedragaren vid bordet", seconds, cast, events: {}, shot: "medium", camera: cam, groundProps: [{ name: "table", x0: tx0, x1: tx1 }],
@@ -289,8 +290,8 @@ const s06 = (): Shot => { const seconds = 2.0, m = figure("sir", 0, 36); m.stand
   // (the body actions, the review of v10: he lifts the sealed letter to show it (0.15-0.55 s), then bows like an official (1.0-1.35 s) and
   //  straightens (1.45-1.8 s))
   ease(m, -1, { head: [0, 6, 0] }, 0.01, { face: { ...FACES.smug, gaze: [0, 0.5] } });
-  ease(m, 1.0, { head: [0, 10, 0], lean: 12 }, 0.35, { face: { ...FACES.smug, gaze: [0, 0.3] } });
-  ease(m, 1.45, { head: [0, 2, 0], lean: 0 }, 0.35, { face: { ...FACES.delighted, gaze: [0, 0.1] } });
+  ease(m, 0.95, { head: [0, 8, 0], lean: 7 }, 0.5, { face: { ...FACES.smug, gaze: [0, 0.3] } });      // (7 degrees over 0.5 s each way: at 12 over 0.35 s the head moved 20 px a frame, flicker on v11)
+  ease(m, 1.5, { head: [0, 2, 0], lean: 0 }, 0.5, { face: { ...FACES.delighted, gaze: [0, 0.1] } });
   const h = holdSheet("con", m, 0, "letter", false, false, (t: number) => 22 * env(t, 0.15, 0.4, 99, 0.3), 240);
   const cast: Cast[] = [{ name: "con", m, who: "sir", look: CON, seed: 9, armWipe: false, hands: { L: [[0, "grip"]], R: [[0, "grip"]] }, pose: h.pose }];
   const c0 = fitCam(cast, seconds, ZH(0.63), [], () => false, 0.05), cam = (t: number) => ({ ...c0, z: c0.z * lerp(1, 0.98, smooth(t / seconds)) });
@@ -407,12 +408,13 @@ const s12 = (): Shot => { const seconds = 1.9, c = figure("sir", 0, -15); c.stan
 const s13 = (): Shot => { const seconds = 1.8, m = figure("sir", 0, 90, 0.45);
   // (the review of v10: the figure 60 % of the height, and the money as a thing he really carries: the bribe's envelope in a breast pocket low
   //  on the chest, seen from the side as he walks (it stood at his chin facing us and read as floating))
+  // (31 % of the height, not 60: a walking figure at 60 % moved 23 px a frame, over the 12 px limit (flicker on v11); v10's walk, which passed)
   m.walk(mt(m, 3.0), { step: 0.8, tau: 0.6, keep: true }); m.stand(4);
   ease(m, -1, { head: [0, 0, 0] }, 0.01, { face: { ...FACES.smug, gaze: [0.6, 0] } });
   const cast: Cast[] = [{ name: "con", m, who: "sir", look: CON, seed: 9, armWipe: false, hands: { L: [[0, "fist"]], R: [[0, "fist"]] } }];
-  const z = ZH(0.6), x0 = castAt(cast, 0)[0].x, cam = camFeet(x0 + 0.12 * FM.W / z, z, 0.82);
+  const z = ZH(0.31), x0 = castAt(cast, 0)[0].x, cam = camFeet(x0 - 0.2 * FM.W / z, z, 0.82);
   const v = viewOf(cam), door = { x: v.x1 - 250, top: LINE_TOP - 760, w: 300 };
-  return { id: "e13", title: "13 Han försvinner", seconds, cast, events: {}, shot: "full", camera: () => cam, offFrameOK: (n, t) => t > 0.5,
+  return { id: "e13", title: "13 Han försvinner", seconds, cast, events: {}, shot: "wide", camera: () => cam, offFrameOK: (n, t) => t > 0.5,
     ownBg: (g) => { suite(g, cam, SUITE); rect(g, door.x, door.top, door.w, LINE_TOP - door.top, "#8a7258");      // (a lit corridor beyond: his black suit vanished against a black opening, the fifth review)
       g.lineWidth = 16; g.strokeStyle = "#e9dcc4"; g.strokeRect(door.x - 8, door.top - 8, door.w + 16, LINE_TOP - door.top + 8); },
     over: (g, t, f) => { const nk = jointPx(f, "neck"), pel = jointPx(f, "pelvis"), x = nk[0] + (pel[0] - nk[0]) * 0.45 + 34, y = nk[1] + (pel[1] - nk[1]) * 0.42;
@@ -474,14 +476,16 @@ const s17 = (): Shot => { const seconds = 2.0;
   //  the height, the camera following him. The red funnel stands on the ship: on a white deckhouse on the deck, in front of the rail (behind the
   //  rail it stood in the sea))
   // (walking from the first frame to the last, staggered into a stride; at 0.9 s he looks back over his shoulder, the way he came, and grins)
+  // (31 % of the height and a still camera: at 60 % with the camera following, the deck and the rail moved 23 px a frame, over the 12 px
+  //  limit (flicker on v11); v10's walk, across the picture)
   const m = figure("sir", 0, 90, 0.45); m.walk(mt(m, 3.0), { step: 0.8, tau: 0.6, keep: true }); m.stand(4); const T_STOP = 99;
   ease(m, -1, { head: [0, 0, 0] }, 0.01, { face: { ...FACES.smug, gaze: [0.6, 0] } }); ease(m, 0.9, { head: [-42, -2, 0] }, 0.5, { face: { ...FACES.delighted, gaze: [-0.4, -0.1] } });
   const cast: Cast[] = [{ name: "con", m, who: "sir", look: CON, seed: 9, armWipe: false, hands: { L: [[0, "fist"]], R: [[0, "fist"]] } }];
-  const z = ZH(0.6), xs: number[] = []; for (let k = 0; k <= Math.ceil(seconds * 30) + 2; k++) xs.push(castAt(cast, k / 30)[0].x);
+  const z = ZH(0.31), xs: number[] = []; for (let k = 0; k <= Math.ceil(seconds * 30) + 2; k++) xs.push(castAt(cast, k / 30)[0].x);
   const xAt = (t: number) => { const k = Math.max(0, Math.min(xs.length - 1, t * 30)), i = Math.floor(k), f = k - i; return xs[i] + ((xs[Math.min(xs.length - 1, i + 1)] ?? xs[i]) - xs[i]) * f; };
-  const cam = (t: number) => camFeet(lerp(xs[0], xs[xs.length - 1], t / seconds) * 0.3 + xAt(t) * 0.7 + 30, z, 0.82);      // (following him: a steady pan, so nothing jerks with his steps)
-  const FX = xs[0] - 0.36 * FM.W / z;      // (the deckhouse and its funnel left of where he starts)
-  return { id: "e17", title: "17 Ångaren", seconds, cast, events: { T_STOP }, shot: "full", camera: cam,
+  void xAt; const CAM = camFeet((xs[0] + xs[xs.length - 1]) / 2, z, 0.82), cam = (_t: number) => CAM;
+  const FX = CAM.cx - 0.5 * FM.W / z + 120;      // (the deckhouse and its funnel at the left, behind where he starts)
+  return { id: "e17", title: "17 Ångaren", seconds, cast, events: { T_STOP }, shot: "wide", camera: cam,
     ownBg: (g, t) => { const c = cam(t), v = viewOf(c); const gr = g.createLinearGradient(0, v.y0, 0, LINE_TOP - 380); gr.addColorStop(0, "#5a6ea0"); gr.addColorStop(0.6, "#e9a07a"); gr.addColorStop(1, "#f7d2a0"); g.fillStyle = gr; g.fillRect(v.x0 - 400, v.y0 - 400, v.x1 - v.x0 + 800, LINE_TOP - 380 - v.y0 + 400);
       const sea = LINE_TOP - 380; g.fillStyle = "#2e4a6a"; g.fillRect(v.x0 - 400, sea, v.x1 - v.x0 + 800, 400);
       for (let r = 0; r < 4; r++) { const y = sea + 30 + r * 70; g.beginPath(); for (let x = v.x0 - 400; x <= v.x1 + 400; x += 30) { const yy = y + Math.sin(x / 70 + t * 1.6 + r) * 6; x === v.x0 - 400 ? g.moveTo(x, yy) : g.lineTo(x, yy); } g.lineWidth = 5; g.strokeStyle = "rgba(220,230,255,0.35)"; g.stroke(); }

@@ -148,7 +148,7 @@ const PAPER = { x: 330, y: 760, w: 420, h: 540 }, STAMP_AT: P2 = [PAPER.x + PAPE
 const stampScene = (g: G, sx: number, sy: number, sold: boolean) => { tableTop(g); towerModel(g, 900, 1300, 460);
   towerPaper(g, PAPER.x, PAPER.y, PAPER.w, PAPER.h, sold);
   // (the hand on the stamp's handle from above-right, the forearm out through the picture's top edge)
-  const H: HandSpec = { id: "stamp", x: sx + 70, y: sy - 200, ang: Math.PI * 0.8, s: 1.35, sleeve: CON_SLEEVE, curl: 0.9, thumb: 0.5 };      // (the fist on the handle's top, the forearm out through the right edge)
+  const H: HandSpec = { id: "stamp", x: sx + 70, y: sy - 200, ang: Math.PI * 0.92, s: 1.35, sleeve: CON_SLEEVE, curl: 0.9, thumb: 0.5 };      // (the fist on the handle's top, the forearm out through the right edge, nearly level: at 0.8 pi the sleeve rose into the hook text's line ends, the fifth review)
   stamp(g, sx, sy, 1.2); DRAWN.things.push({ what: "stamp", at: [sx, sy], carried: true, look: "stamp" }); handBack(g, H); handFingers(g, H); };
 const stampCam = (t: number, sec: number) => ({ cx: 590, cy: 1010, z: lerp(1.55, 1.62, smooth(t / sec)) });
 const s01 = (): Shot => propShot("e01", "1 Stämpeln (SOLD)", 1.6, (g, t) => {
@@ -373,7 +373,7 @@ const s13 = (): Shot => { const seconds = 1.8, x0 = 0.45, m = figure("sir", x0, 
   const z = (0.31 * FM.H) / (FM.PPM * heightOf("sir")), cam = { cx: px(0.0), cy: footY("sir") - (0.5 * FM.H - 0.06 * FM.H) / z + 0.0, z };
   const v = viewOf(cam), door = { x: v.x1 - 330, top: LINE_TOP - 700, w: 260 };
   return { id: "e13", title: "13 Han försvinner", seconds, cast, events: {}, shot: "wide", camera: () => cam, offFrameOK: (n, t) => t > 0.8,
-    ownBg: (g) => { suite(g, cam, SUITE); rect(g, door.x, door.top, door.w, LINE_TOP - door.top, "#1e1820"); g.lineWidth = 16; g.strokeStyle = "#e9dcc4"; g.strokeRect(door.x - 8, door.top - 8, door.w + 16, LINE_TOP - door.top + 8);
+    ownBg: (g) => { suite(g, cam, SUITE); rect(g, door.x, door.top, door.w, LINE_TOP - door.top, "#8a7258");      // (a lit corridor beyond: his black suit vanished against a black opening, the fifth review) g.lineWidth = 16; g.strokeStyle = "#e9dcc4"; g.strokeRect(door.x - 8, door.top - 8, door.w + 16, LINE_TOP - door.top + 8);
       /* (no door leaf in the room: he walked over it, the fourth review; the door stands open outwards, only the dark opening shows) */ },
     // (the money in his near hand as he walks: the dealer's cheque (squiggles, no numbers), drawn before him so his fist's fingers lie over it,
     //  following the hand along the forearm's line; the review: "he vanished with the money" showed only the bribe's envelope)

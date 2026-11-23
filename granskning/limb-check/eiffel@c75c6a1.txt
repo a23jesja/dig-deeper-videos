@@ -1,0 +1,16 @@
+eiffel@c75c6a1: 19 shots, 1024 frames: e01 OK, e02 45 faults, e03 16 faults, e04 OK, e05 OK, e06 120 faults, e07 OK, e08 OK, e09 OK, e10 48 faults, e11 22 faults, e12 OK, e13 OK, e14 138 faults, e15 66 faults, e16 18 faults, e17 OK, e18 51 faults, e19 OK
+  e02 con: a hand 1.0 hand lengths from the end of an arm (not joined to its arm)  (45 frames)
+  e03 con: a hand 1.0 hand lengths from the end of an arm (not joined to its arm)  (2 frames)
+  e03 con: a hand 1.1 hand lengths from the end of an arm (not joined to its arm)  (5 frames)
+  e03 con: a hand 1.2 hand lengths from the end of an arm (not joined to its arm)  (9 frames)
+  e06 con: 3 hands seen (1 on the arms, 2 drawn besides)  (60 frames)
+  e06 con: a hand 1.2 hand lengths from the end of an arm (not joined to its arm)  (18 frames)
+  e06 con: a hand 1.1 hand lengths from the end of an arm (not joined to its arm)  (42 frames)
+  e10 d1: 3 hands seen (1 on the arms, 2 drawn besides)  (48 frames)
+  e11 young: 3 hands seen (1 on the arms, 2 drawn besides)  (22 frames)
+  e14 young: a hand 1.1 hand lengths from the end of an arm (not joined to its arm)  (85 frames)
+  e14 young: a hand 1.0 hand lengths from the end of an arm (not joined to its arm)  (53 frames)
+  e15 grey: 3 hands seen (1 on the arms, 2 drawn besides)  (66 frames)
+  e16 grey: a hand 1.0 hand lengths from the end of an arm (not joined to its arm)  (18 frames)
+  e18 con: 3 hands seen (1 on the arms, 2 drawn besides)  (51 frames)
+LIMB CHECK FAILED: 524

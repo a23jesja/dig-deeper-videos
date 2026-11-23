@@ -8,6 +8,7 @@
 // the stamp's SOLD as a cartoon mark (the same word as the voice).
 import type { Pose } from "../rig";
 import type { Face, Look } from "../designs/common";
+import { handAt } from "../designs/common";
 import { ease, mt } from "../stage/acting";
 import { solve } from "../rig";
 import { GUARD } from "../clips/clips";
@@ -259,6 +260,8 @@ const pointer = (name: string, m: ReturnType<typeof figure>, sx: number, TW: P2,
 //    back round the side edge, the thumb over the front; the sheet's face (or its blank back) to us
 /** how far each hold's top edge still comes too near the chin, after the hold is lowered its most (filled as the shots are built) */
 export const CHIN_SHORT: Record<string, number> = {};
+/** the hand check's planted faults (scripts/limb_check.mjs sets them): one more hand beside a held paper, or the two edge hands of v10 */
+export const PLANT_HANDS = { three: false, four: false };
 const SHEET = { w: 150, h: 160 };      // (shorter than 04's chest, so the paper's top stays under the chin, the independent review)
 type Held = "letter" | "back" | "news" | "cheque" | "envelope" | "bid" | "sold";
 const newspaperHeld = (g: G, x: number, y: number, w: number, h: number) => { rect(g, x, y, w, h, "#eee6d2", OL * 0.8); squiggles(g, x + w * 0.1, y + h * 0.09, w * 0.8, 2, h * 0.05, "#2a2428", 4);      // (the paper's name as squiggles: a black band read as struck out, the review of v10)
@@ -306,16 +309,24 @@ const holdSheet = (name: string, m: ReturnType<typeof figure>, x: number, kind: 
   //  the drawn hands hold its edges at their height, so no rig fist shows beside the paper (a third hand, the sixth and seventh independent
   //  reviews of v11); the paper's width found once)
   const handsAt = (f: Fig): [P2, P2] => { const c = (sd: "L" | "R"): P2 => { const w = jointPx(f, "wr" + sd), q = jointPx(f, "tip" + sd); return [(w[0] + q[0]) / 2, (w[1] + q[1]) / 2]; }; return [c("L"), c("R")]; };
-  let PW = 0, HS = 1;
-  const over = (g: G, t: number, f: Fig) => { if (f.name !== name) return; const carry = fixed || LMAX !== 0, [cx0, cy0] = carry ? carried(f) : at(), hcy = cy0 - (carry ? 0 : lift(t)), cy = hcy + drop;
-    const HN = handsAt(f); if (!PW) { const f0 = castAt([{ name, m, who: "sir", pose: hold }], 0)[0], H0 = handsAt(f0), wl = jointPx(f0, "wrL"), tl = jointPx(f0, "tipL"); HS = Math.max(1, Math.hypot(tl[0] - wl[0], tl[1] - wl[1]) / 46); PW = Math.max(SHEET.w, Math.abs(H0[0][0] - H0[1][0]) + 2 * 26 * HS); }
-    const cx = (HN[0][0] + HN[1][0]) / 2, SW = PW, x0 = cx - SW / 2, y0 = cy - SHEET.h / 2; void cx0;
+  // (exactly two hands, the ones on his arms (DAILY-RULES, Impossible things 10; Jesper on v11: "3-4 händer"): the paper spans between the
+  //  rig's own two hands, its sides through their middles, and those same two hands are drawn once more over it, by the rig's own handAt at
+  //  the rig's own wrists, so the fingers lie on the paper's edge; no other hand is drawn. The drawn hands are registered (DRAWN.heldHands)
+  //  and the paper as a cover (DRAWN.covers) for scripts/limb_check.mjs)
+  let PW = 0;
+  const over = (g: G, t: number, f: Fig) => { if (f.name !== name) return; const carry = fixed || LMAX !== 0, [cx0, cy0] = carry ? carried(f) : at(), hcy = cy0 - (carry ? 0 : lift(t)), cy = hcy + drop; void cx0; void hcy;
+    const HN = handsAt(f); if (!PW) { const H0 = handsAt(castAt([{ name, m, who: "sir", pose: hold }], 0)[0]); PW = Math.max(90, Math.abs(H0[0][0] - H0[1][0])); }
+    const cx = (HN[0][0] + HN[1][0]) / 2, SW = PW, x0 = cx - SW / 2, y0 = cy - SHEET.h / 2;
     if (kind === "sold") towerPaper(g, x0 - 10, y0 - 10, SW + 20, SHEET.h + 20, true); else if (kind === "news") newspaperHeld(g, x0, y0, SW, SHEET.h); else if (kind === "cheque") cheque(g, x0 - 10, cy - 46, SW + 20, 92); else if (kind === "envelope") envelopeHeld(g, x0, y0, SW, SHEET.h);
-    else if (kind === "bid") { const bh = SHEET.h * 0.6, by = cy - bh / 2; rect(g, x0, by, SW, bh, "#f4ecd6", OL * 0.8); squiggles(g, x0 + SW * 0.1, by + bh * 0.18, SW * 0.8, 4, bh * 0.18, "#6a5a6a", 3.5); } else letter(g, x0, y0, SW, SHEET.h, kind === "back");      // (the bid shorter, so its top stays under his chin, the independent review)
-    for (const hp of HN) { const d = hp[0] < cx ? -1 : 1, ex = cx + d * SW / 2, hy = hp[1]; void hcy; g.save(); g.translate(ex, hy); g.scale(HS, HS);
-      g.beginPath(); g.moveTo(d * 20, -34); g.quadraticCurveTo(d * 30, 0, d * 20, 34); g.lineTo(-d * 6, 34); g.quadraticCurveTo(-d * 12, 0, -d * 6, -34); g.closePath(); g.fillStyle = SKIN; g.fill(); g.lineWidth = 7; g.strokeStyle = INK; g.stroke();
-      for (const yy of [-14, 2, 18]) { g.beginPath(); g.moveTo(-d * 4, yy); g.lineTo(d * 10, yy + 2); g.lineWidth = 3.5; g.stroke(); }
-      g.beginPath(); g.ellipse(-d * 22, -26, 18, 10, d * 0.35, 0, Math.PI * 2); g.fillStyle = SKIN; g.fill(); g.lineWidth = 6; g.stroke(); g.restore(); } };
+    else if (kind === "bid") { const bh = SHEET.h * 0.6, by = cy - bh / 2; rect(g, x0, by, SW, bh, "#f4ecd6", OL * 0.8); squiggles(g, x0 + SW * 0.1, by + bh * 0.18, SW * 0.8, 4, bh * 0.18, "#6a5a6a", 3.5); } else letter(g, x0, y0, SW, SHEET.h, kind === "back");
+    const RG = DRAWN as unknown as { heldHands?: { who: string; at: P2; rig: boolean }[]; covers?: { who: string; rect: [number, number, number, number] }[] };
+    RG.covers?.push({ who: name, rect: [x0 - (kind === "sold" || kind === "cheque" ? 10 : 0), y0, x0 + SW + (kind === "sold" || kind === "cheque" ? 10 : 0), y0 + SHEET.h] });
+    const sc = scaleOf(f.who); g.save(); g.translate(f.x, footY(f.who)); g.scale(sc, sc); const k = new Ink(g, D.ol);
+    for (const sd of ["L", "R"] as const) handAt(k, f.sk, sd, (sd === "L" ? f.o.handL : f.o.handR) ?? "relaxed", SKIN);
+    g.restore(); for (const hp of HN) RG.heldHands?.push({ who: name, at: hp, rig: true });
+    if (PLANT_HANDS.three) RG.heldHands?.push({ who: name, at: [x0 + SW + 60, cy + 40], rig: false });      // (the check's planted three-hand fault: one more hand beside the paper)
+    if (PLANT_HANDS.four) for (const d of [-1, 1]) RG.heldHands?.push({ who: name, at: [cx + d * (SW / 2 + 40), hcy], rig: false });      // (planted four hands: v10's two drawn hands at the paper's edges besides the rig's own)
+  };
   // (fixed: the hands carry the thing, so it moves with them as he breathes; the check's contact (the wrists at the thing's sides) holds by
   //  construction and is left out)
   if (fixed || LMAX !== 0) return { pose: hold, over, contacts: [] };

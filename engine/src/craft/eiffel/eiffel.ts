@@ -10,6 +10,7 @@ import type { Pose } from "../rig";
 import type { Face, Look } from "../designs/common";
 import { ease, mt } from "../stage/acting";
 import { solve } from "../rig";
+import { GUARD } from "../clips/clips";
 import { FM, D, figure, castAt, poseAt, jointPx, scaleOf, footY, fitCam, px, viewOf, reach, thighUnder, heightOf, type Clip, type Cast, type Fig } from "../clips/clipKit";
 import { DRAWN, SLEEVE } from "../alcatraz/alcatraz";
 import { Ink } from "../ink";
@@ -173,7 +174,7 @@ const s02 = (): Shot => { const seconds = 2.2, m = figure("sir", -0.15, 18); m.s
   // (a slow smug nod already under way in the first frame, for opening (c), which starts on this shot)
   // (the head's yaw 0 on a body turned 18: the face's yaw stays well under the front/three-quarter switch at 26.7; at 6 the nod's idle carried it
   //  over and the view turned back within a second, clip_check)
-  ease(m, -1, { head: [0, 0, 0] }, 0.01, { face: FACES.smug }); ease(m, -0.2, { head: [0, 6, 0] }, 0.6, { face: FACES.smug }); ease(m, 0.5, { head: [0, 1, 0] }, 0.7, { face: FACES.smug }); ease(m, 1.05, { head: [0, 3, -3], lean: -6 }, 0.45, { face: FACES.delighted });      // (the second body action: he leans back, pleased, and grins)
+  ease(m, -1, { head: [0, 0, 0] }, 0.01, { face: FACES.smug }); ease(m, -0.2, { head: [0, 6, 0] }, 0.6, { face: FACES.smug }); ease(m, 0.5, { head: [0, 1, 0] }, 0.7, { face: FACES.smug }); ease(m, 1.05, { head: [0, 3, -4], roll: 5 }, 0.45, { face: FACES.delighted });      // (the second body action: he sways to one side, pleased, and grins; a lean back does not show on a figure facing us, the independent review of v11)
   // (he holds up the stamped paper, the tower drawn on it with SOLD across, at his chest (04): the claim and his face together in frame 1; at
   //  phone size the face alone with the words left the claim to the text, the independent review)
   // (the review of v10: a body action before 1.0 s in opening (c): he lifts the SOLD paper toward us from the first frame (04's lift, 24 px over
@@ -214,11 +215,12 @@ const s04 = (): Shot => propShot("e04", "4 Tidningen: det rostiga tornet", 1.5, 
 
 // 5  "He was a con man.": the con man standing beside the suite's table (the newspaper on it), in 01's framing, smug, his mouth shut, no gesture.
 //    Camera: a slow push-in.
-const s05 = (): Shot => { const seconds = 1.6, m = figure("sir", -0.1, 56); m.stand(0.1);
-  // (the body actions, the review of v10: he turns from three-quarter to face us (03's turn, 0.1-0.85 s), then leans back, smug (1.0 s))
-  m.turn(-26, 0.7, 0.015); m.stand(seconds + 1);      // (56 to 30 degrees, inside the three-quarter drawing: through the switch to the front the face's redraw flickered at this size, v11)
+const s05 = (): Shot => { const seconds = 1.6, m = figure("sir", -0.1, 22);
+  // (the body actions, the review of v10: a smug sway to one side (0.15 s), then to the other with a grin (0.85 s); the turn switched the
+  //  torso's drawing and his tie vanished in one frame, the independent review of v11)
+  m.stand(seconds + 1);
   ease(m, -1, { head: [0, 2, 0] }, 0.01, { face: { ...FACES.smug, gaze: [0.5, 0] } });
-  ease(m, 1.0, { head: [0, -3, -3], lean: -6 }, 0.35, { face: { ...FACES.delighted, gaze: [0, 0] } });
+  ease(m, 0.15, { head: [0, 2, -4], roll: 5 }, 0.4, { face: { ...FACES.smug, gaze: [0.3, 0] } }); ease(m, 0.85, { head: [0, -2, 4], roll: -4 }, 0.45, { face: { ...FACES.delighted, gaze: [0, 0] } });
   const cast: Cast[] = [{ name: "con", m, who: "sir", look: CON, seed: 1,      // (seed 1: no blink during the turn; with 9 a blink fell on the turn and the eyes shut as the head changed drawings, flicker on v11)
      armWipe: false, hands: { L: [[0, "relaxed"]], R: [[0, "relaxed"]] } }];
   const tx0 = px(0.3), tx1 = px(0.84), c0 = fitCam(cast, seconds, 2.7, [], () => false, 0.06);
@@ -228,6 +230,17 @@ const s05 = (): Shot => { const seconds = 1.6, m = figure("sir", -0.1, 56); m.st
       g.save(); g.translate((tx0 + tx1) / 2, LINE_TOP - 432); g.rotate(-0.05); rect(g, -100, -14, 200, 14, "#eee6d2", OL * 0.6); g.restore(); } } as Shot; };
 
 /** the zoom at which a standing figure is `frac` of the picture's height (the review of v10: at least 0.6 alone, 0.45 in two- and three-shots) */
+/** 06's reaction (clips.ts c06): the hands come up at his sides, elbows out, palms out, in 0.2 s and out a little more in 0.16 s, the arms found
+ *  once from the pose as he holds them up (found each frame the arm's answer swaps) */
+const guard = (name: string, m: ReturnType<typeof figure>, xm: number, T: number) => {
+  const arms: Record<string, Pose> = {};
+  const armsAt = (out: number): Pose => { const key = String(out); if (arms[key]) return arms[key]; const { pose: p0, heading } = poseAt({ name, m, who: "sir" }, T + 0.6), x = px(xm), sc = scaleOf("sir");
+    const sk = solve(D.props("sir"), p0, heading), k = sk.j.skull as unknown as number[], kx = x + k[0] * sc, ky = footY("sir") + k[1] * sc;
+    const q = reach("sir", x, p0, heading, "R", [kx - out * sc, ky + 60 * sc], false, { elbowBelow: true });
+    return (arms[key] = reach("sir", x, q, heading, "L", [kx + (out + (out > 100 ? GUARD.farOut : 0)) * sc, ky + (GUARD.farDown > 66 ? GUARD.farDown : 66) * sc], false, { elbowBelow: true })); };
+  return (t: number, p: Pose): Pose => { const w1 = env(t, T, 0.2, 99, 0.1); if (w1 <= 0) return p; const a = armsAt(95), b = armsAt(150), w2 = env(t, T + 0.2, 0.16, 99, 0.1);
+    const g = { armL: lerpArm(a.armL, b.armL, w2), armR: lerpArm(a.armR, b.armR, w2) };
+    return { ...p, armL: lerpArm(p.armL, g.armL, w1), armR: lerpArm(p.armR, g.armR, w1) }; }; };
 const ZH = (frac: number) => (frac * FM.H) / (FM.PPM * heightOf("sir"));
 /** a camera whose ground line lies `feet` down the picture: the lower part free for the phone's buttons, no more than about 20 % */
 const camFeet = (cx: number, z: number, feet = 0.8) => ({ cx, cy: footY("sir") - ((feet - 0.5) * FM.H) / z, z });
@@ -313,23 +326,25 @@ const seatOf = (c: Cast) => { const g0 = castAt([c], 0.5)[0], s = scaleOf("sir")
 const benchTop = (cast: Cast[]) => Math.max(...cast.map((c) => seatOf(c).top));
 const bench = (g: G, x0: number, x1: number, top: number) => { rect(g, x0, top, x1 - x0, 30, "#6e4630"); for (const lx of [x0 + 20, (x0 + x1) / 2 - 11, x1 - 42]) { DRAWN.uprights.push({ what: "bench leg", foot: LINE_TOP, floor: LINE_TOP, x: lx }); rect(g, lx, top + 30, 22, LINE_TOP - top - 30, "#5a3826"); } };
 const BENCH_X = [-0.72, 0, 0.72];      // (0.53 m apart: at least 40 px between the figures' boxes, and the three large enough for a wide shot)
-const s07 = (): Shot => { const seconds = 1.5;
-  // (the review of v10: the con man in the picture with the dealers: he holds up the sealed letter to them (04's lift, 0.1-0.5 s) and the two
-  //  seated dealers react, each jerking back a little (06's jerk, 0.65 and 0.8 s); seated in profile they face him. Three figures need the
-  //  dealers 40 px apart (eiffel_check), so the figures are about 28 % of the height: at 45 % only two fit, a deviation in STOPP v11)
-  const DX = [0.06, 0.8], looks = [BENCH2, YOUNG];
-  const ms = DX.map((xm, i) => { const fc = i === 1 ? { ...FACES.delighted, gaze: [-0.5, 0] as [number, number] } : { ...FACES.calm, gaze: [-0.5, 0] as [number, number] }, mm = seated(`d${i}`, xm, [6, 0, 0], fc);
-    ease(mm, 0.6 + i * 0.15, { ...SIT, lean: 10, head: [2, -12, 0] } as Partial<Pose>, 0.24, { face: { ...fc, brow: 0.9, pupil: 0.8, gaze: [-0.8, -0.2] } }); return mm; });      // (a bigger jerk back, upright, the head up and the brows high: at lean 7 it did not read at 360 px)
-  const c = figure("sir", -0.62, 48); c.stand(seconds + 1);
-  ease(c, -1, { head: [-6, 2, 0] }, 0.01, { face: { ...FACES.smug, gaze: [0.6, 0.1] } }); ease(c, 0.9, { head: [-6, 4, -3] }, 0.35, { face: { ...FACES.delighted, gaze: [0.6, 0.1] } });
-  const h = holdSheet("con", c, -0.62, "letter", false, false, (t: number) => 14 * env(t, 0.1, 0.4, 99, 0.3));
-  const dealers: Cast[] = ms.map((mm, i) => ({ name: `d${i}`, m: mm, who: "sir", look: looks[i], seed: 30 + i, armWipe: false, pose: kneesHook(DX[i]), hands: { L: [[0, "fist"]], R: [[0, "fist"]] } } as Cast));
-  const cast: Cast[] = [{ name: "con", m: c, who: "sir", look: CON, seed: 9, armWipe: false, pose: h.pose, hands: { L: [[0, "grip"]], R: [[0, "grip"]] } }, ...dealers];
-  const seats = dealers.map(seatOf), top = Math.max(...seats.map((q) => q.top)); for (const q of seats) q.top = top;
+const s07 = (): Shot => { const seconds = 0.8, c = figure("sir", -0.2, 40); c.stand(seconds + 1);
+  // (7a, the review of v10 and the independent review of v11: shot 7 in two cuts within its 1.5 s, so each reads at 360 px and nothing is
+  //  small: the con man alone, turned to the dealers off the picture's right, lifts the sealed letter to show it (04's lift, 0-0.35 s))
+  ease(c, -1, { head: [-6, 2, 0] }, 0.01, { face: { ...FACES.smug, gaze: [0.7, 0.1] } }); ease(c, 0.35, { head: [-6, -2, -3] }, 0.3, { face: { ...FACES.delighted, gaze: [0.7, 0] } });
+  const h = holdSheet("con", c, -0.2, "letter", false, false, (t: number) => 26 * env(t, 0, 0.35, 99, 0.3));
+  const cast: Cast[] = [{ name: "con", m: c, who: "sir", look: CON, seed: 9, armWipe: false, pose: h.pose, hands: { L: [[0, "grip"]], R: [[0, "grip"]] } }];
+  const c0 = fitCam(cast, seconds, ZH(0.64), [], () => false, 0.05), cam = (t: number) => ({ ...c0, z: c0.z * lerp(0.98, 1, smooth(t / seconds)) });
+  return { id: "e07", title: "7a Han visar brevet", seconds, cast, events: {}, shot: "full", camera: cam, contacts: h.contacts, over: h.over, ownBg: (g, t) => suite(g, cam(t), SUITE) } as Shot; };
+const s07b = (): Shot => { const seconds = 0.8;
+  // (7b: the two dealers on the bench, both facing the con man off the picture's left, jerk back as they see the letter (06's jerk, 0.08 and
+  //  0.2 s), the brows high)
+  const DX = [0, 0.74], looks = [BENCH2, YOUNG];
+  const ms = DX.map((xm, i) => { const fc = i === 1 ? { ...FACES.delighted, gaze: [-0.6, 0] as [number, number] } : { ...FACES.calm, gaze: [-0.6, 0] as [number, number] }, mm = seated(`d${i}`, xm, [6, 0, 0], fc);
+    ease(mm, 0.08 + i * 0.12, { ...SIT, lean: 6, head: [2, -12, 0] } as Partial<Pose>, 0.22, { face: { ...fc, brow: 0.9, pupil: 0.8, gaze: [-0.8, -0.2] } }); return mm; });
+  const cast: Cast[] = ms.map((mm, i) => ({ name: `d${i}`, m: mm, who: "sir", look: looks[i], seed: 30 + i, armWipe: false, pose: kneesHook(DX[i]), hands: { L: [[0, "fist"]], R: [[0, "fist"]] } } as Cast));
+  const seats = cast.map(seatOf), top = Math.max(...seats.map((q) => q.top)); for (const q of seats) q.top = top;
   const x0 = Math.min(...seats.map((q) => q.x0)) - 10, x1 = Math.max(...seats.map((q) => q.x1)) + 10;
-  const c1 = fitCam(cast, seconds, ZH(0.5), [], () => false, 0.034), c0 = camFeet(c1.cx, c1.z, 0.8), cam = (t: number) => ({ ...c0, cx: c0.cx + lerp(-4, 4, smooth(t / seconds)) });
-  return { id: "e07", title: "7 Han visar brevet för handlarna", seconds, cast, events: {}, shot: "wide", camera: cam, seats, contacts: h.contacts, over: h.over,
-    ownBg: (g, t) => suite(g, cam(t), SUITE), back: (g) => bench(g, x0, x1, top) } as Shot; };
+  const c1 = fitCam(cast, seconds, ZH(0.62), [], () => false, 0.035), c0 = camFeet(c1.cx, c1.z, 0.8), cam = () => c0;
+  return { id: "e07b", title: "7b Handlarna rycker till", seconds, cast, events: {}, shot: "wide", camera: cam, seats, ownBg: (g) => suite(g, cam(), SUITE), back: (g) => bench(g, x0, x1, top) } as Shot; };
 
 // 8  he points out of the suite's window at the real tower, small and far off in it at his chest's height (05, the approved point: the eyes
 //    first, the arm up, the finger out under a second, down; a full shot, about 52 % of the height). Camera: still, a slow push-in.
@@ -366,11 +381,12 @@ const s09 = (): Shot => { const seconds = 1.5, m = seated("young", 0, [14, 2, 0]
 const s10 = (): Shot => { const seconds = 1.6;
   // (the review of v10: the winner and the man on his right, who faces him (seated in profile, all facing left): the winner lifts his bid (0.15 s),
   //  the loser jerks back and grimaces (06's jerk, 0.6 s), then leans in to look (1.05 s); two figures, large)
-  const DX = [0, 0.69], looks = [YOUNG, BENCH3];
+  const DX = [0, 0.74], looks = [YOUNG, BENCH3];
   const ms = DX.map((xm, i) => seated(`d${i}`, xm, [6, 0, 0], i === 0 ? { ...FACES.delighted, gaze: [-0.3, 0.2] } : { ...FACES.calm, gaze: [-0.8, 0.1] }));
   ease(ms[1], 0.6, { ...SIT, lean: 6, head: [12, -4, 0] } as Partial<Pose>, 0.22, { face: { ...FACES.grimace, gaze: [-0.9, 0] } });
   ease(ms[1], 1.05, { ...SIT, lean: 14, head: [12, 8, 0] } as Partial<Pose>, 0.35, { face: { ...FACES.grimace, gaze: [-0.9, 0.2] } });
-  const h = holdSheet("d0", ms[0], DX[0], "bid", true, false, (t: number) => 18 * env(t, 0.15, 0.4, 99, 0.3));
+  ease(ms[0], 0.9, { ...SIT, lean: 6, head: [10, -4, 0] } as Partial<Pose>, 0.35, { face: { ...FACES.delighted, brow: 0.8, gaze: [-0.3, 0] } });      // (the winner sits up proudly, the independent review of v11: nothing showed he won)
+  const h = holdSheet("d0", ms[0], DX[0], "bid", true, false, (t: number) => 26 * env(t, 0.15, 0.4, 99, 0.3));
   const cast: Cast[] = ms.map((m, i) => ({ name: `d${i}`, m, who: "sir", look: looks[i], seed: 30 + i, armWipe: false, pose: i === 0 ? h.pose : kneesHook(DX[i]), hands: i === 0 ? { L: [[0, "grip"]], R: [[0, "grip"]] } : { L: [[0, "fist"]], R: [[0, "fist"]] } } as Cast));
   const seats = cast.map((c, i) => seatOf({ ...c, pose: kneesHook(DX[i]) })), top = Math.max(...seats.map((q) => q.top)); for (const q of seats) q.top = top;
   const x0 = Math.min(...seats.map((q) => q.x0)) - 10, x1 = Math.max(...seats.map((q) => q.x1)) + 10;
@@ -380,13 +396,13 @@ const s10 = (): Shot => { const seconds = 1.6;
 
 // 11 "The dealer paid for the tower.": a hand-only close-up: the dealer's hand pushes the cheque over the table (EB: a certified check), about
 //    4 px a frame, his forearm out through the right edge. No tower model on this table. Camera: following the cheque slowly.
-const s11 = (): Shot => { const seconds = 1.6, d = figure("sir", -0.34, 28); d.stand(seconds + 1);
+const s11 = (): Shot => { const seconds = 1.6, d = figure("sir", -0.4, 28); d.stand(seconds + 1);
   // (the review of v10: the dealer leans in and holds the cheque out to the con man (0.15-0.5 s, 04's lift with a lean); the con man reacts,
   //  jerking back with a grin (06's jerk, 0.7 s), then leans in to it (1.15 s)
   ease(d, -1, { head: [6, 2, 0] }, 0.01, { face: { ...FACES.delighted, gaze: [0.7, 0] } }); ease(d, 0.15, { head: [6, -2, 0], lean: 10 }, 0.35, { face: { ...FACES.delighted, gaze: [0.8, 0] } });
-  const c = figure("sir", 0.35, -28); c.stand(seconds + 1); ease(c, -1, { head: [-4, 2, 0] }, 0.01, { face: { ...FACES.smug, gaze: [-0.7, 0.2] } });
+  const c = figure("sir", 0.41, -28); c.stand(seconds + 1); ease(c, -1, { head: [-4, 2, 0] }, 0.01, { face: { ...FACES.smug, gaze: [-0.7, 0.2] } });
   ease(c, 0.7, { head: [-6, -6, 0], lean: -9 }, 0.22, { face: { ...FACES.delighted, brow: 0.8, gaze: [-0.8, 0.2] } }); ease(c, 1.15, { head: [-4, 6, -3], lean: 7 }, 0.35, { face: { ...FACES.smug, gaze: [-0.8, 0.4] } });
-  const h = holdSheet("young", d, -0.34, "cheque", false, false, (t: number) => 26 * env(t, 0.15, 0.35, 99, 0.3));
+  const h = holdSheet("young", d, -0.4, "cheque", false, false, (t: number) => 26 * env(t, 0.15, 0.35, 99, 0.3));
   const cast: Cast[] = [{ name: "young", m: d, who: "sir", look: YOUNG, seed: 31, armWipe: false, pose: h.pose, hands: { L: [[0, "grip"]], R: [[0, "grip"]] } },
     { name: "con", m: c, who: "sir", look: CON, seed: 9, armWipe: false, hands: { L: [[0, "relaxed"]], R: [[0, "relaxed"]] } }];
   const c1 = fitCam(cast, seconds, ZH(0.5), [], () => false, 0.04), c0 = camFeet(c1.cx, c1.z, 0.8), cam = (t: number) => ({ ...c0, z: c0.z * lerp(0.985, 0.995, smooth(t / seconds)) });
@@ -397,7 +413,7 @@ const s11 = (): Shot => { const seconds = 1.6, d = figure("sir", -0.34, 28); d.s
 const s12 = (): Shot => { const seconds = 1.9, c = figure("sir", 0, -15); c.stand(seconds + 1);
   // (the body actions, the review of v10: he lifts the bribe's envelope (0.2-0.6 s), then leans back, pleased with himself (1.1-1.45 s))
   ease(c, -1, { head: [0, 6, 0] }, 0.01, { face: { ...FACES.smug, gaze: [0, 0.6] } }); ease(c, 0.6, { head: [0, 2, 0] }, 0.4, { face: { ...FACES.smug, gaze: [-0.6, 0.1] } });
-  ease(c, 1.1, { head: [0, 3, -3], lean: -7 }, 0.35, { face: { ...FACES.delighted, gaze: [0, 0] } });
+  ease(c, 1.1, { head: [0, 3, -4], roll: 5 }, 0.4, { face: { ...FACES.delighted, gaze: [0, 0] } });      // (a sway: a lean does not show facing us)
   const h = holdSheet("con", c, 0, "envelope", false, false, (t: number) => 24 * env(t, 0.2, 0.4, 99, 0.3));
   const cast: Cast[] = [{ name: "con", m: c, who: "sir", look: CON, seed: 9, armWipe: false, pose: h.pose, hands: { L: [[0, "grip"]], R: [[0, "grip"]] } }];
   const c0 = fitCam(cast, seconds, 2.7, [], () => false, 0.06), cam = (t: number) => ({ ...c0, z: c0.z * lerp(0.97, 1, smooth(t / seconds)) });
@@ -428,7 +444,7 @@ const s14 = (): Shot => { const seconds = 2.6, m = figure("sir", 0, 0); m.stand(
   //  (1.9-2.3 s)); the face: hard squeeze, then the grimace
   m.turn(-18, 0.5, 0.015); m.stand(seconds + 1);
   ease(m, -1, { head: [0, 4, 0] }, 0.01, { face: FACES.squeeze }); ease(m, 1.0, { head: [-4, 8, 3] }, 0.5, { face: FACES.squeeze });
-  ease(m, 1.9, { head: [-2, 14, 0], lean: 9 }, 0.4, { face: { ...FACES.grimace, gaze: [0, 0.6] } });
+  ease(m, 1.9, { head: [-2, 14, 0], lean: 9, py: -0.03, roll: 4 }, 0.4, { face: { ...FACES.grimace, gaze: [0, 0.6] } });
   const h = holdSheet("young", m, 0, "back", false, false, (t: number) => -22 * env(t, 0.25, 0.4, 99, 0.3), 236);
   const cast: Cast[] = [{ name: "young", m, who: "sir", look: YOUNG, seed: 31, armWipe: false, pose: h.pose, hands: { L: [[0, "grip"]], R: [[0, "grip"]] } }];
   const c0 = fitCam(cast, seconds, 2.7, [], () => false, 0.06), cam = (t: number) => ({ ...c0, z: c0.z * lerp(0.97, 1, smooth(t / seconds)) });
@@ -436,15 +452,15 @@ const s14 = (): Shot => { const seconds = 2.6, m = figure("sir", 0, 0); m.stand(
 
 // 15 "Later, the con man tried again.": the second hotel (the suite recoloured: other wallpaper and table), the con man already standing with the
 //    letter (04), the grey dealer (his first shot) standing and looking at it (01, mouth shut). Camera: a slow slide sideways.
-const s15 = (): Shot => { const seconds = 2.2, m = figure("sir", -0.34, 30); m.stand(seconds + 1);
+const s15 = (): Shot => { const seconds = 2.2, m = figure("sir", -0.4, 30); m.stand(seconds + 1);
   // (the review of v10, the body actions: the con man leans in to the grey dealer, smug (0.15-0.5 s); the grey dealer lifts the letter to read it
   //  (0.7-1.1 s) and then jerks back, doubting it (06's jerk, 1.45 s); the con man straightens and grins (1.75 s). The letter is the grey dealer's
   //  from the start, as at the police desk in shot 16)
   ease(m, -1, { head: [8, 2, 0] }, 0.01, { face: { ...FACES.smug, gaze: [0.6, 0.1] } }); ease(m, 0.15, { head: [8, 6, 0], lean: 9 }, 0.35, { face: { ...FACES.smug, gaze: [0.7, 0.3] } });
   ease(m, 1.75, { head: [8, 2, -3], lean: 0 }, 0.35, { face: { ...FACES.delighted, gaze: [0.6, 0.1] } });
-  const n = figure("sir", 0.34, -30); n.stand(seconds + 1); ease(n, -1, { head: [-8, 4, 0] }, 0.01, { face: { ...FACES.calm, gaze: [-0.6, 0.3] } });
+  const n = figure("sir", 0.4, -30); n.stand(seconds + 1); ease(n, -1, { head: [-8, 4, 0] }, 0.01, { face: { ...FACES.calm, gaze: [-0.6, 0.3] } });
   ease(n, 1.45, { head: [-8, -4, 0], lean: -8 }, 0.22, { face: { ...FACES.grimace, gaze: [-0.7, 0.1] } });
-  const h = holdSheet("grey", n, 0.34, "letter", false, false, (t: number) => 20 * env(t, 0.7, 0.4, 99, 0.3));
+  const h = holdSheet("grey", n, 0.4, "letter", false, false, (t: number) => 20 * env(t, 0.7, 0.4, 99, 0.3));
   const cast: Cast[] = [{ name: "con", m, who: "sir", look: CON, seed: 9, armWipe: false, hands: { L: [[0, "relaxed"]], R: [[0, "relaxed"]] } },
     { name: "grey", m: n, who: "sir", look: GREY, seed: 41, armWipe: false, pose: h.pose, hands: { L: [[0, "grip"]], R: [[0, "grip"]] } }];
   const c1 = fitCam(cast, seconds, ZH(0.5), [], () => false, 0.04), c0 = camFeet(c1.cx, c1.z, 0.8), cam = (t: number) => ({ ...c0, cx: c0.cx + lerp(-4, 4, smooth(t / seconds)) });
@@ -453,14 +469,14 @@ const s15 = (): Shot => { const seconds = 2.2, m = figure("sir", -0.34, 30); m.s
 // 16 "This time, another dealer told the police.": the police desk beside them; the grey dealer holds the letter up (04); the policeman
 //    stands (01, mouth shut) with the shock face and a small head move. Both whole on the floor, the feet in view. Camera: a slow push-in.
 const DESK = { x0: px(-0.95), x1: px(-0.52) };      // (the desk at the policeman's side, so the two can stand closer and larger, the review of v10)
-const s16 = (): Shot => { const seconds = 2.4, a = figure("sir", 0.34, -25); a.stand(seconds + 1);      // (the grey dealer at the right with the letter, as in shot 15)
+const s16 = (): Shot => { const seconds = 2.4, a = figure("sir", 0.4, -25); a.stand(seconds + 1);      // (the grey dealer at the right with the letter, as in shot 15)
   ease(a, -1, { head: [-6, 2, 0] }, 0.01, { face: { ...FACES.calm, smile: -0.2, gaze: [-0.6, 0] } }); ease(a, 0.5, { head: [-6, -3, 0] }, 0.6, { face: { ...FACES.calm, smile: -0.2, gaze: [-0.7, 0] } });
-  const p = figure("sir", -0.33, 12); p.stand(seconds + 1); const SHOCK_P: Face = { ...FACES.shock, sad: 1, smile: -1, mouth: 0.8 };      // (turned 12 and the head 8: the face stays in the front drawing, so the open mouth shows whole; in three-quarter it read as a small smile, the fourth review)      // (the shock's open mouth and the corners right down: with the moustache a small mouth read as a smile, the independent reviews)
-  ease(p, -1, { head: [6, 0, 0] }, 0.01, { face: { ...FACES.calm, gaze: [0.6, 0] } }); ease(p, 1.1, { head: [8, -8, 0], lean: -9 }, 0.35, { face: SHOCK_P });      // (the beat: he reads it and jerks back in shock, 06's jerk)
+  const p = figure("sir", -0.39, 12); p.stand(seconds + 1); const SHOCK_P: Face = { ...FACES.shock, sad: 1, smile: -1, mouth: 0.8 };      // (turned 12 and the head 8: the face stays in the front drawing, so the open mouth shows whole; in three-quarter it read as a small smile, the fourth review)      // (the shock's open mouth and the corners right down: with the moustache a small mouth read as a smile, the independent reviews)
+  ease(p, -1, { head: [6, 0, 0] }, 0.01, { face: { ...FACES.calm, gaze: [0.6, 0] } }); ease(p, 1.1, { head: [8, -8, 0], lean: -9, py: -0.04 }, 0.22, { face: SHOCK_P });      // (06 whole: the jerk and the hands up at his sides, the independent review of v11: only his head moved)      // (the beat: he reads it and jerks back in shock, 06's jerk)
   ease(a, 1.6, { head: [-6, 4, 0], lean: 9 }, 0.35, { face: { ...FACES.calm, smile: -0.3, brow: -0.3, gaze: [-0.8, 0.1] } });      // (the body actions, the review of v10: he lifts the letter (0.2 s), the policeman jerks back (1.1 s), he leans in to the policeman, serious (1.6 s))
-  const h = holdSheet("grey", a, 0.34, "letter", false, false, (t: number) => 20 * env(t, 0.2, 0.4, 99, 0.3));      // (the second beat: he holds the letter up to the policeman)
+  const h = holdSheet("grey", a, 0.4, "letter", false, false, (t: number) => 20 * env(t, 0.2, 0.4, 99, 0.3));      // (the second beat: he holds the letter up to the policeman)
   const cast: Cast[] = [{ name: "grey", m: a, who: "sir", look: GREY, seed: 41, armWipe: false, pose: h.pose, hands: { L: [[0, "grip"]], R: [[0, "grip"]] } },
-    { name: "police", m: p, who: "sir", look: POLICE, seed: 51, armWipe: false, hands: { L: [[0, "relaxed"]], R: [[0, "relaxed"]] } }];
+    { name: "police", m: p, who: "sir", look: POLICE, seed: 51, armWipe: false, pose: guard("police", p, -0.39, 1.1), hands: { L: [[0, "relaxed"], [1.18, "fist"], [1.26, "open"]], R: [[0, "relaxed"], [1.18, "fist"], [1.26, "open"]] } }];
   const c1 = fitCam(cast, seconds, ZH(0.5), [], () => false, 0.04), c0 = camFeet(c1.cx, c1.z, 0.8), cam = (t: number) => ({ ...c0, z: c0.z * lerp(0.99, 1, smooth(t / seconds)) });
   return { id: "e16", title: "16 Polisdisken", seconds, cast, events: {}, shot: "wide", camera: cam, contacts: h.contacts, over: h.over, groundProps: [{ name: "desk", x0: DESK.x0, x1: DESK.x1 }],
     ownBg: (g, t) => { const c = cam(t), v = viewOf(c); g.fillStyle = "#6a7080"; g.fillRect(v.x0 - 200, v.y0 - 200, v.x1 - v.x0 + 400, LINE_TOP - v.y0 + 200);
@@ -501,7 +517,7 @@ const s17 = (): Shot => { const seconds = 2.0;
 // 18 "Or so the story goes.": the con man in front of the tower in the evening (01, smug, a small head move; the automation session: him, not
 //    Sir, who is not in the film). Camera: a slow pull-back.
 const s18 = (): Shot => { const seconds = 1.7, m = figure("sir", -0.1, -38); m.stand(seconds + 1);      // (turned three-quarter left, a medium shot at night: shot 2's frontal evening set-up made the cut into the loop a jump cut)
-  ease(m, -1, { head: [0, 0, 0] }, 0.01, { face: { ...FACES.smug, gaze: [0.3, 0] } }); ease(m, 0.3, { head: [0, -5, -4] }, 0.5, { face: { ...FACES.smug, gaze: [0.5, -0.2] } }); ease(m, 0.95, { head: [0, 2, 3], lean: -7 }, 0.4, { face: { ...FACES.delighted, gaze: [0, 0] } });      // (the body actions, the review of v10: he lifts the SOLD paper (0.15-0.55 s), then leans back, pleased (0.95 s))
+  ease(m, -1, { head: [0, 0, 0] }, 0.01, { face: { ...FACES.smug, gaze: [0.3, 0] } }); ease(m, 0.3, { head: [0, -5, -4] }, 0.5, { face: { ...FACES.smug, gaze: [0.5, -0.2] } }); ease(m, 0.95, { head: [0, 2, 4], roll: -5 }, 0.4, { face: { ...FACES.delighted, gaze: [0, 0] } });      // (the body actions, the review of v10: he lifts the SOLD paper (0.15-0.55 s), then leans back, pleased (0.95 s))
   // (he holds the stamped SOLD paper, as in shot 2 that the loop cuts to: it popped into his hands at the cut, the fourth review; a small lift is a beat)
   const h = holdSheet("con", m, -0.1, "sold", false, false, (t: number) => 20 * env(t, 0.15, 0.4, 99, 0.3));
   const cast: Cast[] = [{ name: "con", m, who: "sir", look: CON, seed: 9, armWipe: false, pose: h.pose, hands: { L: [[0, "grip"]], R: [[0, "grip"]] } }];
@@ -512,6 +528,6 @@ const s18 = (): Shot => { const seconds = 1.7, m = figure("sir", -0.1, -38); m.s
       tower(g, c.cx - 230, LINE_TOP - 190, 900, "#4a3a50", OL * 0.8); g.fillStyle = "#3a3038"; g.fillRect(v.x0 - 300, LINE_TOP - 200, v.x1 - v.x0 + 600, 200); g.fillStyle = "#6a5a5e"; g.fillRect(v.x0 - 300, LINE_TOP, v.x1 - v.x0 + 600, v.y1 - LINE_TOP + 300); line(g, [[v.x0 - 300, FM.GY], [v.x1 + 300, FM.GY]], FM.LINE);
     } } as Shot; };
 
-export const SHOTS: Record<string, () => Shot> = { e01: s01, e02: s02, e03: s03, e04: s04, e05: s05, e06: s06, e07: s07, e08: s08, e09: s09, e10: s10, e11: s11, e12: s12, e13: s13, e14: s14, e15: s15, e16: s16, e17: s17, e18: s18, e19: s19 };
+export const SHOTS: Record<string, () => Shot> = { e01: s01, e02: s02, e03: s03, e04: s04, e05: s05, e06: s06, e07: s07, e07b: s07b, e08: s08, e09: s09, e10: s10, e11: s11, e12: s12, e13: s13, e14: s14, e15: s15, e16: s16, e17: s17, e18: s18, e19: s19 };
 export type { Shot };
 void rrect; void castAt;

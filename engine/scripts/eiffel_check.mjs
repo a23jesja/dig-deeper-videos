@@ -8,15 +8,16 @@
 //     node scripts/eiffel_check.mjs     (from engine/)
 import * as esbuild from "esbuild"; import fs from "node:fs"; import path from "node:path"; import { pathToFileURL } from "node:url";
 const out = path.resolve("out/eifc_model.mjs");
-fs.writeFileSync("out/_eifc_entry.ts", 'export { SHOTS } from "../src/craft/eiffel/eiffel"; export { DRAWN } from "../src/craft/alcatraz/alcatraz"; export * from "../src/craft/eiffel/timeline"; export { textAlpha } from "../src/craft/eiffel/EiffelFilm"; export { castAt, figBox, FM } from "../src/craft/clips/clipKit";\n');
+fs.writeFileSync("out/_eifc_entry.ts", 'export { SHOTS } from "../src/craft/eiffel/eiffel"; export { DRAWN } from "../src/craft/alcatraz/alcatraz"; export * from "../src/craft/eiffel/timeline"; export { textAlpha } from "../src/craft/eiffel/EiffelFilm"; export { castAt, figBox, FM, scaleOf, footY } from "../src/craft/clips/clipKit";\n');
 await esbuild.build({ entryPoints: ["out/_eifc_entry.ts"], bundle: true, format: "esm", platform: "node", outfile: out, logLevel: "error", loader: { ".json": "json" }, jsx: "automatic", external: ["remotion", "react"] });
 const M = await import(pathToFileURL(out).href); fs.rmSync(out); fs.rmSync("out/_eifc_entry.ts");
-const { SHOTS, DRAWN, castAt, figBox, FM, textAlpha, TEXT } = M; const faults = []; const notes = [];
+const { SHOTS, DRAWN, castAt, figBox, FM, textAlpha, TEXT, scaleOf, footY } = M; const faults = []; const notes = [];
 const mock = () => new Proxy({}, { get: (o, k) => (k === "createLinearGradient" || k === "createRadialGradient" ? () => ({ addColorStop() {} }) : k === "measureText" ? () => ({ width: 10 }) : () => {}), set: () => true });
 const scr = (cam, p) => [(p[0] - cam.cx) * cam.z + FM.W / 2, (p[1] - cam.cy) * cam.z + FM.H / 2];
 // bench
-for (const id of ["e07", "e10", "e11", "e15", "e16"]) { const s = SHOTS[id](); let minGap = 1e9, pair = "";      // (every shot with figures side by side: their boxes 40 px apart, so no two bodies merge, the review of v10)      // (shot 10's bench too, since its two sit closer, the review of v10)
-  for (let f = 0; f < Math.round(s.seconds * FM.FPS); f++) { const t = f / FM.FPS, cam = s.camera(t), boxes = castAt(s.cast, t).sort((p, q) => p.x - q.x).map((g) => { const P = figBox(g).map((q) => scr(cam, q)); return [Math.min(...P.map((q) => q[0])), Math.max(...P.map((q) => q[0])), g.name]; }).sort((a, b) => a[0] - b[0]);
+// (the cap's brim reaches past figBox's head, so each head counts 195 units on the side it faces (the brims measured at 175-187 in a still of shot 11): caps touched with 43 px between the boxes, the independent review of v11)
+for (const id of ["e07b", "e10", "e11", "e15", "e16"]) { const s = SHOTS[id](); let minGap = 1e9, pair = "";      // (every shot with figures side by side: their boxes 40 px apart, so no two bodies merge, the review of v10)      // (shot 10's bench too, since its two sit closer, the review of v10)
+  for (let f = 0; f < Math.round(s.seconds * FM.FPS); f++) { const t = f / FM.FPS, cam = s.camera(t), boxes = castAt(s.cast, t).sort((p, q) => p.x - q.x).map((g) => { const sc = scaleOf(g.who), k = g.sk.j.skull, dir = Math.sign(g.sk.sin || 0.0001), P = [...figBox(g), [g.x + (k[0] + dir * 195) * sc, footY(g.who) + k[1] * sc]].map((q) => scr(cam, q)); return [Math.min(...P.map((q) => q[0])), Math.max(...P.map((q) => q[0])), g.name]; }).sort((a, b) => a[0] - b[0]);
     for (let i = 0; i + 1 < boxes.length; i++) { const gap = boxes[i + 1][0] - boxes[i][1]; if (gap < minGap) { minGap = gap; pair = `${boxes[i][2]} and ${boxes[i + 1][2]}, frame ${f}`; } if (gap < 40) faults.push(`${id} frame ${f}: only ${gap.toFixed(0)} px between ${boxes[i][2]} and ${boxes[i + 1][2]}`); } }
   notes.push(`side by side (${id}): the smallest gap between two figures' boxes ${minGap.toFixed(0)} px, ${pair} (40 or more)`); }
 // a thing's place on the screen per frame, from what the shot registers in DRAWN.things

@@ -233,7 +233,14 @@ Tiderna gäller filmen i sekunder. Varje kroppshandling står med sin starttid. 
   - bilderna i sekund 0–10 är 1,4–2,2 s långa;
   - loopen ändrar 2,7 % av bilden.
 - **ElevenLabs:** 3 589 av 40 000, oförändrad.
-- **En tionde oberoende granskare** granskar den här filen. Svaret skickas separat.
+- **Den tionde oberoende granskningen** (den här filen, md5 a313…) godkände punkterna 2–4: inga omöjliga saker (ingen tredje näve, inget papper mot hakan, inga överlapp, inget flimmer, ingen text på figurer), blinkningarna, kroken och loopen. **Den fällde punkt 1, läsbarheten hos kroppshandlingarna:**
+  1. Tvåbilden i bild 15 (24,13–26,33): alla rörelser är cirka 24 px, för små för en telefon.
+  2. 7a (10,23–10,98): ingen kroppshandling syns, bara inzoomningen.
+  3. Bild 18 (30,73–32,43): en gungning på 36–50 px.
+  4. Bild 3: en gungning på 45 px, och tidningen lyfts aldrig.
+  5. Bild 14 och 11a: små förflyttningar.
+
+  Inget av detta är tidsgränsen över 45 rutor; det gäller rörelser som är för små för att läsas. Orsaken är densamma överallt: lyft och sänkningar av papper ger nästan ingen rörelse, eftersom armarna redan är nära sin räckvidd, och gungningarna är små vid den här storleken.
 
 ## Att ta ställning till
 

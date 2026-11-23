@@ -153,7 +153,7 @@ Alla fel från båda granskningarna är rättade i filen ovan.
 | 3 | Bild 10: mannen på bänken tittade bort | Förloraren sitter på vinnarens högra sida, vänd mot honom. Han rycker till och grimaserar (0,6 s) och lutar sig fram och tittar (1,05 s). Vinnaren lyfter budet högt och sätter sig stolt upprätt (0,9 s). |
 | 4 | Bild 13: kuvertet svävade | Kuvertet sitter i en bröstficka lågt på bröstet, i profil. |
 | 5 | Bild 17: skorstenen | Skorstenen står på ett vitt däckshus på däcket, framför relingen. |
-| 6 | Bild 9 → 10: papperet | Den unga handlaren håller budet redan i bild 9 och sänker det när han frågar, så att det är fritt från munnen. |
+| 6 | Bild 9 → 10: papperet | Den unga handlaren håller budet redan i bild 9, stilla och lågt, fritt från munnen, och lutar sig ivrigt fram när han har frågat. |
 | 7 | Blinkningarna | **Orsak:** blinken sätter locket till det största av vilolocket och blinkens värde, och clipKit ritar varje lock mellan 0,3 och 0,75 som 0,42. Belåten (0,55) och grimasen (0,32) såg därför likadana ut i vila och i halvblink. **Rättning:** vilolocket är nu 0,2 för belåten och 0,16 för grimasen, och clipKit är orört. Varje blink går öppet, halvt, halvt, stängt, stängt, halvt, halvt, öppet (`punkt7-…`, rutorna 14–22). |
 | 8 | Bithastigheten | Filmen ligger på 12,9 Mbit/s vid CRF 4; de platta teckningarna gav 2,6 Mbit/s vid CRF 16. Krokklippen ligger på 14,8 och 14,6 Mbit/s. Flimret är mätt på den nya filen. |
 | 9 | Tidningens rubrik | Rubriken är krumelurer i stället för en svart rand. |

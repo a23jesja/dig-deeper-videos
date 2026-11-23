@@ -8,221 +8,223 @@
    "id": "n01",
    "t0": 0,
    "t1": 1.9,
-   "what": "the fake head on the pillow; the torch through the bars already on it in frame 1, the bars' shadows on the bed",
+   "what": "the fake head on the pillow at the bars' end; the torch through the bars already on it in frame 1",
    "cam": {
     "from": [
      [
-      -0.42,
-      1.62,
-      0.98
+      -0.6,
+      1.68,
+      1.08
      ],
      [
-      -0.48,
-      1.78,
-      0.94
+      -0.64,
+      1.58,
+      1.04
      ]
     ],
     "at": [
      -0.81,
-     2.45,
-     0.75
+     0.82,
+     0.86
     ],
-    "lens": 40,
+    "lens": 36,
     "focus": "head",
-    "fstop": 2.0
+    "fstop": 2
    },
    "torch": {
     "from": [
      [
-      -0.05,
+      0.28,
       -0.55,
-      1.25
+      1.2
      ],
      [
-      -0.12,
+      0.22,
       -0.55,
-      1.25
+      1.2
      ]
     ],
     "at": [
      [
       -0.76,
-      2.4,
-      0.76
+      0.8,
+      0.74
      ],
      [
-      -0.82,
-      2.45,
-      0.76
+      -0.81,
+      0.82,
+      0.73
      ]
     ],
-    "power": 260
+    "power": 110
    },
    "figs": [],
-   "fg": []
+   "fg": [],
+   "place": "block"
   },
   {
    "id": "n02",
    "t0": 1.9,
    "t1": 3.2,
-   "what": "over the guard's shoulder (his back and cap, dark and soft at the edge): his torch on the fake head through the bars; he says goodnight to it (Daniel, [OWN])",
+   "what": "the guard at the bars in three-quarter view, the torch in his hand on the fake head in the bed; he says goodnight to it (Daniel, [OWN])",
    "cam": {
     "from": [
      [
-      0.12,
-      -1.3,
-      1.62
+      2.25,
+      -2.75,
+      1.42
      ],
      [
-      0.06,
-      -1.22,
-      1.6
+      2.18,
+      -2.67,
+      1.4
      ]
     ],
     "at": [
-     -0.8,
-     2.42,
-     0.62
+     0,
+     0.1,
+     1.3
     ],
-    "lens": 40,
-    "focus": "head",
-    "fstop": 2.4
+    "lens": 22,
+    "focus": "guard",
+    "fstop": 3.2
    },
    "torch": {
     "from": [
      [
-      -0.05,
-      -0.62,
-      1.18
+      0.384,
+      -0.47,
+      0.848
      ],
      [
-      -0.05,
-      -0.62,
-      1.18
+      0.384,
+      -0.47,
+      0.848
      ]
     ],
     "at": [
      [
-      -0.8,
-      2.45,
-      0.76
+      -0.81,
+      0.82,
+      0.73
      ],
      [
-      -0.8,
-      2.45,
-      0.76
+      -0.81,
+      0.82,
+      0.73
      ]
     ],
-    "power": 260
+    "power": 110
    },
    "figs": [
     {
      "name": "guard",
      "look": "GUARD",
      "at": [
-      0.32,
-      -0.92
+      0.78,
+      -0.42
      ],
-     "facing": "away",
-     "ots": true
+     "facing": "cell"
     }
    ],
-   "fg": []
+   "fg": [],
+   "place": "block"
   },
   {
    "id": "n03",
    "t0": 3.2,
    "t1": 4.6,
-   "what": "the guard in the tier, pleased, his light still on the cell: the head was fake (the narrator over his smile)",
+   "what": "the guard in the tier, pleased, the torch off in his hand: the head was fake (the narrator over his closed smile)",
    "cam": {
     "from": [
      [
-      1.62,
-      -2.62,
+      2.42,
+      -2.6,
       1.25
      ],
      [
-      1.52,
-      -2.52,
+      2.38,
+      -2.55,
       1.24
      ]
     ],
     "at": [
-     -0.12,
-     -0.62,
-     1.0
+     0.78,
+     -0.42,
+     1
     ],
-    "lens": 32,
+    "lens": 29,
     "focus": "guard",
     "fstop": 2.4
    },
    "torch": {
     "from": [
      [
-      -0.3,
-      -0.4,
-      1.1
+      0.44,
+      -0.47,
+      0.839
      ],
      [
-      -0.3,
-      -0.4,
-      1.1
+      0.44,
+      -0.47,
+      0.839
      ]
     ],
     "at": [
      [
-      -0.8,
-      2.45,
-      0.76
+      -0.81,
+      0.82,
+      0.73
      ],
      [
-      -0.7,
-      2.45,
-      0.7
+      -0.81,
+      0.82,
+      0.73
      ]
     ],
-    "power": 0
+    "power": 110
    },
    "figs": [
     {
      "name": "guard",
      "look": "GUARD",
      "at": [
-      -0.12,
-      -0.62
+      0.78,
+      -0.42
      ],
      "facing": "cell"
     }
    ],
-   "fg": []
+   "fg": [],
+   "place": "block"
   },
   {
    "id": "n04",
    "t0": 4.6,
    "t1": 6.9,
-   "what": "across the cellhouse: three tiers, a cell on each, a fake head asleep in every bed; the light of the guard (off the right edge) on the middle one; the camera drifting",
+   "what": "across the cellhouse: the tiers, a fake head asleep in every bed near the bars, lit; the camera drifting",
    "cam": {
     "from": [
      [
-      0.15,
-      -6.9,
-      4.3
+      0.2,
+      -5.2,
+      5.95
      ],
      [
-      -0.15,
-      -6.8,
-      4.25
+      0,
+      -5.1,
+      5.92
      ]
     ],
     "at": [
-     -0.1,
-     1.2,
-     4.3
+     0,
+     1,
+     3.9
     ],
-    "lens": 17,
+    "lens": 15,
     "focus": [
-     -0.8,
-     2.45,
+     -0.81,
+     0.82,
      3.6
     ],
     "fstop": 8
@@ -230,59 +232,60 @@
    "torch": {
     "from": [
      [
-      3.7,
-      -0.95,
-      4.05
+      0,
+      0,
+      -50
      ],
      [
-      3.4,
-      -0.95,
-      4.05
+      0,
+      0,
+      -50
      ]
     ],
     "at": [
      [
-      -0.55,
-      2.45,
-      3.62
+      0,
+      0,
+      -60
      ],
      [
-      -0.8,
-      2.45,
-      3.62
+      0,
+      0,
+      -60
      ]
     ],
-    "power": 320
+    "power": 0
    },
    "figs": [],
-   "fg": []
+   "fg": [],
+   "place": "tiers"
   },
   {
    "id": "n05",
    "t0": 6.9,
    "t1": 9.5,
-   "what": "before the night, in his cell: the guard's light sweeps the wall and stops a hand from the vent; he freezes, sweats and goes pale",
+   "what": "before the night, in his cell: he listens at the vent; the guard's light sweeps the wall toward it; his head swings round, he flinches back and freezes, goes pale, sweats",
    "cam": {
     "from": [
      [
-      -0.25,
-      0.3,
+      0.1,
+      0.25,
       1.05
      ],
      [
-      -0.18,
-      0.38,
+      0.15,
+      0.33,
       1.03
      ]
     ],
     "at": [
-     0.3,
+     0.35,
      2.5,
-     0.95
+     0.85
     ],
     "lens": 18,
     "focus": "inmate",
-    "fstop": 4.0
+    "fstop": 4
    },
    "torch": {
     "from": [
@@ -299,12 +302,12 @@
     ],
     "at": [
      [
-      0.78,
+      0.62,
       2.9,
-      1.35
+      1.45
      ],
      [
-      0.88,
+      0.86,
       2.9,
       0.66
      ]
@@ -317,19 +320,20 @@
      "look": "INMATE",
      "at": [
       0.3,
-      2.3
+      2.4
      ],
-     "facing": "camera"
+     "facing": "left"
     }
    ],
-   "fg": []
+   "fg": [],
+   "place": "block"
   }
  ],
  "voice": [
   {
    "who": "george",
    "line": 1,
-   "t": 0.0
+   "t": 0
   },
   {
    "who": "daniel",
@@ -355,7 +359,7 @@
  ],
  "text": {
   "t0": 0,
-  "t1": 3.0,
+  "t1": 3,
   "lines": [
    "THE GUARD'S TORCH",
    "HIT THE PILLOW"

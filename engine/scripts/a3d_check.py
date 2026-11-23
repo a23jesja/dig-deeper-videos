@@ -5,7 +5,7 @@
 #            a figure behind a solid would be drawn in front of it)
 #   shadow:  a contact shadow under each figure, centred on the floor point, on floor the map sees
 #   motion:  no joint moves more than 45 px in a frame, no face value more than 0.3, no hand changing its drawing while still
-#   framing: the head inside the picture
+#   framing: the whole figure inside the picture with 1 % to spare
 #     python scripts/a3d_check.py [dump.json]        (from engine/; scripts/a3d_dump.mjs writes the dump, A3D_PLANT plants a fault)
 import json, sys, os
 import numpy as np
@@ -66,8 +66,10 @@ for sid, S in dump["shots"].items():
                     if abs(a - b) > 0.3: faults.append(f"{sid} {fr + 1} {n}: the face's {k} jumps {abs(a - b):.2f} in a frame")
                 if g["hands"] != p["hands"]: faults.append(f"{sid} {fr + 1} {n}: a hand changes its drawing {p['hands']} -> {g['hands']}")
             prev[n] = g
-            cr = g["joints"].get("crown")
-            if cr and not (0 <= cr[0] <= W and 0 <= cr[1] <= H): faults.append(f"{sid} {fr + 1} {n}: the head outside the picture")
+            # framing: the whole figure inside the picture, cap, ears, hands and shoes, with 1 % to spare (the review of v3 points 6 and 15:
+            #  the cap cut by the top and the shoes by the bottom as the lens went in)
+            out = [(x, y) for (x, y) in g["box"] if not (0.01 * W <= x <= 0.99 * W and 0.01 * H <= y <= 0.99 * H)]
+            if out: faults.append(f"{sid} {fr + 1} {n}: the figure cut by the picture's edge at ({out[0][0]:.0f}, {out[0][1]:.0f})")
 
 print(f"plant: {dump.get('plant')}")
 for sid, st in stats.items():

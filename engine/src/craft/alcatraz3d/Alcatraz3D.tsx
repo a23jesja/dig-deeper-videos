@@ -5,7 +5,7 @@ import React from "react";
 import { AbsoluteFill, Audio, Img, staticFile, useCurrentFrame } from "remotion";
 import { FM } from "../clips/clipKit";
 import SPEC from "./shots.json";
-import { SHOTS3D, WHO, paintFigures, fright, otsGuard, beam, project, OTS, beltTorch, type Who3 } from "./a3d";
+import { SHOTS3D, WHO, paintFigures, beamTo, type Who3 } from "./a3d";
 
 export const PROV_S = SPEC.shots[SPEC.shots.length - 1].t1;
 const BUILT: Record<string, Who3[]> = Object.fromEntries(SHOTS3D.map((s) => [s.id, WHO[s.id]()]));
@@ -22,8 +22,7 @@ const paintText = (g: CanvasRenderingContext2D, t: number) => {
 /** everything drawn over the plate at the shot's frame fr */
 export const paintOver = (g: CanvasRenderingContext2D, id: string, fr: number) => {
   g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, FM.W, FM.H);
-  if (id === "n02") { const b = project("n02", fr, [-0.80, 2.45, 0.76]); beam(g, [OTS.head[0] - 260, OTS.head[1] + 330], [b[0], b[1]], 90, 0.8); otsGuard(g, "n02", fr); }
-  paintFigures(g, id, fr, BUILT[id], id === "n05" ? fright : id === "n03" ? (h, f) => beltTorch(h, f) : undefined); };
+  paintFigures(g, id, fr, BUILT[id]); beamTo(g, id, fr); };
 
 export const Alcatraz3D: React.FC<{ muted?: boolean }> = ({ muted = false }) => {
   const t = useCurrentFrame() / FM.FPS, { s, fr } = shotAt3(t), f = Math.min(fr, nFrames(s) - 1);

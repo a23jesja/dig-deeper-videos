@@ -1,0 +1,130 @@
+{
+ "note": "Alcatraz in the new style, the whole film (the style test's n01-n05 and the rest). Same world and axes as shots.json.",
+ "fps": 30,
+ "W": 1080,
+ "H": 1920,
+ "shots": [
+  {
+   "id": "n08",
+   "t0": 0,
+   "t1": 2.4,
+   "what": "the roof in moonlight: vents, a chimney, the city far off; the searchlight sweeps past",
+   "cam": {
+    "from": [
+     [
+      100.2,
+      -6.5,
+      1.3
+     ],
+     [
+      100.0,
+      -6.3,
+      1.32
+     ]
+    ],
+    "at": [
+     100.0,
+     6.0,
+     1.0
+    ],
+    "lens": 24,
+    "focus": [
+     100.0,
+     0.0,
+     0.9
+    ],
+    "fstop": 4.0
+   },
+   "torch": {
+    "from": [
+     [
+      0,
+      0,
+      -50
+     ],
+     [
+      0,
+      0,
+      -50
+     ]
+    ],
+    "at": [
+     [
+      0,
+      0,
+      -60
+     ],
+     [
+      0,
+      0,
+      -60
+     ]
+    ],
+    "power": 0
+   },
+   "figs": [],
+   "fg": []
+  },
+  {
+   "id": "n09",
+   "t0": 0,
+   "t1": 2.6,
+   "what": "the bay at night, slow waves, the city's lights across the water",
+   "cam": {
+    "from": [
+     [
+      200.0,
+      -2.0,
+      1.2
+     ],
+     [
+      200.3,
+      -1.8,
+      1.18
+     ]
+    ],
+    "at": [
+     200.0,
+     30.0,
+     0.6
+    ],
+    "lens": 28,
+    "focus": [
+     200.0,
+     8.0,
+     0.2
+    ],
+    "fstop": 5.6
+   },
+   "torch": {
+    "from": [
+     [
+      0,
+      0,
+      -50
+     ],
+     [
+      0,
+      0,
+      -50
+     ]
+    ],
+    "at": [
+     [
+      0,
+      0,
+      -60
+     ],
+     [
+      0,
+      0,
+      -60
+     ]
+    ],
+    "power": 0
+   },
+   "figs": [],
+   "fg": []
+  }
+ ]
+}

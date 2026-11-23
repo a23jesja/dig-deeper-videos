@@ -32,17 +32,17 @@
     "from": [
      [
       -0.42,
-      -2.2,
-      1.1
+      -2.65,
+      1.15
      ],
      [
       -0.45,
-      -2.12,
-      1.09
+      -2.56,
+      1.14
      ]
     ],
     "at": [
-     -0.46,
+     -0.62,
      1.0,
      0.8
     ],
@@ -59,20 +59,20 @@
    "cam": {
     "from": [
      [
-      1.77,
-      -2.17,
-      0.85
+      1.29,
+      -1.48,
+      0.75
      ],
      [
-      1.7,
-      -2.07,
-      0.86
+      1.24,
+      -1.41,
+      0.76
      ]
     ],
     "at": [
      -0.15,
      0.82,
-     1.0
+     1.05
     ],
     "lens": 28,
     "focus": "captain",
@@ -83,26 +83,26 @@
    "id": "B",
    "t0": 2.7,
    "t1": 4.4,
-   "what": "high over the captain's left shoulder (his dark back at the left, his boots on the map below): the boy looks down, points at the boot, answers, grins",
+   "what": "the boy alone, from the captain's eye height looking down at him: he looks down at the captain's boots, points at them, looks up at the captain (beside the lens), answers, grins",
    "cam": {
     "from": [
      [
-      -0.35,
-      -2.2,
-      1.3
+      -0.12,
+      0.62,
+      1.42
      ],
      [
-      -0.33,
-      -2.12,
-      1.3
+      -0.1,
+      0.68,
+      1.41
      ]
     ],
     "at": [
-     0.7,
+     0.95,
      1.85,
-     1.3
+     0.9
     ],
-    "lens": 32,
+    "lens": 26,
     "focus": "boy",
     "fstop": 2.8
    }
@@ -110,7 +110,7 @@
   {
    "id": "E",
    "t0": 4.4,
-   "t1": 5.5,
+   "t1": 5.9,
    "what": "the boot on the map, close: it lifts and the red X shows under it",
    "cam": {
     "from": [
@@ -143,26 +143,26 @@
   },
   {
    "id": "D",
-   "t0": 5.5,
-   "t1": 7.0,
-   "what": "three-quarter, waist up: he looks down at his boot, then at the boy; his face goes red, sweat, a sheepish grin; a fist on his hip",
+   "t0": 5.9,
+   "t1": 7.4,
+   "what": "three-quarter, from the thighs up: he looks down at his boot, then at the boy; his face goes red, sweat on his cheek, a sheepish grin, both hands up open",
    "cam": {
     "from": [
      [
-      1.27,
-      -1.44,
-      1.2
+      0.91,
+      -0.92,
+      1.25
      ],
      [
-      1.22,
-      -1.37,
-      1.2
+      0.88,
+      -0.86,
+      1.25
      ]
     ],
     "at": [
-     0.0,
+     -0.2,
      0.82,
-     1.0
+     1.05
     ],
     "lens": 28,
     "focus": "captain",

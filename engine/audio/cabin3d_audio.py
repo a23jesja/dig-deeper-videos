@@ -21,13 +21,14 @@ def take(name):
     a = a[: min(len(a), int((p["words"][-1]["b"] + 0.22) * SR))].copy(); fo = min(len(a), int(0.08 * SR)); a[-fo:] *= np.linspace(1, 0, fo)
     return a, p["line"]
 def wahwah():
-    """the comic fall on the cut to his red face: four clean notes stepping down (660, 622, 587, 554 Hz, the last held with a slow wobble),
-    a soft triangle tone (odd harmonics), nothing under 500 Hz, nothing buzzing"""
+    """the comic fall on the cut to his red face: four notes stepping down a fifth in all (784, 698, 622, 523 Hz: G, F, E flat, C), the last
+    held with a slow wobble; a fuller tone (odd and a little even harmonics, like a muted horn) but nothing under 500 Hz, nothing buzzing
+    (v19's four notes fell only three semitones and were thin, the review)"""
     out = []
-    for f, d, wob in ((660, 0.16, 0), (622, 0.16, 0), (587, 0.16, 0), (554, 0.55, 1)):
-        n = ns(d); t = np.arange(n) / SR; fr = f * (1 + 0.012 * wob * np.sin(2 * np.pi * 6 * t)); ph = 2 * np.pi * np.cumsum(fr) / SR
-        tone = np.sin(ph) - np.sin(3 * ph) / 9 + np.sin(5 * ph) / 25
-        env = np.minimum(1, t / 0.012) * np.minimum(1, (d - t) / 0.05) * (np.exp(-t * 1.5) if wob else 1.0); out.append(0.45 * tone * env)
+    for f, d, wob in ((784, 0.17, 0), (698, 0.17, 0), (622, 0.17, 0), (523, 0.6, 1)):
+        n = ns(d); t = np.arange(n) / SR; fr = f * (1 + 0.015 * wob * np.sin(2 * np.pi * 5.5 * t)); ph = 2 * np.pi * np.cumsum(fr) / SR
+        tone = np.sin(ph) + 0.35 * np.sin(2 * ph) + 0.25 * np.sin(3 * ph) + 0.1 * np.sin(4 * ph) + 0.06 * np.sin(5 * ph)
+        env = np.minimum(1, t / 0.015) * np.minimum(1, (d - t) / 0.05) * (np.exp(-t * 1.2) if wob else 1.0); out.append(0.32 * tone * env)
     return np.concatenate(out)
 
 def main():
@@ -40,9 +41,8 @@ def main():
     voice = vg * dbg(-16 - integrated(st(vg))) + vd * dbg(-16 - integrated(st(vd)))
     SH = {s["id"]: s for s in SPEC["shots"]}; C = SH["D"]; E = SH["E"]      # (D: his red face; E: the boot on the map)
     cues = [{"k": "paper", "f": 0, "g": 1.0, "p": -0.3}, {"k": "paper", "f": 9, "g": 1.2, "p": -0.35}, {"k": "paper", "f": 13, "g": 1.0, "p": -0.3},      # his hand on the papers (frame 1), the sweep (0.3 s)
-            {"k": "flap", "f": 11, "g": 0.7, "p": -0.4}, {"k": "flap", "f": 13, "g": 0.6, "p": -0.5}, {"k": "flap", "f": 15, "g": 0.6, "p": -0.45},      # the three papers go over the edge
-            {"k": "paper", "f": 72, "g": 0.45, "p": -0.5}, {"k": "paper", "f": 74, "g": 0.4, "p": -0.55},      # and land on the floor (2.4-2.5 s)
-            {"k": "paper", "f": int((E["t0"] + 0.25) * FPS), "g": 1.1, "p": -0.15}]      # the boot comes up off the map
+            {"k": "flap", "f": 24, "g": 0.7, "p": -0.4}, {"k": "flap", "f": 27, "g": 0.6, "p": -0.5}, {"k": "flap", "f": 30, "g": 0.6, "p": -0.45},      # the three papers go over the edge (seen from about 0.8 s)
+            {"k": "paper", "f": 72, "g": 0.45, "p": -0.5}, {"k": "paper", "f": 74, "g": 0.4, "p": -0.55}]      # and land on the floor (2.4-2.5 s); no sound under the boot (a scuff, the review of v19)
     beds = [{"k": "lap", "f0": 0, "f1": int(DUR * FPS), "g": 0.55}]
     spec = {"fps": FPS, "frames": int(DUR * FPS), "seed": 23, "cues": cues, "beds": beds}
     bus = fx.effects(spec)[:, :N]

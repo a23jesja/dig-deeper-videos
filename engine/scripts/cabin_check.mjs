@@ -9,7 +9,8 @@
 //   6  in front of nothing: written to out/cab3d/figs.json for scripts/cabin_depth.py, which reads Blender's ray map (no thing of the room
 //      nearer than a figure where he is drawn)
 // Planted faults (each must fail): --plant float (the boot lifted too high), sink (the figure 10 px into the floor), slide (the figure
-// skating 2 mm a frame), lean (the hip away from the standing foot), fgOverFace (the captain moved over the boy's face).
+// skating 2 mm a frame), lean (the hip away from the standing foot), fgOverFace (the captain moved over the boy's face), sweatOut (a
+// sweat drop up on the cap's band).
 //   node scripts/cabin_check.mjs [--plant float|sink|slide|lean|fgOverFace]
 import * as esbuild from "esbuild"; import fs from "node:fs"; import { pathToFileURL } from "node:url";
 const plant = process.argv.includes("--plant") ? process.argv[process.argv.indexOf("--plant") + 1] : null;
@@ -18,7 +19,7 @@ fs.writeFileSync("out/_cab_entry.ts", 'export * from "../src/craft/cabin3d/cabin
 try { await esbuild.build({ entryPoints: ["out/_cab_entry.ts"], bundle: true, format: "esm", platform: "node", outfile: out, logLevel: "error", loader: { ".json": "json" } }); }
 finally { fs.rmSync("out/_cab_entry.ts"); }
 const M = await import(pathToFileURL(out).href); fs.rmSync(out);
-const { SHOTS, WHO, PLANT, placeOf, toScreen, feetOf, project, jointPx, figBox, FM, footY, captionAt } = M;
+const { SHOTS, WHO, PLANT, placeOf, toScreen, feetOf, project, jointPx, figBox, FM, footY, captionAt, sweatDrops, SWEAT_ZONE } = M;
 if (plant) { if (!(plant in PLANT)) throw new Error("no such planted fault: " + plant); PLANT[plant] = true; }
 const faults = [], dump = {}, regions = []; let frames = 0, F0 = 0;
 const SPEED = 11, prevJ = {};      // 7 (the flicker rule): no joint of a figure moves more than 11 px between frames in the picture (flicker.py follows up to 12)
@@ -70,6 +71,10 @@ for (const S of SHOTS) {
           if (!inside && !outside && !armGone) faults.push(`5 ${S.id} frame ${fr} ${w.name}: his ${sd} hand cut by the picture's edge (at ${c.map((v) => v.toFixed(0))})`); }
       }
     }
+    // 9 sweat on the skin (the reviewer, v19: a drop on the cap's band or beside the cap is an impossible thing): every drop inside the
+    //    skin zone of the near cheek and temple, under the cap's band, in the head's own units
+    for (const { w } of placed) if (w.sweatAt !== undefined) { const t = fr / FM.FPS - w.sweatAt; if (t <= 0) continue; const Z = SWEAT_ZONE;
+      for (const dr of sweatDrops(t)) if (dr && (dr.x < Z.x0 || dr.x > Z.x1 || dr.y < Z.y0 || dr.y > Z.y1)) faults.push(`9 ${S.id} frame ${fr} ${w.name}: a sweat drop off his skin (at ${dr.x.toFixed(2)}, ${dr.y.toFixed(2)} of his head)`); }
     // 8 the caption band (DAILY-RULES: the lower third, never on a face, a chest or hands) against every figure's head, trunk and hands
     { const cap = captionAt(S.t0 + fr / FM.FPS);
       if (cap) for (const { w, pl } of placed) { if (w.sil) continue; const J = (j) => toScreen(pl, jointPx(pl.f, j)), [x0, y0, x1, y1] = cap.box, inBox = (q, m = 0) => q[0] > x0 - m && q[0] < x1 + m && q[1] > y0 - m && q[1] < y1 + m;
@@ -91,7 +96,7 @@ for (const S of SHOTS) {
       if (pts.some((q) => inFg(q))) faults.push(`4 ${S.id} frame ${fr}: the captain in front covers the boy's face or pointing hand`); }
     // (for scripts/flicker.py: the shot of each frame and each face's eye area, the head's circle less its cap; the boy's and the
     //  captain's faces, not the dark one in front)
-    regions.push({ F: F0 + fr, shot: S.id, eyes: placed.filter((p) => !p.w.sil).map((p) => { const J = (j) => toScreen(p.pl, jointPx(p.pl.f, j)), a = J("skull"), b = J("crown"), r = Math.hypot(b[0] - a[0], b[1] - a[1]) / 2; return [Math.round((a[0] + b[0]) / 2), Math.round((a[1] + b[1]) / 2 - 0.05 * r), Math.round(0.4 * r)]; }), text: [] });
+    regions.push({ F: F0 + fr, shot: S.id, eyes: placed.filter((p) => !p.w.sil).map((p) => { const J = (j) => toScreen(p.pl, jointPx(p.pl.f, j)), a = J("skull"), b = J("crown"), r = Math.hypot(b[0] - a[0], b[1] - a[1]) / 2; const yaw = (p.pl.f.sk.faceYaw * Math.PI) / 180; return [Math.round((a[0] + b[0]) / 2 + 0.5 * r * Math.sin(yaw)), Math.round((a[1] + b[1]) / 2 + 0.05 * r), Math.round(0.5 * r)]; }), text: [] });      // (the eyes' area moves toward the side the face turns: measured on the three-quarter captain, v22)
     dump[S.id].push(row); } F0 += n; }
 fs.mkdirSync("out/cab3d", { recursive: true }); if (!plant) { fs.writeFileSync("out/cab3d/figs.json", JSON.stringify(dump)); fs.writeFileSync("out/cab3d/regions.jsonl", regions.map((r) => JSON.stringify(r)).join(String.fromCharCode(10)) + String.fromCharCode(10)); }
 const key = (x) => x.replace(/ frame \d+/, "").replace(/[-\d.]+ (cm|px|units)/g, "N $1").replace(/ \(at [^)]*\)/, "");

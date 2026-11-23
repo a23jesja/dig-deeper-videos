@@ -122,7 +122,15 @@ Tiderna gäller filmen (s), som börjar med öppning (c).
 - **ElevenLabs-räknaren** (`film-v10/elevenlabs-raknaren.txt`): 3 589 av 40 000. Före Eiffeltornet var den 2 842, alltså +747. Skickat enligt min räkning är 1 881 tecken (inom godkända 2 428); räknaren släpar.
 - **Lyssna efter:** "Or so, the story goes." (bild 18, 30,83 s, g15b take 2) och riskorden i `engine/voice/eiffel/lyssna-riskord.wav`.
 - **Det frysta utseendet:** `git diff ad1a161` ger 0 rader i designs, rig, clips, ink, stage och alcatraz/.
-- **Oberoende granskning:** den femte granskaren fällde inget av punkterna 1–6 på v7 (rapporten nedan). **Den sjätte granskaren** godkände huvudfilmen v8 på alla tre punkter: stämpeln mot texten, gången förbi dörren och hela filmen. Den sjunde granskaren godkände v9:s stämpelbild på text och grepp. En åttonde granskare kontrollerar stämpelbilden i v10, och dess svar skickas separat.
+- **Oberoende granskning:** den femte granskaren fällde inget av punkterna 1–6 på v7 (rapporten nedan). **Den sjätte granskaren** godkände huvudfilmen v8 på alla tre punkter: stämpeln mot texten, gången förbi dörren och hela filmen. Den sjunde granskaren godkände v9:s stämpelbild på text och grepp. **Den åttonde granskaren godkände stämpelbilden i v10 på alla tre punkter**, både i filmen och i (d):
+- **Texten:** ärmen ligger minst 137 px under texten i filmen medan texten står i full styrka. I (d) är avståndet 33 px lodrätt, vid sidan av texten, och 61 px under textens bredd.
+- **Greppet:** handen följer stämpeln inom 2,3 px.
+- **Den röda ramen** är hel från ruta 102 i filmen och ruta 37 i (d), och den ligger 22–23 px fri från stämpeln.
+- **Rörelsen:** högst 12,0 px per ruta, alltså precis vid gränsen.
+
+Granskaren noterar också:
+- SOLD med hel ram syns cirka 0,3 s före klippet. Bokstäverna syns tidigare, och papperet med SOLD syns igen i bild 2 och 18.
+- Tornspetsen på papperet sticker 6 px upp bakom stämpelns knopp i stämpelbildens första ruta.
 - **Ordningen i (c):** han håller det stämplade papperet i ruta 1, och stämpelns närbild börjar med stämpeln vilande på papperet och lyfter den, så att SOLD visas. Den fjärde granskaren läste det som omvänd ordning; (d) har stämpeln först.
 
 ## Att ta ställning till (från den femte granskaren, inte rättat)

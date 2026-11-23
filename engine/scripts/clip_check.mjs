@@ -25,12 +25,13 @@
 //     node scripts/clip_check.mjs <clip id | all>     (from engine/)   CLIP_PLANT=<fault> plants one fault (see below)
 import * as esbuild from "esbuild"; import fs from "node:fs"; import path from "node:path"; import { pathToFileURL } from "node:url";
 const out = path.resolve("out/clip_model.mjs");
-fs.writeFileSync("out/_clip_entry.ts", 'export * from "../src/craft/clips/clipKit"; export { CLIPS, CRAB, GUARD } from "../src/craft/clips/clips"; export { SHOTS, DRAWN, SLEEVE, PLANT as ALC_PLANT } from "../src/craft/alcatraz/alcatraz"; export { Ink } from "../src/craft/ink"; export { ease } from "../src/craft/stage/acting"; export { pupilIn, drawnGaze, qPupils, FACE } from "../src/craft/designs/flat"; export { handFlip, SHOE } from "../src/craft/designs/common"; export { PIVOT } from "../src/craft/motion";\n');
+fs.writeFileSync("out/_clip_entry.ts", 'export * from "../src/craft/clips/clipKit"; export { CLIPS, CRAB, GUARD } from "../src/craft/clips/clips"; export { SHOTS, DRAWN, SLEEVE, PLANT as ALC_PLANT } from "../src/craft/alcatraz/alcatraz"; export { SHOTS as EIF_SHOTS } from "../src/craft/eiffel/eiffel"; export { Ink } from "../src/craft/ink"; export { ease } from "../src/craft/stage/acting"; export { pupilIn, drawnGaze, qPupils, FACE } from "../src/craft/designs/flat"; export { handFlip, SHOE } from "../src/craft/designs/common"; export { PIVOT } from "../src/craft/motion";\n');
 await esbuild.build({ entryPoints: ["out/_clip_entry.ts"], bundle: true, format: "esm", platform: "node", outfile: out, logLevel: "error", loader: { ".json": "json" } });
 const M = await import(pathToFileURL(out).href); fs.rmSync(out); fs.rmSync("out/_clip_entry.ts");
-const { SHOTS, DRAWN, SLEEVE, ALC_PLANT, CLIPS: LIB, CRAB, GUARD, Ink, castAt, FM, scaleOf, footY, D, shoeDrawn, FLAT_SPECS, viewOf, heightOf, drawnHandKind, figBox, pupilIn, drawnGaze, thighUnder, handFlip, SHOE, PIVOT, qPupils, FACE } = M;
+const { SHOTS: ALC_SHOTS, EIF_SHOTS, DRAWN, SLEEVE, ALC_PLANT, CLIPS: LIB, CRAB, GUARD, Ink, castAt, FM, scaleOf, footY, D, shoeDrawn, FLAT_SPECS, viewOf, heightOf, drawnHandKind, figBox, pupilIn, drawnGaze, thighUnder, handFlip, SHOE, PIVOT, qPupils, FACE } = M;
 // (alcatraz: the shots of the Alcatraz film, src/craft/alcatraz/alcatraz.ts, checked as the library's clips are)
-const CLIPS = { ...LIB, ...SHOTS }, LINE_TOP = FM.GY - FM.LINE / 2, ids = process.argv[2] === "alcatraz" ? Object.keys(SHOTS) : process.argv[2] && process.argv[2] !== "all" ? [process.argv[2]] : Object.keys(LIB);
+const SHOTS = { ...ALC_SHOTS, ...EIF_SHOTS };      // (the films' shots: the flat Alcatraz and the Eiffel Tower, both read as clips)
+const CLIPS = { ...LIB, ...SHOTS }, LINE_TOP = FM.GY - FM.LINE / 2, ids = process.argv[2] === "alcatraz" ? Object.keys(ALC_SHOTS) : process.argv[2] === "eiffel" ? Object.keys(EIF_SHOTS) : process.argv[2] && process.argv[2] !== "all" ? [process.argv[2]] : Object.keys(LIB);
 const PL = process.env.CLIP_PLANT;
 // a stand-in canvas that keeps only the transform, to draw a figure and read the places its drawing marks (the pipe's bowl)
 const mockCtx = () => { let m = [1, 0, 0, 1, 0, 0]; const st = [], mul = (a, b) => [a[0] * b[0] + a[2] * b[1], a[1] * b[0] + a[3] * b[1], a[0] * b[2] + a[2] * b[3], a[1] * b[2] + a[3] * b[3], a[0] * b[4] + a[2] * b[5] + a[4], a[1] * b[4] + a[3] * b[5] + a[5]];

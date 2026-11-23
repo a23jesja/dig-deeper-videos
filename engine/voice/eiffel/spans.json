@@ -1,0 +1,170 @@
+[
+ {
+  "id": "g01",
+  "take": 0,
+  "on": 0.108,
+  "off": 1.286,
+  "dur": 1.178,
+  "line": "He sold the Eiffel Tower."
+ },
+ {
+  "id": "g02",
+  "take": 0,
+  "on": 0.057,
+  "off": 0.935,
+  "dur": 0.878,
+  "line": "It was never his."
+ },
+ {
+  "id": "g03",
+  "take": 0,
+  "on": 0.045,
+  "off": 2.605,
+  "dur": 2.56,
+  "line": "A newspaper said the tower cost too much to fix."
+ },
+ {
+  "id": "g04",
+  "take": 0,
+  "on": 0.071,
+  "off": 1.014,
+  "dur": 0.943,
+  "line": "He was a con man."
+ },
+ {
+  "id": "g05",
+  "take": 0,
+  "on": 0.059,
+  "off": 1.846,
+  "dur": 1.788,
+  "line": "He pretended to be a government official."
+ },
+ {
+  "id": "g06",
+  "take": 0,
+  "on": 0.073,
+  "off": 2.533,
+  "dur": 2.46,
+  "line": "He told scrap dealers to bid for the tower's iron."
+ },
+ {
+  "id": "g07",
+  "take": 0,
+  "on": 0.011,
+  "off": 0.89,
+  "dur": 0.88,
+  "line": "One dealer won."
+ },
+ {
+  "id": "g08",
+  "take": 0,
+  "on": 0.077,
+  "off": 1.373,
+  "dur": 1.295,
+  "line": "The dealer paid for the tower."
+ },
+ {
+  "id": "g09",
+  "take": 0,
+  "on": 0.088,
+  "off": 1.512,
+  "dur": 1.423,
+  "line": "The con man got a bribe too."
+ },
+ {
+  "id": "g10",
+  "take": 0,
+  "on": 0.039,
+  "off": 1.253,
+  "dur": 1.214,
+  "line": "Then he vanished with the money."
+ },
+ {
+  "id": "g11",
+  "take": 0,
+  "on": 0.069,
+  "off": 2.278,
+  "dur": 2.21,
+  "line": "The dealer was too embarrassed to tell the police."
+ },
+ {
+  "id": "g12",
+  "take": 0,
+  "on": 0.045,
+  "off": 1.751,
+  "dur": 1.706,
+  "line": "Later, the con man tried again."
+ },
+ {
+  "id": "g13",
+  "take": 0,
+  "on": 0.046,
+  "off": 1.969,
+  "dur": 1.923,
+  "line": "This time, another dealer told the police."
+ },
+ {
+  "id": "g14",
+  "take": 0,
+  "on": 0.101,
+  "off": 1.649,
+  "dur": 1.548,
+  "line": "The con man fled to America."
+ },
+ {
+  "id": "g15",
+  "take": 0,
+  "on": 0.074,
+  "off": 1.186,
+  "dur": 1.113,
+  "line": "Or so the story goes."
+ },
+ {
+  "id": "g16",
+  "take": 0,
+  "on": 0.047,
+  "off": 0.626,
+  "dur": 0.58,
+  "line": "Any offers?"
+ },
+ {
+  "id": "d01",
+  "take": 0,
+  "on": 0.072,
+  "off": 0.773,
+  "dur": 0.7,
+  "line": "Do you deliver?"
+ },
+ {
+  "id": "g17",
+  "take": 0,
+  "on": 0.02,
+  "off": 1.55,
+  "dur": 1.53,
+  "line": "Somebody bought the Eiffel Tower."
+ },
+ {
+  "id": "g18",
+  "take": 0,
+  "on": 0.106,
+  "off": 1.172,
+  "dur": 1.066,
+  "line": "The seller didn't own it."
+ },
+ {
+  "id": "g19",
+  "take": 0,
+  "on": 0.045,
+  "off": 1.694,
+  "dur": 1.648,
+  "line": "This man sold the Eiffel Tower."
+ },
+ {
+  "id": "g15b",
+  "take": 2,
+  "on": 0.061,
+  "off": 1.279,
+  "dur": 1.219,
+  "line": "Or so, the story goes."
+ }
+]

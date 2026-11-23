@@ -6,6 +6,7 @@ import { FlatStyle, FSW, FSH, FLAT_FRAMES } from "./craft/FlatStyle";
 import { FlatMotionA, FLAT_MOTION_FRAMES } from "./craft/FlatMotion";
 import { FlatClip, CLIP_IDS, clipFrames } from "./craft/clips/FlatClip";
 import { AlcatrazFilm, AlcatrazShot, SHOT_IDS, shotFrames, FILM_S } from "./craft/alcatraz/AlcatrazFilm";
+import { EiffelFilm, EiffelHook, EiffelShot, EIFFEL_IDS, eiffelFrames, FILM_S as EIFFEL_S } from "./craft/eiffel/EiffelFilm";
 import { Alcatraz3D, PROV_S, Alcatraz3DFilm, FILM_S as FILM3D_S, DummyCard } from "./craft/alcatraz3d/Alcatraz3D";
 // the older flat films (style2d: no 3D, no card figures)
 import { Dance, DanceThumb, Mona2D, Mona2DThumb, Titanic1, Titanic1Thumb } from "./videos/style2d/Mona2D";
@@ -23,6 +24,10 @@ export const Root: React.FC = () => (
     <Composition id="Alcatraz3D" component={Alcatraz3DFilm} defaultProps={{ muted: true }} durationInFrames={Math.round(FILM3D_S * 30)} fps={30} width={1080} height={1920} />
     <Composition id="A3D-dummy" component={DummyCard} defaultProps={{ hair: "#5a3a24" }} durationInFrames={1} fps={30} width={640} height={660} />
     <Composition id="Alcatraz3D-prov" component={Alcatraz3D} defaultProps={{ muted: true }} durationInFrames={Math.round(PROV_S * 30)} fps={30} width={1080} height={1920} />
+    {/* Who Sold the Eiffel Tower in 1925 (flat 2D, 23 Nov): the film and each shot alone */}
+    <Composition id="Eiffel" component={EiffelFilm} defaultProps={{ muted: true }} durationInFrames={Math.round(EIFFEL_S * 30)} fps={30} width={1080} height={1920} />
+    {["B", "C"].map((o) => <Composition key={o} id={`EiffelHook-${o}`} component={EiffelHook} defaultProps={{ opening: o, muted: true }} durationInFrames={150} fps={30} width={1080} height={1920} />)}
+    {EIFFEL_IDS.map((id) => <Composition key={id} id={`EiffelShot-${id}`} component={EiffelShot} defaultProps={{ id }} durationInFrames={eiffelFrames(id)} fps={30} width={1080} height={1920} />)}
     {/* Alcatraz 1962 (flat 2D, 22 Nov): the film, its three hook-lab openings (0-5 s) and each shot alone */}
     <Composition id="Alcatraz" component={AlcatrazFilm} defaultProps={{ opening: "A" }} durationInFrames={Math.round(FILM_S * 30)} fps={30} width={1080} height={1920} />
     {["A", "B", "C"].map((o) => <Composition key={o} id={`AlcatrazHook-${o}`} component={AlcatrazFilm} defaultProps={{ opening: o }} durationInFrames={150} fps={30} width={1080} height={1920} />)}

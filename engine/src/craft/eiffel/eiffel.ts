@@ -266,7 +266,7 @@ const holdSheet = (name: string, m: ReturnType<typeof figure>, x: number, kind: 
   //  construction and is left out)
   if (fixed || LMAX !== 0) return { pose: hold, over, contacts: [] };
   return { pose: hold, over, contacts: [{ who: name, side: "L" as const, t0: 0, t1: 99, at: (t: number) => side(1, t), tol: 4, what: `${name}'s left hand at the sheet's right side` }, { who: name, side: "R" as const, t0: 0, t1: 99, at: (t: number) => side(-1, t), tol: 4, what: `${name}'s right hand at the sheet's left side` }] }; };
-const s06 = (): Shot => { const seconds = 2.0, m = figure("sir", 0, 25); m.stand(seconds + 1);      // (turned three-quarter in a full shot: shot 5's frontal medium framing made the letter pop in at a near-identical cut, the independent review)
+const s06 = (): Shot => { const seconds = 2.0, m = figure("sir", 0, 36); m.stand(seconds + 1);      // (turned three-quarter in a full shot: shot 5's frontal medium framing made the letter pop in at a near-identical cut, the independent review)
   ease(m, -1, { head: [0, 6, 0] }, 0.01, { face: { ...FACES.smug, gaze: [0, 0.5] } }); ease(m, 0.95, { head: [0, 2, 0] }, 0.45, { face: { ...FACES.delighted, gaze: [0, 0.2] } });
   const h = holdSheet("con", m, 0, "letter", false, true, () => 0, 240);      // (carried by the hands: at three-quarter the per-frame search left the wrist 4 px off the sheet)      // (the second beat: the grin; the letter 10 px lower, clear of the chin)
   const cast: Cast[] = [{ name: "con", m, who: "sir", look: CON, seed: 9, armWipe: false, hands: { L: [[0, "grip"]], R: [[0, "grip"]] }, pose: h.pose }];

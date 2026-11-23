@@ -1,4 +1,4 @@
 first frame: the first sound at 0.000 s (frame 1), the peak in frame 1 0.38 -> OK
 text: THIS MAN SOLD THE / EIFFEL TOWER (6 words), 0.0-3.0 s, 1.50 s per line -> OK
 seconds 0-10: shots start at [0, 2.2, 3.7, 5.2, 6.7, 8.2], lasting [2.2, 1.5, 1.6, 1.4, 1.6, 2.0] s -> OK
-the loop: 3.0 % of the picture changes from the last frame to the first; inside the film 95 % of frame changes are 7.6 % or less, the largest cut 88.5 %
+the loop: 2.9 % of the picture changes from the last frame to the first; inside the film 95 % of frame changes are 7.6 % or less, the largest cut 88.8 %

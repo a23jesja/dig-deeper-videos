@@ -14,12 +14,15 @@ from mathutils import Vector, Matrix
 HERE = os.path.dirname(os.path.abspath(__file__)); ENGINE = os.path.normpath(os.path.join(HERE, "..", ".."))
 SPEC = json.load(open(os.environ.get("A3D_SPEC") or os.path.join(ENGINE, "src", "craft", "alcatraz3d", "shots.json")))      # (A3D_SPEC: the whole film's plan, film.json)
 argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
-WHICH = argv[0] if argv else "all"; DRAFT = "--draft" in argv; MAP_ONLY = "--map-only" in argv
+WHICH = argv[0] if argv else "all"; DRAFT = "--draft" in argv; MAP_ONLY = "--map-only" in argv; CAMS_ONLY = "--cams-only" in argv      # (cams-only: the projections alone, for a quick picture of the overlay)
 FR = None
 if "--frames" in argv: a, b = argv[argv.index("--frames") + 1].split("-"); FR = (int(a), int(b))
 W, H, FPS = SPEC["W"], SPEC["H"], SPEC["fps"]
 PLACE = next((x.get("place", "block") for x in SPEC["shots"] if x["id"] == WHICH), "block")      # each shot names its place; only that place is built
 AREA = PLACE
+SHOT0 = next((x for x in SPEC["shots"] if x["id"] == WHICH), {})
+CARD_GLOW = SHOT0.get("cardGlow", 0.8)      # (v12: the fake head card's brightness: it is unlit, its own colours times this)
+LAMPS = SHOT0.get("lamps", 1.0); MOONK = SHOT0.get("moon", 1.0)      # (v12: the night's level per shot: shot 1 read as daylight, the review of v11)
 if WHICH == "all": raise SystemExit("render one shot at a time: each shot builds only its own place (the tiers, the roof, the bay)")
 TIERS = PLACE == "tiers"      # the view across the cellhouse at the block's three tiers: built only for that shot (the others are inside a tier)
 GRID = 10      # the map: one ray per GRID x GRID pixels
@@ -105,6 +108,27 @@ box("floor", "floor", -5.0, 9.0, -3.2, CD + 0.3, -0.1, 0.0, CONC)
 if not TIERS: box("ceiling", "ceiling", -5.0, 9.0, -3.2, CD + 0.3, CH, CH + 0.1, WALL_HI)
 if not TIERS: box("tier wall", "wall", -5.0, 9.0, -3.3, -3.2, 0.0, CH, WALL_LO)                  # the wall across the tier
 if not TIERS: box("tier wall hi", "wall", -5.0, 9.0, -3.21, -3.19, 1.25, CH, WALL_HI)
+DUMMY = (-0.75, 0.82, 0.755)      # the fake head card's centre (the face's centre 4 mm lower): on the pillow, in the gap between bars 3 and 4
+DUMMY_W = 0.267                     # the card's width in metres (the face 0.23 m across)
+CARDS = []
+def dummy_card(name, at, k):
+    """the flat fake head (blender/alcatraz3d/tex/dummy<k>.png, drawn by the flat v4's code) on a card turned to the lens: lit by the set's
+    lights like a painted board, a little of its own glow so its ink and colours read at night; it casts no shadow (a flat board's shadow)"""
+    # (unlit: the drawing's own colours at a set brightness, so its ink stays the frozen look's dark ink; lit by the set's lights the ink went
+    #  grey in the first draft. The torch's light on it is the flat v4's cone and glow, drawn over the plate)
+    m = bpy.data.materials.new(name); m.use_nodes = True; nt = m.node_tree; N = nt.nodes; L = nt.links
+    for n in list(N):
+        if n.type != "OUTPUT_MATERIAL": N.remove(n)
+    out = next(n for n in N if n.type == "OUTPUT_MATERIAL")
+    im = N.new("ShaderNodeTexImage"); im.image = bpy.data.images.load(os.path.join(HERE, "tex", f"dummy{k}.png")); im.interpolation = "Cubic"
+    em = N.new("ShaderNodeEmission"); em.inputs["Strength"].default_value = CARD_GLOW; L.new(im.outputs["Color"], em.inputs["Color"])
+    tr = N.new("ShaderNodeBsdfTransparent"); mx = N.new("ShaderNodeMixShader"); L.new(im.outputs["Alpha"], mx.inputs["Fac"]); L.new(tr.outputs[0], mx.inputs[1]); L.new(em.outputs[0], mx.inputs[2]); L.new(mx.outputs[0], out.inputs["Surface"])
+    me = bpy.data.meshes.new(name); bm = bmesh.new(); bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=0.5); bm.to_mesh(me); bm.free()
+    uv = me.uv_layers.new()
+    for poly in me.polygons:
+        for li in poly.loop_indices: v = me.vertices[me.loops[li].vertex_index].co; uv.data[li].uv = (v.x + 0.5, v.y + 0.5)
+    o = bpy.data.objects.new(name, me); sc.collection.objects.link(o); o.data.materials.append(m); o.location = at; k_ = SHOT0.get("cardScale", 1.0); o.scale = (DUMMY_W * k_, DUMMY_W * k_ * 660 / 640, 1)      # (cardScale: shot 4's heads a little larger, to read at phone size)
+    o.visible_shadow = False; OBJ[name] = "head"; CARDS.append(o); return o
 def cell(i, cx, z0=0.0, tag=""):
     """one cell: walls, the bars, the bed with the fake head, the table, the vent; z0 lifts it to a tier above"""
     def box_(name, kind, x0, x1, y0, y1, za, zb, m, bevel=0.0): return box(name + tag, kind, x0, x1, y0, y1, za + z0, zb + z0, m, bevel)
@@ -118,8 +142,10 @@ def cell(i, cx, z0=0.0, tag=""):
         box_(f"side{i}{sx} hi", "wall", x - WT / 2 - 0.005, x + WT / 2 + 0.005, 0.0, CD, 1.25, CH, WALL_HI)
     # the bars: round uprights 0.13 m apart from the floor to a header, flat bands across
     n = int(CW / 0.13)
-    for k in range(n + 1): cyl_(f"bar{i}_{k}", "bars", cx - CW / 2 + 0.06 + k * (CW - 0.12) / n, -0.02, 0.0, CH - 0.25, 0.011, STEEL, 10)
-    for zb in (0.12, 1.05, 2.0): box_(f"band{i}_{zb}", "bars", cx - CW / 2, cx + CW / 2, -0.035, -0.005, zb, zb + 0.05, STEEL, 0.004)
+    # (v12, the view across the tiers: thinner bars and no middle band, so the faces of the three dummies read at phone size; the middle band
+    #  fell across the middle dummy's face, the review of v11)
+    for k in range(n + 1): cyl_(f"bar{i}_{k}", "bars", cx - CW / 2 + 0.06 + k * (CW - 0.12) / n, -0.02, 0.0, CH - 0.25, 0.007 if TIERS else 0.011, STEEL, 10)
+    for zb in ((0.12, 2.0) if TIERS else (0.12, 1.05, 2.0)): box_(f"band{i}_{zb}", "bars", cx - CW / 2, cx + CW / 2, -0.035, -0.005, zb, zb + 0.05, STEEL, 0.004)
     box_(f"header{i}", "bars", cx - CW / 2 - WT, cx + CW / 2 + WT, -0.05, 0.0, CH - 0.25, CH, STEEL, 0.01)
     # the bed along the left wall: a steel frame on legs to the floor, a mattress, the pillow, the blanket, the fake head
     bx0, bx1, by0, by1, bz = cx - 1.2, cx - 0.42, 0.55, 2.75, 0.42
@@ -137,15 +163,11 @@ def cell(i, cx, z0=0.0, tag=""):
     hx, hy, hz = cx - 0.81, by0 + 0.27, bz + 0.31      # (sunk into the pillow, the blanket to the chin: no hard dark band under it, point 14)
     # (only the three who got out have a fake head, in the column of cells at x 0, one per tier; every other bed has a sleeper's lump under
     #  the blanket and no head: identical dummies everywhere said every prisoner was a dummy, the independent review point 22)
-    if i == 1:
-        # the face turned up and toward the bed's foot (into the cell), the hair at the back toward the bars
-        sphere_(f"head{i}", "head", (hx, hy, hz), 0.105, SKIN, 0.92, 1.0, 1.0)
-        sphere_(f"hair{i}", "head", (hx, hy - 0.04, hz + 0.01), 0.108, [HAIR, HAIR2, HAIR3][int(z0 // 2.8) % 3], 0.98, 0.95, 1.0)
-        sphere_(f"nose{i}", "head", (hx, hy + 0.06, hz + 0.08), 0.02, SKIN)
-        # the shut eyes painted on: a thin dark line set into the surface, inside the face (3D discs stood out over the edge into the hair, point 20)
-        for ex in (-0.034, 0.034):
-            d = Vector((ex, 0.055, 0.08)).normalized() * 0.103; c = (hx + d.x / 0.92 * 0.92, hy + d.y, hz + d.z)
-            o = cyl(f"lid{i}{ex}{tag}", "head", c[1], c[2] + z0, c[0] - 0.014, c[0] + 0.014, 0.0035, DARK, 8, axis="x")
+    if i == 1 and not SHOT0.get("noDummy"):
+        # (v12: the fake head is the flat v4's drawing on a card standing on the pillow and turned to the lens, so every face is flat Knopp and
+        #  the bars, the blanket and the light treat it as a thing in the cell: the automation session's condition for round 4. It stands in
+        #  the gap between two bars, x -0.75, so the lens of shot 1 can look at it between them)
+        dummy_card(f"dummy{i}{tag}", (cx + DUMMY[0] - CELLS[1], DUMMY[1], DUMMY[2] + z0), int(z0 // 2.8) % 3)
     else:
         sphere_(f"sleeper{i}", "bed", (cx - 0.81, by0 + 0.95, bz + 0.2), 0.22, BLANK, 1.45, 4.4, 0.5)      # the blanket pulled over a sleeper, head and all: one long hump
     # the fold-down table on the right wall, a tin cup and a book on it
@@ -168,7 +190,7 @@ if TIERS:
     for k in (1, 2):
         box(f"slab{k}", "floor", -5.0, 9.0, -1.25, CD + 0.3, k * TH - 0.25, k * TH, CONC)
         for i, cx in enumerate(CELLS): cell(i, cx, k * TH, f"_t{k}")
-        for xr in np.arange(-5.0, 9.0, 0.16): cyl(f"rail{k}_{xr:.2f}", "bars", float(xr), -1.2, k * TH, k * TH + 0.95, 0.009, STEEL, 8)
+        for xr in np.arange(-5.0, 9.0, 0.24): cyl(f"rail{k}_{xr:.2f}", "bars", float(xr), -1.2, k * TH, k * TH + 0.95, 0.006, STEEL, 8)      # (v12: thinner and wider apart, over the top dummy's face)
         box(f"railtop{k}", "bars", -5.0, 9.0, -1.23, -1.17, k * TH + 0.93, k * TH + 0.99, STEEL, 0.005)
     fl = bpy.data.lights.new("cellhouse windows", "AREA"); fl.color = hexc("#9fb4ff")[:3]; fl.energy = 900; fl.size = 8.0
     flo = bpy.data.objects.new("cellhouse windows", fl); sc.collection.objects.link(flo); flo.location = (0.0, -7.5, 5.0); flo.rotation_euler = (math.radians(80), 0, 0)
@@ -176,12 +198,12 @@ if TIERS:
     for k in (0, 1, 2): point(f"gallery lamp{k}", (-0.4, -0.75, k * TH + 2.3), "#ffa95e", 260, 0.06)      # (over the three cells with the dummies: they are the lit ones)
 # the lamps of the tier: caged bulbs on the ceiling, warm, falling off with the distance (cabin v5's lamp)
 for lx in (-3.6, 1.35, 6.3):
-    point(f"lamp{lx}", (lx, -1.7, CH - 0.25), "#ffa95e", 260, 0.06)
+    point(f"lamp{lx}", (lx, -1.7, CH - 0.25), "#ffa95e", 260 * LAMPS, 0.06)
     if not TIERS: sphere(f"bulb{lx}", "lamp", (lx, -1.7, CH - 0.2), 0.04, mat("bulb glow", "#ffd9a0", 0.2, 1, 0, 0))      # (in the view of the tiers there is no ceiling for it to hang from: no bulb in the air)
     if "bulb glow" in MATS: MATS["bulb glow"].node_tree.nodes["Principled BSDF"].inputs["Emission Color"].default_value = hexc("#ffc27a")
     if "bulb glow" in MATS: MATS["bulb glow"].node_tree.nodes["Principled BSDF"].inputs["Emission Strength"].default_value = 30
 # the moon through the high windows across the tier: a thin cold light (cabin v5's window), an area light
-mo = bpy.data.lights.new("moon", "AREA"); mo.color = hexc("#8fb0ff")[:3]; mo.energy = 420; mo.size = 1.2
+mo = bpy.data.lights.new("moon", "AREA"); mo.color = hexc("#8fb0ff")[:3]; mo.energy = 420 * MOONK; mo.size = 1.2
 mobj = bpy.data.objects.new("moon", mo); sc.collection.objects.link(mobj); mobj.location = (1.0, -3.1, 2.3); mobj.rotation_euler = (math.radians(70), 0, 0)
 # the guard's torch: a warm spot with a soft edge
 tl = bpy.data.lights.new("torch", "SPOT"); tl.color = hexc("#ffe2b0")[:3]; tl.spot_size = math.radians(15); tl.spot_blend = 0.45; tl.shadow_soft_size = 0.02
@@ -194,6 +216,15 @@ camd.sensor_fit = "VERTICAL"; camd.sensor_height = 24.0
 ctgt = bpy.data.objects.new("cam target", None); sc.collection.objects.link(ctgt)
 c = cam.constraints.new("TRACK_TO"); c.target = ctgt; c.track_axis = "TRACK_NEGATIVE_Z"; c.up_axis = "UP_Y"
 foc = bpy.data.objects.new("focus", None); sc.collection.objects.link(foc); camd.dof.use_dof = True; camd.dof.focus_object = foc
+# (v12: each fake head card faces the lens)
+for o in CARDS: c = o.constraints.new("TRACK_TO"); c.target = cam; c.track_axis = "TRACK_Z"; c.up_axis = "UP_Y"
+# (v12: the torch neither lights nor is blocked by the bars: a lit bar read as a stick in front of the guard, the review of v11 point 3; the
+#  beam is drawn whole from the lamp to its spot over the plate instead)
+_bars = bpy.data.collections.new("torch: not the bars")
+for _n, _k in OBJ.items():
+    if _k == "bars" and _n in bpy.data.objects: _bars.objects.link(bpy.data.objects[_n])
+torch.light_linking.receiver_collection = _bars; torch.light_linking.blocker_collection = _bars
+for _co in _bars.collection_objects: _co.light_linking.link_state = "EXCLUDE"
 
 # ------------------------------------------------------------------ the rest of the film's places ------------------------------------------------------------------
 def emis(name, col, strength):
@@ -299,7 +330,7 @@ def fig_point(shot, name):
     for f in shot["figs"]:
         if f["name"] == name: return (f["at"][0], f["at"][1], 1.45)
     return None
-FOCUS = {"head": (CELLS[1] - 0.81, 0.55 + 0.27, 0.42 + 0.31)}
+FOCUS = {"head": (DUMMY[0], DUMMY[1], DUMMY[2] - 0.004)}
 
 def pose_shot(shot, t):
     """camera, focus and torch at the time t (seconds into the shot)"""
@@ -310,11 +341,14 @@ def pose_shot(shot, t):
         R0, R1 = shot["raft"]["from"], shot["raft"]["to"]; rx, ry = R0[0] + (R1[0] - R0[0]) * u, R0[1] + (R1[1] - R0[1]) * u
         for o, l0 in zip(RAFT, RAFT0): o.location = (l0.x + rx, l0.y + ry, l0.z + 0.03 * math.sin(t * 2.1))
     T = shot["torch"]; torch.location = lerp3(T["from"][0], T["from"][1], u); tgt.location = lerp3(T["at"][0], T["at"][1], u); tl.energy = T["power"] * 9
-    tl.spot_size = math.radians(T.get("cone", 15))
+    tl.spot_size = math.radians(T.get("cone", 15)); tl.spot_blend = T.get("blend", 0.45)
     sps = shot.get("spots", [])
     for k, (L, sp) in enumerate(zip(SPOTS, sps)):
         nxt = sps[k + 1]["on"] if k + 1 < len(sps) else 1e9
         L.data.energy = sp["power"] * ease((t - sp["on"]) / 0.3) * (1 - 0.65 * ease((t - nxt) / 0.3))      # (one at a time: the last one lit is the bright one)
+        if k < len(CARDS):      # (v12: each dummy's card brightens with its own spot, as v11's lit heads did: unlit cards were all bright at once)
+            em = next(n for n in CARDS[k].active_material.node_tree.nodes if n.type == "EMISSION")
+            em.inputs["Strength"].default_value = CARD_GLOW * (0.55 + 0.45 * ease((t - sp["on"]) / 0.3) * (1 - 0.35 * ease((t - nxt) / 0.3)))
 
 def projection():
     """the 3 x 4 matrix taking a world point to (pixel x, pixel y, depth along the lens) * w"""
@@ -354,6 +388,7 @@ for shot in shots:
     for fr in range(f0, f1 + 1):
         pose_shot(shot, fr / FPS); sc.frame_set(0); bpy.context.view_layer.update()
         P, Mwc = projection(); cams.append({"f": fr, "P": P, "cam": list(Mwc.to_translation())})
+        if CAMS_ONLY: continue
         dep, kin, kinds = ray_map(Mwc); depths.append(dep); kinds_.append(kin)
         if not MAP_ONLY:
             sc.render.filepath = os.path.join(outp, f"{fr + 1:04d}.jpg"); bpy.ops.render.render(write_still=True)
@@ -362,5 +397,6 @@ for shot in shots:
     if FR is None: json.dump({"id": shot["id"], "frames": [c["P"] for c in cams]}, open(os.path.join(camdir, shot["id"] + ".json"), "w"))
     json.dump({"id": shot["id"], "W": W, "H": H, "grid": GRID, "frames": cams, "render_s": secs, "render_s_per_frame": secs / max(1, f1 - f0 + 1), "draft": DRAFT,
                "device": sc.cycles.device}, open(os.path.join(outd, "cam.json" if FR is None else f"cam-{f0}-{f1}.json"), "w"))
+    if CAMS_ONLY: print(f"CAMS {shot['id']}", flush=True); continue
     np.savez_compressed(os.path.join(outd, "map.npz" if FR is None else f"map-{f0}-{f1}.npz"), depth=np.stack(depths), kind=np.stack(kinds_), kinds=np.array(kinds))
     print(f"SHOT {shot['id']}: {f1 - f0 + 1} frames in {secs:.1f} s ({secs / max(1, f1 - f0 + 1):.2f} s a frame, {sc.cycles.device})", flush=True)

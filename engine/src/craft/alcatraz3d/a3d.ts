@@ -14,6 +14,7 @@ import SPEC from "./film.json";
 import { CAMS as CAMS0 } from "./cams";
 import MOUTH_G01 from "./mouth-g01.json";
 import MOUTH_G02 from "./mouth-g02.json";
+import { heldTorch, cone, fakeHead } from "./flatprops";
 
 type G = CanvasRenderingContext2D;
 type P2 = [number, number];
@@ -41,7 +42,9 @@ export type Who3 = { name: string; cast: Cast; at: [number, number]; torch?: boo
 export const PLANT3 = { float: false, sink: false, behind: false, noShadow: false };      // the checks' planted faults (A3D_PLANT)
 
 // the guard's torch in his right hand, aimed at the fake head (shots 2 and 3, the same hand, lit in both: the review of v3 points 2, 5, 16)
-export const HEAD3: [number, number, number] = [-0.81, 0.82, 0.73];
+export const HEAD3: [number, number, number] = [-0.75, 0.82, 0.75];
+/** the fake head card in the set (set.py DUMMY, DUMMY_W): its centre and width in metres */
+export const DUMMY3: [number, number, number] = [-0.75, 0.82, 0.755], DUMMY_W3 = 0.267;      // (v12: the fake head card's face, set.py DUMMY)
 const torchArm = (m: ReturnType<typeof figure>) => { let ref: Pose | null = null;
   return (t: number, p: Pose, heading: number): Pose => {
     if (!ref) { const a = poseAt({ name: "guard", m, who: "sir" }, 0), sk = solve(D.props("sir"), a.pose, heading), pel = sk.j.pelvis as unknown as number[], s = scaleOf("sir");
@@ -57,14 +60,17 @@ const guard = (smileK: number, talk = false): Who3 => { const s = 1.6, m = figur
     ease(m, -1, { head: [-12, 12, 0] }, 0.01, { face: { pupil: 1, gaze: [-0.8, 0.6], smile: 0, lid: 0.15, brow: 0.35, mouth: 0 } });
     ease(m, 0.2, { head: [-3, 3, 0] }, 0.55, { face: { pupil: 1, gaze: [0.15, 0.05], smile: 0, lid: 0.08, brow: 0.6, mouth: 0 } });
   }
-  return { name: "guard", at: [0.78, -0.42], torch: true, cast: { name: "guard", m, who: "sir", look: GUARD, seed: 12, armWipe: false, pose: torchArm(m), hands: { L: [[0, "relaxed"]], R: [[0, "grip"]] }, ...(talk ? { mouth: { t0: 0, len: MOUTH_G01.mouth.length, mouth: MOUTH_G01.mouth } } : {}) } }; };
+  return { name: "guard", at: [0.78, -0.42], torch: true, cast: { name: "guard", m, who: "sir", look: GUARD, seed: 12, armWipe: false, pose: torchArm(m), hands: { L: [[0, "relaxed"]], R: [[0, "fist"]] }, ...(talk ? { mouth: { t0: 0, len: MOUTH_G01.mouth.length, mouth: MOUTH_G01.mouth } } : {}) } }; };
 const inmateN05 = (): Who3 => { const m = figure("sir", 0, -90); m.stand(4);
   // (the approved react, no walk: a walk's arm swing at this size ran 30 px a frame and the flicker measure failed its frames)
   // listening at the vent, his head turned back to it; the light comes; his head swings round to it; he flinches back, the shoulders up, eyes
   // wide (every change over 0.5 s or more, the head trailing the body)
-  ease(m, -1, { head: [26, 4, 0] }, 0.01, { face: { pupil: 1, gaze: [0.7, 0.25], lid: 0.1 } });
-  ease(m, 0.3, { head: [30, 0, 0] }, 0.5, { face: { pupil: 1, gaze: [0.8, 0.1], brow: 0.5, lid: 0 } });
-  ease(m, 0.95, { lean: -6, head: [34, -2, 0] }, 0.6, { face: { pupil: 0.7, gaze: [0.85, 0.0], wide: 1, brow: 1, mouth: 0.2, smile: -0.5, lid: 0 } });
+  // (v12: the head stays in the rig's three-quarter drawing the whole shot, its yaw 40-46 (the face's yaw -50 to -44, the drawing switches to
+  //  the side view at -58): from 26 to 34 it crossed that switch and the head jumped from profile to three-quarter, the review of v11 point 2.
+  //  The eyes do the looking at the light; simpler, as the automation session asked)
+  ease(m, -1, { head: [40, 4, 0] }, 0.01, { face: { pupil: 1, gaze: [0.7, 0.25], lid: 0.1 } });
+  ease(m, 0.3, { head: [42, 0, 0] }, 0.5, { face: { pupil: 1, gaze: [0.8, 0.1], brow: 0.5, lid: 0 } });
+  ease(m, 0.95, { lean: -6, head: [46, -2, 0] }, 0.6, { face: { pupil: 0.7, gaze: [0.85, 0.0], wide: 1, brow: 1, mouth: 0.2, smile: -0.5, lid: 0 } });
   FRIGHT_AT.n05 = 1.05;
   return { name: "inmate", at: [0.30, 2.40], cast: { name: "inmate", m, who: "sir", look: INMATE, seed: 41, armWipe: false, hands: { L: [[0, "fist"]], R: [[0, "fist"]] } } }; };
 // ------------------------------------------------------------------ the rest of the film's people ------------------------------------------------------------------
@@ -108,7 +114,7 @@ const guardN11 = (): Who3 => { const m = figure("sir", 0, -20); m.stand(4);
   return { name: "guard", at: [0.78, -0.42], cast: { name: "guard", m, who: "sir", look: GUARD, seed: 13, armWipe: false, hands: { L: [[0, "open"]], R: [[0, "open"]] } } }; };
 export const FRIGHT_AT: Record<string, number> = { n05: 1.6, n11: 0.45 };
 export const FRIGHT_COL: Record<string, [number, number, number]> = { n05: [186, 222, 190], n11: [226, 96, 80] };
-export const WHO: Record<string, () => Who3[]> = { n01: () => [], n02: () => [guard(1, true)], n03: () => [guard(0)], n04: () => [], n05: () => [inmateN05()],
+export const WHO: Record<string, () => Who3[]> = { n01: () => [], n02: () => [guard(1, true)], n03: () => [],      /* (v12: close on the fake head, simpler: the review of v11 point 1) */ n04: () => [], n05: () => [inmateN05()],
   n06: () => [inmateN06()], n07: () => [inmateN07()], n08: () => [roofMan(0), roofMan(1), roofMan(2)], n09: () => [], n10: () => [guardN10()], n11: () => [guardN11()], n12: () => [], n13: () => [], n14: () => [] };
 
 /** where a figure stands in the picture at frame fr: the screen point of his feet, his scale, and the 2D camera that draws him there.
@@ -127,7 +133,7 @@ export const LINE_TOP = FM.GY - FM.LINE / 2;
 /** the torch in the hand (the grip rule: palm and thumb behind the barrel, the fingers wrapped over it in front), aimed at a picture point;
  *  drawn in the rig's world (the figure's transform). Returns the lens in the rig's world */
 export const torchGeo = (f: Fig, aim: P2) => { const wr = jointPx(f, "wrR"), tp = jointPx(f, "tipR"), hc: P2 = [wr[0] + (tp[0] - wr[0]) * 0.45, wr[1] + (tp[1] - wr[1]) * 0.45];
-  const a = Math.atan2(aim[1] - hc[1], aim[0] - hc[0]), L = 0.27 / FIG_H * FM.PPM * heightOf(f.who); return { hc, a, L, lens: [hc[0] + Math.cos(a) * L * 0.56, hc[1] + Math.sin(a) * L * 0.56] as P2 }; };
+  const a = Math.atan2(aim[1] - hc[1], aim[0] - hc[0]), L = 0.27 / FIG_H * FM.PPM * heightOf(f.who), s = L / 102; return { hc, a, L, s, lens: [hc[0] + Math.cos(a) * 82 * s, hc[1] + Math.sin(a) * 82 * s] as P2 }; };
 /** where the torch points at frame fr: Blender's torch target, eased over the shot as set.py eases it (so the lamp, the cone and the plate's spot agree) */
 export const torchTarget = (id: string, fr: number): [number, number, number] => { const sh = SHOTS3D.find((s) => s.id === id)!, n = Math.round((sh.t1 - sh.t0) * FM.FPS), u = smooth(Math.min(1, fr / Math.max(1, n))), A = sh.torch.at;
   return [lerp(A[0][0], A[1][0], u), lerp(A[0][1], A[1][1], u), lerp(A[0][2], A[1][2], u)]; };
@@ -191,7 +197,9 @@ export const paintFigures = (g: G, id: string, fr: number, whos: Who3[]) => {
       if (u > 0 && y0 + yy < chin && r > gg && gg > b && r - b > 45 && lum > 120) { const m = 0.72 * u, C = FRIGHT_COL[id] ?? [186, 222, 190]; L[k] = L[k] * (1 - m) + C[0] * m; L[k + 1] = L[k + 1] * (1 - m) + C[1] * m; L[k + 2] = L[k + 2] * (1 - m) + C[2] * m; } }
     h.putImageData(lit, x0, y0);
     h.setTransform(pl.z, 0, 0, pl.z, FM.W / 2 - pl.z * pl.cx, FM.H / 2 - pl.z * pl.cy);
-    if (w.torch) { const aim = aimRig(id, fr, pl), lens = torchGrip(h, f, aim, true), g0 = torchGeo(f, aim);
+    // (v12: the torch in the flat v4's approved hand (palm and thumb behind, the shaft over the palm, four fingers round it in front), drawn
+    //  over the rig's fist: the rig's grip hand behind the lamp read as a ball with crossing lines, the review of v11 point 4)
+    if (w.torch) { const aim = aimRig(id, fr, pl), g0 = torchGeo(f, aim), lens = heldTorch(h, g0.hc[0], g0.hc[1], g0.a, null, 0, g0.s, "#33456a", 0);
       LENS[id].push({ screen: toScreen(pl, lens), world: lensWorld(pl, lens), aim: toScreen(pl, aim), ang: g0.a }); }
     if (u > 0 && id === "n05") sweat(h, f, t - fa);
     if (u > 0 && id === "n11") steam(h, f, t - fa);
@@ -221,12 +229,21 @@ export const steam = (h: G, f: Fig, a0: number) => {
 /** the torch's beam in the air, from the lens to the bars (beyond them the plate's own light carries it: the beam starts in front of the bars
  *  at the lamp, the independent review point 17) */
 export const beamTo = (g: G, id: string, fr: number) => {
-  // (a soft cone along the lamp's own axis, from the lens to the bars, widening and fading; the plate's spot lies where the axis meets the bed:
-  //  a thin upright stick from the lens read as a wick, the review of v9 point 1)
-  for (const L of LENS[id] ?? []) { const a = L.world, b = torchTarget(id, fr), k = Math.min(1, (0 - a[1]) / ((b[1] - a[1]) || 1e-6)), mw: [number, number, number] = [a[0] + (b[0] - a[0]) * k, 0, a[2] + (b[2] - a[2]) * k], q = project(id, fr, mw);
-    const A = L.screen, len = Math.max(60, Math.hypot(q[0] - A[0], q[1] - A[1])), ux = Math.cos(L.ang), uy = Math.sin(L.ang), nx = -uy, ny = ux, B: P2 = [A[0] + ux * len, A[1] + uy * len], r0 = 16, r1 = Math.max(60, len * 0.26);
-    g.save(); g.setTransform(1, 0, 0, 1, 0, 0); g.globalCompositeOperation = "screen"; g.filter = "blur(6px)";
-    for (const [w, k2] of [[1, 0.09], [0.6, 0.11]] as [number, number][]) { const gr = g.createLinearGradient(A[0], A[1], B[0], B[1]); gr.addColorStop(0, `rgba(255,236,190,${k2 * 2})`); gr.addColorStop(1, "rgba(255,236,190,0)");
-      g.fillStyle = gr; g.beginPath(); g.moveTo(A[0] + nx * r0 * w, A[1] + ny * r0 * w); g.lineTo(B[0] + nx * r1 * w, B[1] + ny * r1 * w); g.lineTo(B[0] - nx * r1 * w, B[1] - ny * r1 * w); g.lineTo(A[0] - nx * r0 * w, A[1] - ny * r0 * w); g.closePath(); g.fill(); }
-    g.filter = "none"; g.restore(); } };
+  // (v12: the flat v4's cone, whole from the lens to its spot on the head; it no longer stops at the bars, and the plate's torch no longer
+  //  lights the bars (set.py light linking), the review of v11 point 3)
+  for (const L of LENS[id] ?? []) { const q = project(id, fr, torchTarget(id, fr)); g.save(); g.setTransform(1, 0, 0, 1, 0, 0); g.globalCompositeOperation = "lighter";
+    cone(g, L.screen[0], L.screen[1], q[0], q[1], Math.max(40, Math.hypot(q[0] - L.screen[0], q[1] - L.screen[1]) * 0.16), 0.75); g.restore(); } };
+/** v12, shots 1 and 3: the guard's hand and torch (the flat v4's drawing) at the torch's world point, projected, with the whole cone to the
+ *  head; the sleeve runs out through the picture's edge. Blender's torch stands at the same world point, so the plate's spot is where it points */
+export const handTorch = (g: G, id: string, fr: number) => {
+  // (the hand where the guard's arm comes in at the lower right, in picture pixels: his torch's world point lies just under the lens, too close
+  //  to project; Blender's torch is there, so the plate's light comes from the same side as the drawn cone)
+  const sh = SHOTS3D.find((s) => s.id === id)! as ShotSpec & { hand?: { lens: P2; s: number } }; if (!sh.hand) return null;
+  const lp = sh.hand.lens, q = project(id, fr, torchTarget(id, fr)), sc = sh.hand.s;
+  const a = Math.atan2(q[1] - lp[1], q[0] - lp[0]), hx = lp[0] - Math.cos(a) * 82 * sc, hy = lp[1] - Math.sin(a) * 82 * sc;
+  // (the fake head itself drawn over its card in the plate, at the card's projected place and size: Blender's colour handling turned the card's
+  //  cream face grey-beige; nothing stands in front of it in these two shots, so the flat v4's own colours and ink go on top, exactly over it)
+  const C = project(id, fr, DUMMY3), sh0 = sh as unknown as { cam: { lens: number } }, wpx = DUMMY_W3 * (sh0.cam.lens / 24 * FM.H) / C[2], hs = wpx / (640 / 3.0);
+  g.save(); g.setTransform(1, 0, 0, 1, 0, 0); fakeHead(g, C[0], C[1] + (10 / 3.0) * hs, 3.0 * hs / 3.0, 1); const lens = heldTorch(g, hx, hy, a, [q[0], q[1]], 1, sc); g.restore();
+  return { lens, spot: [q[0], q[1]] as P2, hand: [hx, hy] as P2, ang: a }; };
 export { lerp, smooth };

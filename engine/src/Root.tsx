@@ -6,7 +6,7 @@ import { FlatStyle, FSW, FSH, FLAT_FRAMES } from "./craft/FlatStyle";
 import { FlatMotionA, FLAT_MOTION_FRAMES } from "./craft/FlatMotion";
 import { FlatClip, CLIP_IDS, clipFrames } from "./craft/clips/FlatClip";
 import { AlcatrazFilm, AlcatrazShot, SHOT_IDS, shotFrames, FILM_S } from "./craft/alcatraz/AlcatrazFilm";
-import { Alcatraz3D, PROV_S, Alcatraz3DFilm, FILM_S as FILM3D_S } from "./craft/alcatraz3d/Alcatraz3D";
+import { Alcatraz3D, PROV_S, Alcatraz3DFilm, FILM_S as FILM3D_S, DummyCard } from "./craft/alcatraz3d/Alcatraz3D";
 // the older flat films (style2d: no 3D, no card figures)
 import { Dance, DanceThumb, Mona2D, Mona2DThumb, Titanic1, Titanic1Thumb } from "./videos/style2d/Mona2D";
 import { DANCE_TOTAL } from "./videos/style2d/dance";
@@ -21,6 +21,7 @@ export const Root: React.FC = () => (
     {CLIP_IDS.map((id) => <Composition key={id} id={`Bildtyp-${id}`} component={FlatClip} defaultProps={{ id }} durationInFrames={clipFrames(id)} fps={30} width={1080} height={1920} />)}
     {/* Alcatraz in the new style, the style test (22-23 Nov): Blender plates, the flat figures on their floor */}
     <Composition id="Alcatraz3D" component={Alcatraz3DFilm} defaultProps={{ muted: true }} durationInFrames={Math.round(FILM3D_S * 30)} fps={30} width={1080} height={1920} />
+    <Composition id="A3D-dummy" component={DummyCard} defaultProps={{ hair: "#5a3a24" }} durationInFrames={1} fps={30} width={640} height={660} />
     <Composition id="Alcatraz3D-prov" component={Alcatraz3D} defaultProps={{ muted: true }} durationInFrames={Math.round(PROV_S * 30)} fps={30} width={1080} height={1920} />
     {/* Alcatraz 1962 (flat 2D, 22 Nov): the film, its three hook-lab openings (0-5 s) and each shot alone */}
     <Composition id="Alcatraz" component={AlcatrazFilm} defaultProps={{ opening: "A" }} durationInFrames={Math.round(FILM_S * 30)} fps={30} width={1080} height={1920} />

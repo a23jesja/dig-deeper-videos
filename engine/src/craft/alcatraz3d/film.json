@@ -8,60 +8,71 @@
    "id": "n01",
    "t0": 0,
    "t1": 1.9,
-   "what": "the fake head on the pillow at the bars' end; the torch through the bars already on it in frame 1",
+   "what": "the fake head (flat, v4's drawing) on the pillow, close, through a gap in the bars; the guard's hand and torch at the lower right, the whole cone on the head from frame 1",
    "cam": {
     "from": [
      [
-      -0.8,
-      1.2,
-      1.5
+      -0.751,
+      -0.085,
+      1.25
      ],
      [
-      -0.8,
-      1.13,
-      1.43
+      -0.751,
+      -0.075,
+      1.245
      ]
     ],
     "at": [
-     -0.81,
-     0.84,
-     0.8
+     -0.751,
+     0.82,
+     0.74
     ],
-    "lens": 36,
+    "lens": 32,
     "focus": "head",
-    "fstop": 2
+    "fstop": 2.8
    },
    "torch": {
     "from": [
      [
-      0.32,
-      -0.55,
-      1.2
+      -0.735,
+      -0.03,
+      1.19
      ],
      [
-      0.28,
-      -0.55,
-      1.2
+      -0.735,
+      -0.03,
+      1.19
      ]
     ],
     "at": [
      [
-      -0.62,
-      0.68,
-      0.66
+      -0.75,
+      0.82,
+      0.75
      ],
      [
-      -0.81,
+      -0.77,
       0.82,
-      0.73
+      0.75
      ]
     ],
-    "power": 260,
-    "cone": 11
+    "power": 80,
+    "cone": 22,
+    "blend": 0.9
    },
    "figs": [],
    "fg": [],
-   "place": "block"
+   "place": "block",
+   "lamps": 0.25,
+   "moon": 1.0,
+   "cardGlow": 1.6,
+   "hand": {
+    "lens": [
+     800,
+     1480
+    ],
+    "s": 2.2
+   }
   },
   {
    "id": "n02",
@@ -71,52 +82,53 @@
    "cam": {
     "from": [
      [
-      1.2,
-      -3.02,
-      1.28
+      -0.3,
+      -3.0,
+      1.35
      ],
      [
-      1.15,
+      -0.27,
       -2.95,
-      1.27
+      1.34
      ]
     ],
     "at": [
      0.25,
      0,
-     1
+     1.0
     ],
-    "lens": 19,
+    "lens": 16,
     "focus": "guard",
     "fstop": 3.2
    },
    "torch": {
     "from": [
      [
-      0.311,
+      0.029,
       -0.47,
-      0.784
+      0.927
      ],
      [
-      0.311,
+      0.029,
       -0.47,
-      0.784
+      0.927
      ]
     ],
     "at": [
      [
-      0.55,
-      -0.15,
-      0
+      -0.75,
+      0.82,
+      0.75
      ],
      [
-      -0.81,
+      -0.75,
       0.82,
-      0.73
+      0.75
      ]
     ],
     "power": 110,
-    "cone": 15
+    "cone": 15,
+    "blend": 0.9
    },
    "figs": [
     {
@@ -130,76 +142,78 @@
     }
    ],
    "fg": [],
-   "place": "block"
+   "place": "block",
+   "cardGlow": 0.7
   },
   {
    "id": "n03",
    "t0": 3.2,
    "t1": 4.6,
-   "what": "the guard in the tier, pleased, the torch off in his hand: the head was fake (the narrator over his closed smile)",
+   "what": "close on the fake head on the pillow while the narrator says it was fake: whole, nothing in front of it, the torch's cone on it",
    "cam": {
     "from": [
      [
-      1.45,
-      -2.95,
+      -0.751,
+      -0.085,
       1.25
      ],
      [
-      1.42,
-      -2.9,
-      1.24
+      -0.751,
+      -0.075,
+      1.245
      ]
     ],
     "at": [
-     0.72,
-     -0.38,
-     1
+     -0.751,
+     0.82,
+     0.76
     ],
-    "lens": 25,
-    "focus": "guard",
-    "fstop": 2.4
+    "lens": 46,
+    "focus": "head",
+    "fstop": 2.8
    },
    "torch": {
     "from": [
      [
-      0.096,
-      -0.47,
-      0.908
+      -0.735,
+      -0.03,
+      1.19
      ],
      [
-      0.096,
-      -0.47,
-      0.908
+      -0.735,
+      -0.03,
+      1.19
      ]
     ],
     "at": [
      [
-      -0.81,
+      -0.77,
       0.82,
-      0.73
+      0.75
      ],
      [
-      -0.81,
+      -0.78,
       0.82,
-      0.73
+      0.75
      ]
     ],
-    "power": 110,
-    "cone": 15
+    "power": 80,
+    "cone": 22,
+    "blend": 0.9
    },
-   "figs": [
-    {
-     "name": "guard",
-     "look": "GUARD",
-     "at": [
-      0.78,
-      -0.42
-     ],
-     "facing": "cell"
-    }
-   ],
+   "figs": [],
    "fg": [],
-   "place": "block"
+   "place": "block",
+   "lamps": 0.25,
+   "moon": 1.0,
+   "cardGlow": 1.6,
+   "hand": {
+    "lens": [
+     900,
+     1560
+    ],
+    "s": 2.4
+   }
   },
   {
    "id": "n04",
@@ -210,12 +224,12 @@
     "from": [
      [
       0.2,
-      -5.2,
+      -6.5,
       5.95
      ],
      [
       0,
-      -5.1,
+      -6.4,
       5.92
      ]
     ],
@@ -224,7 +238,7 @@
      1,
      3.9
     ],
-    "lens": 15,
+    "lens": 19,
     "focus": [
      -0.81,
      0.82,
@@ -270,7 +284,7 @@
       0.4
      ],
      "at": [
-      -0.81,
+      -0.75,
       0.82,
       0.75
      ],
@@ -285,7 +299,7 @@
       3.25
      ],
      "at": [
-      -0.81,
+      -0.75,
       0.82,
       3.6
      ],
@@ -300,7 +314,7 @@
       6.1000000000000005
      ],
      "at": [
-      -0.81,
+      -0.75,
       0.82,
       6.45
      ],
@@ -308,7 +322,9 @@
      "power": 5000,
      "cone": 7
     }
-   ]
+   ],
+   "cardGlow": 1.3,
+   "cardScale": 1.5
   },
   {
    "id": "n05",
@@ -363,7 +379,8 @@
      ]
     ],
     "power": 220,
-    "cone": 8
+    "cone": 11,
+    "blend": 1.0
    },
    "figs": [
     {
@@ -377,7 +394,8 @@
     }
    ],
    "fg": [],
-   "place": "block"
+   "place": "block",
+   "noDummy": true
   },
   {
    "id": "n06",

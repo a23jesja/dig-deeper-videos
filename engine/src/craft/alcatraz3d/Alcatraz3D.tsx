@@ -5,7 +5,7 @@ import React from "react";
 import { AbsoluteFill, Audio, Img, staticFile, useCurrentFrame } from "remotion";
 import { FM } from "../clips/clipKit";
 import SPEC from "./shots.json";
-import { SHOTS3D, WHO, paintFigures, beamTo, type Who3 } from "./a3d";
+import { SHOTS3D, WHO, paintFigures, beamTo, handTorch, type Who3 } from "./a3d";
 
 export const PROV_S = SPEC.shots[SPEC.shots.length - 1].t1;
 const BUILT: Record<string, Who3[]> = Object.fromEntries(SHOTS3D.map((s) => [s.id, WHO[s.id]()]));
@@ -22,7 +22,7 @@ const paintText = (g: CanvasRenderingContext2D, t: number) => {
 /** everything drawn over the plate at the shot's frame fr */
 export const paintOver = (g: CanvasRenderingContext2D, id: string, fr: number) => {
   g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, FM.W, FM.H);
-  paintFigures(g, id, fr, BUILT[id]); beamTo(g, id, fr); };
+  paintFigures(g, id, fr, BUILT[id]); beamTo(g, id, fr); handTorch(g, id, fr); };
 
 export const Alcatraz3D: React.FC<{ muted?: boolean }> = ({ muted = false }) => {
   const t = useCurrentFrame() / FM.FPS, { s, fr } = shotAt3(t), f = Math.min(fr, nFrames(s) - 1);
@@ -55,7 +55,7 @@ const alarm = (g: CanvasRenderingContext2D, t: number) => { const on = 0.5 + 0.5
   const gr = g.createRadialGradient(FM.W * 0.85, 300, 0, FM.W * 0.85, 300, 1300); gr.addColorStop(0, `rgba(255,50,40,${0.32 * on})`); gr.addColorStop(1, "rgba(255,50,40,0)"); g.fillStyle = gr; g.fillRect(0, 0, FM.W, FM.H); g.restore(); };
 export const paintOverF = (g: CanvasRenderingContext2D, id: string, fr: number, dur: number) => {
   g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, FM.W, FM.H);
-  paintFigures(g, id, fr, BUILT_F[id]); beamTo(g, id, fr);
+  paintFigures(g, id, fr, BUILT_F[id]); beamTo(g, id, fr); handTorch(g, id, fr);
   if (id === "n08") searchBeam(g, fr / FM.FPS, dur);
   if (id === "n11") alarm(g, fr / FM.FPS); };
 export const Alcatraz3DFilm: React.FC<{ muted?: boolean }> = ({ muted = false }) => {
@@ -65,3 +65,10 @@ export const Alcatraz3DFilm: React.FC<{ muted?: boolean }> = ({ muted = false })
     <AbsoluteFill><canvas width={FM.W} height={FM.H} ref={(cv) => { if (cv) { const g = cv.getContext("2d")!; paintOverF(g, s.id, f, s.t1 - s.t0); paintTextF(g, t); } }} /></AbsoluteFill>
     {muted ? null : <Audio src={staticFile("craft/alcatraz3d-film.wav")} />}
   </AbsoluteFill>; };
+
+// ------------------------------------------------------------------ v12: the fake head's picture for the card in the Blender set ------------------------------------------------------------------
+import { fakeHead } from "./flatprops";
+/** the flat v4 fake head alone on a clear background (640 x 660), written as a PNG by `remotion still A3D-dummy`; Blender puts it on a card
+ *  on the pillow (set.py), so every face in the style test is flat Knopp */
+export const DummyCard: React.FC<{ hair?: string }> = ({ hair = "#5a3a24" }) =>
+  <AbsoluteFill><canvas width={640} height={660} ref={(cv) => { if (cv) { const g = cv.getContext("2d")!; g.clearRect(0, 0, 640, 660); fakeHead(g, 320, 340, 3.0, 0, hair); } }} /></AbsoluteFill>;

@@ -1,0 +1,7 @@
+pre-count: 22 characters x 3 takes = 66 (cap 66)
+character_count before: 3562 of 40000
+character_count after: 3562 (used 0)
+take0: 'Also, the story goes.' word errors 0.40
+take1: 'Also, the story goes.' word errors 0.40
+take2: 'or so the story goes.' word errors 0.00
+picked take2

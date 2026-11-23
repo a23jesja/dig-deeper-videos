@@ -1,0 +1,34 @@
+{
+ "line": "Or so, the story goes.",
+ "take": 2,
+ "word_errors": 0.0,
+ "words": [
+  {
+   "w": "or",
+   "a": 0.0,
+   "b": 0.18
+  },
+  {
+   "w": "so",
+   "a": 0.18,
+   "b": 0.4
+  },
+  {
+   "w": "the",
+   "a": 0.4,
+   "b": 0.54
+  },
+  {
+   "w": "story",
+   "a": 0.54,
+   "b": 0.8
+  },
+  {
+   "w": "goes.",
+   "a": 0.8,
+   "b": 1.16
+  }
+ ],
+ "character_count_before": 3562,
+ "character_count_after": 3562
+}

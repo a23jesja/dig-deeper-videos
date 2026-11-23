@@ -16,6 +16,7 @@
   - `krok-c-overst-mot-d-under-360px.jpg`;
   - `bild-7-i-360px.jpg` (rutorna 308–350);
   - `bild-10-11-15-16-klippen.jpg` (klippen in i 11a, 11b, 16a och 16b);
+  - `mossorna-bild-11-och-15.jpg`: från en tidigare v11-rendering (md5 5d86…), när bild 11 och 15 var tvåbilder. Den ligger kvar som underlag. Ett äldre blinkblad (`punkt7-…-15-23`) togs bort av mitt eget skript innan det committades, vilket bryter regeln om att aldrig radera i granskning/. Det ersattes av `punkt7-…-14-22`.
   - `bild-18-in-i-loopen.jpg` (rutorna 960–993 och ruta 0);
   - `papper-och-hakor.jpg` (elva rutor med papper i händerna).
 - **Före och efter**, med v10 överst och v11 under: `film-v11/fore-efter/`, för punkterna 3, 4, 5, 6, 7 och 9.

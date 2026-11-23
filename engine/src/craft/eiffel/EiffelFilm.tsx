@@ -21,7 +21,7 @@ export const paintShot = (g: CanvasRenderingContext2D, c: Shot, t: number) => {
 export const textAlpha = (t: number) => { const tail = FILM_S - TEXT.loopIn; return t >= TEXT.t0 && t < TEXT.t1 + TEXT.fade ? Math.min(1, (TEXT.t1 + TEXT.fade - t) / TEXT.fade) : t >= tail ? Math.min(1, (t - tail) / (TEXT.loopIn - 0.12)) : 0; };
 const paintText = (g: CanvasRenderingContext2D, t: number, lines: string[] = TEXT.lines, hook = false) => { const al = hook ? (t < TEXT.t1 + TEXT.fade ? Math.min(1, (TEXT.t1 + TEXT.fade - t) / TEXT.fade) : 0) : textAlpha(t); if (al <= 0) return;
   g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = al; g.font = "900 88px 'Arial Black', Arial, sans-serif"; g.textAlign = "center"; g.lineJoin = "round";
-  g.font = `900 ${lines.some((l) => l.length > 14) ? 74 : 88}px 'Arial Black', Arial, sans-serif`;
+  g.font = `900 ${lines.some((l) => l.length > 18) ? 64 : lines.some((l) => l.length > 14) ? 74 : 88}px 'Arial Black', Arial, sans-serif`;      // (SOMEBODY BOUGHT THE came within 20 px of the edges at 74, the independent review)
   lines.forEach((l, i) => { const y = 230 + i * 108; g.lineWidth = 18; g.strokeStyle = "#141018"; g.strokeText(l, FM.W / 2, y); g.fillStyle = "#fff4c2"; g.fillText(l, FM.W / 2, y); });
   g.globalAlpha = 1; };
 export const EiffelFilm: React.FC<{ muted?: boolean }> = ({ muted = false }) => {

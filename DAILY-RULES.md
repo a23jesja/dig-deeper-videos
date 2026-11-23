@@ -57,6 +57,11 @@ far shots instead of faces, empty places instead of action. That is not allowed 
 - **Every step the voice tells is shown as an action with detail:** the tool, the material, the effort, the risk.
 - **A shot type the story needs and the library lacks is built and approved,** not replaced by a hand close-up or an
   empty shot. Missing motions are added to the library (dig, scrape, climb, sneak, carry, paddle, sew, paint).
+- **Measured (Jesper 2026-11-23, from the three reference Shorts):** a character is in focus and doing something in
+  about 90 % of the running time; something new visibly happens every 1-2 seconds; no stretch longer than 1.5 s
+  where only the voice moves the story. The reviewer counts these per shot and lists them in the STOPP.
+- **The Emu War Short is our own proof:** it worked (73 % watched) because soldiers, emus, guns and the truck were
+  moving all the time. New videos keep that energy, with the new characters, voice and settings.
 - **The reviewer fails a video that is correct but lifeless:** if a viewer would ask "where are the people?" or the
   picture stands still while the voice tells action, it fails.
 

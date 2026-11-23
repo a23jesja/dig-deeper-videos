@@ -63,7 +63,7 @@
 {"F": 62, "shot": "0-e02", "eyes": [], "text": []}
 {"F": 63, "shot": "0-e02", "eyes": [], "text": []}
 {"F": 64, "shot": "0-e02", "eyes": [], "text": []}
-{"F": 65, "shot": "1-e01", "eyes": [], "text": []}
+{"F": 65, "shot": "0-e02", "eyes": [], "text": []}
 {"F": 66, "shot": "1-e01", "eyes": [], "text": []}
 {"F": 67, "shot": "1-e01", "eyes": [], "text": []}
 {"F": 68, "shot": "1-e01", "eyes": [], "text": []}
@@ -108,7 +108,7 @@
 {"F": 107, "shot": "1-e01", "eyes": [], "text": []}
 {"F": 108, "shot": "1-e01", "eyes": [], "text": []}
 {"F": 109, "shot": "1-e01", "eyes": [], "text": []}
-{"F": 110, "shot": "2-e03", "eyes": [], "text": []}
+{"F": 110, "shot": "1-e01", "eyes": [], "text": []}
 {"F": 111, "shot": "2-e03", "eyes": [], "text": []}
 {"F": 112, "shot": "2-e03", "eyes": [], "text": []}
 {"F": 113, "shot": "2-e03", "eyes": [], "text": []}
@@ -198,7 +198,7 @@
 {"F": 197, "shot": "3-e04", "eyes": [], "text": []}
 {"F": 198, "shot": "3-e04", "eyes": [], "text": []}
 {"F": 199, "shot": "3-e04", "eyes": [], "text": []}
-{"F": 200, "shot": "4-e05", "eyes": [], "text": []}
+{"F": 200, "shot": "3-e04", "eyes": [], "text": []}
 {"F": 201, "shot": "4-e05", "eyes": [], "text": []}
 {"F": 202, "shot": "4-e05", "eyes": [], "text": []}
 {"F": 203, "shot": "4-e05", "eyes": [], "text": []}
@@ -327,7 +327,7 @@
 {"F": 326, "shot": "6-e07", "eyes": [], "text": []}
 {"F": 327, "shot": "6-e07", "eyes": [], "text": []}
 {"F": 328, "shot": "6-e07", "eyes": [], "text": []}
-{"F": 329, "shot": "7-e07b", "eyes": [], "text": []}
+{"F": 329, "shot": "6-e07", "eyes": [], "text": []}
 {"F": 330, "shot": "7-e07b", "eyes": [], "text": []}
 {"F": 331, "shot": "7-e07b", "eyes": [], "text": []}
 {"F": 332, "shot": "7-e07b", "eyes": [], "text": []}
@@ -510,7 +510,7 @@
 {"F": 509, "shot": "11-e11", "eyes": [], "text": []}
 {"F": 510, "shot": "11-e11", "eyes": [], "text": []}
 {"F": 511, "shot": "11-e11", "eyes": [], "text": []}
-{"F": 512, "shot": "12-e11b", "eyes": [], "text": []}
+{"F": 512, "shot": "11-e11", "eyes": [], "text": []}
 {"F": 513, "shot": "12-e11b", "eyes": [], "text": []}
 {"F": 514, "shot": "12-e11b", "eyes": [], "text": []}
 {"F": 515, "shot": "12-e11b", "eyes": [], "text": []}
@@ -822,7 +822,7 @@
 {"F": 821, "shot": "17-e16", "eyes": [], "text": []}
 {"F": 822, "shot": "17-e16", "eyes": [], "text": []}
 {"F": 823, "shot": "17-e16", "eyes": [], "text": []}
-{"F": 824, "shot": "18-e16b", "eyes": [], "text": []}
+{"F": 824, "shot": "17-e16", "eyes": [], "text": []}
 {"F": 825, "shot": "18-e16b", "eyes": [], "text": []}
 {"F": 826, "shot": "18-e16b", "eyes": [], "text": []}
 {"F": 827, "shot": "18-e16b", "eyes": [], "text": []}

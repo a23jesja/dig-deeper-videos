@@ -210,7 +210,8 @@ const s03 = (): Shot => { const seconds = 1.6, m = figure("sir", 0, 0); m.stand(
   ease(m, -1, { head: [0, 8, 0] }, 0.01, { face: { ...FACES.smug, gaze: [0, 0.8] } });
   ease(m, 0.3, { head: [0, 2, -3], lean: -4, roll: 8 }, 0.5, { face: { ...FACES.delighted, gaze: [0, 0.1] } });      // (a sway as he lowers the paper, the ninth independent review of v11)
   const h = holdSheet("con", m, 0, "news", false, false, (t: number) => -50 * env(t, 0.2, 0.45, 99, 0.3), 244);
-  const cast: Cast[] = [{ name: "con", m, who: "sir", look: CON, seed: 9, armWipe: false, hands: { L: [[0, "grip"]], R: [[0, "grip"]] }, pose: h.pose }];
+  const cast: Cast[] = [{ name: "con", m, who: "sir", look: CON, seed: 3, armWipe: false,      // (seed 3: no blink on the sway, the flicker measure)
+    hands: { L: [[0, "grip"]], R: [[0, "grip"]] }, pose: h.pose }];
   const c0 = fitCam(cast, seconds, 2.7, [], () => false, 0.06), cam = (t: number) => ({ ...c0, z: c0.z * lerp(0.97, 1, smooth(t / seconds)) });
   return { id: "e03", title: "3 Han läser tidningen", seconds, cast, events: {}, shot: "medium", camera: cam, contacts: h.contacts, over: h.over, ownBg: (g, t) => suite(g, cam(t), SUITE) } as Shot; };
 const s04 = (): Shot => propShot("e04", "4 Tidningen: det rostiga tornet", 1.5, (g) => paperPage(g), [], (t) => ({ cx: 545, cy: lerp(1160, 1240, smooth(t / 1.5)), z: 1.55 }));

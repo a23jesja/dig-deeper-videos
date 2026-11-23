@@ -339,7 +339,7 @@ const s07b = (): Shot => { const seconds = 0.8;
   //  0.2 s), the brows high)
   const DX = [0, 0.74], looks = [BENCH2, YOUNG];
   const ms = DX.map((xm, i) => { const fc = i === 1 ? { ...FACES.delighted, gaze: [-0.6, 0] as [number, number] } : { ...FACES.calm, gaze: [-0.6, 0] as [number, number] }, mm = seated(`d${i}`, xm, [6, 0, 0], fc);
-    ease(mm, 0.08 + i * 0.12, { ...SIT, lean: 6, head: [2, -12, 0] } as Partial<Pose>, 0.22, { face: { ...fc, brow: 0.9, pupil: 0.8, gaze: [-0.8, -0.2] } }); return mm; });
+    ease(mm, 0.05 + i * 0.12, { ...SIT, lean: 9, head: [2, -10, 0] } as Partial<Pose>, 0.3, { face: { ...fc, brow: 0.9, pupil: 0.8, gaze: [-0.8, -0.2] } }); return mm; });
   const cast: Cast[] = ms.map((mm, i) => ({ name: `d${i}`, m: mm, who: "sir", look: looks[i], seed: 30 + i, armWipe: false, pose: kneesHook(DX[i]), hands: { L: [[0, "fist"]], R: [[0, "fist"]] } } as Cast));
   const seats = cast.map(seatOf), top = Math.max(...seats.map((q) => q.top)); for (const q of seats) q.top = top;
   const x0 = Math.min(...seats.map((q) => q.x0)) - 10, x1 = Math.max(...seats.map((q) => q.x1)) + 10;

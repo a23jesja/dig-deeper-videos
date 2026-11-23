@@ -1,0 +1,143 @@
+{
+ "note": "3D step 1 (23 Nov night): the captain's cabin at sunset. World axes: x right, y away from the lens, z up, metres. The stern windows in the back wall (y 3.2); the low sun comes in through them toward the lens. Each shot's camera drifts from 'from[0]' to 'from[1]' over the shot (eased), looking at 'at'; focus on a figure's head or a point.",
+ "fps": 30,
+ "W": 1080,
+ "H": 1920,
+ "figs": {
+  "captain": [
+   -0.3,
+   0.82
+  ],
+  "boy": [
+   0.54,
+   1.2
+  ]
+ },
+ "map": {
+  "at": [
+   -0.28,
+   0.86
+  ],
+  "w": 0.6,
+  "d": 0.43,
+  "rot": 188
+ },
+ "shots": [
+  {
+   "id": "A",
+   "t0": 0,
+   "t1": 2.4,
+   "what": "the captain alone at the chart table: he rummages in the papers, they fly off, he straightens and shouts the line toward the boy (off to the right)",
+   "cam": {
+    "from": [
+     [
+      -0.42,
+      -2.2,
+      1.1
+     ],
+     [
+      -0.46,
+      -2.07,
+      1.08
+     ]
+    ],
+    "at": [
+     -0.46,
+     1.0,
+     0.8
+    ],
+    "lens": 28,
+    "focus": "captain",
+    "fstop": 2.8
+   }
+  },
+  {
+   "id": "B",
+   "t0": 2.4,
+   "t1": 4.6,
+   "what": "over the captain's shoulder on the boy: he looks down, points at the captain's boot, answers, grins",
+   "cam": {
+    "from": [
+     [
+      0.9,
+      -1.4,
+      1.3
+     ],
+     [
+      0.86,
+      -1.32,
+      1.29
+     ]
+    ],
+    "at": [
+     0.4,
+     1.18,
+     0.85
+    ],
+    "lens": 35,
+    "focus": "boy",
+    "fstop": 2.2
+   }
+  },
+  {
+   "id": "C",
+   "t0": 4.6,
+   "t1": 5.9,
+   "what": "the captain, full figure: he looks down, lifts his boot a few centimetres off the map; his eyes go wide",
+   "cam": {
+    "from": [
+     [
+      -0.03,
+      -2.0,
+      1.05
+     ],
+     [
+      -0.06,
+      -1.9,
+      1.04
+     ]
+    ],
+    "at": [
+     -0.28,
+     0.82,
+     0.98
+    ],
+    "lens": 28,
+    "focus": "captain",
+    "fstop": 2.8
+   }
+  },
+  {
+   "id": "D",
+   "t0": 5.9,
+   "t1": 7.0,
+   "what": "the captain closer, from the waist up: his face goes red, sweat runs, a sheepish grin",
+   "cam": {
+    "from": [
+     [
+      -0.22,
+      -1.22,
+      1.22
+     ],
+     [
+      -0.23,
+      -1.12,
+      1.21
+     ]
+    ],
+    "at": [
+     -0.3,
+     0.82,
+     1.02
+    ],
+    "lens": 28,
+    "focus": "captain",
+    "fstop": 2.8
+   }
+  }
+ ],
+ "heights": {
+  "captain": 1.75,
+  "boy": 1.5
+ }
+}

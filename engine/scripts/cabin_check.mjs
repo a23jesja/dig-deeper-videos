@@ -1,0 +1,88 @@
+// 3D step 1, the cabin: the checks of impossible things for flat figures standing in a Blender plate, every frame of every shot.
+//   1  feet on the floor: a standing sole's picture point is the floor point's projection (within 3 px), and no foot is above the floor
+//      but the lifted boot (shot C), which is lifted 1.5-5 cm ("a couple of centimetres"), never more
+//   2  no sliding: a planted foot's floor point moves less than 1 cm over a shot
+//   3  weight: while one foot is off the floor the pelvis is over the other foot (within a fifth of the stance width at rest)
+//   4  over the shoulder (shot B): the dark captain in front never covers the boy's face (his head's circle) or his pointing hand
+//   5  frame edges: a hand is inside the picture with a margin, or wholly out of it (not cut by the edge)
+//   7  speed (the flicker rule): no joint moves more than 11 px in the picture between frames
+//   6  in front of nothing: written to out/cab3d/figs.json for scripts/cabin_depth.py, which reads Blender's ray map (no thing of the room
+//      nearer than a figure where he is drawn)
+// Planted faults (each must fail): --plant float (the boot lifted too high), sink (the figure 10 px into the floor), slide (the figure
+// skating 2 mm a frame), lean (the hip away from the standing foot), fgOverFace (the captain moved over the boy's face).
+//   node scripts/cabin_check.mjs [--plant float|sink|slide|lean|fgOverFace]
+import * as esbuild from "esbuild"; import fs from "node:fs"; import { pathToFileURL } from "node:url";
+const plant = process.argv.includes("--plant") ? process.argv[process.argv.indexOf("--plant") + 1] : null;
+const out = "out/_cab_check.mjs";
+fs.writeFileSync("out/_cab_entry.ts", 'export * from "../src/craft/cabin3d/cabin"; export { castAt, jointPx, figBox, FM, footY } from "../src/craft/clips/clipKit";');
+try { await esbuild.build({ entryPoints: ["out/_cab_entry.ts"], bundle: true, format: "esm", platform: "node", outfile: out, logLevel: "error", loader: { ".json": "json" } }); }
+finally { fs.rmSync("out/_cab_entry.ts"); }
+const M = await import(pathToFileURL(out).href); fs.rmSync(out);
+const { SHOTS, WHO, PLANT, placeOf, toScreen, feetOf, project, jointPx, figBox, FM, footY } = M;
+if (plant) { if (!(plant in PLANT)) throw new Error("no such planted fault: " + plant); PLANT[plant] = true; }
+const faults = [], dump = {}, regions = []; let frames = 0, F0 = 0;
+const SPEED = 11, prevJ = {};      // 7 (the flicker rule): no joint of a figure moves more than 11 px between frames in the picture (flicker.py follows up to 12)
+const hull = (P) => { const p = [...P].sort((a, b) => a[0] - b[0] || a[1] - b[1]), cr = (o, a, b) => (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]), lo = [], up = [];
+  for (const q of p) { while (lo.length >= 2 && cr(lo[lo.length - 2], lo[lo.length - 1], q) <= 0) lo.pop(); lo.push(q); }
+  for (const q of p.reverse()) { while (up.length >= 2 && cr(up[up.length - 2], up[up.length - 1], q) <= 0) up.pop(); up.push(q); } return [...lo.slice(0, -1), ...up.slice(0, -1)]; };
+const inPoly = (pt, P) => { let c = false; for (let i = 0, j = P.length - 1; i < P.length; j = i++) if ((P[i][1] > pt[1]) !== (P[j][1] > pt[1]) && pt[0] < ((P[j][0] - P[i][0]) * (pt[1] - P[i][1])) / (P[j][1] - P[i][1]) + P[i][0]) c = !c; return c; };
+for (const S of SHOTS) {
+  const whos = WHO[S.id](), n = Math.round((S.t1 - S.t0) * FM.FPS), first = {}; dump[S.id] = [];
+  for (let fr = 0; fr < n; fr++) { frames++; const row = [];
+    const placed = whos.map((w) => ({ w, pl: placeOf(S.id, fr, w) }));
+    for (const { w, pl } of placed) {
+      const f = pl.f, scr = (j) => toScreen(pl, jointPx(f, j)), ft = feetOf(S.id, fr, w);
+      // 7 speed: every joint's picture point against the frame before in the same shot
+      { const JN = ["skull", "crown", "neck", "shL", "shR", "elL", "elR", "wrL", "wrR", "tipL", "tipR", "hipL", "hipR", "anL", "anR", "toeL", "toeR"], cur = Object.fromEntries(JN.map((j) => [j, scr(j)])), k = S.id + w.name, pv = prevJ[k];
+        // (the face: its features slide across the head as it turns, about 0.6 of the head's radius times the sine of where it points)
+        { const a0 = scr("skull"), c0 = scr("crown"), hr = Math.hypot(c0[0] - a0[0], c0[1] - a0[1]) / 2; cur.face = [(a0[0] + c0[0]) / 2 + 0.6 * hr * Math.sin((f.sk.faceYaw * Math.PI) / 180), (a0[1] + c0[1]) / 2]; JN.push("face"); }
+        if (pv && fr > 0) { let worst = 0, wj = ""; for (const j of JN) { const d = Math.hypot(cur[j][0] - pv[j][0], cur[j][1] - pv[j][1]); if (d > worst) { worst = d; wj = j; } }
+          if (worst > SPEED) faults.push(`7 ${S.id} frame ${fr} ${w.name}: ${wj} moves ${worst.toFixed(1)} px in a frame (the flicker rule: at most ${SPEED})`); }
+        prevJ[k] = cur; }
+      // (his shape for the depth check: the head's circle, the trunk's hull, and each arm and leg as a thick line from joint to joint; the
+      //  figure's box hull filled the empty air under a reaching arm, where the papers fall)
+      { const P = (j) => scr(j).map((v) => Math.round(v)), s0 = scr("skull"), c0 = scr("crown"), hr = Math.hypot(c0[0] - s0[0], c0[1] - s0[1]) / 2, lw = Math.round(0.17 * hr);      // (half a sleeve's width: about 0.17 of the head's radius on Knopp)
+        const limbs = ["L", "R"].flatMap((d) => [[P("sh" + d), P("el" + d)], [P("el" + d), P("wr" + d)], [P("wr" + d), P("tip" + d)], [P("hip" + d), P("kn" + d)], [P("kn" + d), P("an" + d)], [P("an" + d), P("toe" + d)], [P("heel" + d), P("toe" + d)]]);
+        row.push({ name: w.name, sil: !!w.sil, depth: pl.depth, head: [Math.round((s0[0] + c0[0]) / 2), Math.round((s0[1] + c0[1]) / 2), Math.round(hr * 1.1)],
+          trunk: hull(["neck", "shL", "shR", "hipL", "hipR"].map((j) => scr(j))).map((q) => q.map((v) => Math.round(v))), limbs, lw, poly: hull(figBox(f).map((q) => toScreen(pl, q))).map((q) => q.map((v) => Math.round(v))) }); }
+      if (!w.sil) {
+        // 1 the soles on the floor
+        const floorY = project(S.id, fr, [w.at[0], w.at[1], 0])[1], soleY = toScreen(pl, [f.x, footY(f.who)])[1];
+        if (Math.abs(soleY - floorY) > 3) faults.push(`1 ${S.id} frame ${fr} ${w.name}: his soles drawn ${(soleY - floorY).toFixed(1)} px from the floor's line (into or above the floor)`);
+        for (const q of ft) { const lifted = (S.id === "C" || S.id === "D") && w.name === "captain" && q.side === "R";
+          if (!lifted && q.up > 0.01) faults.push(`1 ${S.id} frame ${fr} ${w.name}: his ${q.side} foot ${(q.up * 100).toFixed(1)} cm above the floor`);
+          if (lifted && q.up > 0.05) faults.push(`1 ${S.id} frame ${fr} ${w.name}: the lifted boot ${(q.up * 100).toFixed(1)} cm up (a couple of centimetres at most 5)`);
+          if (q.up < -0.01) faults.push(`1 ${S.id} frame ${fr} ${w.name}: his ${q.side} foot ${(-q.up * 100).toFixed(1)} cm into the floor`); }
+        // 2 no sliding (a foot on the floor keeps its floor point; the figure's own world point counted: it carries the feet)
+        const at = placeOf(S.id, fr, w).foot, back = project(S.id, fr, [w.at[0], w.at[1], 0]);
+        for (const q of ft) if (q.up <= 0.002) { const k = w.name + q.side, wx = q.world[0] + (at[0] - back[0]) * 0; first[k] ??= wx; if (Math.abs(wx - first[k]) > 0.01) faults.push(`2 ${S.id} frame ${fr} ${w.name}: his planted ${q.side} foot slid ${((wx - first[k]) * 100).toFixed(1)} cm`); }
+        // 3 the weight over the standing foot while the other is up
+        const up = ft.filter((q) => q.up > 0.01);
+        if (up.length === 1) { const st = ft.find((q) => q !== up[0]), pel = (jointPx(f, "hipL")[0] + jointPx(f, "hipR")[0]) / 2, an = jointPx(f, "an" + st.side)[0], span = Math.abs(jointPx(f, "anL")[0] - jointPx(f, "anR")[0]) || 1;
+          if (Math.abs(pel - an) > 0.2 * Math.max(span, 60) + 30) faults.push(`3 ${S.id} frame ${fr} ${w.name}: one foot up and the pelvis ${Math.abs(pel - an).toFixed(0)} units off the standing foot (leaning in the air)`); }
+        // 5 hands not cut by the frame's edge
+        for (const sd of ["L", "R"]) { const a = scr("wr" + sd), b = scr("tip" + sd), len = Math.hypot(b[0] - a[0], b[1] - a[1]), c = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2], m = 0.6 * len;
+          const inside = c[0] > m && c[0] < FM.W - m && c[1] > m && c[1] < FM.H - m, outside = c[0] < -3.5 * len || c[0] > FM.W + 3.5 * len || c[1] < -3.5 * len || c[1] > FM.H + 3.5 * len;
+          if (!inside && !outside) faults.push(`5 ${S.id} frame ${fr} ${w.name}: his ${sd} hand cut by the picture's edge (at ${c.map((v) => v.toFixed(0))})`); }
+      }
+    }
+    // 4 over the shoulder: the captain in front never on the boy's face or pointing hand
+    const fg = placed.find((p) => p.w.sil), boy = placed.find((p) => p.w.name === "boy");
+    // (the captain's shape: his head's circle with its ears, and the hull of his body's joints with half a sleeve's width round them;
+    //  the figure's box hull spans the empty air between his head and his hands)
+    const shapeOf = (pl) => { const J = (j) => toScreen(pl, jointPx(pl.f, j)), s0 = J("skull"), c0 = J("crown"), r = Math.hypot(c0[0] - s0[0], c0[1] - s0[1]) / 2, hc = [(s0[0] + c0[0]) / 2, (s0[1] + c0[1]) / 2], m = 0.3 * r;
+      const body = hull(["neck", "shL", "shR", "elL", "elR", "wrL", "wrR", "tipL", "tipR", "hipL", "hipR", "anL", "anR", "toeL", "toeR", "heelL", "heelR"].flatMap((j) => { const q = J(j); return [[q[0] - m, q[1] - m], [q[0] + m, q[1] - m], [q[0] - m, q[1] + m], [q[0] + m, q[1] + m]]; }));
+      return (q) => Math.hypot(q[0] - hc[0], (q[1] - hc[1]) * 1.0) < r * 1.18 || inPoly(q, body); };
+    if (fg && boy) { const inFg = shapeOf(fg.pl), b = boy.pl, s0 = toScreen(b, jointPx(b.f, "skull")), c0 = toScreen(b, jointPx(b.f, "crown")), r = Math.hypot(c0[0] - s0[0], c0[1] - s0[1]) / 2, hc = [(s0[0] + c0[0]) / 2, (s0[1] + c0[1]) / 2];
+      const pts = []; for (let k = 0; k < 24; k++) { const a = (k / 24) * 2 * Math.PI; pts.push([hc[0] + r * Math.cos(a), hc[1] + r * Math.sin(a)]); } pts.push(hc);
+      const tip = toScreen(b, jointPx(b.f, "tipR")), wr = toScreen(b, jointPx(b.f, "wrR")); pts.push(tip, [(tip[0] + wr[0]) / 2, (tip[1] + wr[1]) / 2]);
+      if (pts.some((q) => inFg(q))) faults.push(`4 ${S.id} frame ${fr}: the captain in front covers the boy's face or pointing hand`); }
+    // (for scripts/flicker.py: the shot of each frame and each face's eye area, the head's circle less its cap; the boy's and the
+    //  captain's faces, not the dark one in front)
+    regions.push({ F: F0 + fr, shot: S.id, eyes: placed.filter((p) => !p.w.sil).map((p) => { const J = (j) => toScreen(p.pl, jointPx(p.pl.f, j)), a = J("skull"), b = J("crown"), r = Math.hypot(b[0] - a[0], b[1] - a[1]) / 2; return [Math.round((a[0] + b[0]) / 2), Math.round((a[1] + b[1]) / 2 - 0.05 * r), Math.round(0.4 * r)]; }), text: [] });
+    dump[S.id].push(row); } F0 += n; }
+fs.mkdirSync("out/cab3d", { recursive: true }); if (!plant) { fs.writeFileSync("out/cab3d/figs.json", JSON.stringify(dump)); fs.writeFileSync("out/cab3d/regions.jsonl", regions.map((r) => JSON.stringify(r)).join(String.fromCharCode(10)) + String.fromCharCode(10)); }
+const key = (x) => x.replace(/ frame \d+/, "").replace(/[-\d.]+ (cm|px|units)/g, "N $1").replace(/ \(at [^)]*\)/, "");
+const kinds = [...new Set(faults.map(key))].map((k) => `${k}  (${faults.filter((x) => key(x) === k).length} frames)`);
+console.log(`cabin${plant ? " planted " + plant : ""}: ${SHOTS.length} shots, ${frames} frames, ${faults.length} faults`); for (const k of kinds.slice(0, 20)) console.log("  " + k); if (process.argv.includes("--all")) for (const x of faults) console.log("    " + x);
+console.log(faults.length ? "CABIN CHECK FAILED" : "CABIN CHECK OK"); process.exit(faults.length ? 1 : 0);

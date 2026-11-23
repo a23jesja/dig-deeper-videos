@@ -70,16 +70,16 @@ export const POLICE: Look = { col: { coat: "#1f2a4a", vest: "#1f2a4a", shirt: "#
 const CON_SLEEVE = "#2c2c36", YOUNG_SLEEVE = "#cdb88c";
 
 /** the approved six faces (FlatStyle.tsx MINER, Jesper 20 Nov): smug, delighted, shock, hard squeeze, grimace, tear */
-// (the resting lids of smug and grimace at 0.3: a blink is lid = max(rest, blink) and clipKit draws any lid from 0.3 to 0.75 at 0.42, so at
-//  0.55 and 0.32 the blink's half lid looked like the rest and the eye went straight to shut; at 0.3 it goes 0.30, 0.42, shut, 0.42, 0.30,
-//  DAILY-RULES 9 and the reviewer of v10)
+// (the resting lids of smug and grimace at 0.16, as calm: a blink is lid = max(rest, blink) and clipKit draws any lid from 0.3 to 0.75 at
+//  0.42, so at 0.55 and 0.32 the blink's half lid looked like the rest and the eye went straight to shut, and at 0.3 the half step was
+//  hardly seen; smug at 0.2 (heavier than calm) and grimace at 0.16 go 0.2, 0.42, shut, 0.42, 0.2, DAILY-RULES 9 and the reviewer of v10)
 export const FACES: Record<string, Face> = {
-  smug: { lid: 0.3, smirk: 1, brow: -0.25, smile: 0.15, gaze: [0.7, 0], pupil: 1, mouth: 0 },
+  smug: { lid: 0.2, smirk: 1, brow: -0.25, smile: 0.15, gaze: [0.7, 0], pupil: 1, mouth: 0 },
   delighted: { smile: 0.3, mouth: 0, brow: 0.5, pupil: 1 },      // (smile 0.3: at 1 the rig opened a D-shaped grin with the tongue showing, which two independent reviews read as talking; non-speakers keep the mouth shut)      // (the mouth shut: only Daniel's line is spoken in the picture, the independent review)
   shock: { wide: 1, brow: 1, sad: 0.6, pupil: 0.5, mouth: 0.5, smile: -0.7 },
   squeeze: { squeeze: 1, smile: -0.6, mouth: 0.3, teeth: 1, brow: -0.4, pupil: 1 },
   calm: { pupil: 1, smile: 0.2, mouth: 0 },
-  grimace: { brow: -1, lid: 0.3, smile: -0.5, teeth: 1, mouth: 0.42, pupil: 1 },
+  grimace: { brow: -1, lid: 0.16, smile: -0.5, teeth: 1, mouth: 0.42, pupil: 1 },
   tear: { tear: 1, sad: 1, smile: -1, lid: 0.45, mouth: 0.35, gaze: [0, 0.3], pupil: 1 },
 };
 
@@ -317,17 +317,17 @@ const s07 = (): Shot => { const seconds = 1.5;
   // (the review of v10: the con man in the picture with the dealers: he holds up the sealed letter to them (04's lift, 0.1-0.5 s) and the two
   //  seated dealers react, each jerking back a little (06's jerk, 0.65 and 0.8 s); seated in profile they face him. Three figures need the
   //  dealers 40 px apart (eiffel_check), so the figures are about 28 % of the height: at 45 % only two fit, a deviation in STOPP v11)
-  const DX = [0.05, 0.82], looks = [BENCH2, YOUNG];
+  const DX = [0.06, 0.8], looks = [BENCH2, YOUNG];
   const ms = DX.map((xm, i) => { const fc = i === 1 ? { ...FACES.delighted, gaze: [-0.5, 0] as [number, number] } : { ...FACES.calm, gaze: [-0.5, 0] as [number, number] }, mm = seated(`d${i}`, xm, [6, 0, 0], fc);
-    ease(mm, 0.65 + i * 0.15, { ...SIT, lean: 7, head: [4, -5, 0] } as Partial<Pose>, 0.22, { face: { ...fc, brow: 0.6, gaze: [-0.7, -0.1] } }); return mm; });
-  const c = figure("sir", -0.46, 30); c.stand(seconds + 1);
-  ease(c, -1, { head: [8, 2, 0] }, 0.01, { face: { ...FACES.smug, gaze: [0.6, 0.1] } }); ease(c, 0.9, { head: [8, 4, -3] }, 0.35, { face: { ...FACES.delighted, gaze: [0.6, 0.1] } });
-  const h = holdSheet("con", c, -0.46, "letter", false, false, (t: number) => 22 * env(t, 0.1, 0.4, 99, 0.3));
+    ease(mm, 0.6 + i * 0.15, { ...SIT, lean: 10, head: [2, -12, 0] } as Partial<Pose>, 0.24, { face: { ...fc, brow: 0.9, pupil: 0.8, gaze: [-0.8, -0.2] } }); return mm; });      // (a bigger jerk back, upright, the head up and the brows high: at lean 7 it did not read at 360 px)
+  const c = figure("sir", -0.62, 48); c.stand(seconds + 1);
+  ease(c, -1, { head: [-6, 2, 0] }, 0.01, { face: { ...FACES.smug, gaze: [0.6, 0.1] } }); ease(c, 0.9, { head: [-6, 4, -3] }, 0.35, { face: { ...FACES.delighted, gaze: [0.6, 0.1] } });
+  const h = holdSheet("con", c, -0.62, "letter", false, false, (t: number) => 14 * env(t, 0.1, 0.4, 99, 0.3));
   const dealers: Cast[] = ms.map((mm, i) => ({ name: `d${i}`, m: mm, who: "sir", look: looks[i], seed: 30 + i, armWipe: false, pose: kneesHook(DX[i]), hands: { L: [[0, "fist"]], R: [[0, "fist"]] } } as Cast));
   const cast: Cast[] = [{ name: "con", m: c, who: "sir", look: CON, seed: 9, armWipe: false, pose: h.pose, hands: { L: [[0, "grip"]], R: [[0, "grip"]] } }, ...dealers];
   const seats = dealers.map(seatOf), top = Math.max(...seats.map((q) => q.top)); for (const q of seats) q.top = top;
   const x0 = Math.min(...seats.map((q) => q.x0)) - 10, x1 = Math.max(...seats.map((q) => q.x1)) + 10;
-  const c1 = fitCam(cast, seconds, ZH(0.5), [], () => false, 0.04), c0 = camFeet(c1.cx, c1.z, 0.8), cam = (t: number) => ({ ...c0, cx: c0.cx + lerp(-4, 4, smooth(t / seconds)) });
+  const c1 = fitCam(cast, seconds, ZH(0.5), [], () => false, 0.034), c0 = camFeet(c1.cx, c1.z, 0.8), cam = (t: number) => ({ ...c0, cx: c0.cx + lerp(-4, 4, smooth(t / seconds)) });
   return { id: "e07", title: "7 Han visar brevet för handlarna", seconds, cast, events: {}, shot: "wide", camera: cam, seats, contacts: h.contacts, over: h.over,
     ownBg: (g, t) => suite(g, cam(t), SUITE), back: (g) => bench(g, x0, x1, top) } as Shot; };
 

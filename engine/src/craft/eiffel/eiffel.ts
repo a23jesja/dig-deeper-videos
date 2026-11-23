@@ -214,9 +214,9 @@ const s04 = (): Shot => propShot("e04", "4 Tidningen: det rostiga tornet", 1.5, 
 
 // 5  "He was a con man.": the con man standing beside the suite's table (the newspaper on it), in 01's framing, smug, his mouth shut, no gesture.
 //    Camera: a slow push-in.
-const s05 = (): Shot => { const seconds = 1.6, m = figure("sir", -0.1, 62); m.stand(0.1);
+const s05 = (): Shot => { const seconds = 1.6, m = figure("sir", -0.1, 56); m.stand(0.1);
   // (the body actions, the review of v10: he turns from three-quarter to face us (03's turn, 0.1-0.85 s), then leans back, smug (1.0 s))
-  m.turn(-50, 0.75, 0.015); m.stand(seconds + 1);
+  m.turn(-26, 0.7, 0.015); m.stand(seconds + 1);      // (56 to 30 degrees, inside the three-quarter drawing: through the switch to the front the face's redraw flickered at this size, v11)
   ease(m, -1, { head: [0, 2, 0] }, 0.01, { face: { ...FACES.smug, gaze: [0.5, 0] } });
   ease(m, 1.0, { head: [0, -3, -3], lean: -6 }, 0.35, { face: { ...FACES.delighted, gaze: [0, 0] } });
   const cast: Cast[] = [{ name: "con", m, who: "sir", look: CON, seed: 1,      // (seed 1: no blink during the turn; with 9 a blink fell on the turn and the eyes shut as the head changed drawings, flicker on v11)
@@ -479,7 +479,7 @@ const s17 = (): Shot => { const seconds = 2.0;
   // (31 % of the height and a still camera: at 60 % with the camera following, the deck and the rail moved 23 px a frame, over the 12 px
   //  limit (flicker on v11); v10's walk, across the picture)
   const m = figure("sir", 0, 90, 0.45); m.walk(mt(m, 3.0), { step: 0.8, tau: 0.6, keep: true }); m.stand(4); const T_STOP = 99;
-  ease(m, -1, { head: [0, 0, 0] }, 0.01, { face: { ...FACES.smug, gaze: [0.6, 0] } }); ease(m, 0.9, { head: [-42, -2, 0] }, 0.5, { face: { ...FACES.delighted, gaze: [-0.4, -0.1] } });
+  ease(m, -1, { head: [0, 0, 0] }, 0.01, { face: { ...FACES.smug, gaze: [0.6, 0] } }); ease(m, 0.9, { head: [0, -2, 0] }, 0.5, { face: { ...FACES.delighted, gaze: [-0.9, -0.1] } });      // (he looks back with his eyes, the head in profile: turned, the head changed drawings and flickered, v11)
   const cast: Cast[] = [{ name: "con", m, who: "sir", look: CON, seed: 9, armWipe: false, hands: { L: [[0, "fist"]], R: [[0, "fist"]] } }];
   const z = ZH(0.31), xs: number[] = []; for (let k = 0; k <= Math.ceil(seconds * 30) + 2; k++) xs.push(castAt(cast, k / 30)[0].x);
   const xAt = (t: number) => { const k = Math.max(0, Math.min(xs.length - 1, t * 30)), i = Math.floor(k), f = k - i; return xs[i] + ((xs[Math.min(xs.length - 1, i + 1)] ?? xs[i]) - xs[i]) * f; };

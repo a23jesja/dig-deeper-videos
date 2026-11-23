@@ -1,0 +1,59 @@
+{
+ "line": "He told scrap dealers to bid for the tower's iron.\r",
+ "take": 0,
+ "word_errors": 0.0,
+ "words": [
+  {
+   "w": "He",
+   "a": 0.0,
+   "b": 0.18
+  },
+  {
+   "w": "told",
+   "a": 0.18,
+   "b": 0.36
+  },
+  {
+   "w": "scrap",
+   "a": 0.36,
+   "b": 0.68
+  },
+  {
+   "w": "dealers",
+   "a": 0.68,
+   "b": 1.02
+  },
+  {
+   "w": "to",
+   "a": 1.02,
+   "b": 1.24
+  },
+  {
+   "w": "bid",
+   "a": 1.24,
+   "b": 1.38
+  },
+  {
+   "w": "for",
+   "a": 1.38,
+   "b": 1.6
+  },
+  {
+   "w": "the",
+   "a": 1.6,
+   "b": 1.72
+  },
+  {
+   "w": "tower's",
+   "a": 1.72,
+   "b": 2.1
+  },
+  {
+   "w": "iron.",
+   "a": 2.1,
+   "b": 2.4
+  }
+ ],
+ "character_count_before": 2893,
+ "character_count_after": 2893
+}

@@ -1,0 +1,178 @@
+== voice/eiffel/g01 (26)
+pre-count: 26 characters x 3 takes = 78 (cap 78)
+character_count before: 2842 of 40000
+character_count after: 2842 (used 0)
+take0: 'He sold the Eiffel Tower.' word errors 0.00
+take1: 'He sold the Eiffel Tower.' word errors 0.00
+take2: 'He sold the Eiffel Tower.' word errors 0.00
+picked take0
+== voice/eiffel/g02 (18)
+pre-count: 18 characters x 3 takes = 54 (cap 54)
+character_count before: 2842 of 40000
+character_count after: 2842 (used 0)
+take0: 'It was never his.' word errors 0.00
+take1: 'It was never his.' word errors 0.00
+take2: 'It was never his.' word errors 0.00
+picked take0
+== voice/eiffel/g03 (49)
+pre-count: 49 characters x 3 takes = 147 (cap 147)
+character_count before: 2893 of 40000
+character_count after: 2893 (used 0)
+take0: 'A newspaper said the tower cost too much to fix.' word errors 0.00
+take1: 'A newspaper said the tower cost too much to fix.' word errors 0.00
+take2: 'A newspaper said the tower cost too much to fix.' word errors 0.00
+picked take0
+== voice/eiffel/g04 (18)
+pre-count: 18 characters x 3 takes = 54 (cap 54)
+character_count before: 2893 of 40000
+character_count after: 2893 (used 0)
+take0: 'He was a con man.' word errors 0.00
+take1: 'He was a con man.' word errors 0.00
+take2: 'He was a con man.' word errors 0.00
+picked take0
+== voice/eiffel/g05 (42)
+pre-count: 42 characters x 3 takes = 126 (cap 126)
+character_count before: 2893 of 40000
+character_count after: 2893 (used 0)
+take0: 'He pretended to be a government official.' word errors 0.00
+take1: 'He pretended to be a government official.' word errors 0.00
+take2: 'He pretended to be a government official.' word errors 0.00
+picked take0
+== voice/eiffel/g06 (51)
+pre-count: 51 characters x 3 takes = 153 (cap 153)
+character_count before: 2893 of 40000
+character_count after: 2893 (used 0)
+take0: "He told scrap dealers to bid for the tower's iron." word errors 0.00
+take1: "He told scrap dealers to bid for the tower's iron." word errors 0.00
+take2: "He told scrap dealers to bid for the tower's iron." word errors 0.00
+picked take0
+== voice/eiffel/g07 (16)
+pre-count: 16 characters x 3 takes = 48 (cap 48)
+character_count before: 2893 of 40000
+character_count after: 2893 (used 0)
+take0: 'One Dealer One' word errors 0.33
+take1: 'One Dealer One' word errors 0.33
+take2: 'One Dealer One' word errors 0.33
+picked take0
+== voice/eiffel/g08 (31)
+pre-count: 31 characters x 3 takes = 93 (cap 93)
+character_count before: 2893 of 40000
+character_count after: 2893 (used 0)
+take0: 'The dealer paid for the tower.' word errors 0.00
+take1: 'The dealer paid for the tower.' word errors 0.00
+take2: 'The dealer paid for the tower.' word errors 0.00
+picked take0
+== voice/eiffel/g09 (29)
+pre-count: 29 characters x 3 takes = 87 (cap 87)
+character_count before: 2893 of 40000
+character_count after: 2893 (used 0)
+take0: 'The con man got a bribe too.' word errors 0.00
+take1: 'The con man got a bribe too.' word errors 0.00
+take2: 'The con man got a bribe too.' word errors 0.00
+picked take0
+== voice/eiffel/g10 (33)
+pre-count: 33 characters x 3 takes = 99 (cap 99)
+character_count before: 2893 of 40000
+character_count after: 3188 (used 295)
+take0: 'Then he vanished with the money.' word errors 0.00
+take1: 'Then he vanished with the money.' word errors 0.00
+take2: 'Then he vanished with the money.' word errors 0.00
+picked take0
+== voice/eiffel/g11 (51)
+pre-count: 51 characters x 3 takes = 153 (cap 153)
+character_count before: 3188 of 40000
+character_count after: 3188 (used 0)
+take0: 'The dealer was too embarrassed to tell the police.' word errors 0.00
+take1: 'The dealer was too embarrassed to tell the police.' word errors 0.00
+take2: 'The dealer was too embarrassed to tell the police.' word errors 0.00
+picked take0
+== voice/eiffel/g12 (32)
+pre-count: 32 characters x 3 takes = 96 (cap 96)
+character_count before: 3188 of 40000
+character_count after: 3188 (used 0)
+take0: 'Later the conman tried again.' word errors 0.33
+take1: 'Later the conman tried again.' word errors 0.33
+take2: 'Later the conman tried again.' word errors 0.33
+picked take0
+== voice/eiffel/g13 (43)
+pre-count: 43 characters x 3 takes = 129 (cap 129)
+character_count before: 3188 of 40000
+character_count after: 3188 (used 0)
+take0: 'This time, another dealer told the police.' word errors 0.00
+take1: 'This time, another dealer told the police.' word errors 0.00
+take2: 'This time, another dealer told the police.' word errors 0.00
+picked take0
+== voice/eiffel/g14 (29)
+pre-count: 29 characters x 3 takes = 87 (cap 87)
+character_count before: 3188 of 40000
+character_count after: 3188 (used 0)
+take0: 'the con man fled to America.' word errors 0.00
+take1: 'The con man fled to America.' word errors 0.00
+take2: 'the con man fled to America.' word errors 0.00
+picked take0
+== voice/eiffel/g15 (22)
+pre-count: 22 characters x 3 takes = 66 (cap 66)
+character_count before: 3188 of 40000
+Traceback (most recent call last):
+  File "C:\Users\sweje\dig-deeper-videos\engine\voice\el_line.py", line 72, in <module>
+    main()
+    ~~~~^^
+  File "C:\Users\sweje\dig-deeper-videos\engine\voice\el_line.py", line 67, in main
+    c1, _ = used(); print(f"character_count after: {c1} (used {c1 - c0})")
+            ~~~~^^
+  File "C:\Users\sweje\dig-deeper-videos\engine\voice\el_line.py", line 21, in used
+    s = json.loads(req("/user/subscription")); return s["character_count"], s["character_limit"]
+                   ~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sweje\dig-deeper-videos\engine\voice\el_line.py", line 17, in req
+    with urllib.request.urlopen(r, timeout=120) as f: return f.read()
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "C:\Python314\Lib\urllib\request.py", line 187, in urlopen
+    return opener.open(url, data, timeout)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python314\Lib\urllib\request.py", line 493, in open
+    response = meth(req, response)
+  File "C:\Python314\Lib\urllib\request.py", line 602, in http_response
+    response = self.parent.error(
+        'http', request, response, code, msg, hdrs)
+  File "C:\Python314\Lib\urllib\request.py", line 531, in error
+    return self._call_chain(*args)
+           ~~~~~~~~~~~~~~~~^^^^^^^
+  File "C:\Python314\Lib\urllib\request.py", line 464, in _call_chain
+    result = func(*args)
+  File "C:\Python314\Lib\urllib\request.py", line 611, in http_error_default
+    raise HTTPError(req.full_url, code, msg, hdrs, fp)
+urllib.error.HTTPError: HTTP Error 429: Too Many Requests
+STOPPED at voice/eiffel/g15
+== voice/eiffel/d01 (15)
+pre-count: 15 characters x 3 takes = 45 (cap 45)
+character_count before: 3409 of 40000
+Traceback (most recent call last):
+  File "C:\Users\sweje\dig-deeper-videos\engine\voice\el_line.py", line 72, in <module>
+    main()
+    ~~~~^^
+  File "C:\Users\sweje\dig-deeper-videos\engine\voice\el_line.py", line 67, in main
+    c1, _ = used(); print(f"character_count after: {c1} (used {c1 - c0})")
+            ~~~~^^
+  File "C:\Users\sweje\dig-deeper-videos\engine\voice\el_line.py", line 21, in used
+    s = json.loads(req("/user/subscription")); return s["character_count"], s["character_limit"]
+                   ~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sweje\dig-deeper-videos\engine\voice\el_line.py", line 17, in req
+    with urllib.request.urlopen(r, timeout=120) as f: return f.read()
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "C:\Python314\Lib\urllib\request.py", line 187, in urlopen
+    return opener.open(url, data, timeout)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "C:\Python314\Lib\urllib\request.py", line 493, in open
+    response = meth(req, response)
+  File "C:\Python314\Lib\urllib\request.py", line 602, in http_response
+    response = self.parent.error(
+        'http', request, response, code, msg, hdrs)
+  File "C:\Python314\Lib\urllib\request.py", line 531, in error
+    return self._call_chain(*args)
+           ~~~~~~~~~~~~~~~~^^^^^^^
+  File "C:\Python314\Lib\urllib\request.py", line 464, in _call_chain
+    result = func(*args)
+  File "C:\Python314\Lib\urllib\request.py", line 611, in http_error_default
+    raise HTTPError(req.full_url, code, msg, hdrs, fp)
+urllib.error.HTTPError: HTTP Error 429: Too Many Requests
+STOPPED at d01

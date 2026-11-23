@@ -1,0 +1,34 @@
+{
+ "line": "The seller didn't own it.",
+ "take": 0,
+ "word_errors": 0.0,
+ "words": [
+  {
+   "w": "The",
+   "a": 0.0,
+   "b": 0.18
+  },
+  {
+   "w": "seller",
+   "a": 0.18,
+   "b": 0.4
+  },
+  {
+   "w": "didn't",
+   "a": 0.4,
+   "b": 0.78
+  },
+  {
+   "w": "own",
+   "a": 0.78,
+   "b": 0.92
+  },
+  {
+   "w": "it.",
+   "a": 0.92,
+   "b": 1.14
+  }
+ ],
+ "character_count_before": 3457,
+ "character_count_after": 3457
+}

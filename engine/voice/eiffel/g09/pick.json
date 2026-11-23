@@ -1,0 +1,44 @@
+{
+ "line": "The con man got a bribe too.\r",
+ "take": 0,
+ "word_errors": 0.0,
+ "words": [
+  {
+   "w": "The",
+   "a": 0.0,
+   "b": 0.18
+  },
+  {
+   "w": "con",
+   "a": 0.18,
+   "b": 0.34
+  },
+  {
+   "w": "man",
+   "a": 0.34,
+   "b": 0.54
+  },
+  {
+   "w": "got",
+   "a": 0.54,
+   "b": 0.72
+  },
+  {
+   "w": "a",
+   "a": 0.72,
+   "b": 0.84
+  },
+  {
+   "w": "bribe",
+   "a": 0.84,
+   "b": 1.06
+  },
+  {
+   "w": "too.",
+   "a": 1.06,
+   "b": 1.4
+  }
+ ],
+ "character_count_before": 2893,
+ "character_count_after": 2893
+}

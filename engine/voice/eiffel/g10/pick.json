@@ -1,0 +1,39 @@
+{
+ "line": "Then he vanished with the money.\r",
+ "take": 0,
+ "word_errors": 0.0,
+ "words": [
+  {
+   "w": "Then",
+   "a": 0.0,
+   "b": 0.2
+  },
+  {
+   "w": "he",
+   "a": 0.2,
+   "b": 0.3
+  },
+  {
+   "w": "vanished",
+   "a": 0.3,
+   "b": 0.58
+  },
+  {
+   "w": "with",
+   "a": 0.58,
+   "b": 0.8
+  },
+  {
+   "w": "the",
+   "a": 0.8,
+   "b": 0.92
+  },
+  {
+   "w": "money.",
+   "a": 0.92,
+   "b": 1.12
+  }
+ ],
+ "character_count_before": 2893,
+ "character_count_after": 3188
+}

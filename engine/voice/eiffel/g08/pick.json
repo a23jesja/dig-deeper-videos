@@ -1,0 +1,39 @@
+{
+ "line": "The dealer paid for the tower.\r",
+ "take": 0,
+ "word_errors": 0.0,
+ "words": [
+  {
+   "w": "The",
+   "a": 0.0,
+   "b": 0.18
+  },
+  {
+   "w": "dealer",
+   "a": 0.18,
+   "b": 0.42
+  },
+  {
+   "w": "paid",
+   "a": 0.42,
+   "b": 0.68
+  },
+  {
+   "w": "for",
+   "a": 0.68,
+   "b": 0.88
+  },
+  {
+   "w": "the",
+   "a": 0.88,
+   "b": 0.98
+  },
+  {
+   "w": "tower.",
+   "a": 0.98,
+   "b": 1.24
+  }
+ ],
+ "character_count_before": 2893,
+ "character_count_after": 2893
+}

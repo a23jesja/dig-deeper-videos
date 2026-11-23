@@ -1,0 +1,39 @@
+{
+ "line": "This man sold the Eiffel Tower.",
+ "take": 0,
+ "word_errors": 0.0,
+ "words": [
+  {
+   "w": "This",
+   "a": 0.0,
+   "b": 0.24
+  },
+  {
+   "w": "man",
+   "a": 0.24,
+   "b": 0.5
+  },
+  {
+   "w": "sold",
+   "a": 0.5,
+   "b": 0.82
+  },
+  {
+   "w": "the",
+   "a": 0.82,
+   "b": 0.98
+  },
+  {
+   "w": "Eiffel",
+   "a": 0.98,
+   "b": 1.32
+  },
+  {
+   "w": "Tower.",
+   "a": 1.32,
+   "b": 1.56
+  }
+ ],
+ "character_count_before": 3457,
+ "character_count_after": 3457
+}

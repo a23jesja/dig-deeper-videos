@@ -1,0 +1,34 @@
+{
+ "line": "He was a con man.\r",
+ "take": 0,
+ "word_errors": 0.0,
+ "words": [
+  {
+   "w": "He",
+   "a": 0.0,
+   "b": 0.16
+  },
+  {
+   "w": "was",
+   "a": 0.16,
+   "b": 0.28
+  },
+  {
+   "w": "a",
+   "a": 0.28,
+   "b": 0.42
+  },
+  {
+   "w": "con",
+   "a": 0.42,
+   "b": 0.6
+  },
+  {
+   "w": "man.",
+   "a": 0.6,
+   "b": 0.9
+  }
+ ],
+ "character_count_before": 2893,
+ "character_count_after": 2893
+}

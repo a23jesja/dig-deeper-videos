@@ -1,0 +1,24 @@
+{
+ "line": "Do you deliver?",
+ "take": 0,
+ "word_errors": 0.0,
+ "words": [
+  {
+   "w": "Do",
+   "a": 0.0,
+   "b": 0.18
+  },
+  {
+   "w": "you",
+   "a": 0.18,
+   "b": 0.32
+  },
+  {
+   "w": "deliver?",
+   "a": 0.32,
+   "b": 0.62
+  }
+ ],
+ "character_count_before": 3409,
+ "character_count_after": null
+}

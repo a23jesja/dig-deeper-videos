@@ -1,0 +1,39 @@
+{
+ "line": "The con man fled to America.\r",
+ "take": 0,
+ "word_errors": 0.0,
+ "words": [
+  {
+   "w": "the",
+   "a": 0.0,
+   "b": 0.2
+  },
+  {
+   "w": "con",
+   "a": 0.2,
+   "b": 0.4
+  },
+  {
+   "w": "man",
+   "a": 0.4,
+   "b": 0.64
+  },
+  {
+   "w": "fled",
+   "a": 0.64,
+   "b": 0.9
+  },
+  {
+   "w": "to",
+   "a": 0.9,
+   "b": 1.12
+  },
+  {
+   "w": "America.",
+   "a": 1.12,
+   "b": 1.42
+  }
+ ],
+ "character_count_before": 3188,
+ "character_count_after": 3188
+}

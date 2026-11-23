@@ -1,0 +1,40 @@
+take0: 'Also, the story goes.' word errors 0.40
+take1: 'Also, the story goes.' word errors 0.40
+take2: 'Also, the story goes.' word errors 0.40
+picked take0
+take0: 'Do you deliver?' word errors 0.00
+take1: 'Do you deliver?' word errors 0.00
+take2: 'Do you deliver?' word errors 0.00
+picked take0
+== voice/eiffel/g16 (11)
+pre-count: 11 characters x 3 takes = 33 (cap 33)
+character_count before: 3409 of 40000
+character_count after: 3409 (used 0)
+take0: 'Any offers?' word errors 0.00
+take1: 'Any offers?' word errors 0.00
+take2: 'and he offers.' word errors 1.00
+picked take0
+== voice/eiffel/g17 (33)
+pre-count: 33 characters x 3 takes = 99 (cap 99)
+character_count before: 3409 of 40000
+character_count after: 3457 (used 48)
+take0: 'Somebody bought the Eiffel Tower.' word errors 0.00
+take1: 'Somebody bought the Eiffel Tower.' word errors 0.00
+take2: 'Somebody bought the Eiffel Tower.' word errors 0.00
+picked take0
+== voice/eiffel/g18 (25)
+pre-count: 25 characters x 3 takes = 75 (cap 75)
+character_count before: 3457 of 40000
+character_count after: 3457 (used 0)
+take0: "The seller didn't own it." word errors 0.00
+take1: "The seller didn't own it." word errors 0.00
+take2: "The seller didn't own it." word errors 0.00
+picked take0
+== voice/eiffel/g19 (31)
+pre-count: 31 characters x 3 takes = 93 (cap 93)
+character_count before: 3457 of 40000
+character_count after: 3457 (used 0)
+take0: 'This man sold the Eiffel Tower.' word errors 0.00
+take1: 'This man sold the Eiffel Tower.' word errors 0.00
+take2: 'This man sold the Eiffel Tower.' word errors 0.00
+picked take0

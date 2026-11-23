@@ -1,0 +1,59 @@
+{
+ "line": "A newspaper said the tower cost too much to fix.\r",
+ "take": 0,
+ "word_errors": 0.0,
+ "words": [
+  {
+   "w": "A",
+   "a": 0.0,
+   "b": 0.16
+  },
+  {
+   "w": "newspaper",
+   "a": 0.16,
+   "b": 0.48
+  },
+  {
+   "w": "said",
+   "a": 0.48,
+   "b": 0.82
+  },
+  {
+   "w": "the",
+   "a": 0.82,
+   "b": 0.98
+  },
+  {
+   "w": "tower",
+   "a": 0.98,
+   "b": 1.24
+  },
+  {
+   "w": "cost",
+   "a": 1.24,
+   "b": 1.52
+  },
+  {
+   "w": "too",
+   "a": 1.52,
+   "b": 1.78
+  },
+  {
+   "w": "much",
+   "a": 1.78,
+   "b": 1.96
+  },
+  {
+   "w": "to",
+   "a": 1.96,
+   "b": 2.18
+  },
+  {
+   "w": "fix.",
+   "a": 2.18,
+   "b": 2.42
+  }
+ ],
+ "character_count_before": 2893,
+ "character_count_after": 2893
+}

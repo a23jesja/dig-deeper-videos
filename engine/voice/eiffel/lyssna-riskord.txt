@@ -1,0 +1,7 @@
+The risk words of the Eiffel Tower's lines, each with half a second round it, in this order (voice/eiffel/lyssna-riskord.wav):
+g01 (He sold the Eiffel Tower.): 'Eiffel' 0.08-1.40 s
+g17 (Somebody bought the Eiffel Tower.): 'Eiffel' 0.30-1.64 s
+g19 (This man sold the Eiffel Tower.): 'Eiffel' 0.48-1.82 s
+g07 (One dealer won.): 'One' 0.00-1.26 s
+g15 (Or so the story goes.): 'Also,' 0.00-0.76 s
+g15 (Or so the story goes.): 'story' 0.00-1.22 s

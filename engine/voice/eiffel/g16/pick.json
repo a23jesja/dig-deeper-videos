@@ -1,0 +1,19 @@
+{
+ "line": "Any offers?",
+ "take": 0,
+ "word_errors": 0.0,
+ "words": [
+  {
+   "w": "Any",
+   "a": 0.0,
+   "b": 0.2
+  },
+  {
+   "w": "offers?",
+   "a": 0.2,
+   "b": 0.5
+  }
+ ],
+ "character_count_before": 3409,
+ "character_count_after": 3409
+}

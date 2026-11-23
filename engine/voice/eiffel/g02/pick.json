@@ -1,0 +1,29 @@
+{
+ "line": "It was never his.\r",
+ "take": 0,
+ "word_errors": 0.0,
+ "words": [
+  {
+   "w": "It",
+   "a": 0.0,
+   "b": 0.16
+  },
+  {
+   "w": "was",
+   "a": 0.16,
+   "b": 0.26
+  },
+  {
+   "w": "never",
+   "a": 0.26,
+   "b": 0.48
+  },
+  {
+   "w": "his.",
+   "a": 0.48,
+   "b": 0.76
+  }
+ ],
+ "character_count_before": 2842,
+ "character_count_after": 2842
+}

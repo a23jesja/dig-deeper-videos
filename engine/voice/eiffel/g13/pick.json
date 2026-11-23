@@ -1,0 +1,44 @@
+{
+ "line": "This time, another dealer told the police.\r",
+ "take": 0,
+ "word_errors": 0.0,
+ "words": [
+  {
+   "w": "This",
+   "a": 0.0,
+   "b": 0.22
+  },
+  {
+   "w": "time,",
+   "a": 0.22,
+   "b": 0.52
+  },
+  {
+   "w": "another",
+   "a": 0.64,
+   "b": 0.82
+  },
+  {
+   "w": "dealer",
+   "a": 0.82,
+   "b": 1.14
+  },
+  {
+   "w": "told",
+   "a": 1.14,
+   "b": 1.36
+  },
+  {
+   "w": "the",
+   "a": 1.36,
+   "b": 1.56
+  },
+  {
+   "w": "police.",
+   "a": 1.56,
+   "b": 1.8
+  }
+ ],
+ "character_count_before": 3188,
+ "character_count_after": 3188
+}

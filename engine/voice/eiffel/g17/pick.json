@@ -1,0 +1,34 @@
+{
+ "line": "Somebody bought the Eiffel Tower.",
+ "take": 0,
+ "word_errors": 0.0,
+ "words": [
+  {
+   "w": "Somebody",
+   "a": 0.0,
+   "b": 0.34
+  },
+  {
+   "w": "bought",
+   "a": 0.34,
+   "b": 0.6
+  },
+  {
+   "w": "the",
+   "a": 0.6,
+   "b": 0.8
+  },
+  {
+   "w": "Eiffel",
+   "a": 0.8,
+   "b": 1.14
+  },
+  {
+   "w": "Tower.",
+   "a": 1.14,
+   "b": 1.38
+  }
+ ],
+ "character_count_before": 3409,
+ "character_count_after": 3457
+}

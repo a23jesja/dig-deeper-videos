@@ -1,0 +1,44 @@
+{
+ "line": "He pretended to be a government official.\r",
+ "take": 0,
+ "word_errors": 0.0,
+ "words": [
+  {
+   "w": "He",
+   "a": 0.0,
+   "b": 0.16
+  },
+  {
+   "w": "pretended",
+   "a": 0.16,
+   "b": 0.48
+  },
+  {
+   "w": "to",
+   "a": 0.48,
+   "b": 0.74
+  },
+  {
+   "w": "be",
+   "a": 0.74,
+   "b": 0.86
+  },
+  {
+   "w": "a",
+   "a": 0.86,
+   "b": 0.98
+  },
+  {
+   "w": "government",
+   "a": 0.98,
+   "b": 1.22
+  },
+  {
+   "w": "official.",
+   "a": 1.22,
+   "b": 1.64
+  }
+ ],
+ "character_count_before": 2893,
+ "character_count_after": 2893
+}

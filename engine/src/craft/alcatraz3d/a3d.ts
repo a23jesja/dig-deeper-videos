@@ -69,8 +69,8 @@ const inmateN05 = (): Who3 => { const m = figure("sir", 0, -90); m.stand(4);
   //  the side view at -58): from 26 to 34 it crossed that switch and the head jumped from profile to three-quarter, the review of v11 point 2.
   //  The eyes do the looking at the light; simpler, as the automation session asked)
   ease(m, -1, { head: [40, 4, 0] }, 0.01, { face: { pupil: 1, gaze: [0.7, 0.25], lid: 0.1 } });
-  ease(m, 0.3, { head: [42, 0, 0] }, 0.5, { face: { pupil: 1, gaze: [0.8, 0.1], brow: 0.5, lid: 0 } });
-  ease(m, 0.95, { lean: -6, head: [46, -2, 0] }, 0.6, { face: { pupil: 0.7, gaze: [0.85, 0.0], wide: 1, brow: 1, mouth: 0.2, smile: -0.5, lid: 0 } });
+  ease(m, 0.3, { head: [42, 0, 0] }, 0.5, { face: { pupil: 1, gaze: [0.8, 0.1], brow: 0.25, lid: 0 } });
+  ease(m, 0.95, { lean: -6, head: [46, -2, 0] }, 0.6, { face: { pupil: 0.7, gaze: [0.85, 0.0], wide: 1, brow: 0.1, mouth: 0.2, smile: -0.5, lid: 0 } });      // (v12b: the brows barely up, so they stay in view under the cap's brim: at 1 and at 0.55 they slid under it, the independent reviews)
   FRIGHT_AT.n05 = 1.05;
   return { name: "inmate", at: [0.30, 2.40], cast: { name: "inmate", m, who: "sir", look: INMATE, seed: 41, armWipe: false, hands: { L: [[0, "fist"]], R: [[0, "fist"]] } } }; };
 // ------------------------------------------------------------------ the rest of the film's people ------------------------------------------------------------------
@@ -231,8 +231,24 @@ export const steam = (h: G, f: Fig, a0: number) => {
 export const beamTo = (g: G, id: string, fr: number) => {
   // (v12: the flat v4's cone, whole from the lens to its spot on the head; it no longer stops at the bars, and the plate's torch no longer
   //  lights the bars (set.py light linking), the review of v11 point 3)
-  for (const L of LENS[id] ?? []) { const q = project(id, fr, torchTarget(id, fr)); g.save(); g.setTransform(1, 0, 0, 1, 0, 0); g.globalCompositeOperation = "lighter";
-    cone(g, L.screen[0], L.screen[1], q[0], q[1], Math.max(40, Math.hypot(q[0] - L.screen[0], q[1] - L.screen[1]) * 0.16), 0.75); g.restore(); } };
+  // (v12b: brighter, so it visibly reaches the dummy; and the cell's bars drawn back over the part of the beam beyond the bar plane, as they
+  //  stand in front of it there: the beam was pasted over every bar, the independent review)
+  for (const L of LENS[id] ?? []) { const T = torchTarget(id, fr), q = project(id, fr, T), A = L.screen, len = Math.hypot(q[0] - A[0], q[1] - A[1]), r = Math.max(46, len * 0.18);
+    g.save(); g.setTransform(1, 0, 0, 1, 0, 0); g.globalCompositeOperation = "lighter"; cone(g, A[0], A[1], q[0], q[1], r, 1.15); g.restore();
+    const a3 = L.world, u = (BARS_Y - a3[1]) / ((T[1] - a3[1]) || 1e-6); if (!(u > 0 && u < 1)) continue;
+    const M = project(id, fr, [a3[0] + (T[0] - a3[0]) * u, BARS_Y, a3[2] + (T[2] - a3[2]) * u]), ux = (q[0] - A[0]) / (len || 1), uy = (q[1] - A[1]) / (len || 1), nx = -uy, ny = ux;
+    const tm = Math.hypot(M[0] - A[0], M[1] - A[1]) / (len || 1), w = (t: number) => (8 + (r - 8) * t / 0.85);      // (v12b: just the beam's own width: wider, the drawn bars showed beside it, the independent review)
+    g.save(); g.setTransform(1, 0, 0, 1, 0, 0); g.beginPath();
+    g.moveTo(M[0] + nx * w(tm), M[1] + ny * w(tm)); g.lineTo(q[0] + nx * w(1) + ux * r * 1.7, q[1] + ny * w(1) + uy * r * 1.7); g.lineTo(q[0] - nx * w(1) + ux * r * 1.7, q[1] - ny * w(1) + uy * r * 1.7); g.lineTo(M[0] - nx * w(tm), M[1] - ny * w(tm)); g.closePath(); g.clip();
+    g.strokeStyle = "#3b414d"; g.lineCap = "butt";
+    // (each bar as the plate draws it: a dark edge and a pale steel middle, so it runs on unbroken where it crosses the beam)
+    for (let k = 0; k <= 19; k++) { const x = -1.19 + k * (2.38 / 19), b0 = project(id, fr, [x, BARS_Y, 0]), b1 = project(id, fr, [x, BARS_Y, 2.35]), bw = Math.max(1.5, 0.019 * FOCAL(id) / ((b0[2] + b1[2]) / 2));
+      for (const [col, ww] of [["#38323f", 1]] as [string, number][]) { g.strokeStyle = col; g.lineWidth = bw * ww; g.beginPath(); g.moveTo(b0[0], b0[1]); g.lineTo(b1[0], b1[1]); g.stroke(); } }
+    g.strokeStyle = "#3b414d";
+    for (const zb of [0.12, 1.05, 2.0]) { const p0 = project(id, fr, [-1.25, -0.02, zb + 0.025]), p1 = project(id, fr, [1.25, -0.02, zb + 0.025]); g.lineWidth = Math.max(2, 0.05 * FOCAL(id) / ((p0[2] + p1[2]) / 2)); g.beginPath(); g.moveTo(p0[0], p0[1]); g.lineTo(p1[0], p1[1]); g.stroke(); }
+    g.restore(); } };
+const BARS_Y = -0.02;      // the plane of the cell's bars (set.py: the uprights at y -0.02, radius 0.011; the bands 0.05 high at z 0.12, 1.05, 2.0)
+const FOCAL = (id: string) => ((SHOTS3D.find((s) => s.id === id) as unknown as { cam: { lens: number } }).cam.lens / 24) * FM.H;
 /** v12, shots 1 and 3: the guard's hand and torch (the flat v4's drawing) at the torch's world point, projected, with the whole cone to the
  *  head; the sleeve runs out through the picture's edge. Blender's torch stands at the same world point, so the plate's spot is where it points */
 export const handTorch = (g: G, id: string, fr: number) => {
@@ -243,7 +259,28 @@ export const handTorch = (g: G, id: string, fr: number) => {
   const a = Math.atan2(q[1] - lp[1], q[0] - lp[0]), hx = lp[0] - Math.cos(a) * 82 * sc, hy = lp[1] - Math.sin(a) * 82 * sc;
   // (the fake head itself drawn over its card in the plate, at the card's projected place and size: Blender's colour handling turned the card's
   //  cream face grey-beige; nothing stands in front of it in these two shots, so the flat v4's own colours and ink go on top, exactly over it)
-  const C = project(id, fr, DUMMY3), sh0 = sh as unknown as { cam: { lens: number } }, wpx = DUMMY_W3 * (sh0.cam.lens / 24 * FM.H) / C[2], hs = wpx / (640 / 3.0);
-  g.save(); g.setTransform(1, 0, 0, 1, 0, 0); fakeHead(g, C[0], C[1] + (10 / 3.0) * hs, 3.0 * hs / 3.0, 1); const lens = heldTorch(g, hx, hy, a, [q[0], q[1]], 1, sc); g.restore();
+  // (v12b: the cone and its glow first, the head over them, so its ink and mouth stay whole: the cone laid over the face greyed the chin's
+  //  outline, the independent review; a soft contact shadow under the chin on the pillow, so the head rests on it)
+  const sh0 = sh as unknown as { cam: { lens: number }; cardScale?: number }, k = sh0.cardScale ?? 1, C = project(id, fr, [DUMMY3[0], DUMMY3[1], DUMMY3[2] + (k - 1) * 0.124]);
+  const wpx = DUMMY_W3 * k * (sh0.cam.lens / 24 * FM.H) / C[2], hs = wpx / (640 / 3.0), cy = C[1] + (10 / 3.0) * hs, chin = cy + 96 * hs;
+  const lens0: P2 = [hx + Math.cos(a) * 82 * sc, hy + Math.sin(a) * 82 * sc];
+  g.save(); g.setTransform(1, 0, 0, 1, 0, 0);
+  g.save(); g.globalCompositeOperation = "lighter"; cone(g, lens0[0], lens0[1], q[0], q[1], 130 * sc / 1.2, 1); g.restore();
+  g.save(); g.filter = "blur(10px)"; g.fillStyle = "rgba(14,12,24,0.5)"; g.beginPath(); g.ellipse(C[0] + 6 * hs, chin - 6 * hs, 88 * hs, 20 * hs, 0, 0, Math.PI * 2); g.fill(); g.restore();
+  fakeHead(g, C[0], cy, hs, 1);
+  // (the torch's light on the face, as in v4: a soft warm glow inside the face's outline, the outline itself left alone)
+  g.save(); g.beginPath(); g.ellipse(C[0], cy, 84 * hs, 88 * hs, 0, 0, Math.PI * 2); g.clip(); g.globalCompositeOperation = "screen";
+  const gl = g.createRadialGradient(C[0] + 20 * hs, cy + 30 * hs, 0, C[0] + 20 * hs, cy + 30 * hs, 110 * hs); gl.addColorStop(0, "rgba(255,236,170,0.28)"); gl.addColorStop(1, "rgba(255,236,170,0)"); g.fillStyle = gl; g.fillRect(C[0] - 120 * hs, cy - 120 * hs, 240 * hs, 240 * hs); g.restore();
+  const lens = heldTorch(g, hx, hy, a, null, 0, sc); g.restore();
   return { lens, spot: [q[0], q[1]] as P2, hand: [hx, hy] as P2, ang: a }; };
+/** v12c, shot 4: each dummy's own lamp lifts its head over the night grade (Alcatraz3D.tsx NIGHT darkens the plate): a soft warm glow on the
+ *  head, following its lamp as set.py turns it on (the darkened heads lost their contrast at phone size) */
+export const dummyGlow = (g: G, id: string, fr: number) => {
+  const sh = SHOTS3D.find((s) => s.id === id) as unknown as { spots?: { on: number }[]; cardScale?: number; cardFront?: number; cam: { lens: number } } | undefined;
+  if (!sh?.spots) return; const t = fr / FM.FPS, k = sh.cardScale ?? 1, e = (u: number) => smooth(Math.min(1, Math.max(0, u)));
+  sh.spots.forEach((sp, i) => { const nxt = sh.spots![i + 1]?.on ?? 1e9, lit = e((t - sp.on) / 0.3) * (1 - 0.3 * e((t - nxt) / 0.3)), cf = i < 2 ? (sh.cardFront ?? 0) : 0;
+    const P = project(id, fr, [DUMMY3[0], DUMMY3[1] - cf, DUMMY3[2] + 0.25 * cf + (k - 1) * 0.124 + i * 2.85 - 0.004]), r = 0.23 * k * 0.75 * ((sh.cam.lens / 24) * FM.H) / P[2];
+    g.save(); g.setTransform(1, 0, 0, 1, 0, 0); g.globalCompositeOperation = "screen"; const gr = g.createRadialGradient(P[0], P[1], 0, P[0], P[1], r);
+    gr.addColorStop(0, `rgba(255,226,180,${0.22 + 0.4 * lit})`); gr.addColorStop(0.6, `rgba(255,226,180,${0.12 + 0.22 * lit})`); gr.addColorStop(1, "rgba(255,226,180,0)");
+    g.fillStyle = gr; g.beginPath(); g.arc(P[0], P[1], r, 0, Math.PI * 2); g.fill(); g.restore(); }); };
 export { lerp, smooth };

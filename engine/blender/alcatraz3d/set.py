@@ -127,7 +127,7 @@ def dummy_card(name, at, k):
     uv = me.uv_layers.new()
     for poly in me.polygons:
         for li in poly.loop_indices: v = me.vertices[me.loops[li].vertex_index].co; uv.data[li].uv = (v.x + 0.5, v.y + 0.5)
-    o = bpy.data.objects.new(name, me); sc.collection.objects.link(o); o.data.materials.append(m); o.location = at; k_ = SHOT0.get("cardScale", 1.0); o.scale = (DUMMY_W * k_, DUMMY_W * k_ * 660 / 640, 1)      # (cardScale: shot 4's heads a little larger, to read at phone size)
+    o = bpy.data.objects.new(name, me); sc.collection.objects.link(o); o.data.materials.append(m); k_ = SHOT0.get("cardScale", 1.0); o.location = (at[0], at[1], at[2] + (k_ - 1) * 0.124); o.scale = (DUMMY_W * k_, DUMMY_W * k_ * 660 / 640, 1)      # (cardScale: a larger head, its chin kept on the pillow: the face's bottom is 0.124 m under the card's centre at scale 1)
     o.visible_shadow = False; OBJ[name] = "head"; CARDS.append(o); return o
 def cell(i, cx, z0=0.0, tag=""):
     """one cell: walls, the bars, the bed with the fake head, the table, the vent; z0 lifts it to a tier above"""
@@ -167,7 +167,8 @@ def cell(i, cx, z0=0.0, tag=""):
         # (v12: the fake head is the flat v4's drawing on a card standing on the pillow and turned to the lens, so every face is flat Knopp and
         #  the bars, the blanket and the light treat it as a thing in the cell: the automation session's condition for round 4. It stands in
         #  the gap between two bars, x -0.75, so the lens of shot 1 can look at it between them)
-        dummy_card(f"dummy{i}{tag}", (cx + DUMMY[0] - CELLS[1], DUMMY[1], DUMMY[2] + z0), int(z0 // 2.8) % 3)
+        cf = SHOT0.get("cardFront", 0.0) if z0 < 5.0 else 0.0      # (v12b: not on the top tier, which the lens sees from below: moved forward it sat on the bed's head rail, the independent review)
+        dummy_card(f"dummy{i}{tag}", (cx + DUMMY[0] - CELLS[1], DUMMY[1] - cf, DUMMY[2] + z0 + 0.25 * cf), int(z0 // 2.8) % 3)      # (cardFront: shot 4's cards at the pillow's front, so its raised front no longer covers the chins)
     else:
         sphere_(f"sleeper{i}", "bed", (cx - 0.81, by0 + 0.95, bz + 0.2), 0.22, BLANK, 1.45, 4.4, 0.5)      # the blanket pulled over a sleeper, head and all: one long hump
     # the fold-down table on the right wall, a tin cup and a book on it
@@ -341,14 +342,14 @@ def pose_shot(shot, t):
         R0, R1 = shot["raft"]["from"], shot["raft"]["to"]; rx, ry = R0[0] + (R1[0] - R0[0]) * u, R0[1] + (R1[1] - R0[1]) * u
         for o, l0 in zip(RAFT, RAFT0): o.location = (l0.x + rx, l0.y + ry, l0.z + 0.03 * math.sin(t * 2.1))
     T = shot["torch"]; torch.location = lerp3(T["from"][0], T["from"][1], u); tgt.location = lerp3(T["at"][0], T["at"][1], u); tl.energy = T["power"] * 9
-    tl.spot_size = math.radians(T.get("cone", 15)); tl.spot_blend = T.get("blend", 0.45)
+    tl.spot_size = math.radians(T.get("cone", 15)); tl.spot_blend = T.get("blend", 0.45); tl.shadow_soft_size = T.get("soft", 0.02)
     sps = shot.get("spots", [])
     for k, (L, sp) in enumerate(zip(SPOTS, sps)):
         nxt = sps[k + 1]["on"] if k + 1 < len(sps) else 1e9
         L.data.energy = sp["power"] * ease((t - sp["on"]) / 0.3) * (1 - 0.65 * ease((t - nxt) / 0.3))      # (one at a time: the last one lit is the bright one)
         if k < len(CARDS):      # (v12: each dummy's card brightens with its own spot, as v11's lit heads did: unlit cards were all bright at once)
             em = next(n for n in CARDS[k].active_material.node_tree.nodes if n.type == "EMISSION")
-            em.inputs["Strength"].default_value = CARD_GLOW * (0.55 + 0.45 * ease((t - sp["on"]) / 0.3) * (1 - 0.35 * ease((t - nxt) / 0.3)))
+            em.inputs["Strength"].default_value = CARD_GLOW * (0.35 + 0.65 * ease((t - sp["on"]) / 0.3) * (1 - 0.3 * ease((t - nxt) / 0.3)))
 
 def projection():
     """the 3 x 4 matrix taking a world point to (pixel x, pixel y, depth along the lens) * w"""

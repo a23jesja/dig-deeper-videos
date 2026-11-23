@@ -5,9 +5,12 @@ import React from "react";
 import { AbsoluteFill, Audio, Img, staticFile, useCurrentFrame } from "remotion";
 import { FM } from "../clips/clipKit";
 import SPEC from "./shots.json";
-import { SHOTS3D, WHO, paintFigures, beamTo, handTorch, type Who3 } from "./a3d";
+import { SHOTS3D, WHO, paintFigures, beamTo, handTorch, dummyGlow, type Who3 } from "./a3d";
 
 export const PROV_S = SPEC.shots[SPEC.shots.length - 1].t1;
+/** v12b: the same night in every shot of the opening: shots 2, 4 and 5 darkened and cooled over the plate (under the figures), to match shots
+ *  1 and 3 (the independent review: the lit ceiling, floor and pillars read as a corridor at dusk) */
+export const NIGHT: Record<string, string> = { n02: "#6f7aa6", n04: "#6f7aa6", n05: "#a3abd0" };
 const BUILT: Record<string, Who3[]> = Object.fromEntries(SHOTS3D.map((s) => [s.id, WHO[s.id]()]));
 export const shotAt3 = (t: number) => { let i = 0; while (i + 1 < SHOTS3D.length && t >= SHOTS3D[i + 1].t0) i++; const s = SHOTS3D[i]; return { s, fr: Math.round((t - s.t0) * FM.FPS) }; };
 const nFrames = (s: (typeof SHOTS3D)[number]) => Math.round((s.t1 - s.t0) * FM.FPS);
@@ -22,12 +25,13 @@ const paintText = (g: CanvasRenderingContext2D, t: number) => {
 /** everything drawn over the plate at the shot's frame fr */
 export const paintOver = (g: CanvasRenderingContext2D, id: string, fr: number) => {
   g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, FM.W, FM.H);
-  paintFigures(g, id, fr, BUILT[id]); beamTo(g, id, fr); handTorch(g, id, fr); };
+  paintFigures(g, id, fr, BUILT[id]); beamTo(g, id, fr); handTorch(g, id, fr); dummyGlow(g, id, fr); };
 
 export const Alcatraz3D: React.FC<{ muted?: boolean }> = ({ muted = false }) => {
   const t = useCurrentFrame() / FM.FPS, { s, fr } = shotAt3(t), f = Math.min(fr, nFrames(s) - 1);
   return <AbsoluteFill style={{ background: "#101522" }}>
     <Img src={staticFile(`alc3d/${s.id}/${String(f + 1).padStart(4, "0")}.jpg`)} style={{ width: FM.W, height: FM.H }} />
+    {NIGHT[s.id] ? <AbsoluteFill style={{ background: NIGHT[s.id], mixBlendMode: "multiply" }} /> : null}
     <AbsoluteFill><canvas width={FM.W} height={FM.H} ref={(cv) => { if (cv) { const g = cv.getContext("2d")!; paintOver(g, s.id, f); paintText(g, t); } }} /></AbsoluteFill>
     {muted ? null : <Audio src={staticFile("craft/alcatraz3d-prov.wav")} />}
   </AbsoluteFill>; };
@@ -55,13 +59,14 @@ const alarm = (g: CanvasRenderingContext2D, t: number) => { const on = 0.5 + 0.5
   const gr = g.createRadialGradient(FM.W * 0.85, 300, 0, FM.W * 0.85, 300, 1300); gr.addColorStop(0, `rgba(255,50,40,${0.32 * on})`); gr.addColorStop(1, "rgba(255,50,40,0)"); g.fillStyle = gr; g.fillRect(0, 0, FM.W, FM.H); g.restore(); };
 export const paintOverF = (g: CanvasRenderingContext2D, id: string, fr: number, dur: number) => {
   g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, FM.W, FM.H);
-  paintFigures(g, id, fr, BUILT_F[id]); beamTo(g, id, fr); handTorch(g, id, fr);
+  paintFigures(g, id, fr, BUILT_F[id]); beamTo(g, id, fr); handTorch(g, id, fr); dummyGlow(g, id, fr);
   if (id === "n08") searchBeam(g, fr / FM.FPS, dur);
   if (id === "n11") alarm(g, fr / FM.FPS); };
 export const Alcatraz3DFilm: React.FC<{ muted?: boolean }> = ({ muted = false }) => {
   const t = useCurrentFrame() / FM.FPS, { s, fr } = shotAtF(t), n = Math.round((s.t1 - s.t0) * FM.FPS), f = Math.min(fr, n - 1);
   return <AbsoluteFill style={{ background: "#101522" }}>
     <Img src={staticFile(`alc3d/${s.id}/${String(f + 1).padStart(4, "0")}.jpg`)} style={{ width: FM.W, height: FM.H }} />
+    {NIGHT[s.id] ? <AbsoluteFill style={{ background: NIGHT[s.id], mixBlendMode: "multiply" }} /> : null}
     <AbsoluteFill><canvas width={FM.W} height={FM.H} ref={(cv) => { if (cv) { const g = cv.getContext("2d")!; paintOverF(g, s.id, f, s.t1 - s.t0); paintTextF(g, t); } }} /></AbsoluteFill>
     {muted ? null : <Audio src={staticFile("craft/alcatraz3d-film.wav")} />}
   </AbsoluteFill>; };

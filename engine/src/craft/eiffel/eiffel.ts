@@ -272,7 +272,12 @@ const holdSheet = (name: string, m: ReturnType<typeof figure>, x: number, kind: 
     // (seated and facing left: in front of his shoulders, a little under them, where both hands reach; 0.34 of the arm down, as 0.25 let the
     //  bid touch the speaking mouth, the independent review of v11)
     if (seatedFront) { const a = poseAt({ name, m, who: "sir" }, 0.3), sk = solve(D.props("sir"), a.pose, a.heading), s2 = scaleOf("sir"), L = sk.j.shL as unknown as number[], Rr = sk.j.shR as unknown as number[], P = D.props("sir"), arm = (P.upper + P.fore) * s2;
-      chest = [px(x) + ((L[0] + Rr[0]) / 2) * s2 - 0.52 * arm, footY("sir") + ((L[1] + Rr[1]) / 2) * s2 + 0.34 * arm]; } } return chest; };
+      chest = [px(x) + ((L[0] + Rr[0]) / 2) * s2 - 0.52 * arm, footY("sir") + ((L[1] + Rr[1]) / 2) * s2 + 0.34 * arm]; }
+    // (never over the chin: the thing's top edge, at the top of its lift, at least 24 below the chin (the skull joint, where the chin's outline
+    //  is drawn); it lay on the chin in five shots, the fourth independent review of v11)
+    const chin = jointPx(castAt([{ name, m, who: "sir" }], 0)[0], "skull")[1], top = { sold: 90, news: 80, letter: 80, back: 80, envelope: 53, cheque: 46, bid: 48 }[kind];
+    const up0 = Math.max(0, ...Array.from({ length: 91 }, (_, k) => lift(k / 30))), need = chin + 24 + top + up0;
+    if (chest[1] < need) chest = [chest[0], need]; } return chest; };
   const side = (d: 1 | -1, t = 0): P2 => { const [cx, cy] = at(); return [cx + d * (SHEET.w / 2 - 16), cy + 4 - lift(t)]; };
   const solve2 = (p: Pose, heading: number, t = 0): Pose => { const xx = px(x); return reach("sir", xx, reach("sir", xx, p, heading, "L", side(1, t), false, { elbowBelow: true }), heading, "R", side(-1, t), false, { elbowBelow: true }); };
   let ref: Pose | null = null;
@@ -345,9 +350,9 @@ const s07b = (): Shot => { const seconds = 0.8;
   // (the shock face with the hands up: calm faces read as reaching, the independent review of v11)
   const DX = [0, 0.77], looks = [BENCH2, YOUNG];
   const ms = DX.map((xm, i) => { const fc = i === 1 ? { ...FACES.delighted, gaze: [-0.6, 0] as [number, number] } : { ...FACES.calm, gaze: [-0.6, 0] as [number, number] }, mm = seated(`d${i}`, xm, [6, 0, 0], fc);
-    ease(mm, 0.02 + i * 0.36, { ...SIT, head: [2, -10, 0] } as Partial<Pose>, 0.36, { face: { ...FACES.shock, gaze: [-0.8, -0.2] } }); return mm; });
+    ease(mm, 0.02 + i * 0.26, { ...SIT, head: [2, -10, 0] } as Partial<Pose>, 0.34, { face: { ...FACES.shock, gaze: [-0.8, -0.2] } }); return mm; });
   // (and their hands come up, 06 whole: the jerk alone read at 360 px as two men looking up, the independent review of v11; up over 0.4 s, slower than the policeman's 0.2, which failed the flicker measure here)
-  const cast: Cast[] = ms.map((mm, i) => { const kh = kneesHook(DX[i]), gd = guard(`d${i}`, mm, DX[i], 0.02 + i * 0.36, 0.36, 0.1); return { name: `d${i}`, m: mm, who: "sir", look: looks[i], seed: 30 + i, armWipe: false, pose: (t: number, p: Pose, hd: number) => gd(t, kh(t, p, hd)), hands: { L: [[0, "open"]], R: [[0, "open"]] } } as Cast; });
+  const cast: Cast[] = ms.map((mm, i) => { const kh = kneesHook(DX[i]), gd = guard(`d${i}`, mm, DX[i], 0.02 + i * 0.26, 0.34, 0.1); return { name: `d${i}`, m: mm, who: "sir", look: looks[i], seed: 30 + i, armWipe: false, pose: (t: number, p: Pose, hd: number) => gd(t, kh(t, p, hd)), hands: { L: [[0, "open"]], R: [[0, "open"]] } } as Cast; });
   const seats = cast.map((c, i) => seatOf({ ...c, pose: kneesHook(DX[i]) })), top = Math.max(...seats.map((q) => q.top)); for (const q of seats) q.top = top;
   const x0 = Math.min(...seats.map((q) => q.x0)) - 10, x1 = Math.max(...seats.map((q) => q.x1)) + 10;
   const c1 = fitCam(cast, seconds, ZH(0.62), [], () => false, 0.035), c0 = camFeet(c1.cx, c1.z, 0.8), cam = () => c0;
@@ -477,7 +482,8 @@ const s15 = (): Shot => { const seconds = 2.2, m = figure("sir", -0.4, 22); m.st
 // 16 "This time, another dealer told the police.": the police desk beside them; the grey dealer holds the letter up (04); the policeman
 //    stands (01, mouth shut) with the shock face and a small head move. Both whole on the floor, the feet in view. Camera: a slow push-in.
 const DESK = { x0: px(-0.95), x1: px(-0.52) };      // (the desk at the policeman's side, so the two can stand closer and larger, the review of v10)
-const s16 = (): Shot => { const seconds = 2.4, a = figure("sir", 0.4, -25); a.stand(seconds + 1);      // (the grey dealer at the right with the letter, as in shot 15)
+const s16 = (): Shot => { const seconds = 2.4, a = figure("sir", 0.4, -45);      // (-45: at -25 he stood as in shot 15 and looked frozen across the cut, the fourth independent review of v11)
+  a.stand(seconds + 1);      // (the grey dealer at the right with the letter, as in shot 15)
   ease(a, -1, { head: [-6, 2, 0] }, 0.01, { face: { ...FACES.calm, smile: -0.2, gaze: [-0.6, 0] } }); ease(a, 0.5, { head: [-6, -3, 0] }, 0.6, { face: { ...FACES.calm, smile: -0.2, gaze: [-0.7, 0] } });
   const p = figure("sir", -0.39, 12); p.stand(seconds + 1); const SHOCK_P: Face = { ...FACES.shock, sad: 1, smile: -1, mouth: 0.8 };      // (turned 12 and the head 8: the face stays in the front drawing, so the open mouth shows whole; in three-quarter it read as a small smile, the fourth review)      // (the shock's open mouth and the corners right down: with the moustache a small mouth read as a smile, the independent reviews)
   ease(p, -1, { head: [6, 0, 0] }, 0.01, { face: { ...FACES.calm, gaze: [0.6, 0] } }); ease(p, 1.1, { head: [8, -8, 0], lean: -9, py: -0.04 }, 0.22, { face: SHOCK_P });      // (06 whole: the jerk and the hands up at his sides, the independent review of v11: only his head moved)      // (the beat: he reads it and jerks back in shock, 06's jerk)

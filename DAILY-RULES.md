@@ -323,6 +323,12 @@ however short, in the background as much as in front. "It is only in the backgro
 7. Light, shadow or smoke that does something impossible: a shadow on the wrong side, a fire that lights
    nothing, smoke that cuts off in a straight line.
 8. Words on screen that disagree with the voice, or a caption covering a face.
+10. **Wrong number of body parts** (Jesper 2026-11-23, Eiffel v11: a dealer held a paper with two hands while a third
+   fist hung beside it): every figure has exactly two arms, two hands, two legs, two feet, one head, in every frame.
+   A hand that holds something is the same hand as the arm it belongs to; a "held" pose never adds a hand.
+   **Check by code, every frame:** count the drawn hands, arms, feet and heads per figure and fail on any number
+   other than the rig's; also fail any hand not joined to its own arm. This check is planted with a three-hand
+   fault and must fail it before any film is sent.
 9. **Flicker** (Jesper 2026-11-20, eye-patch Short): outlines, eyes, text or light that blink, shimmer or jump
    between frames. Causes found: a blink drawn as an empty eye ring for one or two frames; thin outlines aliasing
    while the camera moves slowly; speech bubbles jumping a few pixels per frame as they pop in; heavy compression.

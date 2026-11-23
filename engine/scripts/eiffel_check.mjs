@@ -15,10 +15,10 @@ const { SHOTS, DRAWN, castAt, figBox, FM, textAlpha, TEXT } = M; const faults = 
 const mock = () => new Proxy({}, { get: (o, k) => (k === "createLinearGradient" || k === "createRadialGradient" ? () => ({ addColorStop() {} }) : k === "measureText" ? () => ({ width: 10 }) : () => {}), set: () => true });
 const scr = (cam, p) => [(p[0] - cam.cx) * cam.z + FM.W / 2, (p[1] - cam.cy) * cam.z + FM.H / 2];
 // bench
-{ const s = SHOTS.e07(); let minGap = 1e9;
-  for (let f = 0; f < Math.round(s.seconds * FM.FPS); f++) { const t = f / FM.FPS, cam = s.camera(t), boxes = castAt(s.cast, t).map((g) => { const P = figBox(g).map((q) => scr(cam, q)); return [Math.min(...P.map((q) => q[0])), Math.max(...P.map((q) => q[0]))]; }).sort((a, b) => a[0] - b[0]);
-    for (let i = 0; i + 1 < boxes.length; i++) { const gap = boxes[i + 1][0] - boxes[i][1]; minGap = Math.min(minGap, gap); if (gap < 40) faults.push(`e07 frame ${f}: only ${gap.toFixed(0)} px between two dealers`); } }
-  notes.push(`bench (shot 7): the smallest gap between two dealers' boxes ${minGap.toFixed(0)} px (40 or more)`); }
+for (const id of ["e07", "e10", "e11", "e15", "e16"]) { const s = SHOTS[id](); let minGap = 1e9;      // (every shot with figures side by side: their boxes 40 px apart, so no two bodies merge, the review of v10)      // (shot 10's bench too, since its two sit closer, the review of v10)
+  for (let f = 0; f < Math.round(s.seconds * FM.FPS); f++) { const t = f / FM.FPS, cam = s.camera(t), boxes = castAt(s.cast, t).filter((g) => id === "e07" ? g.name.startsWith("d") : true).sort((p, q) => p.x - q.x).map((g) => { const P = figBox(g).map((q) => scr(cam, q)); return [Math.min(...P.map((q) => q[0])), Math.max(...P.map((q) => q[0]))]; }).sort((a, b) => a[0] - b[0]);
+    for (let i = 0; i + 1 < boxes.length; i++) { const gap = boxes[i + 1][0] - boxes[i][1]; minGap = Math.min(minGap, gap); if (gap < 40) faults.push(`${id} frame ${f}: only ${gap.toFixed(0)} px between two figures`); } }
+  notes.push(`side by side (${id}): the smallest gap between two figures' boxes ${minGap.toFixed(0)} px (40 or more)`); }
 // a thing's place on the screen per frame, from what the shot registers in DRAWN.things
 const track = (id, what) => { const s = SHOTS[id](), pts = [];
   for (let f = 0; f < Math.round(s.seconds * FM.FPS); f++) { const t = f / FM.FPS; for (const k of Object.keys(DRAWN)) DRAWN[k].length = 0; s.ownBg?.(mock(), t); const th = DRAWN.things.find((q) => q.what === what); pts.push(th ? scr(s.camera(t), th.at) : null); }

@@ -18,7 +18,7 @@ fs.writeFileSync("out/_cab_entry.ts", 'export * from "../src/craft/cabin3d/cabin
 try { await esbuild.build({ entryPoints: ["out/_cab_entry.ts"], bundle: true, format: "esm", platform: "node", outfile: out, logLevel: "error", loader: { ".json": "json" } }); }
 finally { fs.rmSync("out/_cab_entry.ts"); }
 const M = await import(pathToFileURL(out).href); fs.rmSync(out);
-const { SHOTS, WHO, PLANT, placeOf, toScreen, feetOf, project, jointPx, figBox, FM, footY } = M;
+const { SHOTS, WHO, PLANT, placeOf, toScreen, feetOf, project, jointPx, figBox, FM, footY, captionAt } = M;
 if (plant) { if (!(plant in PLANT)) throw new Error("no such planted fault: " + plant); PLANT[plant] = true; }
 const faults = [], dump = {}, regions = []; let frames = 0, F0 = 0;
 const SPEED = 11, prevJ = {};      // 7 (the flicker rule): no joint of a figure moves more than 11 px between frames in the picture (flicker.py follows up to 12)
@@ -36,7 +36,8 @@ for (const S of SHOTS) {
       { const JN = ["skull", "crown", "neck", "shL", "shR", "elL", "elR", "wrL", "wrR", "tipL", "tipR", "hipL", "hipR", "anL", "anR", "toeL", "toeR"], cur = Object.fromEntries(JN.map((j) => [j, scr(j)])), k = S.id + w.name, pv = prevJ[k];
         // (the face: its features slide across the head as it turns, about 0.6 of the head's radius times the sine of where it points)
         { const a0 = scr("skull"), c0 = scr("crown"), hr = Math.hypot(c0[0] - a0[0], c0[1] - a0[1]) / 2; cur.face = [(a0[0] + c0[0]) / 2 + 0.6 * hr * Math.sin((f.sk.faceYaw * Math.PI) / 180), (a0[1] + c0[1]) / 2]; JN.push("face"); }
-        if (pv && fr > 0) { let worst = 0, wj = ""; for (const j of JN) { const d = Math.hypot(cur[j][0] - pv[j][0], cur[j][1] - pv[j][1]); if (d > worst) { worst = d; wj = j; } }
+        if (pv && fr > 0) { let worst = 0, wj = ""; const inPic = (q) => q[0] > -40 && q[0] < FM.W + 40 && q[1] > -40 && q[1] < FM.H + 40;      // (only what is in the picture can flicker)
+          for (const j of JN) { if (!inPic(cur[j]) && !inPic(pv[j])) continue; const d = Math.hypot(cur[j][0] - pv[j][0], cur[j][1] - pv[j][1]); if (d > worst) { worst = d; wj = j; } }
           if (worst > SPEED) faults.push(`7 ${S.id} frame ${fr} ${w.name}: ${wj} moves ${worst.toFixed(1)} px in a frame (the flicker rule: at most ${SPEED})`); }
         prevJ[k] = cur; }
       // (his shape for the depth check: the head's circle, the trunk's hull, and each arm and leg as a thick line from joint to joint; the
@@ -49,7 +50,7 @@ for (const S of SHOTS) {
         // 1 the soles on the floor
         const floorY = project(S.id, fr, [w.at[0], w.at[1], 0])[1], soleY = toScreen(pl, [f.x, footY(f.who)])[1];
         if (Math.abs(soleY - floorY) > 3) faults.push(`1 ${S.id} frame ${fr} ${w.name}: his soles drawn ${(soleY - floorY).toFixed(1)} px from the floor's line (into or above the floor)`);
-        for (const q of ft) { const lifted = (S.id === "C" || S.id === "D") && w.name === "captain" && q.side === "R";
+        for (const q of ft) { const lifted = S.id === "E" && w.name === "captain" && q.side === "R";
           if (!lifted && q.up > 0.01) faults.push(`1 ${S.id} frame ${fr} ${w.name}: his ${q.side} foot ${(q.up * 100).toFixed(1)} cm above the floor`);
           if (lifted && q.up > 0.05) faults.push(`1 ${S.id} frame ${fr} ${w.name}: the lifted boot ${(q.up * 100).toFixed(1)} cm up (a couple of centimetres at most 5)`);
           if (q.up < -0.01) faults.push(`1 ${S.id} frame ${fr} ${w.name}: his ${q.side} foot ${(-q.up * 100).toFixed(1)} cm into the floor`); }
@@ -60,12 +61,23 @@ for (const S of SHOTS) {
         const up = ft.filter((q) => q.up > 0.01);
         if (up.length === 1) { const st = ft.find((q) => q !== up[0]), pel = (jointPx(f, "hipL")[0] + jointPx(f, "hipR")[0]) / 2, an = jointPx(f, "an" + st.side)[0], span = Math.abs(jointPx(f, "anL")[0] - jointPx(f, "anR")[0]) || 1;
           if (Math.abs(pel - an) > 0.2 * Math.max(span, 60) + 30) faults.push(`3 ${S.id} frame ${fr} ${w.name}: one foot up and the pelvis ${Math.abs(pel - an).toFixed(0)} units off the standing foot (leaning in the air)`); }
-        // 5 hands not cut by the frame's edge
+      }
+      {
+        // 5 hands not cut by the frame's edge (every figure, the dark one in front too: v17's independent review found his hand cut)
         for (const sd of ["L", "R"]) { const a = scr("wr" + sd), b = scr("tip" + sd), len = Math.hypot(b[0] - a[0], b[1] - a[1]), c = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2], m = 0.6 * len;
           const inside = c[0] > m && c[0] < FM.W - m && c[1] > m && c[1] < FM.H - m, outside = c[0] < -3.5 * len || c[0] > FM.W + 3.5 * len || c[1] < -3.5 * len || c[1] > FM.H + 3.5 * len;
-          if (!inside && !outside) faults.push(`5 ${S.id} frame ${fr} ${w.name}: his ${sd} hand cut by the picture's edge (at ${c.map((v) => v.toFixed(0))})`); }
+          const off = (q) => q[0] < 0 || q[0] > FM.W || q[1] < 0 || q[1] > FM.H, armGone = off(scr("sh" + sd)) && off(scr("el" + sd)) && off(a);      // (the whole arm out of the picture: nothing reaches the edge to be cut)
+          if (!inside && !outside && !armGone) faults.push(`5 ${S.id} frame ${fr} ${w.name}: his ${sd} hand cut by the picture's edge (at ${c.map((v) => v.toFixed(0))})`); }
       }
     }
+    // 8 the caption band (DAILY-RULES: the lower third, never on a face, a chest or hands) against every figure's head, trunk and hands
+    { const cap = captionAt(S.t0 + fr / FM.FPS);
+      if (cap) for (const { w, pl } of placed) { if (w.sil) continue; const J = (j) => toScreen(pl, jointPx(pl.f, j)), [x0, y0, x1, y1] = cap.box, inBox = (q, m = 0) => q[0] > x0 - m && q[0] < x1 + m && q[1] > y0 - m && q[1] < y1 + m;
+        const s0 = J("skull"), c0 = J("crown"), hr = Math.hypot(c0[0] - s0[0], c0[1] - s0[1]) / 2, hc = [(s0[0] + c0[0]) / 2, (s0[1] + c0[1]) / 2];
+        const nx = Math.max(x0, Math.min(x1, hc[0])), ny = Math.max(y0, Math.min(y1, hc[1])), faceHit = Math.hypot(nx - hc[0], ny - hc[1]) < hr * 1.05;
+        const trunk = hull(["neck", "shL", "shR", "hipL", "hipR"].map(J)), chestHit = [0, 0.25, 0.5, 0.75, 1].some((u) => [0, 0.5, 1].some((v) => inPoly([x0 + (x1 - x0) * u, y0 + (y1 - y0) * v], trunk)));
+        const handHit = ["L", "R"].some((sd) => inBox(J("tip" + sd), 20) || inBox(J("wr" + sd), 20));
+        if (faceHit || chestHit || handHit) faults.push(`8 ${S.id} frame ${fr} ${w.name}: the caption "${cap.text}" over his ${faceHit ? "face" : chestHit ? "chest" : "hand"}`); } }
     // 4 over the shoulder: the captain in front never on the boy's face or pointing hand
     const fg = placed.find((p) => p.w.sil), boy = placed.find((p) => p.w.name === "boy");
     // (the captain's shape: his head's circle with its ears, and the hull of his body's joints with half a sleeve's width round them;

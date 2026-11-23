@@ -3,7 +3,7 @@
 import React from "react";
 import { AbsoluteFill, Audio, Img, staticFile, useCurrentFrame } from "remotion";
 import { FM } from "../clips/clipKit";
-import { SHOTS, WHO, paintFigures, type Who3 } from "./cabin";
+import { SHOTS, WHO, paintFigures, paintCaption, type Who3 } from "./cabin";
 
 export const CABIN_S = SHOTS[SHOTS.length - 1].t1;
 const BUILT: Record<string, Who3[]> = Object.fromEntries(SHOTS.map((s) => [s.id, WHO[s.id]()]));
@@ -14,6 +14,6 @@ export const Cabin3D: React.FC<{ muted?: boolean; plate?: number }> = ({ muted =
   const t = useCurrentFrame() / FM.FPS, { s, fr } = shotAtC(t), pf = plate ?? fr;
   return <AbsoluteFill style={{ background: "#1a1210" }}>
     <Img src={staticFile(`cab3d/${s.id}/${String(pf + 1).padStart(4, "0")}.jpg`)} style={{ width: FM.W, height: FM.H }} />
-    <AbsoluteFill><canvas width={FM.W} height={FM.H} ref={(cv) => { if (cv) paintCabin(cv.getContext("2d")!, s.id, fr); }} /></AbsoluteFill>
+    <AbsoluteFill><canvas width={FM.W} height={FM.H} ref={(cv) => { if (cv) { const g = cv.getContext("2d")!; paintCabin(g, s.id, fr); paintCaption(g, t); } }} /></AbsoluteFill>
     {muted ? null : <Audio src={staticFile("craft/cabin3d.wav")} />}
   </AbsoluteFill>; };

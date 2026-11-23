@@ -12,7 +12,7 @@ import craft_sfx as fx  # noqa: E402
 from dsp import SR, ns, dbg, rng, place, pan, integrated, true_peak, write_wav, st  # noqa: E402
 
 SPEC = json.load(open("src/craft/cabin3d/shots.json")); FPS = SPEC["fps"]; DUR = SPEC["shots"][-1]["t1"]
-VOICES = [{"who": "george", "take": "c01", "t": 0.7}, {"who": "daniel", "take": "c02", "t": 2.6}]
+VOICES = [{"who": "george", "take": "c01", "t": 1.0}, {"who": "daniel", "take": "c02", "t": 2.88}]      # (cabin.ts VOICE_AT)
 
 def decode(f):
     return np.frombuffer(subprocess.run(["ffmpeg", "-v", "error", "-nostdin", "-i", f, "-f", "f32le", "-ac", "1", "-ar", str(SR), "-"], capture_output=True, check=True).stdout, np.float32).astype(np.float64)
@@ -20,10 +20,15 @@ def take(name):
     p = json.load(open(f"voice/cabin/{name}/pick.json")); a = decode(f"voice/cabin/{name}/take{p['take']}.mp3")
     a = a[: min(len(a), int((p["words"][-1]["b"] + 0.22) * SR))].copy(); fo = min(len(a), int(0.08 * SR)); a[-fo:] *= np.linspace(1, 0, fo)
     return a, p["line"]
-def sting(dur=0.5):
-    """the embarrassment: two clean high tones one after the other (1320 then 1760 Hz), soft edges; nothing low or buzzing"""
-    n = ns(dur); t = np.arange(n) / SR; f = np.where(t < dur * 0.45, 1320.0, 1760.0); ph = 2 * np.pi * np.cumsum(f) / SR
-    env = np.minimum(1, t / 0.01) * np.exp(-t * 4.5); return 0.5 * np.sin(ph) * env
+def wahwah():
+    """the comic fall on the cut to his red face: four clean notes stepping down (660, 622, 587, 554 Hz, the last held with a slow wobble),
+    a soft triangle tone (odd harmonics), nothing under 500 Hz, nothing buzzing"""
+    out = []
+    for f, d, wob in ((660, 0.16, 0), (622, 0.16, 0), (587, 0.16, 0), (554, 0.55, 1)):
+        n = ns(d); t = np.arange(n) / SR; fr = f * (1 + 0.012 * wob * np.sin(2 * np.pi * 6 * t)); ph = 2 * np.pi * np.cumsum(fr) / SR
+        tone = np.sin(ph) - np.sin(3 * ph) / 9 + np.sin(5 * ph) / 25
+        env = np.minimum(1, t / 0.012) * np.minimum(1, (d - t) / 0.05) * (np.exp(-t * 1.5) if wob else 1.0); out.append(0.45 * tone * env)
+    return np.concatenate(out)
 
 def main():
     N = ns(DUR + 0.3); vg, vd = np.zeros(N), np.zeros(N); placed = []
@@ -33,15 +38,16 @@ def main():
     for a, b in zip(placed, placed[1:]):
         if b["start"] < a["end"] + 0.1: raise SystemExit(f"voices overlap or touch: {a} / {b}")
     voice = vg * dbg(-16 - integrated(st(vg))) + vd * dbg(-16 - integrated(st(vd)))
-    C = {s["id"]: s for s in SPEC["shots"]}["D"]      # (the close-up of his red face)
-    cues = [{"k": "paper", "f": 0, "g": 1.2, "p": -0.3}, {"k": "paper", "f": 7, "g": 0.9, "p": -0.35}, {"k": "paper", "f": 14, "g": 1.0, "p": -0.3},      # rummaging (frame 1: the hook's sound)
-            {"k": "flap", "f": 15, "g": 0.7, "p": -0.4}, {"k": "flap", "f": 19, "g": 0.6, "p": -0.5}, {"k": "flap", "f": 22, "g": 0.6, "p": -0.45},      # the three papers fly off
-            {"k": "paper", "f": 34, "g": 0.6, "p": -0.5}, {"k": "paper", "f": 38, "g": 0.5, "p": -0.55}]      # and land on the floor
+    SH = {s["id"]: s for s in SPEC["shots"]}; C = SH["D"]; E = SH["E"]      # (D: his red face; E: the boot on the map)
+    cues = [{"k": "paper", "f": 0, "g": 1.0, "p": -0.3}, {"k": "paper", "f": 9, "g": 1.2, "p": -0.35}, {"k": "paper", "f": 13, "g": 1.0, "p": -0.3},      # his hand on the papers (frame 1), the sweep (0.3 s)
+            {"k": "flap", "f": 11, "g": 0.7, "p": -0.4}, {"k": "flap", "f": 13, "g": 0.6, "p": -0.5}, {"k": "flap", "f": 15, "g": 0.6, "p": -0.45},      # the three papers go over the edge
+            {"k": "paper", "f": 72, "g": 0.45, "p": -0.5}, {"k": "paper", "f": 74, "g": 0.4, "p": -0.55},      # and land on the floor (2.4-2.5 s)
+            {"k": "paper", "f": int((E["t0"] + 0.25) * FPS), "g": 1.1, "p": -0.15}]      # the boot comes up off the map
     beds = [{"k": "lap", "f0": 0, "f1": int(DUR * FPS), "g": 0.55}]
     spec = {"fps": FPS, "frames": int(DUR * FPS), "seed": 23, "cues": cues, "beds": beds}
     bus = fx.effects(spec)[:, :N]
     if bus.shape[1] < N: bus = np.pad(bus, ((0, 0), (0, N - bus.shape[1])))
-    t_sting = C["t0"] + 0.05; place(bus, pan(sting(), 0.0), t_sting, dbg(-8))
+    t_sting = C["t0"]; place(bus, pan(wahwah(), 0.0), t_sting, dbg(-3))      # (on the cut itself, louder than v17's beeps: the independent review)
     mix = bus * dbg(-14) + st(voice)
     for _ in range(3):
         cur = integrated(mix)

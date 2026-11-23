@@ -170,16 +170,16 @@ def pose_cam(shot, t):
     else:
         u = ease(t / (shot["t1"] - shot["t0"])); cam.location = lerp3(C["from"][0], C["from"][1], u); ctgt.location = Vector(C["at"])
     camd.lens = C["lens"]; camd.dof.aperture_fstop = C["fstop"]
-    fx, fy = SPEC["figs"][C["focus"]]; foc.location = Vector((fx, fy, 0.8 * SPEC["heights"][C["focus"]]))      # (the head of the figure in focus)
+    fx, fy = SPEC["figs"][C["focus"]]; foc.location = Vector(C["focusPoint"]) if "focusPoint" in C else Vector((fx, fy, 0.8 * SPEC["heights"][C["focus"]]))      # (the head of the figure in focus, or a point: E focuses on the boot)
 
 def pose_shot(shot, t):
     pose_cam(shot, t)
-    # the papers: still on the table, then (shot A) pushed off its front edge one after another (0.15, 0.22, 0.29 s), each falling flat to the
+    # the papers: still on the table, then (shot A) swept off its front edge one after another (0.3, 0.37, 0.44 s, as his hand passes), each falling flat to the
     # floor over 2.1 s along a curve, turning a little; timed by its length in the picture with a steady middle, so no edge of a paper moves
     # more than about 11 px a frame (the flicker rule: an eased 0.75 s flight moved them 80 px a frame, v1)
     for k, p in enumerate(PAPERS):
         l0, r0 = P0[k]; pts, L = PAPER_PATHS[k]
-        u = 1.0 if shot["id"] != "A" else (t - (0.15 + 0.07 * k)) / 2.1      # (later shots: the papers already on the floor)
+        u = (shot["t0"] + t - (0.3 + 0.07 * k)) / 2.1      # (the film's own time: the papers go on falling in the next shot, swept off by his hand from 0.3 s)
         uu = min(1.0, max(0.0, u)); sfr = trap(uu); i = min(len(pts) - 1, bisect.bisect_left(L, sfr))
         p.location = pts[i]; p.rotation_euler = (r0.x, r0.y, r0.z + math.radians(12) * uu)
 

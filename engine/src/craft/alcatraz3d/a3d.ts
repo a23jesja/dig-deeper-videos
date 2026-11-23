@@ -70,7 +70,7 @@ const inmateN05 = (): Who3 => { const m = figure("sir", 0, -90); m.stand(4);
   //  The eyes do the looking at the light; simpler, as the automation session asked)
   ease(m, -1, { head: [40, 4, 0] }, 0.01, { face: { pupil: 1, gaze: [0.7, 0.25], lid: 0.1 } });
   ease(m, 0.3, { head: [42, 0, 0] }, 0.5, { face: { pupil: 1, gaze: [0.8, 0.1], brow: 0.25, lid: 0 } });
-  ease(m, 0.95, { lean: -6, head: [46, -2, 0] }, 0.6, { face: { pupil: 0.7, gaze: [0.85, 0.0], wide: 1, brow: 0.1, mouth: 0.2, smile: -0.5, lid: 0 } });      // (v12b: the brows barely up, so they stay in view under the cap's brim: at 1 and at 0.55 they slid under it, the independent reviews)
+  ease(m, 0.95, { lean: -6, head: [46, -2, 0] }, 0.6, { face: { pupil: 0.7, gaze: [0.85, 0.0], wide: 0.28, brow: 0.1, mouth: 0.2, smile: -0.5, lid: 0 } });      // (v12g: wide kept under 0.3: the rig lifts the brows 8 px in one step when wide passes 0.3 (flat.ts raise), which jumped them under the brim in one frame, the independent review of v12f; the fright is in the pupils, the mouth, the pale skin and the sweat)
   FRIGHT_AT.n05 = 1.05;
   return { name: "inmate", at: [0.30, 2.40], cast: { name: "inmate", m, who: "sir", look: INMATE, seed: 41, armWipe: false, hands: { L: [[0, "fist"]], R: [[0, "fist"]] } } }; };
 // ------------------------------------------------------------------ the rest of the film's people ------------------------------------------------------------------
@@ -262,16 +262,19 @@ export const handTorch = (g: G, id: string, fr: number) => {
   //  to project; Blender's torch is there, so the plate's light comes from the same side as the drawn cone)
   const sh = SHOTS3D.find((s) => s.id === id)! as ShotSpec & { hand?: { lens: P2; s: number } }; if (!sh.hand) return null;
   const lp = sh.hand.lens, q = project(id, fr, torchTarget(id, fr)), sc = sh.hand.s;
-  const a = Math.atan2(q[1] - lp[1], q[0] - lp[0]), hx = lp[0] - Math.cos(a) * 82 * sc, hy = lp[1] - Math.sin(a) * 82 * sc;
   // (the fake head itself drawn over its card in the plate, at the card's projected place and size: Blender's colour handling turned the card's
   //  cream face grey-beige; nothing stands in front of it in these two shots, so the flat v4's own colours and ink go on top, exactly over it)
   // (v12b: the cone and its glow first, the head over them, so its ink and mouth stay whole: the cone laid over the face greyed the chin's
   //  outline, the independent review; a soft contact shadow under the chin on the pillow, so the head rests on it)
   const sh0 = sh as unknown as { cam: { lens: number }; cardScale?: number }, k = sh0.cardScale ?? 1, C = project(id, fr, [DUMMY3[0], DUMMY3[1], DUMMY3[2] + (k - 1) * 0.124]);
-  const wpx = DUMMY_W3 * k * (sh0.cam.lens / 24 * FM.H) / C[2], hs = wpx / (640 / 3.0), cy = C[1] + (10 / 3.0) * hs, chin = cy + 96 * hs;
+  // (v12g: the drawn head 12 % larger than its card, grown upward from the chin, so it fills the hook as v4's did and still covers the card)
+  const wpx = DUMMY_W3 * k * (sh0.cam.lens / 24 * FM.H) / C[2], hs0 = wpx / (640 / 3.0), chin = C[1] + (10 / 3.0) * hs0 + 96 * hs0, hs = hs0 * 1.12, cy = chin - 96 * hs;
+  // (the torch pointed at the face's centre, the same line as its cone)
+  const a = Math.atan2(cy - lp[1], C[0] - lp[0]), hx = lp[0] - Math.cos(a) * 82 * sc, hy = lp[1] - Math.sin(a) * 82 * sc;
   const lens0: P2 = [hx + Math.cos(a) * 82 * sc, hy + Math.sin(a) * 82 * sc];
   g.save(); g.setTransform(1, 0, 0, 1, 0, 0);
-  g.save(); g.globalCompositeOperation = "lighter"; cone(g, lens0[0], lens0[1], q[0], q[1], 130 * sc / 1.2, 1); g.restore();
+  // (v12g: the cone aimed at the face's centre, so the light falls on the face as in v4, not under the chin)
+  g.save(); g.globalCompositeOperation = "lighter"; cone(g, lens0[0], lens0[1], C[0], cy, 130 * sc / 1.2, 1); g.restore();
   g.save(); g.filter = "blur(10px)"; g.fillStyle = "rgba(14,12,24,0.5)"; g.beginPath(); g.ellipse(C[0] + 6 * hs, chin - 6 * hs, 88 * hs, 20 * hs, 0, 0, Math.PI * 2); g.fill(); g.restore();
   fakeHead(g, C[0], cy, hs, 1);
   // (the torch's light on the face, as in v4: a soft warm glow inside the face's outline, the outline itself left alone)

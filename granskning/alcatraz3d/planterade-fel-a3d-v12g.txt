@@ -1,0 +1,17 @@
+The planted faults of scripts/a3d_check.py (A3D_PLANT), each must fail (v12g):
+
+float: CAUGHT ( A3D CHECK FAILED (78), A3D CHECK FAILED (156))
+   n02 1 guard: the L shoe 10.0 px above the floor (floating)
+   n02 1 guard: the R shoe 10.0 px above the floor (floating)
+
+sink: CAUGHT ( A3D CHECK FAILED (78), A3D CHECK FAILED (156))
+   n02 1 guard: the L shoe 10.0 px into the floor
+   n02 1 guard: the R shoe 10.0 px into the floor
+
+behind: CAUGHT ( A3D CHECK FAILED (88), A3D CHECK FAILED (78))
+   n02 1 guard: under the L shoe the map sees nothing at 3.15 m, not floor at 3.65 m
+   n02 1 guard: bars stands 0.64 m in front of him at (472, 1050) but he is drawn over it
+
+noShadow: CAUGHT ( A3D CHECK FAILED (39), A3D CHECK FAILED (78))
+   n02 1 guard: no contact shadow under him
+   n02 2 guard: no contact shadow under him

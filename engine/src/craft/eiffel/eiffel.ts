@@ -209,7 +209,7 @@ const s03 = (): Shot => { const seconds = 1.6, m = figure("sir", 0, 0); m.stand(
   // (the body action, the review of v10: he lowers the newspaper 40 px (0.2-0.65 s) to look over it at us, and leans back a little)
   ease(m, -1, { head: [0, 8, 0] }, 0.01, { face: { ...FACES.smug, gaze: [0, 0.8] } });
   ease(m, 0.3, { head: [0, 2, 0], lean: -4 }, 0.45, { face: { ...FACES.delighted, gaze: [0, 0.1] } });
-  const h = holdSheet("con", m, 0, "news", false, false, (t: number) => -40 * env(t, 0.2, 0.45, 99, 0.3));
+  const h = holdSheet("con", m, 0, "news", false, false, (t: number) => -50 * env(t, 0.2, 0.45, 99, 0.3));
   const cast: Cast[] = [{ name: "con", m, who: "sir", look: CON, seed: 9, armWipe: false, hands: { L: [[0, "grip"]], R: [[0, "grip"]] }, pose: h.pose }];
   const c0 = fitCam(cast, seconds, 2.7, [], () => false, 0.06), cam = (t: number) => ({ ...c0, z: c0.z * lerp(0.97, 1, smooth(t / seconds)) });
   return { id: "e03", title: "3 Han läser tidningen", seconds, cast, events: {}, shot: "medium", camera: cam, contacts: h.contacts, over: h.over, ownBg: (g, t) => suite(g, cam(t), SUITE) } as Shot; };
@@ -274,10 +274,12 @@ const holdSheet = (name: string, m: ReturnType<typeof figure>, x: number, kind: 
     if (seatedFront) { const a = poseAt({ name, m, who: "sir" }, 0.3), sk = solve(D.props("sir"), a.pose, a.heading), s2 = scaleOf("sir"), L = sk.j.shL as unknown as number[], Rr = sk.j.shR as unknown as number[], P = D.props("sir"), arm = (P.upper + P.fore) * s2;
       chest = [px(x) + ((L[0] + Rr[0]) / 2) * s2 - 0.52 * arm, footY("sir") + ((L[1] + Rr[1]) / 2) * s2 + 0.34 * arm]; }
     // (never over the chin: the thing's top edge, at the top of its lift, at least 24 below the chin (the skull joint, where the chin's outline
-    //  is drawn); it lay on the chin in five shots, the fourth independent review of v11)
+    //  is drawn); it lay on the chin in five shots, the fourth independent review of v11. The hold stays where the arms reach it and the thing
+    //  hangs lower in the hands (drop): moving the hold down put it out of the arms' reach and the rig's own fists showed beside it, a third
+    //  hand, the sixth independent review of v11)
     const chin = jointPx(castAt([{ name, m, who: "sir" }], 0)[0], "skull")[1], top = { sold: 90, news: 80, letter: 80, back: 80, envelope: 53, cheque: 46, bid: 48 }[kind];
-    const up0 = Math.max(0, ...Array.from({ length: 91 }, (_, k) => lift(k / 30))), need = chin + 24 + top + up0;
-    if (chest[1] < need) chest = [chest[0], need]; } return chest; };
+    const up0 = Math.max(0, ...Array.from({ length: 91 }, (_, k) => lift(k / 30))); drop = Math.min(70, Math.max(0, chin + 24 + top + up0 - chest[1])); } return chest; };
+  let drop = 0;
   const side = (d: 1 | -1, t = 0): P2 => { const [cx, cy] = at(); return [cx + d * (SHEET.w / 2 - 16), cy + 4 - lift(t)]; };
   const solve2 = (p: Pose, heading: number, t = 0): Pose => { const xx = px(x); return reach("sir", xx, reach("sir", xx, p, heading, "L", side(1, t), false, { elbowBelow: true }), heading, "R", side(-1, t), false, { elbowBelow: true }); };
   let ref: Pose | null = null;
@@ -296,10 +298,10 @@ const holdSheet = (name: string, m: ReturnType<typeof figure>, x: number, kind: 
   const carried = (f: Fig): P2 => { const a = jointPx(f, "wrL"), b = jointPx(f, "wrR"), mid: P2 = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
     if (!off0) { const f0 = castAt([{ name, m, who: "sir", pose: hold }], 0)[0], a0 = jointPx(f0, "wrL"), b0 = jointPx(f0, "wrR"), c0 = at(); off0 = [c0[0] - (a0[0] + b0[0]) / 2, c0[1] - (a0[1] + b0[1]) / 2]; }
     return [mid[0] + off0[0], mid[1] + off0[1]]; };
-  const over = (g: G, t: number, f: Fig) => { if (f.name !== name) return; const carry = fixed || LMAX !== 0, [cx, cy0] = carry ? carried(f) : at(), cy = cy0 - (carry ? 0 : lift(t)), x0 = cx - SHEET.w / 2, y0 = cy - SHEET.h / 2;
+  const over = (g: G, t: number, f: Fig) => { if (f.name !== name) return; const carry = fixed || LMAX !== 0, [cx, cy0] = carry ? carried(f) : at(), hcy = cy0 - (carry ? 0 : lift(t)), cy = hcy + drop, x0 = cx - SHEET.w / 2, y0 = cy - SHEET.h / 2;      // (cy: the thing's middle, drop under the hands' hcy)
     if (kind === "sold") towerPaper(g, x0 - 10, y0 - 10, SHEET.w + 20, SHEET.h + 20, true); else if (kind === "news") newspaperHeld(g, x0, y0, SHEET.w, SHEET.h); else if (kind === "cheque") cheque(g, x0 - 10, cy - 46, SHEET.w + 20, 92); else if (kind === "envelope") envelopeHeld(g, x0, y0, SHEET.w, SHEET.h);
     else if (kind === "bid") { const bh = SHEET.h * 0.6, by = cy - bh / 2; rect(g, x0, by, SHEET.w, bh, "#f4ecd6", OL * 0.8); squiggles(g, x0 + SHEET.w * 0.1, by + bh * 0.18, SHEET.w * 0.8, 4, bh * 0.18, "#6a5a6a", 3.5); } else letter(g, x0, y0, SHEET.w, SHEET.h, kind === "back");      // (the bid shorter, so its top stays under his chin, the independent review)
-    for (const d of [-1, 1]) { const ex = cx + d * SHEET.w / 2, hy = cy + 6; g.save(); g.translate(ex, hy);
+    for (const d of [-1, 1]) { const ex = cx + d * SHEET.w / 2, hy = hcy + 6; g.save(); g.translate(ex, hy);
       g.beginPath(); g.moveTo(d * 20, -34); g.quadraticCurveTo(d * 30, 0, d * 20, 34); g.lineTo(-d * 6, 34); g.quadraticCurveTo(-d * 12, 0, -d * 6, -34); g.closePath(); g.fillStyle = SKIN; g.fill(); g.lineWidth = 7; g.strokeStyle = INK; g.stroke();
       for (const yy of [-14, 2, 18]) { g.beginPath(); g.moveTo(-d * 4, yy); g.lineTo(d * 10, yy + 2); g.lineWidth = 3.5; g.stroke(); }
       g.beginPath(); g.ellipse(-d * 22, -26, 18, 10, d * 0.35, 0, Math.PI * 2); g.fillStyle = SKIN; g.fill(); g.lineWidth = 6; g.stroke(); g.restore(); } };
@@ -307,14 +309,14 @@ const holdSheet = (name: string, m: ReturnType<typeof figure>, x: number, kind: 
   //  construction and is left out)
   if (fixed || LMAX !== 0) return { pose: hold, over, contacts: [] };
   return { pose: hold, over, contacts: [{ who: name, side: "L" as const, t0: 0, t1: 99, at: (t: number) => side(1, t), tol: 4, what: `${name}'s left hand at the sheet's right side` }, { who: name, side: "R" as const, t0: 0, t1: 99, at: (t: number) => side(-1, t), tol: 4, what: `${name}'s right hand at the sheet's left side` }] }; };
-const s06 = (): Shot => { const seconds = 2.0, m = figure("sir", 0, -36);      // (turned left: shot 7a, right after it, turns right and closer, so the cut is no jump cut, the independent review of v11)
+const s06 = (): Shot => { const seconds = 2.0, m = figure("sir", 0, 36);      // (turned left: shot 7a, right after it, turns right and closer, so the cut is no jump cut, the independent review of v11)
   m.stand(seconds + 1);
   // (the body actions, the review of v10: he lifts the sealed letter to show it (0.15-0.55 s), then bows like an official (1.0-1.35 s) and
   //  straightens (1.45-1.8 s))
   ease(m, -1, { head: [0, 6, 0] }, 0.01, { face: { ...FACES.smug, gaze: [0, 0.5] } });
   ease(m, 0.95, { head: [0, 8, 0], lean: 7 }, 0.5, { face: { ...FACES.smug, gaze: [0, 0.3] } });      // (7 degrees over 0.5 s each way: at 12 over 0.35 s the head moved 20 px a frame, flicker on v11)
   ease(m, 1.5, { head: [0, 2, 0], lean: 0 }, 0.5, { face: { ...FACES.delighted, gaze: [0, 0.1] } });
-  const h = holdSheet("con", m, 0, "letter", false, false, (t: number) => 18 * env(t, 0.15, 0.4, 99, 0.3), 226);
+  const h = holdSheet("con", m, 0, "letter", false, false, (t: number) => 30 * env(t, 0.15, 0.45, 99, 0.3), 226);
   const cast: Cast[] = [{ name: "con", m, who: "sir", look: CON, seed: 9, armWipe: false, hands: { L: [[0, "grip"]], R: [[0, "grip"]] }, pose: h.pose }];
   const c0 = fitCam(cast, seconds, ZH(0.63), [], () => false, 0.05), cam = (t: number) => ({ ...c0, z: c0.z * lerp(1, 0.98, smooth(t / seconds)) });
   return { id: "e06", title: "6 Brevet med sigillet", seconds, cast, events: {}, shot: "full", camera: cam, contacts: h.contacts, over: h.over, ownBg: (g, t) => suite(g, cam(t), SUITE, { x: px(0.3) - 95, w: 190, top: 1037, bottom: 1332, towerX: px(0.3), towerY: 1307, towerH: 170 }) } as Shot; };      // (the window behind him: different from shots 5 and 7a on either side, the fifth independent review of v11)
@@ -340,9 +342,9 @@ const s07 = (): Shot => { const seconds = 0.8, c = figure("sir", -0.2, 46); c.st
   //  small: the con man alone, turned to the dealers off the picture's right, lifts the sealed letter to show it (04's lift, 0-0.35 s))
   ease(c, -1, { head: [-6, 2, 0] }, 0.01, { face: { ...FACES.smug, gaze: [0.7, 0.1] } }); ease(c, 0.35, { head: [-6, -2, -3] }, 0.3, { face: { ...FACES.delighted, gaze: [0.7, 0] } });
   // (seed 2: no blink in this short close shot; a blink at this size failed the flicker measure, v11)
-  const h = holdSheet("con", c, -0.2, "letter", false, false, (t: number) => 14 * env(t, 0, 0.5, 99, 0.3), 228);
+  const h = holdSheet("con", c, -0.2, "letter", false, false, (t: number) => 30 * env(t, 0, 0.5, 99, 0.3), 228);
   const cast: Cast[] = [{ name: "con", m: c, who: "sir", look: CON, seed: 2, armWipe: false, pose: h.pose, hands: { L: [[0, "grip"]], R: [[0, "grip"]] } }];
-  const c0 = fitCam(cast, seconds, 2.7, [], () => false, 0.06), cam = (t: number) => ({ ...c0, z: c0.z * lerp(0.98, 1, smooth(t / seconds)) });
+  const c0 = fitCam(cast, seconds, 2.7, [], () => false, 0.06), cam = (t: number) => ({ ...c0, cx: c0.cx + 0.03 * FM.W / c0.z, z: c0.z * lerp(0.98, 1, smooth(t / seconds)) });      // (him in the left third, the room he shows the letter to in front of him)
   return { id: "e07", title: "7a Han visar brevet", seconds, cast, events: {}, shot: "medium", camera: cam, contacts: h.contacts, over: h.over, ownBg: (g, t) => suite(g, cam(t), SUITE) } as Shot; };
 const s07b = (): Shot => { const seconds = 0.8;
   // (7b: the two dealers on the bench, both facing the con man off the picture's left, jerk back as they see the letter (06's jerk, 0.08 and
@@ -413,9 +415,9 @@ const s11 = (): Shot => { const seconds = 0.85, d = figure("sir", 0, 28); d.stan
   // (11a and 11b, the fifth independent review of v11: the two-shot here, after shot 10's two-shot on the same wall, was a near-identical cut;
   //  now two single shots of 62 %. 11a: the dealer leans in and holds the cheque out to the con man off the picture's right (04's lift with a lean))
   ease(d, -1, { head: [6, 2, 0] }, 0.01, { face: { ...FACES.delighted, gaze: [0.7, 0] } }); ease(d, 0.05, { head: [6, -2, 0], lean: 7 }, 0.45, { face: { ...FACES.delighted, gaze: [0.8, 0] } });
-  const h = holdSheet("young", d, 0, "cheque", false, false, (t: number) => 14 * env(t, 0.05, 0.45, 99, 0.3));
+  const h = holdSheet("young", d, 0, "cheque", false, false, (t: number) => 26 * env(t, 0.05, 0.45, 99, 0.3));
   const cast: Cast[] = [{ name: "young", m: d, who: "sir", look: YOUNG, seed: 31, armWipe: false, pose: h.pose, hands: { L: [[0, "grip"]], R: [[0, "grip"]] } }];
-  const c0 = fitCam(cast, seconds, ZH(0.62), [], () => false, 0.05), cam = (t: number) => ({ ...c0, z: c0.z * lerp(0.985, 1, smooth(t / seconds)) });
+  const c1 = fitCam(cast, seconds, ZH(0.62), [], () => false, 0.05), c0 = camFeet(c1.cx, c1.z, 0.9), cam = (t: number) => ({ ...c0, z: c0.z * lerp(0.985, 1, smooth(t / seconds)) });      // (low in the picture: in hook (b) the text lay over his cap)
   return { id: "e11", title: "11a Checken", seconds, cast, events: {}, shot: "full", camera: cam, contacts: h.contacts, over: h.over, ownBg: (g, t) => suite(g, cam(t), SUITE), sounds: [{ t: 0.05, k: "paper", g: 0.8 }] } as Shot; };
 const s11b = (): Shot => { const seconds = 0.8, c = figure("sir", 0, -38);      // (-38: at -28 the head flipped to the front drawing for a frame as he leaned)
   c.stand(seconds + 1);
@@ -433,7 +435,7 @@ const s12 = (): Shot => { const seconds = 1.9, c = figure("sir", 0, -15); c.stan
   // (the body actions, the review of v10: he lifts the bribe's envelope (0.2-0.6 s), then leans back, pleased with himself (1.1-1.45 s))
   ease(c, -1, { head: [0, 6, 0] }, 0.01, { face: { ...FACES.smug, gaze: [0, 0.6] } }); ease(c, 0.6, { head: [0, 2, 0] }, 0.4, { face: { ...FACES.smug, gaze: [-0.6, 0.1] } });
   ease(c, 1.1, { head: [0, 3, -4], roll: 5 }, 0.4, { face: { ...FACES.delighted, gaze: [0, 0] } });      // (a sway: a lean does not show facing us)
-  const h = holdSheet("con", c, 0, "envelope", false, false, (t: number) => 12 * env(t, 0.2, 0.4, 99, 0.3));      // (12 px: at 24 the notes touched his chin, the independent review of v11)
+  const h = holdSheet("con", c, 0, "envelope", false, false, (t: number) => 20 * env(t, 0.2, 0.45, 99, 0.3));      // (12 px: at 24 the notes touched his chin, the independent review of v11)
   const cast: Cast[] = [{ name: "con", m: c, who: "sir", look: CON, seed: 9, armWipe: false, pose: h.pose, hands: { L: [[0, "grip"]], R: [[0, "grip"]] } }];
   const c0 = fitCam(cast, seconds, 2.7, [], () => false, 0.06), cam = (t: number) => ({ ...c0, z: c0.z * lerp(0.97, 1, smooth(t / seconds)) });
   return { id: "e12", title: "12 Mutan", seconds, cast, events: {}, shot: "medium", camera: cam, contacts: h.contacts, over: h.over, ownBg: (g, t) => suite(g, cam(t), SUITE), sounds: [{ t: 0.25, k: "paper", g: 0.6 }] } as Shot; };
@@ -479,7 +481,7 @@ const s15 = (): Shot => { const seconds = 2.2, m = figure("sir", -0.4, 22); m.st
   ease(m, 1.75, { head: [8, 2, -3], lean: 0 }, 0.35, { face: { ...FACES.delighted, gaze: [0.6, 0.1] } });
   const n = figure("sir", 0.4, -30); n.stand(seconds + 1); ease(n, -1, { head: [-8, 4, 0] }, 0.01, { face: { ...FACES.calm, gaze: [-0.6, 0.3] } });
   ease(n, 1.45, { head: [-8, -4, 0], lean: -8 }, 0.22, { face: { ...FACES.grimace, gaze: [-0.7, 0.1] } });
-  const h = holdSheet("grey", n, 0.4, "letter", false, false, (t: number) => 20 * env(t, 0.7, 0.4, 99, 0.3));
+  const h = holdSheet("grey", n, 0.4, "letter", false, false, (t: number) => 20 * env(t, 0.7, 0.45, 99, 0.3));
   const cast: Cast[] = [{ name: "con", m, who: "sir", look: CON, seed: 9, armWipe: false, hands: { L: [[0, "relaxed"]], R: [[0, "relaxed"]] } },
     { name: "grey", m: n, who: "sir", look: GREY, seed: 41, armWipe: false, pose: h.pose, hands: { L: [[0, "grip"]], R: [[0, "grip"]] } }];
   const c1 = fitCam(cast, seconds, ZH(0.5), [], () => false, 0.04), c0 = camFeet(c1.cx, c1.z, 0.8), cam = (t: number) => ({ ...c0, cx: c0.cx + lerp(-4, 4, smooth(t / seconds)) });
@@ -498,7 +500,7 @@ const s16 = (): Shot => { const seconds = 1.15, a = figure("sir", 0.1, -35); a.s
   //  size across the cut; now two single shots of 62 % at the police desk. 16a: the grey dealer, beside the desk, lifts the letter to show the
   //  policeman off the picture's left (04, 0.1 s), then leans in, serious (0.6 s))
   ease(a, -1, { head: [-6, 2, 0] }, 0.01, { face: { ...FACES.calm, smile: -0.2, gaze: [-0.6, 0] } }); ease(a, 0.6, { head: [-6, 4, 0], lean: 7 }, 0.45, { face: { ...FACES.calm, smile: -0.3, brow: -0.3, gaze: [-0.8, 0.1] } });
-  const h = holdSheet("grey", a, 0.1, "letter", false, false, (t: number) => 18 * env(t, 0.1, 0.4, 99, 0.3));
+  const h = holdSheet("grey", a, 0.1, "letter", false, false, (t: number) => 28 * env(t, 0.1, 0.45, 99, 0.3));
   const cast: Cast[] = [{ name: "grey", m: a, who: "sir", look: GREY, seed: 41, armWipe: false, pose: h.pose, hands: { L: [[0, "grip"]], R: [[0, "grip"]] } }];
   const c0 = fitCam(cast, seconds, ZH(0.62), [], () => false, 0.05), cam = (t: number) => ({ ...c0, z: c0.z * lerp(0.985, 1, smooth(t / seconds)) });
   return { id: "e16", title: "16a Den grå vid polisdisken", seconds, cast, events: {}, shot: "full", camera: cam, contacts: h.contacts, over: h.over, groundProps: [{ name: "desk", x0: DESK16.x0, x1: DESK16.x1 }], ownBg: (g, t) => policeRoom(g, cam(t)) } as Shot; };
@@ -544,7 +546,7 @@ const s17 = (): Shot => { const seconds = 2.0;
 const s18 = (): Shot => { const seconds = 1.7, m = figure("sir", -0.1, -38); m.stand(seconds + 1);      // (turned three-quarter left, a medium shot at night: shot 2's frontal evening set-up made the cut into the loop a jump cut)
   ease(m, -1, { head: [0, 0, 0] }, 0.01, { face: { ...FACES.smug, gaze: [0.3, 0] } }); ease(m, 0.3, { head: [0, -5, -4] }, 0.5, { face: { ...FACES.smug, gaze: [0.5, -0.2] } }); ease(m, 0.95, { head: [0, 2, 4], roll: -5 }, 0.4, { face: { ...FACES.delighted, gaze: [0, 0] } });      // (the body actions, the review of v10: he lifts the SOLD paper (0.15-0.55 s), then leans back, pleased (0.95 s))
   // (he holds the stamped SOLD paper, as in shot 2 that the loop cuts to: it popped into his hands at the cut, the fourth review; a small lift is a beat)
-  const h = holdSheet("con", m, -0.1, "sold", false, false, (t: number) => 8 * env(t, 0.15, 0.4, 99, 0.3), 212);      // (low: its top touched his mouth, the independent review of v11)
+  const h = holdSheet("con", m, -0.1, "sold", false, false, (t: number) => 24 * env(t, 0.15, 0.45, 99, 0.3), 212);      // (low: its top touched his mouth, the independent review of v11)
   const cast: Cast[] = [{ name: "con", m, who: "sir", look: CON, seed: 9, armWipe: false, pose: h.pose, hands: { L: [[0, "grip"]], R: [[0, "grip"]] } }];
   const c0 = fitCam(cast, seconds, 2.5, [], () => false, 0.06), cam = (t: number) => ({ ...c0, z: c0.z * lerp(1, 0.97, smooth(t / seconds)) });
   return { id: "e18", title: "18 Han framför tornet", seconds, cast, events: {}, shot: "medium", camera: cam, contacts: h.contacts, over: h.over,

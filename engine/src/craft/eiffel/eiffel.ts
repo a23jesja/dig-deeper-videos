@@ -183,9 +183,9 @@ const s02 = (): Shot => { const seconds = 2.2, m = figure("sir", -0.15, 18); m.s
   const cast: Cast[] = [{ name: "con", m, who: "sir", look: CON, seed: 9, armWipe: false, hands: { L: [[0, "grip"]], R: [[0, "grip"]] }, pose: h.pose }];
   const z = (0.62 * FM.H) / (FM.PPM * heightOf("sir")), c0 = fitCam(cast, seconds, z);
   // (the figure low enough that the hook's two lines (to y 345) stay clear of his cap: the text lay over it in the draft)
-  // (before frame 1, in the loop's 0.73 s: the camera comes in from wider (0.67 of the zoom) and lands on frame 1's framing with no speed, so
-  //  the cut from shot 18's close three-quarter shot into it is no near-jump cut, the independent review of v11; at most about 11 px a frame)
-  const cam = (t: number) => { const k = t < 0 ? lerp(0.67, 1, smooth((t + 0.73) / 0.73)) : 1, z = c0.z * lerp(0.96, 1, smooth(t / seconds)) * k; return { ...c0, cy: c0.cy - 150 / z, z }; };
+  // (before frame 1, in the loop's 0.73 s: the camera comes in from wider (0.85 of the zoom; at 0.67 the zoom failed the flicker measure) and lands on frame 1's framing with no speed, so
+  //  the cut from shot 18's close three-quarter shot into it is no near-jump cut, the independent review of v11; at most about 5 px a frame)
+  const cam = (t: number) => { const k = t < 0 ? lerp(0.85, 1, smooth((t + 0.73) / 0.73)) : 1, z = c0.z * lerp(0.96, 1, smooth(t / seconds)) * k; return { ...c0, cy: c0.cy - 150 / z, z }; };
   return { id: "e02", title: "2 Bedragaren framför tornet", seconds, cast, events: {}, shot: "full", camera: cam, contacts: h.contacts, over: h.over,
     ownBg: (g, t) => { const c = cam(t), v = viewOf(c); eveningSky(g, v.y0 - 200, LINE_TOP - 300);
       for (let i = 0; i < 9; i++) { const hx = v.x0 - 100 + i * 190, hh = 260 + ((i * 53) % 140); rect(g, hx, LINE_TOP - 300 - hh, 180, hh + 300, ["#5a4458", "#4e3c52", "#644a5c"][i % 3], OL * 0.6); }
@@ -345,9 +345,9 @@ const s07b = (): Shot => { const seconds = 0.8;
   // (the shock face with the hands up: calm faces read as reaching, the independent review of v11)
   const DX = [0, 0.77], looks = [BENCH2, YOUNG];
   const ms = DX.map((xm, i) => { const fc = i === 1 ? { ...FACES.delighted, gaze: [-0.6, 0] as [number, number] } : { ...FACES.calm, gaze: [-0.6, 0] as [number, number] }, mm = seated(`d${i}`, xm, [6, 0, 0], fc);
-    ease(mm, 0.02 + i * 0.28, { ...SIT, head: [2, -10, 0] } as Partial<Pose>, 0.36, { face: { ...FACES.shock, gaze: [-0.8, -0.2] } }); return mm; });
+    ease(mm, 0.02 + i * 0.36, { ...SIT, head: [2, -10, 0] } as Partial<Pose>, 0.36, { face: { ...FACES.shock, gaze: [-0.8, -0.2] } }); return mm; });
   // (and their hands come up, 06 whole: the jerk alone read at 360 px as two men looking up, the independent review of v11; up over 0.4 s, slower than the policeman's 0.2, which failed the flicker measure here)
-  const cast: Cast[] = ms.map((mm, i) => { const kh = kneesHook(DX[i]), gd = guard(`d${i}`, mm, DX[i], 0.02 + i * 0.28, 0.36, 0.1); return { name: `d${i}`, m: mm, who: "sir", look: looks[i], seed: 30 + i, armWipe: false, pose: (t: number, p: Pose, hd: number) => gd(t, kh(t, p, hd)), hands: { L: [[0, "open"]], R: [[0, "open"]] } } as Cast; });
+  const cast: Cast[] = ms.map((mm, i) => { const kh = kneesHook(DX[i]), gd = guard(`d${i}`, mm, DX[i], 0.02 + i * 0.36, 0.36, 0.1); return { name: `d${i}`, m: mm, who: "sir", look: looks[i], seed: 30 + i, armWipe: false, pose: (t: number, p: Pose, hd: number) => gd(t, kh(t, p, hd)), hands: { L: [[0, "open"]], R: [[0, "open"]] } } as Cast; });
   const seats = cast.map((c, i) => seatOf({ ...c, pose: kneesHook(DX[i]) })), top = Math.max(...seats.map((q) => q.top)); for (const q of seats) q.top = top;
   const x0 = Math.min(...seats.map((q) => q.x0)) - 10, x1 = Math.max(...seats.map((q) => q.x1)) + 10;
   const c1 = fitCam(cast, seconds, ZH(0.62), [], () => false, 0.035), c0 = camFeet(c1.cx, c1.z, 0.8), cam = () => c0;
@@ -375,13 +375,13 @@ const s08 = (): Shot => { const seconds = 1.7, sx = px(0) - 90, m = figure("sir"
 
 // 9  the young dealer, still seated as in shot 7 (the bench in view): "Do you deliver?" (Daniel, the only lip sync). Camera: a slow push-in.
 const s09 = (): Shot => { const seconds = 1.5, m = seated("young", 0, [14, 2, 0], { ...FACES.delighted, mouth: 0, gaze: [-0.6, 0] });
-  ease(m, 0.75, { ...SIT, lean: 24, head: [14, 4, 0] } as Partial<Pose>, 0.4, { face: { ...FACES.delighted, mouth: 0, brow: 0.7, gaze: [-0.7, 0] } });      // (he leans in, eager, after asking: the independent review of v11 saw only the bid's small drop)
+  ease(m, 0.6, { ...SIT, lean: 22, head: [14, 4, 0] } as Partial<Pose>, 0.7, { face: { ...FACES.delighted, mouth: 0, brow: 0.7, gaze: [-0.7, 0] } });      // (he leans in, eager, after asking: the independent review of v11 saw only the bid's small drop)
   // (he holds his bid already, as in shot 10 (the review of v10: his hands were empty here and the paper was in them a moment later), and lifts
   //  it as he asks (0.1-0.5 s, 04's lift seated))
   const M = MOUTH_D01 as { t0: number; len: number; mouth: number[] };
-  const h = holdSheet("young", m, 0, "bid", true, false, (t: number) => -12 * env(t, 0.1, 0.6, 99, 0.3));      // (he lowers it as he asks: lifted, its top edge lay on his mouth during the line, the independent review of v11)
+  const h = holdSheet("young", m, 0, "bid", true, true);      // (held still and low, clear of his mouth; his body action is the eager lean (0.6 s): the bid lowered during the line failed the flicker measure with the lip sync)      // (he lowers it as he asks: lifted, its top edge lay on his mouth during the line, the independent review of v11)
   const cast: Cast[] = [{ name: "young", m, who: "sir", look: YOUNG, seed: 31, armWipe: false, pose: h.pose, mouth: M, hands: { L: [[0, "grip"]], R: [[0, "grip"]] } }];
-  const seat = seatOf({ ...cast[0], pose: kneesHook(0) }), c0 = fitCam(cast, seconds, 2.6, [[seat.x1 + 60, FM.GY + 40], [seat.x0 - 60, seat.top]], () => false, 0.05), cam = (t: number) => ({ ...c0, z: c0.z * lerp(0.97, 1, smooth(t / seconds)) });
+  const seat = seatOf({ ...cast[0], pose: kneesHook(0) }), c0 = fitCam(cast, seconds, 2.2, [[seat.x1 + 120, FM.GY + 60], [seat.x0 - 120, seat.top]], () => false, 0.06)      /* (v10's framing: closer, the lip sync's flap failed the flicker measure) */, cam = (t: number) => ({ ...c0, z: c0.z * lerp(0.97, 1, smooth(t / seconds)) });
   return { id: "e09", title: "9 Do you deliver?", seconds, cast, events: { LINE: M.t0 }, shot: "full", camera: cam, seats: [seat], contacts: h.contacts, over: h.over,
     ownBg: (g, t) => suite(g, cam(t), SUITE), back: (g) => bench(g, seat.x0 - 300, seat.x1 + 300, seat.top) } as Shot; };
 

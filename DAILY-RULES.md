@@ -64,6 +64,10 @@ far shots instead of faces, empty places instead of action. That is not allowed 
   moving all the time. New videos keep that energy, with the new characters, voice and settings.
 - **The reviewer fails a video that is correct but lifeless:** if a viewer would ask "where are the people?" or the
   picture stands still while the voice tells action, it fails.
+- **Cuts are not action (2026-11-24, the captain's dinner v5 failed):** a new camera angle on the same standing pose
+  does not count as "something new". Each shot in the shot list names the action that happens inside it (a grab, a
+  bite, a stand-up, a slam, a hand raised, a face that changes) and when. A sound needs a visible cause on screen:
+  no thud, crash or slam without the thing that makes it.
 
 ## Story first: something happens (Jesper 2026-11-21)
 Jesper's verdict on the reference Shorts: they win because a lot happens, there are action scenes, it is clearly
@@ -415,6 +419,13 @@ An object in a hand must look held and used the way a person would, in every fra
   landing. It never hangs in the air or changes hand between two frames.
 - **Check by script:** for every frame where a prop is held, the grip point lies inside the hand and the working
   end points within the allowed angle for that use pose. The reviewer looks at every held object in close-up.
+- **Measured closeness is not enough (2026-11-24, the pudding in v5):** a grip 0.5 cm from the object can still read
+  as a hand floating in front of it. The object must read as held at phone size in a still frame: fingers over it,
+  the object's own shape (bowl, handle) visible. The reviewer judges this at phone size.
+- **Hands and the body (2026-11-24, v5):** a figure's own hand or thumb never covers its mouth while it speaks, and a
+  figure never reads as one-armed: in medium and close shots both hands are visible unless the other is clearly
+  behind a named object. A raised hand (a vote, a wave) is drawn at ear height beside the head in 3/4 view, because
+  the Knopp arms do not reach over the head. Each of these gets a code check with a planted fault that must fail.
 
 ## Our own lines, not only sources (Jesper 2026-11-18) - every video, Shorts and long
 The story follows the sources, but the characters are allowed to be characters. Invented lines, jokes, asides

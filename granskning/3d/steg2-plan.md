@@ -66,3 +66,18 @@ Bitarna byggs i ordningen 1, 2, 3, 4, 5, 6, 7, så att varje ny teknik är bevis
 - **A.** Handverktyg platta i figurens bläck och stora föremål i 3D. Mitt förslag är ja.
 - **B.** Paddlingen i en ny miljö (jollen till havs). Mitt förslag är ja, eftersom det inte går att paddla i kajutan.
 - **C.** Ingen replik i arket. Mitt förslag är ja.
+
+## Godkänd 24 nov, med granskarens tillägg (tas med i bygget och visas i STOPP:et)
+- Ja på A, B och C. Skrov och hav byggs själva, utan nedladdade modeller.
+1. Klättra: halvprofil eller 3/4, aldrig bakifrån, huvudet inom 60°. Vangen täcker aldrig ansiktet eller en gripande hand. Samma kontroll görs för relingen mot kaptenens händer och paddel.
+2. Sy: tråden sitter i nålen och i seglet i varje ruta. Planterat: tråden lossnar från nålen.
+3. Verktyg: planterat fel där pensel eller skrapa glider 3 cm från fingrarna. Det ska fälla.
+4. Skrapa: spånen landar på golvet och blir liggande.
+5. Främre lager: cabin_depths gamla plant (lådan) fäller fortfarande. Båda resultaten visas.
+6. Bära: egna armar, fingrar framför och handflata bakom på handtagen, huvudena syns, bärarna står isär med marginal och tyngden syns.
+7. Havet: flicker2 körs på jollebiten för sig. Ljusstandarden ute (sol och himmel). Solnedgången är ett tema.
+8. Måla: namnet stavas rätt och skrivs helt ut i slutet. Penseldragen fladdrar inte när kameran rör sig.
+9. Inte tråkigt: ansiktet ändras i varje bit. Per bit anges figurens höjd i procent och närmaste referensruta (kriterium a–d).
+10. Klipp: minst 30° i vinkel och minst 1,3x i storlek.
+11. Kontaktljuden görs själva (syntes eller egna inspelningar i koden). Varje ljud listas med tid.
+12. Bildrutor i full storlek från gångbitarna (1 och 2) läggs i STOPP-mappen (villkor 3).

@@ -43,9 +43,16 @@ def explained(G0, G1, G2, ys, xs, shifts, chunk=1500):
     return out
 
 def affine(P0, P1, pts):
-    """the 2 x 3 map taking where the points are in the frame with matrix P0 to where they are with P1 (least squares)"""
-    def pr(P, q): v = P @ np.array([q[0], q[1], q[2], 1.0]); return v[:2] / v[2]
-    A = np.array([pr(P0, q) for q in pts]); B = np.array([pr(P1, q) for q in pts])
+    """the 2 x 3 map taking where the points are in the frame with matrix P0 to where they are with P1 (least squares), fitted only on points
+    well in front of the lens that land near the picture in both frames: in v57's B1 and E the captain stands beside or behind the camera, his
+    points projected wildly and the fitted map warped the whole frame (the measure's run on v57, 25 Nov); fewer than 3 such points: no map"""
+    def pr(P, q): v = P @ np.array([q[0], q[1], q[2], 1.0]); return (v[:2] / v[2], v[2])
+    keep = []
+    for q in pts:
+        (a0, w0), (a1, w1) = pr(P0, q), pr(P1, q)
+        if w0 > 0.3 and w1 > 0.3 and all(-W < a[0] < 2 * W and -H < a[1] < 2 * H for a in (a0, a1)): keep.append((a0, a1))
+    if len(keep) < 3: return np.array([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0]])
+    A = np.array([k[0] for k in keep]); B = np.array([k[1] for k in keep])
     X = np.c_[A, np.ones(len(A))]; M, *_ = np.linalg.lstsq(X, B, rcond=None); return M.T      # (2 x 3)
 
 def warp(img, M):
@@ -99,13 +106,17 @@ def face_tracks(meas):
     return fails, big
 
 def check(path, regions, root=None, fps=30):
-    cams, pts = {}, {}; FACE = {}; PAN = {}
+    cams, pts, fpts = {}, {}, {}; FACE = {}; PAN = {}
     if root:
         spec = json.load(open(os.path.join(root, "src/craft/cabin3d/shots.json"), encoding="utf-8")); figs = spec.get("figs", {})
         for s in spec["shots"]:
             p = os.path.join(root, f"src/craft/cabin3d/cam/{s['id']}.json")
             if os.path.exists(p): cams[s["id"]] = [np.array(P, float) for P in json.load(open(p, encoding="utf-8"))["frames"]]
         pts = [(x + dx, y, z) for (x, y) in figs.values() for dx in (-0.5, 0.5) for z in (0.0, 0.9, 1.75)]
+        # (per shot, only the figure the camera focuses on: with both figures, points of the one far off to the side went in and out of the
+        #  picture from frame to frame and the fitted map jittered (v57's A, 0.27-0.30 s))
+        fpts = {s["id"]: [(figs[s["cam"]["focus"]][0] + dx, figs[s["cam"]["focus"]][1], z) for dx in (-0.4, 0.0, 0.4) for z in (0.0, 0.5, 0.9, 1.3, 1.75)]
+                for s in spec["shots"] if s.get("cam", {}).get("focus") in figs}
     start = {}
     for F in sorted(regions):
         sh = regions[F].get("shot"); start.setdefault(sh, F)
@@ -119,19 +130,27 @@ def check(path, regions, root=None, fps=30):
         if len(seq) > 3: seq.pop(0); idx.pop(0)
         t = F - 1
         sh = [regions.get(k, {}).get("shot") for k in (t - 1, t, t + 1)]
-        a, b, c = seq
+        a, b, c = seq; a0, c0 = a, c; Mab = None      # (as they are: the captions sit on the screen and do not move with the camera)
         same_shot = sh[1] is not None and sh[0] == sh[1] == sh[2]
         if same_shot and sh[1] in cams and pts:      # (the camera's movement taken out: the frames before and after warped onto this one)
-            C = cams[sh[1]]; k = t - start[sh[1]]
+            C = cams[sh[1]]; k = t - start[sh[1]]; pp = fpts.get(sh[1], pts)
             if 1 <= k < len(C) - 1:
-                a = warp(a, affine(C[k - 1], C[k], pts)); c = warp(c, affine(C[k + 1], C[k], pts))
+                Mab, Mcb = affine(C[k - 1], C[k], pp), affine(C[k + 1], C[k], pp)
+                def moves(M):      # (the largest shift the map makes at the picture's corners: under half a pixel it is not applied, since resampling
+                    #  alone softens the edges and made flicker of its own, B1 v57 43 px in an eye against 38 unwarped)
+                    return max(np.hypot(*(M @ np.array([x, y, 1.0]) - np.array([x, y]))) for x in (0, W) for y in (0, H))
+                if moves(Mab) >= 0.5: a = warp(a, Mab)
+                if moves(Mcb) >= 0.5: c = warp(c, Mcb)
         if same_shot or (sh[0] == sh[1] and sh[1] is not None):      # (the face track: each eye's patch from the frame before (camera taken out) to this one)
-            ga, gb = fl.gray(a).astype(np.float32), fl.gray(b).astype(np.float32); ms = []
+            ga, gb = fl.gray(a0).astype(np.float32), fl.gray(b).astype(np.float32); ms = []      # (the frames as they are, no resampling: the camera's own shift at the face is subtracted below)
             for (ex, ey, er) in regions.get(t, {}).get("eyes", []):
                 if er < FACE_R: continue
                 hh = int(min(128, max(24, 2.2 * er))); x0, y0 = int(ex) - hh, int(ey) - hh
                 if x0 < 0 or y0 < 0 or x0 + 2 * hh > W or y0 + 2 * hh > H: continue
-                ms.append((ex, ey, er) + phase_shift(ga[y0:y0 + 2 * hh, x0:x0 + 2 * hh], gb[y0:y0 + 2 * hh, x0:x0 + 2 * hh]))
+                dx, dy, cf = phase_shift(ga[y0:y0 + 2 * hh, x0:x0 + 2 * hh], gb[y0:y0 + 2 * hh, x0:x0 + 2 * hh])
+                if Mab is not None:      # (what the lens alone did to that point: where it was in the frame before, by the inverse map)
+                    Ai = np.linalg.inv(np.r_[Mab, [[0, 0, 1]]]); px = Ai @ np.array([ex, ey, 1.0]); dx -= ex - px[0]; dy -= ey - px[1]
+                ms.append((ex, ey, er, dx, dy, cf))
             FACE[t] = ms
         if same_shot and not (sh[1] in cams and pts):      # (1b: no camera data: the whole picture's shift measured and taken out)
             g0, g1, g2 = (fl.gray(x).astype(np.float32) for x in (a, b, c))
@@ -150,22 +169,35 @@ def check(path, regions, root=None, fps=30):
                 if int(fl.flicker_map(a2, b, c2).sum()) < int(fl.flicker_map(a, b, c).sum()): a, c = a2, c2
                 else: PAN[t] = (0.0, 0.0)
             else: PAN[t] = v1 if n1 >= 0.5 and n0 >= 0.5 else (0.0, 0.0)
-        raw = fl.flicker_map(a, b, c)
-        if sh[1] is not None and not same_shot: raw[:] = False
-        n0 = int(raw.sum()); reg = regions.get(t, {"eyes": [], "text": []})
-        eye0 = max([fl.in_circle(raw, *e) for e in reg["eyes"]] or [0]); txt0 = max([fl.in_box(raw, bx) for bx in reg["text"]] or [0])
-        m = raw.copy()
-        if n0:
-            G = [fl.gray(x) for x in (a, b, c)]; ys, xs = np.nonzero(m)
-            # (the 12 px class: eyes, text, outlines)
-            tight = np.zeros(len(ys), bool)
-            for (x, y, r) in reg["eyes"]: tight |= (xs - x) ** 2 + (ys - y) ** 2 <= r * r
-            for (x0, y0, x1, y1) in reg["text"]: tight |= (xs >= x0) & (xs < x1) & (ys >= y0) & (ys < y1)
-            tight |= np.abs(b[ys, xs].astype(np.int16) - INK).max(1) < 30
-            ok = np.zeros(len(ys), bool)
-            if tight.any(): ok[tight] = explained(*G, ys[tight], xs[tight], S12)
-            if (~tight).any(): ok[~tight] = explained(*G, ys[~tight], xs[~tight], S40)
-            m[ys[ok], xs[ok]] = False
+        reg = regions.get(t, {"eyes": [], "text": []})
+        TXT = np.zeros((H, W), bool)
+        for (x0, y0, x1, y1) in reg["text"]: TXT[max(0, y0):max(0, y1), max(0, x0):max(0, x1)] = True
+        def unexplained(A, C, txt_unwarped):
+            """the flickering pixels no steady step explains, with A and C as the frames before and after (the caption boxes on the frames as they are)"""
+            raw = fl.flicker_map(A, b, C)
+            if txt_unwarped is not None and TXT.any(): raw = np.where(TXT, fl.flicker_map(a0, b, c0), raw)
+            if sh[1] is not None and not same_shot: raw[:] = False
+            m = raw.copy()
+            if raw.any():
+                G = [fl.gray(x) for x in (A, b, C)]; G0 = [fl.gray(x) for x in (a0, b, c0)]; ys, xs = np.nonzero(m)
+                tight = np.zeros(len(ys), bool)      # (the 12 px class: eyes, text, outlines)
+                for (x, y, r) in reg["eyes"]: tight |= (xs - x) ** 2 + (ys - y) ** 2 <= r * r
+                for (x0, y0, x1, y1) in reg["text"]: tight |= (xs >= x0) & (xs < x1) & (ys >= y0) & (ys < y1)
+                tight |= np.abs(b[ys, xs].astype(np.int16) - INK).max(1) < 30
+                ok = np.zeros(len(ys), bool); intxt = TXT[ys, xs]
+                for sel, GG in ((~intxt, G), (intxt, G0)):      # (caption pixels explained on the unwarped frames)
+                    t12, t40 = sel & tight, sel & ~tight
+                    if t12.any(): ok[t12] = explained(*GG, ys[t12], xs[t12], S12)
+                    if t40.any(): ok[t40] = explained(*GG, ys[t40], xs[t40], S40)
+                m[ys[ok], xs[ok]] = False
+            return raw, m
+        raw, m = unexplained(a, c, True)
+        if a is not a0 or c is not c0:
+            # (a pixel flickers only if neither way explains it: with the camera taken out, or as a steady step on the frames as they are;
+            #  resampling the warped frames alone softened edges and made flicker of its own, B1 v57 43 px in an eye against 38; a jump out and
+            #  back is explained by neither)
+            raw_u, m_u = unexplained(a0, c0, None); m = m & m_u; raw = raw & raw_u
+        n0 = int(raw.sum()); eye0 = max([fl.in_circle(raw, *e) for e in reg["eyes"]] or [0]); txt0 = max([fl.in_box(raw, bx) for bx in reg["text"]] or [0])
         n = int(m.sum())
         eye = max([fl.in_circle(m, *e) for e in reg["eyes"]] or [0]); txt = max([fl.in_box(m, bx) for bx in reg["text"]] or [0])
         rows.append((t, n, eye, txt, n0, eye0, txt0))

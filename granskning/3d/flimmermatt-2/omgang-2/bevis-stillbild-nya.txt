@@ -62,7 +62,7 @@ h4) a face 3 px out on one frame and back on top of the whole picture moving 6 p
      the raw measure (no movement taken out) is over its limits on frames: none
 h5) a face 2 px out on one frame and back on top of the whole picture moving 9 px a frame: frames 412-412 (13.73-13.73 s, shot still): FAILED by the check, it must fail (right)
      frame 413 (13.77 s): a face goes out and back: its speed change -2.0, +4.0, -2.0 px in x (sign changes twice in 3 frames; reported on the frame that went out); a face goes out and back: its speed change -2.0, +4.0, -2.0 px in x (sign changes twice in 3 frames; reported on the frame that went out)
-     the raw measure (no movement taken out) is over its limits on frames: [412]
+     the raw measure (no movement taken out) is over its limits on frames: none
 h6) a face 3 px out on one frame and back on top of the whole picture moving 9 px a frame: frames 450-450 (15.00-15.00 s, shot still): FAILED by the check, it must fail (right)
      frame 450 (15.00 s): 3955 pixels flicker in the picture (at most 2000); the whole picture's speed changes 5.7 px in one frame (at most 4.5)
      frame 451 (15.03 s): a face's speed changes 6.0 px in one frame (at most 4.5: 12 px a frame built up over about 3 frames); a face's speed changes 6.0 px in one frame (at most 4.5: 12 px a frame built up over about 3 frames); a face goes out and back: its speed change -3.0, +6.0, -3.0 px in x (sign changes twice in 3 frames; reported on the frame that went out); a face goes out and back: its speed change -3.0, +6.0, -3.0 px in x (sign changes twice in 3 frames; reported on the frame that went out)

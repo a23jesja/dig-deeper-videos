@@ -22,8 +22,8 @@ Still-basen behövs för de mjuka glidningarna. Varken v17 eller v1y har ett fö
 | d | en bokstav byts en ruta | fäll | – | fäller | – | – | fäller | – |
 | e | pupill 6 px ut och tillbaka | fäll | fäller | fäller | fäller | fäller | fäller | fäller |
 | g | ansikte 11 px ut och tillbaka | fäll | fäller | fäller | fäller | fäller | fäller | fäller |
-| j | kroppsdel 45 px ut och tillbaka (ny) | fäll | fäller | fäller | (går igenom, se nedan) | fäller | fäller | (går igenom, se nedan) |
-| j2 | kroppsdel 30 px ut och tillbaka (ny) | fäll | fäller | fäller | (går igenom, se nedan) | fäller | fäller | (går igenom, se nedan) |
+| j | kroppsdel 45 px ut och tillbaka (ny) | fäll | fäller | fäller | ogiltig plantering (enfärgad yta, inget ändras) | fäller | fäller | ogiltig plantering (enfärgad yta, inget ändras) |
+| j2 | kroppsdel 30 px ut och tillbaka (ny) | fäll | fäller | fäller | ogiltig plantering (enfärgad yta, inget ändras) | fäller | fäller | ogiltig plantering (enfärgad yta, inget ändras) |
 | f | glidning 5 px/ruta, uppbyggd och inbromsad | igenom | – | – | går igenom | – | – | går igenom |
 | f2 | glidning upp till 12 px/ruta, uppbyggd och inbromsad | igenom | – | – | fäller **FEL** | – | – | går igenom |
 | f2b | glidning upp till 14 px/ruta (över 12) | fäll | – | – | fäller | – | – | fäller |
@@ -34,7 +34,7 @@ Still-basen behövs för de mjuka glidningarna. Varken v17 eller v1y har ett fö
 | h3 | 2 px ovanpå 6 px | fäll | – | fäller | går igenom **FEL** | – | fäller | fäller |
 | h4 | 3 px ovanpå 6 px | fäll | – | fäller | går igenom **FEL** | – | fäller | fäller |
 | h5 | 2 px ovanpå 9 px | fäll | – | fäller | fäller | – | fäller | fäller |
-| h6 | 3 px ovanpå 9 px | fäll | – | fäller | fäller | – | – | fäller |
+| h6 | 3 px ovanpå 9 px | fäll | – | fäller | fäller | – | fäller | fäller |
 | k | snabb mjuk huvudvridning 1..6..1 px/ruta | igenom | går igenom | – | går igenom | går igenom | – | går igenom |
 
 ### j och j2 på still-basen
@@ -54,17 +54,20 @@ Kört på v17:s figurfil.
 
 Film v57:s leder går också igenom (leder-v57.txt).
 
-## Filmerna själva
+## Filmerna själva (villkor 1: v57)
 | film | gamla måttet | nya måttet |
 |---|---|---|
+| v57, ac6b0bd162b95aa8e3acecc53257365b, kamera tagen ur matriserna | 1 ruta, loopsömmen | 1 ruta, loopsömmen (största bild 400, öga 34, text 0, ansiktsspår högst 8,2 px/ruta, fartändring 3,2, ingen ut-och-tillbaka) |
 | v17 | 1 ruta, loopsömmen | 1 ruta, loopsömmen |
-| v1y | 6 rutor: ögonflimmer 36, 384, 506, 632, 1046, 1071 | 7 rutor, se nedan |
+| v1y | 6 rutor | 5 rutor, se nedan |
 
-v1y:s sju rutor med det nya måttet:
-- ögonflimmer: 36, 384, 632, 1046 och 1071 fäller med båda måtten;
-- ruta 506 fäller bara med det gamla;
-- text 1000 (198 av 150) fäller bara med det nya;
-- ansiktsspåret: ryck på 4,6-5,0 px vid 70 och 384, där båda ögonen visar samma ryck. Det har ögonlappsfilmen verkligen.
+Filer: v57-nya.txt (och v57-nya-utan-kamera.txt, samma fil utan matriserna: 1 ruta, loopsömmen).
+
+v1y med det nya måttet:
+- ögonflimmer: 384, 632, 1046 och 1071, samma som med det gamla måttet;
+- ansiktsspåret: rycken vid 70 och 384, 4,6-5,0 px med båda ögonen. Det har filmen verkligen, se granskarens notering om ruta 70.
+
+Följande fäller med det gamla måttet men inte med det nya: ögonflimret vid 36 och 506, och texten vid 1000.
 
 ## Det som ändrats i det nya måttet i omgång 2
 Allt finns i engine/scripts/flicker2.py.
@@ -84,6 +87,15 @@ Allt finns i engine/scripts/flicker2.py.
    Grundorsaken till att f2 föll med båda måtten var färgkanter med samma ljushet, till exempel blå rock mot brunt skägg. Flimmerkartan arbetar i färg, men förklaringen görs i grått, och där är rutan platt. Färgkanalerna gick inte att använda, eftersom de är halvupplösta i videon (4:2:0).
 3. **Lederna.** motion2.py fäller huvudet om det går ut och tillbaka, oavsett belopp. Kontrollen läser nu oavrundade huvudpositioner (headF), eftersom avrundningen ensam gav +1, -2, +1.
 
+4. **Kameran, efter körningen på v57.** Den första körningen på v57 föll på 59 rutor i B1 och E. Det gamla måttet släppte igenom samma fil, så felet låg i hur kameran togs bort, och det fanns tre orsaker:
+   - **Punkterna bakom linsen.** Kartan anpassades på punkter runt båda figurerna. Kaptenen står bredvid eller bakom kameran i B1 och E, så hans punkter projicerades vilt. Nu används bara punkter runt figuren som kameran fokuserar på, minst 0,3 m framför linsen och nära bilden. Finns färre än 3 sådana punkter dras ingen kamera bort.
+   - **Texterna.** De sitter fast på skärmen och följer inte kameran. Därför bedöms de på de ovridna rutorna.
+   - **Omsamplingen.** Den mjukade upp kanter och gav eget flimmer. Nu räknas en pixel som flimmer bara om den varken förklaras med kameran borttagen eller som ett jämnt steg på rutorna som de är. Ett hopp ut och tillbaka förklaras av ingen av dem.
+
+   Ansiktsspåret mäts på rutorna som de är, och kamerans egen förflyttning vid ansiktet dras av. Kameran vrids bara bort när den flyttar bilden minst en halv pixel.
+
+   Efter ändringarna är allt kört om: båda filmerna och alla tre bevisen med det nya måttet. Resultatet står i tabellen ovan.
+
 ## Planteringen (flicker_proof.py)
 - f och f2 byggs upp och bromsas in över minst 3 rutor och går tillbaka på samma sätt.
 - De gamla glidningarna finns kvar som f3 och f4 och ska fälla.
@@ -94,5 +106,5 @@ Allt finns i engine/scripts/flicker2.py.
 
 ## Vad som återstår
 - b och d testas bara på v1y, eftersom v17 och still-basen saknar bubblor och texter.
-- h6 och k saknar plats i v1y men är testade på still-basen, och k även på v17.
+- k saknar plats i v1y men är testad på still-basen och på v17.
 - Inget fall är fel med det nya måttet där planteringen faktiskt landar. Det gamla måttet har kvar fem kända svagheter: c, f2, f3, h1-h4 och j på still-basen (den sista är en ogiltig plantering, se ovan).

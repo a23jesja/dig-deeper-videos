@@ -81,3 +81,26 @@ Bitarna byggs i ordningen 1, 2, 3, 4, 5, 6, 7, så att varje ny teknik är bevis
 10. Klipp: minst 30° i vinkel och minst 1,3x i storlek.
 11. Kontaktljuden görs själva (syntes eller egna inspelningar i koden). Varje ljud listas med tid.
 12. Bildrutor i full storlek från gångbitarna (1 och 2) läggs i STOPP-mappen (villkor 3).
+
+## Tillägg 24 nov kväll: bit 8 (godkänd av molnsessionen, DAILY-RULES ac7036c på claude/emu-short-cloud)
+**Bit 8: ta, hålla, skåla, räcka upp handen.**
+- Momenten:
+  - en tvålagershand sluter sig om ett föremål och tar det från en tallrik;
+  - en skål;
+  - en halv resning med en smäll i bordet;
+  - en handuppräckning i öronhöjd bredvid huvudet, handflatan mot kameran, med figuren i 3/4.
+- Kräver något av det en ändring i riggen skickas ett ark-STOPP först.
+- "Cuts are not action": varje bild anger vilken handling som sker inne i den och när.
+- Varje ljud har en synlig orsak.
+
+**Nya kodkontroller före nästa film-STOPP.** Var och en har ett planterat fel som fäller.
+- Den egna handen eller tummen ligger över munnen medan figuren talar.
+- En arm syns inte i medium- och närbilder, om den inte döljs av ett namngivet föremål.
+- Regel 7 (ingen saknas) och regel 8 (inget ansikte skyms) får egna planterade fel.
+
+**Hållna föremål** ("Measured closeness is not enough") bedöms i telefonstorlek på en stillbild:
+- fingrarna ligger över föremålet;
+- föremålets form syns;
+- en telefonstor stillbild av varje grepp läggs i STOPP-mappen.
+
+**Ordning:** rörelsearket med bit 8, sedan middagen v6 (utan nya ElevenLabs-tecken), sedan baksidesarket, sist Alcatraz i 3D. Ingen tid lovas för v6 förrän bit 8 är klar.

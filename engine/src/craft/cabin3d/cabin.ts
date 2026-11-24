@@ -115,15 +115,17 @@ const captainG = (id: string, heading: number): Who3 => { const t0 = SHOT_T0[id]
   } else {
     ease(m, -9, { head: [6, 6, -3], lean: 2, py: PY }, 0.01, { face: { pupil: 1, gaze: [0, 0.7], brow: 0.8, wide: 0.45, smile: -0.4, mouth: 0.35 } });
     ease(m, T(4.05), { head: [0, 14, 0], lean: 4, px: HIP, py: PY }, 0.4, {});
-    ease(m, T(4.3), { head: [0, 14, 0], lean: 4, px: HIP, py: PY }, 1.1, {}); m.actAt(T(4.52), { legR: LIFT } as Partial<Pose>, 6.6 - 4.52, { in: 1.0, out: 0.6, antic: 0, glide: true });      // (the lift as its own layer: it eases out into the planted stand 6.0-6.55, so D1 opens with the boot up as E ends and he sets it down; held it read as planted, v32)      // (up by 5.35: the X clear 0.55 s before the cut, the reviewer)      // (the boot up in 0.75 s, toe up: the X under the toe shows)
+    ease(m, T(4.45), { head: [0, 14, 0], lean: 4, px: HIP * 1.6, py: PY, roll: -6 }, 1.35, {}); /* (the knee raise reads: the hips go over the standing leg and the body tips toward it, v44) */ m.actAt(T(4.45), { legR: LIFT } as Partial<Pose>, 6.6 - 4.45, { in: 1.38, out: 0.6, antic: 0, glide: true });      // (the lift as its own layer: it eases out into the planted stand 6.0-6.55, so D1 opens with the boot up as E ends and he sets it down; held it read as planted, v32)      // (up by 5.35: the X clear 0.55 s before the cut, the reviewer)      // (the boot up in 0.75 s, toe up: the X under the toe shows)
     ease(m, T(5.86), { head: [6, 6, -3], lean: 2, py: PY }, 0.01, { face: { pupil: 1, gaze: [0, 0.7], brow: 0.8, wide: 0.45, smile: -0.4, mouth: 0.35 } });
     ease(m, T(6.2), { head: [6, 6, -3], lean: 2, py: PY }, 0.35, { face: { pupil: 1, gaze: [0.9, -0.1], brow: 0.8, wide: 0.45, smile: -0.5, mouth: 0.3 } });
     if (id !== "D2") ease(m, T(6.75), { head: [6, 6, -3], lean: 2, py: PY }, 0.5, { face: { pupil: 1, gaze: [0.6, 0], brow: 0.6, smile: 1, mouth: 0.4, sad: 0.25 } });
+    if (id === "D2") ease(m, T(6.92), { head: [9, 6, 3], lean: 0, py: PY + 0.018 }, 0.4, {});      /* (his shoulders come up and his head tips in the middle of D2: v44 held one face for 0.7 s) */
     if (id === "D2") ease(m, T(6.57), { head: [6, 6, -3], lean: 2, py: PY }, 0.01, { face: { pupil: 1, gaze: [0.6, 0], sad: 0, smile: 1, mouth: 0.55, teeth: 1, squeeze: 1, brow: -0.3 } });      // (the punchline, set on the cut: eyes squeezed shut, a wide grin with teeth; at 360 px v34's small smile read the same as the shot before it)      // (the sheepish grin shows his teeth from the cut into the close-up)
   }
   let JAB: { side: "L" | "R"; arm: [Seg2, Seg2] } | null = null;
   const arms = (t: number, p: Pose, hd: number): Pose => { const g = t + t0;
-    if (g >= 4.4) return p;      // (E and D1: his arms hang, the open hands by his coat's hem in both pictures (E framed wide enough to hold them): v35 had fists on his hips in E, out of its picture, but hands at the hem in D1
+    if (g >= 6.6) return p;      // (D2's close-up: the arms hang, out of the picture below)
+    if (g >= 4.4) { const kb = smooth((g - 4.5) / 1.2) * (1 - smooth((g - 6.0) / 0.6)), WIDE2: [Seg2, Seg2] = [[18, 54], [118, 44]]; return { ...p, armL: lerpPose(AKIMBO, WIDE2, kb), armR: lerpPose(AKIMBO, WIDE2, kb) }; }      // (E and D1: fists on his hips in both, so his hands are out of E's close picture and match in D1; the elbows go out a little for balance while the knee is up)
     const sw = smooth(g / 0.8),      /* (his hand sweeps across the table top from right of the papers to past them: it reaches them at about 0.4 s, when they start to slide; v34's hand stood still while they flew) */ tableR: [Seg2, Seg2] = lerpPose([[0, 40], [60, 30]], [[0, 50], [0, 60]], sw);      // (from right of the stack to its back edge at the table top's height, pushing it off: searched; v39's hand ended above the stack)
     // (A1b is a close-up of his shout: both hands go down and out of it (his right hand leaves the table 0.6-1.1); the arms go out wide
     //  from 1.3, just before the cut into A2a, and land in it: cut on the action)
@@ -141,14 +143,14 @@ const captainG = (id: string, heading: number): Who3 => { const t0 = SHOT_T0[id]
     return { ...p, armR: f(R0), armL: f(L0) }; };
   const shot = SPEC.shots.find((q) => q.id === id)!, n = Math.round((shot.t1 - shot.t0) * FM.FPS);
   return { name: "captain", at: FIGS.captain, h: HEIGHTS.captain, rimSide: 1, ...(late ? { redAt: T(6.05), ...(id === "D2" ? { redMax: 1.35, sweatAt: T(6.38) } : {}) } : id === "A2b" ? { redAt: -1, redMax: 0.7 } : {}),
-    cast: { name: "captain", m, who: "sir", look: CAPTAIN, seed: late ? 12 : 1, armWipe: false, pose: arms, hands: late ? { L: [[0, "open"]], R: [[0, "open"]] } : t0 >= 5.9 ? { L: [[0, "open"]], R: [[0, "open"]] } : id === "A2a" ? { L: [[0, "open"]], R: [[0, "open"]] } : t0 >= 2.05 ? (heading > 0 ? { L: [[0, "point"]], R: [[0, "fist"]] } : { L: [[0, "fist"]], R: [[0, "point"]] }) : { L: [[0, "open"]], R: [[0, "relaxed"]] },
+    cast: { name: "captain", m, who: "sir", look: CAPTAIN, seed: late ? 12 : 1, armWipe: false, pose: arms, hands: late ? (t0 >= 6.6 ? { L: [[0, "open"]], R: [[0, "open"]] } : { L: [[0, "fist"]], R: [[0, "fist"]] }) : t0 >= 5.9 ? { L: [[0, "open"]], R: [[0, "open"]] } : id === "A2a" ? { L: [[0, "open"]], R: [[0, "open"]] } : t0 >= 2.05 ? (heading > 0 ? { L: [[0, "point"]], R: [[0, "fist"]] } : { L: [[0, "fist"]], R: [[0, "point"]] }) : { L: [[0, "open"]], R: [[0, "relaxed"]] },
       ...(late ? {} : { mouth: { t0: 0, len: n, mouth: mouthTrack(C01.words, VOICE_AT.c01 - t0, n).map((v, f) => { const g = t0 + f / FM.FPS; return Math.min(1, id === "A1b" ? (g < 0.97 ? 0 : g < 1.32 ? Math.max(v * 1.6, 1) : v * 1.4) : id === "A2b" ? Math.max(v * 1.4, 0.9) : id === "A2a" && g < 1.53 ? 0 : v * (heading > 20 ? 0.8 : 1)); }) } }) } }; };      // (A2a: shut in the pause until "where": v39 opened it with no word on screen)      // (A1b: shut as it opens, then the shout as wide as the drawing goes; A2b: never under 0.7)      // (A1b: the shout's mouth wide open; A2b: never under 0.7, the angriest)      // (A1b: the shout's mouth wide open)
 /** the boy's timeline (film seconds): 2.7 looking down at the captain's boots, his arm up pointing at them (it is up as the shot opens:
  *  the pose changes on the cut); 2.88 "You're standing on it, Captain."; 3.25-3.7 he looks up at the captain; 3.9-4.35 a big grin, his
  *  shoulders up, his head tipped */
 const boyG = (id: string, heading: number): Who3 => { const t0 = SHOT_T0[id], T = (x: number) => x - t0, m = figure("sir", 0, heading); m.stand(9);
   ease(m, -9, { head: [-6, 12, 0], lean: 5 }, 0.01, { face: { pupil: 1, gaze: [-0.4, 0.55], smile: 0.2, brow: 0.5 } });
-  ease(m, T(3.0), { head: [-8, -6, 2], lean: -1 }, 0.42, { face: { pupil: 1, gaze: [-0.6, -0.55], smile: 0.5, brow: 0.8 } });      // (his eyes go up at the end of B1 and are up as B2 opens)
+  ease(m, T(3.0), { head: [-8, -6, 2], lean: -1 }, 0.42, { face: { pupil: 1, gaze: [-0.6, -0.55], smile: 0.15, brow: 0.8 } });      // (eyes open as B2 begins; the smile lowers the lids by 4.3: the sly change reads, v44)      // (his eyes go up at the end of B1 and are up as B2 opens)
   ease(m, T(3.9), { head: [-8, -6, 5], lean: -2, roll: -4, py: 0.015 }, 0.45, { face: { pupil: 1, gaze: [-0.6, -0.55], smile: 1, brow: 0.8 } });
   // (the arm solved once for the shot, at its first frame, and held: re-solved every frame it flipped between two answers when his
   //  shoulders lifted, 20 px in a frame, v28)
@@ -168,7 +170,7 @@ const captainB = (): Who3 => { const s = 1.7, m = figure("sir", 0, 0); m.stand(s
  *  bent, so a straight free leg would reach into the floor) */
 /** E's step (the boot lifted and set down again, the test of 24 Nov): which way along his facing and how far, in leg lengths */
 export const E_STEP = { ahead: -0.14, dur: 0.75, at: 0.25 };
-export const LIFT_LEG: { th: [number, number]; sh: [number, number]; pitch: number } = { th: [22, 6], sh: [-58, 0], pitch: -3 };      // (pitch -3: the sole level as it lifts (searched: at -10 the drawn toe swung up 260 px and the boot turned nose-up))
+export const LIFT_LEG: { th: [number, number]; sh: [number, number]; pitch: number } = { th: [22, 8], sh: [-58, 0], pitch: -3 };      // (the knee a little out to the side so it shows bent in the front view)      // (pitch -3: the sole level as it lifts (searched: at -10 the drawn toe swung up 260 px and the boot turned nose-up))
 export const WHO: Record<string, () => Who3[]> = { A: () => [captainG("A", 0)], A1b: () => [captainG("A1b", 30)], A2a: () => [captainG("A2a", 35)], A2b: () => [captainG("A2b", 25)],
   B1: () => [boyG("B1", -16)], B2: () => [boyG("B2", -40)], E: () => [captainG("E", 0)], D1: () => [captainG("D1", 0)], D2: () => [captainG("D2", 35)] };
 export const TABLE_TOP = 0.488;
@@ -220,8 +222,13 @@ const cnv = () => (typeof OffscreenCanvas !== "undefined" ? new OffscreenCanvas(
  *  passes a few centimetres apart: the sun's own size) */
 const castShadow = (g: G, id: string, fr: number, w: Who3, fig: OffscreenCanvas | HTMLCanvasElement) => {
   const c = camAt(id, fr), [x, y] = w.at, vx = x - c[0], vy = y - c[1], vl = Math.hypot(vx, vy) || 1, rx = -vy / vl, ry = vx / vl, hw = 0.3;
-  const HZ = 0.3, P0 = project(id, fr, [x - rx * hw, y - ry * hw, 0]), P1 = project(id, fr, [x + rx * hw, y + ry * hw, 0]), P2 = project(id, fr, [x, y, HZ]);
-  const Q2 = project(id, fr, [x, y - SUN_BACK * HZ, 0]);      // (the map measured 0.3 m up, not 1 m: close to the lens a point 1 m up projected wildly, shot E)
+  // (the hinge on the DRAWN soles: the card stands about 40 px lower and draws about 1.3 times wider than the projected world points, so with the
+  //  hinge on those the legs fell on the far side of it and his shadow folded away behind him, no shadow in the sun patch: the reviewer on v44)
+  const HZ = 0.3, W0 = project(id, fr, [x - rx * hw, y - ry * hw, 0]), W1 = project(id, fr, [x + rx * hw, y + ry * hw, 0]), WC = project(id, fr, [x, y, 0]), WQ = project(id, fr, [x, y - SUN_BACK * HZ, 0]);
+  const pl = placeOf(id, fr, w), f = pl.f, ppm = (footY(f.who) - (jointPx(f, "crown") as unknown as number[])[1]) / (w.h * 0.97), dirx = (W1[0] - W0[0]), diry = (W1[1] - W0[1]), dl = Math.hypot(dirx, diry) || 1;
+  const C = toScreen(pl, [f.x, footY(f.who)]), half = (hw * ppm) * pl.z, ratio = (2 * half) / dl;
+  const P0 = [C[0] - dirx / dl * half, C[1] - diry / dl * half], P1 = [C[0] + dirx / dl * half, C[1] + diry / dl * half], P2 = toScreen(pl, [f.x, footY(f.who) - HZ * ppm]);
+  const Q2 = [C[0] + (WQ[0] - WC[0]) * ratio, C[1] + (WQ[1] - WC[1]) * ratio];      // (the map measured 0.3 m up, not 1 m: close to the lens a point 1 m up projected wildly, shot E)
   // (the affine map sending P0, P1, P2 to P0, P1, Q2: solved for the 2x3 matrix)
   const sx = [P0[0], P1[0], P2[0]], sy = [P0[1], P1[1], P2[1]], dx = [P0[0], P1[0], Q2[0]], dy = [P0[1], P1[1], Q2[1]];
   const den = sx[0] * (sy[1] - sy[2]) + sx[1] * (sy[2] - sy[0]) + sx[2] * (sy[0] - sy[1]); if (Math.abs(den) < 1e-6) return;
@@ -234,11 +241,10 @@ const castShadow = (g: G, id: string, fr: number, w: Who3, fig: OffscreenCanvas 
   sm.setTransform(1, 0, 0, 1, 0, 0); sm.clearRect(0, 0, FM.W, FM.H); sm.fillStyle = "#ffffff";
   for (const d of [0]) for (const [x0, x1, z0, z1] of PANES) { const q = [[x0, z0], [x1, z0], [x1, z1], [x0, z1]].map(([px, pz]) => project(id, fr, [px + d, 3.2 - pz * SUN_BACK + d, 0]));
     sm.beginPath(); q.forEach((p, i) => (i ? sm.lineTo(p[0], p[1]) : sm.moveTo(p[0], p[1]))); sm.closePath(); sm.fill(); }
-  // (and only where the plate's floor is actually sunlit: the table's own shadow lies inside a window's patch, and the hand's shadow fell there as a
-  //  floating dark blob, v34-v40. A smooth weight on the plate's brightness, no hard threshold)
-  { const P = g.getImageData(0, 0, FM.W, FM.H).data, Mk = sm.getImageData(0, 0, FM.W, FM.H); const md = Mk.data;
-    for (let i = 0; i < md.length; i += 4) { if (!md[i + 3]) continue; const lum = 0.3 * P[i] + 0.55 * P[i + 1] + 0.15 * P[i + 2]; md[i + 3] = Math.round(md[i + 3] * Math.min(1, Math.max(0, (lum - 95) / 70))); }
-    sm.putImageData(Mk, 0, 0); }
+  // (minus the table's own shadow on the floor, from its box and the sun's slope: the hand's shadow fell inside it as a floating blob in A, v34-v40.
+  //  v41-v44 used the canvas's brightness for this, but the plate is not on that canvas: it read black everywhere and took every cast shadow away)
+  { const TX0 = -1.447, TX1 = -0.583, TY0 = 0.823, TH = 0.488, L = TH * SUN_BACK, q = [[TX0, TY0 + 0.02], [TX1, TY0 + 0.02], [TX1, TY0 - L], [TX0, TY0 - L]].map(([px, py]) => project(id, fr, [px, py, 0]));
+    sm.globalCompositeOperation = "destination-out"; sm.fillStyle = "#000"; sm.beginPath(); q.forEach((p, i) => (i ? sm.lineTo(p[0], p[1]) : sm.moveTo(p[0], p[1]))); sm.closePath(); sm.fill(); sm.globalCompositeOperation = "source-over"; }
   sh.globalCompositeOperation = "destination-in"; sh.drawImage(SM as CanvasImageSource, 0, 0); sh.globalCompositeOperation = "source-over";
   g.save(); g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 0.5; g.drawImage(SH as CanvasImageSource, 0, 0); g.restore(); };
 /** the figures of a shot at frame fr over the plate, the farthest first: contact shadows, the figure, the cabin's light on his fill (the ink
@@ -337,7 +343,7 @@ export const CAPS = ((): { a: number; b: number; text: string }[] => { const cut
   return out; })();
 void captions;
 /** where the band stands in each shot (pixels from the top): the lower third, below the faces, chests and hands; in B above the boy (stage/film.ts allows a shot's band above its figures) */
-const CAP_TOPS: Record<string, number> = { A: 1440, A1b: 1515, A2a: 1392, A2b: 1660, B1: 1400, B2: 1515, E: 1440, D1: 1680, D2: 1680 };      // (B: above the boy's head: his chest and hands fill the lower third)
+const CAP_TOPS: Record<string, number> = { A: 1400, A1b: 1515, A2a: 1400, A2b: 1660, B1: 1400, B2: 1400, E: 1400, D1: 1400, D2: 1400 };      // (one height for every word, the reviewer on v44; A1b lower because at 1400 "BOY!" lay on his chin in the close-up; A2b lower: at 1400 the words would lie on his chest and fist in a medium shot, so they sit over his thighs)
 export const captionAt = (T: number) => { const c = CAPS.find((q) => T >= q.a - 0.03 && T < q.b); if (!c) return null; const sh = SHOTS.find((s) => T >= s.t0 && T < s.t1) ?? SHOTS[SHOTS.length - 1];
   const sz = Math.round(96 * Math.min(1, 8.9 / capWidth(c.text))), w = Math.min(1020, capWidth(c.text) * 1.194 * sz) * (PLANT.capWide ? 1.6 : 1), top = (CAP_TOPS[sh.id] ?? 1440) - (PLANT.capWide ? 110 : 0);      // (capWide: the planted caption, wider and down at the hands' height: the check must fail it)
   return { text: c.text, sz, box: [540 - w / 2, top, 540 + w / 2, top + sz * 1.08] as [number, number, number, number] }; };

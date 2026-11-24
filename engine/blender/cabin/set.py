@@ -189,12 +189,12 @@ def pose_shot(shot, t):
         r0 = P0[k][1]; l0, e, pts, L = PAPER_PATHS[k]; ts, tsl, tf = PAPER_T[k]; g = shot["t0"] + t
         if g < ts + tsl:      # on the table: still, then sliding flat under his hand to just over the front edge
             u = trap((g - ts) / tsl); p.location = l0.lerp(e, u); turn = 8 * u
-            over = max(0.0, 0.823 - (p.location.y - 0.13)) / 0.26; tilt = 8.0 * max(0.0, min(1.0, (over - 0.1) / 0.35)) ** 2      # (the sheet leans over the edge before it tips: v39's stuck out flat)
+            over = max(0.0, 0.823 - (p.location.y - 0.13)) / 0.26; tilt = 16.0 * max(0.0, min(1.0, (over - 0.1) / 0.35)) ** 1.5      # (the sheet leans over the edge before it tips: v39's stuck out flat)
             p.location.z = l0.z + max(0.0, p.location.y - 0.823) * math.sin(math.radians(tilt))      # (pivoting on the table's edge: the part behind it lifts, the part over the floor dips)
         else:      # off the edge: forward clear of the table's front, then down; tipped forward in the air, flat again as it lands
             uu = min(1.0, (g - ts - tsl) / tf); i = min(len(pts) - 1, bisect.bisect_left(L, trap(uu, 0.12))); p.location = pts[i].copy()      # (a quick start: it is visibly falling within A's 0.8 s, v34-v35)
             if PLANT_IN and k == 0: p.location.y = max(p.location.y, 0.86 - 0.3 * uu)      # (the planted fault: the sheet drops back into the table front)
-            tilt = 8 + 30 * math.sin(math.pi * min(1.0, uu * 1.15)); turn = 8 + 22 * uu      # (tipped toward the lens as it falls, so the sheet shows its face: edge-on it read as a thin strip)
+            tilt = 16 + 22 * math.sin(math.pi * min(1.0, uu * 1.15)); turn = 8 + 22 * uu      # (tipped toward the lens as it falls, so the sheet shows its face: edge-on it read as a thin strip)
             hz = p.location.z - 0.003; tilt = min(tilt, math.degrees(math.asin(max(0.0, min(1.0, hz / 0.14)))))      # (never a corner into the floor: half the sheet's depth is 0.13 m)
         p.rotation_euler = (r0.x, r0.y - math.radians(tilt), r0.z + math.radians(turn))      # (the front edge down: the back edge up, clear of the table top)
 

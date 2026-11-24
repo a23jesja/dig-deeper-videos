@@ -7,7 +7,7 @@
 // Per figure: the skeleton's arms, legs, feet and head counted from its joints (2, 2, 2, 1); the hands seen = the rig's two hands, less any
 // whose middle lies under a cover and is not drawn again, plus every other hand drawn for that figure. Fails on any count but two, and on any
 // hand drawn more than its own hand's length from the end of an arm (not joined to its arm).
-//   node scripts/limb_check.mjs eiffel|alcatraz|clips|cabin      the current code (cabin: 3D step 1, src/craft/cabin3d)
+//   node scripts/limb_check.mjs eiffel|alcatraz|clips|cabin|dinner      the current code (cabin: 3D step 1, src/craft/cabin3d; dinner: the Short, src/craft/dinner3d)
 //   node scripts/limb_check.mjs eiffel@<commit>                    an earlier eiffel.ts (its drawn hands registered by the same rule)
 //   node scripts/limb_check.mjs eiffel --plant three|four          a planted third hand, or v10's two edge hands: must fail
 //   node scripts/limb_check.mjs eiffel --plant-guard               a planted unregistered hand in src/: the guard must fail
@@ -53,15 +53,17 @@ if (arg.startsWith("eiffel@")) {
   tmp = path.resolve("src/craft/eiffel/_limb_tmp.ts"); fs.writeFileSync(tmp, src); eifFile = "../src/craft/eiffel/_limb_tmp";
 }
 const out = path.resolve("out/limb_model.mjs");
-fs.writeFileSync("out/_limb_entry.ts", `export { SHOTS as EIF } from "${eifFile}"; ${tmp ? "" : 'export { PLANT_HANDS } from "../src/craft/eiffel/eiffel";'} export { SHOTS as ALC, DRAWN } from "../src/craft/alcatraz/alcatraz"; export { CLIPS } from "../src/craft/clips/clips"; export { WHO as CAB_WHO, SHOTS as CAB_SHOTS } from "../src/craft/cabin3d/cabin"; export { castAt, jointPx, FM } from "../src/craft/clips/clipKit";`);
+fs.writeFileSync("out/_limb_entry.ts", `export { SHOTS as EIF } from "${eifFile}"; ${tmp ? "" : 'export { PLANT_HANDS } from "../src/craft/eiffel/eiffel";'} export { SHOTS as ALC, DRAWN } from "../src/craft/alcatraz/alcatraz"; export { CLIPS } from "../src/craft/clips/clips"; export { WHO as CAB_WHO, SHOTS as CAB_SHOTS } from "../src/craft/cabin3d/cabin"; export { WHO as DIN_WHO } from "../src/craft/dinner3d/figures"; export { SHOTS as DIN_SHOTS } from "../src/craft/dinner3d/core"; export { castAt, jointPx, FM } from "../src/craft/clips/clipKit";`);
 try { await esbuild.build({ entryPoints: ["out/_limb_entry.ts"], bundle: true, format: "esm", platform: "node", outfile: out, logLevel: "error", loader: { ".json": "json" } }); }
 finally { if (tmp) fs.writeFileSync(tmp, ""), fs.rmSync(tmp); fs.rmSync("out/_limb_entry.ts"); }
 const M = await import(pathToFileURL(out).href); fs.rmSync(out);
-const { EIF, ALC, CLIPS, DRAWN, castAt, jointPx, FM, PLANT_HANDS, CAB_WHO, CAB_SHOTS } = M;
+const { EIF, ALC, CLIPS, DRAWN, castAt, jointPx, FM, PLANT_HANDS, CAB_WHO, CAB_SHOTS, DIN_WHO, DIN_SHOTS } = M;
 // (3D step 1, the cabin: each shot's figures as the rig draws them; nothing is drawn over them but their own figure)
 const CAB = Object.fromEntries(CAB_SHOTS.map((S) => [S.id, () => ({ seconds: S.t1 - S.t0, cast: CAB_WHO[S.id]().map((w) => w.cast) })]));
 if (plant && PLANT_HANDS) PLANT_HANDS[plant] = true;
-const set = arg.startsWith("eiffel") ? EIF : arg === "alcatraz" ? ALC : arg === "cabin" ? CAB : CLIPS;
+// (the Short "The captain's dinner": each shot's figures, their timeline in film time from the shot's start)
+const DIN = Object.fromEntries(DIN_SHOTS.map((S) => [S.id, () => ({ seconds: S.t1 - S.t0, off: S.t0, cast: DIN_WHO[S.id]().map((w) => w.cast) })]));
+const set = arg.startsWith("eiffel") ? EIF : arg === "alcatraz" ? ALC : arg === "cabin" ? CAB : arg === "dinner" ? DIN : CLIPS;
 const mock = () => new Proxy({}, { get: (o, k) => (k === "createLinearGradient" || k === "createRadialGradient" ? () => ({ addColorStop() {} }) : k === "measureText" ? () => ({ width: 10 }) : k === "getTransform" ? () => ({ a: 1, b: 0, c: 0, d: 1, e: 0, f: 0 }) : () => {}), set: () => true });
 const faults = [], seen = {}; let frames = 0;
 for (const id of Object.keys(set)) {
@@ -69,7 +71,7 @@ for (const id of Object.keys(set)) {
   for (let f = 0; f < n; f++) { const t = f / FM.FPS; frames++;
     for (const k of Object.keys(DRAWN)) if (Array.isArray(DRAWN[k])) DRAWN[k].length = 0;
     DRAWN.heldHands = []; DRAWN.covers = [];
-    const figs = castAt(s.cast, t), g = mock();
+    const figs = castAt(s.cast, t + (s.off ?? 0)), g = mock();
     try { s.ownBg?.(g, t); s.bg && 0; s.back?.(g, t); for (const fg of figs) s.over?.(g, t, fg); s.front?.(g, t); } catch (e) { /* drawing on the mock canvas: only the registrations are wanted */ }
     for (const fg of figs) {
       const J = Object.keys(fg.sk.j), arms = ["wrL", "wrR"].filter((j) => J.includes(j)).length, legs = ["anL", "anR"].filter((j) => J.includes(j)).length, heads = J.includes("skull") ? 1 : 0;

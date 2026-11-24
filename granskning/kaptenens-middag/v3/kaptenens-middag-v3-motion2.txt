@@ -1,0 +1,7 @@
+movement check (the new measure): body parts at most 40 px a frame, their speed changing at most 13.3 px from frame to frame; the face at most 12 px a frame; the camera's movement taken out by its matrices
+largest: body 41.3 px (8c frame 18 8c:boy tipL), speed change 5.0 px (8c frame 25 8c:crew tipL), face 0.9 px (8b frame 86 8b:captain head)
+the head out and back (speed change changing sign twice in 3 frames, each over 1 px): none
+FAIL: 3 faults
+  body part moves 41.3 px in a frame (at most 40): 8c frame 18 8c:boy tipL
+  body part moves 40.8 px in a frame (at most 40): 8c frame 19 8c:boy tipL
+  body part moves 41.2 px in a frame (at most 40): 8c frame 20 8c:boy tipL

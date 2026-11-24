@@ -1,0 +1,3 @@
+guard: 49 files read, every hand drawn outside the rig is registered
+dinner: 15 shots, 720 frames: 2 OK, 4 OK, 5 OK, 6 OK, 7 OK, 1a OK, 1b OK, 3a OK, 3b OK, 3c OK, 3d OK, 5a OK, 8a OK, 8b OK, 8c OK
+LIMB CHECK OK

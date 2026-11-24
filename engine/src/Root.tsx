@@ -9,6 +9,7 @@ import { AlcatrazFilm, AlcatrazShot, SHOT_IDS, shotFrames, FILM_S } from "./craf
 import { EiffelFilm, EiffelHook, EiffelShot, EIFFEL_IDS, eiffelFrames, FILM_S as EIFFEL_S } from "./craft/eiffel/EiffelFilm";
 import { Cabin3D, CABIN_S } from "./craft/cabin3d/Cabin3D";
 import { Moves3D, MOVES_S } from "./craft/moves3d/Moves3D";
+import { Dinner3D, DINNER_S } from "./craft/dinner3d/Dinner3D";
 import { Alcatraz3D, PROV_S, Alcatraz3DFilm, FILM_S as FILM3D_S, DummyCard } from "./craft/alcatraz3d/Alcatraz3D";
 // the older flat films (style2d: no 3D, no card figures)
 import { Dance, DanceThumb, Mona2D, Mona2DThumb, Titanic1, Titanic1Thumb } from "./videos/style2d/Mona2D";
@@ -23,6 +24,8 @@ export const Root: React.FC = () => (
     {/* the eight shot types of the library in flat 2D, one clip each (Bildtyp-c01 ... c08) */}
     {CLIP_IDS.map((id) => <Composition key={id} id={`Bildtyp-${id}`} component={FlatClip} defaultProps={{ id }} durationInFrames={clipFrames(id)} fps={30} width={1080} height={1920} />)}
     {/* Alcatraz in the new style, the style test (22-23 Nov): Blender plates, the flat figures on their floor */}
+    {/* the Short "The captain's dinner" (24 Nov evening) */}
+    <Composition id="Dinner3D" component={Dinner3D} defaultProps={{ muted: true }} durationInFrames={Math.round(DINNER_S * 30)} fps={30} width={1080} height={1920} />
     {/* 3D step 2, the movement sheet (24 Nov) */}
     <Composition id="Moves3D" component={Moves3D} durationInFrames={Math.round(MOVES_S * 30)} fps={30} width={1080} height={1920} />
     <Composition id="Cabin3D" component={Cabin3D} defaultProps={{ muted: true }} durationInFrames={Math.round(CABIN_S * 30)} fps={30} width={1080} height={1920} />

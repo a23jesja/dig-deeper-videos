@@ -1,0 +1,14 @@
+dinner depth planted: 720 frames, 42 faults
+  3d frame 0 3d:boy: 19 cells of the room (prop) nearer than him inside his outline
+  3d frame 1 3d:boy: 19 cells of the room (prop) nearer than him inside his outline
+  3d frame 2 3d:boy: 19 cells of the room (prop) nearer than him inside his outline
+  3d frame 3 3d:boy: 19 cells of the room (prop) nearer than him inside his outline
+  3d frame 4 3d:boy: 19 cells of the room (prop) nearer than him inside his outline
+  3d frame 5 3d:boy: 19 cells of the room (prop) nearer than him inside his outline
+  3d frame 6 3d:boy: 19 cells of the room (prop) nearer than him inside his outline
+  3d frame 7 3d:boy: 19 cells of the room (prop) nearer than him inside his outline
+  3d frame 8 3d:boy: 19 cells of the room (prop) nearer than him inside his outline
+  3d frame 9 3d:boy: 19 cells of the room (prop) nearer than him inside his outline
+  3d frame 10 3d:boy: 19 cells of the room (prop) nearer than him inside his outline
+  3d frame 11 3d:boy: 19 cells of the room (prop) nearer than him inside his outline
+DINNER DEPTH FAILED

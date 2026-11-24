@@ -84,6 +84,77 @@
      1.15
     ]
    }
+  },
+  {
+   "id": "S2",
+   "t0": 3.0,
+   "t1": 6.0,
+   "what": "carrying (the two-shot): the captain backs up, the boy follows, the treasure chest between them at chest height, both hands on each end's handle; half way they heave it up",
+   "set": "cabin",
+   "figs": {
+    "captain": [
+     0.15,
+     0.45
+    ],
+    "boy": [
+     1.35,
+     0.45
+    ]
+   },
+   "walk": {
+    "captain": [
+     1,
+     0
+    ],
+    "boy": [
+     1,
+     0
+    ]
+   },
+   "chest": true,
+   "cam": {
+    "keys": [
+     [
+      0.0,
+      [
+       0.75,
+       -3.1,
+       0.95
+      ],
+      [
+       0.75,
+       0.45,
+       0.78
+      ]
+     ],
+     [
+      3.0,
+      [
+       -0.03,
+       -3.1,
+       0.95
+      ],
+      [
+       -0.03,
+       0.45,
+       0.78
+      ]
+     ]
+    ],
+    "lin": true,
+    "lens": 20,
+    "fstop": 4,
+    "focus": "captain",
+    "focusPoint": [
+     0.4,
+     0.45,
+     1.0
+    ]
+   },
+   "bounce": 420,
+   "hide": [
+    "stool"
+   ]
   }
  ]
 }

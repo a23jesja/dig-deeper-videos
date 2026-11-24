@@ -7,6 +7,7 @@ import { FM, D, castAt, jointPx, scaleOf, footY, heightOf, px, type Cast } from 
 import { Ink } from "../ink";
 import SPEC from "./shots.json";
 import CAM_S1 from "./cam/S1.json";
+import CAM_S2 from "./cam/S2.json";
 
 type G = CanvasRenderingContext2D;
 type P2 = [number, number];
@@ -15,7 +16,7 @@ export type Shot = { id: string; t0: number; t1: number; what: string; set: stri
   cam: { lens: number; fstop: number; focus: string; focusPoint?: number[]; keys?: unknown[]; from?: unknown[]; at?: number[] } };
 export const SHOTS = SPEC.shots as unknown as Shot[];
 export const HEIGHTS = SPEC.heights as Record<string, number>;
-const CAMS: Record<string, Mat[]> = { S1: CAM_S1.frames };
+const CAMS: Record<string, Mat[]> = { S1: CAM_S1.frames, S2: CAM_S2.frames };
 export const smooth = (u: number) => (u <= 0 ? 0 : u >= 1 ? 1 : u * u * (3 - 2 * u));
 
 /** the planted faults of the movement checks (scripts/moves_check.mjs): each must fail */

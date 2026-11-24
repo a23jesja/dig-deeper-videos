@@ -127,11 +127,11 @@ imp("wooden_candlestick", (TABLE[0] + 0.1, TABLE[1] + 0.2, TOP), 0, 1.0)
 imp("carved_wooden_plate", (TABLE[0] + 0.32, TABLE[1] + 0.16, TOP), 0, 1.0)
 imp("jug_01", (TABLE[0] - 0.42, TABLE[1] - 0.1, TOP), 120, 1.0)
 imp("vintage_oil_lamp", (TABLE[0] - 0.05, TABLE[1] + 0.26, TOP), 0, 0.55)
-imp("treasure_chest", (1.55, 2.45, 0), -18, 1.0)
+CHEST = imp("treasure_chest", (1.55, 2.45, 0), -18, 1.0); CHEST_HOME = (CHEST.location.copy(), CHEST.rotation_euler.copy(), CHEST.scale.copy())      # (step 2: carried in piece S2, moved by props/S2.json)
 imp("wine_barrel_01", (-1.85, 2.55, 0), 20, 1.0); imp("barrel_03", (-1.95, 1.95, 0), 0, 0.95); imp("barrel_03", (-1.4, 2.75, 0), 40, 0.9)
 imp("wooden_crate_01", (1.95, 1.3, 0), 88, 1.0); imp("wooden_crate_01", (1.95, 1.3, 0.35), 80, 0.9)
 imp("wooden_bookshelf_worn", (-2.08, 0.25, 0), -90, 0.95)
-imp("wooden_stool_01", (0.25, 2.15, 0), 15, 1.0)
+STOOL = imp("wooden_stool_01", (0.25, 2.15, 0), 15, 1.0); STOOL_HOME = STOOL.location.copy()      # (moved out of S2: behind the carried chest its legs read as the chest's own, the first full-size still)
 lantern = imp("wooden_lantern_01", (-1.15, 1.55, 1.62), 0, 1.0)      # (over the table, off the top of his cap: at x -0.62 it sat on his head in A and D1, v45)
 imp("wooden_lantern_01", (1.93, 1.24, 0.66), 25, 1.0)      # (a second lantern standing on the crates by the boy, lit: the side wall behind him read as an empty dark wall, v39)
 LL = bpy.data.lights.new("crate lantern", "POINT"); LL.energy = 48; LL.color = (1.0, 0.66, 0.34); LL.shadow_soft_size = 0.05; LLo = bpy.data.objects.new("crate lantern", LL); sc.collection.objects.link(LLo); LLo.location = (1.86, 1.14, 0.84)      # (a little in front of the lantern's glass, so its glow reaches the wall and the crates)
@@ -181,8 +181,27 @@ def pose_cam(shot, t):
     camd.lens = C["lens"]; camd.dof.aperture_fstop = C["fstop"]
     fx, fy = SPEC["figs"][C["focus"]]; foc.location = Vector(C["focusPoint"]) if "focusPoint" in C else Vector((fx, fy, 0.8 * SPEC["heights"][C["focus"]]))      # (the head of the figure in focus, or a point: E focuses on the boot)
 
+# the sunlit floor's bounce: the sun's patches on the floor in front of the carriers throw warm light up onto the near face of what they hold
+# (S2: the carried chest read as a dark shape against the dark wall, the first stills); on only in the shots that ask for it ("bounce")
+BOUNCE = bpy.data.lights.new("floor bounce", "AREA"); BOUNCE.shape = "RECTANGLE"; BOUNCE.size = 1.6; BOUNCE.size_y = 0.8; BOUNCE.color = hexc("#ffbf80")[:3]; BOUNCE.energy = 0
+BO = bpy.data.objects.new("floor bounce", BOUNCE); sc.collection.objects.link(BO); BO.visible_camera = False; BO.location = (0.4, -0.35, 0.05); BO.rotation_euler = (math.radians(-35), 0, 0)
+PROPS = {}
+def props_of(sid):
+    if sid not in PROPS:
+        p = os.path.join(ENGINE, "src", "craft", "moves3d", "props", sid + ".json")
+        PROPS[sid] = {th["name"]: th["frames"] for th in json.load(open(p))["things"]} if os.path.exists(p) else {}
+    return PROPS[sid]
+
 def pose_shot(shot, t):
     pose_cam(shot, t)
+    # the carried chest (piece S2): its place every frame from the figures' code (scripts/moves_props.mjs), at 0.55 of its size, its long
+    # axis along the way (x), its lock toward the lens; elsewhere it stands in its corner as in step 1
+    BOUNCE.energy = shot.get("bounce", 0)
+    STOOL.location = Vector((0.25, 5.0, 0)) if "stool" in shot.get("hide", []) else STOOL_HOME.copy()
+    fr = int(math.floor(t * FPS + 0.5)); P = props_of(shot["id"]) if shot.get("chest") else {}
+    if "chest" in P:
+        q = P["chest"][max(0, min(len(P["chest"]) - 1, fr))]; CHEST.location = Vector(q); CHEST.rotation_euler = (0, 0, 0); CHEST.scale = (0.55, 0.55, 0.55); BO.location.x = q[0]      # (the bounce under it, moving with it)
+    else: CHEST.location, CHEST.rotation_euler, CHEST.scale = CHEST_HOME[0].copy(), CHEST_HOME[1].copy(), CHEST_HOME[2].copy()
 
 def trap(u, a=0.3):
     """0..1 with a steady middle: speeding up over the first a, slowing over the last a (its top speed 1 / (1 - a) of the mean)"""

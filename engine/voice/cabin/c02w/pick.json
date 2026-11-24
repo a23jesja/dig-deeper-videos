@@ -1,0 +1,36 @@
+{
+ "line": "You're standing on it, Captain.",
+ "take": 0,
+ "word_errors": 0.0,
+ "words": [
+  {
+   "w": "You're",
+   "a": 0.0,
+   "b": 0.28
+  },
+  {
+   "w": "standing",
+   "a": 0.28,
+   "b": 0.52
+  },
+  {
+   "w": "on",
+   "a": 0.52,
+   "b": 0.78
+  },
+  {
+   "w": "it,",
+   "a": 0.78,
+   "b": 0.92
+  },
+  {
+   "w": "Captain.",
+   "a": 1.08,
+   "b": 1.14
+  }
+ ],
+ "character_count_before": 3661,
+ "character_count_after": 3661,
+ "voice": "Will (bIHbv24MWmeRgasZH58o)",
+ "why": "Jesper chose Will by ear (25 Nov, via the automation session: \"Will\"). Of the three test takes all have 0 word errors (faster-whisper small.en); take 0 is used: 'Captain' heard most surely (0.73 against 0.71) and the 0.16 s pause before it gives the sly beat. No new characters spent."
+}

@@ -116,18 +116,18 @@
    "cam": {
     "from": [
      [
-      0.773,
-      -0.888,
-      1.679
+      0.768,
+      -1.059,
+      1.731
      ],
      [
-      0.773,
-      -0.888,
-      1.679
+      0.768,
+      -1.059,
+      1.731
      ]
     ],
     "at": [
-     -0.08,
+     -0.17,
      0.82,
      1.16
     ],
@@ -198,7 +198,7 @@
    "id": "E",
    "t0": 4.4,
    "t1": 5.9,
-   "what": "a deliberate close-up from above of his boots on the map (the map fills half the picture; his hands hang at the hem, as in D1): the right boot lifts in a knee raise and the red X under it shows",
+   "what": "a deliberate close-up from above of his boots on the map: the right boot lifts in a knee raise and the red X under it shows (4.4-5.9, at most 1.5 s: the reference's close-ups of a hand or object); he lowers it out of the picture, during D2",
    "cam": {
     "from": [
      [
@@ -230,37 +230,9 @@
    "scaleAt": "feet"
   },
   {
-   "id": "D1",
-   "t0": 5.9,
-   "t1": 6.6,
-   "what": "full figure from the front (as E sees his boots): he looks down at the boot he holds up over the X; his face starts to go red",
-   "cam": {
-    "from": [
-     [
-      -0.324,
-      -2.62,
-      1.338
-     ],
-     [
-      -0.337,
-      -2.498,
-      1.326
-     ]
-    ],
-    "at": [
-     -0.3,
-     0.82,
-     0.85
-    ],
-    "lens": 28,
-    "focus": "captain",
-    "fstop": 2.8
-   }
-  },
-  {
    "id": "D2",
-   "t0": 6.6,
-   "t1": 7.4,
+   "t0": 5.9,
+   "t1": 6.7,
    "what": "his whole face close, both eyes and the mouth in the picture: red, sweat on his cheek, a sheepish grin",
    "cam": {
     "from": [
@@ -285,6 +257,34 @@
     "fstop": 2.8
    },
    "closeup": true
+  },
+  {
+   "id": "D1",
+   "t0": 6.7,
+   "t1": 7.4,
+   "what": "full figure from the front, last: both boots down, the X under the right one; fists on his hips; red, eyes open at the boy, a sheepish grin (the reviewer's order of 25 Nov: E, then his face, then the full shot with the boot down)",
+   "cam": {
+    "from": [
+     [
+      -0.324,
+      -2.62,
+      1.338
+     ],
+     [
+      -0.337,
+      -2.498,
+      1.326
+     ]
+    ],
+    "at": [
+     -0.3,
+     0.82,
+     0.85
+    ],
+    "lens": 28,
+    "focus": "captain",
+    "fstop": 2.8
+   }
   }
  ],
  "heights": {

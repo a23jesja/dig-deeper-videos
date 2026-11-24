@@ -12,7 +12,7 @@ import craft_sfx as fx  # noqa: E402
 from dsp import SR, ns, dbg, rng, place, pan, integrated, true_peak, write_wav, st  # noqa: E402
 
 SPEC = json.load(open("src/craft/cabin3d/shots.json")); FPS = SPEC["fps"]; DUR = SPEC["shots"][-1]["t1"]
-VOICES = [{"who": "george", "take": "c01", "t": 1.0}, {"who": "daniel", "take": "c02", "t": 2.88}]      # (cabin.ts VOICE_AT)
+VOICES = [{"who": "george", "take": "c01", "t": 1.0}, {"who": "will", "take": "c02w", "t": 2.95}]      # (cabin.ts VOICE_AT)
 
 def decode(f):
     return np.frombuffer(subprocess.run(["ffmpeg", "-v", "error", "-nostdin", "-i", f, "-f", "f32le", "-ac", "1", "-ar", str(SR), "-"], capture_output=True, check=True).stdout, np.float32).astype(np.float64)
@@ -39,7 +39,7 @@ def main():
     for a, b in zip(placed, placed[1:]):
         if b["start"] < a["end"] + 0.1: raise SystemExit(f"voices overlap or touch: {a} / {b}")
     voice = vg * dbg(-16 - integrated(st(vg))) + vd * dbg(-16 - integrated(st(vd)))
-    SH = {s["id"]: s for s in SPEC["shots"]}; C = SH["D"]; E = SH["E"]      # (D: his red face; E: the boot on the map)
+    SH = {s["id"]: s for s in SPEC["shots"]}; C = SH["D2"]; E = SH["E"]      # (D2: his red face, right after the reveal; E: the boot on the map)
     cues = [{"k": "paper", "f": 0, "g": 1.0, "p": -0.3}, {"k": "paper", "f": 9, "g": 1.2, "p": -0.35}, {"k": "paper", "f": 13, "g": 1.0, "p": -0.3},      # his hand on the papers (frame 1), the sweep (0.3 s)
             {"k": "flap", "f": 24, "g": 0.7, "p": -0.4}, {"k": "flap", "f": 27, "g": 0.6, "p": -0.5}, {"k": "flap", "f": 30, "g": 0.6, "p": -0.45},      # the three papers go over the edge (seen from about 0.8 s)
             {"k": "paper", "f": 72, "g": 0.45, "p": -0.5}, {"k": "paper", "f": 74, "g": 0.4, "p": -0.55}]      # and land on the floor (2.4-2.5 s); no sound under the boot (a scuff, the review of v19)

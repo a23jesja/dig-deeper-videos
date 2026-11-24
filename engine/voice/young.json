@@ -1,0 +1,15 @@
+{
+ "_why": "Jesper chose Will by ear for the cabin boy (25 Nov, via the automation session, verbatim \"Will\"): the voice of young characters from 3D step 1 on, beside George (narrator, Sir) and Daniel (adult partners).",
+ "voice_name": "Will",
+ "voice_id": "bIHbv24MWmeRgasZH58o",
+ "provider": "elevenlabs",
+ "voice_kind": "ElevenLabs premade voice (not cloned, not a library voice from another user)",
+ "model_id": "eleven_multilingual_v2",
+ "output_format": "mp3_44100_128",
+ "voice_settings": "the voice's own defaults (none sent)",
+ "takes_per_sentence": 3,
+ "pick": "the take faster-whisper small.en hears with the fewest word errors, then timing",
+ "key": "read from the environment variable ELEVENLABS_API_KEY only; never written anywhere",
+ "credits": "pre-count characters x takes before every call; 186 characters approved by the reviewer for the whole test (2 voices x 3 takes x 31)",
+ "role": "young characters (the cabin boy and others)"
+}

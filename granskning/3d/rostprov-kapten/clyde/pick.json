@@ -1,0 +1,39 @@
+{
+ "line": "Boy! Where is my treasure map?",
+ "take": 0,
+ "word_errors": 0.0,
+ "words": [
+  {
+   "w": "Boy,",
+   "a": 0.0,
+   "b": 0.36
+  },
+  {
+   "w": "where",
+   "a": 0.86,
+   "b": 1.12
+  },
+  {
+   "w": "is",
+   "a": 1.12,
+   "b": 1.28
+  },
+  {
+   "w": "my",
+   "a": 1.28,
+   "b": 1.46
+  },
+  {
+   "w": "treasure",
+   "a": 1.46,
+   "b": 1.72
+  },
+  {
+   "w": "map?",
+   "a": 1.72,
+   "b": 2.02
+  }
+ ],
+ "character_count_before": 3733,
+ "character_count_after": 3733
+}

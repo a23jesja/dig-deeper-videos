@@ -1,0 +1,18 @@
+{
+ "line": "Boy! Where is my treasure map?",
+ "take": 2,
+ "voice": "Clyde (wyWA56cQNU2KqUW4eCsI), the captain's voice test of 25 Nov",
+ "words": [
+  {
+   "w": "Boy,",
+   "a": 0.09,
+   "b": 0.37
+  },
+  {
+   "w": "map?",
+   "a": 1.5,
+   "b": 1.88
+  }
+ ],
+ "note": "only the first and last word: the mix trims the take at the last word's end + 0.22 s; the voice measured on loudness runs 0.09-1.88 s"
+}

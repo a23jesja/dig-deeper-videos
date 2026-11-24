@@ -1,0 +1,14 @@
+{
+ "_why": "The captain's voice test with Clyde (Jesper via the automation session, 25 Nov: \"Kanske ska prova med clyde ist\u00e4llet is\u00e5fall\"; approved by the reviewer): 'Boy! Where is my treasure map?' (30 characters), 3 takes at most (90), dropped into v57's sound in place of George; a test, not a delivery.",
+ "voice_name": "Clyde",
+ "voice_id": "wyWA56cQNU2KqUW4eCsI",
+ "provider": "elevenlabs",
+ "voice_kind": "ElevenLabs premade voice used by id (not cloned, not added to the account)",
+ "model_id": "eleven_multilingual_v2",
+ "output_format": "mp3_44100_128",
+ "voice_settings": "the voice's own defaults (none sent)",
+ "takes_per_sentence": 3,
+ "pick": "the take faster-whisper small.en hears with the fewest word errors",
+ "key": "read from the environment variable ELEVENLABS_API_KEY only; never written anywhere",
+ "credits": "pre-count 30 x 3 = 90; the counter read before (expected 3 733) and after (at most 3 823)"
+}

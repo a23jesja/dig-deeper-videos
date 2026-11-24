@@ -19,6 +19,7 @@ fs.writeFileSync("out/_cab_entry.ts", 'export * from "../src/craft/cabin3d/cabin
 try { await esbuild.build({ entryPoints: ["out/_cab_entry.ts"], bundle: true, format: "esm", platform: "node", outfile: out, logLevel: "error", loader: { ".json": "json" } }); }
 finally { fs.rmSync("out/_cab_entry.ts"); }
 const M = await import(pathToFileURL(out).href); fs.rmSync(out);
+const SPEC = JSON.parse(fs.readFileSync("src/craft/cabin3d/shots.json", "utf8"));      // (the map, for rule 8c)
 const { SHOTS, WHO, PLANT, placeOf, toScreen, feetOf, project, jointPx, figBox, FM, footY, captionAt, sweatDrops, SWEAT_ZONE } = M;
 if (plant) { if (!(plant in PLANT)) throw new Error("no such planted fault: " + plant); PLANT[plant] = true; }
 const faults = [], dump = {}, regions = []; let frames = 0, F0 = 0;
@@ -96,6 +97,11 @@ for (const S of SHOTS) {
     //   in a deliberate close-up (shots.json "closeup") the band may lie over the coat (the reviewer, 24 Nov: rule 8 forbids the face, our
     //   check the hands; the references put text over the coat in close-ups): the face and the hands are checked there as everywhere
     { const cap = captionAt(S.t0 + fr / FM.FPS);
+      // 8c never over the map (the reviewer's caption rule: never over the objects that carry the joke, the map and the X; v57's A2a caption
+      //    touched the map's front edge by 18 px)
+      if (cap) { const MP = SPEC.map, rr = (MP.rot * Math.PI) / 180, cn = [[-1, -1], [1, -1], [1, 1], [-1, 1]].map(([u, v]) => { const x = (u * MP.w) / 2, y = (v * MP.d) / 2; return M.project(S.id, fr, [MP.at[0] + x * Math.cos(rr) - y * Math.sin(rr), MP.at[1] + x * Math.sin(rr) + y * Math.cos(rr), 0.003]); });
+        if (cn.every((q) => q[2] > 0)) { const mx0 = Math.min(...cn.map((q) => q[0])), mx1 = Math.max(...cn.map((q) => q[0])), my0 = Math.min(...cn.map((q) => q[1])), my1 = Math.max(...cn.map((q) => q[1]));
+          if (mx1 > cap.box[0] && mx0 < cap.box[2] && my1 > cap.box[1] - 6 && my0 < cap.box[3]) faults.push(`8 ${S.id} frame ${fr}: the caption "${cap.text}" over the map`); } }
       // 8b the Shorts safe area (DAILY-RULES: nothing important in the top or bottom 15 %, the app's overlay covers it; the film review of v55)
       if (cap && (cap.box[3] > 0.85 * FM.H || cap.box[1] < 0.15 * FM.H)) faults.push(`8 ${S.id} frame ${fr}: the caption "${cap.text}" in the ${cap.box[3] > 0.85 * FM.H ? "bottom" : "top"} 15 % (the Shorts overlay)`);
       if (cap) for (const { w, pl } of placed) { if (w.sil) continue; const J = (j) => toScreen(pl, jointPx(pl.f, j)), cw = (cap.box[2] - cap.box[0]) * 1.25, x0 = 540 - cw / 2, x1 = 540 + cw / 2, y0 = cap.box[1] - 6, y1 = cap.box[3] + 6,      /* (the drawn text is about a quarter wider than capWidth's estimate: v26's captions crossed hands the check had passed) */

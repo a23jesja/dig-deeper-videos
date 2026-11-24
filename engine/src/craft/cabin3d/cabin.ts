@@ -115,17 +115,18 @@ const captainG = (id: string, heading: number): Who3 => { const t0 = SHOT_T0[id]
   } else {
     ease(m, -9, { head: [6, 6, -3], lean: 2, py: PY }, 0.01, { face: { pupil: 1, gaze: [0, 0.7], brow: 0.8, wide: 0.45, smile: -0.4, mouth: 0.35 } });
     ease(m, T(4.05), { head: [0, 14, 0], lean: 4, px: HIP, py: PY }, 0.4, {});
-    ease(m, T(4.45), { head: [0, 14, 0], lean: 4, px: HIP * 1.6, py: PY, roll: -6 }, 1.35, {}); /* (the knee raise reads: the hips go over the standing leg and the body tips toward it, v44) */ m.actAt(T(4.45), { legR: LIFT } as Partial<Pose>, 6.6 - 4.45, { in: 1.38, out: 0.6, antic: 0, glide: true });      // (the lift as its own layer: it eases out into the planted stand 6.0-6.55, so D1 opens with the boot up as E ends and he sets it down; held it read as planted, v32)      // (up by 5.35: the X clear 0.55 s before the cut, the reviewer)      // (the boot up in 0.75 s, toe up: the X under the toe shows)
+    ease(m, T(4.45), { head: [0, 14, 0], lean: 4, px: HIP * 1.8, py: PY, roll: -3 }, 1.35, {}); /* (the knee raise reads: the hips go over the standing leg and the body tips toward it, v44) */ m.actAt(T(4.4), { legR: LIFT } as Partial<Pose>, 6.6 - 4.4, { in: 1.55, out: 0.6, antic: 0, glide: true });      // (the lift as its own layer: it eases out into the planted stand 6.0-6.55, so D1 opens with the boot up as E ends and he sets it down; held it read as planted, v32)      // (up by 5.35: the X clear 0.55 s before the cut, the reviewer)      // (the boot up in 0.75 s, toe up: the X under the toe shows)
     ease(m, T(5.86), { head: [6, 6, -3], lean: 2, py: PY }, 0.01, { face: { pupil: 1, gaze: [0, 0.7], brow: 0.8, wide: 0.45, smile: -0.4, mouth: 0.35 } });
     ease(m, T(6.2), { head: [6, 6, -3], lean: 2, py: PY }, 0.35, { face: { pupil: 1, gaze: [0.9, -0.1], brow: 0.8, wide: 0.45, smile: -0.5, mouth: 0.3 } });
     if (id !== "D2") ease(m, T(6.75), { head: [6, 6, -3], lean: 2, py: PY }, 0.5, { face: { pupil: 1, gaze: [0.6, 0], brow: 0.6, smile: 1, mouth: 0.4, sad: 0.25 } });
-    if (id === "D2") ease(m, T(6.92), { head: [9, 6, 3], lean: 0, py: PY + 0.018 }, 0.4, {});      /* (his shoulders come up and his head tips in the middle of D2: v44 held one face for 0.7 s) */
+    if (id === "D2") ease(m, T(6.9), { head: [10, 6, 6], lean: -2, py: PY + 0.045 }, 0.42, {});      /* (his shoulders come up and his head tips in the middle of D2: v44 held one face for 0.7 s) */
     if (id === "D2") ease(m, T(6.57), { head: [6, 6, -3], lean: 2, py: PY }, 0.01, { face: { pupil: 1, gaze: [0.6, 0], sad: 0, smile: 1, mouth: 0.55, teeth: 1, squeeze: 1, brow: -0.3 } });      // (the punchline, set on the cut: eyes squeezed shut, a wide grin with teeth; at 360 px v34's small smile read the same as the shot before it)      // (the sheepish grin shows his teeth from the cut into the close-up)
   }
   let JAB: { side: "L" | "R"; arm: [Seg2, Seg2] } | null = null;
   const arms = (t: number, p: Pose, hd: number): Pose => { const g = t + t0;
     if (g >= 6.6) return p;      // (D2's close-up: the arms hang, out of the picture below)
-    if (g >= 4.4) { const kb = smooth((g - 4.5) / 1.2) * (1 - smooth((g - 6.0) / 0.6)), WIDE2: [Seg2, Seg2] = [[18, 54], [118, 44]]; return { ...p, armL: lerpPose(AKIMBO, WIDE2, kb), armR: lerpPose(AKIMBO, WIDE2, kb) }; }      // (E and D1: fists on his hips in both, so his hands are out of E's close picture and match in D1; the elbows go out a little for balance while the knee is up)
+    if (g >= 4.4) { const kb = smooth((g - 4.5) / 1.2) * (1 - smooth((g - 6.0) / 0.6)), HL: [Seg2, Seg2] = [[0, 60], [-40, -30]], HR: [Seg2, Seg2] = [[-15, 55], [40, -40]];      // (E and D1: fists really on his hips, elbows out (searched on D1's picture: v45's AKIMBO angles held the fists up at his shoulders); the elbows go out a little more for balance while the knee is up)
+      return { ...p, armL: lerpPose(HL, [[0, 68], [-44, -30]], kb), armR: lerpPose(HR, [[-15, 63], [44, -40]], kb) }; }
     const sw = smooth(g / 0.8),      /* (his hand sweeps across the table top from right of the papers to past them: it reaches them at about 0.4 s, when they start to slide; v34's hand stood still while they flew) */ tableR: [Seg2, Seg2] = lerpPose([[0, 40], [60, 30]], [[0, 50], [0, 60]], sw);      // (from right of the stack to its back edge at the table top's height, pushing it off: searched; v39's hand ended above the stack)
     // (A1b is a close-up of his shout: both hands go down and out of it (his right hand leaves the table 0.6-1.1); the arms go out wide
     //  from 1.3, just before the cut into A2a, and land in it: cut on the action)
@@ -170,7 +171,7 @@ const captainB = (): Who3 => { const s = 1.7, m = figure("sir", 0, 0); m.stand(s
  *  bent, so a straight free leg would reach into the floor) */
 /** E's step (the boot lifted and set down again, the test of 24 Nov): which way along his facing and how far, in leg lengths */
 export const E_STEP = { ahead: -0.14, dur: 0.75, at: 0.25 };
-export const LIFT_LEG: { th: [number, number]; sh: [number, number]; pitch: number } = { th: [22, 8], sh: [-58, 0], pitch: -3 };      // (the knee a little out to the side so it shows bent in the front view)      // (pitch -3: the sole level as it lifts (searched: at -10 the drawn toe swung up 260 px and the boot turned nose-up))
+export const LIFT_LEG: { th: [number, number]; sh: [number, number]; pitch: number } = { th: [22, 11], sh: [-58, -10], pitch: -3 };      // (the knee out and the shin back in under it: the leg bends visibly at the knee in the front view)      // (the knee a little out to the side so it shows bent in the front view)      // (pitch -3: the sole level as it lifts (searched: at -10 the drawn toe swung up 260 px and the boot turned nose-up))
 export const WHO: Record<string, () => Who3[]> = { A: () => [captainG("A", 0)], A1b: () => [captainG("A1b", 30)], A2a: () => [captainG("A2a", 35)], A2b: () => [captainG("A2b", 25)],
   B1: () => [boyG("B1", -16)], B2: () => [boyG("B2", -40)], E: () => [captainG("E", 0)], D1: () => [captainG("D1", 0)], D2: () => [captainG("D2", 35)] };
 export const TABLE_TOP = 0.488;
@@ -237,7 +238,7 @@ const castShadow = (g: G, id: string, fr: number, w: Who3, fig: OffscreenCanvas 
   const ax = solve3(dx), ay = solve3(dy);
   SH ??= cnv(); SM ??= cnv(); const sh = SH.getContext("2d") as unknown as G, sm = SM.getContext("2d") as unknown as G;
   sh.setTransform(1, 0, 0, 1, 0, 0); sh.clearRect(0, 0, FM.W, FM.H); sh.setTransform(ax[0], ay[0], ax[1], ay[1], ax[2], ay[2]); sh.drawImage(fig as CanvasImageSource, 0, 0);
-  sh.setTransform(1, 0, 0, 1, 0, 0); sh.globalCompositeOperation = "source-in"; sh.fillStyle = "#2a160b"; sh.fillRect(0, 0, FM.W, FM.H); sh.globalCompositeOperation = "source-over";
+  sh.setTransform(1, 0, 0, 1, 0, 0); sh.globalCompositeOperation = "source-in"; sh.fillStyle = "#3a1806"; sh.fillRect(0, 0, FM.W, FM.H); sh.globalCompositeOperation = "source-over";
   sm.setTransform(1, 0, 0, 1, 0, 0); sm.clearRect(0, 0, FM.W, FM.H); sm.fillStyle = "#ffffff";
   for (const d of [0]) for (const [x0, x1, z0, z1] of PANES) { const q = [[x0, z0], [x1, z0], [x1, z1], [x0, z1]].map(([px, pz]) => project(id, fr, [px + d, 3.2 - pz * SUN_BACK + d, 0]));
     sm.beginPath(); q.forEach((p, i) => (i ? sm.lineTo(p[0], p[1]) : sm.moveTo(p[0], p[1]))); sm.closePath(); sm.fill(); }
@@ -246,7 +247,7 @@ const castShadow = (g: G, id: string, fr: number, w: Who3, fig: OffscreenCanvas 
   { const TX0 = -1.447, TX1 = -0.583, TY0 = 0.823, TH = 0.488, L = TH * SUN_BACK, q = [[TX0, TY0 + 0.02], [TX1, TY0 + 0.02], [TX1, TY0 - L], [TX0, TY0 - L]].map(([px, py]) => project(id, fr, [px, py, 0]));
     sm.globalCompositeOperation = "destination-out"; sm.fillStyle = "#000"; sm.beginPath(); q.forEach((p, i) => (i ? sm.lineTo(p[0], p[1]) : sm.moveTo(p[0], p[1]))); sm.closePath(); sm.fill(); sm.globalCompositeOperation = "source-over"; }
   sh.globalCompositeOperation = "destination-in"; sh.drawImage(SM as CanvasImageSource, 0, 0); sh.globalCompositeOperation = "source-over";
-  g.save(); g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 0.5; g.drawImage(SH as CanvasImageSource, 0, 0); g.restore(); };
+  g.save(); g.setTransform(1, 0, 0, 1, 0, 0); for (const [ox, oy] of [[0, 0], [3, 2], [-3, 2], [2, -3], [-2, -3]]) { g.globalAlpha = 0.5 / 5 * (ox || oy ? 1.05 : 0.8); g.drawImage(SH as CanvasImageSource, ox, oy); } g.restore(); };      // (five copies a few px apart: a soft edge like the table's shadow, v45's was hard; no canvas blur headless)
 /** the figures of a shot at frame fr over the plate, the farthest first: contact shadows, the figure, the cabin's light on his fill (the ink
  *  kept), the red face and the sweat, the lens blur at his depth. Nothing is drawn but the rig's own figure (its own two hands) */
 export const paintFigures = (g: G, id: string, fr: number, whos: Who3[]) => {
@@ -296,7 +297,7 @@ export const paintFigures = (g: G, id: string, fr: number, whos: Who3[]) => {
       for (let y = 0; y < FM.H; y++) for (let x = 0; x < Wd; x++) { const i = y * Wd + x, k = i * 4; if (Dd[k + 3] < 2) continue; const f0 = wf(k); if (f0 <= 0) { out[i * 3] = Dd[k]; out[i * 3 + 1] = Dd[k + 1]; out[i * 3 + 2] = Dd[k + 2]; continue; }
         let r = Dd[k] * 0.8 + 6, gg = Dd[k + 1] * 0.7, b = Dd[k + 2] * 0.66;
         if (w.key) { const q = w.key * Math.min(1, Math.max(0, (dx > 0 ? x - kx0 : kx1 - x) / Math.max(1, kx1 - kx0))); r = r * (1 + 0.42 * q) + 22 * q; gg = gg * (1 + 0.3 * q) + 12 * q; b = b * (1 + 0.08 * q); }      // (a warm light from the windows' side across him (B), graded smoothly over his width: the side wall behind him is dark, v39)
-        const xr = Math.min(Wd - 1, Math.max(0, x + dx * rim)), yr = y - Math.round(rim * 0.7), outside = yr < 0 ? 1 : Math.max(1 - A(yr * Wd + xr), 1 - A(y * Wd + xr));
+        const xr = Math.min(Wd - 1, Math.max(0, x + dx * rim)), yr = y - Math.round(rim * 0.7), outside = yr < 0 ? 0 : Math.max(1 - A(yr * Wd + xr), 1 - A(y * Wd + xr));
         if (outside > 0) { const q = outside; r = r * (1 - q) + Math.min(255, r * 1.18 + 52) * q; gg = gg * (1 - q) + Math.min(255, gg * 1.1 + 28) * q; b = b * (1 - q) + (b * 0.96 + 4) * q; }
         if (ru > 0) { const sk = Math.min(1, Math.max(0, (Dd[k] - Dd[k + 2] - 45) / 30)) * Math.min(1, Math.max(0, (Dd[k] - 150) / 40))      /* (smooth: the colour-order test was a hard step that the outlines' soft edges crossed from frame to frame, a flicker at the eyes, v23) */, dd = Math.hypot(x - hc[0], (y - hc[1]) * 1.15) / hr;
           if (sk > 0 && dd < 1.0) { const mm = 0.72 * ru * sk * Math.min(1, (1.0 - dd) / 0.4); r = r * (1 - mm) + 214 * mm; gg = gg * (1 - mm) + 58 * mm; b = b * (1 - mm) + 52 * mm; } }
@@ -314,7 +315,7 @@ export const paintFigures = (g: G, id: string, fr: number, whos: Who3[]) => {
  *  quarter (facing the screen's right, D) the near cheek and temple between the ear and the eye, under the cap's band; the drops' places
  *  and the check's skin zone (scripts/cabin_check.mjs) both come from here. v19's drop sat on the cap's gold band and beside the cap */
 export const SWEAT_ZONE = { x0: -0.92, x1: -0.14, y0: -0.34, y1: 0.2 };
-export const SWEAT_DROPS: [number, number, number][] = [[0, -0.3, -0.22]];      // (one drop, in the clear patch of skin between the ear, the squeezed eye and the cap (two touched the eye and the ear at full size, v37); grown before the cut into D2 and running slowly through it, so it is never a tiny dark dot)
+export const SWEAT_DROPS: [number, number, number][] = [[0, -0.3, -0.17]];      // (one drop, in the clear patch of skin between the ear, the squeezed eye and the cap (two touched the eye and the ear at full size, v37); grown before the cut into D2 and running slowly through it, so it is never a tiny dark dot)
 /** each drop's place in the head's units at time a0 after the sweating starts, or null when it isn't there (it lives 0.7 s) */
 /** where a drop sits on the head (in head radii): on a turned head as listed; on a front-facing head (D1) out beside the eye, between it and
  *  the ear, a little lower (the face is wide from the front: v34's drop sat on the eye's outline, v35's first try above its corner) */

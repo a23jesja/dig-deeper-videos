@@ -127,13 +127,13 @@ imp("wine_barrel_01", (-1.85, 2.55, 0), 20, 1.0); imp("barrel_03", (-1.95, 1.95,
 imp("wooden_crate_01", (1.95, 1.3, 0), 88, 1.0); imp("wooden_crate_01", (1.95, 1.3, 0.35), 80, 0.9)
 imp("wooden_bookshelf_worn", (-2.08, 0.25, 0), -90, 0.95)
 imp("wooden_stool_01", (0.25, 2.15, 0), 15, 1.0)
-lantern = imp("wooden_lantern_01", (-0.62, 1.55, 1.62), 0, 1.0)
+lantern = imp("wooden_lantern_01", (-1.0, 1.55, 1.62), 0, 1.0)      # (over the table, off the top of his cap: at x -0.62 it sat on his head in A and D1, v45)
 imp("wooden_lantern_01", (1.93, 1.24, 0.66), 25, 1.0)      # (a second lantern standing on the crates by the boy, lit: the side wall behind him read as an empty dark wall, v39)
 LL = bpy.data.lights.new("crate lantern", "POINT"); LL.energy = 70; LL.color = (1.0, 0.66, 0.34); LL.shadow_soft_size = 0.05; LLo = bpy.data.objects.new("crate lantern", LL); sc.collection.objects.link(LLo); LLo.location = (1.86, 1.14, 0.84)      # (a little in front of the lantern's glass, so its glow reaches the wall and the crates)
 # a warm beam from the stern windows' side across the boy and the side wall behind him (B1, B2): v39's boy stood against a near-black wall
 BS = bpy.data.lights.new("boy beam", "SPOT"); BS.energy = 260; BS.color = (1.0, 0.72, 0.42); BS.spot_size = math.radians(34); BS.spot_blend = 0.8; BS.shadow_soft_size = 0.3
 BSo = bpy.data.objects.new("boy beam", BS); sc.collection.objects.link(BSo); BSo.location = (0.7, 2.9, 1.7); BSo.rotation_euler = (Vector((1.6, 0.55, 0.5)) - Vector((0.7, 2.9, 1.7))).to_track_quat("-Z", "Y").to_euler()
-box("lantern chain", "prop", -0.625, -0.615, 1.545, 1.555, 2.14, ZT - 0.16, BEAM)
+box("lantern chain", "prop", -1.005, -0.995, 1.545, 1.555, 2.14, ZT - 0.16, BEAM)
 # the treasure map flat on the floor, under the captain's boot (our own drawing)
 MP = SPEC["map"]; plane("treasure map", "map", MP["at"], MP["w"], MP["d"], MP["rot"], flat_img("map", os.path.join(T, "map.png"), rough=0.9, glow=0.0), z=0.002)      # (a little light of its own: the red X read pale in the boot's shade, v31)
 # loose papers on the table that fly off in shot A as the captain rummages

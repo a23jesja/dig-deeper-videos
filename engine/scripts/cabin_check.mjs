@@ -74,8 +74,8 @@ for (const S of SHOTS) {
     }
     // 9 sweat on the skin (the reviewer, v19: a drop on the cap's band or beside the cap is an impossible thing): every drop inside the
     //    skin zone of the near cheek and temple, under the cap's band, in the head's own units
-    for (const { w } of placed) if (w.sweatAt !== undefined) { const t = fr / FM.FPS - w.sweatAt; if (t <= 0) continue; const Z = SWEAT_ZONE;
-      for (const dr of sweatDrops(t)) if (dr && (dr.x < Z.x0 || dr.x > Z.x1 || dr.y < Z.y0 || dr.y > Z.y1)) faults.push(`9 ${S.id} frame ${fr} ${w.name}: a sweat drop off his skin (at ${dr.x.toFixed(2)}, ${dr.y.toFixed(2)} of his head)`); }
+    for (const { w, pl } of placed) if (w.sweatAt !== undefined) { const t = fr / FM.FPS - w.sweatAt; if (t <= 0) continue; const Z = SWEAT_ZONE;      // (the drop's place as drawn, front-facing heads included: dropAt)
+      for (const d0 of sweatDrops(t)) { const dr = d0 && { ...d0, ...M.dropAt(d0, pl.f.sk.sin) }; if (dr && (dr.x < Z.x0 || dr.x > Z.x1 || dr.y < Z.y0 || dr.y > Z.y1)) faults.push(`9 ${S.id} frame ${fr} ${w.name}: a sweat drop off his skin (at ${dr.x.toFixed(2)}, ${dr.y.toFixed(2)} of his head)`); } }
     // 10 joint limits on every figure's solved skeleton (the reviewer, v26: a straight leg swung 38 degrees out put the hip outside the
     //    coat): the thigh at most 15 degrees out to the side (on Knopp, more puts the hip outside the coat) and 45 behind; the knee and the
     //    elbow bent at most 150 and one way only; the upper arm at most 65 behind the body and 60 across the chest
@@ -96,7 +96,8 @@ for (const S of SHOTS) {
         const nx = Math.max(x0, Math.min(x1, hc[0])), ny = Math.max(y0, Math.min(y1, hc[1])), faceHit = Math.hypot(nx - hc[0], ny - hc[1]) < hr * 1.05;
         const closeup = !!S.closeup, trunk = hull(["neck", "shL", "shR", "hipL", "hipR"].map(J)), chestHit = !closeup && [0, 0.25, 0.5, 0.75, 1].some((u) => [0, 0.5, 1].some((v) => inPoly([x0 + (x1 - x0) * u, y0 + (y1 - y0) * v], trunk)));
         const handHit = ["L", "R"].some((sd) => inBox(J("tip" + sd), 30) || inBox(J("wr" + sd), 30) || inBox([(J("tip" + sd)[0] + J("wr" + sd)[0]) / 2, (J("tip" + sd)[1] + J("wr" + sd)[1]) / 2], 30));
-        if (faceHit || chestHit || handHit) faults.push(`8 ${S.id} frame ${fr} ${w.name}: the caption "${cap.text}" over his ${faceHit ? "face" : chestHit ? "chest" : "hand"}`); } }
+        const feetHit = !closeup && ["L", "R"].some((sd) => ["toe", "heel", "an"].some((j) => inBox(J(j + sd), 12)));      // (and in a full shot not over the feet: the joke is the boots on the map, the reviewer on v34)
+        if (faceHit || chestHit || handHit || feetHit) faults.push(`8 ${S.id} frame ${fr} ${w.name}: the caption "${cap.text}" over his ${faceHit ? "face" : chestHit ? "chest" : handHit ? "hand" : "feet"}`); } }
     // 4 over the shoulder: the captain in front never on the boy's face or pointing hand
     const fg = placed.find((p) => p.w.sil), boy = placed.find((p) => p.w.name === "boy");
     // (the captain's shape: his head's circle with its ears, and the hull of his body's joints with half a sleeve's width round them;

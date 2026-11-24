@@ -132,7 +132,7 @@ box("lantern chain", "prop", -0.625, -0.615, 1.545, 1.555, 2.14, ZT - 0.16, BEAM
 # the treasure map flat on the floor, under the captain's boot (our own drawing)
 MP = SPEC["map"]; plane("treasure map", "map", MP["at"], MP["w"], MP["d"], MP["rot"], flat_img("map", os.path.join(T, "map.png"), rough=0.9, glow=0.18), z=0.002)      # (a little light of its own: the red X read pale in the boot's shade, v31)
 # loose papers on the table that fly off in shot A as the captain rummages
-PAPERS = [plane(f"paper{k}", "paper", (TABLE[0] - 0.12 + 0.04 * k, TABLE[1] - 0.12 + 0.03 * k), 0.33, 0.44, -12 + 14 * k, flat_img(f"paper{k}", os.path.join(T, f"paper{k}.png"), glow=0.35), z=TOP + 0.004 + 0.002 * k) for k in range(3)]
+PAPERS = [plane(f"paper{k}", "paper", (-1.06 + 0.02 * k, 0.895 + 0.01 * k), 0.26, 0.34, 86 + 5 * k, flat_img(f"paper{k}", os.path.join(T, f"paper{k}.png"), glow=0.35), z=TOP + 0.003 * (k + 1)) for k in range(3)]      # (A4-ish, in the free strip of the table top between the jug and the compass: v34's 0.33 x 0.44 sheets lay into the ship and over the front, and one fell through the table front)
 P0 = [(p.location.copy(), p.rotation_euler.copy()) for p in PAPERS]
 
 # ------------------------------------------------------------------ the light ------------------------------------------------------------------
@@ -179,11 +179,17 @@ def pose_shot(shot, t):
     # the papers: still on the table, then (shot A) swept off its front edge one after another (0.3, 0.37, 0.44 s, as his hand passes), each falling flat to the
     # floor over 2.1 s along a curve, turning a little; timed by its length in the picture with a steady middle, so no edge of a paper moves
     # more than about 11 px a frame (the flicker rule: an eased 0.75 s flight moved them 80 px a frame, v1)
+    PLANT_IN = "--plant" in argv and argv[argv.index("--plant") + 1] == "paperIn"      # (the planted fault: sheet 0 falls back through the table front)
     for k, p in enumerate(PAPERS):
-        l0, r0 = P0[k]; pts, L = PAPER_PATHS[k]
-        u = (shot["t0"] + t - (-0.45 + 0.08 * k)) / 2.0      # (the film's own time: they are already sliding off as the film opens, in the air by 0.6 s, and go on falling in the next shot)
-        uu = min(1.0, max(0.0, u)); sfr = trap(uu); i = min(len(pts) - 1, bisect.bisect_left(L, sfr))
-        p.location = pts[i]; fl = math.sin(math.pi * uu); p.rotation_euler = (r0.x + math.radians(14) * fl, r0.y + math.radians(8) * fl, r0.z + math.radians(28) * uu)      # (tipped and turning as they fall: flat and level they looked parked, v31)
+        r0 = P0[k][1]; l0, e, pts, L = PAPER_PATHS[k]; ts, tsl, tf = PAPER_T[k]; g = shot["t0"] + t
+        if g < ts + tsl:      # on the table: still, then sliding flat under his hand to just over the front edge
+            u = trap((g - ts) / tsl); p.location = l0.lerp(e, u); tilt = 0.0; turn = 8 * u
+        else:      # off the edge: forward clear of the table's front, then down; tipped forward in the air, flat again as it lands
+            uu = min(1.0, (g - ts - tsl) / tf); i = min(len(pts) - 1, bisect.bisect_left(L, trap(uu, 0.12))); p.location = pts[i].copy()      # (a quick start: it is visibly falling within A's 0.8 s, v34-v35)
+            if PLANT_IN and k == 0: p.location.y += 0.16 * math.sin(math.pi * uu)
+            tilt = 38 * math.sin(math.pi * min(1.0, uu * 1.15)); turn = 8 + 22 * uu      # (tipped toward the lens as it falls, so the sheet shows its face: edge-on it read as a thin strip)
+            hz = p.location.z - 0.003; tilt = min(tilt, math.degrees(math.asin(max(0.0, min(1.0, hz / 0.14)))))      # (never a corner into the floor: half the sheet's depth is 0.13 m)
+        p.rotation_euler = (r0.x, r0.y - math.radians(tilt), r0.z + math.radians(turn))      # (the front edge down: the back edge up, clear of the table top)
 
 def trap(u, a=0.3):
     """0..1 with a steady middle: speeding up over the first a, slowing over the last a (its top speed 1 / (1 - a) of the mean)"""
@@ -192,19 +198,20 @@ def trap(u, a=0.3):
     if u > 1 - a: return 1 - vm * (1 - u) ** 2 / (2 * a)
     return vm * (u - a / 2)
 
+PAPER_T = [(0.22 + 0.05 * k, 0.2, 1.5) for k in range(3)]      # (each sheet: when his hand reaches it, the slide's length, the fall's length, in seconds)
+
 def paper_paths():
-    """each paper's way off the table's front edge to the floor (a curve through a point just over the edge), with its length measured in
-    shot A's picture (the lens at 1.2 s), so the papers can be timed by how far they move on the screen"""
+    """each paper's way: a slide on the table top toward the front-left (under his hand) to just over the front edge, then forward clear of the table's
+    front and down to the floor. The fall's length is measured in shot A's picture (the lens at 1.2 s) so it can be timed by how far it moves on the screen."""
     shotA = next(s for s in SPEC["shots"] if s["id"] == "A"); pose_cam(shotA, 1.2); bpy.context.view_layer.update(); P, _ = projection()
     scr = lambda q: ((P[0][0] * q.x + P[0][1] * q.y + P[0][2] * q.z + P[0][3]) / (P[2][0] * q.x + P[2][1] * q.y + P[2][2] * q.z + P[2][3]), (P[1][0] * q.x + P[1][1] * q.y + P[1][2] * q.z + P[1][3]) / (P[2][0] * q.x + P[2][1] * q.y + P[2][2] * q.z + P[2][3]))
     out = []
     for k in range(len(PAPERS)):
-        l0 = P0[k][0]; end = Vector((l0.x - 0.1 + 0.02 * k, 0.8 + 0.025 * k, 0.003 + 0.002 * k));      # (clear of his resting hand and arm in every frame: out/paper_sim)
-        c = Vector((l0.x - 0.06, 0.8, TOP + 0.05))
-        pts = [l0 * (1 - w) ** 2 + c * (2 * (1 - w) * w) + end * (w * w) for w in [n / 599 for n in range(600)]]
+        l0 = P0[k][0]; e = Vector((l0.x - 0.05, 0.78 - 0.01 * k, l0.z)); c = Vector((l0.x - 0.2, 0.52 - 0.02 * k, l0.z + 0.03)); end = Vector((l0.x - 0.24 + 0.03 * k, 0.48 - 0.04 * k, 0.003 + 0.002 * k))
+        pts = [e * (1 - w) ** 2 + c * (2 * (1 - w) * w) + end * (w * w) for w in [n / 599 for n in range(600)]]
         L = [0.0]
         for a, b in zip(pts, pts[1:]): pa, pb = scr(a), scr(b); L.append(L[-1] + math.hypot(pb[0] - pa[0], pb[1] - pa[1]))
-        out.append((pts, [v / L[-1] for v in L]))
+        out.append((l0, e, pts, [v / L[-1] for v in L]))
     return out
 
 def projection():
@@ -230,6 +237,38 @@ def ray_map(Mwc):
     return depth, kind, kinds
 
 PAPER_PATHS = paper_paths()
+if "--paper-screen" in argv:      # each paper's centre on shot A's screen, frame by frame (to time his hand against them)
+    shA = next(q for q in SPEC["shots"] if q["id"] == "A")
+    for fr in range(0, 48, 3):
+        tt = fr / FPS; sh = shA if tt < shA["t1"] else next(q for q in SPEC["shots"] if q["t0"] <= tt < q["t1"] + 1e-9); pose_shot(sh, tt - sh["t0"]); pose_cam(shA, min(tt, shA["t1"] - 0.01)); bpy.context.view_layer.update(); P, _ = projection()
+        sp = lambda q: (round((P[0][0] * q.x + P[0][1] * q.y + P[0][2] * q.z + P[0][3]) / (P[2][0] * q.x + P[2][1] * q.y + P[2][2] * q.z + P[2][3])), round((P[1][0] * q.x + P[1][1] * q.y + P[1][2] * q.z + P[1][3]) / (P[2][0] * q.x + P[2][1] * q.y + P[2][2] * q.z + P[2][3])))
+        print("PS", fr, [sp(pp.location) for pp in PAPERS], flush=True)
+    sys.exit(0)
+if "--paper-check" in argv:
+    # every paper's corners, edge midpoints and centre against every solid thing (the props' own boxes, a little inside, and the floor), every frame of the
+    # film: a paper must never be inside or through the table or anything else (rule 1). The planted fault --plant paperIn sends one sheet into the table.
+    dg = bpy.context.evaluated_depsgraph_get(); solids = []
+    for o in bpy.data.objects:
+        if o.type == "MESH" and OBJ.get(o.name.split(".")[0]) == "prop":
+            bb = [Vector(c) for c in o.bound_box]; mn = Vector((min(c.x for c in bb), min(c.y for c in bb), min(c.z for c in bb))); mx = Vector((max(c.x for c in bb), max(c.y for c in bb), max(c.z for c in bb)))
+            solids.append((o.name, o.matrix_world.inverted(), mn, mx))
+    LOC = [Vector((x, y, 0)) for x in (-0.5, 0, 0.5) for y in (-0.5, 0, 0.5)]
+    faults = []; nfr = round(SPEC["shots"][-1]["t1"] * FPS)
+    for fr in range(nfr):
+        tt = fr / FPS; sh = next(q for q in SPEC["shots"] if q["t0"] <= tt < q["t1"] + 1e-9); pose_shot(sh, tt - sh["t0"]); bpy.context.view_layer.update()
+        for k, pp in enumerate(PAPERS):
+            for q in LOC:
+                w = pp.matrix_world @ q
+                if w.z < -0.001: faults.append(f"frame {fr} paper{k}: {-w.z * 100:.1f} cm into the floor")
+                for nm, Mi, mn, mx in solids:
+                    l = Mi @ w; e = 0.004 / max(1e-6, Mi.to_scale().x ** -1)
+                    if all(mn[i] + e < l[i] < mx[i] - e for i in range(3)): faults.append(f"frame {fr} paper{k}: inside {nm} at ({w.x:.2f}, {w.y:.2f}, {w.z:.2f})")
+    seen = set(); out = []
+    for f in faults:
+        key = f.split(": ", 1)[1].split(" at ")[0] + f.split(" ")[2]
+        if key not in seen: seen.add(key); out.append(f)
+    for f in out[:30]: print("  " + f)
+    print(f"PAPER CHECK {'OK' if not faults else 'FAILED'} ({len(faults)} point-frames)", flush=True); sys.exit(0)
 shots = SPEC["shots"] if WHICH == "all" else [s for s in SPEC["shots"] if s["id"] == WHICH]
 for shot in shots:
     n = round((shot["t1"] - shot["t0"]) * FPS); f0, f1 = (0, n - 1) if FR is None else FR

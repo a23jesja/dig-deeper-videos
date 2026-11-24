@@ -51,7 +51,7 @@ for (const S of SHOTS) {
         // 1 the soles on the floor
         const floorY = project(S.id, fr, [w.at[0], w.at[1], 0])[1], soleY = toScreen(pl, [f.x, footY(f.who)])[1];
         if (Math.abs(soleY - floorY) > 3) faults.push(`1 ${S.id} frame ${fr} ${w.name}: his soles drawn ${(soleY - floorY).toFixed(1)} px from the floor's line (into or above the floor)`);
-        for (const q of ft) { const lifted = S.id === "E" && w.name === "captain" && q.side === "R";
+        for (const q of ft) { const lifted = ["E", "D1", "D2"].includes(S.id) && w.name === "captain" && q.side === "R";      // (he keeps the boot up as he stares at the X: E and D)
           if (!lifted && q.up > 0.01) faults.push(`1 ${S.id} frame ${fr} ${w.name}: his ${q.side} foot ${(q.up * 100).toFixed(1)} cm above the floor`);
           if (lifted && q.up > 0.05) faults.push(`1 ${S.id} frame ${fr} ${w.name}: the lifted boot ${(q.up * 100).toFixed(1)} cm up (a couple of centimetres at most 5)`);
           if (q.up < -0.01) faults.push(`1 ${S.id} frame ${fr} ${w.name}: his ${q.side} foot ${(-q.up * 100).toFixed(1)} cm into the floor`); }

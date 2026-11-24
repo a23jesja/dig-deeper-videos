@@ -1,0 +1,85 @@
+00:01.375  cycles           | WARNING CUEW initialization failed: Error opening the library
+C:\Users\sweje\dig-deeper-videos\engine\blender\cabin\set.py:38: DeprecationWarning: 'World.use_nodes' is expected to be removed in Blender 6.0
+  world = bpy.data.worlds.new("w"); sc.world = world; world.use_nodes = True
+C:\Users\sweje\dig-deeper-videos\engine\blender\cabin\set.py:45: DeprecationWarning: 'Material.use_nodes' is expected to be removed in Blender 6.0
+  m = bpy.data.materials.new(name); m.use_nodes = True; nt = m.node_tree; n = nt.nodes; L = nt.links; bsdf = n["Principled BSDF"]
+C:\Users\sweje\dig-deeper-videos\engine\blender\cabin\set.py:61: DeprecationWarning: 'Material.use_nodes' is expected to be removed in Blender 6.0
+  m = bpy.data.materials.new(name); m.use_nodes = True; nt = m.node_tree; n = nt.nodes; L = nt.links; bsdf = n["Principled BSDF"]
+09:20:29 | INFO: Data are loaded, start creating Blender stuff
+09:20:29 | INFO: Blender create Mesh node Cube.005
+09:20:29 | INFO: Blender create Mesh node Cube.001
+09:20:29 | INFO: Blender create Mesh node Cube.002
+09:20:29 | INFO: glTF import finished in 0.01s
+09:20:29 | INFO: Data are loaded, start creating Blender stuff
+09:20:29 | INFO: Blender create Mesh node Cylinder.005
+09:20:29 | INFO: Blender create Mesh node Cylinder.001
+09:20:29 | INFO: Blender create Mesh node Cylinder.002
+09:20:29 | INFO: glTF import finished in 0.02s
+09:20:29 | INFO: Data are loaded, start creating Blender stuff
+09:20:29 | INFO: Blender create Mesh node x-Boats-Dutch-medium-rigging-joined
+09:20:29 | INFO: Blender create Mesh node x-Boats-Dutch-medium-baseB-joined
+09:20:29 | INFO: Blender create Mesh node Plane.072
+09:20:29 | INFO: glTF import finished in 0.10s
+09:20:29 | INFO: Data are loaded, start creating Blender stuff
+09:20:29 | INFO: Blender create Mesh node Mesh
+09:20:29 | INFO: glTF import finished in 0.19s
+09:20:29 | INFO: Data are loaded, start creating Blender stuff
+09:20:29 | INFO: Blender create Mesh node Circle.002
+09:20:29 | INFO: glTF import finished in 0.01s
+09:20:29 | INFO: Data are loaded, start creating Blender stuff
+09:20:29 | INFO: Blender create Mesh node Cylinder
+09:20:29 | INFO: glTF import finished in 0.01s
+09:20:29 | INFO: Data are loaded, start creating Blender stuff
+09:20:29 | INFO: Blender create Mesh node Glass.001
+09:20:29 | INFO: Blender create Mesh node Circle.003
+09:20:29 | INFO: Blender create Mesh node Plane.003
+09:20:29 | INFO: glTF import finished in 0.02s
+09:20:29 | INFO: Data are loaded, start creating Blender stuff
+09:20:29 | INFO: Blender create Mesh node Plane.020
+09:20:29 | INFO: Blender create Mesh node Plane.002
+09:20:29 | INFO: Blender create Mesh node Plane.005
+09:20:29 | INFO: Blender create Mesh node Plane.006
+09:20:29 | INFO: Blender create Mesh node Plane.007
+09:20:29 | INFO: glTF import finished in 0.12s
+09:20:29 | INFO: Data are loaded, start creating Blender stuff
+09:20:29 | INFO: Blender create Mesh node DiameterSmall.012
+09:20:29 | INFO: Blender create Mesh node Cylinder.014
+09:20:29 | INFO: Blender create Mesh node Plane.006
+09:20:29 | INFO: Blender create Mesh node DiameterSmall.004
+09:20:29 | INFO: glTF import finished in 0.02s
+09:20:29 | INFO: Data are loaded, start creating Blender stuff
+09:20:29 | INFO: Blender create Mesh node Circle.002
+09:20:29 | INFO: glTF import finished in 0.01s
+09:20:29 | INFO: Data are loaded, start creating Blender stuff
+09:20:29 | INFO: Blender create Mesh node Circle.002
+09:20:29 | INFO: glTF import finished in 0.01s
+09:20:29 | INFO: Data are loaded, start creating Blender stuff
+09:20:29 | INFO: Blender create Mesh node Cube.005
+09:20:29 | INFO: Blender create Mesh node Cube.020
+09:20:29 | INFO: Blender create Mesh node Cube.001
+09:20:29 | INFO: glTF import finished in 0.01s
+09:20:29 | INFO: Data are loaded, start creating Blender stuff
+09:20:29 | INFO: Blender create Mesh node Cube.005
+09:20:29 | INFO: Blender create Mesh node Cube.020
+09:20:29 | INFO: Blender create Mesh node Cube.001
+09:20:29 | INFO: glTF import finished in 0.01s
+09:20:29 | INFO: Data are loaded, start creating Blender stuff
+09:20:29 | INFO: Blender create Mesh node Cube.009
+09:20:29 | INFO: glTF import finished in 0.01s
+09:20:29 | INFO: Data are loaded, start creating Blender stuff
+09:20:29 | INFO: Blender create Mesh node Slice.003
+09:20:29 | INFO: glTF import finished in 0.02s
+09:20:29 | INFO: Data are loaded, start creating Blender stuff
+09:20:29 | INFO: Blender create Mesh node Cube.001
+09:20:29 | INFO: Blender create Mesh node Cube.004
+09:20:29 | INFO: Blender create Mesh node Cylinder.031
+09:20:29 | INFO: glTF import finished in 0.02s
+09:20:29 | INFO: Data are loaded, start creating Blender stuff
+09:20:29 | INFO: Blender create Mesh node Cube.001
+09:20:29 | INFO: Blender create Mesh node Cube.004
+09:20:29 | INFO: Blender create Mesh node Cylinder.031
+09:20:29 | INFO: glTF import finished in 0.02s
+C:\Users\sweje\dig-deeper-videos\engine\blender\cabin\set.py:159: DeprecationWarning: 'Material.use_nodes' is expected to be removed in Blender 6.0
+  hm = hz.data.materials[0]; hm.use_nodes = True; hn = hm.node_tree.nodes; hn.remove(hn["Principled BSDF"]); pv = hn.new("ShaderNodeVolumePrincipled")
+PAPER CHECK OK (0 point-frames)
+Blender 5.2.3 LTS (hash e13b728c6880 built 2026-10-22 01:37:16)

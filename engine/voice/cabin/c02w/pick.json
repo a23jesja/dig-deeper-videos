@@ -5,7 +5,7 @@
  "words": [
   {
    "w": "You're",
-   "a": 0.0,
+   "a": 0.1,
    "b": 0.28
   },
   {
@@ -25,12 +25,13 @@
   },
   {
    "w": "Captain.",
-   "a": 1.08,
-   "b": 1.14
+   "a": 0.98,
+   "b": 1.37
   }
  ],
  "character_count_before": 3661,
  "character_count_after": 3661,
  "voice": "Will (bIHbv24MWmeRgasZH58o)",
- "why": "Jesper chose Will by ear (25 Nov, via the automation session: \"Will\"). Of the three test takes all have 0 word errors (faster-whisper small.en); take 0 is used: 'Captain' heard most surely (0.73 against 0.71) and the 0.16 s pause before it gives the sly beat. No new characters spent."
+ "why": "Jesper chose Will by ear (25 Nov, via the automation session: \"Will\"). Of the three test takes all have 0 word errors (faster-whisper small.en); take 0 is used: 'Captain' heard most surely (0.73 against 0.71) and the 0.16 s pause before it gives the sly beat. No new characters spent.",
+ "timing_note": "25 Nov (v54): 'You're' starts at 0.10 and 'Captain.' runs 0.98-1.37, measured on the take's loudness (20 ms RMS over 0.02); faster-whisper gave 0.0 and 1.08-1.14, which closed the boy's mouth while he said 'Captain' (v53)"
 }

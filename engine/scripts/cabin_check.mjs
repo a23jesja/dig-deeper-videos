@@ -68,7 +68,8 @@ for (const S of SHOTS) {
         for (const sd of ["L", "R"]) { const a = scr("wr" + sd), b = scr("tip" + sd), len = Math.hypot(b[0] - a[0], b[1] - a[1]), c = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2], m = 0.6 * len;
           const inside = c[0] > m && c[0] < FM.W - m && c[1] > m && c[1] < FM.H - m, outside = c[0] < -3.5 * len || c[0] > FM.W + 3.5 * len || c[1] < -3.5 * len || c[1] > FM.H + 3.5 * len;
           const off = (q) => q[0] < 0 || q[0] > FM.W || q[1] < 0 || q[1] > FM.H, armGone = off(scr("sh" + sd)) && off(scr("el" + sd)) && off(a);      // (the whole arm out of the picture: nothing reaches the edge to be cut)
-          if (!inside && !outside && !armGone) faults.push(`5 ${S.id} frame ${fr} ${w.name}: his ${sd} hand cut by the picture's edge (at ${c.map((v) => v.toFixed(0))})`); }
+          const goneClean = S.closeup && (c[0] < -0.7 * len || c[0] > FM.W + 0.7 * len || c[1] > FM.H + 0.7 * len || c[1] < -0.7 * len);      // (a deliberate close-up: the arm leaves the picture cleanly, no part of the hand in it, the reviewer 24 Nov)
+          if (!inside && !outside && !armGone && !goneClean) faults.push(`5 ${S.id} frame ${fr} ${w.name}: his ${sd} hand cut by the picture's edge (at ${c.map((v) => v.toFixed(0))})`); }
       }
     }
     // 9 sweat on the skin (the reviewer, v19: a drop on the cap's band or beside the cap is an impossible thing): every drop inside the
@@ -85,13 +86,15 @@ for (const S of SHOTS) {
         const knee = ang(th, shn), elbow = ang(ua, fa), uaL = Math.hypot(...ua) || 1, armBack = (Math.asin(Math.max(-1, Math.min(1, -dot(ua, fwd) / uaL))) * 180) / Math.PI, across = (Math.asin(Math.max(-1, Math.min(1, (-dot(ua, lat) * sgn) / uaL))) * 180) / Math.PI;
         const bad = [out > 15 && `thigh ${out.toFixed(0)} degrees out (the hip outside the coat)`, back > 45 && `thigh ${back.toFixed(0)} behind`, knee > 150 && `knee bent ${knee.toFixed(0)}`, elbow > 150 && `elbow bent ${elbow.toFixed(0)}`, armBack > 65 && `upper arm ${armBack.toFixed(0)} behind`, across > 60 && `upper arm ${across.toFixed(0)} across`].filter(Boolean);
         for (const b of bad) faults.push(`10 ${S.id} frame ${fr} ${w.name}: his ${sd === "L" ? "left" : "right"} ${b}`); } }
-    // 8 the caption band (DAILY-RULES: the lower third, never on a face, a chest or hands) against every figure's head, trunk and hands
+    // 8 the caption band (DAILY-RULES: the lower third, never on a face, a chest or hands) against every figure's head, trunk and hands;
+    //   in a deliberate close-up (shots.json "closeup") the band may lie over the coat (the reviewer, 24 Nov: rule 8 forbids the face, our
+    //   check the hands; the references put text over the coat in close-ups): the face and the hands are checked there as everywhere
     { const cap = captionAt(S.t0 + fr / FM.FPS);
       if (cap) for (const { w, pl } of placed) { if (w.sil) continue; const J = (j) => toScreen(pl, jointPx(pl.f, j)), cw = (cap.box[2] - cap.box[0]) * 1.25, x0 = 540 - cw / 2, x1 = 540 + cw / 2, y0 = cap.box[1] - 6, y1 = cap.box[3] + 6,      /* (the drawn text is about a quarter wider than capWidth's estimate: v26's captions crossed hands the check had passed) */
         inBox = (q, m = 0) => q[0] > x0 - m && q[0] < x1 + m && q[1] > y0 - m && q[1] < y1 + m;
         const s0 = J("skull"), c0 = J("crown"), hr = Math.hypot(c0[0] - s0[0], c0[1] - s0[1]) / 2, hc = [(s0[0] + c0[0]) / 2, (s0[1] + c0[1]) / 2];
         const nx = Math.max(x0, Math.min(x1, hc[0])), ny = Math.max(y0, Math.min(y1, hc[1])), faceHit = Math.hypot(nx - hc[0], ny - hc[1]) < hr * 1.05;
-        const trunk = hull(["neck", "shL", "shR", "hipL", "hipR"].map(J)), chestHit = [0, 0.25, 0.5, 0.75, 1].some((u) => [0, 0.5, 1].some((v) => inPoly([x0 + (x1 - x0) * u, y0 + (y1 - y0) * v], trunk)));
+        const closeup = !!S.closeup, trunk = hull(["neck", "shL", "shR", "hipL", "hipR"].map(J)), chestHit = !closeup && [0, 0.25, 0.5, 0.75, 1].some((u) => [0, 0.5, 1].some((v) => inPoly([x0 + (x1 - x0) * u, y0 + (y1 - y0) * v], trunk)));
         const handHit = ["L", "R"].some((sd) => inBox(J("tip" + sd), 30) || inBox(J("wr" + sd), 30) || inBox([(J("tip" + sd)[0] + J("wr" + sd)[0]) / 2, (J("tip" + sd)[1] + J("wr" + sd)[1]) / 2], 30));
         if (faceHit || chestHit || handHit) faults.push(`8 ${S.id} frame ${fr} ${w.name}: the caption "${cap.text}" over his ${faceHit ? "face" : chestHit ? "chest" : "hand"}`); } }
     // 4 over the shoulder: the captain in front never on the boy's face or pointing hand

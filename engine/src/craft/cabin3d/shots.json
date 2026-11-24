@@ -55,29 +55,30 @@
    "id": "A1b",
    "t0": 0.8,
    "t1": 1.4,
-   "what": "full figure, 35 degrees from his left, lower: he straightens up, head up, his arm thrown out toward the boy: \"Boy!\"",
+   "what": "a deliberate close-up, chest and up, from his left, low: his head comes up and he shouts \"Boy!\" with his mouth wide open",
    "cam": {
     "from": [
      [
-      -2.0,
-      -1.5,
-      0.95
+      -1.21,
+      -0.48,
+      1.05
      ],
      [
-      -1.94,
-      -1.42,
-      0.95
+      -1.17,
+      -0.43,
+      1.05
      ]
     ],
     "at": [
      -0.3,
      0.82,
-     0.85
+     1.2
     ],
-    "lens": 24,
+    "lens": 28,
     "focus": "captain",
     "fstop": 2.8
-   }
+   },
+   "closeup": true
   },
   {
    "id": "A2a",
@@ -100,7 +101,7 @@
     "at": [
      -0.15,
      0.82,
-     0.9
+     0.83
     ],
     "lens": 28,
     "focus": "captain",
@@ -111,7 +112,7 @@
    "id": "A2b",
    "t0": 2.05,
    "t1": 2.7,
-   "what": "full figure, high from his front left (55 degrees round): leaning right in at the boy: \"treasure map?\"",
+   "what": "full figure, high, 55 degrees from his front left: leaning right in, jabbing his finger at the boy: \"treasure map?\"",
    "cam": {
     "from": [
      [
@@ -257,29 +258,30 @@
    "id": "D2",
    "t0": 6.6,
    "t1": 7.4,
-   "what": "his face close: red, sweat on his cheek, a sheepish grin, his eyes on the boy",
+   "what": "his whole face close, both eyes and the mouth in the picture: red, sweat on his cheek, a sheepish grin",
    "cam": {
     "from": [
      [
-      0.3,
-      -0.3,
-      1.38
+      0.62,
+      -0.5,
+      1.33
      ],
      [
-      0.28,
-      -0.24,
-      1.38
+      0.6,
+      -0.45,
+      1.33
      ]
     ],
     "at": [
      -0.3,
      0.82,
-     1.48
+     1.25
     ],
     "lens": 28,
     "focus": "captain",
     "fstop": 2.8
-   }
+   },
+   "closeup": true
   }
  ],
  "heights": {

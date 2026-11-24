@@ -57,9 +57,11 @@ def pbr(name, scale=1.0, tint=None, rough_mul=1.0):
     nm = img("nor_gl", True); nmap = n.new("ShaderNodeNormalMap"); nmap.inputs["Strength"].default_value = 0.8; L.new(nm.outputs["Color"], nmap.inputs["Color"]); L.new(nmap.outputs["Normal"], bsdf.inputs["Normal"])
     return m
 
-def flat_img(name, path, emit=0.0, rough=0.85):
+def flat_img(name, path, emit=0.0, rough=0.85, glow=0.0):
     m = bpy.data.materials.new(name); m.use_nodes = True; nt = m.node_tree; n = nt.nodes; L = nt.links; bsdf = n["Principled BSDF"]
     t = n.new("ShaderNodeTexImage"); t.image = bpy.data.images.load(path); L.new(t.outputs["Color"], bsdf.inputs["Base Color"]); bsdf.inputs["Roughness"].default_value = rough
+    if glow:      # (a little light of its own on top of the lit surface: the papers read bright against the dark table, v29)
+        L.new(t.outputs["Color"], bsdf.inputs["Emission Color"]); bsdf.inputs["Emission Strength"].default_value = glow
     if emit:      # (a picture that only shines: no light falls on it, so the sun does not wash it out)
         em = n.new("ShaderNodeEmission"); em.inputs["Strength"].default_value = emit; L.new(t.outputs["Color"], em.inputs["Color"]); L.new(em.outputs[0], n["Material Output"].inputs["Surface"])
     return m
@@ -130,7 +132,7 @@ box("lantern chain", "prop", -0.625, -0.615, 1.545, 1.555, 2.14, ZT - 0.16, BEAM
 # the treasure map flat on the floor, under the captain's boot (our own drawing)
 MP = SPEC["map"]; plane("treasure map", "map", MP["at"], MP["w"], MP["d"], MP["rot"], flat_img("map", os.path.join(T, "map.png"), rough=0.9), z=0.002)
 # loose papers on the table that fly off in shot A as the captain rummages
-PAPERS = [plane(f"paper{k}", "paper", (TABLE[0] - 0.12 + 0.04 * k, TABLE[1] - 0.12 + 0.03 * k), 0.21, 0.28, -12 + 14 * k, flat_img(f"paper{k}", os.path.join(T, f"paper{k}.png")), z=TOP + 0.004 + 0.002 * k) for k in range(3)]
+PAPERS = [plane(f"paper{k}", "paper", (TABLE[0] - 0.12 + 0.04 * k, TABLE[1] - 0.12 + 0.03 * k), 0.33, 0.44, -12 + 14 * k, flat_img(f"paper{k}", os.path.join(T, f"paper{k}.png"), glow=0.35), z=TOP + 0.004 + 0.002 * k) for k in range(3)]
 P0 = [(p.location.copy(), p.rotation_euler.copy()) for p in PAPERS]
 
 # ------------------------------------------------------------------ the light ------------------------------------------------------------------
@@ -179,7 +181,7 @@ def pose_shot(shot, t):
     # more than about 11 px a frame (the flicker rule: an eased 0.75 s flight moved them 80 px a frame, v1)
     for k, p in enumerate(PAPERS):
         l0, r0 = P0[k]; pts, L = PAPER_PATHS[k]
-        u = (shot["t0"] + t - (0.3 + 0.07 * k)) / 2.1      # (the film's own time: the papers go on falling in the next shot, swept off by his hand from 0.3 s)
+        u = (shot["t0"] + t - (-0.25 + 0.08 * k)) / 2.0      # (the film's own time: they are already sliding off as the film opens, in the air by 0.6 s, and go on falling in the next shot)
         uu = min(1.0, max(0.0, u)); sfr = trap(uu); i = min(len(pts) - 1, bisect.bisect_left(L, sfr))
         p.location = pts[i]; p.rotation_euler = (r0.x, r0.y, r0.z + math.radians(12) * uu)
 

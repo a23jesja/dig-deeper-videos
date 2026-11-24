@@ -70,7 +70,7 @@ export const geo = (id: string, fr: number, at: [number, number], h: number, dy 
 /** a world point in the figure's own drawing space (so a hand can be put on a thing in the room) */
 export const toLocal = (id: string, fr: number, at: [number, number], h: number, p: [number, number, number]): P2 => { const G0 = geo(id, fr, at, h), q = project(id, fr, p); return [(q[0] - FM.W / 2) / G0.z + G0.cx, (q[1] - FM.H / 2) / G0.z + G0.cy]; };
 /** the checks' planted faults (scripts/cabin_check.mjs) */
-export const PLANT = { float: false, sink: false, slide: false, lean: false, fgOverFace: false, sweatOut: false };
+export const PLANT = { float: false, sink: false, slide: false, lean: false, fgOverFace: false, sweatOut: false, legOut: false, capWide: false };
 
 /** v18 (after v17's reviews): five short shots, a strong pose in each, the joke shown in the picture.
  *  (seeds 1, 2 and 12 give no blink inside these shots: a blink while a face changes flickers; pupils one size; wide under 0.5 and the lid
@@ -82,40 +82,51 @@ type Seg2 = [number, number];
 export const AKIMBO: [Seg2, Seg2] = [[14, 46], [120, 40]];
 const armsTo = (from: number, dur: number, L?: [Seg2, Seg2], R?: [Seg2, Seg2]) => (t: number, p: Pose): Pose => { const w = env(t, from, dur, 99, 0); if (w <= 0) return p;
   return { ...p, ...(L ? { armL: lerpArm(p.armL, L, w) } : {}), ...(R ? { armR: lerpArm(p.armR, R, w) } : {}) }; };
-/** A (0-1.3 s): the captain at the chart table, his head down over it; his right hand on the papers sweeps them off the table's left end
- *  (0.15-0.75: the arm swings out 8 degrees, the papers fly from under it, set.py), his eyes come up (0.8) and his head begins to turn
- *  toward the boy as he shouts "Boy!" (1.0) */
+/** v27: strong key poses and quick changes (10-16 frames each, eased in and out), each part under 11 px a frame (the reviewer, v26: we
+ *  used 2-5 px a frame; the budget gives a new pose in under half a second). Short holds still breathe and the eyes move. */
+const key = (t: number, keys: [number, number][]) => { let v = 0; for (const [t0, d] of keys) v += smooth((t - t0) / d); return v; };      // (how many of the key changes have happened by t, each eased)
+const lerpPose = (a: [Seg2, Seg2], b: [Seg2, Seg2], u: number): [Seg2, Seg2] => lerpArm(a, b, Math.min(1, Math.max(0, u))) as [Seg2, Seg2];
+/** A (0-1.3 s), the captain at the chart table:
+ *   K1 0.0  bent over it, head down, his right hand on the papers;
+ *   K2 0.15-0.6  the sweep: the right arm swings out wide over the table, the papers go off it (set.py);
+ *   K3 0.6-1.0  he straightens up, head up, brows down, eyes wide: "Boy!" (1.0);
+ *   K4 0.9-1.3  his left arm comes off the hip and is thrown out toward the boy */
 const captainA = (): Who3 => { const s = 1.3, m = figure("sir", 0, 0); m.stand(s + 1);
-  ease(m, -1, { head: [-6, 24, 0], lean: 10, roll: -5 }, 0.01, { face: { pupil: 1, gaze: [-0.8, 0.7], brow: -0.6, smile: -0.2, lid: 0.2 } });
-  ease(m, 0.15, { head: [-8, 26, -4], lean: 12, roll: -7 }, 0.55, { face: { pupil: 1, gaze: [-0.9, 0.7], brow: -0.9, smile: -0.4, lid: 0.25 } });
-  ease(m, 0.75, { head: [-8, 26, -4], lean: 12, roll: -7 }, 0.4, { face: { pupil: 1, gaze: [0.7, -0.1], brow: -1, smile: -0.6, wide: 0.25, lid: 0 } });
-  ease(m, 1.0, { head: [0, 8, 0], lean: 4, roll: -2 }, 0.6, { face: { pupil: 1, gaze: [0.7, -0.1], brow: -1, smile: -0.6, wide: 0.25, lid: 0 } });
-  // (the sweep: the arm out from 46 to 54 degrees over 0.6 s, its forearm with it; the hand stays at the table top's height)
-  const sweep = (t: number, p: Pose): Pose => { const u = smooth((t - 0.1) / 0.8), o = 46 + 12 * u, arm: Pose["armR"] = [[10, o], [18, o - 4]]; return { ...p, armR: arm }; };
-  return { name: "captain", at: FIGS.captain, h: HEIGHTS.captain, rimSide: 1, cast: { name: "captain", m, who: "sir", look: CAPTAIN, seed: 1, armWipe: false, pose: (t, p) => sweep(t, p),
-    hands: { L: [[0, "relaxed"]], R: [[0, "relaxed"]] }, mouth: { t0: 0, len: 39, mouth: mouthTrack(C01.words, 1.0, 39) } } }; };
-/** A2 (1.3-2.7 s): low, three-quarter: turned toward the boy (heading 35), both arms thrown out, leaning in as he shouts "Where is my
- *  treasure map?"; at 0.5 he leans further in and his brows come down harder */
+  ease(m, -1, { head: [-6, 24, 0], lean: 14, roll: -6 }, 0.01, { face: { pupil: 1, gaze: [-0.8, 0.7], brow: -0.7, smile: -0.3, lid: 0.2 } });
+  ease(m, 0.15, { head: [-8, 26, -4], lean: 16, roll: -8 }, 0.45, { face: { pupil: 1, gaze: [-0.9, 0.7], brow: -0.9, smile: -0.5, lid: 0.25 } });
+  ease(m, 0.6, { head: [0, 4, 0], lean: -2, roll: 0 }, 0.4, { face: { pupil: 1, gaze: [0.6, -0.1], brow: -1, smile: -0.7, wide: 0.3, lid: 0 } });
+  ease(m, 1.0, { head: [2, 2, 2], lean: 2, roll: 2 }, 0.3, { face: { pupil: 1, gaze: [0.7, -0.1], brow: -1, smile: -0.8, wide: 0.35, lid: 0 } });
+  const OUT_L: [Seg2, Seg2] = [[14, 40], [36, 28]];
+  const arms = (t: number, p: Pose): Pose => { const u = smooth((t - 0.1) / 0.65), o = 46 + 14 * u, armR: Pose["armR"] = [[10, o], [18, o - 4]];
+    const ul = 0.45 * smooth((t - 0.7) / 0.6); return { ...p, armR, armL: lerpPose(p.armL as [Seg2, Seg2], OUT_L, ul) }; };      // (0.45 of the way: the whole throw at this size was over 11 px a frame)
+  return { name: "captain", at: FIGS.captain, h: HEIGHTS.captain, rimSide: 1, cast: { name: "captain", m, who: "sir", look: CAPTAIN, seed: 1, armWipe: false, pose: arms,
+    hands: { L: [[0, "open"]], R: [[0, "relaxed"]] }, mouth: { t0: 0, len: 39, mouth: mouthTrack(C01.words, 1.0, 39) } } }; };
+/** A2 (1.3-2.7 s), low three-quarter, turned toward the boy (heading 35):
+ *   K1 0.0  arms thrown out wide, leaning in, brows hard down, mouth open ("where is my");
+ *   K2 0.1-0.75  both hands come in and up to fists at his chest;
+ *   K3 0.8-1.35  he leans right in at the boy, his arms thrown out on "map?" */
 const captainA2 = (): Who3 => { const s = 1.4, m = figure("sir", 0, 35); m.stand(s + 1);
-  ease(m, -1, { head: [8, -8, 3], lean: 4 }, 0.01, { face: { pupil: 1, gaze: [0.3, -0.2], brow: -1, smile: -0.7, wide: 0.3, lid: 0 } });
-  ease(m, 0.45, { head: [12, -4, 6], lean: 9 }, 0.8, { face: { pupil: 1, gaze: [0.3, -0.1], brow: -1, smile: -0.8, wide: 0.35, lid: 0 } });
-  // (the arms go up as he shouts, from out and low to out and high (0.1-1.3), so his whole body moves with the line, under 11 px a frame)
-  const ARMS_UP: [Seg2, Seg2] = [[14, 52], [70, 36]];
-  const arms = (t: number, p: Pose): Pose => { const u = smooth((t - 0.1) / 1.2); return { ...p, armL: lerpArm(ARMS_OUT, ARMS_UP, u), armR: lerpArm(ARMS_OUT, ARMS_UP, u) }; };
+  ease(m, -1, { head: [8, -6, 3], lean: 6 }, 0.01, { face: { pupil: 1, gaze: [0.3, -0.2], brow: -1, smile: -0.7, wide: 0.3, lid: 0 } });
+  ease(m, 0.3, { head: [8, -4, 2], lean: 4 }, 0.45, { face: { pupil: 1, gaze: [0.3, -0.15], brow: -1, smile: -0.9, wide: 0.35, lid: 0 } });
+  ease(m, 0.8, { head: [10, -8, 4], lean: 14 }, 0.4, { face: { pupil: 1, gaze: [0.35, -0.2], brow: -1, smile: -0.8, wide: 0.4, lid: 0 } });
+  const FISTS: [Seg2, Seg2] = [[16, 28], [96, 20]], DOWN_OUT: [Seg2, Seg2] = [[4, 42], [30, 34]];
+  const arms = (t: number, p: Pose): Pose => { const k1 = 0.4 * smooth((t - 0.1) / 0.65), k2 = 0.32 * smooth((t - 0.8) / 0.55);      // (part of the way each: the whole moves at this size were over 11 px a frame)
+   
+    const a = lerpPose(lerpPose(ARMS_OUT, FISTS, k1), DOWN_OUT, k2); return { ...p, armL: a, armR: a }; };
   return { name: "captain", at: FIGS.captain, h: HEIGHTS.captain, rimSide: 1, cast: { name: "captain", m, who: "sir", look: CAPTAIN, seed: 1, armWipe: false, pose: arms,
     hands: { L: [[0, "open"]], R: [[0, "open"]] }, mouth: { t0: 0, len: 42, mouth: mouthTrack(C01.words, -0.3, 42).map((v) => v * 0.8) } } }; };      // (a little smaller: at three-quarter the widest mouth crossed the head's outline, v19)
-/** B (2.7-4.4 s): high over the captain's left shoulder: the boy looks down at the captain's boots (0-0.6), points at them (0.05-1.15),
- *  answers (0.15), grins (1.0) */
+/** B (2.7-4.4 s), the boy alone, seen from the captain's eye height:
+ *   K1 0.0  looking down at the captain's boots;
+ *   K2 0.05-0.85  his arm comes up and points toward the captain's boots (aimed past the lens's lower left, the hand at his chest's height);
+ *   K3 0.65-1.1  he looks up at the captain (head and eyes up and toward the lens), a cheeky smile;
+ *   K4 1.1-1.6  a big grin, his shoulders up, his head tipped */
 const boyB = (): Who3 => { const s = 1.7, m = figure("sir", 0, -16); m.stand(s + 1);
-  // (he looks down at the captain's boots (0-0.6), then up at the captain beside the lens (0.75-1.35) as he says "Captain", and grins (1.0))
-  ease(m, -1, { head: [-6, 0, 0] }, 0.01, { face: { pupil: 1, gaze: [-0.4, 0], smile: 0.1, brow: 0.6 } });
-    // (small, gentle moves: at 88 % of the picture a bigger look flickered his pupils, v20)
-  ease(m, 0.0, { head: [-6, 10, 0], lean: 4 }, 0.7, { face: { pupil: 1, gaze: [-0.4, 0.5], smile: 0.2, brow: 0.4 } });
-  ease(m, 0.7, { head: [-7, -3, 2], lean: -1 }, 0.8, { face: { pupil: 1, gaze: [-0.35, -0.3], smile: 0.4, brow: 0.7 } });
-  ease(m, 1.05, { head: [-7, -3, 3], lean: -2, roll: -3 }, 0.65, { face: { pupil: 1, gaze: [-0.35, -0.3], smile: 1, brow: 0.7 } });
-  // (the finger aims at the captain's right boot on the floor, projected into his drawing: the arm straight out toward it, raised over 1.1 s)
-  const point = (t: number, p: Pose, heading: number): Pose => { const w = env(t, 0.05, 1.1, 99, 0); if (w <= 0) return p;
-    const q = toLocal("B", Math.round(t * FM.FPS), FIGS.boy, HEIGHTS.boy, [FIGS.captain[0] - 0.08, FIGS.captain[1], 0.05]), r = reach("sir", px(0), p, heading, "R", q, true, { bend: 12 }); return { ...p, armR: lerpArm(p.armR, r.armR, w) }; };
+  ease(m, -1, { head: [-6, 12, 0], lean: 5 }, 0.01, { face: { pupil: 1, gaze: [-0.4, 0.55], smile: 0.2, brow: 0.5 } });
+  ease(m, 0.65, { head: [-8, -4, 2], lean: -1 }, 0.45, { face: { pupil: 1, gaze: [-0.35, -0.3], smile: 0.5, brow: 0.8 } });
+  ease(m, 1.1, { head: [-8, -4, 5], lean: -2, roll: -4, py: 0.015 }, 0.5, { face: { pupil: 1, gaze: [-0.35, -0.3], smile: 1, brow: 0.8 } });
+  // (the finger aims at the captain's right boot, projected into his drawing; it comes up over 0.45 s)
+  const point = (t: number, p: Pose, heading: number): Pose => { const w = smooth((t - 0.05) / 0.8); const base = p;
+    if (w <= 0) return base; const q = toLocal("B", Math.round(t * FM.FPS), FIGS.boy, HEIGHTS.boy, [FIGS.captain[0] - 0.08, FIGS.captain[1], 0.6]), r = reach("sir", px(0), base, heading, "R", q, true, { bend: 12 }); return { ...base, armR: lerpArm(base.armR, r.armR, w) }; };
   return { name: "boy", at: FIGS.boy, h: HEIGHTS.boy, rimSide: -1, cast: { name: "boy", m, who: "sir", look: BOY, seed: 2, armWipe: false, pose: point,
     hands: { L: [[0, "relaxed"]], R: [[0, "point"]] }, mouth: { t0: 0, len: 51, mouth: mouthTrack(C02.words, 0.18, 51) } } }; };
 /** B: the captain from behind, the dark shape in front: he looks down at his boots as the boy points (0.55) */
@@ -124,16 +135,18 @@ const captainB = (): Who3 => { const s = 1.7, m = figure("sir", 0, 0); m.stand(s
   return { name: "captain", at: FIGS.captain, h: HEIGHTS.captain, rimSide: 1, sil: true, cast: { name: "captain", m, who: "sir", look: { ...CAPTAIN, moustache: false }, seed: 13, armWipe: false, hands: { L: [[0, "relaxed"]], R: [[0, "relaxed"]] } } }; };
 /** the lifted boot's free leg (thigh and shin directions, the foot's pitch): the sole 2-3 cm off the floor (the standing leg is a little
  *  bent, so a straight free leg would reach into the floor) */
-export const LIFT_LEG: { th: [number, number]; sh: [number, number]; pitch: number } = { th: [16, 38], sh: [-12, 0], pitch: 0 };      // (4.5 cm up and 10.7 cm out to his side, so the X under it shows clear: the search of 24 Nov, v20)
+/** E's step (the boot lifted and set down again, the test of 24 Nov): which way along his facing and how far, in leg lengths */
+export const E_STEP = { ahead: -0.14, dur: 0.75, at: 0.25 };
+export const LIFT_LEG: { th: [number, number]; sh: [number, number]; pitch: number } = { th: [12, 6], sh: [-41, 0], pitch: 0 };      // (4.7 cm straight up by bending the knee, the hip under the coat: 38 degrees out put the leg outside the coat, v26)
 /** E (4.4-5.5 s): his boots on the map, close: his hip goes over the left foot (0-0.25), the right boot lifts 2.5 cm (0.25-0.85) and the
  *  red X shows under it. (the pelvis lowered a little on purpose: left to the rig, it was lowered onto both feet and stopped being so when
  *  the boot came off the floor, a kink in the body's movement, v13) */
 const captainE = (): Who3 => { const s = 1.5, m = figure("sir", 0, 0); m.stand(s + 1); const PY = -0.03;
-  const LIFT = PLANT.float ? { th: [LIFT_LEG.th[0] + 40, LIFT_LEG.th[1]], sh: [LIFT_LEG.sh[0] + 20, 0], pitch: LIFT_LEG.pitch } : LIFT_LEG;
+  const LIFT = PLANT.float ? { th: [LIFT_LEG.th[0] + 40, LIFT_LEG.th[1]], sh: [LIFT_LEG.sh[0] + 20, 0], pitch: LIFT_LEG.pitch } : PLANT.legOut ? { th: [0, 38], sh: [0, 38], pitch: 0 } : LIFT_LEG;      // (legOut: v26's fault, a straight leg swung 38 degrees out: the joint check must fail it)
   const HIP = PLANT.lean ? -0.07 : 0.06;      // (px > 0 moves his pelvis over his left foot, the one that stays down: the check's weight test)
   ease(m, -1, { head: [0, 14, 0], lean: 4, py: PY }, 0.01, {});
   ease(m, 0.0, { head: [0, 14, 0], lean: 4, px: HIP, py: PY }, 0.25, {});
-  ease(m, 0.15, { head: [0, 14, 0], lean: 4, px: HIP, py: PY, legR: LIFT } as Partial<Pose>, 1.2, {});      // (1.2 s: the boot under 11 px a frame; the X clear from about 1.0 s, 0.5 s before the cut)
+  ease(m, 0.15, { head: [0, 14, 0], lean: 4, px: HIP, py: PY, legR: LIFT } as Partial<Pose>, 0.75, {});      // (the boot up in 0.75 s; the X clear from about 0.7 s, 0.8 s before the cut; his breathing keeps the held boot moving)
   // (both fists on his hips, as he stands over the map: his hands up at his waist, out of the close picture of his boots)
   const akimbo = (t: number, p: Pose): Pose => ({ ...p, armL: AKIMBO, armR: AKIMBO });
   return { name: "captain", at: FIGS.captain, h: HEIGHTS.captain, rimSide: 1, cast: { name: "captain", m, who: "sir", look: CAPTAIN, seed: 12, armWipe: false, pose: akimbo, hands: { L: [[0, "fist"]], R: [[0, "fist"]] } } }; };
@@ -145,9 +158,11 @@ const captainD = (): Who3 => { const s = 1.5, m = figure("sir", 0, 35); m.stand(
   ease(m, -1, { head: [6, 6, -3], lean: 2 }, 0.01, { face: { pupil: 1, gaze: [0, 0.7], brow: 0.8, wide: 0.45, smile: -0.4, mouth: 0.35 } });
   ease(m, 0.3, { head: [6, 6, -3], lean: 2 }, 0.35, { face: { pupil: 1, gaze: [0.6, 0], brow: 0.8, wide: 0.45, smile: -0.5, mouth: 0.3 } });
   ease(m, 0.5, { head: [6, 6, -3], lean: 2 }, 1.0, { face: { pupil: 1, gaze: [0.6, 0], brow: 0.7, wide: 0.45, smile: -0.2, mouth: 0.25 } });
-  ease(m, 0.6, { head: [6, 6, -3], lean: 2 }, 0.9, { face: { pupil: 1, gaze: [0.6, 0], brow: 0.65, smile: 0.7, mouth: 0.25 } });      // (no teeth: they appear at a step in the drawing, a pop, v20)      // (0.85 s: faster, the grin's eye change flickered, v18)
+  ease(m, 0.9, { head: [6, 6, -3], lean: 2 }, 0.5, { face: { pupil: 1, gaze: [0.6, 0], brow: 0.6, smile: 1, mouth: 0.3 } });      // (K4: the big sheepish grin)      // (no teeth: they appear at a step in the drawing, a pop, v20)      // (0.85 s: faster, the grin's eye change flickered, v18)
   // (both hands coming up to his chest, palms open, a sheepish "oh well" (0.4-1.45): no frozen fist (v19), and both hands in the closer picture)
-  const arms = (t: number, p: Pose): Pose => armsTo(0.1, 1.4, [[6, 18], [56, 12]], [[6, 18], [56, 12]])(t, p);
+  // (K3 0.45-0.85: a quick open-handed shrug up to his chest; K4 1.0-1.5: the hands sink a little as the grin comes)
+  const SHRUG_UP: [Seg2, Seg2] = [[8, 24], [74, 16]], SHRUG_REST: [Seg2, Seg2] = [[6, 20], [60, 12]];
+  const arms = (t: number, p: Pose): Pose => { const k1 = 0.35 * smooth((t - 0.3) / 0.7), k2 = 0.35 * smooth((t - 1.05) / 0.45); const a = lerpPose(lerpPose(p.armL as [Seg2, Seg2], SHRUG_UP, k1), SHRUG_REST, k2), b = lerpPose(lerpPose(p.armR as [Seg2, Seg2], SHRUG_UP, k1), SHRUG_REST, k2); return { ...p, armL: a, armR: b }; };
   return { name: "captain", at: FIGS.captain, h: HEIGHTS.captain, rimSide: 1, redAt: 0.15, sweatAt: 0.4, cast: { name: "captain", m, who: "sir", look: CAPTAIN, seed: 12, armWipe: false, pose: arms,
     hands: { L: [[0, "open"]], R: [[0, "open"]] } } }; };      // (the hands' shape set from the start: a change of shape is a one-frame step in the drawing)
 export const WHO: Record<string, () => Who3[]> = { A: () => [captainA()], A2: () => [captainA2()], B: () => [boyB()],      // (the boy alone: the reviewer, v19, until a back view of the head is approved)
@@ -298,9 +313,9 @@ export const VOICE_AT = { c01: 1.0, c02: 2.88 };
 const WORDS = [...C01.words.map((w) => ({ ...w, a: w.a + VOICE_AT.c01, b: w.b + VOICE_AT.c01, line: "c01" })), ...C02.words.map((w) => ({ ...w, a: w.a + VOICE_AT.c02, b: w.b + VOICE_AT.c02, line: "c02" }))];
 export const CAPS = captions(WORDS, () => false, SHOTS.slice(1).map((s) => s.t0));
 /** where the band stands in each shot (pixels from the top): the lower third, below the faces, chests and hands; in B above the boy (stage/film.ts allows a shot's band above its figures) */
-const CAP_TOPS: Record<string, number> = { A: 1440, A2: 1510, B: 1470, E: 1440, D: 1680 };      // (B: above the boy's head: his chest and hands fill the lower third)
+const CAP_TOPS: Record<string, number> = { A: 1440, A2: 1510, B: 1490, E: 1440, D: 1680 };      // (B: above the boy's head: his chest and hands fill the lower third)
 export const captionAt = (T: number) => { const c = CAPS.find((q) => T >= q.a - 0.03 && T < q.b); if (!c) return null; const sh = SHOTS.find((s) => T >= s.t0 && T < s.t1) ?? SHOTS[SHOTS.length - 1];
-  const sz = Math.round(96 * Math.min(1, 8.9 / capWidth(c.text))), w = Math.min(1020, capWidth(c.text) * 1.194 * sz), top = CAP_TOPS[sh.id] ?? 1440;
+  const sz = Math.round(96 * Math.min(1, 8.9 / capWidth(c.text))), w = Math.min(1020, capWidth(c.text) * 1.194 * sz) * (PLANT.capWide ? 1.6 : 1), top = CAP_TOPS[sh.id] ?? 1440;
   return { text: c.text, sz, box: [540 - w / 2, top, 540 + w / 2, top + sz * 1.08] as [number, number, number, number] }; };
 export const paintCaption = (g: G, T: number) => { const c = captionAt(T); if (!c) return;
   g.save(); g.setTransform(1, 0, 0, 1, 0, 0); g.font = `900 ${c.sz}px 'Arial Black', Arial, sans-serif`; g.textAlign = "center"; g.textBaseline = "top"; g.lineJoin = "round";

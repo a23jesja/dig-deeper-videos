@@ -10,7 +10,7 @@
 //      nearer than a figure where he is drawn)
 // Planted faults (each must fail): --plant float (the boot lifted too high), sink (the figure 10 px into the floor), slide (the figure
 // skating 2 mm a frame), lean (the hip away from the standing foot), fgOverFace (the captain moved over the boy's face), sweatOut (a
-// sweat drop up on the cap's band).
+// sweat drop up on the cap's band), legOut (a straight leg swung 38 degrees out), capWide (a caption 1.6 times as wide).
 //   node scripts/cabin_check.mjs [--plant float|sink|slide|lean|fgOverFace]
 import * as esbuild from "esbuild"; import fs from "node:fs"; import { pathToFileURL } from "node:url";
 const plant = process.argv.includes("--plant") ? process.argv[process.argv.indexOf("--plant") + 1] : null;
@@ -75,13 +75,24 @@ for (const S of SHOTS) {
     //    skin zone of the near cheek and temple, under the cap's band, in the head's own units
     for (const { w } of placed) if (w.sweatAt !== undefined) { const t = fr / FM.FPS - w.sweatAt; if (t <= 0) continue; const Z = SWEAT_ZONE;
       for (const dr of sweatDrops(t)) if (dr && (dr.x < Z.x0 || dr.x > Z.x1 || dr.y < Z.y0 || dr.y > Z.y1)) faults.push(`9 ${S.id} frame ${fr} ${w.name}: a sweat drop off his skin (at ${dr.x.toFixed(2)}, ${dr.y.toFixed(2)} of his head)`); }
+    // 10 joint limits on every figure's solved skeleton (the reviewer, v26: a straight leg swung 38 degrees out put the hip outside the
+    //    coat): the thigh at most 15 degrees out to the side (on Knopp, more puts the hip outside the coat) and 45 behind; the knee and the
+    //    elbow bent at most 150 and one way only; the upper arm at most 65 behind the body and 60 across the chest
+    for (const { w, pl } of placed) { const v = pl.f.sk.v, sub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]], dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2], nrm = (a) => { const l = Math.hypot(...a) || 1; return a.map((x) => x / l); }, ang = (a, b) => (Math.acos(Math.max(-1, Math.min(1, dot(nrm(a), nrm(b))))) * 180) / Math.PI;
+      const up = nrm(sub(v.neck, v.pelvis)), lat0 = sub(v.hipL, v.hipR), lat = nrm(sub(lat0, up.map((x) => x * dot(lat0, up)))), fwd = [lat[1] * up[2] - lat[2] * up[1], lat[2] * up[0] - lat[0] * up[2], lat[0] * up[1] - lat[1] * up[0]];
+      for (const sd of ["L", "R"]) { const sgn = sd === "L" ? 1 : -1, th = sub(v["kn" + sd], v["hip" + sd]), shn = sub(v["an" + sd], v["kn" + sd]), ua = sub(v["el" + sd], v["sh" + sd]), fa = sub(v["wr" + sd], v["el" + sd]);
+        const thL = Math.hypot(...th) || 1, out = (Math.asin(Math.max(-1, Math.min(1, (dot(th, lat) * sgn) / thL))) * 180) / Math.PI, back = (Math.asin(Math.max(-1, Math.min(1, -dot(th, fwd) / thL))) * 180) / Math.PI;
+        const knee = ang(th, shn), elbow = ang(ua, fa), uaL = Math.hypot(...ua) || 1, armBack = (Math.asin(Math.max(-1, Math.min(1, -dot(ua, fwd) / uaL))) * 180) / Math.PI, across = (Math.asin(Math.max(-1, Math.min(1, (-dot(ua, lat) * sgn) / uaL))) * 180) / Math.PI;
+        const bad = [out > 15 && `thigh ${out.toFixed(0)} degrees out (the hip outside the coat)`, back > 45 && `thigh ${back.toFixed(0)} behind`, knee > 150 && `knee bent ${knee.toFixed(0)}`, elbow > 150 && `elbow bent ${elbow.toFixed(0)}`, armBack > 65 && `upper arm ${armBack.toFixed(0)} behind`, across > 60 && `upper arm ${across.toFixed(0)} across`].filter(Boolean);
+        for (const b of bad) faults.push(`10 ${S.id} frame ${fr} ${w.name}: his ${sd === "L" ? "left" : "right"} ${b}`); } }
     // 8 the caption band (DAILY-RULES: the lower third, never on a face, a chest or hands) against every figure's head, trunk and hands
     { const cap = captionAt(S.t0 + fr / FM.FPS);
-      if (cap) for (const { w, pl } of placed) { if (w.sil) continue; const J = (j) => toScreen(pl, jointPx(pl.f, j)), [x0, y0, x1, y1] = cap.box, inBox = (q, m = 0) => q[0] > x0 - m && q[0] < x1 + m && q[1] > y0 - m && q[1] < y1 + m;
+      if (cap) for (const { w, pl } of placed) { if (w.sil) continue; const J = (j) => toScreen(pl, jointPx(pl.f, j)), cw = (cap.box[2] - cap.box[0]) * 1.25, x0 = 540 - cw / 2, x1 = 540 + cw / 2, y0 = cap.box[1] - 6, y1 = cap.box[3] + 6,      /* (the drawn text is about a quarter wider than capWidth's estimate: v26's captions crossed hands the check had passed) */
+        inBox = (q, m = 0) => q[0] > x0 - m && q[0] < x1 + m && q[1] > y0 - m && q[1] < y1 + m;
         const s0 = J("skull"), c0 = J("crown"), hr = Math.hypot(c0[0] - s0[0], c0[1] - s0[1]) / 2, hc = [(s0[0] + c0[0]) / 2, (s0[1] + c0[1]) / 2];
         const nx = Math.max(x0, Math.min(x1, hc[0])), ny = Math.max(y0, Math.min(y1, hc[1])), faceHit = Math.hypot(nx - hc[0], ny - hc[1]) < hr * 1.05;
         const trunk = hull(["neck", "shL", "shR", "hipL", "hipR"].map(J)), chestHit = [0, 0.25, 0.5, 0.75, 1].some((u) => [0, 0.5, 1].some((v) => inPoly([x0 + (x1 - x0) * u, y0 + (y1 - y0) * v], trunk)));
-        const handHit = ["L", "R"].some((sd) => inBox(J("tip" + sd), 20) || inBox(J("wr" + sd), 20));
+        const handHit = ["L", "R"].some((sd) => inBox(J("tip" + sd), 30) || inBox(J("wr" + sd), 30) || inBox([(J("tip" + sd)[0] + J("wr" + sd)[0]) / 2, (J("tip" + sd)[1] + J("wr" + sd)[1]) / 2], 30));
         if (faceHit || chestHit || handHit) faults.push(`8 ${S.id} frame ${fr} ${w.name}: the caption "${cap.text}" over his ${faceHit ? "face" : chestHit ? "chest" : "hand"}`); } }
     // 4 over the shoulder: the captain in front never on the boy's face or pointing hand
     const fg = placed.find((p) => p.w.sil), boy = placed.find((p) => p.w.name === "boy");

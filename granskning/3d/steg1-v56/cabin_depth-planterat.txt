@@ -1,0 +1,14 @@
+cabin depth planted: 222 frames, 24 faults
+  A frame 0 captain: 36 cells of the room (prop) nearer than him inside his outline
+  A frame 1 captain: 36 cells of the room (prop) nearer than him inside his outline
+  A frame 2 captain: 36 cells of the room (prop) nearer than him inside his outline
+  A frame 3 captain: 36 cells of the room (prop) nearer than him inside his outline
+  A frame 4 captain: 36 cells of the room (prop) nearer than him inside his outline
+  A frame 5 captain: 36 cells of the room (prop) nearer than him inside his outline
+  A frame 6 captain: 36 cells of the room (prop) nearer than him inside his outline
+  A frame 7 captain: 35 cells of the room (prop) nearer than him inside his outline
+  A frame 8 captain: 35 cells of the room (prop) nearer than him inside his outline
+  A frame 9 captain: 35 cells of the room (prop) nearer than him inside his outline
+  A frame 10 captain: 36 cells of the room (prop) nearer than him inside his outline
+  A frame 11 captain: 36 cells of the room (prop) nearer than him inside his outline
+CABIN DEPTH FAILED

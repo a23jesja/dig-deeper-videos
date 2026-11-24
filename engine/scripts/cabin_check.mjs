@@ -11,7 +11,7 @@
 // Planted faults (each must fail): --plant float (the boot lifted too high), sink (the figure 10 px into the floor), slide (the figure
 // skating 2 mm a frame), lean (the hip away from the standing foot), fgOverFace (the captain moved over the boy's face), sweatOut (a
 // sweat drop up on the cap's band), legOut (a straight leg swung 38 degrees out), capWide (a caption 1.6 times as wide).
-//   node scripts/cabin_check.mjs [--plant float|sink|slide|lean|fgOverFace]
+//   node scripts/cabin_check.mjs [--plant float|sink|slide|lean|fgOverFace|capLow]
 import * as esbuild from "esbuild"; import fs from "node:fs"; import { pathToFileURL } from "node:url";
 const plant = process.argv.includes("--plant") ? process.argv[process.argv.indexOf("--plant") + 1] : null;
 const out = "out/_cab_check.mjs";
@@ -96,6 +96,8 @@ for (const S of SHOTS) {
     //   in a deliberate close-up (shots.json "closeup") the band may lie over the coat (the reviewer, 24 Nov: rule 8 forbids the face, our
     //   check the hands; the references put text over the coat in close-ups): the face and the hands are checked there as everywhere
     { const cap = captionAt(S.t0 + fr / FM.FPS);
+      // 8b the Shorts safe area (DAILY-RULES: nothing important in the top or bottom 15 %, the app's overlay covers it; the film review of v55)
+      if (cap && (cap.box[3] > 0.85 * FM.H || cap.box[1] < 0.15 * FM.H)) faults.push(`8 ${S.id} frame ${fr}: the caption "${cap.text}" in the ${cap.box[3] > 0.85 * FM.H ? "bottom" : "top"} 15 % (the Shorts overlay)`);
       if (cap) for (const { w, pl } of placed) { if (w.sil) continue; const J = (j) => toScreen(pl, jointPx(pl.f, j)), cw = (cap.box[2] - cap.box[0]) * 1.25, x0 = 540 - cw / 2, x1 = 540 + cw / 2, y0 = cap.box[1] - 6, y1 = cap.box[3] + 6,      /* (the drawn text is about a quarter wider than capWidth's estimate: v26's captions crossed hands the check had passed) */
         inBox = (q, m = 0) => q[0] > x0 - m && q[0] < x1 + m && q[1] > y0 - m && q[1] < y1 + m;
         const s0 = J("skull"), c0 = J("crown"), hr = Math.hypot(c0[0] - s0[0], c0[1] - s0[1]) / 2, hc = [(s0[0] + c0[0]) / 2, (s0[1] + c0[1]) / 2];

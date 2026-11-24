@@ -112,24 +112,24 @@
    "id": "A2b",
    "t0": 2.066666666666667,
    "t1": 2.7,
-   "what": "medium, nearly from the front and a little above (30 degrees from A2a, so the cut is not a jump cut: the independent review of v52): the jab rising at the boy (screen right), his free hand open at his hip as A2a leaves it",
+   "what": "medium, nearly from the front and a little above (30 degrees from A2a, so the cut is not a jump cut: the independent review of v52): the jab rising at the boy (screen right), his free hand open at his hip as A2a leaves it; pulled back x1.2 and lowered in v56 so the captions keep out of the Shorts overlay's bottom 15 % without crossing his chest",
    "cam": {
     "from": [
      [
-      0.123,
-      -1.265,
-      1.724
+      0.182,
+      -1.682,
+      1.787
      ],
      [
-      0.123,
-      -1.265,
-      1.724
+      0.182,
+      -1.682,
+      1.787
      ]
     ],
     "at": [
      -0.17,
      0.82,
-     1.16
+     1.11
     ],
     "lens": 28,
     "focus": "captain",
@@ -169,24 +169,24 @@
    "id": "B2",
    "t0": 3.466666666666667,
    "t1": 4.4,
-   "what": "medium shot of the boy from below (30 degrees from B1, which looks down on him; pulled back in v55 so his talking mouth is not a giant close-up): on it, Captain, the sly grin",
+   "what": "medium shot of the boy from below (30 degrees from B1, which looks down on him; pulled back in v55 so his talking mouth is not a giant close-up): on it, Captain, the sly grin; lowered 0.2 m in v56 so he sits higher and the captions keep out of the bottom 15 % under his fist",
    "cam": {
     "from": [
      [
       -0.625,
       0.551,
-      0.529
+      0.329
      ],
      [
       -0.625,
       0.548,
-      0.529
+      0.329
      ]
     ],
     "at": [
      1.33,
      0.8,
-     1.02
+     0.82
     ],
     "lens": 24,
     "focus": "boy",

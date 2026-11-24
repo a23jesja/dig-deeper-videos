@@ -1,0 +1,14 @@
+{
+ "_why": "The cabin boy's voice test (the automation session's decision of 24 Nov, granskning/beslut-fran-molnsessionen.md on claude/emu-short-cloud b889695): two lighter premade voices, Jesper picks by ear; Daniel stays for adults. Jessica: young, bright and playful: a light voice that can read as a boy (cartoon boys are often voiced this way).",
+ "voice_name": "Jessica",
+ "voice_id": "cgSgspJ2msm6clMCkdW9",
+ "provider": "elevenlabs",
+ "voice_kind": "ElevenLabs premade voice (not cloned, not a library voice from another user)",
+ "model_id": "eleven_multilingual_v2",
+ "output_format": "mp3_44100_128",
+ "voice_settings": "the voice's own defaults (none sent)",
+ "takes_per_sentence": 3,
+ "pick": "the take faster-whisper small.en hears with the fewest word errors",
+ "key": "read from the environment variable ELEVENLABS_API_KEY only; never written anywhere",
+ "credits": "pre-count characters x takes before every call; 186 characters approved by the reviewer for the whole test (2 voices x 3 takes x 31)"
+}

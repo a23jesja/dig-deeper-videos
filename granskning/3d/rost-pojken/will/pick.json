@@ -1,0 +1,34 @@
+{
+ "line": "You're standing on it, Captain.",
+ "take": 0,
+ "word_errors": 0.0,
+ "words": [
+  {
+   "w": "You're",
+   "a": 0.0,
+   "b": 0.28
+  },
+  {
+   "w": "standing",
+   "a": 0.28,
+   "b": 0.52
+  },
+  {
+   "w": "on",
+   "a": 0.52,
+   "b": 0.78
+  },
+  {
+   "w": "it,",
+   "a": 0.78,
+   "b": 0.92
+  },
+  {
+   "w": "Captain.",
+   "a": 1.08,
+   "b": 1.14
+  }
+ ],
+ "character_count_before": 3661,
+ "character_count_after": 3661
+}

@@ -111,14 +111,14 @@ const captainG = (id: string, heading: number): Who3 => { const t0 = SHOT_T0[id]
     { face: { pupil: 1, gaze: [0.6, -0.1], brow: -0.9, smile: -0.6, wide: 0.3, lid: 0 } });      // (step 2: the shout, his mouth wide on "Boy!")
     ease(m, T(0.95), { head: [1, 3, 1], lean: 1, roll: 1 }, 0.6, { face: { pupil: 1, gaze: [0.7, -0.1], brow: -1, smile: -0.8, wide: 0.35, lid: 0 } });
     ease(m, T(1.45), { head: [6, -6, 3], lean: 7 }, 0.45, { face: { pupil: 1, gaze: [0.3, -0.2], brow: -1, smile: -0.8, wide: 0.35, lid: 0 } });
-    ease(m, T(2.02), { head: [10, -10, 5], lean: 15 }, 0.01, { face: { pupil: 1, gaze: [0.35, -0.2], brow: -1, smile: -1, wide: 0, lid: 0.42, mouth: 1 } });      // (narrowed eyes: the half lid)      // (step 3, set on the cut: leaning right in, angriest, eyes narrowed, his mouth wide)
+    ease(m, T(2.02), { head: [10, -10, 5], lean: 15 }, 0.01, { face: { pupil: 1, gaze: [0.6, 0.1], brow: -1, smile: -1, wide: 0, lid: 0.25, mouth: 1 } });      // (angriest: brows right down, eyes a little narrowed and on the boy, mouth wide; not the boy's sly half lid, v31)      // (step 3, set on the cut: leaning right in, angriest, eyes narrowed, his mouth wide)
   } else {
     ease(m, -9, { head: [6, 6, -3], lean: 2, py: PY }, 0.01, { face: { pupil: 1, gaze: [0, 0.7], brow: 0.8, wide: 0.45, smile: -0.4, mouth: 0.35 } });
     ease(m, T(4.05), { head: [0, 14, 0], lean: 4, px: HIP, py: PY }, 0.4, {});
     ease(m, T(4.3), { head: [0, 14, 0], lean: 4, px: HIP, py: PY, legR: LIFT } as Partial<Pose>, 1.1, {});      // (up by 5.35: the X clear 0.55 s before the cut, the reviewer)      // (the boot up in 0.75 s, toe up: the X under the toe shows)
-    ease(m, T(5.9), { head: [6, 6, -3], lean: 2, py: PY }, 0.05, { face: { pupil: 1, gaze: [0, 0.7], brow: 0.8, wide: 0.45, smile: -0.4, mouth: 0.35 } });
+    ease(m, T(5.86), { head: [6, 6, -3], lean: 2, py: PY }, 0.01, { face: { pupil: 1, gaze: [0, 0.7], brow: 0.8, wide: 0.45, smile: -0.4, mouth: 0.35 } });
     ease(m, T(6.2), { head: [6, 6, -3], lean: 2, py: PY }, 0.35, { face: { pupil: 1, gaze: [0.6, 0], brow: 0.8, wide: 0.45, smile: -0.5, mouth: 0.3 } });
-    ease(m, T(6.75), { head: [6, 6, -3], lean: 2, py: PY }, 0.5, { face: { pupil: 1, gaze: [0.6, 0], brow: 0.6, smile: 1, mouth: 0.75, smirk: 0.3, sad: 0.3 } });
+    ease(m, T(6.75), { head: [6, 6, -3], lean: 2, py: PY }, 0.5, { face: { pupil: 1, gaze: [0.6, 0], brow: 0.6, smile: 1, mouth: 0.4, sad: 0.25 } });
     if (id === "D2") ease(m, T(6.57), { head: [6, 6, -3], lean: 2, py: PY }, 0.01, { face: { teeth: 1 } });      // (the sheepish grin shows his teeth from the cut into the close-up)
   }
   let JAB: { side: "L" | "R"; arm: [Seg2, Seg2] } | null = null;
@@ -134,25 +134,25 @@ const captainG = (id: string, heading: number): Who3 => { const t0 = SHOT_T0[id]
     if (g >= 2.05) { // (the jab: the arm on the screen's right side reaches up and out to the right, toward the boy (raised: in the close-up a level arm left the picture and crossed the caption), solved once and held;
       //  the other fist at his chest. v29's set angles pointed the finger back across his own chin)
       if (!JAB) { const sk = solve(D.props("sir"), p, hd), sc = scaleOf("sir"), J = (n: string) => sk.j[n as keyof typeof sk.j] as unknown as number[], right: "L" | "R" = J("shL")[0] > J("shR")[0] ? "L" : "R", sh = J("sh" + right), L = 0.92 * sc * (D.props("sir").upper + D.props("sir").fore + D.props("sir").hand);
-        const r = reach("sir", px(0), p, hd, right, [px(0) + sh[0] * sc + L * 0.72, footY("sir") + sh[1] * sc - L * 0.22], true, { bend: 16 }); JAB = { side: right, arm: (right === "L" ? r.armL : r.armR) as [Seg2, Seg2] }; }
-      const FIST_UP: [Seg2, Seg2] = [[34, 22], [128, 14]]; return JAB.side === "L" ? { ...p, armL: JAB.arm, armR: FIST_UP } : { ...p, armR: JAB.arm, armL: FIST_UP }; }      // (A2b: the outstretched arm at his shoulder's height, its finger jabbing at the boy)      // (A2b: the finger jabs at the boy, small and quick)
+        const r = reach("sir", px(0), p, hd, right, [px(0) + sh[0] * sc + L * 0.5, footY("sir") + sh[1] * sc + L * 0.05], true, { bend: 35 }); JAB = { side: right, arm: (right === "L" ? r.armL : r.armR) as [Seg2, Seg2] }; }
+      const HANG: [Seg2, Seg2] = [[0, 20], [0, 20]]; return JAB.side === "L" ? { ...p, armL: JAB.arm, armR: HANG } : { ...p, armR: JAB.arm, armL: HANG }; }      // (the other arm hangs out of the close-up: v31's raised fist sat on the shoulder, its forearm hidden; one clear jab reads better)      // (A2b: the outstretched arm at his shoulder's height, its finger jabbing at the boy)      // (A2b: the finger jabs at the boy, small and quick)
     return { ...p, armR: f(R0), armL: f(L0) }; };
   const shot = SPEC.shots.find((q) => q.id === id)!, n = Math.round((shot.t1 - shot.t0) * FM.FPS);
-  return { name: "captain", at: FIGS.captain, h: HEIGHTS.captain, rimSide: 1, ...(late ? { redAt: T(6.05), sweatAt: T(6.3) } : id === "A2b" ? { redAt: -1, redMax: 0.45 } : {}),
+  return { name: "captain", at: FIGS.captain, h: HEIGHTS.captain, rimSide: 1, ...(late ? { redAt: T(6.05), sweatAt: T(6.3) } : id === "A2b" ? { redAt: -1, redMax: 0.7 } : {}),
     cast: { name: "captain", m, who: "sir", look: CAPTAIN, seed: late ? 12 : 1, armWipe: false, pose: arms, hands: late && t0 < 5.9 ? { L: [[0, "fist"]], R: [[0, "fist"]] } : t0 >= 5.9 ? { L: [[0, "open"]], R: [[0, "open"]] } : t0 >= 2.05 ? (heading > 0 ? { L: [[0, "point"]], R: [[0, "fist"]] } : { L: [[0, "fist"]], R: [[0, "point"]] }) : { L: [[0, "open"]], R: [[0, "relaxed"]] },
-      ...(late ? {} : { mouth: { t0: 0, len: n, mouth: mouthTrack(C01.words, VOICE_AT.c01 - t0, n).map((v, f) => { const g = t0 + f / FM.FPS; return Math.min(1, id === "A1b" ? (g < 0.97 ? 0 : g < 1.32 ? Math.max(v * 1.6, 1) : v * 1.4) : id === "A2b" ? Math.max(v, 0.7) : v * (heading > 20 ? 0.8 : 1)); }) } }) } }; };      // (A1b: shut as it opens, then the shout as wide as the drawing goes; A2b: never under 0.7)      // (A1b: the shout's mouth wide open; A2b: never under 0.7, the angriest)      // (A1b: the shout's mouth wide open)
+      ...(late ? {} : { mouth: { t0: 0, len: n, mouth: mouthTrack(C01.words, VOICE_AT.c01 - t0, n).map((v, f) => { const g = t0 + f / FM.FPS; return Math.min(1, id === "A1b" ? (g < 0.97 ? 0 : g < 1.32 ? Math.max(v * 1.6, 1) : v * 1.4) : id === "A2b" ? Math.max(v * 1.4, 0.9) : v * (heading > 20 ? 0.8 : 1)); }) } }) } }; };      // (A1b: shut as it opens, then the shout as wide as the drawing goes; A2b: never under 0.7)      // (A1b: the shout's mouth wide open; A2b: never under 0.7, the angriest)      // (A1b: the shout's mouth wide open)
 /** the boy's timeline (film seconds): 2.7 looking down at the captain's boots, his arm up pointing at them (it is up as the shot opens:
  *  the pose changes on the cut); 2.88 "You're standing on it, Captain."; 3.25-3.7 he looks up at the captain; 3.9-4.35 a big grin, his
  *  shoulders up, his head tipped */
 const boyG = (id: string, heading: number): Who3 => { const t0 = SHOT_T0[id], T = (x: number) => x - t0, m = figure("sir", 0, heading); m.stand(9);
   ease(m, -9, { head: [-6, 12, 0], lean: 5 }, 0.01, { face: { pupil: 1, gaze: [-0.4, 0.55], smile: 0.2, brow: 0.5 } });
-  ease(m, T(3.25), { head: [-8, -6, 2], lean: -1 }, 0.45, { face: { pupil: 1, gaze: [-0.6, -0.55], smile: 0.5, brow: 0.8 } });
+  ease(m, T(3.0), { head: [-8, -6, 2], lean: -1 }, 0.42, { face: { pupil: 1, gaze: [-0.6, -0.55], smile: 0.5, brow: 0.8 } });      // (his eyes go up at the end of B1 and are up as B2 opens)
   ease(m, T(3.9), { head: [-8, -6, 5], lean: -2, roll: -4, py: 0.015 }, 0.45, { face: { pupil: 1, gaze: [-0.6, -0.55], smile: 1, brow: 0.8 } });
   // (the arm solved once for the shot, at its first frame, and held: re-solved every frame it flipped between two answers when his
   //  shoulders lifted, 20 px in a frame, v28)
   // (a straight arm, the finger 35 degrees down toward the screen's left in both shots, found by search on the picture (upper arm and forearm
   //  both at 35 degrees): the reach solver bent the arm differently in B1 and B2, v29-v30)
-  const POINT: [Seg2, Seg2] = id === "B1" ? [[5, 55], [5, 55]] : [[5, 60], [5, 60]];
+  const POINT: [Seg2, Seg2] = id === "B1" ? [[5, 55], [5, 55]] : [[30, 50], [30, 50]];
   const point = (t: number, p: Pose): Pose => ({ ...p, armR: POINT });
   const shot = SPEC.shots.find((q) => q.id === id)!, n = Math.round((shot.t1 - shot.t0) * FM.FPS);
   return { name: "boy", at: FIGS.boy, h: HEIGHTS.boy, rimSide: -1, cast: { name: "boy", m, who: "sir", look: BOY, seed: 2, armWipe: false, pose: point,
@@ -167,7 +167,7 @@ const captainB = (): Who3 => { const s = 1.7, m = figure("sir", 0, 0); m.stand(s
 export const E_STEP = { ahead: -0.14, dur: 0.75, at: 0.25 };
 export const LIFT_LEG: { th: [number, number]; sh: [number, number]; pitch: number } = { th: [12, 6], sh: [-41, 0], pitch: -10 };      // (4.5 cm up by bending the knee, the hip under the coat, the toe tipped up so the X under it shows; 38 degrees out put the leg outside the coat, v26)
 export const WHO: Record<string, () => Who3[]> = { A: () => [captainG("A", 0)], A1b: () => [captainG("A1b", 30)], A2a: () => [captainG("A2a", 35)], A2b: () => [captainG("A2b", 30)],
-  B1: () => [boyG("B1", -16)], B2: () => [boyG("B2", -40)], E: () => [captainG("E", 0)], D1: () => [captainG("D1", 35)], D2: () => [captainG("D2", 35)] };
+  B1: () => [boyG("B1", -16)], B2: () => [boyG("B2", -40)], E: () => [captainG("E", 0)], D1: () => [captainG("D1", 0)], D2: () => [captainG("D2", 35)] };
 export const TABLE_TOP = 0.488;
 
 // ------------------------------------------------------------------ placing and painting ------------------------------------------------------------------

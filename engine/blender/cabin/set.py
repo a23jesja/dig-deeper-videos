@@ -130,7 +130,7 @@ imp("wooden_stool_01", (0.25, 2.15, 0), 15, 1.0)
 lantern = imp("wooden_lantern_01", (-0.62, 1.55, 1.62), 0, 1.0)
 box("lantern chain", "prop", -0.625, -0.615, 1.545, 1.555, 2.14, ZT - 0.16, BEAM)
 # the treasure map flat on the floor, under the captain's boot (our own drawing)
-MP = SPEC["map"]; plane("treasure map", "map", MP["at"], MP["w"], MP["d"], MP["rot"], flat_img("map", os.path.join(T, "map.png"), rough=0.9), z=0.002)
+MP = SPEC["map"]; plane("treasure map", "map", MP["at"], MP["w"], MP["d"], MP["rot"], flat_img("map", os.path.join(T, "map.png"), rough=0.9, glow=0.18), z=0.002)      # (a little light of its own: the red X read pale in the boot's shade, v31)
 # loose papers on the table that fly off in shot A as the captain rummages
 PAPERS = [plane(f"paper{k}", "paper", (TABLE[0] - 0.12 + 0.04 * k, TABLE[1] - 0.12 + 0.03 * k), 0.33, 0.44, -12 + 14 * k, flat_img(f"paper{k}", os.path.join(T, f"paper{k}.png"), glow=0.35), z=TOP + 0.004 + 0.002 * k) for k in range(3)]
 P0 = [(p.location.copy(), p.rotation_euler.copy()) for p in PAPERS]
@@ -183,7 +183,7 @@ def pose_shot(shot, t):
         l0, r0 = P0[k]; pts, L = PAPER_PATHS[k]
         u = (shot["t0"] + t - (-0.45 + 0.08 * k)) / 2.0      # (the film's own time: they are already sliding off as the film opens, in the air by 0.6 s, and go on falling in the next shot)
         uu = min(1.0, max(0.0, u)); sfr = trap(uu); i = min(len(pts) - 1, bisect.bisect_left(L, sfr))
-        p.location = pts[i]; p.rotation_euler = (r0.x, r0.y, r0.z + math.radians(12) * uu)
+        p.location = pts[i]; fl = math.sin(math.pi * uu); p.rotation_euler = (r0.x + math.radians(14) * fl, r0.y + math.radians(8) * fl, r0.z + math.radians(28) * uu)      # (tipped and turning as they fall: flat and level they looked parked, v31)
 
 def trap(u, a=0.3):
     """0..1 with a steady middle: speeding up over the first a, slowing over the last a (its top speed 1 / (1 - a) of the mean)"""

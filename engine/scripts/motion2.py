@@ -13,9 +13,13 @@
 #     --plant jump = one hand moved BODY + 5 px for one frame (a jump of more than 40 px): must fail
 #     --plant snap = one hand set going at 30 px a frame with no build-up (from rest to full speed in one frame): must fail
 #     --plant smooth = one hand moved fast but built up and braked (10, 20, 30, 35, 35, 30, 20, 10 px a frame): must PASS
+#     --plant c = the head 3 px out on one frame and back (the reviewer's case c on the joints): must fail
+#     --plant headturn = the head moved fast but smoothly (1, 2, 3, 4, 5, 6, 6, 5, 4, 3, 2, 1 px a frame on top of the head's own movement): must PASS
+#   the head and face never go out and back, whatever the amount (the reviewer, 25 Nov): their speed change (in x or in y) changing sign twice
+#   within 3 frames, each change over OUTBACK px, fails (a step out and back gives +j, -2j, +j; a turn that speeds up and brakes changes sign once)
 import json, math, os, sys
 
-BODY, EYE = 40.0, 12.0
+BODY, EYE, OUTBACK = 40.0, 12.0, 1.0
 ACC = BODY / 3.0      # (speed change per frame: 0 -> 40 px a frame takes at least 3 frames)
 # the limbs in figs.json, per side L then R: shoulder-elbow, elbow-wrist, wrist-tip, hip-knee, knee-ankle, ankle-toe, heel-toe
 JOINTS = {"sh": (0, 0), "el": (1, 0), "wr": (2, 0), "tip": (2, 1), "hip": (3, 0), "kn": (4, 0), "an": (5, 0), "toe": (5, 1), "heel": (6, 0)}
@@ -41,26 +45,29 @@ def main():
             for fg in figs:
                 if fg.get("sil"): continue
                 nm = fg["name"]
-                pts = {"head": (fg["head"][0], fg["head"][1])}
+                pts = {"head": tuple(fg.get("headF", fg["head"][:2]))}      # (unrounded when the check wrote it)
                 for side, base in (("L", 0), ("R", 7)):
                     for j, (li, end) in JOINTS.items(): pts[j + side] = tuple(fg["limbs"][base + li][end])
                 for j, p in pts.items(): track.setdefault((nm, j), []).append([fr, float(p[0]), float(p[1])])
         # the planted faults, in the longest shot, on the first figure's right hand (wrist and tip), mid-shot
         if plant and planted is None and len(rows) >= 30:
             nm = next(fg["name"] for fg in rows[0] if not fg.get("sil")); k = len(rows) // 2
-            for j in ("wrR", "tipR"):
+            for j in (("head",) if plant in ("c", "headturn") else ("wrR", "tipR")):
                 tr = track[(nm, j)]
                 for row in tr:
                     if plant == "jump" and row[0] == k: row[1] += BODY + 5
                     if plant == "snap" and row[0] >= k: row[1] += 30.0 * min(row[0] - k + 1, 6)      # (30 px a frame from the first frame, for 6 frames, then still)
+                    if plant == "c" and row[0] == k: row[1] += 3.0
+                    if plant == "headturn" and row[0] >= k: row[1] += sum([1, 2, 3, 4, 5, 6, 6, 5, 4, 3, 2, 1][:row[0] - k + 1])
                     if plant == "smooth" and row[0] >= k: row[1] += sum([10, 20, 30, 35, 35, 30, 20, 10][:row[0] - k + 1])      # (a fast move built up and braked: speeds 10, 20, 30, 35, 35, 30, 20, 10 px a frame: must PASS)
             planted = (sid, k, nm)
         for (nm, j), tr in track.items():
             wp = figpos.get(nm)
-            prev_v = None
+            prev_v = None; accs = []      # (the head's speed changes, for the out-and-back rule)
             for i in range(1, len(tr)):
                 f0, x0, y0 = tr[i - 1]; f1, x1, y1 = tr[i]
-                if f1 != f0 + 1: prev_v = None; continue
+                if f1 != f0 + 1: prev_v = None; accs = []; continue
+                if all(not (-40 < x < 1080 + 40 and -40 < y < 1920 + 40) for (x, y) in ((x0, y0), (x1, y1))): prev_v = None; accs = []; continue      # (only what is in the picture can flicker, as in cabin_check)
                 dx, dy = x1 - x0, y1 - y0
                 if wp and f1 < len(cam):      # (the lens's own movement of this figure's place on the floor, taken out)
                     a0, a1 = proj(cam[f0], (wp[0], wp[1], 0)), proj(cam[f1], (wp[0], wp[1], 0)); dx -= a1[0] - a0[0]; dy -= a1[1] - a0[1]
@@ -69,6 +76,14 @@ def main():
                 if j == "head":
                     if sp > worst["eye"][0]: worst["eye"] = (sp, where)
                     if sp > EYE: faults.append(f"face moves {sp:.1f} px in a frame (at most {EYE:.0f}): {where}")
+                    if prev_v is not None:
+                        accs.append((v[0] - prev_v[0], v[1] - prev_v[1]))
+                        if len(accs) >= 3:
+                            for ax in (0, 1):
+                                a3 = [q[ax] for q in accs[-3:]]
+                                if all(abs(q) > OUTBACK for q in a3) and a3[0] * a3[1] < 0 and a3[1] * a3[2] < 0:
+                                    worst["outback"] = max(worst.get("outback", (0, "")), (max(abs(q) for q in a3), where))
+                                    faults.append(f"head goes out and back: its speed change {', '.join(f'{q:+.1f}' for q in a3)} px in {'xy'[ax]} over 3 frames (sign changes twice, each over {OUTBACK:.0f} px): {where}")
                 else:
                     if sp > worst["body"][0]: worst["body"] = (sp, where)
                     if sp > BODY: faults.append(f"body part moves {sp:.1f} px in a frame (at most {BODY:.0f}): {where}")
@@ -78,8 +93,9 @@ def main():
                         if acc > ACC: faults.append(f"body part's speed changes {acc:.1f} px a frame in one frame (at most {ACC:.1f}: build-up over 3 frames): {where}")
                 prev_v = v
     L = [f"movement check (the new measure): body parts at most {BODY:.0f} px a frame, their speed changing at most {ACC:.1f} px from frame to frame; the face at most {EYE:.0f} px a frame; the camera's movement taken out by its matrices",
-         f"largest: body {worst['body'][0]:.1f} px ({worst['body'][1]}), speed change {worst['acc'][0]:.1f} px ({worst['acc'][1]}), face {worst['eye'][0]:.1f} px ({worst['eye'][1]})"]
-    if planted: L.append(f"planted: {plant} on {planted[2]}'s right hand, shot {planted[0]} frame {planted[1]}")
+         f"largest: body {worst['body'][0]:.1f} px ({worst['body'][1]}), speed change {worst['acc'][0]:.1f} px ({worst['acc'][1]}), face {worst['eye'][0]:.1f} px ({worst['eye'][1]})",
+         f"the head out and back (speed change changing sign twice in 3 frames, each over {OUTBACK:.0f} px): {'none' if 'outback' not in worst else f'largest {worst[chr(111)+chr(117)+chr(116)+chr(98)+chr(97)+chr(99)+chr(107)][0]:.1f} px'}"]
+    if planted: L.append(f"planted: {plant} on {planted[2]}'s {'head' if plant in ('c', 'headturn') else 'right hand'}, shot {planted[0]} frame {planted[1]}")
     seen = set(); uniq = []
     for f in faults:
         key = f.split(":")[0].split(" moves ")[0] + f.split(": ")[-1].rsplit(" ", 1)[-1]

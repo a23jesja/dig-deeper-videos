@@ -82,8 +82,8 @@ def main():
     fast = max(range(N - 1), key=eyestep); fastShot = shot(fast)
     plan, noroom = {}, []
     # k: the face alone turning fast but smoothly (built up and braked), where the film's own faces are still
-    kv = [1, 2, 3, 4, 5, 6, 6, 5, 4, 3, 2, 1]; kL = 2 * len(kv) + 2
-    kt = pick(lambda t: big(t, 35) and all(eyestep(q) <= 2 and big(q, 35) for q in range(t - 1, t + kL + 1)) and not any(regions.get(q, {}).get("bub") for q in range(t, t + kL)), kL, calm)
+    kv = [1, 2, 3, 4, 5, 6, 5, 4, 3, 2, 1]; kL = 2 * len(kv) + 2
+    kt = pick(lambda t: big(t, 30) and all(eyestep(q) <= 3 and big(q, 30) and regions.get(q, {}).get("text") == regions.get(t, {}).get("text") for q in range(t - 1, t + kL + 1)) and not any(regions.get(q, {}).get("bub") for q in range(t, t + kL)), kL, calm)
     kOff = {}
     if kt is not None:
         o = 0; offs = []
@@ -94,8 +94,10 @@ def main():
         for i, o in enumerate(offs): kOff[kt + i] = o
     for name, steps, jat, j, bad, ramped in slides:
         total = sum(steps); L = len(steps) + 2 + (len(steps) if ramped else math.ceil(total / BACK))
-        still = lambda t, L=L: all(eyestep(k) <= 2 for k in range(t - 1, t + L + 1))      # (the film's own faces nearly still: the slide is the only movement)
-        need = (lambda t, jat=jat, still=still: big(t + jat, 25) and still(t)) if jat is not None else (lambda t, steps=steps, still=still: all(big(k, 15) for k in range(t, t + len(steps))) and still(t))      # (faces in the picture all through the slide)
+        # (the whole-picture slides: the film's own faces nearly still and its captions unchanged through the window, so the slide is the only
+        #  movement: round 2's f and f2 began as a caption popped in, and the pop and the slide together read as flicker)
+        still = lambda t, L=L: all(eyestep(k) <= 2 for k in range(t - 1, t + L + 1)) and all(regions.get(k, {}).get("text") == regions.get(t, {}).get("text") for k in range(t - 1, t + L + 1))
+        need = (lambda t, jat=jat: big(t + jat, 25)) if jat is not None else (lambda t, steps=steps, still=still: all(big(k, 15) for k in range(t, t + len(steps))) and still(t))      # (faces in the picture all through the slide; h only needs its face)
         order = sorted(calm, key=lambda t: (0 if name.startswith("h") and shot(t) == fastShot else 1, t))
         t0 = pick(lambda t: need(t) and not any(regions.get(k, {}).get("bub") for k in range(t, t + L)), L, calm, order)
         if t0 is None: noroom.append(name); continue      # (no quiet window long enough in this film: reported, not run)
@@ -186,11 +188,11 @@ def main():
         ok, lines = report(name, frames, bad, desc); allok &= ok; L += lines
     if kt is None: L.append("k) a fast smooth head turn: NO ROOM in this film (not run)"); allok = False
     else:
-        ok, lines = report("k", list(range(kt - 1, kt + len(kOff) + 1)), False, "a fast smooth head turn: the face moving 1, 2 ... 6, 6 ... 2, 1 px a frame, held two frames and back the same way"); allok &= ok; L += lines
+        ok, lines = report("k", list(range(kt - 1, kt + len(kOff) + 1)), False, "a fast smooth head turn: the face moving 1, 2 ... 6 ... 2, 1 px a frame, held two frames and back the same way"); allok &= ok; L += lines
     for name in noroom: L.append(f"{name}) NO ROOM in this film: no quiet window long enough (not run)"); allok = False
     inPlan = set()
     for t in [A, B, C, D, E, G, J, J2]:
-        if t is not None: inPlan.update(range(t - 1, t + 2))
+        if t is not None: inPlan.update(range(t - 3, t + 4))      # (the face track's rules span 3-4 frames round a planted jump)
     if kt is not None: inPlan.update(range(kt - 1, kt + len(kOff) + 1))
     for name, (t0, off, *_r) in plan.items(): inPlan.update(range(t0 - 1, t0 + len(off) + 1))
     other = sorted(u for u in failAt if u not in inPlan)

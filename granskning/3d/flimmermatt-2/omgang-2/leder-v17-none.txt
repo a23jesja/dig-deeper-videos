@@ -1,0 +1,4 @@
+movement check (the new measure): body parts at most 40 px a frame, their speed changing at most 13.3 px from frame to frame; the face at most 12 px a frame; the camera's movement taken out by its matrices
+largest: body 11.5 px (B frame 19 boy tipR), speed change 4.1 px (A frame 7 captain tipR), face 4.3 px (A frame 42 captain head)
+the head out and back (speed change changing sign twice in 3 frames, each over 1 px): none
+PASS: 0 faults

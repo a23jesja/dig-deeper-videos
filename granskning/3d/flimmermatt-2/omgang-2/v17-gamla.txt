@@ -1,0 +1,267 @@
+flicker check: ../leverans/3d/kaptenens-karta-3d-steg1-v17.mp4
+frames checked: 208 (1 to 208; the first and last have no neighbour on one side)
+a pixel flickers when it differs by more than 40 (of 255, in R, G or B) from the frame before and the frame after, while those two differ by less than 16
+fails: more than 2000 flickering pixels in a frame, more than 40 in an eye's circle, more than 150 in a box of text
+eye circles per frame: 208 in all; text boxes: 0
+largest: picture 1716 pixels (frame 86), eye 23 (frame 41), text 0 (frame 1)
+movement taken out: a pixel is movement when steps v0 and v1 of at most 12 px explain it (the frame before v0 behind and the frame after v1 ahead both match its 5 x 5 patch, mean grey difference under 14; v0 and v1 point the same way and differ by at most 0.25 of the longer, or 2 px) and its patch is not flat (grey levels vary by 10 or more)
+raw (before movement is taken out): largest picture 2696, eye 184, text 0; frames over the limits raw: 42
+median picture count: 26
+the loop (last frame to first): 63.1 % of the picture changes; inside the shots the median frame change is 2.4 % and 95 % are 4.6 % or less (a pixel changes by more than 24)
+
+FAIL: 1 frames
+  frame 209 (6.97 s): the loop: 63.1 % of the picture changes from the last frame to the first (95 % of frame changes inside the shots are 4.6 % or less)
+
+RAW (Jesper's rule as written, no movement taken out; at most 2000 in the picture, 40 in an eye, 150 in a text): 42 frames over
+  frame 29 (0.97 s): picture 1839, eye 83, text 0
+  frame 34 (1.13 s): picture 823, eye 52, text 0
+  frame 35 (1.17 s): picture 1052, eye 80, text 0
+  frame 36 (1.20 s): picture 1312, eye 110, text 0
+  frame 37 (1.23 s): picture 1579, eye 147, text 0
+  frame 38 (1.27 s): picture 1802, eye 157, text 0
+  frame 39 (1.30 s): picture 1925, eye 177, text 0
+  frame 40 (1.33 s): picture 2675, eye 179, text 0
+  frame 41 (1.37 s): picture 2696, eye 184, text 0
+  frame 42 (1.40 s): picture 2574, eye 169, text 0
+  frame 43 (1.43 s): picture 2455, eye 151, text 0
+  frame 44 (1.47 s): picture 2109, eye 133, text 0
+  frame 45 (1.50 s): picture 1563, eye 114, text 0
+  frame 46 (1.53 s): picture 1320, eye 81, text 0
+  frame 47 (1.57 s): picture 1127, eye 59, text 0
+  frame 60 (2.00 s): picture 356, eye 66, text 0
+  frame 61 (2.03 s): picture 516, eye 95, text 0
+  frame 62 (2.07 s): picture 568, eye 127, text 0
+  frame 63 (2.10 s): picture 565, eye 140, text 0
+  frame 64 (2.13 s): picture 754, eye 133, text 0
+  frame 65 (2.17 s): picture 1250, eye 127, text 0
+  frame 66 (2.20 s): picture 1269, eye 103, text 0
+  frame 67 (2.23 s): picture 1156, eye 77, text 0
+  frame 68 (2.27 s): picture 163, eye 51, text 0
+  frame 75 (2.50 s): picture 425, eye 44, text 0
+  frame 76 (2.53 s): picture 867, eye 48, text 0
+  frame 77 (2.57 s): picture 1246, eye 62, text 0
+  frame 78 (2.60 s): picture 1967, eye 80, text 0
+  frame 79 (2.63 s): picture 1844, eye 67, text 0
+  frame 80 (2.67 s): picture 2135, eye 41, text 0
+  frame 81 (2.70 s): picture 2390, eye 33, text 0
+  frame 82 (2.73 s): picture 2299, eye 33, text 0
+  frame 83 (2.77 s): picture 2019, eye 28, text 0
+  frame 86 (2.87 s): picture 2401, eye 12, text 0
+  frame 120 (4.00 s): picture 774, eye 45, text 0
+  frame 121 (4.03 s): picture 740, eye 43, text 0
+  frame 122 (4.07 s): picture 679, eye 41, text 0
+  frame 180 (6.00 s): picture 683, eye 51, text 0
+  frame 181 (6.03 s): picture 931, eye 66, text 0
+  frame 182 (6.07 s): picture 979, eye 56, text 0
+  frame 183 (6.10 s): picture 775, eye 47, text 0
+  frame 186 (6.20 s): picture 1085, eye 85, text 0
+
+every frame: frame, picture, eye, text, then the raw picture, eye, text
+1	0	0	0	40	0	0
+2	0	0	0	49	0	0
+3	317	0	0	379	0	0
+4	243	0	0	246	0	0
+5	6	0	0	35	0	0
+6	0	0	0	0	0	0
+7	430	0	0	439	0	0
+8	314	0	0	402	0	0
+9	1	0	0	70	0	0
+10	3	0	0	76	1	0
+11	11	3	0	114	7	0
+12	21	4	0	158	11	0
+13	59	7	0	276	22	0
+14	61	8	0	344	19	0
+15	106	7	0	424	25	0
+16	137	2	0	434	15	0
+17	65	3	0	394	14	0
+18	114	0	0	352	14	0
+19	109	1	0	265	17	0
+20	100	2	0	195	11	0
+21	19	1	0	125	6	0
+22	35	0	0	233	5	0
+23	393	0	0	925	1	0
+24	364	0	0	975	2	0
+25	281	0	0	1016	1	0
+26	967	0	0	1142	0	0
+27	464	0	0	512	0	0
+28	482	0	0	1005	0	0
+29	961	0	0	1839	83	0
+30	401	0	0	909	0	0
+31	26	0	0	241	1	0
+32	63	0	0	409	13	0
+33	87	1	0	594	12	0
+34	128	4	0	823	52	0
+35	188	7	0	1052	80	0
+36	198	13	0	1312	110	0
+37	256	17	0	1579	147	0
+38	355	20	0	1802	157	0
+39	379	19	0	1925	177	0
+40	738	20	0	2675	179	0
+41	794	23	0	2696	184	0
+42	809	17	0	2574	169	0
+43	788	19	0	2455	151	0
+44	932	14	0	2109	133	0
+45	278	7	0	1563	114	0
+46	229	4	0	1320	81	0
+47	206	3	0	1127	59	0
+48	141	0	0	921	28	0
+49	126	0	0	711	16	0
+50	112	0	0	574	9	0
+51	52	0	0	434	5	0
+52	25	0	0	305	1	0
+53	14	0	0	189	1	0
+54	5	0	0	112	0	0
+55	4	0	0	77	0	0
+56	15	0	0	89	1	0
+57	24	0	0	94	4	0
+58	10	0	0	128	10	0
+59	8	0	0	214	30	0
+60	9	1	0	356	66	0
+61	20	2	0	516	95	0
+62	27	2	0	568	127	0
+63	21	1	0	565	140	0
+64	339	1	0	754	133	0
+65	372	19	0	1250	127	0
+66	500	17	0	1269	103	0
+67	477	11	0	1156	77	0
+68	30	14	0	163	51	0
+69	1	0	0	58	18	0
+70	0	0	0	12	3	0
+71	0	0	0	0	0	0
+72	0	0	0	0	0	0
+73	0	0	0	2	0	0
+74	4	0	0	138	14	0
+75	17	1	0	425	44	0
+76	49	3	0	867	48	0
+77	64	1	0	1246	62	0
+78	520	2	0	1967	80	0
+79	184	1	0	1844	67	0
+80	223	1	0	2135	41	0
+81	496	0	0	2390	33	0
+82	469	0	0	2299	33	0
+83	376	0	0	2019	28	0
+84	178	0	0	1660	28	0
+85	968	0	0	1939	21	0
+86	1716	0	0	2401	12	0
+87	420	0	0	1560	7	0
+88	413	0	0	1342	1	0
+89	374	0	0	1159	2	0
+90	353	0	0	1034	0	0
+91	382	0	0	1128	0	0
+92	350	0	0	1017	0	0
+93	338	0	0	959	0	0
+94	320	0	0	903	0	0
+95	296	0	0	821	0	0
+96	244	0	0	678	0	0
+97	182	0	0	550	0	0
+98	108	0	0	415	0	0
+99	60	0	0	326	0	0
+100	36	0	0	258	0	0
+101	11	0	0	141	0	0
+102	4	0	0	104	0	0
+103	6	4	0	96	4	0
+104	0	0	0	35	0	0
+105	0	0	0	14	0	0
+106	0	0	0	17	0	0
+107	140	0	0	167	0	0
+108	242	0	0	280	1	0
+109	1	0	0	203	2	0
+110	1	0	0	312	1	0
+111	39	0	0	255	8	0
+112	138	0	0	566	8	0
+113	29	0	0	411	12	0
+114	27	0	0	513	14	0
+115	17	0	0	710	21	0
+116	58	0	0	727	23	0
+117	75	0	0	830	31	0
+118	103	0	0	906	32	0
+119	102	6	0	832	28	0
+120	52	2	0	774	45	0
+121	25	1	0	740	43	0
+122	36	0	0	679	41	0
+123	36	1	0	638	37	0
+124	11	0	0	470	30	0
+125	19	0	0	472	21	0
+126	9	0	0	394	33	0
+127	3	1	0	141	19	0
+128	5	0	0	83	15	0
+129	3	0	0	21	4	0
+130	2	0	0	176	0	0
+131	0	0	0	0	0	0
+132	0	0	0	0	0	0
+133	1	0	0	1	0	0
+134	0	0	0	1	0	0
+135	0	0	0	0	0	0
+136	0	0	0	0	0	0
+137	0	0	0	0	0	0
+138	0	0	0	0	0	0
+139	0	0	0	8	0	0
+140	0	0	0	12	0	0
+141	1	0	0	57	2	0
+142	3	0	0	111	2	0
+143	11	1	0	182	4	0
+144	8	1	0	203	6	0
+145	3	0	0	194	5	0
+146	8	0	0	164	3	0
+147	24	0	0	294	10	0
+148	9	2	0	306	10	0
+149	29	0	0	250	5	0
+150	11	0	0	108	5	0
+151	7	1	0	138	5	0
+152	1	0	0	24	0	0
+153	1	1	0	12	1	0
+154	2	0	0	54	0	0
+155	0	0	0	19	1	0
+156	1	0	0	29	0	0
+157	2	1	0	36	1	0
+158	2	1	0	33	4	0
+159	3	0	0	37	4	0
+160	3	0	0	39	3	0
+161	1	1	0	23	4	0
+162	1	0	0	36	4	0
+163	32	9	0	71	17	0
+164	31	17	0	72	24	0
+165	5	0	0	31	2	0
+166	4	0	0	28	1	0
+167	1	0	0	21	0	0
+168	0	0	0	20	1	0
+169	3	0	0	10	0	0
+170	2	0	0	5	1	0
+171	0	0	0	1	1	0
+172	2	1	0	2	1	0
+173	0	0	0	1	0	0
+174	2	0	0	11	0	0
+175	0	0	0	13	0	0
+176	0	0	0	0	0	0
+177	0	0	0	0	0	0
+178	2	1	0	30	2	0
+179	175	6	0	370	15	0
+180	107	6	0	683	51	0
+181	102	2	0	931	66	0
+182	70	1	0	979	56	0
+183	36	1	0	775	47	0
+184	31	5	0	334	28	0
+185	46	4	0	77	13	0
+186	41	6	0	1085	85	0
+187	0	0	0	31	12	0
+188	4	0	0	14	1	0
+189	5	0	0	20	1	0
+190	1	0	0	24	3	0
+191	1	0	0	18	3	0
+192	0	0	0	16	1	0
+193	0	0	0	27	1	0
+194	4	0	0	46	4	0
+195	4	1	0	61	3	0
+196	12	1	0	106	6	0
+197	8	1	0	122	5	0
+198	13	0	0	124	3	0
+199	26	0	0	157	5	0
+200	223	0	0	399	6	0
+201	52	0	0	295	5	0
+202	26	0	0	266	8	0
+203	40	0	0	196	4	0
+204	55	0	0	219	6	0
+205	13	0	0	180	11	0
+206	46	5	0	158	15	0
+207	44	14	0	151	26	0
+208	46	14	0	135	21	0

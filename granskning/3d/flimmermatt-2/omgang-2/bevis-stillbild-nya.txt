@@ -1,0 +1,74 @@
+flicker proof: faults planted in C:/Users/sweje/AppData/Local/Temp/claude/499ae2b6b7d0911d/becf1467-c80d-4c82-af69-a7ba375e67f6/scratchpad/fl2/still/still-v1y-298.mp4 -> C:/Users/sweje/AppData/Local/Temp/claude/499ae2b6b7d0911d/becf1467-c80d-4c82-af69-a7ba375e67f6/scratchpad/fl2/still/p-new.mp4
+parameters: DIFF 40, SAME 16, picture 2000, eye 40, text 150 pixels; movement step at most 12 px, 5 x 5 patch match under 14 grey levels, flat patch under 10, step before and after differ by at most 0.25 of the longer or 2 px; the fastest real head turn of the film: frame 0 (shot still, 0 px a frame)
+
+a) an empty eye ring on one frame: frames 15-15 (0.50-0.50 s, shot still): FAILED by the check, it must fail (right)
+     frame 15 (0.50 s): 7744 pixels flicker in the picture (at most 2000); 7744 pixels flicker in an eye (at most 40)
+     the raw measure (no movement taken out) is over its limits on frames: [15]
+b) a caption (no quiet frame with a bubble) 3 px out on one frame and back: NO ROOM in this film (not run)
+c) a close-up's face 3 px out on one frame and back: frames 22-22 (0.73-0.73 s, shot still): FAILED by the check, it must fail (right)
+     frame 22 (0.73 s): 4411 pixels flicker in the picture (at most 2000); 1332 pixels flicker in an eye (at most 40)
+     frame 23 (0.77 s): a face's speed changes 6.0 px in one frame (at most 4.5: 12 px a frame built up over about 3 frames); a face's speed changes 6.0 px in one frame (at most 4.5: 12 px a frame built up over about 3 frames); a face goes out and back: its speed change +3.0, -6.0, +3.0 px in x (sign changes twice in 3 frames; reported on the frame that went out); a face goes out and back: its speed change +3.0, -6.0, +3.0 px in x (sign changes twice in 3 frames; reported on the frame that went out)
+     the raw measure (no movement taken out) is over its limits on frames: [22]
+d) a caption with one letter changed on one frame: NO ROOM in this film (not run)
+e) a pupil 6 px out on one frame and back: frames 29-29 (0.97-0.97 s, shot still): FAILED by the check, it must fail (right)
+     frame 29 (0.97 s): 714 pixels flicker in an eye (at most 40)
+     the raw measure (no movement taken out) is over its limits on frames: [29]
+g) a close-up's face 11 px out on one frame and back (inside the 12 px movement step): frames 36-36 (1.20-1.20 s, shot still): FAILED by the check, it must fail (right)
+     frame 36 (1.20 s): 18228 pixels flicker in the picture (at most 2000); 5127 pixels flicker in an eye (at most 40); a face's speed changes 11.0 px in one frame (at most 4.5: 12 px a frame built up over about 3 frames); a face's speed changes 11.0 px in one frame (at most 4.5: 12 px a frame built up over about 3 frames); the whole picture's speed changes 11.1 px in one frame (at most 4.5)
+     frame 37 (1.23 s): a face's speed changes 22.0 px in one frame (at most 4.5: 12 px a frame built up over about 3 frames); a face's speed changes 22.0 px in one frame (at most 4.5: 12 px a frame built up over about 3 frames); a face goes out and back: its speed change +11.0, -22.0, +11.0 px in x (sign changes twice in 3 frames; reported on the frame that went out); a face goes out and back: its speed change +11.0, -22.0, +11.0 px in x (sign changes twice in 3 frames; reported on the frame that went out); the whole picture's speed changes 11.1 px in one frame (at most 4.5)
+     the raw measure (no movement taken out) is over its limits on frames: [36]
+j) a body part (a square on the torso) 45 px out on one frame and back (more than the 40 px body step): frames 43-43 (1.43-1.43 s, shot still): passed by the check, it must fail (WRONG)
+     the raw measure (no movement taken out) is over its limits on frames: none
+j2) a body part 30 px out on one frame and back (inside the 40 px body step: a jump out and back): frames 50-50 (1.67-1.67 s, shot still): passed by the check, it must fail (WRONG)
+     the raw measure (no movement taken out) is over its limits on frames: none
+f) the whole picture sliding 5 px a frame, built up and braked over 4 frames (1-2-3-4, 5 x 8, 4-3-2-1), back the same way: frames 87-120 (2.90-4.00 s, shot still): passed by the check, it must pass (right)
+     the raw measure (no movement taken out) is over its limits on frames: none
+f2) the whole picture speeding up 2, 4, 6, 7 ... 12 px a frame and braking 9, 7, 5, 3, 1, back the same way: frames 127-156 (4.23-5.20 s, shot still): passed by the check, it must pass (right)
+     the raw measure (no movement taken out) is over its limits on frames: none
+f2b) the whole picture speeding up to 14 px a frame (over the 12 px step), built up and braked: frames 163-190 (5.43-6.33 s, shot still): FAILED by the check, it must fail (right)
+     frame 168 (5.60 s): the whole picture moves 12.9 px in a frame (at most 12)
+     frame 169 (5.63 s): a face moves 13.0 px in a frame (at most 12); a face moves 13.0 px in a frame (at most 12); the whole picture moves 14.0 px in a frame (at most 12)
+     frame 170 (5.67 s): a face moves 14.0 px in a frame (at most 12); a face moves 14.0 px in a frame (at most 12)
+     frame 183 (6.10 s): the whole picture moves 13.1 px in a frame (at most 12)
+     ... and 2 frames more
+     the raw measure (no movement taken out) is over its limits on frames: none
+f3) the old slide: from rest straight to 5 px a frame, stopped dead, back at 6 px a frame with no braking (jerks): frames 197-220 (6.57-7.33 s, shot still): FAILED by the check, it must fail (right)
+     frame 197 (6.57 s): a face's speed changes 5.0 px in one frame (at most 4.5: 12 px a frame built up over about 3 frames); a face's speed changes 5.0 px in one frame (at most 4.5: 12 px a frame built up over about 3 frames); the whole picture's speed changes 5.1 px in one frame (at most 4.5)
+     frame 208 (6.93 s): the whole picture's speed changes 5.1 px in one frame (at most 4.5)
+     frame 209 (6.97 s): a face's speed changes 5.0 px in one frame (at most 4.5: 12 px a frame built up over about 3 frames); a face's speed changes 5.0 px in one frame (at most 4.5: 12 px a frame built up over about 3 frames)
+     frame 211 (7.03 s): a face's speed changes 6.0 px in one frame (at most 4.5: 12 px a frame built up over about 3 frames); a face's speed changes 6.0 px in one frame (at most 4.5: 12 px a frame built up over about 3 frames); the whole picture's speed changes 6.0 px in one frame (at most 4.5)
+     ... and 2 frames more
+     the raw measure (no movement taken out) is over its limits on frames: none
+f4) the old speeding-up slide: from rest straight to 6 px a frame, up to 12, stopped dead, back with no braking (jerks): frames 227-246 (7.57-8.20 s, shot still): FAILED by the check, it must fail (right)
+     frame 227 (7.57 s): a face's speed changes 6.0 px in one frame (at most 4.5: 12 px a frame built up over about 3 frames); a face's speed changes 6.0 px in one frame (at most 4.5: 12 px a frame built up over about 3 frames); the whole picture's speed changes 6.9 px in one frame (at most 4.5)
+     frame 233 (7.77 s): the whole picture's speed changes 12.0 px in one frame (at most 4.5)
+     frame 234 (7.80 s): a face's speed changes 12.0 px in one frame (at most 4.5: 12 px a frame built up over about 3 frames); a face's speed changes 12.0 px in one frame (at most 4.5: 12 px a frame built up over about 3 frames)
+     frame 236 (7.87 s): a face's speed changes 6.0 px in one frame (at most 4.5: 12 px a frame built up over about 3 frames); a face's speed changes 6.0 px in one frame (at most 4.5: 12 px a frame built up over about 3 frames); the whole picture's speed changes 6.0 px in one frame (at most 4.5)
+     the raw measure (no movement taken out) is over its limits on frames: none
+h1) a face 2 px out on one frame and back on top of the whole picture moving 3 px a frame: frames 260-260 (8.67-8.67 s, shot still): FAILED by the check, it must fail (right)
+     frame 261 (8.70 s): a face goes out and back: its speed change -2.0, +4.0, -2.0 px in x (sign changes twice in 3 frames; reported on the frame that went out); a face goes out and back: its speed change -2.0, +4.0, -2.0 px in x (sign changes twice in 3 frames; reported on the frame that went out)
+     the raw measure (no movement taken out) is over its limits on frames: none
+h2) a face 3 px out on one frame and back on top of the whole picture moving 3 px a frame: frames 298-298 (9.93-9.93 s, shot still): FAILED by the check, it must fail (right)
+     frame 298 (9.93 s): the whole picture's speed changes 5.8 px in one frame (at most 4.5)
+     frame 299 (9.97 s): a face's speed changes 6.0 px in one frame (at most 4.5: 12 px a frame built up over about 3 frames); a face's speed changes 6.0 px in one frame (at most 4.5: 12 px a frame built up over about 3 frames); a face goes out and back: its speed change -3.0, +6.0, -3.0 px in x (sign changes twice in 3 frames; reported on the frame that went out); a face goes out and back: its speed change -3.0, +6.0, -3.0 px in x (sign changes twice in 3 frames; reported on the frame that went out)
+     the raw measure (no movement taken out) is over its limits on frames: none
+h3) a face 2 px out on one frame and back on top of the whole picture moving 6 px a frame: frames 336-336 (11.20-11.20 s, shot still): FAILED by the check, it must fail (right)
+     frame 336 (11.20 s): the whole picture's speed changes 7.6 px in one frame (at most 4.5)
+     frame 337 (11.23 s): a face goes out and back: its speed change -2.0, +4.0, -2.0 px in x (sign changes twice in 3 frames; reported on the frame that went out); a face goes out and back: its speed change -2.0, +4.0, -2.0 px in x (sign changes twice in 3 frames; reported on the frame that went out); the whole picture's speed changes 6.0 px in one frame (at most 4.5)
+     the raw measure (no movement taken out) is over its limits on frames: none
+h4) a face 3 px out on one frame and back on top of the whole picture moving 6 px a frame: frames 374-374 (12.47-12.47 s, shot still): FAILED by the check, it must fail (right)
+     frame 374 (12.47 s): the whole picture's speed changes 6.6 px in one frame (at most 4.5)
+     frame 375 (12.50 s): a face's speed changes 6.0 px in one frame (at most 4.5: 12 px a frame built up over about 3 frames); a face's speed changes 6.0 px in one frame (at most 4.5: 12 px a frame built up over about 3 frames); a face goes out and back: its speed change -3.0, +6.0, -3.0 px in x (sign changes twice in 3 frames; reported on the frame that went out); a face goes out and back: its speed change -3.0, +6.0, -3.0 px in x (sign changes twice in 3 frames; reported on the frame that went out)
+     the raw measure (no movement taken out) is over its limits on frames: none
+h5) a face 2 px out on one frame and back on top of the whole picture moving 9 px a frame: frames 412-412 (13.73-13.73 s, shot still): FAILED by the check, it must fail (right)
+     frame 413 (13.77 s): a face goes out and back: its speed change -2.0, +4.0, -2.0 px in x (sign changes twice in 3 frames; reported on the frame that went out); a face goes out and back: its speed change -2.0, +4.0, -2.0 px in x (sign changes twice in 3 frames; reported on the frame that went out)
+     the raw measure (no movement taken out) is over its limits on frames: [412]
+h6) a face 3 px out on one frame and back on top of the whole picture moving 9 px a frame: frames 450-450 (15.00-15.00 s, shot still): FAILED by the check, it must fail (right)
+     frame 450 (15.00 s): 3955 pixels flicker in the picture (at most 2000); the whole picture's speed changes 5.7 px in one frame (at most 4.5)
+     frame 451 (15.03 s): a face's speed changes 6.0 px in one frame (at most 4.5: 12 px a frame built up over about 3 frames); a face's speed changes 6.0 px in one frame (at most 4.5: 12 px a frame built up over about 3 frames); a face goes out and back: its speed change -3.0, +6.0, -3.0 px in x (sign changes twice in 3 frames; reported on the frame that went out); a face goes out and back: its speed change -3.0, +6.0, -3.0 px in x (sign changes twice in 3 frames; reported on the frame that went out)
+     the raw measure (no movement taken out) is over its limits on frames: [450]
+k) a fast smooth head turn: the face moving 1, 2 ... 6 ... 2, 1 px a frame, held two frames and back the same way: frames 57-80 (1.90-2.67 s, shot still): passed by the check, it must pass (right)
+     the raw measure (no movement taken out) is over its limits on frames: none
+
+fails outside the planted frames (the film's own): none
+RESULT: the planted cases NOT all as they must be

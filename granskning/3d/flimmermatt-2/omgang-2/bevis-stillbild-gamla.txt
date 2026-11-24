@@ -1,0 +1,68 @@
+flicker proof: faults planted in C:/Users/sweje/AppData/Local/Temp/claude/499ae2b6b7d0911d/becf1467-c80d-4c82-af69-a7ba375e67f6/scratchpad/fl2/still/still-v1y-298.mp4 -> C:/Users/sweje/AppData/Local/Temp/claude/499ae2b6b7d0911d/becf1467-c80d-4c82-af69-a7ba375e67f6/scratchpad/fl2/still/p-old.mp4
+parameters: DIFF 40, SAME 16, picture 2000, eye 40, text 150 pixels; movement step at most 12 px, 5 x 5 patch match under 14 grey levels, flat patch under 10, step before and after differ by at most 0.25 of the longer or 2 px; the fastest real head turn of the film: frame 0 (shot still, 0 px a frame)
+
+a) an empty eye ring on one frame: frames 15-15 (0.50-0.50 s, shot still): FAILED by the check, it must fail (right)
+     frame 15 (0.50 s): 7744 pixels flicker in the picture (at most 2000); 7744 pixels flicker in an eye (at most 40)
+     the raw measure (no movement taken out) is over its limits on frames: [15]
+b) a caption (no quiet frame with a bubble) 3 px out on one frame and back: NO ROOM in this film (not run)
+c) a close-up's face 3 px out on one frame and back: frames 22-22 (0.73-0.73 s, shot still): FAILED by the check, it must fail (right)
+     frame 22 (0.73 s): 5185 pixels flicker in the picture (at most 2000); 1332 pixels flicker in an eye (at most 40)
+     the raw measure (no movement taken out) is over its limits on frames: [22]
+d) a caption with one letter changed on one frame: NO ROOM in this film (not run)
+e) a pupil 6 px out on one frame and back: frames 29-29 (0.97-0.97 s, shot still): FAILED by the check, it must fail (right)
+     frame 29 (0.97 s): 714 pixels flicker in an eye (at most 40)
+     the raw measure (no movement taken out) is over its limits on frames: [29]
+g) a close-up's face 11 px out on one frame and back (inside the 12 px movement step): frames 36-36 (1.20-1.20 s, shot still): FAILED by the check, it must fail (right)
+     frame 36 (1.20 s): 19593 pixels flicker in the picture (at most 2000); 5127 pixels flicker in an eye (at most 40)
+     the raw measure (no movement taken out) is over its limits on frames: [36]
+j) a body part (a square on the torso) 45 px out on one frame and back (more than the 40 px body step): frames 43-43 (1.43-1.43 s, shot still): passed by the check, it must fail (WRONG)
+     the raw measure (no movement taken out) is over its limits on frames: none
+j2) a body part 30 px out on one frame and back (inside the 40 px body step: a jump out and back): frames 50-50 (1.67-1.67 s, shot still): passed by the check, it must fail (WRONG)
+     the raw measure (no movement taken out) is over its limits on frames: none
+f) the whole picture sliding 5 px a frame, built up and braked over 4 frames (1-2-3-4, 5 x 8, 4-3-2-1), back the same way: frames 87-120 (2.90-4.00 s, shot still): passed by the check, it must pass (right)
+     the raw measure (no movement taken out) is over its limits on frames: none
+f2) the whole picture speeding up 2, 4, 6, 7 ... 12 px a frame and braking 9, 7, 5, 3, 1, back the same way: frames 127-156 (4.23-5.20 s, shot still): FAILED by the check, it must pass (WRONG)
+     frame 131 (4.37 s): 3023 pixels flicker in the picture (at most 2000)
+     frame 132 (4.40 s): 5037 pixels flicker in the picture (at most 2000)
+     frame 133 (4.43 s): 6243 pixels flicker in the picture (at most 2000); 47 pixels flicker in an eye (at most 40)
+     frame 134 (4.47 s): 6936 pixels flicker in the picture (at most 2000); 61 pixels flicker in an eye (at most 40)
+     ... and 7 frames more
+     the raw measure (no movement taken out) is over its limits on frames: [131, 132, 133, 134, 135, 136, 147, 148, 149, 150, 151, 152]
+f2b) the whole picture speeding up to 14 px a frame (over the 12 px step), built up and braked: frames 163-190 (5.43-6.33 s, shot still): FAILED by the check, it must fail (right)
+     frame 166 (5.53 s): 4150 pixels flicker in the picture (at most 2000)
+     frame 167 (5.57 s): 6610 pixels flicker in the picture (at most 2000); 61 pixels flicker in an eye (at most 40)
+     frame 168 (5.60 s): 8230 pixels flicker in the picture (at most 2000); 88 pixels flicker in an eye (at most 40)
+     frame 169 (5.63 s): 9665 pixels flicker in the picture (at most 2000); 206 pixels flicker in an eye (at most 40)
+     ... and 8 frames more
+     the raw measure (no movement taken out) is over its limits on frames: [166, 167, 168, 169, 170, 171, 181, 182, 183, 184, 185, 186]
+f3) the old slide: from rest straight to 5 px a frame, stopped dead, back at 6 px a frame with no braking (jerks): frames 197-220 (6.57-7.33 s, shot still): passed by the check, it must fail (WRONG)
+     the raw measure (no movement taken out) is over its limits on frames: none
+f4) the old speeding-up slide: from rest straight to 6 px a frame, up to 12, stopped dead, back with no braking (jerks): frames 227-246 (7.57-8.20 s, shot still): FAILED by the check, it must fail (right)
+     frame 229 (7.63 s): 2943 pixels flicker in the picture (at most 2000)
+     frame 230 (7.67 s): 4742 pixels flicker in the picture (at most 2000)
+     frame 231 (7.70 s): 6252 pixels flicker in the picture (at most 2000); 44 pixels flicker in an eye (at most 40)
+     frame 232 (7.73 s): 6766 pixels flicker in the picture (at most 2000); 60 pixels flicker in an eye (at most 40)
+     the raw measure (no movement taken out) is over its limits on frames: [229, 230, 231, 232]
+h1) a face 2 px out on one frame and back on top of the whole picture moving 3 px a frame: frames 260-260 (8.67-8.67 s, shot still): passed by the check, it must fail (WRONG)
+     the raw measure (no movement taken out) is over its limits on frames: none
+h2) a face 3 px out on one frame and back on top of the whole picture moving 3 px a frame: frames 298-298 (9.93-9.93 s, shot still): passed by the check, it must fail (WRONG)
+     the raw measure (no movement taken out) is over its limits on frames: none
+h3) a face 2 px out on one frame and back on top of the whole picture moving 6 px a frame: frames 336-336 (11.20-11.20 s, shot still): passed by the check, it must fail (WRONG)
+     the raw measure (no movement taken out) is over its limits on frames: none
+h4) a face 3 px out on one frame and back on top of the whole picture moving 6 px a frame: frames 374-374 (12.47-12.47 s, shot still): passed by the check, it must fail (WRONG)
+     the raw measure (no movement taken out) is over its limits on frames: none
+h5) a face 2 px out on one frame and back on top of the whole picture moving 9 px a frame: frames 412-412 (13.73-13.73 s, shot still): FAILED by the check, it must fail (right)
+     frame 411 (13.70 s): 4020 pixels flicker in the picture (at most 2000)
+     frame 412 (13.73 s): 3910 pixels flicker in the picture (at most 2000)
+     frame 413 (13.77 s): 3898 pixels flicker in the picture (at most 2000)
+     the raw measure (no movement taken out) is over its limits on frames: [411, 412, 413]
+h6) a face 3 px out on one frame and back on top of the whole picture moving 9 px a frame: frames 450-450 (15.00-15.00 s, shot still): FAILED by the check, it must fail (right)
+     frame 449 (14.97 s): 4026 pixels flicker in the picture (at most 2000); 44 pixels flicker in an eye (at most 40)
+     frame 450 (15.00 s): 3970 pixels flicker in the picture (at most 2000)
+     frame 451 (15.03 s): 3797 pixels flicker in the picture (at most 2000)
+     the raw measure (no movement taken out) is over its limits on frames: [449, 450, 451]
+k) a fast smooth head turn: the face moving 1, 2 ... 6 ... 2, 1 px a frame, held two frames and back the same way: frames 57-80 (1.90-2.67 s, shot still): passed by the check, it must pass (right)
+     the raw measure (no movement taken out) is over its limits on frames: none
+
+fails outside the planted frames (the film's own): none
+RESULT: the planted cases NOT all as they must be

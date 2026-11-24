@@ -124,7 +124,6 @@ const captainG = (id: string, heading: number): Who3 => { const t0 = SHOT_T0[id]
   }
   let JAB: { side: "L" | "R"; arm: [Seg2, Seg2] } | null = null;
   const arms = (t: number, p: Pose, hd: number): Pose => { const g = t + t0;
-    if (g >= 6.6) return p;      // (D2's close-up: the arms hang, out of the picture below)
     if (g >= 4.4) { const kb = smooth((g - 4.5) / 1.2) * (1 - smooth((g - 6.0) / 0.6)), HL: [Seg2, Seg2] = [[0, 60], [-40, -30]], HR: [Seg2, Seg2] = [[-15, 55], [40, -40]];      // (E and D1: fists really on his hips, elbows out (searched on D1's picture: v45's AKIMBO angles held the fists up at his shoulders); the elbows go out a little more for balance while the knee is up)
       return { ...p, armL: lerpPose(HL, [[0, 68], [-44, -30]], kb), armR: lerpPose(HR, [[-15, 63], [44, -40]], kb) }; }
     const sw = smooth(g / 0.8),      /* (his hand sweeps across the table top from right of the papers to past them: it reaches them at about 0.4 s, when they start to slide; v34's hand stood still while they flew) */ tableR: [Seg2, Seg2] = lerpPose([[0, 40], [60, 30]], [[0, 50], [0, 60]], sw);      // (from right of the stack to its back edge at the table top's height, pushing it off: searched; v39's hand ended above the stack)
@@ -144,7 +143,7 @@ const captainG = (id: string, heading: number): Who3 => { const t0 = SHOT_T0[id]
     return { ...p, armR: f(R0), armL: f(L0) }; };
   const shot = SPEC.shots.find((q) => q.id === id)!, n = Math.round((shot.t1 - shot.t0) * FM.FPS);
   return { name: "captain", at: FIGS.captain, h: HEIGHTS.captain, rimSide: 1, ...(late ? { redAt: T(6.05), ...(id === "D2" ? { redMax: 1.35, sweatAt: T(6.38) } : {}) } : id === "A2b" ? { redAt: -1, redMax: 0.7 } : {}),
-    cast: { name: "captain", m, who: "sir", look: CAPTAIN, seed: late ? 12 : 1, armWipe: false, pose: arms, hands: late ? (t0 >= 6.6 ? { L: [[0, "open"]], R: [[0, "open"]] } : { L: [[0, "fist"]], R: [[0, "fist"]] }) : t0 >= 5.9 ? { L: [[0, "open"]], R: [[0, "open"]] } : id === "A2a" ? { L: [[0, "open"]], R: [[0, "open"]] } : t0 >= 2.05 ? (heading > 0 ? { L: [[0, "point"]], R: [[0, "fist"]] } : { L: [[0, "fist"]], R: [[0, "point"]] }) : { L: [[0, "open"]], R: [[0, "relaxed"]] },
+    cast: { name: "captain", m, who: "sir", look: CAPTAIN, seed: late ? 12 : 1, armWipe: false, pose: arms, hands: late ? { L: [[0, "fist"]], R: [[0, "fist"]] } : t0 >= 5.9 ? { L: [[0, "open"]], R: [[0, "open"]] } : id === "A2a" ? { L: [[0, "open"]], R: [[0, "open"]] } : t0 >= 2.05 ? (heading > 0 ? { L: [[0, "point"]], R: [[0, "fist"]] } : { L: [[0, "fist"]], R: [[0, "point"]] }) : { L: [[0, "open"]], R: [[0, "relaxed"]] },
       ...(late ? {} : { mouth: { t0: 0, len: n, mouth: mouthTrack(C01.words, VOICE_AT.c01 - t0, n).map((v, f) => { const g = t0 + f / FM.FPS; return Math.min(1, id === "A1b" ? (g < 0.97 ? 0 : g < 1.32 ? Math.max(v * 1.6, 1) : v * 1.4) : id === "A2b" ? Math.max(v * 1.4, 0.9) : id === "A2a" && g < 1.53 ? 0 : v * (heading > 20 ? 0.8 : 1)); }) } }) } }; };      // (A2a: shut in the pause until "where": v39 opened it with no word on screen)      // (A1b: shut as it opens, then the shout as wide as the drawing goes; A2b: never under 0.7)      // (A1b: the shout's mouth wide open; A2b: never under 0.7, the angriest)      // (A1b: the shout's mouth wide open)
 /** the boy's timeline (film seconds): 2.7 looking down at the captain's boots, his arm up pointing at them (it is up as the shot opens:
  *  the pose changes on the cut); 2.88 "You're standing on it, Captain."; 3.25-3.7 he looks up at the captain; 3.9-4.35 a big grin, his
@@ -225,7 +224,8 @@ const castShadow = (g: G, id: string, fr: number, w: Who3, fig: OffscreenCanvas 
   const c = camAt(id, fr), [x, y] = w.at, vx = x - c[0], vy = y - c[1], vl = Math.hypot(vx, vy) || 1, rx = -vy / vl, ry = vx / vl, hw = 0.3;
   // (the hinge on the DRAWN soles: the card stands about 40 px lower and draws about 1.3 times wider than the projected world points, so with the
   //  hinge on those the legs fell on the far side of it and his shadow folded away behind him, no shadow in the sun patch: the reviewer on v44)
-  const HZ = 0.3, W0 = project(id, fr, [x - rx * hw, y - ry * hw, 0]), W1 = project(id, fr, [x + rx * hw, y + ry * hw, 0]), WC = project(id, fr, [x, y, 0]), WQ = project(id, fr, [x, y - SUN_BACK * HZ, 0]);
+  const HZ = Math.min(0.3, 0.35 * vl / SUN_BACK), W0 = project(id, fr, [x - rx * hw, y - ry * hw, 0]),      // (HZ: the shadow's reference height, small enough that the floor point it maps to stays in front of the lens: in E (0.45 m away) 0.3 m mapped behind the camera and his shadow vanished, v46)
+  W1 = project(id, fr, [x + rx * hw, y + ry * hw, 0]), WC = project(id, fr, [x, y, 0]), WQ = project(id, fr, [x, y - SUN_BACK * HZ, 0]);
   const pl = placeOf(id, fr, w), f = pl.f, ppm = (footY(f.who) - (jointPx(f, "crown") as unknown as number[])[1]) / (w.h * 0.97), dirx = (W1[0] - W0[0]), diry = (W1[1] - W0[1]), dl = Math.hypot(dirx, diry) || 1;
   const C = toScreen(pl, [f.x, footY(f.who)]), half = (hw * ppm) * pl.z, ratio = (2 * half) / dl;
   const P0 = [C[0] - dirx / dl * half, C[1] - diry / dl * half], P1 = [C[0] + dirx / dl * half, C[1] + diry / dl * half], P2 = toScreen(pl, [f.x, footY(f.who) - HZ * ppm]);
@@ -240,7 +240,7 @@ const castShadow = (g: G, id: string, fr: number, w: Who3, fig: OffscreenCanvas 
   sh.setTransform(1, 0, 0, 1, 0, 0); sh.clearRect(0, 0, FM.W, FM.H); sh.setTransform(ax[0], ay[0], ax[1], ay[1], ax[2], ay[2]); sh.drawImage(fig as CanvasImageSource, 0, 0);
   sh.setTransform(1, 0, 0, 1, 0, 0); sh.globalCompositeOperation = "source-in"; sh.fillStyle = "#3a1806"; sh.fillRect(0, 0, FM.W, FM.H); sh.globalCompositeOperation = "source-over";
   sm.setTransform(1, 0, 0, 1, 0, 0); sm.clearRect(0, 0, FM.W, FM.H); sm.fillStyle = "#ffffff";
-  for (const d of [0]) for (const [x0, x1, z0, z1] of PANES) { const q = [[x0, z0], [x1, z0], [x1, z1], [x0, z1]].map(([px, pz]) => project(id, fr, [px + d, 3.2 - pz * SUN_BACK + d, 0]));
+  for (const d of [0]) for (const [x0, x1, z0, z1] of PANES) { const q = [[x0, z0], [x1, z0], [x1, z1], [x0, z1]].map(([px, pz]) => project(id, fr, [px + d, Math.max(3.2 - pz * SUN_BACK + d, c[1] + 0.12), 0]));      // (the patch's far end held in front of the lens: behind it the corners projected wildly, E v46)
     sm.beginPath(); q.forEach((p, i) => (i ? sm.lineTo(p[0], p[1]) : sm.moveTo(p[0], p[1]))); sm.closePath(); sm.fill(); }
   // (minus the table's own shadow on the floor, from its box and the sun's slope: the hand's shadow fell inside it as a floating blob in A, v34-v40.
   //  v41-v44 used the canvas's brightness for this, but the plate is not on that canvas: it read black everywhere and took every cast shadow away)

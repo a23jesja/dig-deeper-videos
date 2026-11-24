@@ -337,7 +337,7 @@ export const CAPS = ((): { a: number; b: number; text: string }[] => { const cut
   return out; })();
 void captions;
 /** where the band stands in each shot (pixels from the top): the lower third, below the faces, chests and hands; in B above the boy (stage/film.ts allows a shot's band above its figures) */
-const CAP_TOPS: Record<string, number> = { A: 1440, A1b: 1515, A2a: 1412, A2b: 1605, B1: 1400, B2: 1515, E: 1440, D1: 1680, D2: 1680 };      // (B: above the boy's head: his chest and hands fill the lower third)
+const CAP_TOPS: Record<string, number> = { A: 1440, A1b: 1515, A2a: 1412, A2b: 1660, B1: 1400, B2: 1515, E: 1440, D1: 1680, D2: 1680 };      // (B: above the boy's head: his chest and hands fill the lower third)
 export const captionAt = (T: number) => { const c = CAPS.find((q) => T >= q.a - 0.03 && T < q.b); if (!c) return null; const sh = SHOTS.find((s) => T >= s.t0 && T < s.t1) ?? SHOTS[SHOTS.length - 1];
   const sz = Math.round(96 * Math.min(1, 8.9 / capWidth(c.text))), w = Math.min(1020, capWidth(c.text) * 1.194 * sz) * (PLANT.capWide ? 1.6 : 1), top = (CAP_TOPS[sh.id] ?? 1440) - (PLANT.capWide ? 110 : 0);      // (capWide: the planted caption, wider and down at the hands' height: the check must fail it)
   return { text: c.text, sz, box: [540 - w / 2, top, 540 + w / 2, top + sz * 1.08] as [number, number, number, number] }; };

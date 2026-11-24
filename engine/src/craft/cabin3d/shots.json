@@ -169,23 +169,23 @@
    "id": "B2",
    "t0": 3.466666666666667,
    "t1": 4.4,
-   "what": "a deliberate close-up of the boy, chest up, from his right, low: he looks up at the captain and grins: \"on it, Captain\"",
+   "what": "medium shot of the boy from below (30 degrees from B1, which looks down on him; pulled back in v55 so his talking mouth is not a giant close-up): on it, Captain, the sly grin",
    "cam": {
     "from": [
      [
-      0.27,
-      0.575,
-      1.05
+      -0.625,
+      0.551,
+      0.529
      ],
      [
-      0.28,
-      0.575,
-      1.05
+      -0.625,
+      0.548,
+      0.529
      ]
     ],
     "at": [
      1.33,
-     0.71,
+     0.8,
      1.02
     ],
     "lens": 24,

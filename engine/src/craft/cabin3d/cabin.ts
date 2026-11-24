@@ -50,7 +50,16 @@ export const CAPTAIN: Look = { col: { coat: "#24305a", vest: "#a3262e", shirt: "
 export const BOY: Look = { col: { coat: "#5b86b8", vest: "#7aa2cf", shirt: "#f4f0e6", tie: "#7aa2cf", trous: "#6a4a32", shoe: "#3a2a20", cap: "#b8343a", hair: "#7a4a26" }, band: "#8a2228", mono: false, pipe: false, moustache: false };
 
 /** the mouth from a take's word times (pick.json), each frame's change at most 0.12 (the flicker rule), shut outside the words */
-const mouthTrack = (words: { w: string; a: number; b: number }[], t0: number, n: number, rate = 0.1): number[] => {      // (rate: at most this much opening a frame; close-ups slower, v53)
+const mouthTrack = (words: { w: string; a: number; b: number }[], t0: number, n: number, rate = 0.1, env?: number[]): number[] => {
+  if (env) {      // (v55: the voice's own loudness every frame (pick.json env30): the mouth shuts in the dips (the m of map, the p of Captain, the
+    //  pauses) and when the voice ends; v54's smoothed word track held the close-up mouths open (the independent film review). Then at most
+    //  rate a frame, and every turn held for a second frame, so no lip edge goes out and back in one frame (the flicker check))
+    const out: number[] = []; let prev = 0, lastDir = 0, held = false;
+    for (let f = 0; f < n; f++) { const t = f / FM.FPS - t0, k = Math.round(t * FM.FPS), tg = t < 0 ? 0 : env[k] ?? 0; let v = prev + Math.max(-rate, Math.min(rate, tg - prev));
+      const dir = Math.abs(v - prev) < 1e-4 ? 0 : Math.sign(v - prev);
+      if (dir !== 0 && lastDir !== 0 && dir !== lastDir && !held) { v = prev; held = true; } else { held = false; if (dir !== 0) lastDir = dir; }      // (a turn: one frame held first)
+      out.push(v); prev = v; }
+    return out; }      // (rate: at most this much opening a frame; close-ups slower, v53)
   const raw: number[] = []; for (let f = 0; f < n; f++) { const t = f / FM.FPS - t0; raw.push(t < 0 ? 0 : mouthAt(words, t) * 0.9); }
   // (a mouth that shuts for one or two frames between syllables and opens again flickers (the flicker check, v2-v3): each frame takes the
   //  smaller of the largest openings within two frames either side, so a gap of up to four frames is bridged; then at most 0.1 a frame)
@@ -68,8 +77,8 @@ const mouthTrack = (words: { w: string; a: number; b: number }[], t0: number, n:
   const B7 = [1, 6, 15, 20, 15, 6, 1]; return out.map((_, f) => { let s7 = 0, w7 = 0; for (let d = -3; d <= 3; d++) { const q = out[f + d]; if (q === undefined) continue; s7 += B7[d + 3] * q; w7 += B7[d + 3]; } return s7 / w7; }); };
 /** a speaker's mouth over the whole film, cut to one shot: per shot the track started shut at every cut, so the boy's mouth was closed in
  *  the middle of his sentence as B2 began (v53). rate: the opening's limit a frame, the same over the whole line */
-const filmTrack = (words: { w: string; a: number; b: number }[], at: number, t0: number, n: number, rate = 0.1): number[] => {
-  const F0 = Math.round(t0 * FM.FPS), N = Math.round(SHOTS[SHOTS.length - 1].t1 * FM.FPS) + 1; return mouthTrack(words, at, N, rate).slice(F0, F0 + n); };
+const filmTrack = (words: { w: string; a: number; b: number }[], at: number, t0: number, n: number, rate = 0.1, env?: number[]): number[] => {
+  const F0 = Math.round(t0 * FM.FPS), N = Math.round(SHOTS[SHOTS.length - 1].t1 * FM.FPS) + 1; return mouthTrack(words, at, N, rate, env).slice(F0, F0 + n); };
 
 /** h = his height in metres; sil = drawn as a dark silhouette (the over-the-shoulder foreground) */
 export type Who3 = { name: string; cast: Cast; at: [number, number]; h: number; rimSide: 1 | -1; redAt?: number; redMax?: number; sweatAt?: number; sil?: boolean; key?: number };
@@ -160,25 +169,25 @@ const captainG = (id: string, heading: number): Who3 => { const t0 = SHOT_T0[id]
   const shot = SPEC.shots.find((q) => q.id === id)!, n = Math.round((shot.t1 - shot.t0) * FM.FPS);
   return { name: "captain", at: FIGS.captain, h: HEIGHTS.captain, rimSide: 1, ...(late ? { redAt: T(5.95), redMax: 1.35, sweatAt: T(6.15) } : id === "A2b" ? { redAt: -1, redMax: 0.7 } : {}),
     cast: { name: "captain", m, who: "sir", look: CAPTAIN, seed: late ? 12 : 1, armWipe: false, pose: arms, hands: late ? { L: [[0, "fist"]], R: [[0, "fist"]] } : t0 >= 5.9 ? { L: [[0, "open"]], R: [[0, "open"]] } : id === "A2a" ? (heading > 0 ? { L: [[0, "open"], [0.43, "point"]], R: [[0, "open"]] } : { L: [[0, "open"]], R: [[0, "open"], [0.43, "point"]] }) : t0 >= 2.05 ? (heading > 0 ? { L: [[0, "point"]], R: [[0, "open"]] } : { L: [[0, "open"]], R: [[0, "point"]] }) : { L: [[0, "open"]], R: [[0, "relaxed"]] },
-      ...(late ? {} : { mouth: { t0: 0, len: n, mouth: filmTrack(C01.words, VOICE_AT.c01, t0, n).map((v, f) => { const g = t0 + f / FM.FPS; return Math.min(1, id === "A1b" ? (g < 0.97 ? 0 : (1 - smooth((g - 1.12) / 0.4)) * Math.max(v * 1.6, 1) + smooth((g - 1.12) / 0.4) * v * 1.4)      /* (v53: the shout closes over 0.22 s, not in one frame at 1.32: the step flickered in the circle round his eyes) */ : id === "A2b" ? Math.max(v * 1.4, 0.9) : id === "A2a" && g < 1.53 ? 0 : v * (heading > 20 ? 0.8 : 1)); }) } }) } }; };      // (A2a: shut in the pause until "where": v39 opened it with no word on screen)      // (A1b: shut as it opens, then the shout as wide as the drawing goes; A2b: never under 0.7)      // (A1b: the shout's mouth wide open; A2b: never under 0.7, the angriest)      // (A1b: the shout's mouth wide open)
+      ...(late ? {} : { mouth: { t0: 0, len: n, mouth: filmTrack(C01.words, VOICE_AT.c01, t0, n, 0.12, (C01 as { env30?: number[] }).env30).map((v, f) => { const g = t0 + f / FM.FPS; return Math.min(1, id === "A1b" ? (g < 0.97 ? 0 : (1 - smooth((g - 1.12) / 0.4)) * Math.max(v * 1.6, 1) + smooth((g - 1.12) / 0.4) * v * 1.4)      /* (v53: the shout closes over 0.22 s, not in one frame at 1.32: the step flickered in the circle round his eyes) */ : id === "A2b" ? v * 1.2 : id === "A2a" && g < 1.53 ? 0 : v * (heading > 20 ? 0.8 : 1)); }) } }) } }; };      // (A2a: shut in the pause until "where": v39 opened it with no word on screen)      // (A1b: shut as it opens, then the shout as wide as the drawing goes; A2b: never under 0.7)      // (A1b: the shout's mouth wide open; A2b: never under 0.7, the angriest)      // (A1b: the shout's mouth wide open)
 /** the boy's timeline (film seconds): 2.7 looking down at the captain's boots, his arm up pointing at them (it is up as the shot opens:
  *  the pose changes on the cut); 2.88 "You're standing on it, Captain."; 3.25-3.7 he looks up at the captain; 3.9-4.35 a big grin, his
  *  shoulders up, his head tipped */
 const boyG = (id: string, heading: number): Who3 => { const t0 = SHOT_T0[id], T = (x: number) => x - t0, m = figure("sir", 0, heading); m.stand(9);
   ease(m, -9, { head: [-6, 12, 0], lean: 5 }, 0.01, { face: { pupil: 1, gaze: [-0.4, 0.55], smile: 0.2, brow: 0.5 } });
   ease(m, T(3.0), { head: [-8, -6, 2], lean: -1 }, 0.42, { face: { pupil: 1, gaze: [-0.6, -0.55], smile: 0.15, brow: 0.8 } });      // (eyes open as B2 begins; the smile lowers the lids by 4.3: the sly change reads, v44)      // (his eyes go up at the end of B1 and are up as B2 opens)
-  ease(m, T(3.45), { head: [-8, -6, 2], lean: -1 }, 0.01, { face: { pupil: 1, gaze: [-0.6, -0.55], smile: 0.36, brow: 0.8 } });      // (v53: on the cut into B2 the smile is already past 0.3, where the design's smiling lower lid switches on with its full outline: crossing it inside the close-up flickered, 3.83 s)
-  ease(m, T(3.55), { head: [-8, -6, 2], lean: -1 }, 0.85, { face: { pupil: 1, gaze: [-0.6, -0.55], smile: 1, brow: 0.8 } });      // (v53: the head still and the smile over 0.7 s: v52's roll and lift with the smile in the close-up flickered in his eyes, 3.97-4.23 s)
+  ease(m, T(3.45), { head: [-8, -1, 2], lean: -1 }, 0.01, { face: { pupil: 1, gaze: [-0.6, -0.55], smile: 1, brow: 0.8 } });      // (v53: on the cut into B2 the smile is already past 0.3, where the design's smiling lower lid switches on with its full outline: crossing it inside the close-up flickered, 3.83 s)
+  // (v55: the sly smile set whole on the cut into B2 (B1 0.15, B2 1): easing it while he talks put his lower lip out and back where the smile's push and the closing mouth crossed (3.90, 4.10 s))      // (v53: the head still and the smile over 0.7 s: v52's roll and lift with the smile in the close-up flickered in his eyes, 3.97-4.23 s)
   // (the arm solved once for the shot, at its first frame, and held: re-solved every frame it flipped between two answers when his
   //  shoulders lifted, 20 px in a frame, v28)
   // (a straight arm, the finger 35 degrees down toward the screen's left in both shots, found by search on the picture (upper arm and forearm
   //  both at 35 degrees): the reach solver bent the arm differently in B1 and B2, v29-v30)
   const POINT: [Seg2, Seg2] = id === "B1" ? [[5, 55], [5, 55]] : [[30, 50], [30, 50]];
   const HIP: [Seg2, Seg2] = [[20, 25], [60, 0]];      // (his other hand on his hip, the elbow out: searched on B1's picture; the captain's AKIMBO angles put the boy's fist up by his shoulder, v35)
-  const point = (t: number, p: Pose): Pose => ({ ...p, armR: POINT, armL: id === "B1" ? HIP : [[-15, 15], [10, -10]] });      // (B2: the elbow out as in B1 and the fist on his hip below the picture (searched): v49 let the arm hang, a jump across the cut)      // (B2's close-up: the arm hangs, out of the picture below; on the hip its fist sat on the bottom edge)      // (his other hand on his hip: a cocky stance, and out of the caption band above his feet, v34)
+  const point = (t: number, p: Pose): Pose => ({ ...p, armR: POINT, armL: HIP });      /* (v55: B2 is a medium close-up now, so the fist on his hip shows as in B1: the same pose both sides of the cut) */      // (B2: the elbow out as in B1 and the fist on his hip below the picture (searched): v49 let the arm hang, a jump across the cut)      // (B2's close-up: the arm hangs, out of the picture below; on the hip its fist sat on the bottom edge)      // (his other hand on his hip: a cocky stance, and out of the caption band above his feet, v34)
   const shot = SPEC.shots.find((q) => q.id === id)!, n = Math.round((shot.t1 - shot.t0) * FM.FPS);
   return { name: "boy", at: FIGS.boy, h: HEIGHTS.boy, rimSide: -1, key: 0.6, cast: { name: "boy", m, who: "sir", look: BOY, seed: 2, armWipe: false, pose: point,
-    hands: { L: [[0, "fist"]], R: [[0, "point"]] }, mouth: { t0: 0, len: n, mouth: filmTrack(C02.words, VOICE_AT.c02, t0, n, id === "B2" ? 0.05 : 0.07).map((v, f) => (t0 + f / FM.FPS < VOICE_AT.c02 + C02.words[0].a - 0.08 ? 0 : v * (id === "B2" ? 0.75 : 0.85))) } } }; };      // (shut until just before "you're" (0.08 s, so the drawn mouth shows open as the word and its caption begin: at -0.02 the smoothing opened it 0.1 s late, v53); v51 opened it with no word)
+    hands: { L: [[0, "fist"]], R: [[0, "point"]] }, mouth: { t0: 0, len: n, mouth: filmTrack(C02.words, VOICE_AT.c02, t0, n, 0.1, (C02 as { env30?: number[] }).env30).map((v, f) => (t0 + f / FM.FPS < VOICE_AT.c02 + C02.words[0].a - 0.08 ? 0 : t0 + f / FM.FPS < VOICE_AT.c02 + C02.words[0].a + 0.07 ? v * 0.85 : 0.22 + v * 0.55))      /* (v55: once he talks, his mouth stays over 0.2, where the frozen drawing switches the lower lip on: every dip through it and back popped the lip in and out (3.27, 3.90, 4.10 s); and under 0.45 in B2, where the wide-open lower lip met his head's outline and was clipped) */ } } }; };      // (shut until just before "you're" (0.08 s, so the drawn mouth shows open as the word and its caption begin: at -0.02 the smoothing opened it 0.1 s late, v53); v51 opened it with no word)
 /** B: the captain from behind, the dark shape in front: he looks down at his boots as the boy points (0.55) */
 const captainB = (): Who3 => { const s = 1.7, m = figure("sir", 0, 0); m.stand(s + 1);
   ease(m, -1, { head: [0, 0, 0] }, 0.01, {}); ease(m, 0.55, { head: [0, 14, 0], lean: 4 }, 0.6, {});
@@ -370,7 +379,7 @@ export const CAPS = ((): { a: number; b: number; text: string }[] => { const cut
   return out; })();
 void captions;
 /** where the band stands in each shot (pixels from the top): the lower third, below the faces, chests and hands; in B above the boy (stage/film.ts allows a shot's band above its figures) */
-const CAP_TOPS: Record<string, number> = { A: 1400, A1b: 1515, A2a: 1400, A2b: 1660, B1: 1400, B2: 1400, E: 1400, D1: 1400, D2: 1400 };      // (one height for every word, the reviewer on v44; A1b lower because at 1400 "BOY!" lay on his chin in the close-up; A2b lower: at 1400 the words would lie on his chest and fist in a medium shot, so they sit over his thighs)
+const CAP_TOPS: Record<string, number> = { A: 1400, A1b: 1515, A2a: 1400, A2b: 1660, B1: 1400, B2: 1740, E: 1400, D1: 1400, D2: 1400 };      // (one height for every word, the reviewer on v44; A1b lower because at 1400 "BOY!" lay on his chin in the close-up; A2b lower: at 1400 the words would lie on his chest and fist in a medium shot, so they sit over his thighs)
 export const captionAt = (T: number) => { const c = CAPS.find((q) => T >= q.a - 0.03 && T < q.b); if (!c) return null; const sh = SHOTS.find((s) => T >= s.t0 && T < s.t1) ?? SHOTS[SHOTS.length - 1];
   const sz = Math.round(96 * Math.min(1, 8.9 / capWidth(c.text))), w = Math.min(1020, capWidth(c.text) * 1.194 * sz) * (PLANT.capWide ? 1.6 : 1), top = (CAP_TOPS[sh.id] ?? 1440) - (PLANT.capWide ? 110 : 0);      // (capWide: the planted caption, wider and down at the hands' height: the check must fail it)
   return { text: c.text, sz, box: [540 - w / 2, top, 540 + w / 2, top + sz * 1.08] as [number, number, number, number] }; };

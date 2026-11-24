@@ -1,0 +1,2 @@
+cabin depth: 222 frames, 0 faults
+CABIN DEPTH OK

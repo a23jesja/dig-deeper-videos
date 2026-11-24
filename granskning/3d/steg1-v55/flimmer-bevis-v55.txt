@@ -1,0 +1,45 @@
+flicker proof: faults planted in ../leverans/3d/kaptenens-karta-3d-steg1-v55.mp4 -> out/cab3d/proof-v55-planted.mp4
+parameters: DIFF 40, SAME 16, picture 2000, eye 40, text 150 pixels; movement step at most 12 px, 5 x 5 patch match under 14 grey levels, flat patch under 10, step before and after differ by at most 0.25 of the longer or 2 px; the fastest real head turn of the film: frame 48 (shot A2a, 6 px a frame)
+
+a) an empty eye ring on one frame: frames 26-26 (0.87-0.87 s, shot A1b): FAILED by the check, it must fail (right)
+     frame 25 (0.83 s): 79 pixels flicker in an eye (at most 40)
+     frame 26 (0.87 s): 133430 pixels flicker in the picture (at most 2000); 133427 pixels flicker in an eye (at most 40)
+     frame 27 (0.90 s): 56 pixels flicker in an eye (at most 40)
+     the raw measure (no movement taken out) is over its limits on frames: [25, 26, 27]
+b) a caption (no quiet frame with a bubble) 3 px out on one frame and back: frames 33-33 (1.10-1.10 s, shot A1b): FAILED by the check, it must fail (right)
+     frame 33 (1.10 s): 2971 pixels flicker in the picture (at most 2000); 2969 pixels flicker in a text or bubble (at most 150)
+     the raw measure (no movement taken out) is over its limits on frames: [33]
+c) a close-up's face 3 px out on one frame and back: frames 72-72 (2.40-2.40 s, shot A2b): FAILED by the check, it must fail (right)
+     frame 72 (2.40 s): 3850 pixels flicker in the picture (at most 2000); 3713 pixels flicker in an eye (at most 40)
+     the raw measure (no movement taken out) is over its limits on frames: [72]
+d) a caption with one letter changed on one frame: frames 106-106 (3.53-3.53 s, shot B2): FAILED by the check, it must fail (right)
+     frame 106 (3.53 s): 5947 pixels flicker in the picture (at most 2000); 5922 pixels flicker in a text or bubble (at most 150)
+     the raw measure (no movement taken out) is over its limits on frames: [106]
+e) a pupil 6 px out on one frame and back: frames 83-83 (2.77-2.77 s, shot B1): FAILED by the check, it must fail (right)
+     frame 83 (2.77 s): 1974 pixels flicker in an eye (at most 40)
+     the raw measure (no movement taken out) is over its limits on frames: [83]
+g) a close-up's face 11 px out on one frame and back (inside the 12 px movement step): frames 123-123 (4.10-4.10 s, shot B2): FAILED by the check, it must fail (right)
+     frame 122 (4.07 s): 157 pixels flicker in an eye (at most 40)
+     frame 123 (4.10 s): 18536 pixels flicker in the picture (at most 2000); 12344 pixels flicker in an eye (at most 40)
+     the raw measure (no movement taken out) is over its limits on frames: [122, 123]
+j) a body part (a square on the torso) 45 px out on one frame and back (more than the 40 px body step): frames 179-179 (5.97-5.97 s, shot D2): FAILED by the check, it must fail (right)
+     frame 179 (5.97 s): 6064 pixels flicker in the picture (at most 2000)
+     the raw measure (no movement taken out) is over its limits on frames: [179]
+j2) a body part 30 px out on one frame and back (inside the 40 px body step: a jump out and back): frames 203-203 (6.77-6.77 s, shot D1): FAILED by the check, it must fail (right)
+     frame 203 (6.77 s): 8265 pixels flicker in the picture (at most 2000)
+     the raw measure (no movement taken out) is over its limits on frames: [203]
+k) a fast smooth head turn: NO ROOM in this film (not run)
+f) NO ROOM in this film: no quiet window long enough (not run)
+f2) NO ROOM in this film: no quiet window long enough (not run)
+f2b) NO ROOM in this film: no quiet window long enough (not run)
+f3) NO ROOM in this film: no quiet window long enough (not run)
+f4) NO ROOM in this film: no quiet window long enough (not run)
+h1) NO ROOM in this film: no quiet window long enough (not run)
+h2) NO ROOM in this film: no quiet window long enough (not run)
+h3) NO ROOM in this film: no quiet window long enough (not run)
+h4) NO ROOM in this film: no quiet window long enough (not run)
+h5) NO ROOM in this film: no quiet window long enough (not run)
+h6) NO ROOM in this film: no quiet window long enough (not run)
+
+fails outside the planted frames (the film's own): [221]
+RESULT: the planted cases NOT all as they must be

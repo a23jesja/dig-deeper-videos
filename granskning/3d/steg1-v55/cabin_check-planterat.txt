@@ -1,0 +1,7 @@
+float ->  7 E captain: toeR moves N px in a frame (the flicker rule: at most 11) (20 frames)| 1 E captain: the lifted boot N cm up (a knee raise, at most 11) (13 frames)| CABIN CHECK FAILED
+sink ->  1 A captain: his soles drawn N px from the floor's line (into or above the floor) (24 frames)| 1 A1b captain: his soles drawn N px from the floor's line (into or above the floor) (18 frames)| CABIN CHECK FAILED
+slide ->  2 A captain: his planted L foot slid N cm (19 frames)| 2 A captain: his planted R foot slid N cm (19 frames)| CABIN CHECK FAILED
+lean ->  3 E captain: one foot up and the pelvis N units off the standing foot (leaning in the air) (35 frames)| 3 D2 captain: one foot up and the pelvis N units off the standing foot (leaning in the air) (14 frames)| CABIN CHECK FAILED
+sweatOut ->  9 D2 captain: a sweat drop off his skin (16 frames)| 9 D1 captain: a sweat drop off his skin (21 frames)| CABIN CHECK FAILED
+legOut ->  7 E captain: anR moves N px in a frame (the flicker rule: at most 11) (15 frames)| 10 E captain: his right thigh 16 degrees out (the hip outside the coat) (1 frames)| CABIN CHECK FAILED
+capWide ->  8 A1b captain: the caption "BOY!" over his face (12 frames)| 8 A2a captain: the caption "WHERE" over his hand (5 frames)| CABIN CHECK FAILED

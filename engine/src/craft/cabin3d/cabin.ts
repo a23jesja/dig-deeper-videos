@@ -115,9 +115,9 @@ const captainG = (id: string, heading: number): Who3 => { const t0 = SHOT_T0[id]
   } else {
     ease(m, -9, { head: [6, 6, -3], lean: 2, py: PY }, 0.01, { face: { pupil: 1, gaze: [0, 0.7], brow: 0.8, wide: 0.45, smile: -0.4, mouth: 0.35 } });
     ease(m, T(4.05), { head: [0, 14, 0], lean: 4, px: HIP, py: PY }, 0.4, {});
-    ease(m, T(4.3), { head: [0, 14, 0], lean: 4, px: HIP, py: PY, legR: LIFT } as Partial<Pose>, 1.1, {});      // (up by 5.35: the X clear 0.55 s before the cut, the reviewer)      // (the boot up in 0.75 s, toe up: the X under the toe shows)
+    ease(m, T(4.3), { head: [0, 14, 0], lean: 4, px: HIP, py: PY }, 1.1, {}); m.actAt(T(4.3), { legR: LIFT } as Partial<Pose>, 6.55 - 4.3, { in: 1.1, out: 0.55, antic: 0, glide: true });      // (the lift as its own layer: it eases out into the planted stand 6.0-6.55, so D1 opens with the boot up as E ends and he sets it down; held it read as planted, v32)      // (up by 5.35: the X clear 0.55 s before the cut, the reviewer)      // (the boot up in 0.75 s, toe up: the X under the toe shows)
     ease(m, T(5.86), { head: [6, 6, -3], lean: 2, py: PY }, 0.01, { face: { pupil: 1, gaze: [0, 0.7], brow: 0.8, wide: 0.45, smile: -0.4, mouth: 0.35 } });
-    ease(m, T(6.2), { head: [6, 6, -3], lean: 2, py: PY }, 0.35, { face: { pupil: 1, gaze: [0.6, 0], brow: 0.8, wide: 0.45, smile: -0.5, mouth: 0.3 } });
+    ease(m, T(6.2), { head: [6, 6, -3], lean: 2, py: PY }, 0.35, { face: { pupil: 1, gaze: [0.9, -0.1], brow: 0.8, wide: 0.45, smile: -0.5, mouth: 0.3 } });
     ease(m, T(6.75), { head: [6, 6, -3], lean: 2, py: PY }, 0.5, { face: { pupil: 1, gaze: [0.6, 0], brow: 0.6, smile: 1, mouth: 0.4, sad: 0.25 } });
     if (id === "D2") ease(m, T(6.57), { head: [6, 6, -3], lean: 2, py: PY }, 0.01, { face: { teeth: 1 } });      // (the sheepish grin shows his teeth from the cut into the close-up)
   }
@@ -134,7 +134,7 @@ const captainG = (id: string, heading: number): Who3 => { const t0 = SHOT_T0[id]
     if (g >= 2.05) { // (the jab: the arm on the screen's right side reaches up and out to the right, toward the boy (raised: in the close-up a level arm left the picture and crossed the caption), solved once and held;
       //  the other fist at his chest. v29's set angles pointed the finger back across his own chin)
       if (!JAB) { const sk = solve(D.props("sir"), p, hd), sc = scaleOf("sir"), J = (n: string) => sk.j[n as keyof typeof sk.j] as unknown as number[], right: "L" | "R" = J("shL")[0] > J("shR")[0] ? "L" : "R", sh = J("sh" + right), L = 0.92 * sc * (D.props("sir").upper + D.props("sir").fore + D.props("sir").hand);
-        const r = reach("sir", px(0), p, hd, right, [px(0) + sh[0] * sc + L * 0.5, footY("sir") + sh[1] * sc + L * 0.05], true, { bend: 35 }); JAB = { side: right, arm: (right === "L" ? r.armL : r.armR) as [Seg2, Seg2] }; }
+        const r = reach("sir", px(0), p, hd, right, [px(0) + sh[0] * sc + L * 0.66, footY("sir") + sh[1] * sc + L * 0.1], true, { bend: 12 }); JAB = { side: right, arm: (right === "L" ? r.armL : r.armR) as [Seg2, Seg2] }; }
       const HANG: [Seg2, Seg2] = [[0, 20], [0, 20]]; return JAB.side === "L" ? { ...p, armL: JAB.arm, armR: HANG } : { ...p, armR: JAB.arm, armL: HANG }; }      // (the other arm hangs out of the close-up: v31's raised fist sat on the shoulder, its forearm hidden; one clear jab reads better)      // (A2b: the outstretched arm at his shoulder's height, its finger jabbing at the boy)      // (A2b: the finger jabs at the boy, small and quick)
     return { ...p, armR: f(R0), armL: f(L0) }; };
   const shot = SPEC.shots.find((q) => q.id === id)!, n = Math.round((shot.t1 - shot.t0) * FM.FPS);
@@ -166,7 +166,7 @@ const captainB = (): Who3 => { const s = 1.7, m = figure("sir", 0, 0); m.stand(s
 /** E's step (the boot lifted and set down again, the test of 24 Nov): which way along his facing and how far, in leg lengths */
 export const E_STEP = { ahead: -0.14, dur: 0.75, at: 0.25 };
 export const LIFT_LEG: { th: [number, number]; sh: [number, number]; pitch: number } = { th: [12, 6], sh: [-41, 0], pitch: -10 };      // (4.5 cm up by bending the knee, the hip under the coat, the toe tipped up so the X under it shows; 38 degrees out put the leg outside the coat, v26)
-export const WHO: Record<string, () => Who3[]> = { A: () => [captainG("A", 0)], A1b: () => [captainG("A1b", 30)], A2a: () => [captainG("A2a", 35)], A2b: () => [captainG("A2b", 30)],
+export const WHO: Record<string, () => Who3[]> = { A: () => [captainG("A", 0)], A1b: () => [captainG("A1b", 30)], A2a: () => [captainG("A2a", 35)], A2b: () => [captainG("A2b", 10)],
   B1: () => [boyG("B1", -16)], B2: () => [boyG("B2", -40)], E: () => [captainG("E", 0)], D1: () => [captainG("D1", 0)], D2: () => [captainG("D2", 35)] };
 export const TABLE_TOP = 0.488;
 

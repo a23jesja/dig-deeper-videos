@@ -45,7 +45,7 @@ for (const S of SHOTS) {
       //  figure's box hull filled the empty air under a reaching arm, where the papers fall)
       { const P = (j) => scr(j).map((v) => Math.round(v)), s0 = scr("skull"), c0 = scr("crown"), hr = Math.hypot(c0[0] - s0[0], c0[1] - s0[1]) / 2, lw = Math.round(0.17 * hr);      // (half a sleeve's width: about 0.17 of the head's radius on Knopp)
         const limbs = ["L", "R"].flatMap((d) => [[P("sh" + d), P("el" + d)], [P("el" + d), P("wr" + d)], [P("wr" + d), P("tip" + d)], [P("hip" + d), P("kn" + d)], [P("kn" + d), P("an" + d)], [P("an" + d), P("toe" + d)], [P("heel" + d), P("toe" + d)]]);
-        row.push({ name: w.name, sil: !!w.sil, depth: pl.depth, head: [Math.round((s0[0] + c0[0]) / 2), Math.round((s0[1] + c0[1]) / 2), Math.round(hr * 1.1)],
+        row.push({ name: w.name, sil: !!w.sil, depth: pl.depth, head: [Math.round((s0[0] + c0[0]) / 2), Math.round((s0[1] + c0[1]) / 2), Math.round(hr * 1.1)], headF: [+((s0[0] + c0[0]) / 2).toFixed(2), +((s0[1] + c0[1]) / 2).toFixed(2)],      /* (unrounded, for motion2.py's out-and-back rule: rounding alone gives +1, -2, +1) */
           trunk: hull(["neck", "shL", "shR", "hipL", "hipR"].map((j) => scr(j))).map((q) => q.map((v) => Math.round(v))), limbs, lw, poly: hull(figBox(f).map((q) => toScreen(pl, q))).map((q) => q.map((v) => Math.round(v))) }); }
       if (!w.sil) {
         // 1 the soles on the floor

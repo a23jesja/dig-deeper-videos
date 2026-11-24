@@ -111,7 +111,7 @@ const captainG = (id: string, heading: number): Who3 => { const t0 = SHOT_T0[id]
     { face: { pupil: 1, gaze: [0.6, -0.1], brow: -0.9, smile: -0.6, wide: 0.3, lid: 0 } });      // (step 2: the shout, his mouth wide on "Boy!")
     ease(m, T(0.95), { head: [1, 3, 1], lean: 1, roll: 1 }, 0.6, { face: { pupil: 1, gaze: [0.7, -0.1], brow: -1, smile: -0.8, wide: 0.35, lid: 0 } });
     ease(m, T(1.45), { head: [6, -6, 3], lean: 7 }, 0.45, { face: { pupil: 1, gaze: [0.3, -0.2], brow: -1, smile: -0.8, wide: 0.35, lid: 0 } });
-    ease(m, T(2.02), { head: [10, -10, 5], lean: 15 }, 0.01, { face: { pupil: 1, gaze: [1, 0.15], brow: -1, smile: -1, wide: 0, lid: 0.25, mouth: 1 } });      // (pupils right, at the boy: at 0.6 they sat in the middle on a near-frontal head, into the lens, v34)      // (angriest: brows right down, eyes a little narrowed and on the boy, mouth wide; not the boy's sly half lid, v31)      // (step 3, set on the cut: leaning right in, angriest, eyes narrowed, his mouth wide)
+    ease(m, T(2.05), { head: [10, -10, 5], lean: 15 }, 0.01, { face: { pupil: 1, gaze: [1, 0.15], brow: -1, smile: -1, wide: 0, lid: 0.25, mouth: 1 } });      // (pupils right, at the boy: at 0.6 they sat in the middle on a near-frontal head, into the lens, v34)      // (angriest: brows right down, eyes a little narrowed and on the boy, mouth wide; not the boy's sly half lid, v31)      // (step 3, set on the cut: leaning right in, angriest, eyes narrowed, his mouth wide)
   } else {
     ease(m, -9, { head: [6, 6, -3], lean: 2, py: PY }, 0.01, { face: { pupil: 1, gaze: [0, 0.7], brow: 0.8, wide: 0.45, smile: -0.4, mouth: 0.35 } });
     ease(m, T(4.05), { head: [0, 14, 0], lean: 4, px: HIP, py: PY }, 0.4, {});
@@ -227,6 +227,7 @@ const cnv = () => (typeof OffscreenCanvas !== "undefined" ? new OffscreenCanvas(
 /** a figure's shadow on the floor: his own drawn outline (the offscreen picture of him) carried by an affine map from his upright card to
  *  the floor along the sun's rays, darkening the floor only where the sun falls on it (the panes' patches, their edges softened by five
  *  passes a few centimetres apart: the sun's own size) */
+const SUN_SHOTS = new Set(["A", "E", "D1"]);      // (the captain's cast shadow in the sun: A, E and D1, where both reviewers saw it start at his soles on the sunlit floor)
 const castShadow = (g: G, id: string, fr: number, w: Who3, fig: OffscreenCanvas | HTMLCanvasElement) => {
   const c = camAt(id, fr), [x, y] = w.at, vx = x - c[0], vy = y - c[1], vl = Math.hypot(vx, vy) || 1, rx = -vy / vl, ry = vx / vl, hw = 0.3;
   // (the hinge on the DRAWN soles: the card stands about 40 px lower and draws about 1.3 times wider than the projected world points, so with the
@@ -320,7 +321,7 @@ export const paintFigures = (g: G, id: string, fr: number, whos: Who3[]) => {
       for (let i = 0; i < N; i++) if (Dd[i * 4 + 3] >= 2) { Dd[i * 4] = out[i * 3]; Dd[i * 4 + 1] = out[i * 3 + 1]; Dd[i * 4 + 2] = out[i * 3 + 2]; }
     }
     h.putImageData(img, 0, 0);
-    if (!w.sil) castShadow(g, id, fr, w, o);
+    if (!w.sil && SUN_SHOTS.has(id)) castShadow(g, id, fr, w, o);      // (only where the plate's own sun patch lies under his feet in the picture: in A2a the geometric patch and the plate's light disagree and a shadow floated 30 px off his feet through v52b, two independent reviews)
     // (no canvas blur on the figures: the filter works in stills but not in the headless render, so the stills misled (v13-v18); the
     //  figures stand in the focused plane in every shot, and the plate keeps Blender's own depth of field)
     g.save(); g.setTransform(1, 0, 0, 1, 0, 0); g.drawImage(o as CanvasImageSource, 0, 0); g.restore();

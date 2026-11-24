@@ -83,7 +83,7 @@
   {
    "id": "A2a",
    "t0": 1.4,
-   "t1": 2.05,
+   "t1": 2.066666666666667,
    "what": "full figure, low three-quarter from his right: arms out wide, leaning in: \"where is my\"",
    "cam": {
     "from": [
@@ -110,7 +110,7 @@
   },
   {
    "id": "A2b",
-   "t0": 2.05,
+   "t0": 2.066666666666667,
    "t1": 2.7,
    "what": "medium, nearly from the front and a little above (30 degrees from A2a, so the cut is not a jump cut: the independent review of v52): the jab rising at the boy (screen right), his free hand open at his hip as A2a leaves it",
    "cam": {
@@ -140,7 +140,7 @@
   {
    "id": "B1",
    "t0": 2.7,
-   "t1": 3.45,
+   "t1": 3.466666666666667,
    "what": "the boy full, from the captain's own eyes (his point of view, so the captain is not in the picture), the cabin's side wall behind the boy: he points at the boots: \"You're standing\"",
    "cam": {
     "from": [
@@ -167,7 +167,7 @@
   },
   {
    "id": "B2",
-   "t0": 3.45,
+   "t0": 3.466666666666667,
    "t1": 4.4,
    "what": "a deliberate close-up of the boy, chest up, from his right, low: he looks up at the captain and grins: \"on it, Captain\"",
    "cam": {

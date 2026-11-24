@@ -234,6 +234,11 @@ const castShadow = (g: G, id: string, fr: number, w: Who3, fig: OffscreenCanvas 
   sm.setTransform(1, 0, 0, 1, 0, 0); sm.clearRect(0, 0, FM.W, FM.H); sm.fillStyle = "#ffffff";
   for (const d of [0]) for (const [x0, x1, z0, z1] of PANES) { const q = [[x0, z0], [x1, z0], [x1, z1], [x0, z1]].map(([px, pz]) => project(id, fr, [px + d, 3.2 - pz * SUN_BACK + d, 0]));
     sm.beginPath(); q.forEach((p, i) => (i ? sm.lineTo(p[0], p[1]) : sm.moveTo(p[0], p[1]))); sm.closePath(); sm.fill(); }
+  // (and only where the plate's floor is actually sunlit: the table's own shadow lies inside a window's patch, and the hand's shadow fell there as a
+  //  floating dark blob, v34-v40. A smooth weight on the plate's brightness, no hard threshold)
+  { const P = g.getImageData(0, 0, FM.W, FM.H).data, Mk = sm.getImageData(0, 0, FM.W, FM.H); const md = Mk.data;
+    for (let i = 0; i < md.length; i += 4) { if (!md[i + 3]) continue; const lum = 0.3 * P[i] + 0.55 * P[i + 1] + 0.15 * P[i + 2]; md[i + 3] = Math.round(md[i + 3] * Math.min(1, Math.max(0, (lum - 95) / 70))); }
+    sm.putImageData(Mk, 0, 0); }
   sh.globalCompositeOperation = "destination-in"; sh.drawImage(SM as CanvasImageSource, 0, 0); sh.globalCompositeOperation = "source-over";
   g.save(); g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 0.5; g.drawImage(SH as CanvasImageSource, 0, 0); g.restore(); };
 /** the figures of a shot at frame fr over the plate, the farthest first: contact shadows, the figure, the cabin's light on his fill (the ink
@@ -332,7 +337,7 @@ export const CAPS = ((): { a: number; b: number; text: string }[] => { const cut
   return out; })();
 void captions;
 /** where the band stands in each shot (pixels from the top): the lower third, below the faces, chests and hands; in B above the boy (stage/film.ts allows a shot's band above its figures) */
-const CAP_TOPS: Record<string, number> = { A: 1440, A1b: 1515, A2a: 1412, A2b: 1580, B1: 1400, B2: 1515, E: 1440, D1: 1680, D2: 1680 };      // (B: above the boy's head: his chest and hands fill the lower third)
+const CAP_TOPS: Record<string, number> = { A: 1440, A1b: 1515, A2a: 1412, A2b: 1605, B1: 1400, B2: 1515, E: 1440, D1: 1680, D2: 1680 };      // (B: above the boy's head: his chest and hands fill the lower third)
 export const captionAt = (T: number) => { const c = CAPS.find((q) => T >= q.a - 0.03 && T < q.b); if (!c) return null; const sh = SHOTS.find((s) => T >= s.t0 && T < s.t1) ?? SHOTS[SHOTS.length - 1];
   const sz = Math.round(96 * Math.min(1, 8.9 / capWidth(c.text))), w = Math.min(1020, capWidth(c.text) * 1.194 * sz) * (PLANT.capWide ? 1.6 : 1), top = (CAP_TOPS[sh.id] ?? 1440) - (PLANT.capWide ? 110 : 0);      // (capWide: the planted caption, wider and down at the hands' height: the check must fail it)
   return { text: c.text, sz, box: [540 - w / 2, top, 540 + w / 2, top + sz * 1.08] as [number, number, number, number] }; };

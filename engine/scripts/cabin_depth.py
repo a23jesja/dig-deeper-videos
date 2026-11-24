@@ -34,7 +34,13 @@ for sid, rows in F.items():
             for (a, b) in fg["limbs"]:
                 a, b = np.array(a, float), np.array(b, float); d = b - a; L2 = max(1e-6, d @ d); u = np.clip(((pts - a) @ d) / L2, 0, 1); inside |= np.hypot(*(pts - (a + u[:, None] * d)).T) < fg["lw"] + 10
             inside = inside.reshape(ny, nx)
-            bad = inside & np.isin(K, solid) & (D < fg["depth"] - 0.08)
+            # (contact: a sheet of paper under or against his hand (the wrist-to-tip segments, 2 and 9 of the limbs) is touched, not in front of him:
+            #  A's hand pushes the stack off the table, the reviewer's point 5 on v39. Only paper and only at the hands; a prop or the map still counts)
+            hand = np.zeros(len(pts), bool)
+            for li in (2, 9):
+                a, b = (np.array(q, float) for q in fg["limbs"][li]); d = b - a; L2 = max(1e-6, d @ d); u = np.clip(((pts - a) @ d) / L2, 0, 1); hand |= np.hypot(*(pts - (a + u[:, None] * d)).T) < fg["lw"] + 40
+            touch = hand.reshape(ny, nx) & (K == (kinds.index("paper") + 1 if "paper" in kinds else -1))
+            bad = inside & np.isin(K, solid) & (D < fg["depth"] - 0.08) & ~touch
             if bad.any(): faults.append(f"{sid} frame {fr} {fg['name']}: {int(bad.sum())} cells of the room ({', '.join(sorted({kinds[k - 1] for k in K[bad]}))}) nearer than him inside his outline")
 print(f"cabin depth{' planted' if PLANT else ''}: {frames} frames, {len(faults)} faults"); [print("  " + f) for f in faults[:12]]
 print("CABIN DEPTH FAILED" if faults else "CABIN DEPTH OK"); sys.exit(1 if faults else 0)

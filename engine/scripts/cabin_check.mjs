@@ -53,7 +53,9 @@ for (const S of SHOTS) {
         if (Math.abs(soleY - floorY) > 3) faults.push(`1 ${S.id} frame ${fr} ${w.name}: his soles drawn ${(soleY - floorY).toFixed(1)} px from the floor's line (into or above the floor)`);
         for (const q of ft) { const lifted = ["E", "D1", "D2"].includes(S.id) && w.name === "captain" && q.side === "R";      // (he keeps the boot up as he stares at the X: E and D)
           if (!lifted && q.up > 0.01) faults.push(`1 ${S.id} frame ${fr} ${w.name}: his ${q.side} foot ${(q.up * 100).toFixed(1)} cm above the floor`);
-          if (lifted && q.up > 0.05) faults.push(`1 ${S.id} frame ${fr} ${w.name}: the lifted boot ${(q.up * 100).toFixed(1)} cm up (a couple of centimetres at most 5)`);
+          // (v40: a deliberate knee raise to look under the boot, up to 11 cm, in E and D1 only: a 5 cm lift could not both hide a readable X with margin
+          //  and reveal it (the reviewer's point 1 on v39). Everywhere else a sole is on the floor within 3 px; the planted float (40 degrees more) still fails)
+          if (lifted && q.up > 0.11) faults.push(`1 ${S.id} frame ${fr} ${w.name}: the lifted boot ${(q.up * 100).toFixed(1)} cm up (a knee raise, at most 11)`);
           if (q.up < -0.01) faults.push(`1 ${S.id} frame ${fr} ${w.name}: his ${q.side} foot ${(-q.up * 100).toFixed(1)} cm into the floor`); }
         // 2 no sliding (a foot on the floor keeps its floor point; the figure's own world point counted: it carries the feet)
         const at = placeOf(S.id, fr, w).foot, back = project(S.id, fr, [w.at[0], w.at[1], 0]);

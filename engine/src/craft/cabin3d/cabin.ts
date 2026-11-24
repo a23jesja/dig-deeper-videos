@@ -62,7 +62,7 @@ const mouthTrack = (words: { w: string; a: number; b: number }[], t0: number, n:
   const out: number[] = []; let prev = 0; for (let f = 0; f < n; f++) { const v = prev + Math.max(-0.1, Math.min(0.1, cl[f] - prev)); out.push(v); prev = v; } return out; };
 
 /** h = his height in metres; sil = drawn as a dark silhouette (the over-the-shoulder foreground) */
-export type Who3 = { name: string; cast: Cast; at: [number, number]; h: number; rimSide: 1 | -1; redAt?: number; redMax?: number; sweatAt?: number; sil?: boolean };
+export type Who3 = { name: string; cast: Cast; at: [number, number]; h: number; rimSide: 1 | -1; redAt?: number; redMax?: number; sweatAt?: number; sil?: boolean; key?: number };
 export const HEIGHTS = (SPEC as unknown as { heights: Record<string, number> }).heights;
 /** the 2D camera that puts a standing figure (drawn at px(0)) with his feet on the floor point (x, y) and his head h above it, at frame fr */
 /** (a shot may scale its figures at their feet: "scaleAt": "feet" in shots.json. Seen close and from above, the flat card's full height
@@ -115,7 +115,7 @@ const captainG = (id: string, heading: number): Who3 => { const t0 = SHOT_T0[id]
   } else {
     ease(m, -9, { head: [6, 6, -3], lean: 2, py: PY }, 0.01, { face: { pupil: 1, gaze: [0, 0.7], brow: 0.8, wide: 0.45, smile: -0.4, mouth: 0.35 } });
     ease(m, T(4.05), { head: [0, 14, 0], lean: 4, px: HIP, py: PY }, 0.4, {});
-    ease(m, T(4.3), { head: [0, 14, 0], lean: 4, px: HIP, py: PY }, 1.1, {}); m.actAt(T(4.3), { legR: LIFT } as Partial<Pose>, 6.55 - 4.3, { in: 1.1, out: 0.55, antic: 0, glide: true });      // (the lift as its own layer: it eases out into the planted stand 6.0-6.55, so D1 opens with the boot up as E ends and he sets it down; held it read as planted, v32)      // (up by 5.35: the X clear 0.55 s before the cut, the reviewer)      // (the boot up in 0.75 s, toe up: the X under the toe shows)
+    ease(m, T(4.3), { head: [0, 14, 0], lean: 4, px: HIP, py: PY }, 1.1, {}); m.actAt(T(4.52), { legR: LIFT } as Partial<Pose>, 6.6 - 4.52, { in: 1.0, out: 0.6, antic: 0, glide: true });      // (the lift as its own layer: it eases out into the planted stand 6.0-6.55, so D1 opens with the boot up as E ends and he sets it down; held it read as planted, v32)      // (up by 5.35: the X clear 0.55 s before the cut, the reviewer)      // (the boot up in 0.75 s, toe up: the X under the toe shows)
     ease(m, T(5.86), { head: [6, 6, -3], lean: 2, py: PY }, 0.01, { face: { pupil: 1, gaze: [0, 0.7], brow: 0.8, wide: 0.45, smile: -0.4, mouth: 0.35 } });
     ease(m, T(6.2), { head: [6, 6, -3], lean: 2, py: PY }, 0.35, { face: { pupil: 1, gaze: [0.9, -0.1], brow: 0.8, wide: 0.45, smile: -0.5, mouth: 0.3 } });
     if (id !== "D2") ease(m, T(6.75), { head: [6, 6, -3], lean: 2, py: PY }, 0.5, { face: { pupil: 1, gaze: [0.6, 0], brow: 0.6, smile: 1, mouth: 0.4, sad: 0.25 } });
@@ -124,7 +124,7 @@ const captainG = (id: string, heading: number): Who3 => { const t0 = SHOT_T0[id]
   let JAB: { side: "L" | "R"; arm: [Seg2, Seg2] } | null = null;
   const arms = (t: number, p: Pose, hd: number): Pose => { const g = t + t0;
     if (g >= 4.4) return p;      // (E and D1: his arms hang, the open hands by his coat's hem in both pictures (E framed wide enough to hold them): v35 had fists on his hips in E, out of its picture, but hands at the hem in D1
-    const sw = smooth(g / 0.56),      /* (his hand sweeps across the table top from right of the papers to past them: it reaches them at about 0.4 s, when they start to slide; v34's hand stood still while they flew) */ tableR: [Seg2, Seg2] = lerpPose([[0, 40], [60, 30]], [[0, 50], [10, 70]], 0.25 + 0.75 * sw);
+    const sw = smooth(g / 0.8),      /* (his hand sweeps across the table top from right of the papers to past them: it reaches them at about 0.4 s, when they start to slide; v34's hand stood still while they flew) */ tableR: [Seg2, Seg2] = lerpPose([[0, 40], [60, 30]], [[0, 50], [0, 60]], sw);      // (from right of the stack to its back edge at the table top's height, pushing it off: searched; v39's hand ended above the stack)
     // (A1b is a close-up of his shout: both hands go down and out of it (his right hand leaves the table 0.6-1.1); the arms go out wide
     //  from 1.3, just before the cut into A2a, and land in it: cut on the action)
     // (A2a "where is my": both arms flung wide and low, both palms open toward the room; the move starts while A1b's close-up hides the hands
@@ -142,7 +142,7 @@ const captainG = (id: string, heading: number): Who3 => { const t0 = SHOT_T0[id]
   const shot = SPEC.shots.find((q) => q.id === id)!, n = Math.round((shot.t1 - shot.t0) * FM.FPS);
   return { name: "captain", at: FIGS.captain, h: HEIGHTS.captain, rimSide: 1, ...(late ? { redAt: T(6.05), ...(id === "D2" ? { redMax: 1.35, sweatAt: T(6.38) } : {}) } : id === "A2b" ? { redAt: -1, redMax: 0.7 } : {}),
     cast: { name: "captain", m, who: "sir", look: CAPTAIN, seed: late ? 12 : 1, armWipe: false, pose: arms, hands: late ? { L: [[0, "open"]], R: [[0, "open"]] } : t0 >= 5.9 ? { L: [[0, "open"]], R: [[0, "open"]] } : id === "A2a" ? { L: [[0, "open"]], R: [[0, "open"]] } : t0 >= 2.05 ? (heading > 0 ? { L: [[0, "point"]], R: [[0, "fist"]] } : { L: [[0, "fist"]], R: [[0, "point"]] }) : { L: [[0, "open"]], R: [[0, "relaxed"]] },
-      ...(late ? {} : { mouth: { t0: 0, len: n, mouth: mouthTrack(C01.words, VOICE_AT.c01 - t0, n).map((v, f) => { const g = t0 + f / FM.FPS; return Math.min(1, id === "A1b" ? (g < 0.97 ? 0 : g < 1.32 ? Math.max(v * 1.6, 1) : v * 1.4) : id === "A2b" ? Math.max(v * 1.4, 0.9) : v * (heading > 20 ? 0.8 : 1)); }) } }) } }; };      // (A1b: shut as it opens, then the shout as wide as the drawing goes; A2b: never under 0.7)      // (A1b: the shout's mouth wide open; A2b: never under 0.7, the angriest)      // (A1b: the shout's mouth wide open)
+      ...(late ? {} : { mouth: { t0: 0, len: n, mouth: mouthTrack(C01.words, VOICE_AT.c01 - t0, n).map((v, f) => { const g = t0 + f / FM.FPS; return Math.min(1, id === "A1b" ? (g < 0.97 ? 0 : g < 1.32 ? Math.max(v * 1.6, 1) : v * 1.4) : id === "A2b" ? Math.max(v * 1.4, 0.9) : id === "A2a" && g < 1.53 ? 0 : v * (heading > 20 ? 0.8 : 1)); }) } }) } }; };      // (A2a: shut in the pause until "where": v39 opened it with no word on screen)      // (A1b: shut as it opens, then the shout as wide as the drawing goes; A2b: never under 0.7)      // (A1b: the shout's mouth wide open; A2b: never under 0.7, the angriest)      // (A1b: the shout's mouth wide open)
 /** the boy's timeline (film seconds): 2.7 looking down at the captain's boots, his arm up pointing at them (it is up as the shot opens:
  *  the pose changes on the cut); 2.88 "You're standing on it, Captain."; 3.25-3.7 he looks up at the captain; 3.9-4.35 a big grin, his
  *  shoulders up, his head tipped */
@@ -158,7 +158,7 @@ const boyG = (id: string, heading: number): Who3 => { const t0 = SHOT_T0[id], T 
   const HIP: [Seg2, Seg2] = [[20, 25], [60, 0]];      // (his other hand on his hip, the elbow out: searched on B1's picture; the captain's AKIMBO angles put the boy's fist up by his shoulder, v35)
   const point = (t: number, p: Pose): Pose => ({ ...p, armR: POINT, armL: id === "B1" ? HIP : p.armL });      // (B2's close-up: the arm hangs, out of the picture below; on the hip its fist sat on the bottom edge)      // (his other hand on his hip: a cocky stance, and out of the caption band above his feet, v34)
   const shot = SPEC.shots.find((q) => q.id === id)!, n = Math.round((shot.t1 - shot.t0) * FM.FPS);
-  return { name: "boy", at: FIGS.boy, h: HEIGHTS.boy, rimSide: -1, cast: { name: "boy", m, who: "sir", look: BOY, seed: 2, armWipe: false, pose: point,
+  return { name: "boy", at: FIGS.boy, h: HEIGHTS.boy, rimSide: -1, key: 0.6, cast: { name: "boy", m, who: "sir", look: BOY, seed: 2, armWipe: false, pose: point,
     hands: { L: [[0, id === "B1" ? "fist" : "relaxed"]], R: [[0, "point"]] }, mouth: { t0: 0, len: n, mouth: mouthTrack(C02.words, VOICE_AT.c02 - t0, n) } } }; };
 /** B: the captain from behind, the dark shape in front: he looks down at his boots as the boy points (0.55) */
 const captainB = (): Who3 => { const s = 1.7, m = figure("sir", 0, 0); m.stand(s + 1);
@@ -168,7 +168,7 @@ const captainB = (): Who3 => { const s = 1.7, m = figure("sir", 0, 0); m.stand(s
  *  bent, so a straight free leg would reach into the floor) */
 /** E's step (the boot lifted and set down again, the test of 24 Nov): which way along his facing and how far, in leg lengths */
 export const E_STEP = { ahead: -0.14, dur: 0.75, at: 0.25 };
-export const LIFT_LEG: { th: [number, number]; sh: [number, number]; pitch: number } = { th: [12, 6], sh: [-41, 0], pitch: -10 };      // (4.5 cm up by bending the knee, the hip under the coat, the toe tipped up so the X under it shows; 38 degrees out put the leg outside the coat, v26)
+export const LIFT_LEG: { th: [number, number]; sh: [number, number]; pitch: number } = { th: [22, 6], sh: [-58, 0], pitch: -3 };      // (pitch -3: the sole level as it lifts (searched: at -10 the drawn toe swung up 260 px and the boot turned nose-up))
 export const WHO: Record<string, () => Who3[]> = { A: () => [captainG("A", 0)], A1b: () => [captainG("A1b", 30)], A2a: () => [captainG("A2a", 35)], A2b: () => [captainG("A2b", 25)],
   B1: () => [boyG("B1", -16)], B2: () => [boyG("B2", -40)], E: () => [captainG("E", 0)], D1: () => [captainG("D1", 0)], D2: () => [captainG("D2", 35)] };
 export const TABLE_TOP = 0.488;
@@ -245,8 +245,11 @@ export const paintFigures = (g: G, id: string, fr: number, whos: Who3[]) => {
     const f = pl.f;
     // contact shadows: a soft dark ellipse under each foot on the floor (a radial gradient, squashed to the floor's ellipse in the picture:
     // the canvas blur filter does nothing in the headless render, so v17's were hard-edged and faint), smaller and fainter as a foot lifts
-    if (!w.sil) for (const ft of feetOf(id, fr, w)) { const c = project(id, fr, [ft.world[0], ft.world[1] + 0.02, 0]), ex = project(id, fr, [ft.world[0] + 0.16, ft.world[1] + 0.02, 0]), ey = project(id, fr, [ft.world[0], ft.world[1] + 0.12, 0]);
-      const rx = Math.max(4, Math.hypot(ex[0] - c[0], ex[1] - c[1])), ry = Math.max(2, Math.hypot(ey[0] - c[0], ey[1] - c[1])), al = 0.8 * Math.max(0.5, 1 - ft.up * 7);
+    if (!w.sil) for (const ft of feetOf(id, fr, w)) { const c0 = project(id, fr, [ft.world[0], ft.world[1] + 0.02, 0]), ex = project(id, fr, [ft.world[0] + 0.16, ft.world[1] + 0.02, 0]), ey = project(id, fr, [ft.world[0], ft.world[1] + 0.12, 0]);
+      // (centred on the floor under the drawn foot (its ankle's x on the figure's ground line), so it stays on the floor when the foot lifts and the gap
+      //  shows: v39's sat on the projected world point, behind the boot, so a lifted boot read as sliding back, the reviewer)
+      const an = jointPx(f, "an" + ft.side), c = toScreen(pl, [an[0], footY(f.who) - 4]);
+      const kl = 1 - 0.5 * Math.min(1, ft.up / 0.04), rx = Math.max(4, kl * Math.hypot(ex[0] - c0[0], ex[1] - c0[1])), ry = Math.max(2, kl * Math.hypot(ey[0] - c0[0], ey[1] - c0[1])), al = ft.up > 0.004 ? 0.75 : 0.8;      /* (a lifted boot: a smaller, darker shadow right under it, so the gap reads as a lift; the full-size one spread too thin to see, v40) */      // (a lifted boot keeps a clear soft shadow on the floor under it, so the gap reads as a lift, v40)
       g.save(); g.setTransform(1, 0, 0, ry / rx, c[0], c[1]); const gr = g.createRadialGradient(0, 0, 0, 0, 0, rx); gr.addColorStop(0, `rgba(14,7,5,${al})`); gr.addColorStop(0.55, `rgba(14,7,5,${al * 0.6})`); gr.addColorStop(1, "rgba(14,7,5,0)");
       g.fillStyle = gr; g.beginPath(); g.arc(0, 0, rx, 0, Math.PI * 2); g.fill(); g.restore(); }
     const o = off(), h = o.getContext("2d", { willReadFrequently: true }) as unknown as G; h.setTransform(1, 0, 0, 1, 0, 0); h.clearRect(0, 0, FM.W, FM.H);
@@ -278,9 +281,10 @@ export const paintFigures = (g: G, id: string, fr: number, whos: Who3[]) => {
       //  frame and flickered, v9-v16. wf = how much a pixel is fill (not ink), from its distance to the ink's colour and its alpha; the rim
       //  only on the figure's own edge (a neighbour toward the windows outside him), not along every inner line)
       const A = (i: number) => Dd[i * 4 + 3] / 255, wf = (k: number) => Math.min(1, Math.max(0, (Math.abs(Dd[k] - 36) + Math.abs(Dd[k + 1] - 23) + Math.abs(Dd[k + 2] - 38) - 30) / 40)) * (Dd[k + 3] / 255);
-      const out = new Float32Array(N * 3);
+      const out = new Float32Array(N * 3); let kx0 = Wd, kx1 = 0; if (w.key) for (let y = 0; y < FM.H; y += 8) for (let x = 0; x < Wd; x += 4) if (Dd[(y * Wd + x) * 4 + 3] > 128) { kx0 = Math.min(kx0, x); kx1 = Math.max(kx1, x); }
       for (let y = 0; y < FM.H; y++) for (let x = 0; x < Wd; x++) { const i = y * Wd + x, k = i * 4; if (Dd[k + 3] < 2) continue; const f0 = wf(k); if (f0 <= 0) { out[i * 3] = Dd[k]; out[i * 3 + 1] = Dd[k + 1]; out[i * 3 + 2] = Dd[k + 2]; continue; }
         let r = Dd[k] * 0.8 + 6, gg = Dd[k + 1] * 0.7, b = Dd[k + 2] * 0.66;
+        if (w.key) { const q = w.key * Math.min(1, Math.max(0, (dx > 0 ? x - kx0 : kx1 - x) / Math.max(1, kx1 - kx0))); r = r * (1 + 0.42 * q) + 22 * q; gg = gg * (1 + 0.3 * q) + 12 * q; b = b * (1 + 0.08 * q); }      // (a warm light from the windows' side across him (B), graded smoothly over his width: the side wall behind him is dark, v39)
         const xr = Math.min(Wd - 1, Math.max(0, x + dx * rim)), yr = y - Math.round(rim * 0.7), outside = yr < 0 ? 1 : Math.max(1 - A(yr * Wd + xr), 1 - A(y * Wd + xr));
         if (outside > 0) { const q = outside; r = r * (1 - q) + Math.min(255, r * 1.18 + 52) * q; gg = gg * (1 - q) + Math.min(255, gg * 1.1 + 28) * q; b = b * (1 - q) + (b * 0.96 + 4) * q; }
         if (ru > 0) { const sk = Math.min(1, Math.max(0, (Dd[k] - Dd[k + 2] - 45) / 30)) * Math.min(1, Math.max(0, (Dd[k] - 150) / 40))      /* (smooth: the colour-order test was a hard step that the outlines' soft edges crossed from frame to frame, a flicker at the eyes, v23) */, dd = Math.hypot(x - hc[0], (y - hc[1]) * 1.15) / hr;

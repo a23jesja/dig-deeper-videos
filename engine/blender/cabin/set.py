@@ -128,9 +128,14 @@ imp("wooden_crate_01", (1.95, 1.3, 0), 88, 1.0); imp("wooden_crate_01", (1.95, 1
 imp("wooden_bookshelf_worn", (-2.08, 0.25, 0), -90, 0.95)
 imp("wooden_stool_01", (0.25, 2.15, 0), 15, 1.0)
 lantern = imp("wooden_lantern_01", (-0.62, 1.55, 1.62), 0, 1.0)
+imp("wooden_lantern_01", (1.93, 1.24, 0.66), 25, 1.0)      # (a second lantern standing on the crates by the boy, lit: the side wall behind him read as an empty dark wall, v39)
+LL = bpy.data.lights.new("crate lantern", "POINT"); LL.energy = 70; LL.color = (1.0, 0.66, 0.34); LL.shadow_soft_size = 0.05; LLo = bpy.data.objects.new("crate lantern", LL); sc.collection.objects.link(LLo); LLo.location = (1.86, 1.14, 0.84)      # (a little in front of the lantern's glass, so its glow reaches the wall and the crates)
+# a warm beam from the stern windows' side across the boy and the side wall behind him (B1, B2): v39's boy stood against a near-black wall
+BS = bpy.data.lights.new("boy beam", "SPOT"); BS.energy = 260; BS.color = (1.0, 0.72, 0.42); BS.spot_size = math.radians(34); BS.spot_blend = 0.8; BS.shadow_soft_size = 0.3
+BSo = bpy.data.objects.new("boy beam", BS); sc.collection.objects.link(BSo); BSo.location = (0.7, 2.9, 1.7); BSo.rotation_euler = (Vector((1.6, 0.55, 0.5)) - Vector((0.7, 2.9, 1.7))).to_track_quat("-Z", "Y").to_euler()
 box("lantern chain", "prop", -0.625, -0.615, 1.545, 1.555, 2.14, ZT - 0.16, BEAM)
 # the treasure map flat on the floor, under the captain's boot (our own drawing)
-MP = SPEC["map"]; plane("treasure map", "map", MP["at"], MP["w"], MP["d"], MP["rot"], flat_img("map", os.path.join(T, "map.png"), rough=0.9, glow=0.18), z=0.002)      # (a little light of its own: the red X read pale in the boot's shade, v31)
+MP = SPEC["map"]; plane("treasure map", "map", MP["at"], MP["w"], MP["d"], MP["rot"], flat_img("map", os.path.join(T, "map.png"), rough=0.9, glow=0.0), z=0.002)      # (a little light of its own: the red X read pale in the boot's shade, v31)
 # loose papers on the table that fly off in shot A as the captain rummages
 PAPERS = [plane(f"paper{k}", "paper", (-1.06 + 0.02 * k, 0.895 + 0.01 * k), 0.26, 0.34, 86 + 5 * k, flat_img(f"paper{k}", os.path.join(T, f"paper{k}.png"), glow=0.35), z=TOP + 0.003 * (k + 1)) for k in range(3)]      # (A4-ish, in the free strip of the table top between the jug and the compass: v34's 0.33 x 0.44 sheets lay into the ship and over the front, and one fell through the table front)
 P0 = [(p.location.copy(), p.rotation_euler.copy()) for p in PAPERS]
@@ -183,11 +188,13 @@ def pose_shot(shot, t):
     for k, p in enumerate(PAPERS):
         r0 = P0[k][1]; l0, e, pts, L = PAPER_PATHS[k]; ts, tsl, tf = PAPER_T[k]; g = shot["t0"] + t
         if g < ts + tsl:      # on the table: still, then sliding flat under his hand to just over the front edge
-            u = trap((g - ts) / tsl); p.location = l0.lerp(e, u); tilt = 0.0; turn = 8 * u
+            u = trap((g - ts) / tsl); p.location = l0.lerp(e, u); turn = 8 * u
+            over = max(0.0, 0.823 - (p.location.y - 0.13)) / 0.26; tilt = 8.0 * max(0.0, min(1.0, (over - 0.1) / 0.35)) ** 2      # (the sheet leans over the edge before it tips: v39's stuck out flat)
+            p.location.z = l0.z + max(0.0, p.location.y - 0.823) * math.sin(math.radians(tilt))      # (pivoting on the table's edge: the part behind it lifts, the part over the floor dips)
         else:      # off the edge: forward clear of the table's front, then down; tipped forward in the air, flat again as it lands
             uu = min(1.0, (g - ts - tsl) / tf); i = min(len(pts) - 1, bisect.bisect_left(L, trap(uu, 0.12))); p.location = pts[i].copy()      # (a quick start: it is visibly falling within A's 0.8 s, v34-v35)
             if PLANT_IN and k == 0: p.location.y = max(p.location.y, 0.86 - 0.3 * uu)      # (the planted fault: the sheet drops back into the table front)
-            tilt = 38 * math.sin(math.pi * min(1.0, uu * 1.15)); turn = 8 + 22 * uu      # (tipped toward the lens as it falls, so the sheet shows its face: edge-on it read as a thin strip)
+            tilt = 8 + 30 * math.sin(math.pi * min(1.0, uu * 1.15)); turn = 8 + 22 * uu      # (tipped toward the lens as it falls, so the sheet shows its face: edge-on it read as a thin strip)
             hz = p.location.z - 0.003; tilt = min(tilt, math.degrees(math.asin(max(0.0, min(1.0, hz / 0.14)))))      # (never a corner into the floor: half the sheet's depth is 0.13 m)
         p.rotation_euler = (r0.x, r0.y - math.radians(tilt), r0.z + math.radians(turn))      # (the front edge down: the back edge up, clear of the table top)
 
@@ -271,7 +278,7 @@ if "--paper-check" in argv:
     print(f"PAPER CHECK {'OK' if not faults else 'FAILED'} ({len(faults)} point-frames)", flush=True); sys.exit(0)
 shots = SPEC["shots"] if WHICH == "all" else [s for s in SPEC["shots"] if s["id"] == WHICH]
 for shot in shots:
-    n = round((shot["t1"] - shot["t0"]) * FPS); f0, f1 = (0, n - 1) if FR is None else FR
+    n = int(math.floor((shot["t1"] - shot["t0"]) * FPS + 0.5)); f0, f1 = (0, n - 1) if FR is None else FR      # (half up, as the compositor rounds: Python's round() halves to even and left B1 and B2 a plate short, v40)
     outp = os.path.join(ENGINE, "public", "cab3d", shot["id"]); outd = os.path.join(ENGINE, "out", "cab3d", shot["id"]); os.makedirs(outp, exist_ok=True); os.makedirs(outd, exist_ok=True)
     cams, depths, kinds_, t0 = [], [], [], time.time(); kinds = None
     for fr in range(f0, f1 + 1):

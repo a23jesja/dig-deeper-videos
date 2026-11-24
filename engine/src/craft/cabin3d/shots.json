@@ -70,7 +70,7 @@
      ]
     ],
     "at": [
-     -0.3,
+     -0.2,
      0.82,
      1.2
     ],
@@ -112,29 +112,30 @@
    "id": "A2b",
    "t0": 2.05,
    "t1": 2.7,
-   "what": "full figure, high, 55 degrees from his front left: leaning right in, jabbing his finger at the boy: \"treasure map?\"",
+   "what": "a deliberate close-up, chest up, high from his front left: leaning right in, his finger jabbing at the boy on his outstretched arm: \"treasure map?\"",
    "cam": {
     "from": [
      [
-      -1.25,
-      -1.65,
-      1.55
+      -0.92,
+      -0.62,
+      1.5
      ],
      [
-      -1.2,
-      -1.58,
-      1.54
+      -0.88,
+      -0.57,
+      1.5
      ]
     ],
     "at": [
-     -0.25,
+     0.0,
      0.82,
-     0.85
+     1.12
     ],
-    "lens": 26,
+    "lens": 28,
     "focus": "captain",
     "fstop": 2.8
-   }
+   },
+   "closeup": true
   },
   {
    "id": "B1",
@@ -273,7 +274,7 @@
      ]
     ],
     "at": [
-     -0.3,
+     -0.17,
      0.82,
      1.25
     ],

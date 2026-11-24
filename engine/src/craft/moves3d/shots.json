@@ -1,0 +1,89 @@
+{
+ "note": "3D step 2 (24 Nov): the movement sheet. The same cabin and world axes as step 1 (x right, y away from the lens toward the stern windows, z up, metres). Each piece is one shot; 'keys' moves the camera: [t, where, looking at], eased between each pair. figs: each figure's floor point at the piece's start; walk: the world direction of his card's +x (the picture's right as he is drawn).",
+ "fps": 30,
+ "W": 1080,
+ "H": 1920,
+ "heights": {
+  "captain": 1.75,
+  "boy": 1.5
+ },
+ "map": {
+  "at": [
+   -0.2265,
+   0.866
+  ],
+  "w": 0.6,
+  "d": 0.43,
+  "rot": 188
+ },
+ "figs": {
+  "boy": [
+   0.55,
+   0.45
+  ],
+  "captain": [
+   -0.27,
+   0.82
+  ]
+ },
+ "shots": [
+  {
+   "id": "S1",
+   "t0": 0.0,
+   "t1": 3.0,
+   "what": "sneaking: the boy creeps right to left across the cabin toward the chart table, glances back toward the door (the lens), creeps on",
+   "set": "cabin",
+   "figs": {
+    "boy": [
+     0.55,
+     0.45
+    ]
+   },
+   "walk": {
+    "boy": [
+     1,
+     0
+    ]
+   },
+   "cam": {
+    "keys": [
+     [
+      0.0,
+      [
+       0.37,
+       -2.35,
+       0.95
+      ],
+      [
+       0.37,
+       0.45,
+       0.7
+      ]
+     ],
+     [
+      3.0,
+      [
+       -0.32,
+       -2.35,
+       0.95
+      ],
+      [
+       -0.32,
+       0.45,
+       0.7
+      ]
+     ]
+    ],
+    "lin": true,
+    "lens": 28,
+    "fstop": 2.8,
+    "focus": "boy",
+    "focusPoint": [
+     0.1,
+     0.45,
+     1.15
+    ]
+   }
+  }
+ ]
+}

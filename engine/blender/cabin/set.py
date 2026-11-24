@@ -181,7 +181,7 @@ def pose_shot(shot, t):
     # more than about 11 px a frame (the flicker rule: an eased 0.75 s flight moved them 80 px a frame, v1)
     for k, p in enumerate(PAPERS):
         l0, r0 = P0[k]; pts, L = PAPER_PATHS[k]
-        u = (shot["t0"] + t - (-0.25 + 0.08 * k)) / 2.0      # (the film's own time: they are already sliding off as the film opens, in the air by 0.6 s, and go on falling in the next shot)
+        u = (shot["t0"] + t - (-0.45 + 0.08 * k)) / 2.0      # (the film's own time: they are already sliding off as the film opens, in the air by 0.6 s, and go on falling in the next shot)
         uu = min(1.0, max(0.0, u)); sfr = trap(uu); i = min(len(pts) - 1, bisect.bisect_left(L, sfr))
         p.location = pts[i]; p.rotation_euler = (r0.x, r0.y, r0.z + math.radians(12) * uu)
 

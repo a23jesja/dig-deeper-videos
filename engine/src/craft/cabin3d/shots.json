@@ -16,7 +16,7 @@
  "map": {
   "at": [
    -0.313,
-   0.813
+   0.795
   ],
   "w": 0.6,
   "d": 0.43,
@@ -112,22 +112,22 @@
    "id": "A2b",
    "t0": 2.05,
    "t1": 2.7,
-   "what": "a deliberate close-up, chest up, high from his front left: leaning right in, his finger jabbing at the boy on his outstretched arm: \"treasure map?\"",
+   "what": "a deliberate close-up, chest up, high from his right: leaning right in, his finger jabbing toward the boy, his eyes narrowed: \"treasure map?\"",
    "cam": {
     "from": [
      [
-      -0.92,
-      -0.62,
+      0.9,
+      -0.75,
       1.5
      ],
      [
-      -0.88,
-      -0.57,
+      0.86,
+      -0.7,
       1.5
      ]
     ],
     "at": [
-     0.0,
+     -0.02,
      0.82,
      1.12
     ],
@@ -145,14 +145,14 @@
    "cam": {
     "from": [
      [
-      -0.42,
-      0.38,
-      1.48
+      -0.67,
+      0.12,
+      1.55
      ],
      [
-      -0.4,
-      0.44,
-      1.47
+      -0.65,
+      0.17,
+      1.54
      ]
     ],
     "at": [
@@ -169,29 +169,30 @@
    "id": "B2",
    "t0": 3.45,
    "t1": 4.4,
-   "what": "the boy full figure from his right, low: he looks up at the captain and grins: \"on it, Captain\"",
+   "what": "a deliberate close-up of the boy, chest up, from his right, low: he looks up at the captain and grins: \"on it, Captain\"",
    "cam": {
     "from": [
      [
-      2.05,
-      0.35,
-      0.75
+      1.59,
+      0.96,
+      1.05
      ],
      [
-      2.04,
-      0.36,
-      0.75
+      1.58,
+      0.97,
+      1.05
      ]
     ],
     "at": [
-     0.75,
+     0.95,
      1.85,
-     0.66
+     1.02
     ],
     "lens": 24,
     "focus": "boy",
     "fstop": 2.8
-   }
+   },
+   "closeup": true
   },
   {
    "id": "E",

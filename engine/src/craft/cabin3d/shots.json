@@ -88,18 +88,18 @@
    "cam": {
     "from": [
      [
-      1.29,
-      -1.48,
-      0.75
+      1.382,
+      -1.618,
+      0.745
      ],
      [
-      1.24,
-      -1.41,
-      0.76
+      1.329,
+      -1.544,
+      0.756
      ]
     ],
     "at": [
-     -0.21,
+     -0.24,
      0.82,
      0.83
     ],
@@ -112,7 +112,7 @@
    "id": "A2b",
    "t0": 2.05,
    "t1": 2.7,
-   "what": "a deliberate close-up, chest up, high from his right: leaning right in, his finger jabbing toward the boy, his eyes narrowed: \"treasure map?\"",
+   "what": "a medium shot (head to thigh), high and near-frontal: leaning in, his finger jabbing toward the boy, his eyes on him: \"treasure map?\" (the caption over his legs)",
    "cam": {
     "from": [
      [
@@ -135,7 +135,7 @@
     "focus": "captain",
     "fstop": 2.8
    },
-   "closeup": true
+   "closeup": false
   },
   {
    "id": "B1",
@@ -157,7 +157,7 @@
     ],
     "at": [
      1.35,
-     0.8,
+     0.91,
      0.9
     ],
     "lens": 19.5,
@@ -217,7 +217,7 @@
      0.86,
      0.02
     ],
-    "lens": 31,
+    "lens": 23.5,
     "focus": "captain",
     "fstop": 2.8,
     "focusPoint": [

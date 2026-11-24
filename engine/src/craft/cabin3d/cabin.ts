@@ -123,26 +123,25 @@ const captainG = (id: string, heading: number): Who3 => { const t0 = SHOT_T0[id]
   }
   let JAB: { side: "L" | "R"; arm: [Seg2, Seg2] } | null = null;
   const arms = (t: number, p: Pose, hd: number): Pose => { const g = t + t0;
-    if (g >= 5.9) { const k = 0.35 * smooth((g - 6.3) / 0.7); return { ...p, armL: lerpPose(p.armL as [Seg2, Seg2], [[8, 24], [74, 16]], k), armR: lerpPose(p.armR as [Seg2, Seg2], [[8, 24], [74, 16]], k) }; }
-    if (g >= 4.4) return { ...p, armL: AKIMBO, armR: AKIMBO };      // (E: fists on his hips, out of the close picture of his boots)
-    const sw = smooth(g / 0.6),      /* (his hand sweeps across the table top from right of the papers to past them: it reaches them at about 0.4 s, when they start to slide; v34's hand stood still while they flew) */ tableR: [Seg2, Seg2] = lerpPose([[0, 40], [60, 30]], [[0, 50], [10, 70]], 0.25 + 0.75 * sw);
+    if (g >= 4.4) return p;      // (E and D1: his arms hang, the open hands by his coat's hem in both pictures (E framed wide enough to hold them): v35 had fists on his hips in E, out of its picture, but hands at the hem in D1
+    const sw = smooth(g / 0.56),      /* (his hand sweeps across the table top from right of the papers to past them: it reaches them at about 0.4 s, when they start to slide; v34's hand stood still while they flew) */ tableR: [Seg2, Seg2] = lerpPose([[0, 40], [60, 30]], [[0, 50], [10, 70]], 0.25 + 0.75 * sw);
     // (A1b is a close-up of his shout: both hands go down and out of it (his right hand leaves the table 0.6-1.1); the arms go out wide
     //  from 1.3, just before the cut into A2a, and land in it: cut on the action)
     // (A2a "where is my": both arms flung wide and low, both palms open toward the room; the move starts while A1b's close-up hides the hands
     //  (they stay under its frame) and goes on through A2a; v34's half-way pose with a hanging fist was slack. Palms up at the chest was searched
     //  too: from his hands at his knees it needs 350 px, over a second at the 11 px rule, more than A2a's 0.65 s)
-    const out = smooth((g - 0.75) / 1.6), fist = 0, down = 0, WIDE: [Seg2, Seg2] = [[6, 50], [40, 32]];
-    const R0 = lerpPose(tableR, WIDE, out),      /* (his right hand stays at the table, out of the close-up at its left, until the arms go out: moving it down crossed the close-up too fast) */ L0 = lerpPose(p.armL as [Seg2, Seg2], [[6, 38], [30, 24]], out);      // (the far arm a little less wide: it travels further in the picture)
+    const out = smooth((g - 0.75) / 1.6), fist = 0, down = 0, WIDE: [Seg2, Seg2] = [[6, 44], [44, 30]];
+    const R0 = lerpPose(tableR, WIDE, out),      /* (his right hand stays at the table, out of the close-up at its left, until the arms go out: moving it down crossed the close-up too fast) */ L0 = lerpPose(p.armL as [Seg2, Seg2], [[6, 34], [34, 22]], out);      // (the far arm a little less wide: it travels further in the picture)
     const f = (a: [Seg2, Seg2]) => lerpPose(lerpPose(a, FISTS, fist), LEAN_OUT, down);
     if (g >= 2.05) { // (the jab: the arm on the screen's right side reaches up and out to the right, toward the boy (raised: in the close-up a level arm left the picture and crossed the caption), solved once and held;
       //  the other fist at his chest. v29's set angles pointed the finger back across his own chin)
       if (!JAB) { const sk = solve(D.props("sir"), p, hd), sc = scaleOf("sir"), J = (n: string) => sk.j[n as keyof typeof sk.j] as unknown as number[], right: "L" | "R" = J("shL")[0] > J("shR")[0] ? "L" : "R", sh = J("sh" + right), L = 0.92 * sc * (D.props("sir").upper + D.props("sir").fore + D.props("sir").hand);
-        const r = reach("sir", px(0), p, hd, right, [px(0) + sh[0] * sc + L * 0.66, footY("sir") + sh[1] * sc + L * 0.1], true, { bend: 12 }); JAB = { side: right, arm: (right === "L" ? r.armL : r.armR) as [Seg2, Seg2] }; }
-      const HANG: [Seg2, Seg2] = [[0, 35], [0, 35]]; return JAB.side === "L" ? { ...p, armL: JAB.arm, armR: HANG } : { ...p, armR: JAB.arm, armL: HANG }; }      // (the other arm hangs out of the close-up: v31's raised fist sat on the shoulder, its forearm hidden; one clear jab reads better)      // (A2b: the outstretched arm at his shoulder's height, its finger jabbing at the boy)      // (A2b: the finger jabs at the boy, small and quick)
+        const r = reach("sir", px(0), p, hd, right, [px(0) + sh[0] * sc + L * 0.42, footY("sir") + sh[1] * sc + L * 0.14], true, { bend: 24 }); JAB = { side: right, arm: (right === "L" ? r.armL : r.armR) as [Seg2, Seg2] }; }
+      const HANG: [Seg2, Seg2] = [[0, -12], [0, -8]]; return JAB.side === "L" ? { ...p, armL: JAB.arm, armR: HANG } : { ...p, armR: JAB.arm, armL: HANG }; }      // (the other arm hangs by his side, its hand inside the picture (A2b is a medium shot, v36): v31's raised fist sat on the shoulder; one clear jab reads better)      // (A2b: the outstretched arm at his shoulder's height, its finger jabbing at the boy)      // (A2b: the finger jabs at the boy, small and quick)
     return { ...p, armR: f(R0), armL: f(L0) }; };
   const shot = SPEC.shots.find((q) => q.id === id)!, n = Math.round((shot.t1 - shot.t0) * FM.FPS);
   return { name: "captain", at: FIGS.captain, h: HEIGHTS.captain, rimSide: 1, ...(late ? { redAt: T(6.05), sweatAt: T(6.6), ...(id === "D2" ? { redMax: 1.35 } : {}) } : id === "A2b" ? { redAt: -1, redMax: 0.7 } : {}),
-    cast: { name: "captain", m, who: "sir", look: CAPTAIN, seed: late ? 12 : 1, armWipe: false, pose: arms, hands: late && t0 < 5.9 ? { L: [[0, "fist"]], R: [[0, "fist"]] } : t0 >= 5.9 ? { L: [[0, "open"]], R: [[0, "open"]] } : id === "A2a" ? { L: [[0, "open"]], R: [[0, "open"]] } : t0 >= 2.05 ? (heading > 0 ? { L: [[0, "point"]], R: [[0, "fist"]] } : { L: [[0, "fist"]], R: [[0, "point"]] }) : { L: [[0, "open"]], R: [[0, "relaxed"]] },
+    cast: { name: "captain", m, who: "sir", look: CAPTAIN, seed: late ? 12 : 1, armWipe: false, pose: arms, hands: late ? { L: [[0, "open"]], R: [[0, "open"]] } : t0 >= 5.9 ? { L: [[0, "open"]], R: [[0, "open"]] } : id === "A2a" ? { L: [[0, "open"]], R: [[0, "open"]] } : t0 >= 2.05 ? (heading > 0 ? { L: [[0, "point"]], R: [[0, "fist"]] } : { L: [[0, "fist"]], R: [[0, "point"]] }) : { L: [[0, "open"]], R: [[0, "relaxed"]] },
       ...(late ? {} : { mouth: { t0: 0, len: n, mouth: mouthTrack(C01.words, VOICE_AT.c01 - t0, n).map((v, f) => { const g = t0 + f / FM.FPS; return Math.min(1, id === "A1b" ? (g < 0.97 ? 0 : g < 1.32 ? Math.max(v * 1.6, 1) : v * 1.4) : id === "A2b" ? Math.max(v * 1.4, 0.9) : v * (heading > 20 ? 0.8 : 1)); }) } }) } }; };      // (A1b: shut as it opens, then the shout as wide as the drawing goes; A2b: never under 0.7)      // (A1b: the shout's mouth wide open; A2b: never under 0.7, the angriest)      // (A1b: the shout's mouth wide open)
 /** the boy's timeline (film seconds): 2.7 looking down at the captain's boots, his arm up pointing at them (it is up as the shot opens:
  *  the pose changes on the cut); 2.88 "You're standing on it, Captain."; 3.25-3.7 he looks up at the captain; 3.9-4.35 a big grin, his
@@ -156,7 +155,8 @@ const boyG = (id: string, heading: number): Who3 => { const t0 = SHOT_T0[id], T 
   // (a straight arm, the finger 35 degrees down toward the screen's left in both shots, found by search on the picture (upper arm and forearm
   //  both at 35 degrees): the reach solver bent the arm differently in B1 and B2, v29-v30)
   const POINT: [Seg2, Seg2] = id === "B1" ? [[5, 55], [5, 55]] : [[30, 50], [30, 50]];
-  const point = (t: number, p: Pose): Pose => ({ ...p, armR: POINT, armL: id === "B1" ? AKIMBO : p.armL });      // (his other hand on his hip: a cocky stance, and out of the caption band above his feet, v34)
+  const HIP: [Seg2, Seg2] = [[20, 25], [60, 0]];      // (his other hand on his hip, the elbow out: searched on B1's picture; the captain's AKIMBO angles put the boy's fist up by his shoulder, v35)
+  const point = (t: number, p: Pose): Pose => ({ ...p, armR: POINT, armL: id === "B1" ? HIP : p.armL });      // (B2's close-up: the arm hangs, out of the picture below; on the hip its fist sat on the bottom edge)      // (his other hand on his hip: a cocky stance, and out of the caption band above his feet, v34)
   const shot = SPEC.shots.find((q) => q.id === id)!, n = Math.round((shot.t1 - shot.t0) * FM.FPS);
   return { name: "boy", at: FIGS.boy, h: HEIGHTS.boy, rimSide: -1, cast: { name: "boy", m, who: "sir", look: BOY, seed: 2, armWipe: false, pose: point,
     hands: { L: [[0, id === "B1" ? "fist" : "relaxed"]], R: [[0, "point"]] }, mouth: { t0: 0, len: n, mouth: mouthTrack(C02.words, VOICE_AT.c02 - t0, n) } } }; };
@@ -180,6 +180,8 @@ export const placeOf = (id: string, fr: number, w: Who3) => { const f = castAt([
   // (planted faults for the checks: a figure skating 2 mm a frame; the captain in front moved 35 cm over the boy)
   const at: [number, number] = [w.at[0] + (PLANT.slide && !w.sil ? 0.002 * fr : 0) + (PLANT.fgOverFace && w.sil ? 0.35 : 0), w.at[1]];
   return { ...geo(id, fr, at, w.h, PLANT.sink ? 10 : 0), f }; };
+/** a hand's drawn length on the screen (the rig's hand prop at this shot's scale): the checks measure a hand's reach with it */
+export const handPx = (who: Parameters<typeof scaleOf>[0], pl: ReturnType<typeof placeOf>) => D.props(who).hand * scaleOf(who) * pl.z;
 export const toScreen = (pl: ReturnType<typeof placeOf>, q: P2): P2 => [pl.z * (q[0] - pl.cx) + FM.W / 2, pl.z * (q[1] - pl.cy) + FM.H / 2];
 /** each foot's world point on the floor (metres), from the rig's sole: its sideways offset and its height above the ground */
 export const feetOf = (id: string, fr: number, w: Who3) => { const pl = placeOf(id, fr, w), mpp = w.h / (FM.PPM * heightOf(w.cast.who)), ax = w.at[0] + (PLANT.slide && !w.sil ? 0.002 * fr : 0);
@@ -297,7 +299,7 @@ export const paintFigures = (g: G, id: string, fr: number, whos: Who3[]) => {
  *  quarter (facing the screen's right, D) the near cheek and temple between the ear and the eye, under the cap's band; the drops' places
  *  and the check's skin zone (scripts/cabin_check.mjs) both come from here. v19's drop sat on the cap's gold band and beside the cap */
 export const SWEAT_ZONE = { x0: -0.92, x1: -0.14, y0: -0.34, y1: 0.2 };
-export const SWEAT_DROPS: [number, number, number][] = [[0, -0.29, -0.27], [0.25, -0.43, -0.26], [0.55, -0.3, -0.27], [0.8, -0.44, -0.26]];      // (x for a turned head; a front-facing head (D1) moves them out past the eye, where its temple is: x scaled 1.85)      // (out on the temple, two at a time, running only a little way: in D1's front view v34's drop ran onto the eye's outline)      // (at the temple, away from the eye: lower it read as a tear, v30)      // (off the ear's ring, v21)      // (when, x, y at birth; each runs 0.3 down)
+export const SWEAT_DROPS: [number, number, number][] = [[0, -0.22, -0.2], [0.25, -0.42, -0.19], [0.55, -0.22, -0.2], [0.8, -0.43, -0.19]];      // (below the cap's underside, side by side, never overlapping: v35's tips ran into the cap)      // (x for a turned head; a front-facing head (D1) moves them out past the eye, where its temple is: x scaled 1.85)      // (out on the temple, two at a time, running only a little way: in D1's front view v34's drop ran onto the eye's outline)      // (at the temple, away from the eye: lower it read as a tear, v30)      // (off the ear's ring, v21)      // (when, x, y at birth; each runs 0.3 down)
 /** each drop's place in the head's units at time a0 after the sweating starts, or null when it isn't there (it lives 0.7 s) */
 /** where a drop sits on the head (in head radii): on a turned head as listed; on a front-facing head (D1) out beside the eye, between it and
  *  the ear, a little lower (the face is wide from the front: v34's drop sat on the eye's outline, v35's first try above its corner) */
@@ -309,7 +311,7 @@ export const sweat = (h: G, f: Fig, a0: number) => {
   for (const dr of sweatDrops(a0)) { if (!dr) continue;
     const q = dropAt(dr, f.sk.sin), x = sk[0] + side * q.x * R0, y = sk[1] + q.y * R0, d = Math.max(R0 * 0.058, 24) * Math.max(0.05, dr.sz);      // (the strip of skin between the cap's brim and the ear is about a quarter of a head radius high in the close-up: v35's bigger drops lay on the ear)      // (never smaller than in a close-up: D1's drops were a few pixels on the phone, v34)
     h.save(); h.globalAlpha = Math.max(0, Math.min(1, dr.al)); h.beginPath(); h.moveTo(x, y - d * 1.8); h.quadraticCurveTo(x + d, y + d * 0.2, x, y + d * 0.8); h.quadraticCurveTo(x - d, y + d * 0.2, x, y - d * 1.8); h.closePath();
-    h.fillStyle = "#bfe6ff"; h.fill(); h.lineWidth = D.ol * scaleOf(f.who) * 0.8; h.strokeStyle = "#241726"; h.lineJoin = "round"; h.stroke(); h.restore(); } };
+    h.fillStyle = "#bfe6ff"; h.fill(); h.lineWidth = D.ol * scaleOf(f.who) * 0.8 * Math.min(1, 0.25 + dr.sz);      /* (a thin outline while it grows: v35's new drop was all outline and read as a black mole) */ h.strokeStyle = "#241726"; h.lineJoin = "round"; h.stroke(); h.restore(); } };
 
 export { lerp, smooth };
 
@@ -326,7 +328,7 @@ export const CAPS = ((): { a: number; b: number; text: string }[] => { const cut
   return out; })();
 void captions;
 /** where the band stands in each shot (pixels from the top): the lower third, below the faces, chests and hands; in B above the boy (stage/film.ts allows a shot's band above its figures) */
-const CAP_TOPS: Record<string, number> = { A: 1440, A1b: 1515, A2a: 1455, A2b: 1440, B1: 1400, B2: 1515, E: 1440, D1: 1680, D2: 1680 };      // (B: above the boy's head: his chest and hands fill the lower third)
+const CAP_TOPS: Record<string, number> = { A: 1440, A1b: 1515, A2a: 1412, A2b: 1805, B1: 1400, B2: 1515, E: 1440, D1: 1680, D2: 1680 };      // (B: above the boy's head: his chest and hands fill the lower third)
 export const captionAt = (T: number) => { const c = CAPS.find((q) => T >= q.a - 0.03 && T < q.b); if (!c) return null; const sh = SHOTS.find((s) => T >= s.t0 && T < s.t1) ?? SHOTS[SHOTS.length - 1];
   const sz = Math.round(96 * Math.min(1, 8.9 / capWidth(c.text))), w = Math.min(1020, capWidth(c.text) * 1.194 * sz) * (PLANT.capWide ? 1.6 : 1), top = (CAP_TOPS[sh.id] ?? 1440) - (PLANT.capWide ? 110 : 0);      // (capWide: the planted caption, wider and down at the hands' height: the check must fail it)
   return { text: c.text, sz, box: [540 - w / 2, top, 540 + w / 2, top + sz * 1.08] as [number, number, number, number] }; };

@@ -186,7 +186,7 @@ def pose_shot(shot, t):
             u = trap((g - ts) / tsl); p.location = l0.lerp(e, u); tilt = 0.0; turn = 8 * u
         else:      # off the edge: forward clear of the table's front, then down; tipped forward in the air, flat again as it lands
             uu = min(1.0, (g - ts - tsl) / tf); i = min(len(pts) - 1, bisect.bisect_left(L, trap(uu, 0.12))); p.location = pts[i].copy()      # (a quick start: it is visibly falling within A's 0.8 s, v34-v35)
-            if PLANT_IN and k == 0: p.location.y += 0.16 * math.sin(math.pi * uu)
+            if PLANT_IN and k == 0: p.location.y = max(p.location.y, 0.86 - 0.3 * uu)      # (the planted fault: the sheet drops back into the table front)
             tilt = 38 * math.sin(math.pi * min(1.0, uu * 1.15)); turn = 8 + 22 * uu      # (tipped toward the lens as it falls, so the sheet shows its face: edge-on it read as a thin strip)
             hz = p.location.z - 0.003; tilt = min(tilt, math.degrees(math.asin(max(0.0, min(1.0, hz / 0.14)))))      # (never a corner into the floor: half the sheet's depth is 0.13 m)
         p.rotation_euler = (r0.x, r0.y - math.radians(tilt), r0.z + math.radians(turn))      # (the front edge down: the back edge up, clear of the table top)
@@ -198,7 +198,7 @@ def trap(u, a=0.3):
     if u > 1 - a: return 1 - vm * (1 - u) ** 2 / (2 * a)
     return vm * (u - a / 2)
 
-PAPER_T = [(0.22 + 0.05 * k, 0.2, 1.5) for k in range(3)]      # (each sheet: when his hand reaches it, the slide's length, the fall's length, in seconds)
+PAPER_T = [(0.26 + 0.05 * k, 0.2, 1.5) for k in range(3)]      # (each sheet: when his hand reaches it, the slide's length, the fall's length, in seconds)
 
 def paper_paths():
     """each paper's way: a slide on the table top toward the front-left (under his hand) to just over the front edge, then forward clear of the table's
@@ -207,7 +207,7 @@ def paper_paths():
     scr = lambda q: ((P[0][0] * q.x + P[0][1] * q.y + P[0][2] * q.z + P[0][3]) / (P[2][0] * q.x + P[2][1] * q.y + P[2][2] * q.z + P[2][3]), (P[1][0] * q.x + P[1][1] * q.y + P[1][2] * q.z + P[1][3]) / (P[2][0] * q.x + P[2][1] * q.y + P[2][2] * q.z + P[2][3]))
     out = []
     for k in range(len(PAPERS)):
-        l0 = P0[k][0]; e = Vector((l0.x - 0.05, 0.78 - 0.01 * k, l0.z)); c = Vector((l0.x - 0.2, 0.52 - 0.02 * k, l0.z + 0.03)); end = Vector((l0.x - 0.24 + 0.03 * k, 0.48 - 0.04 * k, 0.003 + 0.002 * k))
+        l0 = P0[k][0]; e = Vector((l0.x - 0.05, 0.78 - 0.01 * k, l0.z)); c = Vector((l0.x - 0.1, 0.5 - 0.02 * k, l0.z + 0.03)); end = Vector((-0.86 + 0.035 * k, 0.5 - 0.045 * k, 0.003 + 0.002 * k))      # (they land beside the map, where A2a and D1 see the floor: v35's landed out of every later picture, so they seemed to vanish)
         pts = [e * (1 - w) ** 2 + c * (2 * (1 - w) * w) + end * (w * w) for w in [n / 599 for n in range(600)]]
         L = [0.0]
         for a, b in zip(pts, pts[1:]): pa, pb = scr(a), scr(b); L.append(L[-1] + math.hypot(pb[0] - pa[0], pb[1] - pa[1]))

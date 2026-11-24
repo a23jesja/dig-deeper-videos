@@ -69,6 +69,10 @@ for (const S of SHOTS) {
           const inside = c[0] > m && c[0] < FM.W - m && c[1] > m && c[1] < FM.H - m, outside = c[0] < -3.5 * len || c[0] > FM.W + 3.5 * len || c[1] < -3.5 * len || c[1] > FM.H + 3.5 * len;
           const off = (q) => q[0] < 0 || q[0] > FM.W || q[1] < 0 || q[1] > FM.H, armGone = off(scr("sh" + sd)) && off(scr("el" + sd)) && off(a);      // (the whole arm out of the picture: nothing reaches the edge to be cut)
           const goneClean = S.closeup && (c[0] < -0.7 * len || c[0] > FM.W + 0.7 * len || c[1] > FM.H + 0.7 * len || c[1] < -0.7 * len);      // (a deliberate close-up: the arm leaves the picture cleanly, no part of the hand in it, the reviewer 24 Nov)
+          // (the drawn hand reaches well past the tip joint (on A2b v35 the check passed a finger
+          //  running into the edge. A hand counted inside must keep that far point 30 px inside the picture)
+          const shape = (w.cast.hands?.[sd] ?? [[0, "relaxed"]]).filter((h) => h[0] <= fr / FM.FPS).pop()?.[1] ?? "relaxed", hl = M.handPx(w.cast.who, pl) * (shape === "point" ? 1.4 : 1.2), dl = Math.hypot(b[0] - a[0], b[1] - a[1]) || 1, e = [a[0] + (b[0] - a[0]) / dl * hl, a[1] + (b[1] - a[1]) / dl * hl],      /* (from the wrist, a pointing finger reaches 1.28-1.35 hand lengths with its outline (A2b v36, B1 v35), so 1.4; other hands 1.2) */ farIn = e[0] > 30 && e[0] < FM.W - 30 && e[1] > 30 && e[1] < FM.H - 30, farOut = e[0] < 0 || e[0] > FM.W || e[1] < 0 || e[1] > FM.H;
+          if (inside && !farIn && !(farOut && c[0] > 0 && c[0] < FM.W && c[1] > 0 && c[1] < FM.H && false)) faults.push(`5 ${S.id} frame ${fr} ${w.name}: his ${sd} hand's far end within 30 px of the picture's edge (at ${e.map((v) => v.toFixed(0))})`);
           if (!inside && !outside && !armGone && !goneClean) faults.push(`5 ${S.id} frame ${fr} ${w.name}: his ${sd} hand cut by the picture's edge (at ${c.map((v) => v.toFixed(0))})`); }
       }
     }

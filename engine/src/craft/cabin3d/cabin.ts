@@ -255,9 +255,13 @@ const castShadow = (g: G, id: string, fr: number, w: Who3, fig: OffscreenCanvas 
     sm.globalCompositeOperation = "destination-out"; sm.fillStyle = "#000"; sm.beginPath(); q.forEach((p, i) => (i ? sm.lineTo(p[0], p[1]) : sm.moveTo(p[0], p[1]))); sm.closePath(); sm.fill(); sm.globalCompositeOperation = "source-over"; }
   // (only when his soles stand in the sun: a shadow that does not start at the feet floats (A2a v51, where the sun patch lies in front of him); then
   //  only the contact shadows under his feet are drawn)
-  { const px0 = Math.round(Math.min(FM.W - 1, Math.max(0, C[0]))), py0 = Math.round(Math.min(FM.H - 1, Math.max(0, C[1] + 6))), sole = sm.getImageData(px0, py0, 1, 1).data[3];
-    if (C[1] > FM.H || sole < 128) return; }
   sh.globalCompositeOperation = "destination-in"; sh.drawImage(SM as CanvasImageSource, 0, 0); sh.globalCompositeOperation = "source-over";
+  // (and the shadow left in the sun must touch the soles: in A2a v52 the patch held his sole point but the shadow's sunny part lay 30 px
+  //  off the feet, floating (the independent review); a band across the soles, as wide as his stance, must hold some of it)
+  { const bx = Math.round(Math.max(0, C[0] - half * 1.4)), by = Math.round(Math.max(0, C[1] + 6)), bw = Math.round(Math.min(FM.W - bx, half * 2.8)), bh = Math.round(Math.min(FM.H - by, 36));      /* (the band just below the soles, outside the boots: at the soles themselves the boots cover the shadow and A2a's floating patch passed) */
+    if (C[1] > FM.H || bw < 2 || bh < 2) return;
+    const px = sh.getImageData(bx, by, bw, bh).data; let n = 0; for (let i = 3; i < px.length; i += 4) if (px[i] > 100) n++;
+    if (n < 0.08 * bw * bh) return; }
   g.save(); g.setTransform(1, 0, 0, 1, 0, 0); for (const [ox, oy] of [[0, 0], [3, 2], [-3, 2], [2, -3], [-2, -3]]) { g.globalAlpha = 0.5 / 5 * (ox || oy ? 1.05 : 0.8); g.drawImage(SH as CanvasImageSource, ox, oy); } g.restore(); };      // (five copies a few px apart: a soft edge like the table's shadow, v45's was hard; no canvas blur headless)
 /** the figures of a shot at frame fr over the plate, the farthest first: contact shadows, the figure, the cabin's light on his fill (the ink
  *  kept), the red face and the sweat, the lens blur at his depth. Nothing is drawn but the rig's own figure (its own two hands) */
@@ -330,7 +334,7 @@ export const SWEAT_DROPS: [number, number, number][] = [[0, -0.3, -0.17]];      
 /** each drop's place in the head's units at time a0 after the sweating starts, or null when it isn't there (it lives 0.7 s) */
 /** where a drop sits on the head (in head radii): on a turned head as listed; on a front-facing head (D1) out beside the eye, between it and
  *  the ear, a little lower (the face is wide from the front: v34's drop sat on the eye's outline, v35's first try above its corner) */
-export const dropAt = (dr: { x: number; y: number }, sin: number) => Math.abs(sin) < 0.25 ? { x: dr.x * 2.55, y: dr.y * 0.5 - 0.03 } : { x: dr.x, y: dr.y };      // (front: out past the eye ring, between it and the ear: at 1.9 the drop touched his eye in D1, v52)      // (from the front the temple between the cap's brim and the moustache's curled tip is about a third of a head radius high: a short run, inside it)
+export const dropAt = (dr: { x: number; y: number }, sin: number) => Math.abs(sin) < 0.25 ? { x: dr.x * 2.3, y: dr.y * 0.5 - 0.03 } : { x: dr.x, y: dr.y };      // (front: between the eye ring and the head's outline: at 1.9 it touched his eye, at 2.55 the outline when his head tips (D1, v52))      // (from the front the temple between the cap's brim and the moustache's curled tip is about a third of a head radius high: a short run, inside it)
 export const sweatDrops = (a0: number) => SWEAT_DROPS.map(([t0, x, y]) => { const a = a0 - t0; return a < 0 || a > 1.4 ? null : { x, y: (PLANT.sweatOut ? -0.75 : y) + (a / 1.2) * 0.07, al: 1, sz: Math.min(1, a / 0.2, (1.4 - a) / 0.2) }; });      // (a drop grows in and shrinks away, never see-through: a quick fade flickered, v21)
 /** sweat: drops on the skin of the near cheek and temple, running down, one after another, with an outline as thick as the figure's own */
 export const sweat = (h: G, f: Fig, a0: number) => {

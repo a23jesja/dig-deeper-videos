@@ -17,10 +17,12 @@
 # film's own fails.
 #
 #   usage: python scripts/flicker_proof.py <render.mp4> <regions.jsonl> <its flicker report.txt> <planted.mp4> <proof report.txt>
-import json, math, subprocess, sys
+import importlib, json, math, os, subprocess, sys
 import numpy as np
-sys.path.insert(0, __file__.rsplit("\\", 1)[0].rsplit("/", 1)[0])
-import flicker as fl
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+# (the measure under proof: FLICKER_MODULE=flicker2 for the new one, with FLICKER_ROOT = the engine folder whose camera matrices belong to the render)
+fl = importlib.import_module(os.environ.get("FLICKER_MODULE", "flicker"))
+ROOT = os.environ.get("FLICKER_ROOT")
 
 W, H = fl.W, fl.H
 BACK = 6      # (px a frame the picture glides back after a slide: a steady movement inside the 12 px step)
@@ -56,6 +58,9 @@ def main():
     D = pick(lambda t: regions.get(t, {}).get("text") and not regions.get(t, {}).get("bub") and regions.get(t - 1, {}).get("text") == regions[t]["text"] and regions.get(t + 1, {}).get("text") == regions[t]["text"])
     E = pick(lambda t: big(t, 20))
     G = pick(lambda t: big(t, 60)) or pick(lambda t: big(t, 35))
+    # (the new measure's own cases: a body part (a 160 x 160 square on the torso, below the face) out on one frame and back, 45 px (more than
+    #  the 40 px body step) and 30 px (inside it: a jump out and back is never movement)
+    J = pick(lambda t: big(t, 25)); J2 = pick(lambda t: big(t, 25))
     # the slides: (name, steps a frame, the frame of the extra jump in the slide or None, the jump in px, must fail)
     slides = [("f", [5] * 12, None, 0, False), ("f2", list(range(6, 13)), None, 0, False), ("f2b", list(range(7, 15)), None, 0, True)]
     for s in (3, 6, 9):
@@ -103,6 +108,10 @@ def main():
         if F == E:
             x, y, r = big(E, 20)[0]; r2 = max(4, int(r * 0.5)); m = (XX - x) ** 2 + (YY - y) ** 2 <= r2 * r2; sh = np.roll(fr, 6, axis=1); fr[m] = sh[m]
         if F == G: moveSquare(fr, *face(G, 35), 11)
+        for (TJ, dj) in ((J, 45), (J2, 30)):
+            if TJ is not None and F == TJ:
+                cx, cy = face(TJ, 25); r0 = big(TJ, 25)[0][2]; ty = min(H - 100, cy + int(3.2 * r0)); x0, y0, x1, y1 = max(0, cx - 80), max(0, ty - 80), min(W - dj, cx + 80), min(H, ty + 80)
+                fr[y0:y1, x0 + dj:x1 + dj] = fr[y0:y1, x0:x1].copy()
         o = offAt.get(F, 0)
         if o: fr = np.concatenate([fr[:, o:], np.repeat(fr[:, -1:], o, axis=1)], axis=1)      # (the picture slid o px to the left)
         if F in jumpAt:      # (the face the extra j px on, the way the picture moves, on this one frame)
@@ -117,7 +126,7 @@ def main():
         o = offAt.get(F, 0); r2 = dict(r)
         r2["eyes"] = [[e[0] - o, e[1], e[2]] for e in r.get("eyes", [])]; r2["text"] = [[b[0] - o, b[1], b[2] - o, b[3]] for b in r.get("text", [])]
         regP[F] = r2
-    rowsP, fails = fl.check(dst, regP)
+    rowsP, fails = fl.check(dst, regP, ROOT) if ROOT else fl.check(dst, regP)
     failAt = {t: why for t, why in fails}; raw = {r[0]: r for r in rowsP}
     def report(name, frames, want_fail, desc):
         hit = [(u, failAt[u]) for u in frames if u in failAt]
@@ -132,7 +141,8 @@ def main():
     allok = True
     point = {"a": (A, "an empty eye ring on one frame"), "b": (B, ("a speech bubble" if BOX == "bub" else "a caption (no quiet frame with a bubble)") + " 3 px out on one frame and back"),
              "c": (C, "a close-up's face 3 px out on one frame and back"), "d": (D, "a caption with one letter changed on one frame"), "e": (E, "a pupil 6 px out on one frame and back"),
-             "g": (G, "a close-up's face 11 px out on one frame and back (inside the 12 px movement step)")}
+             "g": (G, "a close-up's face 11 px out on one frame and back (inside the 12 px movement step)"),
+             "j": (J, "a body part (a square on the torso) 45 px out on one frame and back (more than the 40 px body step)"), "j2": (J2, "a body part 30 px out on one frame and back (inside the 40 px body step: a jump out and back)")}
     for name, (t, desc) in point.items():
         if t is None: L.append(f"{name}) {desc}: NO ROOM in this film (not run)"); allok = False; continue
         ok, lines = report(name, list(range(t - 1, t + 2)), True, desc); allok &= ok; L += lines
@@ -144,7 +154,7 @@ def main():
         ok, lines = report(name, frames, bad, desc); allok &= ok; L += lines
     for name in noroom: L.append(f"{name}) NO ROOM in this film: no quiet window long enough (not run)"); allok = False
     inPlan = set()
-    for t in [A, B, C, D, E, G]:
+    for t in [A, B, C, D, E, G, J, J2]:
         if t is not None: inPlan.update(range(t - 1, t + 2))
     for name, (t0, off, *_r) in plan.items(): inPlan.update(range(t0 - 1, t0 + len(off) + 1))
     other = sorted(u for u in failAt if u not in inPlan)

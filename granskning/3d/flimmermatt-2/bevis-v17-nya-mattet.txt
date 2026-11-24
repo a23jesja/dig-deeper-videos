@@ -1,0 +1,41 @@
+flicker proof: faults planted in ../leverans/3d/kaptenens-karta-3d-steg1-v17.mp4 -> C:/Users/sweje/AppData/Local/Temp/claude/499ae2b6b7d0911d/becf1467-c80d-4c82-af69-a7ba375e67f6/scratchpad/fl2/v17-planted-new.mp4
+parameters: DIFF 40, SAME 16, picture 2000, eye 40, text 150 pixels; movement step at most 12 px, 5 x 5 patch match under 14 grey levels, flat patch under 10, step before and after differ by at most 0.25 of the longer or 2 px; the fastest real head turn of the film: frame 40 (shot A, 5 px a frame)
+
+a) an empty eye ring on one frame: frames 50-50 (1.67-1.67 s, shot A): FAILED by the check, it must fail (right)
+     frame 50 (1.67 s): 12232 pixels flicker in the picture (at most 2000); 12150 pixels flicker in an eye (at most 40)
+     the raw measure (no movement taken out) is over its limits on frames: [50]
+b) a caption (no quiet frame with a bubble) 3 px out on one frame and back: NO ROOM in this film (not run)
+c) a close-up's face 3 px out on one frame and back: frames 57-57 (1.90-1.90 s, shot A): passed by the check, it must fail (WRONG)
+     the raw measure (no movement taken out) is over its limits on frames: none
+d) a caption with one letter changed on one frame: NO ROOM in this film (not run)
+e) a pupil 6 px out on one frame and back: frames 97-97 (3.23-3.23 s, shot B): FAILED by the check, it must fail (right)
+     frame 96 (3.20 s): 64 pixels flicker in an eye (at most 40)
+     frame 97 (3.23 s): 939 pixels flicker in an eye (at most 40)
+     the raw measure (no movement taken out) is over its limits on frames: [96, 97]
+g) a close-up's face 11 px out on one frame and back (inside the 12 px movement step): frames 104-104 (3.47-3.47 s, shot B): FAILED by the check, it must fail (right)
+     frame 103 (3.43 s): 242 pixels flicker in an eye (at most 40)
+     frame 104 (3.47 s): 10830 pixels flicker in the picture (at most 2000); 6126 pixels flicker in an eye (at most 40)
+     the raw measure (no movement taken out) is over its limits on frames: [103, 104]
+j) a body part (a square on the torso) 45 px out on one frame and back (more than the 40 px body step): frames 111-111 (3.70-3.70 s, shot B): FAILED by the check, it must fail (right)
+     frame 111 (3.70 s): 9131 pixels flicker in the picture (at most 2000)
+     the raw measure (no movement taken out) is over its limits on frames: [111]
+j2) a body part 30 px out on one frame and back (inside the 40 px body step: a jump out and back): frames 130-130 (4.33-4.33 s, shot B): FAILED by the check, it must fail (right)
+     frame 130 (4.33 s): 12755 pixels flicker in the picture (at most 2000)
+     the raw measure (no movement taken out) is over its limits on frames: [130]
+f) the whole picture sliding steadily 5 px a frame for 12 frames: frames 140-163 (4.67-5.43 s, shot C): FAILED by the check, it must pass (WRONG)
+     frame 163 (5.43 s): 214 pixels flicker in an eye (at most 40)
+     the raw measure (no movement taken out) is over its limits on frames: [143, 144, 145, 146, 147, 148, 149, 163]
+f2) the whole picture speeding up from 6 to 12 px a frame, 1 px more each frame: frames 179-198 (5.97-6.60 s, shot D): FAILED by the check, it must pass (WRONG)
+     frame 185 (6.17 s): 7123 pixels flicker in the picture (at most 2000); 2162 pixels flicker in an eye (at most 40)
+     frame 198 (6.60 s): 234 pixels flicker in an eye (at most 40)
+     the raw measure (no movement taken out) is over its limits on frames: [178, 179, 183, 184, 185, 197, 198]
+f2b) NO ROOM in this film: no quiet window long enough (not run)
+h1) NO ROOM in this film: no quiet window long enough (not run)
+h2) NO ROOM in this film: no quiet window long enough (not run)
+h3) NO ROOM in this film: no quiet window long enough (not run)
+h4) NO ROOM in this film: no quiet window long enough (not run)
+h5) NO ROOM in this film: no quiet window long enough (not run)
+h6) NO ROOM in this film: no quiet window long enough (not run)
+
+fails outside the planted frames (the film's own): [209]
+RESULT: the planted cases NOT all as they must be

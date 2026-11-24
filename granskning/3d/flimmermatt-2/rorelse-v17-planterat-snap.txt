@@ -1,0 +1,8 @@
+movement check (the new measure): body parts at most 40 px a frame, their speed changing at most 13.3 px from frame to frame; the face at most 12 px a frame; the camera's movement taken out by its matrices
+largest: body 32.0 px (A frame 41 captain wrR), speed change 30.0 px (A frame 42 captain wrR), face 5.1 px (A frame 41 captain head)
+planted: snap on captain's right hand, shot A frame 36
+FAIL: 4 faults
+  body part's speed changes 30.0 px a frame in one frame (at most 13.3: build-up over 3 frames): A frame 36 captain wrR
+  body part's speed changes 30.0 px a frame in one frame (at most 13.3: build-up over 3 frames): A frame 42 captain wrR
+  body part's speed changes 30.0 px a frame in one frame (at most 13.3: build-up over 3 frames): A frame 36 captain tipR
+  body part's speed changes 30.0 px a frame in one frame (at most 13.3: build-up over 3 frames): A frame 42 captain tipR

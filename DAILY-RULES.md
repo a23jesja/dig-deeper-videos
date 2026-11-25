@@ -38,6 +38,13 @@ Overrides every older look section below (the emu look, the 3D cabin lighting, t
   Every new character, animal and prop is drawn by the same rules.
 - **The rig, gesture library, checks and voice carry over.** 3D sets and lighting are no longer used in videos.
 - **Only Jesper can unfreeze it.** Fixing a fault inside the style is allowed, as before.
+- **Every character looks like a different person (Jesper 2026-11-25: "Varför ser alla gubbar likadan ut i videon,
+  alla har keps, bara i olika färger").** A side character is never Sir Digsworth recoloured. Same style and same
+  skeleton, but its own headwear (or none), hair, face (beard, stubble, clean-shaven, age), body size and build, and
+  clothes that tell its job and era: a pirate captain has a tricorn and a long coat, a boy is small and bare-headed.
+  The flat cap, monocle and moustache are Sir Digsworth's alone. Test: in one picture of the whole cast as black
+  silhouettes, every figure is told apart. Parts are built once as a wardrobe on the rig, so motions and checks carry
+  over.
 - **Background upgrade under test (Jesper 2026-11-22, from a reference Short):** "Såhär ska animationen vara,
   levande där karaktärerna syns, snygga bakgrunder med mjuk och perfekt animation". The flat Knopp characters stay;
   what changes, if Jesper approves a style test, is the world behind them: rich lit backgrounds with depth (warm

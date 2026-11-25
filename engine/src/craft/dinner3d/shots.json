@@ -1,5 +1,5 @@
 {
- "note": "The Short 'The captain's dinner' (24 Nov evening). The step-1 cabin and world axes. figs: each figure's pelvis floor point (the captain's over his stool); every camera holds still but 1a's (the take). The voice times in figures.ts.",
+ "note": "The Short 'The captain's dinner' v6 (25 Nov): the wardrobe's people in the step-1 cabin; written by scripts/dinner_v6_shots.mjs from bildlista-v6.md. figs: each figure's pelvis floor point (the captain's over his chest); facing: each figure's floor direction; every camera holds still.",
  "fps": 30,
  "W": 1080,
  "H": 1920,
@@ -18,533 +18,551 @@
   "rot": 188
  },
  "plate": [
-  -0.74,
-  0.97
+  -0.98,
+  0.88
  ],
  "figs": {
   "captain": [
-   -0.25,
+   -0.36,
    0.88
   ],
   "crew": [
-   -1.36,
-   0.62
+   -1.45,
+   0.56
   ],
   "boy": [
-   -2.12,
-   0.45
+   -2.3,
+   0.34
   ]
  },
  "shots": [
   {
-   "id": "1a",
+   "id": "1",
    "t0": 0,
-   "t1": 1.2,
-   "what": "the crewman, grinning, holds up the captain's pudding (the question on the screen; a swish on frame 1)",
+   "t1": 1.6,
+   "what": "two-shot at the table: the sailor's hand already round the pudding on the captain's plate lifts it (0.10-0.90, the ting as it leaves the plate 0.35); the captain's eyes follow it, his hands by the empty plate",
    "static": true,
    "cam": {
     "from": [
      [
-      -0.478,
-      -2.115,
-      2.026
+      -0.974,
+      -3.305,
+      1.702
      ],
      [
-      -0.478,
-      -2.115,
-      2.026
+      -0.974,
+      -3.305,
+      1.702
      ]
     ],
     "at": [
-     -1.16,
-     0.62,
-     1.0
+     -1.2541474175909384,
+     0.6955852341895561,
+     0.85
     ],
-    "lens": 40,
+    "lens": 18,
     "fstop": 2.8,
     "focus": "crew",
     "focusPoint": [
-     -1.16,
-     0.62,
-     1.0
-    ]
-   }
-  },
-  {
-   "id": "1b",
-   "t0": 1.2,
-   "t1": 2.0,
-   "what": "the captain seated, staring at the empty plate",
-   "static": true,
-   "cam": {
-    "from": [
-     [
-      -0.47,
-      -1.98,
-      1.104
-     ],
-     [
-      -0.47,
-      -1.98,
-      1.104
-     ]
-    ],
-    "at": [
-     -0.27,
-     0.885,
-     0.7
-    ],
-    "lens": 28,
-    "fstop": 2.8,
-    "focus": "captain",
-    "focusPoint": [
-     -0.27,
-     0.885,
-     0.7
+     -1.45,
+     0.56,
+     1.615
     ]
    }
   },
   {
    "id": "2",
-   "t0": 2.0,
+   "t0": 1.6,
    "t1": 2.7,
-   "what": "low close: the captain shouts Hey!",
+   "what": "the captain, half close, low, 3/4: eyes wide (1.60), the fist up (1.95), \"Hey!\" (2.04)",
    "static": true,
    "cam": {
     "from": [
      [
-      0.268,
-      -0.946,
-      0.703
+      -1.943,
+      -3.039,
+      0.706
      ],
      [
-      0.268,
-      -0.946,
-      0.703
+      -1.943,
+      -3.039,
+      0.706
      ]
     ],
     "at": [
-     -0.47,
+     -0.36,
      0.88,
-     1.05
+     1.15
     ],
-    "lens": 28,
+    "lens": 34,
     "fstop": 2.8,
     "focus": "captain",
     "focusPoint": [
-     -0.47,
+     -0.36,
      0.88,
-     1.05
+     1.15
     ]
    }
   },
   {
-   "id": "3a",
+   "id": "3",
    "t0": 2.7,
-   "t1": 4.3,
-   "what": "the crewman, pleased with the pudding (side on)",
+   "t1": 4.7,
+   "what": "the sailor, medium, 3/4, the book on the table beside him: his free hand slaps flat on it (2.77, the thump), stays; the pudding on his other palm; he lifts it and sniffs (3.60); brows up, a crooked grin (4.20)",
    "static": true,
    "cam": {
     "from": [
      [
-      -0.986,
-      -2.541,
-      1.223
+      0.471,
+      -3.175,
+      1.888
      ],
      [
-      -0.986,
-      -2.541,
-      1.223
+      0.471,
+      -3.175,
+      1.888
      ]
     ],
     "at": [
-     -1.43,
-     0.62,
-     1.0
+     -1.7468168336547492,
+     0.37452825751837837,
+     1.15
     ],
     "lens": 28,
     "fstop": 2.8,
     "focus": "crew",
     "focusPoint": [
-     -1.43,
-     0.62,
-     1.0
-    ]
-   }
-  },
-  {
-   "id": "3b",
-   "t0": 4.3,
-   "t1": 5.9,
-   "what": "the captain glares at the crewman, red",
-   "static": true,
-   "cam": {
-    "from": [
-     [
-      -0.36,
-      -1.484,
-      1.317
-     ],
-     [
-      -0.36,
-      -1.484,
-      1.317
-     ]
-    ],
-    "at": [
-     -0.36,
-     0.88,
-     0.9
-    ],
-    "lens": 28,
-    "fstop": 2.8,
-    "focus": "captain",
-    "focusPoint": [
-     -0.36,
-     0.88,
-     0.9
-    ]
-   }
-  },
-  {
-   "id": "3c",
-   "t0": 5.9,
-   "t1": 7.3,
-   "what": "the boy, cheeky, beside the crewman with the pudding",
-   "static": true,
-   "cam": {
-    "from": [
-     [
-      -0.585,
-      -2.711,
-      0.986
-     ],
-     [
-      -0.585,
-      -2.711,
-      0.986
-     ]
-    ],
-    "at": [
-     -1.577,
-     0.747,
-     0.86
-    ],
-    "lens": 28,
-    "fstop": 2.8,
-    "focus": "boy",
-    "focusPoint": [
-     -1.577,
-     0.747,
-     0.86
-    ]
-   }
-  },
-  {
-   "id": "3d",
-   "t0": 7.3,
-   "t1": 8.7,
-   "what": "wide: the boy, the crewman and the captain: the cabin full of crew",
-   "static": true,
-   "cam": {
-    "from": [
-     [
-      -0.968,
-      -2.75,
-      1.569
-     ],
-     [
-      -0.968,
-      -2.75,
-      1.569
-     ]
-    ],
-    "at": [
-     -1.22,
-     0.86,
-     0.8
-    ],
-    "lens": 20,
-    "fstop": 2.8,
-    "focus": "crew",
-    "focusPoint": [
-     -1.22,
-     0.86,
-     0.8
+     -1.45,
+     0.56,
+     1.615
     ]
    }
   },
   {
    "id": "4",
-   "t0": 8.7,
-   "t1": 9.8,
-   "what": "the crewman snorts and jabs a finger at the captain; the boy beside him",
+   "t0": 4.7,
+   "t1": 6.4,
+   "what": "all three: the sailor takes a bite (4.80, chewing at 5.00); the captain's brows down (5.30); the boy leans in, eager (5.60)",
    "static": true,
    "cam": {
     "from": [
      [
-      0.094,
-      -1.774,
-      0.686
+      -1.37,
+      -3.149,
+      1.51
      ],
      [
-      0.094,
-      -1.774,
-      0.686
+      -1.37,
+      -3.149,
+      1.51
      ]
     ],
     "at": [
-     -1.66,
-     0.64,
-     1.0
-    ],
-    "lens": 28,
-    "fstop": 2.8,
-    "focus": "crew",
-    "focusPoint": [
-     -1.66,
-     0.64,
-     1.0
-    ]
-   }
-  },
-  {
-   "id": "5a",
-   "t0": 9.8,
-   "t1": 12.1,
-   "what": "high: the crewman holds the pudding up high, admiring it",
-   "static": true,
-   "cam": {
-    "from": [
-     [
-      -0.363,
-      -2.471,
-      2.081
-     ],
-     [
-      -0.363,
-      -2.471,
-      2.081
-     ]
-    ],
-    "at": [
-     -0.95,
-     0.86,
+     -1.3699999999999999,
+     0.5933333333333334,
      0.85
     ],
-    "lens": 20,
+    "lens": 16,
     "fstop": 2.8,
     "focus": "crew",
     "focusPoint": [
-     -0.95,
-     0.86,
-     0.85
-    ]
-   }
-  },
-  {
-   "id": "6",
-   "t0": 12.1,
-   "t1": 13.4,
-   "what": "the crewman raises the pudding: Thank you, Captain.",
-   "static": true,
-   "cam": {
-    "from": [
-     [
-      0.297,
-      -1.911,
-      0.462
-     ],
-     [
-      0.297,
-      -1.911,
-      0.462
-     ]
-    ],
-    "at": [
-     -1.41,
-     0.62,
-     1.0
-    ],
-    "lens": 28,
-    "fstop": 2.8,
-    "focus": "crew",
-    "focusPoint": [
-     -1.41,
-     0.62,
-     1.0
+     -1.45,
+     0.56,
+     1.615
     ]
    }
   },
   {
    "id": "5",
-   "t0": 13.4,
-   "t1": 15.3,
-   "what": "the captain bites his lip: wasn't to complain",
+   "t0": 6.4,
+   "t1": 8.7,
+   "what": "the boy and the sailor: the boy leans forward (6.50), licks his lips while silent (7.20-7.80), smiles (8.30)",
    "static": true,
    "cam": {
     "from": [
      [
-      -0.493,
-      -1.654,
-      1.723
+      -1.359,
+      -1.056,
+      1.387
      ],
      [
-      -0.493,
-      -1.654,
-      1.723
+      -1.359,
+      -1.056,
+      1.387
      ]
     ],
     "at": [
-     -0.36,
-     0.88,
-     0.8
+     -2.3,
+     0.34,
+     1.15
     ],
-    "lens": 28,
+    "lens": 25,
     "fstop": 2.8,
-    "focus": "captain",
+    "focus": "boy",
     "focusPoint": [
-     -0.36,
-     0.88,
-     0.8
+     -2.3,
+     0.34,
+     1.2069999999999999
     ]
    }
   },
   {
    "id": "7",
-   "t0": 15.3,
-   "t1": 16.7,
-   "what": "low close: the captain leans in, hands flat on the table: That was MY pudding!",
+   "t0": 8.7,
+   "t1": 12.1,
+   "what": "all three (shots 6 and 7 of the list as one): the sailor leans to the captain and points (8.80), the captain leans back, eyes nearly shut (9.10); the sailor raises the pudding high (9.90), a big bite (10.60, chewing), the boy reaches for it (11.10), it swings away (11.50)",
    "static": true,
    "cam": {
     "from": [
      [
-      -0.027,
-      -1.013,
-      0.573
+      -1.37,
+      -3.149,
+      1.51
      ],
      [
-      -0.027,
-      -1.013,
-      0.573
+      -1.37,
+      -3.149,
+      1.51
      ]
     ],
     "at": [
-     -0.57,
-     0.88,
-     0.92
+     -1.3699999999999999,
+     0.5933333333333334,
+     0.85
     ],
-    "lens": 28,
-    "fstop": 2.8,
-    "focus": "captain",
-    "focusPoint": [
-     -0.57,
-     0.88,
-     0.92
-    ]
-   }
-  },
-  {
-   "id": "8a",
-   "t0": 16.7,
-   "t1": 18.9,
-   "what": "wide, high: the three of them: only in charge in a fight",
-   "static": true,
-   "cam": {
-    "from": [
-     [
-      -0.592,
-      -2.704,
-      1.569
-     ],
-     [
-      -0.592,
-      -2.704,
-      1.569
-     ]
-    ],
-    "at": [
-     -1.22,
-     0.86,
-     0.8
-    ],
-    "lens": 20,
+    "lens": 16,
     "fstop": 2.8,
     "focus": "crew",
     "focusPoint": [
-     -1.22,
-     0.86,
-     0.8
+     -1.45,
+     0.56,
+     1.615
     ]
    }
   },
   {
-   "id": "8b",
-   "t0": 18.9,
-   "t1": 21.9,
-   "what": "the captain, close: vote him out: he understands and goes pale",
+   "id": "8",
+   "t0": 12.1,
+   "t1": 13.3,
+   "what": "the sailor, half: the pudding up on his palm beside his face, as a toast (12.15); \"Thank you, Captain.\" with a crooked smile (12.20); a nod (12.90)",
    "static": true,
    "cam": {
     "from": [
      [
-      -0.64,
-      -1.407,
-      0.92
+      1.199,
+      -3.142,
+      1.617
      ],
      [
-      -0.64,
-      -1.407,
-      0.92
+      1.199,
+      -3.142,
+      1.617
      ]
     ],
     "at": [
-     -0.4,
-     0.88,
-     0.92
+     -1.7181155550916423,
+     0.3350243366097113,
+     1.3
     ],
-    "lens": 28,
+    "lens": 30,
+    "fstop": 2.8,
+    "focus": "crew",
+    "focusPoint": [
+     -1.45,
+     0.56,
+     1.615
+    ]
+   }
+  },
+  {
+   "id": "9",
+   "t0": 13.3,
+   "t1": 15.3,
+   "what": "the captain, seated, 3/4, both hands on the table: opens his mouth (13.40), presses his lips (14.00), the red rises, fists on the table (14.50), begins to rise (15.00)",
+   "static": true,
+   "cam": {
+    "from": [
+     [
+      -1.371,
+      -3.801,
+      1.692
+     ],
+     [
+      -1.371,
+      -3.801,
+      1.692
+     ]
+    ],
+    "at": [
+     -0.7065938240595495,
+     0.9287105853360229,
+     0.85
+    ],
+    "lens": 33,
     "fstop": 2.8,
     "focus": "captain",
     "focusPoint": [
-     -0.4,
+     -0.36,
      0.88,
-     0.92
+     1.15
     ]
    }
   },
   {
-   "id": "8c",
-   "t0": 21.9,
-   "t1": 24.0,
-   "what": "the boy and the crewman: All in favour? Their hands go up",
+   "id": "10a",
+   "t0": 15.3,
+   "t1": 15.6,
+   "what": "the captain, whole, at the table: half up, feet on the floor (15.30-15.45); his right fist down on the table (15.45, the thump on the contact frame); \"That\" (the crew whole in the picture)",
    "static": true,
    "cam": {
     "from": [
      [
-      -0.372,
-      -2.296,
-      1.744
+      -2.021,
+      -2.103,
+      0.203
      ],
      [
-      -0.372,
-      -2.296,
-      1.744
+      -2.021,
+      -2.103,
+      0.203
      ]
     ],
     "at": [
-     -1.461,
-     0.557,
-     1.43
+     -0.07329678449885285,
+     0.679248247277134,
+     1.05
     ],
-    "lens": 24,
+    "lens": 18,
+    "fstop": 2.8,
+    "focus": "captain",
+    "focusPoint": [
+     -0.36,
+     0.88,
+     1.15
+    ]
+   }
+  },
+  {
+   "id": "10b",
+   "t0": 15.6,
+   "t1": 16.7,
+   "what": "the captain, close, his head 60 % of the picture or more, red, sweating: \"...was MY pudding!\" (the cut on the word boundary before \"was\", 15.60); sinks back (16.40) (the captain whole in the picture) (the captain whole in the picture) (the captain whole in the picture)",
+   "static": true,
+   "cam": {
+    "from": [
+     [
+      -1.169,
+      -1.33,
+      1.192
+     ],
+     [
+      -1.169,
+      -1.33,
+      1.192
+     ]
+    ],
+    "at": [
+     -0.562,
+     0.934,
+     1.356
+    ],
+    "lens": 42,
+    "fstop": 2.8,
+    "focus": "captain",
+    "focusPoint": [
+     -0.36,
+     0.88,
+     1.15
+    ]
+   }
+  },
+  {
+   "id": "11",
+   "t0": 16.7,
+   "t1": 18.7,
+   "what": "all three: the captain beats his chest and raises his fist (16.90); the sailor and the boy lean back, a hand up by the ear (17.40); the captain pleased (18.20)",
+   "static": true,
+   "cam": {
+    "from": [
+     [
+      -1.887,
+      -3.087,
+      1.64
+     ],
+     [
+      -1.887,
+      -3.087,
+      1.64
+     ]
+    ],
+    "at": [
+     -1.3699999999999999,
+     0.5933333333333334,
+     0.85
+    ],
+    "lens": 16,
+    "fstop": 2.8,
+    "focus": "captain",
+    "focusPoint": [
+     -0.36,
+     0.88,
+     1.15
+    ]
+   }
+  },
+  {
+   "id": "12",
+   "t0": 18.7,
+   "t1": 20.5,
+   "what": "the sailor and the boy: they look at each other (19.20); the boy nods (19.80); a crooked grin (20.20)",
+   "static": true,
+   "cam": {
+    "from": [
+     [
+      1.72,
+      -1.797,
+      1.146
+     ],
+     [
+      1.72,
+      -1.797,
+      1.146
+     ]
+    ],
+    "at": [
+     -1.875,
+     0.45000000000000007,
+     0.85
+    ],
+    "lens": 27,
     "fstop": 2.8,
     "focus": "boy",
     "focusPoint": [
-     -1.461,
-     0.557,
-     1.43
+     -2.3,
+     0.34,
+     1.2069999999999999
+    ]
+   }
+  },
+  {
+   "id": "13",
+   "t0": 20.5,
+   "t1": 22,
+   "what": "the sailor, half, 3/4: nods (20.90), chin up (21.50)",
+   "static": true,
+   "cam": {
+    "from": [
+     [
+      -2.023,
+      -3.113,
+      1.579
+     ],
+     [
+      -2.023,
+      -3.113,
+      1.579
+     ]
+    ],
+    "at": [
+     -1.37,
+     0.5933333333333334,
+     1.05
+    ],
+    "lens": 16,
+    "fstop": 2.8,
+    "focus": "crew",
+    "focusPoint": [
+     -1.45,
+     0.56,
+     1.615
+    ]
+   }
+  },
+  {
+   "id": "14",
+   "t0": 22,
+   "t1": 23.2,
+   "what": "close: the boy and the sailor, each with a hand up at the ear, palms to the lens; \"All in favour?\" (22.05); the boy grins (22.80)",
+   "static": true,
+   "cam": {
+    "from": [
+     [
+      -1.252,
+      -1.698,
+      1.849
+     ],
+     [
+      -1.252,
+      -1.698,
+      1.849
+     ]
+    ],
+    "at": [
+     -2.5831559480312314,
+     0.13427516169763443,
+     1.45
+    ],
+    "lens": 20,
+    "fstop": 2.8,
+    "focus": "boy",
+    "focusPoint": [
+     -2.3,
+     0.34,
+     1.2069999999999999
+    ]
+   }
+  },
+  {
+   "id": "15",
+   "t0": 23.2,
+   "t1": 24,
+   "what": "as shot 1: the captain's shoulders sink (23.30), his hand on the empty plate (23.60), the swish into the loop (23.90)",
+   "static": true,
+   "cam": {
+    "from": [
+     [
+      -0.974,
+      -3.305,
+      1.702
+     ],
+     [
+      -0.974,
+      -3.305,
+      1.702
+     ]
+    ],
+    "at": [
+     -1.2541474175909384,
+     0.6955852341895561,
+     0.85
+    ],
+    "lens": 18,
+    "fstop": 2.8,
+    "focus": "captain",
+    "focusPoint": [
+     -0.36,
+     0.88,
+     1.15
     ]
    }
   }
- ]
+ ],
+ "book": [
+  -1.25,
+  0.93
+ ],
+ "facing": {
+  "captain": [
+   -0.75,
+   -0.66
+  ],
+  "crew": [
+   0.7,
+   -0.71
+  ],
+  "boy": [
+   0.7,
+   -0.71
+  ]
+ }
 }

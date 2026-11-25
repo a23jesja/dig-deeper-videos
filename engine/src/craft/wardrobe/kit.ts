@@ -22,7 +22,7 @@ export type Kit = {
 /** the kit a figure's Look carries, if any */
 export const kitOf = (lk?: Look | null): Kit | null => ((lk as unknown as { kit?: Kit } | undefined)?.kit ?? null);
 /** the kit being drawn (drawFlat sets it for each figure) */
-const KIT: { k: Kit | null } = { k: null };
+const KIT: { k: Kit | null; sweat: number } = { k: null, sweat: 0 };
 /** where a kit's mouth sits and how far it opens, per view (head frame): nearer the head's middle and smaller than Sir's, so the whole open
  *  mouth with its lip stays at least an ink line inside the head's outline at every angle and opening (the sheet's review: at Sir's place the
  *  open mouth reached the outline at the chin, in three-quarter and at 60 degrees) */
@@ -258,8 +258,13 @@ const kitFace = (k: Ink, view: "front" | "q" | "side", fwd: number) => { const k
   // (the full beard is not drawn here: beardOverlay draws it after the arms, so it lies over the arms' upper part, and the mouth over it)
   if (kit.hat === "none" && kit.hair === "messy") fl(k, messyHair(fwd), kit.col.hair);
 };
+/** sweat (the captain's rage, the list): two drops at the temple on the head's back side, under the hat's brim, clear of the eyes, the brows and
+ *  the beard (the reviewer's rules: never into an eye nor over the beard), inside the head's outline; they grow with `sweat` (0-1) */
+const kitSweat = (k: Ink, view: "front" | "q" | "side") => { const a = KIT.sweat; if (a < 0.05) return;
+  const spots: [number, number, number][] = view === "front" ? [[-104, -172, 1], [98, -150, 0.8]] : view === "q" ? [[-86, -176, 1], [-102, -146, 0.8]] : [[-30, -176, 1], [-56, -150, 0.8]];
+  for (const [x, y, s] of spots) { const r = 11 * s * a; k.group([spline([[x, y - 1.9 * r], [x + r, y], [x + 0.6 * r, y + r * 0.9], [x - 0.6 * r, y + r * 0.9], [x - r, y]])], "#bfe6f2"); } };
 /** the hat, last */
-const kitHat = (k: Ink, fwd: number) => { const kit = KIT.k; if (!kit) return;
+const kitHat = (k: Ink, fwd: number) => { const kit = KIT.k; if (!kit) return; kitSweat(k, fwd === 0 ? "front" : fwd < 0.9 ? "q" : "side");
   if (kit.hat === "scarf") { const sc = scarfPts(fwd); fl(k, sc, kit.col.scarf); k.clip(sc, () => { for (let x = -140; x < 140; x += 34) for (let y = -280; y < -150; y += 30) k.dot(x + ((y / 30) % 2) * 17, y, 5, "#f4ecd8"); }); }
   if (kit.hat === "tricorn") { const t = tricorn(fwd); fl(k, t.hull, kit.col.hat);
     // (the gold trim along the brim's edge on the side toward us)
@@ -288,7 +293,7 @@ export type FlatSpec = {
 
 const drawFlat = (c: FlatSpec) => (k: Ink, sk: Sk, o: FigOpts) => {
   const lk = o.look; LOOK.col = lk?.col ?? null; LOOK.band = lk?.band ?? null; LOOK.badge = lk?.badge ?? null; LOOK.mono = lk?.mono ?? true; LOOK.pipe = lk?.pipe ?? true; LOOK.moustache = lk?.moustache ?? true; LOOK.brow = lk?.brow ?? null; LOOK.brim = lk?.brim ?? 52;
-  KIT.k = kitOf(lk); const kit = KIT.k; if (kit) { LOOK.mono = false; LOOK.pipe = false; LOOK.moustache = false; }
+  KIT.k = kitOf(lk); KIT.sweat = Math.max(0, Math.min(1, ((o.face ?? {}) as { sweat?: number }).sweat ?? 0)); const kit = KIT.k; if (kit) { LOOK.mono = false; LOOK.pipe = false; LOOK.moustache = false; }
   const other = o.who === "baker", { P: _p, B: B0 } = other ? c.other : c.sir, B = kitBody(B0, kit), Fr = frame(sk), P = sk.P, r = rd(o.face ?? {}), hp = headPose(sk), C = (lk?.col ? { ...c.col, ...lk.col } : c.col) as Col;
   void _p; const front = sk.cos > 0.35, sideOn = Math.abs(sk.sin) > 0.6, d = Math.sign(sk.sin) || 1, sit = other ? 0 : seated(sk);
   const leg = (s: Side) => {

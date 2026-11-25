@@ -18,7 +18,7 @@ def contains(P, pts):
         (x1, y1), (x2, y2) = P[i], P[i - 1]
         m = (y1 > y) != (y2 > y); xi = (x2 - x1) * (y - y1) / ((y2 - y1) if y2 != y1 else 1e-9) + x1; c ^= m & (x < xi)
     return c
-PLANT = "--plant" in sys.argv
+PLANT = "--plant" in sys.argv; PLANT_ARM = "--plant-arm" in sys.argv      # (v6: the captain's far arm lowered behind the table top, nothing named in HIDDEN_BY: must fail)
 F = json.load(open("out/cab3d/figs.json")); faults = []; frames = 0
 for sid, rows in F.items():
     chunks = sorted(glob.glob(f"out/cab3d/{sid}/map*.npz")); depth = {}; kind = {}; kinds = None
@@ -26,14 +26,15 @@ for sid, rows in F.items():
         z = np.load(c); kinds = list(z["kinds"]); b = os.path.basename(c)[:-4]; f0 = 0 if b == "map" else int(b.split("-")[1])
         for i in range(z["depth"].shape[0]): depth[f0 + i] = z["depth"][i]; kind[f0 + i] = z["kind"][i]
     if len(depth) < len(rows): faults.append(f"{sid}: ray maps for {len(depth)} of {len(rows)} frames"); continue
-    solid = [kinds.index(k) + 1 for k in ("prop", "paper", "map") if k in kinds]
+    solid = [kinds.index(k) + 1 for k in ("prop", "paper", "map", "book") if k in kinds]      # (v6: the book is solid too)
     for fr, figs in enumerate(rows):
         frames += 1; D = depth[fr].copy(); K = kind[fr].copy(); ny, nx = D.shape
-        if PLANT and sid == "3d":      # a crate 1 m in front of the captain, over his middle
+        if PLANT and sid == "4":      # a crate 1 m in front of the captain, over his middle
             fg = figs[0]; P = np.array(fg["trunk"]); cx, cy = P[:, 0].mean(), P[:, 1].mean(); j, i = int(cy // 20), int(cx // 20); D[j - 3:j + 3, i - 3:i + 3] = fg["depth"] - 1.0; K[j - 3:j + 3, i - 3:i + 3] = solid[0]
         ys, xs = np.mgrid[0:ny, 0:nx]; pts = np.stack([(xs.ravel() + 0.5) * 20, (ys.ravel() + 0.5) * 20], 1)
         for fg in figs:
             if fg["sil"]: continue
+            if PLANT_ARM and fg["name"].endswith(":captain"): fg = {**fg, "limbDepth": [*fg["limbDepth"][:7], *[fg["depth"] + 0.6] * 3, *fg["limbDepth"][10:]]}      # (his right arm 60 cm behind his floor point: behind the table)
             DEP = np.full(len(pts), np.inf)      # (per cell: the depth of the figure's part drawn there, the nearest part where they overlap)
             m = np.hypot(pts[:, 0] - fg["head"][0], pts[:, 1] - fg["head"][1]) < fg["head"][2]; DEP[m] = np.minimum(DEP[m], min(fg["depth"], fg.get("headDepth", fg["depth"])))
             m = contains(np.array(fg["trunk"], float), pts); DEP[m] = np.minimum(DEP[m], fg["depth"])
@@ -46,8 +47,8 @@ for sid, rows in F.items():
             hand = np.zeros(len(pts), bool)
             for li in (2, 9):
                 a, b = (np.array(q, float) for q in fg["limbs"][li]); d = b - a; L2 = max(1e-6, d @ d); u = np.clip(((pts - a) @ d) / L2, 0, 1); hand |= np.hypot(*(pts - (a + u[:, None] * d)).T) < fg["lw"] + 40
-            touch = hand.reshape(ny, nx) & (K == (kinds.index("paper") + 1 if "paper" in kinds else -1))
+            touch = hand.reshape(ny, nx) & np.isin(K, [kinds.index(k) + 1 for k in ("paper", "book") if k in kinds])      # (v6: the book under the sailor's slapping hand is touched)
             bad = inside & np.isin(K, solid) & (D < DEPG - 0.08) & ~touch
             if bad.any(): faults.append(f"{sid} frame {fr} {fg['name']}: {int(bad.sum())} cells of the room ({', '.join(sorted({kinds[k - 1] for k in K[bad]}))}) nearer than him inside his outline")
-print(f"dinner depth{' planted' if PLANT else ''}: {frames} frames, {len(faults)} faults"); [print("  " + f) for f in faults[:12]]
+print(f"dinner depth{' planted' if PLANT or PLANT_ARM else ''}: {frames} frames, {len(faults)} faults"); [print("  " + f) for f in faults[:12]]
 print("DINNER DEPTH FAILED" if faults else "DINNER DEPTH OK"); sys.exit(1 if faults else 0)

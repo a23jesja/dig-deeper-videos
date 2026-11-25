@@ -6,14 +6,14 @@ import { FM } from "../clips/clipKit";
 import { capWidth } from "../stage/film";
 import { SHOTS, paintFigures, placeOf, toScreen, handPx, type Who } from "./core";
 import { jointPx } from "../clips/clipKit";
-import { WHO, VOICES, FILM_S } from "./figures";
+import { WHO, VOICES, FILM_S, EXTRAS } from "./figures";
 
 export const DINNER_S = FILM_S;
 const BUILT: Record<string, Who[]> = Object.fromEntries(SHOTS.map((s) => [s.id, WHO[s.id]()]));
 export const shotAtD = (t: number) => { let i = 0; while (i + 1 < SHOTS.length && t >= SHOTS[i + 1].t0 - 1e-6) i++; const s = SHOTS[i], n = Math.round((s.t1 - s.t0) * FM.FPS); return { s, fr: Math.min(n - 1, Math.round((t - s.t0) * FM.FPS)) }; };
 /** the hook's question (the first line's own six words), whole, while it is said and a little after (2.0 s); then the spoken words one at a
  *  time (DAILY-RULES 6), each until the next starts or 0.3 s past its end, never running on past a cut by less than 0.4 s */
-const QUESTION = { a: 0, b: 2.0, text: "WHO ATE THE PIRATE|CAPTAIN'S DINNER?" };      // (two lines: in one the six words were 37 px, too small on a phone)
+const QUESTION = { a: 0, b: 1.6, text: "WHO ATE THE PIRATE|CAPTAIN'S DINNER?" };      // (v6: whole while shot 1 lasts, 0-1.6 s, the list)      // (two lines: in one the six words were 37 px, too small on a phone)
 const WORDS = VOICES.filter((v) => v.id !== "n1").flatMap((v) => (v.p.words as { w: string; a: number; b: number }[]).map((w) => ({ w: w.w, a: w.a + v.at + 0.05, b: w.b + v.at + 0.05, line: v.id })));
 export const CAPS = (() => { const cuts = SHOTS.slice(1).map((s) => s.t0), out = WORDS.map((w, i) => { const n = WORDS[i + 1], b = n && n.line === w.line && n.a - w.b < 0.3 ? n.a : w.b + 0.3;
   return { a: w.a, b, text: w.w.toUpperCase().replace(/[.,":;]/g, "").replace("FAVOR", "FAVOUR") }; });
@@ -25,7 +25,7 @@ export const CAPS = (() => { const cuts = SHOTS.slice(1).map((s) => s.t0), out =
 /** the band's top per shot (px): the lower third, below faces and the hands at the table */
 /** each shot's caption band (its top, px): the first of these heights (low under the figures, then high over them) where the band, as wide as
  *  the shot's widest word, meets no face (the head's circle below its cap) and no hand in any frame of the shot (dinner_check 6) */
-const TOPS = [1450, 1500, 1400, 1520, 1540, 330, 380, 430, 480, 300, 1350, 1300, 1250, 1200, 560, 640, 720];
+const TOPS = [1450, 1500, 1400, 1520, 1540, 330, 380, 430, 480, 300, 1350, 1300, 1250, 1200, 560, 640, 720, 1580, 1600, 1150, 1100, 800, 880, 960];
 export const CAP_TOPS: Record<string, number> = (() => { const out: Record<string, number> = {};
   for (const S of SHOTS) { const n = Math.round((S.t1 - S.t0) * FM.FPS), whos = BUILT[S.id], words = CAPS.filter((c) => c.b > S.t0 && c.a < S.t1);
     const lines = Math.max(1, ...words.map((c) => c.text.split("|").length)), cw = Math.max(0, ...words.map((c) => Math.max(...c.text.split("|").map(capWidth)))), sz = Math.round(96 * Math.min(1, 8.9 / Math.max(cw, 0.1))), w = Math.min(1020, cw * 1.194 * sz) + 20, hgt = sz * 1.1 * lines + 12;
@@ -46,10 +46,21 @@ export const captionAt = (T: number) => { const c = CAPS.find((q) => T >= q.a - 
 export const paintCaption = (g: CanvasRenderingContext2D, T: number) => { const c = captionAt(T); if (!c) return;
   g.save(); g.setTransform(1, 0, 0, 1, 0, 0); g.font = `900 ${c.sz}px 'Arial Black', Arial, sans-serif`; g.textAlign = "center"; g.textBaseline = "top"; g.lineJoin = "round";
   g.lineWidth = 18; g.strokeStyle = "#141018"; g.fillStyle = "#fff4c2"; c.lines.forEach((l, i) => { const y = c.box[1] + i * c.sz * 1.1; g.strokeText(l, 540, y); g.fillText(l, 540, y); }); g.restore(); };
+/** the camera on the action, done on the finished picture (the plate and the figures; the words stay still): a short push in at "Hey!"
+ *  (2.00-2.22, to 1.05, held to the cut) and, at the fist on the table (15.467, its contact frame), a 4 % punch in with a small shake that dies in
+ *  0.25 s, the figures with the plate (the reviewer: scale and move the whole frame, no new plates). In picture pixels about the frame's middle */
+export const camFx = (t: number): { s: number; dx: number; dy: number } => {
+  const sm = (u: number) => (u <= 0 ? 0 : u >= 1 ? 1 : u * u * (3 - 2 * u));
+  if (t >= 1.6 && t < 2.7) return { s: 1 + 0.05 * sm((t - 2.0) / 0.22), dx: 0, dy: 0 };
+  const HIT = 464 / FM.FPS; if (t >= 15.3 && t < 15.6 && t >= HIT) { const u = t - HIT, k = Math.exp(-u / 0.09); return { s: 1 + 0.04 * k, dx: 5 * k * Math.sin(u * 2 * Math.PI * 9), dy: 4 * k * Math.cos(u * 2 * Math.PI * 7) }; }
+  return { s: 1, dx: 0, dy: 0 }; };
 export const Dinner3D: React.FC<{ muted?: boolean }> = ({ muted = false }) => {
-  const t = useCurrentFrame() / FM.FPS, { s, fr } = shotAtD(t), pf = s.static ? 0 : fr;
+  const t = useCurrentFrame() / FM.FPS, { s, fr } = shotAtD(t), pf = s.static ? 0 : fr, fx = camFx(t);
   return <AbsoluteFill style={{ background: "#1a1210" }}>
-    <Img src={staticFile(`din3d/${s.id}/${String(pf + 1).padStart(4, "0")}.jpg`)} style={{ width: FM.W, height: FM.H }} />
-    <AbsoluteFill><canvas width={FM.W} height={FM.H} ref={(cv) => { if (cv) { const g = cv.getContext("2d")!; g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, FM.W, FM.H); paintFigures(g, s.id, fr, BUILT[s.id]); paintCaption(g, t); } }} /></AbsoluteFill>
+    <AbsoluteFill style={{ transform: `translate(${fx.dx}px, ${fx.dy}px) scale(${fx.s})`, transformOrigin: "50% 50%" }}>
+      <Img src={staticFile(`din3d/${s.id}/${String(pf + 1).padStart(4, "0")}.jpg`)} style={{ width: FM.W, height: FM.H }} />
+      <AbsoluteFill><canvas width={FM.W} height={FM.H} ref={(cv) => { if (cv) { const g = cv.getContext("2d")!; g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, FM.W, FM.H); paintFigures(g, s.id, fr, BUILT[s.id], EXTRAS[s.id]); } }} /></AbsoluteFill>
+    </AbsoluteFill>
+    <AbsoluteFill><canvas width={FM.W} height={FM.H} ref={(cv) => { if (cv) { const g = cv.getContext("2d")!; g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, FM.W, FM.H); paintCaption(g, t); } }} /></AbsoluteFill>
     {muted ? null : <Audio src={staticFile("craft/dinner3d.wav")} />}
   </AbsoluteFill>; };

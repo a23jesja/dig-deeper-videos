@@ -63,6 +63,15 @@ export const occluders = (sk: Sk, B: Body, side: Side, nearKind: HandKind, kit: 
   return [...legPolys(sk, B, kit), torsoPoly(sk, B), ...headPolys(sk, kit), ...armParts(sk, sk.near, nearKind, B).all];
 };
 
+/** the face's features as rings of points (skeleton units): the eyes, the nose and the mouth, where the head draws them in its view (A's places;
+ *  a kit's eyes larger and lower for a child, its mouth at kitMouth). For dinner_check 13: the picture's edge may not cut through one */
+export const faceFeatures = (sk: Sk, kit: Kit | null = null, face: { mouth?: number; smirk?: number } = {}): P2[][] => {
+  const sn = Math.sin(sk.faceYaw * R), as = Math.abs(sn), view = as < 0.45 ? "front" : as < 0.85 ? "q" : "side", es = kit?.eyes ?? 1, ey = -118 + (es - 1) * 30, tx = sn * 34;
+  const ring = (cx: number, cy: number, rx: number, ry: number) => Array.from({ length: 12 }, (_, i) => headPt(sk, [cx + rx * Math.cos((i / 12) * 2 * Math.PI), cy + ry * Math.sin((i / 12) * 2 * Math.PI)]));
+  const eyes = view === "q" ? [ring(10 - (es - 1) * 20, ey, 30 * es, 40 * es), ring(76, ey, 24 * es, 32 * es)] : view === "front" ? [ring(-46 + tx, ey, 30 * es, 40 * es), ring(46 + tx, ey, 30 * es, 40 * es)] : [ring(66, ey, 27 * es, 36 * es)];
+  const nose = view === "q" ? ring(104, -84, 17, 14) : view === "front" ? ring(tx, -84, 17, 14) : ring(126, -82, 19, 16);
+  const km = kit ? kitMouth(view, face.mouth ?? 0, face.smirk ?? 0, tx) : { x: view === "q" ? 62 : view === "front" ? tx : 92, y: -52, w: 20, s: 0.8, m0: 0.2 };
+  return [...eyes, nose, ring(km.x, km.y + 12, km.w, 14)]; };
 /** is a head-frame point inside the head's outline less an ink line (9): the mouth must lie there (dinner_check rule 11) */
 export const insideHead = (sk: Sk, p: P2) => { const o = sk.j.skull as unknown as P2, c = Math.cos(-sk.headTilt * R), sn = Math.sin(-sk.headTilt * R), dx = p[0] - o[0], dy = p[1] - o[1], lx = dx * c - dy * sn, ly = dx * sn + dy * c;
   return (lx / 117) ** 2 + ((ly + 128) / 123) ** 2 <= 1; };

@@ -93,11 +93,11 @@ def plane(name, kind, c, w, d, rotz, m, z=0.0):
     o.location = (c[0], c[1], z); o.scale = (w, d, 1); o.rotation_euler = (0, 0, math.radians(rotz)); o.data.materials.append(m); OBJ[name] = kind; return o
 
 # ------------------------------------------------------------------ the room ------------------------------------------------------------------
-X0, X1, Y0, Y1, ZT = -2.4, 2.4, -3.2, 3.2, 2.45
+X0, X1, Y0, Y1, ZT = -2.4, 2.4, -4.4, 3.2, 2.45      # (v6: the cabin 1.2 m longer toward the lens, so a camera can stand back far enough for a waist-up 9:16 shot of a Knopp head; the stern end as step 1)
 box("floor", "floor", X0, X1, Y0, Y1, -0.06, 0.0, FLOOR)
 box("wall L", "wall", X0 - 0.1, X0, Y0, Y1, 0, ZT, WALL); box("wall R", "wall", X1, X1 + 0.1, Y0, Y1, 0, ZT, WALL)
 box("ceiling", "wall", X0, X1, Y0, Y1 + 0.1, ZT, ZT + 0.08, WALL)
-for k in range(11): y = Y0 + 0.3 + k * 0.6; box(f"beam{k}", "wall", X0, X1, y - 0.07, y + 0.07, ZT - 0.16, ZT, BEAM)
+for k in range(13): y = Y0 + 0.3 + k * 0.6; box(f"beam{k}", "wall", X0, X1, y - 0.07, y + 0.07, ZT - 0.16, ZT, BEAM)
 # the back wall with three stern windows (openings x -1.6..-0.7, -0.45..0.45, 0.7..1.6, z 0.95..1.85) and their frames and mullions
 WIN = [(-1.6, -0.7), (-0.45, 0.45), (0.7, 1.6)]; WZ = (0.95, 1.85); YB = Y1
 box("back low", "wall", X0, X1, YB, YB + 0.12, 0, WZ[0], WALL); box("back high", "wall", X0, X1, YB, YB + 0.12, WZ[1], ZT, WALL)
@@ -125,7 +125,7 @@ def imp(asset, loc, rotz=0.0, s=1.0, kind="prop"):
 TABLE = (-1.015, 1.11);      # (its front edge just behind the captain, its right end beside him: the flat figure is never behind any part of it)
 TS = 1.0; TOP = 0.488 * TS      # (the table at its own size, 0.49 m: at the waist of our figures, whose big heads make their hips low)
 imp("gallinera_table", (TABLE[0], TABLE[1], 0), 4, TS)
-imp("seadogs_compass", (TABLE[0] + 0.28, TABLE[1] - 0.12, TOP), 30, 1.6)
+pass      # (v6: no compass at the table's right front, where the captain's plate now lies)
 imp("dutch_ship_medium", (TABLE[0] - 0.22, TABLE[1] + 0.12, TOP + 0.03), 70, 0.0145)
 imp("wooden_candlestick", (TABLE[0] + 0.1, TABLE[1] + 0.2, TOP), 0, 1.0)
 imp("carved_wooden_plate", (TABLE[0] + 0.32, TABLE[1] + 0.16, TOP), 0, 1.0)
@@ -157,7 +157,25 @@ bm = bmesh.new(); bm.from_mesh(cream.data); bmesh.ops.delete(bm, geom=[v for v i
 bpy.ops.mesh.primitive_uv_sphere_add(radius=0.016, segments=24, ring_count=12); cherry = bpy.context.object; cherry.name = "pudding cherry"; cherry.location = (0, 0, 0.088); cherry.data.materials.append(mat("cherry", "#b3121c", 0.25))
 for o in (dome, cream, cherry): o.parent = PUD; OBJ[o.name] = "food"
 PUD_HOME = (SPEC["plate"][0], SPEC["plate"][1], TOP + 0.022 * 1.8)
-PUD.location = PUD_HOME; PUD.scale = (2.3, 2.3, 2.3)      # (a big pudding: at 14 cm Knopp's hand (19 cm) hid it, the first stills)
+PUD.location = (0, 50, -5); PUD.scale = (2.3, 2.3, 2.3)      # (v6: the pudding is drawn flat in the sailor's ink, held in his two-layer hand (the reviewer, 25 Nov): the 3D one is never in the picture)
+# v6: the book from 1724 on the table beside the sailor (our own: worn dark leather covers, the cream block of its pages, no title, no text)
+BK = SPEC["book"]; book = bpy.data.objects.new("book", None); sc.collection.objects.link(book)
+LEATHER = mat("leather", "#4a2a18", 0.62); PAGES = mat("pages", "#e6d6b0", 0.9)
+for nm, (x0, x1, y0, y1, z0, z1, m_) in {"book cover low": (-0.13, 0.13, -0.095, 0.095, 0, 0.012, LEATHER), "book pages": (-0.122, 0.126, -0.088, 0.088, 0.012, 0.047, PAGES),
+                                        "book cover top": (-0.13, 0.13, -0.095, 0.095, 0.047, 0.059, LEATHER), "book spine": (-0.136, -0.122, -0.095, 0.095, 0, 0.059, LEATHER)}.items():
+    o = box(nm, "book", x0, x1, y0, y1, z0, z1, m_); o.parent = book
+book.location = (BK[0], BK[1], TOP); book.rotation_euler = (0, 0, math.radians(14))
+# v6: the captain's seat, a low sea chest wider than his hips (the figure sheet's review: on the stool his broad seat hung off its edge), its
+# top at the rig's seat, its long side across his way (props/seat.json "chest": x, y, top, the turn in degrees)
+IRON = mat("iron", "#2a2522", 0.45)
+SEATC = json.load(open(os.path.join(ENGINE, "src", "craft", "dinner3d", "props", "seat.json")))["things"]
+CH = next((t["frames"][0] for t in SEATC if t["name"] == "chest"), None)
+if CH:
+    chest = bpy.data.objects.new("sea chest", None); sc.collection.objects.link(chest); top = CH[2]
+    for nm, (x0, x1, y0, y1, z0, z1, m_) in {"sea chest body": (-0.27, 0.27, -0.19, 0.19, 0.0, top - 0.04, BEAM), "sea chest lid": (-0.28, 0.28, -0.2, 0.2, top - 0.04, top, BEAM),
+                                            "sea chest band L": (-0.2, -0.17, -0.2, 0.2, 0.0, top + 0.002, IRON), "sea chest band R": (0.17, 0.2, -0.2, 0.2, 0.0, top + 0.002, IRON)}.items():
+        o = box(nm, "seat", x0, x1, y0, y1, z0, z1, m_); o.parent = chest
+    chest.location = (CH[0], CH[1], 0); chest.rotation_euler = (0, 0, math.radians(CH[3]))
 MP = SPEC["map"]; plane("treasure map", "map", MP["at"], MP["w"], MP["d"], MP["rot"], flat_img("map", os.path.join(T, "map.png"), rough=0.9, glow=0.0), z=0.002)      # (a little light of its own: the red X read pale in the boot's shade, v31)
 
 # ------------------------------------------------------------------ the light ------------------------------------------------------------------
@@ -217,11 +235,7 @@ def pose_shot(shot, t):
     BOUNCE.energy = shot.get("bounce", 0)
     STOOL.location = Vector((0.25, 5.0, 0)) if "stool" in shot.get("hide", []) else STOOL_HOME.copy()
     fr = int(math.floor(t * FPS + 0.5)); P = {}
-    SEAT = props_of("seat").get("stool")
-    if SEAT: STOOL.location = Vector((SEAT[0][0], SEAT[0][1], 0)); STOOL.scale = (SEAT[0][3],) * 3      # (the captain's seat, from the rig: scripts/dinner_props.mjs)
-    PP = props_of(shot["id"]).get("pudding"); print("PUD", shot["id"], (PP or [[None]])[0][:4], flush=True)
-    if PP: q = PP[max(0, min(len(PP) - 1, fr))]; PUD.location = Vector(q[:3]) if q[3] > 0 else Vector((0, 50, -5)); PUD.rotation_euler = (0, 0, 0)
-    else: PUD.location = Vector(PUD_HOME)
+    STOOL.location = Vector((0.25, 5.0, 0))      # (v6: the captain sits on the sea chest; the stool is out of the room)
     if "chest" in P:
         q = P["chest"][max(0, min(len(P["chest"]) - 1, fr))]; CHEST.location = Vector(q); CHEST.rotation_euler = (0, 0, 0); CHEST.scale = (0.55, 0.55, 0.55); BO.location.x = q[0]      # (the bounce under it, moving with it)
     else: CHEST.location, CHEST.rotation_euler, CHEST.scale = CHEST_HOME[0].copy(), CHEST_HOME[1].copy(), CHEST_HOME[2].copy()

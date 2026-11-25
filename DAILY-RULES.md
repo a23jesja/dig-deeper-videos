@@ -128,6 +128,9 @@ never reach this. The way there:
   pace starts: a Short built from the library in under four hours with at most one fix round.
 - **Quality gate unchanged:** a film that is not at the bar is not published; the pace comes from the library, never
   from passing faults.
+- **Order of worlds (Jesper 2026-11-25: "Ja vi kan köra piraterna först"):** 1. pirates (the cabin, cast and voices
+  exist; the long video "What if you lived one day on a pirate ship?" from granskning/pirate-day; the captain's
+  dinner is its first Short), 2. Alcatraz, 3. one week in the 1300s, 4. the Emu War remade.
 
 ## Goal
 Within one year: about 1 million long-video views a month, enough for at least 50,000 SEK a month from ads and

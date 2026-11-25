@@ -1,0 +1,34 @@
+{
+ "line": "Aye!",
+ "take": 2,
+ "own": true,
+ "words": [
+  {
+   "w": "Aye!",
+   "a": 0.0,
+   "b": 0.29
+  }
+ ],
+ "note": "[OWN] the vote (the cloud session, 25 Nov); whisper heard 'Bye' without a prompt, 'Aye!' with one: to be listened to",
+ "env30": [
+  0.926,
+  0.911,
+  0.918,
+  1.0,
+  0.781,
+  0.67,
+  0.443,
+  0.262,
+  0.149,
+  0.068,
+  0.023,
+  0.005,
+  0.001,
+  0.0,
+  0.001,
+  0.001,
+  0.001,
+  0.0,
+  0.0
+ ]
+}

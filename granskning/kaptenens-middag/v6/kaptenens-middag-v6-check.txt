@@ -1,0 +1,7 @@
+15 cuts: 1->2 captain: 35 deg, 1.49x; 3->4 boy,crew: 31 deg, 1.36x; 4->5 boy: 34 deg, 3.11x; 5->7 boy: 34 deg, 3.11x; 7->8 boy,crew: 40 deg, 1.37x; 11->12 boy,crew: 66 deg, 1.32x; 12->13 boy,crew: 68 deg, 1.30x; 13->14 boy: 45 deg, 1.70x; 15->1 captain: 35 deg, 1.49x
+{}
+arms seen (far arms only, least share of the arm/of its hand, medium and close shots): 2:crew:far 60/100%, 2:captain:far 86/58%, 3:boy:far 100/100%, 3:crew:far 100/100%, 5:boy:far 100/100%, 8:boy:far 83/64%, 8:crew:far 100/100%, 9:crew:far 90/100%, 9:captain:far 10/43%, 12:boy:far 100/100%, 12:crew:far 100/100%, 15:crew:far 56/100%, 15:captain:far 92/79%
+5 (note) hands at the edge of a figure seen only as a sliver: 9 crew R
+13 (note) heads cut by the edge, the most of each in the picture: 2 crew 93%, 9 crew 78%, 10b captain 69%, 15 crew 86%
+worst: seat 0.13 cm from the chest, the pudding's base 0.00 cm off the plate, hands on the table 2.2 to 3.5 cm over its top, a hand at most 0.2 cm from its place
+DINNER CHECK OK (720 frames)

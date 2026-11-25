@@ -84,6 +84,12 @@ const stubblePts = (view: "front" | "q" | "side"): P2[] => view === "front"
 
 type F = ReturnType<typeof frame>;
 export const TURQ = "#1fb3a6";
+/** the full beard's outline in the figure's own units, as beardOverlay draws it (for the beard check: no skin or window inside it) */
+export const beardOutline = (sk: Sk): P2[] => { const sn = Math.sin(sk.faceYaw * (Math.PI / 180)), as = Math.abs(sn), flip = sn < 0, view: "front" | "q" | "side" = as < 0.45 ? "front" : as < 0.85 ? "q" : "side";
+  const c = Math.cos(sk.headTilt * (Math.PI / 180)), si = Math.sin(sk.headTilt * (Math.PI / 180)), o = sk.j.skull as unknown as P2, fx = view !== "front" && flip ? -1 : 1;
+  return beardPts(view).map(([x, y]) => [o[0] + fx * x * c - y * si, o[1] + fx * x * si + y * c] as P2); };
+/** the beard check's planted fault: the beard cut with holes a little wider than the arm (the v6-t13 bug) */
+export const BEARD_PLANT = { holes: false };
 const GOLD = "#e8b630", MOUTH = "#5b1f2a", TONGUE = "#e46a6a", TEAR = "#7cc8ee", WHITE = "#ffffff";
 /** the face check's switch (scripts/face_order.mjs): false draws the nose before the monocle's ring at three-quarter, as in v4 */
 /** cuffSwap: the far hand changes layer in a turn as the sweep passes the coat's edge at the cuff (false: at HAND_SWAP, v6/v7 draft, a notch) */
@@ -235,15 +241,21 @@ const capSide = (k: Ink, back: number, front: number, y0: number, top: number, c
 
 /** the full beard after the arms (the sheet's review: drawn with the head, the sleeves' rounded tops lay over it and the arms looked loose):
  *  over the arms' upper part, but never over a forearm or a hand drawn in front of the head; then the mouth over the beard (the same clip) */
-const beardOverlay = (k: Ink, sk: Sk, r: FR, B: Body, P: Props, over: Side[]) => { const kit = KIT.k; if (!kit || kit.beard !== "full") return;
+/** the full beard over the arms' upper part, then each forearm and hand in `over` drawn again over it, clipped to the forearm and the hand
+ *  (the arm's own drawing, so it fits it exactly): cut out with holes a little wider than the arm, the beard showed the window or the
+ *  waistcoat through the gap (a white wedge as the fist went up, a round hole at the chest beat), the independent review of v6-t13 */
+const beardOverlay = (k: Ink, sk: Sk, r: FR, B: Body, P: Props, over: Side[], arm?: (sd: Side) => void) => { const kit = KIT.k; if (!kit || kit.beard !== "full") return;
   const sn = Math.sin(sk.faceYaw * (Math.PI / 180)), as = Math.abs(sn), flip = sn < 0, view: "front" | "q" | "side" = as < 0.45 ? "front" : as < 0.85 ? "q" : "side";
-  const B9 = 1e4, holes: P2[][] = over.flatMap((sd) => { const E = J(sk, "el", sd), W = J(sk, "wr", sd), T = J(sk, "tip", sd), hc: P2 = [(W[0] + T[0]) / 2, (W[1] + T[1]) / 2];
-    return [seg(E, W, B.arm[1] + 6, B.arm[2] + 6, 0, 0.3, true), ellPts(hc[0], hc[1], P.hand * 0.95, P.hand * 0.95, 0, 0, 360, 20), ellPts(E[0], E[1], B.arm[1] + 6, B.arm[1] + 6, 0, 0, 360, 16)]; });
-  const g = k.g; g.save(); g.beginPath(); g.rect(-B9, -B9, 2 * B9, 2 * B9); for (const h of holes) k.trace(h); g.clip("evenodd");
+  if (BEARD_PLANT.holes) { const B9 = 1e4, holes: P2[][] = over.flatMap((sd) => { const E = J(sk, "el", sd), W = J(sk, "wr", sd), T = J(sk, "tip", sd), hc: P2 = [(W[0] + T[0]) / 2, (W[1] + T[1]) / 2];
+      return [seg(E, W, B.arm[1] + 6, B.arm[2] + 6, 0, 0.3, true), ellPts(hc[0], hc[1], P.hand * 0.95, P.hand * 0.95, 0, 0, 360, 20), ellPts(E[0], E[1], B.arm[1] + 6, B.arm[1] + 6, 0, 0, 360, 16)]; });
+    const g = k.g; g.save(); g.beginPath(); g.rect(-B9, -B9, 2 * B9, 2 * B9); for (const h of holes) k.trace(h); g.clip("evenodd");
+    k.at(sk.j.skull[0], sk.j.skull[1], sk.headTilt, view !== "front" && flip, () => { fl(k, beardPts(view), kit.col.beard); kitMouthDraw(k, view, r, sn * 34); }); g.restore(); return; }      /* (the planted fault: the old holes) */
   k.at(sk.j.skull[0], sk.j.skull[1], sk.headTilt, view !== "front" && flip, () => { const bp = beardPts(view); fl(k, bp, kit.col.beard);
     k.clip(bp, () => { for (const [a, b, c] of BEARD_STRANDS[view]) k.line(spline([a, b, c], false, 8), 5, kit.col.beardHi ?? "#7a5638"); });
-    kitMouthDraw(k, view, r, sn * 34); });
-  g.restore(); };
+    kitMouthDraw(k, view, r, sn * 34); });      /* (the mouth over the beard, under a hand that passes it) */
+  if (arm) for (const sd of over) { const E = J(sk, "el", sd), W = J(sk, "wr", sd), T = J(sk, "tip", sd), hc: P2 = [(W[0] + T[0]) / 2, (W[1] + T[1]) / 2];
+    const g = k.g; g.save(); g.beginPath(); k.trace(seg(E, W, B.arm[1] + 30, B.arm[2] + 30, 0, 0.3, true)); k.trace(ellPts(hc[0], hc[1], P.hand * 1.6, P.hand * 1.6, 0, 0, 360, 24)); k.trace(ellPts(E[0], E[1], B.arm[1] + 30, B.arm[1] + 30, 0, 0, 360, 16)); g.clip("nonzero"); arm(sd); g.restore(); }
+ };
 /** two or three lighter strands in the beard, so it is not a flat dark hole in a close shot (the reviewer, cosmetic) */
 const BEARD_STRANDS: Record<string, [P2, P2, P2][]> = { q: [[[-90, -40], [-80, 0], [-50, 26]], [[70, -10], [60, 20], [30, 40]], [[-20, 10], [-14, 30], [-4, 44]]],
   front: [[[-90, -40], [-80, 0], [-50, 26]], [[90, -40], [80, 0], [50, 26]], [[0, 14], [0, 30], [0, 44]]], side: [[[-20, -60], [-26, -20], [0, 16]], [[80, 10], [70, 30], [50, 42]]] };
@@ -453,10 +465,10 @@ const drawFlat = (c: FlatSpec) => (k: Ink, sk: Sk, o: FigOpts) => {
     const HC = Math.max(Math.hypot(hc[0] - W2[0], hc[1] - W2[1]), P.hand * 0.6) + 12, circ: P2[] = Array.from({ length: 24 }, (_, i) => [hc[0] + HC * Math.cos((i * Math.PI) / 12), hc[1] + HC * Math.sin((i * Math.PI) / 12)] as P2);
     if (u > 0 && u < 1) { const S2 = J(sk, "sh", far), E2 = J(sk, "el", far), cutLine = () => k.clip(torsoPoly, () => { for (const piece of limb(S2, E2, W2, B.arm)) k.clip(piece, () => k.line([[line, -B9], [line, B9]], k.ol)); });
       if (!FACE.cuffSwap) outside(cutLine); else without(behindPts, () => without(circ, cutLine)); }
-    arm(near); beardOverlay(k, sk, r, B, P, [near]); return;
+    arm(near); beardOverlay(k, sk, r, B, P, [near], arm); return;
   }
   layers(sk, { arm, leg, torso, head });
-  beardOverlay(k, sk, r, B, P, Math.abs(sk.sin) > 0.5 ? [sk.near] : [sk.far, sk.near]);
+  beardOverlay(k, sk, r, B, P, Math.abs(sk.sin) > 0.5 ? [sk.near] : [sk.far, sk.near], arm);
 };
 /** where the far arm comes out from behind the body in a turn (|sin| of the facing); [0, 0] switches it in one frame at 0.5 (the v4 order,
  *  the bytes check's planted fault) */

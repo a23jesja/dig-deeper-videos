@@ -29,11 +29,12 @@
 // down in the head's frame, 11), turnCross (the crewman's face turning 0 to 40 degrees more through his first shot, 12).
 //   node scripts/dinner_check.mjs [--plant seatHigh|pudOff|handIn|float|capLow|missing|faceHide|mouthHand|oneArm|mouthOut|turnCross]
 import * as esbuild from "esbuild"; import fs from "node:fs"; import path from "node:path"; import { pathToFileURL } from "node:url";
+const NOTE6 = {};
 const arg = (k) => (process.argv.includes(k) ? process.argv[process.argv.indexOf(k) + 1] : null), plant = arg("--plant");
 const out = "out/_din_check.mjs";
 // (flat.ts keeps its design's body sizes (A_SPEC) to itself: the bundle alone exports them to this check, the file is not changed)
 const exportSpec = { name: "spec", setup(b) { b.onLoad({ filter: /designs[\\/]flat\.ts$/ }, (a) => ({ contents: fs.readFileSync(a.path, "utf8") + "\nexport { A_SPEC };\n", loader: "ts" })); } };
-await esbuild.build({ plugins: [exportSpec], stdin: { contents: 'export * from "./src/craft/dinner3d/core"; export * from "./src/craft/dinner3d/figures"; export { captionAt, CAP_TOPS, camFx } from "./src/craft/dinner3d/Dinner3D"; export { thighUnder, scaleOf, D, FM, jointPx, footY, heightOf } from "./src/craft/clips/clipKit"; export * as BG from "./src/craft/checks/bodyGeom"; export { kitOf, kitBody } from "./src/craft/wardrobe/kit"; export { A_SPEC } from "./src/craft/designs/flat";', resolveDir: ".", loader: "tsx" }, bundle: true, format: "esm", platform: "node", outfile: out, logLevel: "error", loader: { ".json": "json" }, external: ["remotion", "react"] });
+await esbuild.build({ plugins: [exportSpec], stdin: { contents: 'export * from "./src/craft/dinner3d/core"; export * from "./src/craft/dinner3d/figures"; export { captionAt, CAP_TOPS, camFx, bodyCaps, boxHitsCap, CAP_ON_BODY, ARM_CAPS } from "./src/craft/dinner3d/Dinner3D"; export { thighUnder, scaleOf, D, FM, jointPx, footY, heightOf } from "./src/craft/clips/clipKit"; export * as BG from "./src/craft/checks/bodyGeom"; export { kitOf, kitBody, beardOutline } from "./src/craft/wardrobe/kit"; export { A_SPEC } from "./src/craft/designs/flat";', resolveDir: ".", loader: "tsx" }, bundle: true, format: "esm", platform: "node", outfile: out, logLevel: "error", loader: { ".json": "json" }, external: ["remotion", "react"] });
 const M = await import(pathToFileURL(out).href); fs.rmSync(out);
 const { SHOTS, WHO, PLANT, placeOf, toScreen, feetOf, project, jointPx, handPx, FM, cardToWorld, thighUnder, scaleOf, D, captionAt, PUD_UP, TABLE_TOP } = M;
 const CHECK_PLANTS = { capLow: 6, missing: 7, faceHide: 8, mouthHand: 9, oneArm: 10, mouthOut: 11, turnCross: 12, seatEdge: 1, faceEdge: 13, frontArm: 10, smileCross: 14 }, RULE_OF = { seatHigh: 1, pudOff: 3, handIn: 4, handInBook: 4, float: 2, ...CHECK_PLANTS };
@@ -84,7 +85,7 @@ for (const S of SHOTS) {
       // 1 the seat: on the chest's top within 1 cm (in the half rise, shot 10, up to 10 cm over it and never under), and his whole seat on it: the
       //   pelvis's floor point and his hips each side (0.21 m along his right, 0.12 m fore and aft) inside the chest's top
       if (w.name === "captain") { const TH = D.props("sir").thigh * scaleOf("sir"), px0 = jointPx(f, "pelvis")[0], under = thighUnder(f).filter(([x]) => Math.abs(x - px0) < 0.33 * TH), low = under.reduce((a, b) => (b[1] > a[1] ? b : a)), h = cardToWorld(w, pl, low)[2];
-        const rising = T >= RISE.up0 - 0.05 && T < RISE.down1, dz = h - STOOL_TOP, bad = rising ? dz < -0.01 || dz > 0.1 : Math.abs(dz) > 0.01;
+        const rising = T >= RISE.up0 - 0.05 && T < RISE.down1, dz = h - STOOL_TOP, bad = rising ? dz < -0.01 || dz > 0.15 : Math.abs(dz) > 0.01;      /* (rising: up to 15 cm, the reviewer 25 Nov, his feet on the floor (rule 2)) */
         if (!rising) worst.seat = Math.max(worst.seat, Math.abs(dz)); if (bad) faults.push(`1 ${S.id} frame ${fr}: the captain's seat ${(dz * 100).toFixed(1)} cm ${dz > 0 ? "over" : "into"} the chest${rising ? " (rising: 0-10 cm allowed)" : ""}`);
         const Fc = M.FIGS && JSON.parse(fs.readFileSync("src/craft/dinner3d/shots.json", "utf8")).facing.captain, fl = Math.hypot(Fc[0], Fc[1]), fx = Fc[0] / fl, fy = Fc[1] / fl, [ax, ay] = pl.at;
         for (const [r, fo] of [[0, 0], [0.21, 0], [-0.21, 0], [0, 0.12], [0, -0.12]]) if (!onChest(ax + fy * r + fx * fo, ay - fx * r + fy * fo)) { faults.push(`1 ${S.id} frame ${fr}: the captain's seat off the chest's top (${r ? "his hip" : fo ? "fore/aft" : "his pelvis"})`); break; } }
@@ -126,7 +127,10 @@ for (const S of SHOTS) {
         // (v6: the hands of a figure whose head is in the picture; a neighbour seen only as a sliver at the edge is the shot's framing, listed)
         const s1 = scr("skull"), c1 = scr("crown"), hh = Math.hypot(c1[0] - s1[0], c1[1] - s1[1]) / 2, hcx = (s1[0] + c1[0]) / 2, hcy = (s1[1] + c1[1]) / 2, headIn = hcx - hh > 0 && hcx + hh < FM.W && hcy - hh > 0 && hcy + hh < FM.H;
         const k5 = `${S.id} ${w.name} ${sd}`; (HPOS[k5] ??= []).push([(Math.min(...xs) + Math.max(...xs)) / 2, (Math.min(...ys) + Math.max(...ys)) / 2]);
-        if (!inside && !gone) { if (headIn || SPEAKS.some((v) => v.who === w.name && T >= v.t0 && T < v.t1)) faults.push(`5 ${S.id} frame ${fr} ${w.name}: his ${sd} hand cut by the picture's edge`); else NOTES5[k5] = true; } }
+        // (a sliver's hand at the edge passes only if its arm can be followed in the picture to his shoulder: a lone hand at the edge reads as an
+        //  extra hand, Eiffel v11; the reviewer, 25 Nov)
+        const shp = scr("sh" + sd), shIn = shp[0] > 0 && shp[0] < FM.W && shp[1] > 0 && shp[1] < FM.H;
+        if (!inside && !gone) { if (headIn || !shIn || SPEAKS.some((v) => v.who === w.name && T >= v.t0 && T < v.t1)) faults.push(`5 ${S.id} frame ${fr} ${w.name}: his ${sd} hand cut by the picture's edge${!headIn && !shIn ? " (a lone hand: his arm not in the picture)" : ""}`); else NOTES5[k5] = true; } }
     }
     // 9 and 10: the drawn parts of each figure (skeleton units, then the picture)
     { const sil = placed.map(({ w, pl }) => { const f = pl.f, s = scaleOf(f.who), scr = (p) => toScreen(pl, [f.x + p[0] * s, footY(f.who) + p[1] * s]);
@@ -188,10 +192,15 @@ for (const S of SHOTS) {
     const c = captionAt(T); if (c) { const b = [...c.box]; if (plant === "capLow") { b[1] += 300; b[3] += 300; }
       if (b[1] < 0.15 * FM.H || b[3] > 0.85 * FM.H) faults.push(`6 ${S.id} frame ${fr}: "${c.text}" outside 15-85 % (${Math.round(b[1])}-${Math.round(b[3])})`);
       for (const h of heads) { const cx = Math.max(b[0], Math.min(h[0], b[2])), cy = Math.max(b[1], Math.min(h[1], b[3])); if (Math.hypot(cx - h[0], cy - h[1]) < h[2] && b[3] > h[1] - 0.45 * h[2]) {      /* (the face: the head's circle below its cap, which covers its top 0.55) */ faults.push(`6 ${S.id} frame ${fr}: "${c.text}" over a face`); break; } }
-      for (const hb of hands) if (hb[0] < b[2] && hb[2] > b[0] && hb[1] < b[3] && hb[3] > b[1] && hb[2] > 0 && hb[0] < FM.W) { faults.push(`6 ${S.id} frame ${fr}: "${c.text}" over a hand`); break; } }
+      for (const hb of hands) if (hb[0] < b[2] && hb[2] > b[0] && hb[1] < b[3] && hb[3] > b[1] && hb[2] > 0 && hb[0] < FM.W) { faults.push(`6 ${S.id} frame ${fr}: "${c.text}" over a hand`); break; }
+      if (fr % 3 === 0) { let arm = false, body = false; for (const p of placed) M.bodyCaps(p.pl).forEach((cp, i) => { if (M.boxHitsCap(b, cp)) { if (i < M.ARM_CAPS) arm = true; else body = true; } });
+        if (arm) faults.push(`6 ${S.id} frame ${fr}: "${c.text}" over an arm or a hand`); else if (body && !M.CAP_ON_BODY[S.id]) faults.push(`6 ${S.id} frame ${fr}: "${c.text}" over a body`); else if (body) NOTE6[S.id] = true; } }      /* (never over an arm or a hand; over a still torso only where the shot had no free place, the reviewer 25 Nov) */      /* (the reviewer 25 Nov: never over a body or an arm) */
     const cf = M.camFx(T), cfx = (x, y) => [(x - FM.W / 2) * cf.s + FM.W / 2 + cf.dx, (y - FM.H / 2) * cf.s + FM.H / 2 + cf.dy];      // (the digital push and shake on the picture: the eyes move with it, the words do not)
     regions.push({ F: F0 + fr, shot: S.id, eyes: placed.map((p) => { const J = (j) => toScreen(p.pl, jointPx(p.pl.f, j)), a = J("skull"), b = J("crown"), r = Math.hypot(b[0] - a[0], b[1] - a[1]) / 2, yaw = (p.pl.f.sk.faceYaw * Math.PI) / 180;
-      const [ex, ey] = cfx((a[0] + b[0]) / 2 + 0.5 * r * Math.sin(yaw), (a[1] + b[1]) / 2 + 0.05 * r); return [Math.round(ex), Math.round(ey), Math.round(0.5 * r * cf.s)]; }), text: c ? [[Math.round(c.box[0] - 10), Math.round(c.box[1] - 6), Math.round(c.box[2] + 10), Math.round(c.box[3] + 6)]] : [] });
+      const [ex, ey] = cfx((a[0] + b[0]) / 2 + 0.5 * r * Math.sin(yaw), (a[1] + b[1]) / 2 + 0.05 * r); return [Math.round(ex), Math.round(ey), Math.round(0.5 * r * cf.s)]; }), text: c ? [[Math.round(c.box[0] - 10), Math.round(c.box[1] - 6), Math.round(c.box[2] + 10), Math.round(c.box[3] + 6)]] : [] , beard: placed.filter((p) => kitOf(p.pl.f.o.look)?.beard === "full").map((p) => { const f = p.pl.f, sc = scaleOf(f.who), sxy = (q) => cfx(...toScreen(p.pl, [f.x + q[0] * sc, footY(f.who) + q[1] * sc]));
+      const J = (j) => cfx(...toScreen(p.pl, jointPx(f, j))), a = J("skull"), b = J("crown"), hr = Math.hypot(b[0] - a[0], b[1] - a[1]) / 2, mo = BG.mouthPts(f.sk, f.o.face ?? {}, kitOf(f.o.look)).map(sxy);
+      const ex = placed.flatMap((q) => M.bodyCaps(q.pl).map((cp) => { const u = cfx(cp[0], cp[1]), v = cfx(cp[2], cp[3]); return [u[0], u[1], v[0], v[1], cp[4] * 1.15 + 4]; }));      /* (every arm, hand and body over the beard, a little widened: only the beard itself is measured; widened much, the old holes beside the arm went unseen) */
+      return { poly: M.beardOutline(f.sk).map(sxy).map((q) => q.map(Math.round)), ex: ex.map((e) => e.map(Math.round)), mouth: [Math.min(...mo.map((q) => q[0])) - 12, Math.min(...mo.map((q) => q[1])) - 12, Math.max(...mo.map((q) => q[0])) + 12, Math.max(...mo.map((q) => q[1])) + 12].map(Math.round) }; }) });
     dump[S.id].push(row); }
   for (const [k, v] of Object.entries(FACE14)) if (k.startsWith(S.id + ":")) { const who = k.split(":")[1];
     for (const [i, th, nm] of [[0, 0.2, "mouth"], [1, 0.3, "smile"], [2, 0.5, "squeeze"]]) { const lo = Math.min(...v.map((q) => q[i])), hi = Math.max(...v.map((q) => q[i])); if (lo < th - 1e-6 && hi > th + 1e-6) faults.push(`14 ${S.id} ${who}: his ${nm} crosses ${th} inside the shot (${lo.toFixed(2)}-${hi.toFixed(2)})`); } }
@@ -211,10 +220,12 @@ if (!plant) {
 }
 if (arg("--geom")) fs.writeFileSync("out/din3d/geom.json", JSON.stringify(geomOut));
 { const CAMS = JSON.parse(fs.readFileSync("src/craft/dinner3d/cams.json", "utf8")), dirOf = (id) => { const P = CAMS[id][0][2], l = Math.hypot(P[0], P[1], P[2]); return [P[0] / l, P[1] / l, P[2] / l]; };
-  for (let i = 1; i < SHOTS.length; i++) { const a = SHOTS[i - 1].id, b = SHOTS[i].id, both = Object.keys(CUT15[a] ?? {}).filter((nm) => (CUT15[b] ?? {})[nm]); if (!both.length) continue;
+  // (and the loop's seam, the last shot to the first: a cut like the others (the cloud session, 25 Nov); the same camera there was a jump cut)
+  for (let i = 1; i <= SHOTS.length; i++) { const a = SHOTS[i - 1].id, b = SHOTS[i % SHOTS.length].id, both = Object.keys(CUT15[a] ?? {}).filter((nm) => (CUT15[b] ?? {})[nm]); if (!both.length) continue;
     const da = dirOf(a), db = dirOf(b), ang = (Math.acos(Math.min(1, da[0] * db[0] + da[1] * db[1] + da[2] * db[2])) * 180) / Math.PI, sz = Math.min(...both.map((nm) => Math.max(CUT15[a][nm], CUT15[b][nm]) / Math.min(CUT15[a][nm], CUT15[b][nm])));
     CUTS.push(`${a}->${b} ${both.join(",")}: ${ang.toFixed(0)} deg, ${sz.toFixed(2)}x`); if (ang < 30 || sz < 1.3) faults.push(`15 cut ${a}->${b} (${both.join(", ")}): ${ang.toFixed(0)} degrees, ${sz.toFixed(2)}x`); } }
 console.log("15 cuts: " + CUTS.join("; "));
+console.log("6 (note) words over a body where the shot had no free place (faces and hands kept clear): " + (Object.keys(NOTE6).join(", ") || "none"));
 const seen = new Set(), shown = [];
 for (const f of faults) { const k = f.replace(/frame \d+/, "").replace(/-?[\d.]+ (px|cm)/g, "").replace(/\(\d+-\d+\)/, ""); if (!seen.has(k)) { seen.add(k); shown.push(f); } }
 for (const f of shown.slice(0, 40)) console.log("  " + f);

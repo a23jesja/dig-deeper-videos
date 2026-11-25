@@ -1,0 +1,16 @@
+The room's 1.2 m extension (y -4.4 to -3.2: floor, ceiling, both walls, the open end): 845 points, projected with each shot's camera (src/craft/dinner3d/cam/<id>.json, Blender's own projection)
+shot   1: 0 of 845 in the picture
+shot   2: 0 of 845 in the picture
+shot   3: 0 of 845 in the picture
+shot   4: 0 of 845 in the picture
+shot   5: 0 of 845 in the picture
+shot   7: 0 of 845 in the picture
+shot   8: 0 of 845 in the picture
+shot   9: 0 of 845 in the picture
+shot 10b: 0 of 845 in the picture
+shot  11: 0 of 845 in the picture
+shot  12: 0 of 845 in the picture
+shot  13: 0 of 845 in the picture
+shot  14: 0 of 845 in the picture
+shot  15: 0 of 845 in the picture
+The beams keep their places (y = Y0 + 0.3 + 0.6k: the 1.2 m is two beam steps); the textures are box-projected in object space in metres (no stretch); no light refers to the room's end.

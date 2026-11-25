@@ -23,4 +23,4 @@ for s in S['shots']:
     z = np.load(p); n = round((s['t1'] - s['t0']) * 30)
     if z['depth'].shape[0] == 1: np.savez_compressed(p, depth=np.repeat(z['depth'], n, 0), kind=np.repeat(z['kind'], n, 0), kinds=z['kinds'])      # (a held camera: its one map for every frame)
 PY
-(cd out/din3d/root && python ../../../scripts/dinner_depth.py > ../$(basename $LOG)-depth.txt 2>&1 || true; python ../../../scripts/dinner_depth.py --plant > ../$(basename $LOG)-depth-plant.txt 2>&1 || true); tail -1 out/din3d/$(basename $LOG)-depth.txt; tail -1 out/din3d/$(basename $LOG)-depth-plant.txt
+(cd out/din3d/root && python ../../../scripts/dinner_depth.py > ../$(basename $LOG)-depth.txt 2>&1 || true; python ../../../scripts/dinner_depth.py --plant > ../$(basename $LOG)-depth-plant.txt 2>&1 || true; python ../../../scripts/dinner_depth.py --plant-arm > ../$(basename $LOG)-depth-plant-arm.txt 2>&1 || true); tail -1 out/din3d/$(basename $LOG)-depth.txt; tail -1 out/din3d/$(basename $LOG)-depth-plant.txt; tail -1 out/din3d/$(basename $LOG)-depth-plant-arm.txt

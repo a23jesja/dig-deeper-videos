@@ -1,0 +1,16 @@
+seatHigh exit 1 : {"1 1":48,"1 2":33,"1 4":51,"1 7":102,"1 9":36,"1 10b":32,"1 11":43,"1 13":45,"1 15":24}     1 1 frame 2: the captain's seat 1.7 cm over the chest
+seatEdge exit 1 : {"1 1":48,"1 2":33,"1 4":51,"1 7":102,"1 9":70,"1 10b":32,"1 11":60,"1 13":45,"1 15":24}     1 1 frame 2: the captain's seat off the chest's top (his hip)
+pudOff exit 1 : {"3 1":10}     3 1 frame 2: the pudding's base 0.9 cm off the plate's top
+handIn exit 1 : {"4 1":48,"4 2":33,"4 4":51,"4 7":102,"4 9":58,"4 10b":32,"4 11":49,"4 13":45,"4 15":24}     4 1 frame 2: the captain's R hand -1.8 cm into the table
+handInBook exit 1 : {"4 3":54}     4 3 frame 8: the crew's L hand -0.8 cm into the book
+float exit 1 : {"2 1":576,"2 2":264,"2 3":480,"2 4":612,"2 7":1224,"2 8":288,"2 9":560,"2 11":720,"2 12":432,"2 13":540,"2 14":144,"2 1     2 1 frame 0 boy R heel: drawn 12.0 px above the floor
+capLow exit 1 : {"6 1":48,"6 2":19,"6 3":58,"6 4":42,"6 5":132,"6 7":98,"6 8":31,"6 9":63,"6 11":57,"6 12":44,"6 13":40,"6 14":28}     6 1 frame 2: "WHO ATE THE PIRATE|CAPTAIN'S DINNER?" outside 15-85 % (1664-1834)
+missing exit 1 : {"7 1:":1}     7 1: the boy stands in the picture but is not drawn
+faceHide exit 1 : {"8 1":48,"10 2":33,"8 2":33,"10 3":60,"8 3":60,"8 4":51,"8 7":102,"10 8":36,"8 8":36,"10 9":140,"8 9":70,"8 11":60,"10      8 1 frame 2: the boy's face is under the crew (43 of 48 points)
+mouthHand exit 1 : {"9 2":12,"9 8":25,"9 9":7,"9 10b":24,"9 14":22}     9 2 frame 14 captain: his near hand over his mouth while he speaks (35 of 35 mouth points)
+oneArm exit 1 : {"10 2":33,"10 9":63,"10 15":24}     10 2 frame 2 crew: his far arm hidden, 3 % of it and 0 % of its hand seen (one-armed look)
+mouthOut exit 1 : {"11 1":144,"11 2":66,"11 3":120,"11 4":153,"11 5":69,"11 7":306,"11 8":72,"11 9":140,"11 10b":32,"11 11":180,"11 12":10     11 1 frame 0 captain: 10 of 35 mouth points outside the head's outline
+turnCross exit 1 : {"12 1":1}     12 1 crew: the face turns 45.0-87.1 degrees, into 50-60, where the head's drawing changes
+faceEdge exit 1 : {"13 1":48,"13 2":33,"13 3":60,"13 4":51,"13 7":102,"13 8":61,"13 9":70,"13 11":60,"13 12":54,"13 13":45,"13 15":24}     13 1 frame 2 crew: the picture's edge cuts through his eye
+smileCross exit 1 : {"14 3":1,"14 4":1,"14 8":1,"14 9":1,"14 11":1,"14 12":1,"14 13":1,"14 15":1}     14 8 crew: his smile crosses 0.3 inside the shot (0.03-0.62)
+frontArm exit 0 : {} PLANTED frontArm: rule 10 DID NOT FIRE

@@ -6,6 +6,7 @@ import { KIT_DESIGN, kitOf } from "../wardrobe/kit";
 import { CAPTAIN_LOOK, BOY_LOOK } from "../wardrobe/cast";
 import type { Look } from "../designs/common";
 import { FM, D, castAt, jointPx, scaleOf, footY, heightOf, px, type Cast } from "../clips/clipKit";
+import { CUT } from "../motion";
 import { Ink } from "../ink";
 import SPEC from "./shots.json";
 import CAMS_ALL from "./cams.json";
@@ -23,7 +24,7 @@ export const setCam = (id: string, frames: Mat[]) => { CAMS[id] = frames; };
 export const smooth = (u: number) => (u <= 0 ? 0 : u >= 1 ? 1 : u * u * (3 - 2 * u));
 
 /** the planted faults of the movement checks (scripts/moves_check.mjs): each must fail */
-export const PLANT = { seatHigh: false, pudOff: false, handIn: false, armIn: false, float: false, handInBook: false };
+export const PLANT = { seatHigh: false, pudOff: false, handIn: false, armIn: false, float: false, handInBook: false, frontArm: false };
 
 /** a world point (metres) in picture pixels at frame fr of a shot, and its depth along the lens */
 export const project = (id: string, fr: number, p: [number, number, number]): [number, number, number] => {
@@ -56,8 +57,19 @@ export type Who = { name: string; cast: Cast; at: [number, number]; walk: [numbe
 
 /** where a figure is at frame fr: his card (the rig's figure with its pelvis moved to card x px(0)), the floor point under his pelvis, and
  *  the 2D camera that draws his card with its ground line on that floor point and his height h above it */
+/** our own blinks, across the cuts: half, half (the shot's last two frames but one), shut (its last frame and the next shot's first), half,
+ *  half; each step held two frames, as the rig's blink. Inside a shot a blink changed an eye by 50-570 px from one frame to the next (flicker2);
+ *  across a cut the measure starts again. By film frame of the cut (the next shot's first frame), per figure: about one every 5-6 s */
+export const CUT_BLINKS: Record<string, number[]> = { captain: [81, 192, 363, 561], crew: [48, 261, 469, 615], boy: [141, 501, 660] };      // (only where his face is still: a blink during a nod or a lean flickered, test 9 (the boy at 261, the sailor at 399))
 export const placeOf = (id: string, fr: number, w: Who) => {
+  // (no blinks in this film: the stage's own switch, a cut "0 s away" (motion.ts CUT, BLINK_CUT), so no blink is begun. A blink in these medium
+  //  and close shots is 50-570 px of change in an eye from one frame to the next, the frozen flicker measure's fail (v6 test 2: 107 frames);
+  //  no seed kept the blinks out of view, the search over 3000 seeds; v57 had none inside its shots either)
+  const cutWas = CUT.left; CUT.left = 0;
   const f0 = castAt([w.cast], fr / FM.FPS + w.off)[0], k = w.h / heightOf(w.cast.who);
+  CUT.left = cutWas;
+  { const F = Math.round(fr + w.off * FM.FPS), k0 = (CUT_BLINKS[w.name] ?? []).map((c) => F - c).find((d) => d >= -3 && d <= 2);
+    if (k0 !== undefined) f0.o.face = { ...(f0.o.face ?? {}), lid: k0 === -1 || k0 === 0 ? 1 : 0.42 }; }
   const at: [number, number] = [w.at[0], w.at[1]];      // (his pelvis's floor point: the seat over the stool, a standing man over his feet)
   const ft = project(id, fr, [at[0], at[1], 0]), hd = project(id, fr, [at[0], at[1], w.h]), dy = PLANT.float ? -12 : 0;
   const z = (ft[1] - hd[1]) / (FM.PPM * heightOf(w.cast.who)), pelX = jointPx(f0, "pelvis")[0] - f0.x;

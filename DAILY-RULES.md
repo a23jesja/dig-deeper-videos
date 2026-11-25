@@ -112,6 +112,23 @@ explained and it entertains. Ours have been calm explanations. From now on every
   used, even with a new angle.
 - **Violence stays cartoon and bloodless:** no gore, no suffering in detail, respect for real victims.
 
+## The pace (Jesper 2026-11-25) - the minimum, and quality still first
+"Videosen måste bli bra animerade och gjorda annars väntar vi, men vi måste komma i takt så vi kan publicera en short
+om dagen och 1-2 långa videos i veckan. Det är minimum." Hand-coding each film (five versions of one 24 s Short) can
+never reach this. The way there:
+- **Assemble, do not code, each film.** A film is a shot spec (who, where, which motion on which word, camera) built
+  from the library: the cast wardrobe, the motion library (walk, sneak, sit, stand up, take, hold, eat, point, raise a
+  hand, slam, carry, fall, run, react), sets rendered once as plates, props with grips. Film-specific code is a
+  failure of the library: the missing part is added to the library instead, once.
+- **One world a week.** The long video and that week's Shorts share one world, cast and voices. Shorts are its
+  best moments, or side stories from the same world, so the sets and characters are already built and checked.
+- **Batches:** a week's scripts at once (one script STOPP), the week's voice in one ElevenLabs batch (one count),
+  then build. Script and shot list for the next films while the current one renders.
+- **Measured:** the build time and review rounds per Short are written in each film STOPP. Target before the daily
+  pace starts: a Short built from the library in under four hours with at most one fix round.
+- **Quality gate unchanged:** a film that is not at the bar is not published; the pace comes from the library, never
+  from passing faults.
+
 ## Goal
 Within one year: about 1 million long-video views a month, enough for at least 50,000 SEK a month from ads and
 memberships. (Estimate: 0.6-1.6 million views at 3-8 USD per 1,000. Shorts alone would need 60-150 million.)
@@ -616,7 +633,7 @@ The older history-only notes below still apply to the history strand:
 ## Long videos are the product
 - **Length: about 7-12 minutes** (Jesper 2026-11-13). Land at 8:00 or more whenever the story carries it, because
   mid-roll ads need 8 minutes; never pad a story to get there.
-- **Pace: two a month to start, one a week once the pipeline is fast.** Never trade quality for pace.
+- **Pace: 1-2 a week is the minimum (Jesper 2026-11-25),** see "The pace" below. Never trade quality for pace.
 - Workflow: 10 ideas -> Jesper picks -> sources -> script -> Jesper approves the script -> voice -> scenes -> render ->
   review -> Jesper approves the video and thumbnail -> publish.
 - The script decides everything: hook in the first 15 seconds, a question that stays open, a turn every 60-90 seconds,
@@ -625,7 +642,8 @@ The older history-only notes below still apply to the history strand:
 - Look: strong light with a clear source, one colour mood per scene, exaggerated faces, deep backgrounds.
 
 ## Shorts are advertising for the long videos
-- **3-5 a week.** Each one is a self-contained hook from a long video (existing or upcoming) and ends by pointing to it.
+- **One a day is the minimum (Jesper 2026-11-25),** see "The pace" below. Each one is a self-contained hook from a
+  long video (existing or upcoming) and ends by pointing to it.
 - Under 60 seconds, first 3 seconds carry the hook, word-by-word captions.
 
 ## Publishing times (Jesper 2026-11-13: always publish when it is best for views worldwide)

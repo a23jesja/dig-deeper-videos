@@ -75,6 +75,11 @@ far shots instead of faces, empty places instead of action. That is not allowed 
   does not count as "something new". Each shot in the shot list names the action that happens inside it (a grab, a
   bite, a stand-up, a slam, a hand raised, a face that changes) and when. A sound needs a visible cause on screen:
   no thud, crash or slam without the thing that makes it.
+- **Group scenes with big heads (2026-11-25, dinner v6):** three Knopp figures at 60-90 % height in one frame cover
+  each other's faces. Groups are told with two-shots, over-the-shoulder shots (the near figure's back and hat as a
+  dark foreground shape, as in the builder reference) and short reaction shots, never a wide three-shot that leaves
+  the top of the frame as empty ceiling. A vote, cheer or agreement is a shared action that reads at once (fists on
+  the table with "Aye!"), not a raised hand: Knopp arms do not reach over the head.
 
 ## Story first: something happens (Jesper 2026-11-21)
 Jesper's verdict on the reference Shorts: they win because a lot happens, there are action scenes, it is clearly

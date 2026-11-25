@@ -566,7 +566,10 @@ Examples: why sailors poured oil on the sea in a storm, why plague doctors wore 
   from Sir Digsworth into one video of 8-12 minutes ("Ten strange things about life on a pirate ship").
 - **True or myth is our edge.** Many popular "history facts" are false. Every claim is checked against at least
   two solid sources (museum, university, primary source, peer-reviewed or a recognised historian) before the
-  script is written. If the popular story is a myth, the Short says so and tells what is true instead. If the
+  script is written. **One exception (2026-11-25):** a claim with one solid, identifiable source (a primary source
+  or a published work with its year) may be used when the voice names that source in the same sentence ("A book
+  from 1724 says...", "by the major's count"), at most one such line per Short, flagged in the script STOPP and
+  approved by the reviewer. If the popular story is a myth, the Short says so and tells what is true instead. If the
   sources disagree, Sir Digsworth says "probably" or "according to". Sources go in the description.
 - **Sir Digsworth** is in the scene as the curious visitor who asks, pokes, gets it wrong and finds out.
 - **Mix the tone:** funny, frightening, clever, disgusting. Record which kind keeps viewers best in GROWTH.md.

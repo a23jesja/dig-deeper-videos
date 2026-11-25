@@ -20,19 +20,25 @@ const arg = process.argv[2] ?? "eiffel", plant = process.argv.includes("--plant"
 //   - a call to the rig's own handAt(k, ...) or ink's hand(k, ...) outside the rig (designs/, ink.ts, rig.ts, stage/) must have a
 //     DRAWN.heldHands push within 3 lines;
 //   - handFingers (the fingers in front of a held thing) only after a handBack of the same hand within 3 lines.
-// --plant-guard adds a file with an unregistered hand: it must fail.
+// --plant-guard adds a file with an unregistered hand: it must fail. --plant-import adds a film file importing src/craft/checks (which the
+// guard lets through only as measuring code no film uses): it must fail.
 {
   const RIG = /^src[\\/]craft[\\/](designs[\\/]|ink\.ts$|rig\.ts$|stage[\\/])/;
   const files = []; const walk = (d) => { for (const e of fs.readdirSync(d, { withFileTypes: true })) { const f = path.join(d, e.name); if (e.isDirectory()) walk(f); else if (/\.tsx?$/.test(e.name) && !/_limb_tmp/.test(e.name)) files.push(f); } }; walk("src");
   const texts = files.map((f) => [path.relative(".", f), fs.readFileSync(f, "utf8")]);
+  if (process.argv.includes("--plant-import")) texts.push(["src/craft/_planted_import.ts", 'import { handPolys } from "./checks/bodyGeom";\nexport const planted = handPolys;\n']);      // (a film file using the measuring code: must fail)
   if (process.argv.includes("--plant-guard")) texts.push(["src/craft/_planted_guard.ts", 'import { handAt } from "../designs/common";\nexport const planted = (k: any, sk: any) => { handAt(k, sk, "L", "fist", "#f7c9a3"); };\n']);
   const gfaults = [], drawFns = {};
+  // (src/craft/checks/ only measures: bodyGeom traces the rig's hand on a recording canvas that keeps polygons and paints nothing. It is let
+  //  through only while no film code imports from it, so nothing drawn in a film can come from there)
+  const CHECKS = /^src[\\/]craft[\\/]checks[\\/]/;
+  for (const [f, t] of texts) if (!CHECKS.test(f) && /from "[^"]*\/checks\//.test(t)) gfaults.push(`${f}: film code imports the checks' measuring code (src/craft/checks)`);
   for (const [f, t] of texts) { if (RIG.test(f)) continue; const L = t.split("\n");
-    L.forEach((l, i) => { const m = l.match(/(?:export )?const (handBack|heldTorch|hand|\w*[hH]and) = \(/); if (!m || /handAt|handsAt|carried/.test(m[1])) return;
+    L.forEach((l, i) => { const m =l.match(/(?:export )?const (handBack|heldTorch|hand|\w*[hH]and) = \(/); if (!m || /handAt|handsAt|carried/.test(m[1])) return;
       const body = L.slice(i, i + 12).join("\n"), draws = /\.fill\(|fl\(|ell\(|poly\(|handBack\(|rrect\(/.test(body); if (!draws) return;
       drawFns[m[1]] = drawFns[m[1]] || []; drawFns[m[1]].push({ f, i: i + 1, reg: /DRAWN\.sleeves\.push|heldHands/.test(body) || (m[1] !== "handBack" && /handBack\(/.test(body.replace(/const \w+ = \(/, ""))) }); }); }      // (a helper drawing through a registering handBack is registered)
   for (const [fn, defs] of Object.entries(drawFns)) for (const d of defs) if (!d.reg) gfaults.push(`${d.f}:${d.i}: ${fn} draws a hand without registering it (DRAWN.sleeves or DRAWN.heldHands)`);
-  for (const [f, t] of texts) { if (RIG.test(f)) continue; const L = t.split("\n");
+  for (const [f, t] of texts) { if (RIG.test(f) || CHECKS.test(f)) continue; const L = t.split("\n");
     L.forEach((l, i) => { const near = L.slice(Math.max(0, i - 3), i + 4).join("\n");
       if (/\bhandAt\(k\b|[^.\w]hand\(k\b/.test(l) && !/heldHands/.test(near)) gfaults.push(`${f}:${i + 1}: the rig's hand drawn outside the rig without a DRAWN.heldHands registration`);
       for (const m of l.matchAll(/handFingers\((\w+), (\w+)\)/g)) if (!new RegExp(`handBack\\(${m[1]}, ${m[2]}\\)`).test(L.slice(Math.max(0, i - 3), i + 1).join("\n"))) gfaults.push(`${f}:${i + 1}: handFingers(${m[2]}) without its handBack`); }); }

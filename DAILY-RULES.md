@@ -120,17 +120,24 @@ never reach this. The way there:
   from the library: the cast wardrobe, the motion library (walk, sneak, sit, stand up, take, hold, eat, point, raise a
   hand, slam, carry, fall, run, react), sets rendered once as plates, props with grips. Film-specific code is a
   failure of the library: the missing part is added to the library instead, once.
-- **One world a week.** The long video and that week's Shorts share one world, cast and voices. Shorts are its
-  best moments, or side stories from the same world, so the sets and characters are already built and checked.
+- **Every Short its own topic, the library is general (Jesper 2026-11-25, replacing "one world a week": "De stora
+  kanalerna har ju olika ämnen och videos för varje short").** Topics vary freely like the big channels'. Reuse comes
+  from general parts that fit any era: a wardrobe that dresses any character (soldier, king, sailor, farmer, guard,
+  prisoner), and about six general sets dressed with props (a wooden room that is a cabin, a tavern or a cottage; a
+  stone hall; a prison cell; a ship's deck; an open field; a street). A new topic picks the nearest set and adds
+  props; it never builds a new world unless no set fits. A long video may also give one or two Shorts from its voice.
 - **Batches:** a week's scripts at once (one script STOPP), the week's voice in one ElevenLabs batch (one count),
   then build. Script and shot list for the next films while the current one renders.
 - **Measured:** the build time and review rounds per Short are written in each film STOPP. Target before the daily
   pace starts: a Short built from the library in under four hours with at most one fix round.
 - **Quality gate unchanged:** a film that is not at the bar is not published; the pace comes from the library, never
   from passing faults.
-- **Order of worlds (Jesper 2026-11-25: "Ja vi kan köra piraterna först"):** 1. pirates (the cabin, cast and voices
-  exist; the long video "What if you lived one day on a pirate ship?" from granskning/pirate-day; the captain's
-  dinner is its first Short), 2. Alcatraz, 3. one week in the 1300s, 4. the Emu War remade.
+- **Order of long videos (Jesper 2026-11-25: "Ja vi kan köra piraterna först"):** 1. pirates ("What if you lived
+  one day on a pirate ship?", granskning/pirate-day; the cabin, cast and voices exist), 2. Alcatraz, 3. one week in
+  the 1300s, 4. the Emu War remade. Shorts in between are on any topic.
+- **Why the Emu Short took a day and the 3D Shorts take days:** the 3D films were built while the tools (cabin,
+  rig in 3D, checks) were being made, at a much higher bar, with each film coded by hand. The tools are a one-time
+  cost; the library removes the hand coding; the bar stays.
 
 ## Goal
 Within one year: about 1 million long-video views a month, enough for at least 50,000 SEK a month from ads and

@@ -10,7 +10,7 @@
 import { hand, seg, ellPts, type P2, type HandKind } from "../ink";
 import { limb, torsoPts, handFlip, seated } from "../designs/common";
 import type { Sk, Side } from "../rig";
-import { hatOutline, type Kit } from "../wardrobe/kit";
+import { hatOutline, kitMouth, type Kit } from "../wardrobe/kit";
 
 export type Body = { rows: number[][]; arm: number[]; leg: number[] };
 const R = Math.PI / 180;
@@ -63,14 +63,18 @@ export const occluders = (sk: Sk, B: Body, side: Side, nearKind: HandKind, kit: 
   return [...legPolys(sk, B, kit), torsoPoly(sk, B), ...headPolys(sk, kit), ...armParts(sk, sk.near, nearKind, B).all];
 };
 
+/** is a head-frame point inside the head's outline less an ink line (9): the mouth must lie there (dinner_check rule 11) */
+export const insideHead = (sk: Sk, p: P2) => { const o = sk.j.skull as unknown as P2, c = Math.cos(-sk.headTilt * R), sn = Math.sin(-sk.headTilt * R), dx = p[0] - o[0], dy = p[1] - o[1], lx = dx * c - dy * sn, ly = dx * sn + dy * c;
+  return (lx / 117) ** 2 + ((ly + 128) / 123) ** 2 <= 1; };
 /** the mouth with its lower lip, filled with points (flat.ts mouthAt as each view places it; m = the face's mouth, smirk) */
-export const mouthPts = (sk: Sk, face: { mouth?: number; smirk?: number } = {}): P2[] => {
+export const mouthPts = (sk: Sk, face: { mouth?: number; smirk?: number; smile?: number } = {}, kit: Kit | null = null, shift: P2 = [0, 0]): P2[] => {
   const m = face.mouth ?? 0, sm = face.smirk ?? 0, sn = Math.sin(sk.faceYaw * R), as = Math.abs(sn), view = as < 0.45 ? "front" : as < 0.85 ? "q" : "side";
-  const [cx, y0, w, s, m0] = view === "q" ? [62 + sm * 4, -58 + 14 * (1 - Math.min(1, m / 0.5)), 18 * (1 + 0.4 * m), 0.8, Math.max(m, 0.2)]
+  const km = kit ? kitMouth(view, m, sm, sn * 34) : null;
+  const [cx0, y00, w, s, m0] = km ? [km.x, km.y, km.w, km.s, km.m0] : view === "q" ? [62 + sm * 4, -58 + 14 * (1 - Math.min(1, m / 0.5)), 18 * (1 + 0.4 * m), 0.8, Math.max(m, 0.2)]
     : view === "front" ? [sn * 34 + sm * 4, -52, 24 * (1 + 0.4 * m), 1, Math.max(m, 0.2)] : [92, -40, 14 * (1 + 0.4 * m), 0.9, Math.max(m, 0.16)];
-  const H = 61 * s * m0, y1 = y0 + H + 7 * s + 9 * s, pts: P2[] = [];      // (to the lower lip's band under the open mouth)
+  const cx = cx0 + shift[0], y0 = y00 + shift[1], sml = face.smile ?? 0, H = 61 * s * m0 + Math.max(0, sml) * 10 * s, y1 = y0 + H + 7 * s + 9 * s, pts: P2[] = [];      // (shift: the check's planted fault)      // (to the lower lip's band under the open mouth)
   for (let i = 0; i <= 6; i++) for (let j = 0; j <= 4; j++) { const u = -1 + (2 * i) / 6, v = j / 4, half = Math.sqrt(Math.max(0, 1 - u * u)) * 0.5 + 0.5;
-    pts.push(headPt(sk, [cx + u * w * half, y0 - 3 + (y1 - y0 + 3) * v])); }
+    pts.push(headPt(sk, [cx + u * (w + 4.5) * half, y0 - 3 - 12 * s * Math.max(0, -sml) + (y1 - y0 + 3) * v])); }      // (to the corners' ink; a frown lifts the corners)
   return pts;
 };
 

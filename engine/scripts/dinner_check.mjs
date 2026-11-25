@@ -14,12 +14,17 @@
 //      picture shows at least 15 % of it (not under his own legs, torso, head and cap or near arm as the side order draws them, nor under a
 //      nearer figure); an arm hidden by a named object is listed in HIDDEN_BY with that object (v5 8c, the crewman's arm behind his head)
 //   +  writes the root for the frozen measures (motion2, flicker2, and step 1's depth check): out/din3d/root
+//  11  the mouth inside the head: every point of the drawn mouth with its lip at least an ink line inside the head's outline (the figure
+//      sheet's review, 25 Nov: open mouths at Sir's place reached the outline at the chin)
+//  12  the head's drawing does not change inside a shot: the face's turn never crosses 15-28 or 50-60 degrees within a shot, where the
+//      head and the tricorn change drawing (the sheet's review: the hat's shape jumps there)
 // Planted faults (each must fail, and on its own rule: the run exits 1 only when that rule fired): --plant seatHigh (the seat 5 cm over the
 // stool, rule 1), pudOff (the grip 3 cm off the pudding, 3), handIn (the hands 4 cm into the table top, 4), float (a figure 12 px over the
 // floor, 2), capLow (the words in the bottom 15 %, 6), missing (the boy left out of the first shot that sees him, 7), faceHide (the boy put
 // 0.5 m behind the crewman as shot 3d's lens sees them, 8), mouthHand (each speaker's near hand moved onto his mouth, 9), oneArm (the
-// crewman's far arm raised up behind his head, as v5's 8c, in every medium and close shot, 10).
-//   node scripts/dinner_check.mjs [--plant seatHigh|pudOff|handIn|float|capLow|missing|faceHide|mouthHand|oneArm]
+// crewman's far arm raised up behind his head, as v5's 8c, in every medium and close shot, 10), mouthOut (every mouth 40 out and 20
+// down in the head's frame, 11), turnCross (the crewman's face turning 0 to 40 degrees more through his first shot, 12).
+//   node scripts/dinner_check.mjs [--plant seatHigh|pudOff|handIn|float|capLow|missing|faceHide|mouthHand|oneArm|mouthOut|turnCross]
 import * as esbuild from "esbuild"; import fs from "node:fs"; import path from "node:path"; import { pathToFileURL } from "node:url";
 const arg = (k) => (process.argv.includes(k) ? process.argv[process.argv.indexOf(k) + 1] : null), plant = arg("--plant");
 const out = "out/_din_check.mjs";
@@ -28,7 +33,7 @@ const exportSpec = { name: "spec", setup(b) { b.onLoad({ filter: /designs[\\/]fl
 await esbuild.build({ plugins: [exportSpec], stdin: { contents: 'export * from "./src/craft/dinner3d/core"; export * from "./src/craft/dinner3d/figures"; export { captionAt, CAP_TOPS } from "./src/craft/dinner3d/Dinner3D"; export { thighUnder, scaleOf, D, FM, jointPx, footY, heightOf } from "./src/craft/clips/clipKit"; export * as BG from "./src/craft/checks/bodyGeom"; export { kitOf, kitBody } from "./src/craft/wardrobe/kit"; export { A_SPEC } from "./src/craft/designs/flat";', resolveDir: ".", loader: "tsx" }, bundle: true, format: "esm", platform: "node", outfile: out, logLevel: "error", loader: { ".json": "json" }, external: ["remotion", "react"] });
 const M = await import(pathToFileURL(out).href); fs.rmSync(out);
 const { SHOTS, WHO, PLANT, placeOf, toScreen, feetOf, project, jointPx, handPx, FM, cardToWorld, thighUnder, scaleOf, D, captionAt, PUD_UP, TABLE_TOP } = M;
-const CHECK_PLANTS = { capLow: 6, missing: 7, faceHide: 8, mouthHand: 9, oneArm: 10 }, RULE_OF = { seatHigh: 1, pudOff: 3, handIn: 4, float: 2, ...CHECK_PLANTS };
+const CHECK_PLANTS = { capLow: 6, missing: 7, faceHide: 8, mouthHand: 9, oneArm: 10, mouthOut: 11, turnCross: 12 }, RULE_OF = { seatHigh: 1, pudOff: 3, handIn: 4, float: 2, ...CHECK_PLANTS };
 if (plant && !(plant in CHECK_PLANTS)) { if (!(plant in PLANT)) throw new Error("no such planted fault: " + plant); PLANT[plant] = true; }
 const { BG, A_SPEC, footY, VOICES, kitOf, kitBody } = M; if (D.id !== "flatA") throw new Error("the checks' body sizes are A's: the design is " + D.id); const BODY = A_SPEC.sir.B;
 // (an arm hidden by a named thing in the set, so it is no one-armed look: "shot:figure:L|R" -> the thing. None in v5)
@@ -36,7 +41,7 @@ const HIDDEN_BY = {};
 // (who speaks when: each take from its place to its end)
 const SPEAKS = VOICES.filter((v) => v.who !== "narrator").map((v) => ({ who: v.who, t0: v.at, t1: v.at + v.p.env30.length / FM.FPS }));
 if (plant === "faceHide") { const v = M.viewOf("3d"), d = Math.hypot(v.d[0], v.d[1]); M.FIGS.boy = [M.FIGS.crew[0] + (0.5 * v.d[0]) / d, M.FIGS.crew[1] + (0.5 * v.d[1]) / d]; }
-let missingDone = false; const armStat = {}, geomOut = [];
+let missingDone = false; const armStat = {}, geomOut = [], turns = {}; let turnShot = null;
 const SEAT = JSON.parse(fs.readFileSync("src/craft/dinner3d/props/seat.json", "utf8")).things[0].frames[0], STOOL_TOP = SEAT[2];
 const faults = [], dump = {}, regions = [], fig0 = {}; let frames = 0, F0 = 0;
 const hull = (P) => { const p = [...P].sort((a, b) => a[0] - b[0] || a[1] - b[1]), cr = (o, a, b) => (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]), lo = [], up = [];
@@ -99,6 +104,12 @@ for (const S of SHOTS) {
             let hp = g.parts[sd].hand; if (plant === "mouthHand" && sd === g.sk.near) { const c = hp.flat().reduce((a, q, _, A) => [a[0] + q[0] / A.length, a[1] + q[1] / A.length], [0, 0]), mc = mp[Math.floor(mp.length / 2)]; hp = hp.map((P) => P.map((q) => [q[0] + mc[0] - c[0], q[1] + mc[1] - c[1]])); }
             const grown = hp.map((P) => BG.grow(P, 4.5)), hit = mp.filter((q) => grown.some((P) => BG.inPoly(q, P))).length;
             if (hit) faults.push(`9 ${S.id} frame ${fr} ${g.w.name}: his ${sd === g.sk.near ? "near" : "far"} hand over his mouth while he speaks (${hit} of ${mp.length} mouth points)`); } }
+        // 11 the mouth inside the head
+        { const mp = BG.mouthPts(g.sk, g.f.o.face ?? {}, g.kit, plant === "mouthOut" ? [40, 20] : [0, 0]), out = mp.filter((q) => !BG.insideHead(g.sk, q)).length;
+          if (out) faults.push(`11 ${S.id} frame ${fr} ${g.w.name}: ${out} of ${mp.length} mouth points outside the head's outline`); }
+        // 12 (the face's turn this frame, gathered per shot and figure)
+        { if (plant === "turnCross" && g.w.name === "crew") turnShot ??= S.id; const k = `${S.id}:${g.w.name}`, add = plant === "turnCross" && turnShot === S.id && g.w.name === "crew" ? (40 * fr) / n : 0;
+          (turns[k] ??= []).push(Math.abs(g.sk.faceYaw) + add); }
         // 10 a one-armed look (in a medium or close shot: its tallest figure 50 % of the picture or more; every figure whose head is in it)
         const shotTall = Math.max(...sil.map((o) => o.tall)), hc = g.scr(BG.headPt(g.sk, [0, -128]));
         if (shotTall >= 0.5 && hc[0] > 0 && hc[0] < FM.W && hc[1] > 0 && hc[1] < FM.H) { const share = {};
@@ -133,6 +144,8 @@ for (const S of SHOTS) {
     regions.push({ F: F0 + fr, shot: S.id, eyes: placed.map((p) => { const J = (j) => toScreen(p.pl, jointPx(p.pl.f, j)), a = J("skull"), b = J("crown"), r = Math.hypot(b[0] - a[0], b[1] - a[1]) / 2, yaw = (p.pl.f.sk.faceYaw * Math.PI) / 180;
       return [Math.round((a[0] + b[0]) / 2 + 0.5 * r * Math.sin(yaw)), Math.round((a[1] + b[1]) / 2 + 0.05 * r), Math.round(0.5 * r)]; }), text: c ? [[Math.round(c.box[0] - 10), Math.round(c.box[1] - 6), Math.round(c.box[2] + 10), Math.round(c.box[3] + 6)]] : [] });
     dump[S.id].push(row); }
+  for (const [k, v] of Object.entries(turns)) if (k.startsWith(S.id + ":")) { const lo = Math.min(...v), hi = Math.max(...v);
+    for (const [a, b] of [[15, 28], [50, 60]]) if (lo < b && hi > a && (lo < a || hi > b || hi - lo > 0.5)) faults.push(`12 ${S.id} ${k.split(":")[1]}: the face turns ${lo.toFixed(1)}-${hi.toFixed(1)} degrees, into ${a}-${b}, where the head's drawing changes`); }
   F0 += n; }
 if (!plant) {
   const R = "out/din3d/root"; fs.mkdirSync(path.join(R, "out/cab3d"), { recursive: true }); fs.mkdirSync(path.join(R, "src/craft/cabin3d/cam"), { recursive: true });

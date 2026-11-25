@@ -5,7 +5,7 @@ import type { Look } from "../designs/common";
 import type { Kit } from "./kit";
 
 export const CAPTAIN_KIT: Kit = { name: "captain", hat: "tricorn", hair: "none", beard: "full", top: "coat",
-  body: { w: 1.24, d: 1.18, arm: [26, 22, 19], leg: [30, 26, 22], hem: -34 }, col: { hat: "#231d24", beard: "#4b3222" } };
+  body: { w: 1.24, d: 1.18, arm: [26, 22, 19], leg: [30, 26, 22], hem: -34 }, col: { hat: "#231d24", beard: "#4b3222", beardHi: "#7a5638" } };
 export const SAILOR_KIT: Kit = { name: "sailor", hat: "scarf", hair: "none", beard: "stubble", top: "stripes",
   body: { w: 0.8, d: 0.84, arm: [20, 17, 15], leg: [23, 20, 17] }, col: { scarf: "#b8322b", stubble: "rgba(80,55,45,0.16)", stripe: "#2c4a7a" } };
 export const BOY_KIT: Kit = { name: "boy", hat: "none", hair: "messy", beard: "none", top: "shirt", eyes: 1.22,

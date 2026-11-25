@@ -41,3 +41,28 @@ Kepsen, monokeln, mustaschen och pipan finns bara hos Sir. Alla tre bifigurerna 
 - I sidovyn vid 60° sitter skägget framåt, men munnen syns.
 - Sir och kaptenen har båda stora mörka huvudbonader. Som siluett skiljs de åt av hattens spetsar, kaptenens bredd och skägget, och Sir av pipan.
 - Pojkens hår är en enkel tofsig kalott och inget mer detaljerat.
+
+## Rättat efter granskningen (villkor 1–8)
+1. **Kepsresterna.**
+   - Pojkens hår följer huvudets kontur på sidorna, med tofsar bara över hjässan och luggen ovanför brynen.
+   - Sjalen ligger tätt på huvudet, högst 1 över konturen, utan spets framåt.
+   - I siluetten har bara kaptenen ett brätte (ark 1 och telefon-360-siluetter).
+2. och 5. **Munnen.**
+   - Kitets mun (`kitMouth`) sitter närmare huvudets mitt och är mindre. Hela den öppna munnen med läppen ligger minst en bläcklinje innanför konturen.
+   - Det är provat i varje vinkel från -60 till 60° i steg om 5°, med öppning 0–1, leende och snedhet: 0 punkter utanför.
+   - **Ny regel 11 i dinner_check:** munnen ligger innanför huvudets kontur. Planterat fel `mouthOut`: 1 299 nya fel.
+3. **Sitsen.**
+   - På arket sitter kaptenen på en bänk som är bredare än höfterna.
+   - I v6 blir det en 3D-kista eller -bänk, och dinner_check mäter att hela bäckenbredden vilar på sitsen (byggs i v6).
+4. **Bredd och höjd.** Båda fanns redan som parametrar:
+   - kaptenens bål är 1,24x bredare;
+   - sjömannen är 1,90 m mot 1,75 m, alltså 8,6 % längre i ben och bål.
+
+   Ingen ny riggkod behövdes.
+6. **Hatten.** Ingen vändning i v6 korsar 15–28° eller 50–60°.
+   - **Ny regel 12 i dinner_check:** ansiktets vridning korsar aldrig de banden inom en bild. Planterat fel `turnCross`: det fäller.
+   - Ark 3 visar hatten 0–60° i steg om 5°. Formen byts vid vyskiftena 27° och 58° och är stilla däremellan.
+7. **Skägget.** Det ritas efter armarna, över ärmarnas överdel men aldrig över en underarm eller en hand framför huvudet. Munnen ritas över skägget. Ljusare hårstrån ger skägget tre streck.
+8. **Telefonutsnitten** är gjorda om. Ingen figur är avskuren, och ingen bit av arket syns vid kanten.
+
+Kaptenen sittande på ark 1 har kroppen vriden 28°, med huvudet i 3/4. Under 30° ritar riggen båda armarna över kroppen, så båda händerna syns hela på knäna. Vid 40° låg den bortre bakom benet.

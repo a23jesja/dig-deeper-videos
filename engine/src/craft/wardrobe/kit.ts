@@ -23,6 +23,14 @@ export type Kit = {
 export const kitOf = (lk?: Look | null): Kit | null => ((lk as unknown as { kit?: Kit } | undefined)?.kit ?? null);
 /** the kit being drawn (drawFlat sets it for each figure) */
 const KIT: { k: Kit | null } = { k: null };
+/** where a kit's mouth sits and how far it opens, per view (head frame): nearer the head's middle and smaller than Sir's, so the whole open
+ *  mouth with its lip stays at least an ink line inside the head's outline at every angle and opening (the sheet's review: at Sir's place the
+ *  open mouth reached the outline at the chin, in three-quarter and at 60 degrees) */
+export const kitMouth = (view: "front" | "q" | "side", mouth: number, smirk = 0, tx = 0) => view === "q"
+  ? { x: 30 + smirk * 4, y: -74 + 10 * (1 - Math.min(1, mouth / 0.5)), w: 15 * (1 + 0.3 * mouth), s: 0.58, m0: Math.max(mouth, 0.2) }
+  : view === "front" ? { x: tx * 0.8 + smirk * 4, y: -70, w: 18 * (1 + 0.3 * mouth), s: 0.62, m0: Math.max(mouth, 0.2) }
+  : { x: 50, y: -74, w: 11 * (1 + 0.3 * mouth), s: 0.48, m0: Math.max(mouth, 0.16) };
+const kitMouthDraw = (k: Ink, view: "front" | "q" | "side", r: FR, tx = 0) => { const m = kitMouth(view, r.mouth, r.smirk, tx); k.clip(ellPts(0, -128, 117, 123, 0, 0, 360, 60), () => mouthAt(k, m.x, m.y, m.w, m.s, { ...r, mouth: m.m0 }, "#e0806e")); };
 /** the hat's outline in the head's own frame for a view (fwd: 0 from the front, 0.7 three-quarter, 1 profile, facing +x), for the checks too */
 export const hatOutline = (kit: Kit, fwd: number): P2[] => {
   if (kit.hat === "tricorn") return tricorn(fwd).hull;
@@ -46,22 +54,27 @@ const convexHull = (P: P2[]): P2[] => { const p = [...P].sort((a, b) => a[0] - b
   for (const q of p.reverse()) { while (up.length >= 2 && cr(up[up.length - 2], up[up.length - 1], q) <= 0) up.pop(); up.push(q); } return [...lo.slice(0, -1), ...up.slice(0, -1)]; };
 /** a scarf tied over the head: the head's top above a line from the brow (-200, front) to the nape (-150, back) */
 const scarfPts = (fwd: number): P2[] => { const out: P2[] = [];
-  const line = (x: number) => -214 + Math.max(0, -x / 130) * 60 * fwd;      // (at -200 its edge lay on the brows, the sheet's first draft)
-  for (let i = 0; i <= 40; i++) { const a = Math.PI + (i / 40) * Math.PI, x = 131 * Math.cos(a), y = -128 + 137 * Math.sin(a); out.push([x, Math.min(y, line(x))]); }
+  // (tight on the head, 4 over its outline, closed along its lower edge: the first draft took the edge's line out past the head in front, a
+  //  point that read as a cap's peak, the sheet's review; at -200 its edge lay on the brows)
+  const line = (x: number) => -214 + Math.max(0, -x / 130) * 60 * fwd;
+  for (let i = 0; i <= 60; i++) { const a = Math.PI + (i / 60) * Math.PI, x = 127 * Math.cos(a), y = -128 + 133 * Math.sin(a); if (y <= line(x)) out.push([x, y]); }
   return out; };
 /** the scarf's knot and its two tails at the back of the head (drawn behind the head) */
 const scarfKnot = (fwd: number): P2[][] => { if (fwd < 0.3) return []; const bx = -122 * fwd;
   return [ellPts(bx - 8, -168, 22, 18), spline([[bx - 4, -162], [bx - 34, -120], [bx - 46, -70], [bx - 30, -66], [bx - 18, -112]]), spline([[bx + 4, -160], [bx - 10, -110], [bx - 8, -60], [bx + 8, -62], [bx + 10, -114]])]; };
 /** a boy's messy hair: the top of the head with tufts, the fringe ending above the brows (-190) */
 const messyHair = (fwd: number): P2[] => { const out: P2[] = [];
-  for (let i = 0; i <= 30; i++) { const u = i / 30, a = Math.PI * (1 + u), r = i % 2 ? 1.1 : 1.0, x = 130 * r * Math.cos(a) - 8 * fwd, y = -128 + 138 * r * Math.sin(a);
-    out.push([x, Math.min(y, -190 + (u < 0.5 ? 40 * (0.5 - u) * fwd * 2 : 0))]); }
+  // (on the head's own outline at the sides, tufts only over the crown (a from 205 to 335 degrees): the first draft's straight fringe ran out
+  //  past the head on both sides, a dark strip read as a cap's brim, the sheet's review)
+  const fr = (x: number) => -192 + Math.max(0, -x / 126) * 70 * fwd;      // (the fringe's line: above the brows in front, lower at the back)
+  for (let i = 0; i <= 48; i++) { const a = Math.PI * (1 + i / 48), deg = (a * 180) / Math.PI, tuft = deg > 205 && deg < 335 && i % 2 ? 1.09 : 1.0;
+    const x = 126 * tuft * Math.cos(a), y = -128 + 132 * tuft * Math.sin(a); if (y <= fr(x)) out.push([x, y]); }
   return out; };
 /** the full beard (head frame, three-quarter facing +x, or from the front, or in profile): round the jaw from the ears, under the eyes
  *  (never above -74 where an eye is), out past the chin; the mouth is drawn over it after */
 const beardPts = (view: "front" | "q" | "side"): P2[] => view === "front"
   ? spline([[-118, -100], [-132, -40], [-96, 22], [0, 52], [96, 22], [132, -40], [118, -100], [92, -84], [60, -72], [0, -76], [-60, -72], [-92, -84]])
-  : view === "q" ? spline([[-104, -104], [-128, -48], [-96, 18], [-8, 54], [78, 34], [122, -18], [128, -60], [112, -70], [80, -70], [40, -72], [-6, -76], [-60, -80], [-84, -94]])
+  : view === "q" ? spline([[-104, -104], [-128, -48], [-96, 18], [-8, 54], [78, 34], [122, -18], [126, -50], [110, -60], [80, -66], [40, -76], [-6, -78], [-60, -82], [-84, -96]])
   : spline([[-46, -112], [-60, -50], [-30, 16], [60, 52], [130, 20], [150, -30], [138, -58], [108, -64], [70, -66], [30, -72], [-10, -86], [-24, -104]]);
 /** stubble: a light shadow on the jaw and chin only, under the cheeks (the first draft, from under the eyes, read as a dirty face) */
 const stubblePts = (view: "front" | "q" | "side"): P2[] => view === "front"
@@ -220,6 +233,21 @@ const capSide = (k: Ink, back: number, front: number, y0: number, top: number, c
   if (LOOK.badge) fl(k, [[front - 6, y0 - 52], [front + 8, y0 - 40], [front + 4, y0 - 20], [front - 14, y0 - 20], [front - 18, y0 - 40]], LOOK.badge);
 };
 
+/** the full beard after the arms (the sheet's review: drawn with the head, the sleeves' rounded tops lay over it and the arms looked loose):
+ *  over the arms' upper part, but never over a forearm or a hand drawn in front of the head; then the mouth over the beard (the same clip) */
+const beardOverlay = (k: Ink, sk: Sk, r: FR, B: Body, P: Props, over: Side[]) => { const kit = KIT.k; if (!kit || kit.beard !== "full") return;
+  const sn = Math.sin(sk.faceYaw * (Math.PI / 180)), as = Math.abs(sn), flip = sn < 0, view: "front" | "q" | "side" = as < 0.45 ? "front" : as < 0.85 ? "q" : "side";
+  const B9 = 1e4, holes: P2[][] = over.flatMap((sd) => { const E = J(sk, "el", sd), W = J(sk, "wr", sd), T = J(sk, "tip", sd), hc: P2 = [(W[0] + T[0]) / 2, (W[1] + T[1]) / 2];
+    return [seg(E, W, B.arm[1] + 6, B.arm[2] + 6, 0, 0.3, true), ellPts(hc[0], hc[1], P.hand * 0.95, P.hand * 0.95, 0, 0, 360, 20), ellPts(E[0], E[1], B.arm[1] + 6, B.arm[1] + 6, 0, 0, 360, 16)]; });
+  const g = k.g; g.save(); g.beginPath(); g.rect(-B9, -B9, 2 * B9, 2 * B9); for (const h of holes) k.trace(h); g.clip("evenodd");
+  k.at(sk.j.skull[0], sk.j.skull[1], sk.headTilt, view !== "front" && flip, () => { const bp = beardPts(view); fl(k, bp, kit.col.beard);
+    k.clip(bp, () => { for (const [a, b, c] of BEARD_STRANDS[view]) k.line(spline([a, b, c], false, 8), 5, kit.col.beardHi ?? "#7a5638"); });
+    kitMouthDraw(k, view, r, sn * 34); });
+  g.restore(); };
+/** two or three lighter strands in the beard, so it is not a flat dark hole in a close shot (the reviewer, cosmetic) */
+const BEARD_STRANDS: Record<string, [P2, P2, P2][]> = { q: [[[-90, -40], [-80, 0], [-50, 26]], [[70, -10], [60, 20], [30, 40]], [[-20, 10], [-14, 30], [-4, 44]]],
+  front: [[[-90, -40], [-80, 0], [-50, 26]], [[90, -40], [80, 0], [50, 26]], [[0, 14], [0, 30], [0, 44]]], side: [[[-20, -60], [-26, -20], [0, 16]], [[80, 10], [70, 30], [50, 42]]] };
+
 // ---------------- the kit's head parts (in the head's own frame, facing +x; fwd as hatOutline) ----------------
 /** behind the head: the scarf's knot and tails */
 const kitBack = (k: Ink, fwd: number) => { const kit = KIT.k; if (!kit) return; if (kit.hat === "scarf") for (const p of scarfKnot(fwd)) fl(k, p, kit.col.scarf); };
@@ -227,7 +255,7 @@ const kitBack = (k: Ink, fwd: number) => { const kit = KIT.k; if (!kit) return; 
 const kitFace = (k: Ink, view: "front" | "q" | "side", fwd: number) => { const kit = KIT.k; if (!kit) return;
   const head = ellPts(0, -128, 126, 132, 0, 0, 360, 60);
   if (kit.beard === "stubble") k.clip(head, () => { const st = stubblePts(view); k.shape(st, kit.col.stubble, 0); k.clip(st, () => { for (let x = -130; x < 150; x += 16) for (let y = -70; y < 20; y += 14) k.dot(x + ((y / 14) % 2) * 8, y, 2.2, "rgba(60,40,32,0.55)"); }); });
-  if (kit.beard === "full") fl(k, beardPts(view), kit.col.beard);
+  // (the full beard is not drawn here: beardOverlay draws it after the arms, so it lies over the arms' upper part, and the mouth over it)
   if (kit.hat === "none" && kit.hair === "messy") fl(k, messyHair(fwd), kit.col.hair);
 };
 /** the hat, last */
@@ -420,9 +448,10 @@ const drawFlat = (c: FlatSpec) => (k: Ink, sk: Sk, o: FigOpts) => {
     const HC = Math.max(Math.hypot(hc[0] - W2[0], hc[1] - W2[1]), P.hand * 0.6) + 12, circ: P2[] = Array.from({ length: 24 }, (_, i) => [hc[0] + HC * Math.cos((i * Math.PI) / 12), hc[1] + HC * Math.sin((i * Math.PI) / 12)] as P2);
     if (u > 0 && u < 1) { const S2 = J(sk, "sh", far), E2 = J(sk, "el", far), cutLine = () => k.clip(torsoPoly, () => { for (const piece of limb(S2, E2, W2, B.arm)) k.clip(piece, () => k.line([[line, -B9], [line, B9]], k.ol)); });
       if (!FACE.cuffSwap) outside(cutLine); else without(behindPts, () => without(circ, cutLine)); }
-    arm(near); return;
+    arm(near); beardOverlay(k, sk, r, B, P, [near]); return;
   }
   layers(sk, { arm, leg, torso, head });
+  beardOverlay(k, sk, r, B, P, Math.abs(sk.sin) > 0.5 ? [sk.near] : [sk.far, sk.near]);
 };
 /** where the far arm comes out from behind the body in a turn (|sin| of the facing); [0, 0] switches it in one frame at 0.5 (the v4 order,
  *  the bytes check's planted fault) */
@@ -472,7 +501,7 @@ const A_SPEC: FlatSpec = {
     // (shut, a mouth 0.2 open, so it reads at phone size: at 0.13 it was a strip of 2-4 px; the pipe rides the mouth's corner down as it
     //  opens: it stayed under the moustache while the mouth gaped, the review of the shot types v1)
     const m0 = Math.max(r.mouth, 0.2);
-    mouthAt(k, tx + r.smirk * 4, -52, mw, 1, { ...r, mouth: m0 }, "#e0806e");
+    if (KIT.k) { if (KIT.k.beard !== "full") kitMouthDraw(k, "front", r, tx); } else mouthAt(k, tx + r.smirk * 4, -52, mw, 1, { ...r, mouth: m0 }, "#e0806e");
     if (LOOK.pipe) pipeAt(k, [tx + mw - 2, -48 + 61 * (m0 - 0.2) * 0.45 + cornerDown(r, 1)], 1, 1, droopOf(r));
     // (v6: turned toward three-quarter, the half on the side he turns to is shortened just enough to stay inside the head: at tx 15 its tip went
     //  6 past the outline. At tx 0, as in 01 and 04, nothing changes)
@@ -493,7 +522,7 @@ const A_SPEC: FlatSpec = {
     // (from the side the pipe's mouthpiece is in the mouth under the moustache, not at the moustache's tip: Jesper choosing A. The mouth is drawn
     //  after the stem, so it shows in profile too: it was hidden by the moustache and the pipe while he walked in, the review of the motion test)
     if (LOOK.pipe) pipeAt(k, [104, -40], 1, 1, droopOf(r));
-    mouthAt(k, 92, -40, 14 * (1 + 0.4 * r.mouth), 0.9, { ...r, mouth: Math.max(r.mouth, 0.16) }, "#e0806e");
+    if (KIT.k) { if (KIT.k.beard !== "full") kitMouthDraw(k, "side", r); } else mouthAt(k, 92, -40, 14 * (1 + 0.4 * r.mouth), 0.9, { ...r, mouth: Math.max(r.mouth, 0.16) }, "#e0806e");
     if (LOOK.moustache) fl(k, spline([[70, -72], [108, -76], [130, -80], [140, -100], [151, -94], [140, -66], [112, -58], [74, -62]]), lc('hair', CA.hair));
     eyeA(k, 66, -118 + ((KIT.k?.eyes ?? 1) - 1) * 30, 0.9 * (KIT.k?.eyes ?? 1), { ...r, gaze: [Math.max(0.35, r.gaze[0]), r.gaze[1]] }, lc('skin', CA.skin), 1);      // (after the moustache, as front and three-quarter)
     if (mono && LOOK.mono) monoRing(k, 66, -118, 36, 50, 7);
@@ -529,7 +558,7 @@ const A_SPEC: FlatSpec = {
     //  independent review of v4; it sits 14 lower when closed, under the moustache's edge)
     const my = -58 + 14 * (1 - Math.min(1, r.mouth / 0.5));
     const m0 = Math.max(r.mouth, 0.2);
-    k.clip(head, () => mouthAt(k, 62 + r.smirk * 4, my, mw, 0.8, { ...r, mouth: m0 }, "#e0806e"));
+    if (KIT.k) { if (KIT.k.beard !== "full") kitMouthDraw(k, "q", r); } else k.clip(head, () => mouthAt(k, 62 + r.smirk * 4, my, mw, 0.8, { ...r, mouth: m0 }, "#e0806e"));
     // (the pipe stays in his left mouth corner: turned to his left that corner is the far one, at the mouth's nose side; turned to his right
     //  (drawn mirrored) it is the near one, at the mouth's back, the stem going out the same way on the screen as from the front. It jumped
     //  to the other corner in one frame, the review of v2)

@@ -2,6 +2,8 @@
 // puts them there (copied, not shared, so the movement sheet's code stays as it was). Every shot's camera holds still but the first; each
 // figure's card is drawn at the floor point under his PELVIS (the seated captain's seat is over his stool), in the shot's own view: his
 // heading and his card's world direction come from the shot's camera (cards stand across the lens).
+import { KIT_DESIGN, kitOf } from "../wardrobe/kit";
+import { CAPTAIN_LOOK, BOY_LOOK } from "../wardrobe/cast";
 import type { Look } from "../designs/common";
 import { FM, D, castAt, jointPx, scaleOf, footY, heightOf, px, type Cast } from "../clips/clipKit";
 import { Ink } from "../ink";
@@ -43,8 +45,9 @@ export const unproject = (id: string, fr: number, q: P2, depth: number): [number
   const D0 = det(M); return [0, 1, 2].map((k) => det(M.map((row, i) => row.map((v, j) => (j === k ? B[i] : v)))) / D0) as [number, number, number]; };
 
 // ------------------------------------------------------------------ the figures ------------------------------------------------------------------
-export const CAPTAIN: Look = { col: { coat: "#24305a", vest: "#a3262e", shirt: "#f1ead8", tie: "#f1ead8", trous: "#2a2a34", shoe: "#1b1820", cap: "#1d1d26", hair: "#3a2a20" }, band: "#c9a24a", mono: false, pipe: false };
-export const BOY: Look = { col: { coat: "#5b86b8", vest: "#7aa2cf", shirt: "#f4f0e6", tie: "#7aa2cf", trous: "#6a4a32", shoe: "#3a2a20", cap: "#b8343a", hair: "#7a4a26" }, band: "#8a2228", mono: false, pipe: false, moustache: false };
+// (v6: the wardrobe, 25 Nov: the captain, the sailor and the boy are their own people, no longer Sir in other colours; wardrobe/cast.ts)
+export const CAPTAIN: Look = CAPTAIN_LOOK;
+export const BOY: Look = BOY_LOOK;
 /** a figure in a piece. at: his floor point when his card's pelvis is at card x 0; walk: the world floor direction of his card's +x;
  *  off: the piece starts this many seconds into his own timeline (he is already moving in the first frame) */
 export type Who = { name: string; cast: Cast; at: [number, number]; walk: [number, number]; h: number; rimSide: 1 | -1; off: number; key?: number; sun?: boolean; redAt?: number; redMax?: number };
@@ -124,7 +127,7 @@ export const paintFigures = (g: G, id: string, fr: number, whos: Who[], extras: 
     OFF ??= cnv(); const o = OFF, h = o.getContext("2d", { willReadFrequently: true }) as unknown as G; h.setTransform(1, 0, 0, 1, 0, 0); h.clearRect(0, 0, FM.W, FM.H);
     h.setTransform(pl.z, 0, 0, pl.z, FM.W / 2 - pl.z * pl.cx, FM.H / 2 - pl.z * pl.cy);
     const ex = extras[w.name]; if (ex?.back) { h.save(); ex.back(h, pl, fr); h.restore(); }
-    const sc = scaleOf(f.who); h.save(); h.translate(f.x, footY(f.who)); h.scale(sc, sc); D.draw(new Ink(h, D.ol), f.sk, f.o); h.restore();
+    const sc = scaleOf(f.who); h.save(); h.translate(f.x, footY(f.who)); h.scale(sc, sc); const Dz = kitOf(f.o.look) ? KIT_DESIGN : D; Dz.draw(new Ink(h, Dz.ol), f.sk, f.o); h.restore();
     if (ex?.front) { h.save(); ex.front(h, pl, fr); h.restore(); }
     h.setTransform(1, 0, 0, 1, 0, 0);
     const img = h.getImageData(0, 0, FM.W, FM.H), Dd = img.data, Wd = FM.W, N = Wd * FM.H, rim = Math.max(5, Math.round(16 * pl.z)), dx = w.rimSide;

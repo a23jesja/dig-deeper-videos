@@ -25,12 +25,12 @@ const arg = (k) => (process.argv.includes(k) ? process.argv[process.argv.indexOf
 const out = "out/_din_check.mjs";
 // (flat.ts keeps its design's body sizes (A_SPEC) to itself: the bundle alone exports them to this check, the file is not changed)
 const exportSpec = { name: "spec", setup(b) { b.onLoad({ filter: /designs[\\/]flat\.ts$/ }, (a) => ({ contents: fs.readFileSync(a.path, "utf8") + "\nexport { A_SPEC };\n", loader: "ts" })); } };
-await esbuild.build({ plugins: [exportSpec], stdin: { contents: 'export * from "./src/craft/dinner3d/core"; export * from "./src/craft/dinner3d/figures"; export { captionAt, CAP_TOPS } from "./src/craft/dinner3d/Dinner3D"; export { thighUnder, scaleOf, D, FM, jointPx, footY, heightOf } from "./src/craft/clips/clipKit"; export * as BG from "./src/craft/checks/bodyGeom"; export { A_SPEC } from "./src/craft/designs/flat";', resolveDir: ".", loader: "tsx" }, bundle: true, format: "esm", platform: "node", outfile: out, logLevel: "error", loader: { ".json": "json" }, external: ["remotion", "react"] });
+await esbuild.build({ plugins: [exportSpec], stdin: { contents: 'export * from "./src/craft/dinner3d/core"; export * from "./src/craft/dinner3d/figures"; export { captionAt, CAP_TOPS } from "./src/craft/dinner3d/Dinner3D"; export { thighUnder, scaleOf, D, FM, jointPx, footY, heightOf } from "./src/craft/clips/clipKit"; export * as BG from "./src/craft/checks/bodyGeom"; export { kitOf, kitBody } from "./src/craft/wardrobe/kit"; export { A_SPEC } from "./src/craft/designs/flat";', resolveDir: ".", loader: "tsx" }, bundle: true, format: "esm", platform: "node", outfile: out, logLevel: "error", loader: { ".json": "json" }, external: ["remotion", "react"] });
 const M = await import(pathToFileURL(out).href); fs.rmSync(out);
 const { SHOTS, WHO, PLANT, placeOf, toScreen, feetOf, project, jointPx, handPx, FM, cardToWorld, thighUnder, scaleOf, D, captionAt, PUD_UP, TABLE_TOP } = M;
 const CHECK_PLANTS = { capLow: 6, missing: 7, faceHide: 8, mouthHand: 9, oneArm: 10 }, RULE_OF = { seatHigh: 1, pudOff: 3, handIn: 4, float: 2, ...CHECK_PLANTS };
 if (plant && !(plant in CHECK_PLANTS)) { if (!(plant in PLANT)) throw new Error("no such planted fault: " + plant); PLANT[plant] = true; }
-const { BG, A_SPEC, footY, VOICES } = M; if (D.id !== "flatA") throw new Error("the checks' body sizes are A's: the design is " + D.id); const BODY = A_SPEC.sir.B;
+const { BG, A_SPEC, footY, VOICES, kitOf, kitBody } = M; if (D.id !== "flatA") throw new Error("the checks' body sizes are A's: the design is " + D.id); const BODY = A_SPEC.sir.B;
 // (an arm hidden by a named thing in the set, so it is no one-armed look: "shot:figure:L|R" -> the thing. None in v5)
 const HIDDEN_BY = {};
 // (who speaks when: each take from its place to its end)
@@ -85,13 +85,14 @@ for (const S of SHOTS) {
         let sk = f.sk; const kinds = { L: f.o.handL ?? "relaxed", R: f.o.handR ?? "relaxed" };
         const ft = project(S.id, fr, [pl.at[0], pl.at[1], 0]), hd = project(S.id, fr, [pl.at[0], pl.at[1], w.h]), tall = (ft[1] - hd[1]) / FM.H;
         if (plant === "oneArm" && w.name === "crew") { const fa = sk.far, sh = sk.j["sh" + fa], j = { ...sk.j }; j["el" + fa] = [sh[0], sh[1] - 74]; j["wr" + fa] = [sh[0] + 4, sh[1] - 142]; j["tip" + fa] = [sh[0] + 6, sh[1] - 202]; sk = { ...sk, j }; }
-        const parts = { L: BG.armParts(sk, "L", kinds.L, BODY), R: BG.armParts(sk, "R", kinds.R, BODY) };
-        const all = [BG.torsoPoly(sk, BODY), ...BG.headPolys(sk), ...parts.L.all, ...parts.R.all, ...BG.legPolys(sk, BODY)].map((P) => P.map(scr));
-        return { w, pl, f, sk, s, scr, kinds, parts, tall, all }; });
+        const kit = kitOf(f.o.look), B = kitBody(BODY, kit);      // (a wardrobe figure: its own body, coat and hat)
+        const parts = { L: BG.armParts(sk, "L", kinds.L, B), R: BG.armParts(sk, "R", kinds.R, B) };
+        const all = [BG.torsoPoly(sk, B), ...BG.headPolys(sk, kit), ...parts.L.all, ...parts.R.all, ...BG.legPolys(sk, B, kit)].map((P) => P.map(scr));
+        return { w, pl, f, sk, s, scr, kinds, parts, tall, all, kit, B }; });
       for (const g of sil) {
         // (--geom shot:frame writes the parts as the checks see them, in the picture, for an overlay on the rendered frame)
         if (arg("--geom") === `${S.id}:${fr}`) { const G = (P) => P.map((q) => g.scr(q).map((v) => +v.toFixed(1))); geomOut.push({ who: g.w.name, near: g.sk.near, mouth: G(BG.mouthPts(g.sk, g.f.o.face ?? {})),
-          handL: g.parts.L.hand.map(G), handR: g.parts.R.hand.map(G), armL: g.parts.L.all.map(G), armR: g.parts.R.all.map(G), occ: BG.occluders(g.sk, BODY, g.sk.far, g.kinds[g.sk.near]).map(G) }); }
+          handL: g.parts.L.hand.map(G), handR: g.parts.R.hand.map(G), armL: g.parts.L.all.map(G), armR: g.parts.R.all.map(G), occ: BG.occluders(g.sk, g.B, g.sk.far, g.kinds[g.sk.near], g.kit).map(G) }); }
         // 9 the own hand over the mouth while he speaks
         if (SPEAKS.some((v) => v.who === g.w.name && T >= v.t0 && T < v.t1)) { const mp = BG.mouthPts(g.sk, g.f.o.face ?? {});
           for (const sd of ["L", "R"]) { if (Math.abs(g.sk.sin) > 0.5 && sd !== g.sk.near) continue;
@@ -101,7 +102,7 @@ for (const S of SHOTS) {
         // 10 a one-armed look (in a medium or close shot: its tallest figure 50 % of the picture or more; every figure whose head is in it)
         const shotTall = Math.max(...sil.map((o) => o.tall)), hc = g.scr(BG.headPt(g.sk, [0, -128]));
         if (shotTall >= 0.5 && hc[0] > 0 && hc[0] < FM.W && hc[1] > 0 && hc[1] < FM.H) { const share = {};
-          for (const sd of ["L", "R"]) { const own = BG.occluders(g.sk, BODY, sd, g.kinds[g.sk.near]), seenOf = (polys) => { const pts = BG.fillPts(polys, 5); let inside = 0, seen = 0;
+          for (const sd of ["L", "R"]) { const own = BG.occluders(g.sk, g.B, sd, g.kinds[g.sk.near], g.kit), seenOf = (polys) => { const pts = BG.fillPts(polys, 5); let inside = 0, seen = 0;
               for (const q of pts) { const p = g.scr(q); if (p[0] < 0 || p[0] > FM.W || p[1] < 0 || p[1] > FM.H) continue; inside++;
                 if (own.some((P) => BG.inPoly(q, P))) continue; if (sil.some((o) => o !== g && o.pl.depth < g.pl.depth && o.all.some((P) => BG.inPoly(p, P)))) continue; seen++; }
               return { n: pts.length, inside, seen }; };

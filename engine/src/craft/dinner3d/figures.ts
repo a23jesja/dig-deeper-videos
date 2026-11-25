@@ -3,6 +3,7 @@
 // facing him. Nobody walks. The pudding (3D, on the plate) is taken by the crewman's hand in 1a and held in it after: its place every frame
 // comes from that hand (scripts/dinner_props.mjs writes it for Blender), and in the held shots his hand is solved onto its fixed place.
 // Voices: George narrates and is the captain (two short shouted lines), Daniel the crewman, Will the boy (voice/dinner/*, pick.json).
+import { SAILOR_LOOK } from "../wardrobe/cast";
 import type { Pose } from "../rig";
 import { solve } from "../rig";
 import { ease } from "../stage/acting";
@@ -25,7 +26,7 @@ const R = Math.PI / 180;
 const smooth = (u: number) => (u <= 0 ? 0 : u >= 1 ? 1 : u * u * (3 - 2 * u));
 const lerp = (a: number, b: number, u: number) => a + (b - a) * u;
 /** the crewman: a brown coat, a cream waistcoat, a red neckerchief, a dark blue cap, his own brown moustache (the frozen rig's parts, recoloured) */
-export const CREW: Look = { col: { coat: "#6e4528", vest: "#d8c79a", shirt: "#efe6d2", tie: "#a8322c", trous: "#3b3b48", shoe: "#2a1e18", cap: "#33465e", hair: "#5a3a22" }, band: "#c8b27a", mono: false, pipe: false };
+export const CREW: Look = SAILOR_LOOK;      // (v6: the sailor of the wardrobe)
 const FIGS = SPEC.figs as unknown as Record<string, [number, number]>;
 export { FIGS };
 export const PLATE: [number, number] = SPEC.plate as [number, number];

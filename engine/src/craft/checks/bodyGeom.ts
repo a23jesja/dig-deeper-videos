@@ -10,6 +10,7 @@
 import { hand, seg, ellPts, type P2, type HandKind } from "../ink";
 import { limb, torsoPts, handFlip, seated } from "../designs/common";
 import type { Sk, Side } from "../rig";
+import { hatOutline, type Kit } from "../wardrobe/kit";
 
 export type Body = { rows: number[][]; arm: number[]; leg: number[] };
 const R = Math.PI / 180;
@@ -46,15 +47,20 @@ export const torsoPoly = (sk: Sk, B: Body): P2[] => {
 /** a point of the head's own frame (flat.ts head(): at the skull joint, turned by headTilt, mirrored when the face turns left) in skeleton units */
 export const headPt = (sk: Sk, p: P2): P2 => { const sn = Math.sin(sk.faceYaw * R), as = Math.abs(sn), view = as < 0.45 ? "front" : as < 0.85 ? "q" : "side", fx = view !== "front" && sn < 0 ? -p[0] : p[0];
   const c = Math.cos(sk.headTilt * R), s = Math.sin(sk.headTilt * R), o = sk.j.skull as unknown as P2; return [o[0] + fx * c - p[1] * s, o[1] + fx * s + p[1] * c]; };
-/** the head (A's ellipse, 126 x 132 about (0, -128)) and its cap (the side cap's box, -128 to 112 across and -312 to -206 up, with its brim) */
-export const headPolys = (sk: Sk): P2[][] => [ellPts(0, -128, 126, 132, 0, 0, 360, 40).map((q) => headPt(sk, q)), [[-140, -206], [-128, -312], [112, -312], [150, -206]].map((q) => headPt(sk, q as P2))];
+/** the head (A's ellipse, 126 x 132 about (0, -128)) and what is on it: Sir's cap (the side cap's box, -128 to 112 across and -312 to -206
+ *  up, with its brim), or a wardrobe figure's own hat or hair as the kit draws it in that view */
+export const headPolys = (sk: Sk, kit: Kit | null = null): P2[][] => { const head = ellPts(0, -128, 126, 132, 0, 0, 360, 40).map((q) => headPt(sk, q));
+  if (!kit) return [head, [[-140, -206], [-128, -312], [112, -312], [150, -206]].map((q) => headPt(sk, q as P2))];
+  const as = Math.abs(Math.sin(sk.faceYaw * R)), fwd = as < 0.45 ? 0 : as < 0.85 ? 0.7 : 1, hat = hatOutline(kit, fwd);
+  return hat.length ? [head, hat.map((q) => headPt(sk, q))] : [head]; };
 
 /** both legs as drawn (flat.ts leg(): the trouser limb; the shoe is left out) */
-export const legPolys = (sk: Sk, B: Body): P2[][] => (["L", "R"] as Side[]).flatMap((s) => limb(J(sk, "hip", s), J(sk, "kn", s), J(sk, "an", s), B.leg));
+export const legPolys = (sk: Sk, B: Body, kit: Kit | null = null): P2[][] => (["L", "R"] as Side[]).flatMap((s) => { const h = J(sk, "hip", s), kn = J(sk, "kn", s);
+  return [...limb(h, kn, J(sk, "an", s), B.leg), ...(kit?.top === "coat" ? [seg(mid(h, kn, -0.1), mid(h, kn, 0.8), B.leg[0] + 16, B.leg[1] + 22, 0, 0.3, true)] : [])]; });      // (the long coat's skirt over the thigh, as kit.ts draws it)
 /** what the figure itself draws over its arm `side` (see the head of this file) */
-export const occluders = (sk: Sk, B: Body, side: Side, nearKind: HandKind): P2[][] => {
+export const occluders = (sk: Sk, B: Body, side: Side, nearKind: HandKind, kit: Kit | null = null): P2[][] => {
   if (Math.abs(sk.sin) <= 0.5 || side === sk.near) return [];
-  return [...legPolys(sk, B), torsoPoly(sk, B), ...headPolys(sk), ...armParts(sk, sk.near, nearKind, B).all];
+  return [...legPolys(sk, B, kit), torsoPoly(sk, B), ...headPolys(sk, kit), ...armParts(sk, sk.near, nearKind, B).all];
 };
 
 /** the mouth with its lower lip, filled with points (flat.ts mouthAt as each view places it; m = the face's mouth, smirk) */

@@ -23,7 +23,7 @@ const arg = process.argv[2] ?? "eiffel", plant = process.argv.includes("--plant"
 // --plant-guard adds a file with an unregistered hand: it must fail. --plant-import adds a film file importing src/craft/checks (which the
 // guard lets through only as measuring code no film uses): it must fail.
 {
-  const RIG = /^src[\\/]craft[\\/](designs[\\/]|ink\.ts$|rig\.ts$|stage[\\/])/;
+  const RIG = /^src[\\/]craft[\\/](designs[\\/]|wardrobe[\\/]|ink\.ts$|rig\.ts$|stage[\\/])/;      // (wardrobe/: the rig's own drawing of the wardrobe's people, the same arm and hand as designs/, 25 Nov)
   const files = []; const walk = (d) => { for (const e of fs.readdirSync(d, { withFileTypes: true })) { const f = path.join(d, e.name); if (e.isDirectory()) walk(f); else if (/\.tsx?$/.test(e.name) && !/_limb_tmp/.test(e.name)) files.push(f); } }; walk("src");
   const texts = files.map((f) => [path.relative(".", f), fs.readFileSync(f, "utf8")]);
   if (process.argv.includes("--plant-import")) texts.push(["src/craft/_planted_import.ts", 'import { handPolys } from "./checks/bodyGeom";\nexport const planted = handPolys;\n']);      // (a film file using the measuring code: must fail)

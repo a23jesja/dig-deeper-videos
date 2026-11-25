@@ -86,7 +86,7 @@ real suffering is played for laughs.
 
 - Faceless. Sir Digsworth is the frozen code-drawn character from the engine (README: the frozen look), voice
   Kokoro bm_george.
-- **Shorts:** "Why did they do that?" or one absurd true story, 25-40 seconds, one place, two or three characters,
+- **Shorts:** "Why did they do that?" or one absurd true story, 35-50 seconds, one place, two or three characters,
   question or claim in the first frame, answer in the last third, ends in a loop. The hook lab applies.
 - **Long videos:** 8-12 minutes, in second person ("What if you..."), built from a world that already has Shorts,
   cold open in the middle of the action, chapters that each end on a question, a promise with stakes, and an

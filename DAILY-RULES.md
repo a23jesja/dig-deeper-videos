@@ -556,7 +556,7 @@ Strange but true tricks, habits and solutions from history. One question per Sho
 Examples: why sailors poured oil on the sea in a storm, why plague doctors wore beaks, why Rome taxed urine.
 - **The question is the hook.** It is on screen and spoken in the first second, over a picture where the strange
   thing is already happening. The answer comes in the last third, not before.
-- **Shape, 25-40 seconds:** question and strange picture (0-2 s), the problem people had (to about 10 s), what
+- **Shape, 35-50 seconds (2026-11-25; the Emu Short, our best, was 51 s at 73 % watched):** question and strange picture (0-2 s), the problem people had (to about 10 s), what
   they did, shown as action (to about 25 s), the answer and one last surprising fact. No part 2, no cliffhanger.
 - **Small and sharp:** one place, two or three characters, one clear action. No crowd scenes unless the story is
   about a crowd.

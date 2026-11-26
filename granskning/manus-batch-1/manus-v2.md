@@ -6,7 +6,7 @@
 >   an exhibit; the Short must not risk playing his ordeal for laughs. Its shot goes to a longer Carvajal or Hicks beat.
 >   Pre-count falls by 52 x 3 = 156 characters.
 > - Every other fact, change and cut in v2 is accepted. The three named single-source lines (Short 1 line 7, Short 4
->   line 12, Short 5 line 5) are accepted by the cloud session and go to the reviewer for his explicit approval.
+>   line 12, Short 5 line 5) are accepted by the cloud session and go to the reviewer for explicit approval.
 > - Johnson (1724) is re-opened when gutenberg.org is back, before Short 1 is voiced.
 
 Draft for the script STOPP, 2026-11-26. Nothing is committed or pushed, nothing is built, and no ElevenLabs or other paid

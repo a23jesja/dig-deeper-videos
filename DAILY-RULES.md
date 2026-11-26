@@ -80,6 +80,11 @@ far shots instead of faces, empty places instead of action. That is not allowed 
   dark foreground shape, as in the builder reference) and short reaction shots, never a wide three-shot that leaves
   the top of the frame as empty ceiling. A vote, cheer or agreement is a shared action that reads at once (fists on
   the table with "Aye!"), not a raised hand: Knopp arms do not reach over the head.
+- **Cheat the staging per shot, as real film does (2026-11-26, dinner v6 lost a day to one locked layout):** each
+  shot may place the figures for its own frame instead of one geometry for the whole room. Inside a shot every rule
+  holds (contact, feet, depth, limbs, flicker, faces). Across cuts: the same order of figures and eyelines, no broken
+  180° line, no visible jump (two shots in a row with the same background object never show a different distance to
+  it), and props stay where their user is. The STOPP lists the cheat per shot.
 
 ## Story first: something happens (Jesper 2026-11-21)
 Jesper's verdict on the reference Shorts: they win because a lot happens, there are action scenes, it is clearly

@@ -39,7 +39,7 @@ const exportSpec = { name: "spec", setup(b) { b.onLoad({ filter: /designs[\\/]fl
 await esbuild.build({ plugins: [exportSpec], stdin: { contents: 'export * from "./src/craft/dinner3d/core"; export * from "./src/craft/dinner3d/figures"; export { captionAt, CAP_TOPS, camFx, bodyCaps, boxHitsCap, CAP_ON_BODY, ARM_CAPS } from "./src/craft/dinner3d/Dinner3D"; export { thighUnder, scaleOf, D, FM, jointPx, footY, heightOf } from "./src/craft/clips/clipKit"; export * as BG from "./src/craft/checks/bodyGeom"; export { kitOf, kitBody, beardOutline } from "./src/craft/wardrobe/kit"; export { A_SPEC } from "./src/craft/designs/flat";', resolveDir: ".", loader: "tsx" }, bundle: true, format: "esm", platform: "node", outfile: out, logLevel: "error", loader: { ".json": "json" }, external: ["remotion", "react"] });
 const M = await import(pathToFileURL(out).href); fs.rmSync(out);
 const { SHOTS, WHO, PLANT, placeOf, toScreen, feetOf, project, jointPx, handPx, FM, cardToWorld, thighUnder, scaleOf, D, captionAt, PUD_UP, TABLE_TOP } = M;
-const CHECK_PLANTS = { capLow: 6, missing: 7, faceHide: 8, headPeek: 8, hide40: 8, mouthHand: 9, oneArm: 10, mouthOut: 11, turnCross: 12, seatEdge: 1, faceEdge: 13, frontArm: 10, smileCross: 14 }, RULE_OF = { seatHigh: 1, pudOff: 3, handIn: 4, handInBook: 4, float: 2, ...CHECK_PLANTS };
+const CHECK_PLANTS = { sleeveNoInk: 10, capLow: 6, missing: 7, faceHide: 8, headPeek: 8, hide40: 8, mouthHand: 9, oneArm: 10, mouthOut: 11, turnCross: 12, seatEdge: 1, faceEdge: 13, frontArm: 10, smileCross: 14 }, RULE_OF = { seatHigh: 1, pudOff: 3, handIn: 4, handInBook: 4, float: 2, ...CHECK_PLANTS };
 if (plant && !(plant in CHECK_PLANTS)) { if (!(plant in PLANT)) throw new Error("no such planted fault: " + plant); PLANT[plant] = true; }
 const { BG, A_SPEC, footY, VOICES, kitOf, kitBody } = M; if (D.id !== "flatA") throw new Error("the checks' body sizes are A's: the design is " + D.id); const BODY = A_SPEC.sir.B;
 // (an arm hidden by a named thing in the set, so it is no one-armed look: "shot:figure:near|far" -> the thing.
@@ -174,7 +174,10 @@ for (const S of SHOTS) {
             share[sd] = { arm: seenOf(g.parts[sd].all), hand: seenOf(g.parts[sd].hand), sleeve: seenOf(g.parts[sd].sleeve) };
             /* (v6c: a coat's sleeve lying over the coat is the coat's own red with no edge to read: the captain's far arm down his side in 2 and 15b
                read as a hand out of the coat, the independent review of v6. For a coat, the sleeve counts as seen only off the torso) */
-            if (g.kit?.top === "coat" || g.kit?.top === "shirt") { const tp = BG.torsoPoly(g.sk, g.B), pts = BG.fillPts(g.parts[sd].sleeve, 5); let off = 0;
+            /* (the reviewer, 26 Nov: a near arm before the body has its whole own ink outline from shoulder to hand and reads; only a far arm drawn behind
+               the body (|sin| over 0.15, ARM_WIPE), its sleeve shown over the body clipped by the sweep with no outline of its own, is the coat's colour
+               with no edge. Planted: sleeveNoInk takes the near arm as having no outline either, and must fail) */
+            if ((g.kit?.top === "coat" || g.kit?.top === "shirt") && ((sd === g.sk.far && Math.abs(g.sk.sin) > 0.15) || plant === "sleeveNoInk")) { const tp = BG.torsoPoly(g.sk, g.B), pts = BG.fillPts(g.parts[sd].sleeve, 5); let off = 0;
               for (const q of pts) { const p = g.scr(q); if (p[0] < 0 || p[0] > FM.W || p[1] < 0 || p[1] > FM.H) continue; if (own.some((P) => BG.inPoly(q, P)) || BG.inPoly(q, tp)) continue;
                 if (sil.some((o) => o !== g && o.pl.depth < g.pl.depth && o.all.some((P) => BG.inPoly(p, P)))) continue; off++; }
               share[sd].sleeve = { ...share[sd].sleeve, seen: Math.min(share[sd].sleeve.seen, off) }; } }

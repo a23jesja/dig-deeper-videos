@@ -85,3 +85,19 @@ Bild 3, 7, 9 och 11 fyller alltså också under 60 % med det här måttet. Kapte
 
 - **De gamla planterade felen i dinner_check** (headPeek, hide40, oneArm, frontArm och de andra) fäller fortfarande. Det bevisar inget förrän filmen själv klarar kontrollen, så de körs igen på v6c.
 - **Punkt 4, ärmränderna som korsas,** och **punkt 9, ögonlocket över pupillen,** har ännu ingen kontroll. Det görs i morgon före rättelserna.
+
+## Tillägg kl. 21: granskarens beslut om regel 10
+
+**Undantaget:** en närmre arm framför bålen har hela sin egen tuschkontur och räknas därför som synlig. Samma-färg-regeln (rock eller skjorta) gäller bara en bortre arm som riggen ritar bakom kroppen (|sin| över 0,15). Där klipps ärmen av svepet och saknar egen kontur.
+
+**Resultat på v6** (`dinner-check-pa-v6-sammanfattning.txt`): inga närmre armar fäller längre. Alla granskningens punkter fäller fortfarande:
+- kaptenens hand ur rocken i 2 och 15b;
+- fingrarna i 1 och 11;
+- pojken enarmad i 1, 7 och 15a;
+- sjömannens bortre hand i 1 och 9.
+
+**Planterat fel:** `node scripts/dinner_check.mjs --plant sleeveNoInk` behandlar den närmre ärmen som om den saknar kontur. Den fäller då närmre händer i 1, 2, 7, 9, 11, 15a och 15b (`planterat-sleeveNoInk-pa-v6.txt`).
+
+**Fyllnaden** (granskarens beslut):
+- 60 % gäller bild 3 och 7, där figurerna står upp.
+- Bild 9 och 11 med den sittande kaptenen väntar på molnsessionens svar.

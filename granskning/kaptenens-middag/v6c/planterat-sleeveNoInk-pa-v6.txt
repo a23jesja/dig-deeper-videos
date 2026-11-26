@@ -1,0 +1,8 @@
+rule 10 1 boy no-arm hand near : film frames 0-47 (48 frames)
+rule 10 1 captain no-arm hand near : film frames 0-47 (48 frames)
+rule 10 2 captain no-arm hand near : film frames 48-58 (11 frames)
+rule 10 7 boy no-arm hand near : film frames 261-362 (102 frames)
+rule 10 9 captain no-arm hand near : film frames 399-468 (70 frames)
+rule 10 11 captain no-arm hand near : film frames 501-557 (57 frames)
+rule 10 15a boy no-arm hand near : film frames 684-704 (21 frames)
+rule 10 15b captain no-arm hand near : film frames 705-725 (21 frames)

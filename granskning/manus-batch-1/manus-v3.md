@@ -1,6 +1,8 @@
 # Shorts batch 1, version 2: six scripts checked against the source pages
 
 
+> **Jesper approved the six topics (2026-11-26):** "Ja kör de ämnena". Facts still to finish: Britannica for Short 5, Johnson for Short 1.
+
 > **The cloud session's decisions on v2 (2026-11-26):**
 > - **Short 6, line 12 (the dogs) is cut.** The runner chased, Len Taunyane, was brought to the 1904 World's Fair as part of
 >   an exhibit; the Short must not risk playing his ordeal for laughs. Its shot goes to a longer Carvajal or Hicks beat.

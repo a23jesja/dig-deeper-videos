@@ -1,0 +1,18 @@
+cheats: 4: captain 0.80, 0.00 m; boy -0.60, -0.40 m | 7: captain 0.80, 0.00 m | 8: captain 0.80, 0.00 m; boy -0.60, -0.40 m | 12: captain 1.50, 0.00 m | 13: captain 1.50, 0.00 m; boy -0.60, -0.40 m | 15a: captain 1.50, 0.00 m
+  1->2: seen in both captain; objects in both 4; largest change 0 cm
+  2->3: seen in both -; objects in both 1; largest change 0 cm
+  3->4: seen in both crew; objects in both 4; largest change 0 cm
+  4->5: seen in both -; objects in both 0; largest change 0 cm
+  5->7: seen in both boy; objects in both 0; largest change 0 cm
+  7->8: seen in both crew; objects in both 5; largest change 0 cm
+  8->9: seen in both crew; objects in both 5; largest change 0 cm
+  9->10b: seen in both captain; objects in both 0; largest change 0 cm
+  10b->11: seen in both captain; objects in both 0; largest change 0 cm
+  11->12: seen in both crew; objects in both 6; largest change 0 cm
+  12->13: seen in both crew; objects in both 5; largest change 0 cm
+  13->14: seen in both -; objects in both 0; largest change 0 cm
+  14->15a: seen in both boy; objects in both 0; largest change 0 cm
+  15a->15b: seen in both -; objects in both 2; largest change 0 cm
+  15b->1: seen in both captain; objects in both 4; largest change 0 cm
+  the boy's walk: last seen at his place until 23.50 s, first at the table's end from Infinity s: Infinity s for 1.04 m (at least 1.04 s)
+CHEAT CHECK OK

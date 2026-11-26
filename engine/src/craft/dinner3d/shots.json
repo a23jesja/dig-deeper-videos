@@ -451,13 +451,13 @@
    "cam": {
     "from": [
      [
-      0.537,
-      -0.832,
+      -0.62,
+      -1.72,
       1.491
      ],
      [
-      0.537,
-      -0.832,
+      -0.62,
+      -1.72,
       1.491
      ]
     ],
@@ -489,7 +489,7 @@
   {
    "id": "14",
    "t0": 22,
-   "t1": 22.78,
+   "t1": 22.8,
    "what": "close: the boy and the sailor, each with a hand up at the ear, palms to the lens; \"All in favour?\" (22.05); the boy grins (22.80)",
    "static": true,
    "cam": {
@@ -522,29 +522,29 @@
   },
   {
    "id": "15a",
-   "t0": 22.78,
-   "t1": 23.55,
+   "t0": 22.8,
+   "t1": 23.5,
    "what": "the vote, a two-shot: the sailor's left fist on the 1724 book and the boy's right fist into his own left palm on one beat (frame 690, the thunk), both 'Aye!' [OWN]",
    "static": true,
    "cam": {
     "from": [
      [
-      0.698,
-      -2.166,
-      1.897
+      -1.875,
+      -3.145,
+      1.784
      ],
      [
-      0.698,
-      -2.166,
-      1.897
+      -1.875,
+      -3.145,
+      1.784
      ]
     ],
     "at": [
-     -2.0999756633902886,
-     0.18188444490835776,
-     0.85
+     -1.875,
+     0.45000000000000007,
+     1.15
     ],
-    "lens": 17,
+    "lens": 22,
     "fstop": 2.8,
     "focus": "crew",
     "focusPoint": [
@@ -562,8 +562,8 @@
   },
   {
    "id": "15b",
-   "t0": 23.55,
-   "t1": 24.25,
+   "t0": 23.5,
+   "t1": 24.2,
    "what": "the captain's reaction (0.7 s): his shoulders sink, his eyes go down, the sweat; the 'Aye!' heard over him; the loop's seam to shot 1 after it",
    "static": true,
    "cam": {

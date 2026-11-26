@@ -1,0 +1,14 @@
+dinner depth planted: 726 frames, 51 faults
+  4 frame 0 4:crew: 36 cells of the room (prop) nearer than him inside his outline
+  4 frame 1 4:crew: 36 cells of the room (prop) nearer than him inside his outline
+  4 frame 2 4:crew: 36 cells of the room (prop) nearer than him inside his outline
+  4 frame 3 4:crew: 36 cells of the room (prop) nearer than him inside his outline
+  4 frame 4 4:crew: 36 cells of the room (prop) nearer than him inside his outline
+  4 frame 5 4:crew: 36 cells of the room (prop) nearer than him inside his outline
+  4 frame 6 4:crew: 36 cells of the room (prop) nearer than him inside his outline
+  4 frame 7 4:crew: 36 cells of the room (prop) nearer than him inside his outline
+  4 frame 8 4:crew: 36 cells of the room (prop) nearer than him inside his outline
+  4 frame 9 4:crew: 36 cells of the room (prop) nearer than him inside his outline
+  4 frame 10 4:crew: 36 cells of the room (prop) nearer than him inside his outline
+  4 frame 11 4:crew: 36 cells of the room (prop) nearer than him inside his outline
+DINNER DEPTH FAILED

@@ -70,7 +70,7 @@ export const paintCaption = (g: CanvasRenderingContext2D, T: number) => { const 
  *  0.25 s, the figures with the plate (the reviewer: scale and move the whole frame, no new plates). In picture pixels about the frame's middle */
 export const camFx = (t: number): { s: number; dx: number; dy: number } => {
   const sm = (u: number) => (u <= 0 ? 0 : u >= 1 ? 1 : u * u * (3 - 2 * u));
-  if (t >= 1.6 && t < 2.7) return { s: 1 + 0.05 * sm((t - 2.0) / 0.22), dx: 0, dy: 0 };
+  if (t >= 1.6 && t < 2.7) return { s: 1 + 0.04 * sm((t - 1.9) / 0.5), dx: 0, dy: 0 };
   // (the slam: a 3 % push over the eight frames up to the contact frame, held to the cut into 10b.
   //  At most about 11 px a frame at the picture's edge: as a jump of 4 % on the contact frame it changed 67000 px at once, flicker2 on test 2)
   const HIT = 464 / FM.FPS, A = HIT - 8 / FM.FPS;      /* (eight frames: in four, the eyes near the picture's edge flickered, test 7) */
@@ -78,7 +78,7 @@ export const camFx = (t: number): { s: number; dx: number; dy: number } => {
   if (t >= HIT && t < 469 / FM.FPS) return { s: 1.03, dx: 0, dy: 0 };
   // (15a, the vote's insert: the same push onto the fists' thud on frame 696, held to the cut: the table jolts with the blow (the reviewer: something
   //  happens at the thud); the props are one still plate, so the picture itself moves)
-  const V = 690 / FM.FPS, V0 = V - 8 / FM.FPS; if (t >= V0 && t < V) return { s: 1 + 0.025 * sm((t - V0) / (V - V0)), dx: 0, dy: 0 }; if (t >= V && t < 23.55) return { s: 1.025, dx: 0, dy: 0 };      // (held to the cut: a shake or a push back out is a move out and back, and flicker2 failed it at every frame, 20000 px at the contact frame on test 4)
+  const V = 690 / FM.FPS, V0 = V - 8 / FM.FPS; if (t >= V0 && t < V) return { s: 1 + 0.025 * sm((t - V0) / (V - V0)), dx: 0, dy: 0 }; if (t >= V && t < 23.5) return { s: 1.025, dx: 0, dy: 0 };      // (held to the cut: a shake or a push back out is a move out and back, and flicker2 failed it at every frame, 20000 px at the contact frame on test 4)
   return { s: 1, dx: 0, dy: 0 }; };
 // (the loop: a hard cut from the last frame to the first, on a matching picture (15 is shot 1's camera); the seam is a cut like the others (the cloud session, 25 Nov: a dissolve reads as an end))
 export const Dinner3D: React.FC<{ muted?: boolean; plant?: string }> = ({ muted = false, plant }) => {

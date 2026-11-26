@@ -1,0 +1,3 @@
+beard check: 264 frames with a full beard; inside its outline (7 px in), away from arms, hands, bodies and the mouth, no pixel brighter than 140
+largest: 0 (frame 725)
+PASS: 0 frames

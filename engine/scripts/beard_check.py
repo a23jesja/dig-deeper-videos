@@ -36,7 +36,7 @@ def all_frames():
         yield n, np.frombuffer(b, np.uint8).reshape(1920, 1080, 3); n += 1
 
 
-rows, fails, worst = [], [], (0, None)
+rows, fails, worst = [], [], (0, -1)
 it = ((f, grab(f)) for f in todo) if (stills or frames is not None) else ((f, im) for f, im in all_frames() if f in R)
 for f, im in it:
     lum = 0.299 * im[..., 0] + 0.587 * im[..., 1] + 0.114 * im[..., 2]

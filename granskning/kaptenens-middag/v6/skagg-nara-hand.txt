@@ -1,0 +1,7 @@
+Frames where an arm, hand or body capsule comes within about a hand's width (60 px) of the captain's beard, per shot (film frames):
+shot 1: 0-47
+shot 2: 48-80
+shot 9: 399-468
+shot 10b: 469-500
+shot 11: 501-560
+shot 15b: 705-725

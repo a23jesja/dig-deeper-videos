@@ -1,0 +1,2 @@
+dinner depth: 726 frames, 0 faults
+DINNER DEPTH OK

@@ -13,7 +13,7 @@ import craft_sfx as fx  # noqa: E402
 from dsp import SR, ns, dbg, place, pan, integrated, true_peak, write_wav, st  # noqa: E402
 
 SPEC = json.load(open("src/craft/dinner3d/shots.json")); FPS = SPEC["fps"]; DUR = SPEC["shots"][-1]["t1"]
-VOICES = [("n1", "narrator", -0.05), ("k2", "captain", 1.99), ("n3", "narrator", 2.72), ("d4", "crew", 12.15), ("n5", "narrator", 13.35), ("k6", "captain", 15.4), ("n7", "narrator", 16.75), ("w8", "boy", 22.0), ("aye-crew", "crew", 22.94), ("aye-boy", "boy", 22.99)]      # (the vote: both "Aye!" [OWN] on the fists' beat, the cloud session 25 Nov)
+VOICES = [("n1", "narrator", -0.05), ("k2", "captain", 1.99), ("n3", "narrator", 2.72), ("d4", "crew", 12.15), ("n5", "narrator", 13.35), ("k6", "captain", 15.4), ("n7", "narrator", 16.75), ("w8", "boy", 22.0), ("aye-crew", "crew", 22.94), ("aye-boy", "boy", 22.96)]      # (the vote: both "Aye!" [OWN] on the fists' beat, the cloud session 25 Nov)
 DIR = os.environ.get("DINNER_VOICE_DIR", "voice/dinner"); CAPTAIN = os.environ.get("DINNER_CAPTAIN", "")      # (DINNER_CAPTAIN=-daniel-reserv: the spare)
 
 def decode(f):
@@ -39,7 +39,7 @@ def main():
     #  nose (3.85), chewing at each bite (4.83 and 10.60), the captain's fist on the table (15.467, the contact frame), the swish into the loop)
     cues = [{"k": "whoosh", "f": 0, "g": 1.3, "p": 0.2}, {"k": "ting", "f": 10, "g": 0.8, "p": -0.2}, {"k": "book", "f": 87, "g": 1.25, "p": -0.1},
             {"k": "sniff", "f": 116, "g": 1.0, "p": -0.1}, {"k": "munch", "f": 145, "g": 1.0, "p": -0.1}, {"k": "munch", "f": 318, "g": 1.1, "p": 0.0},
-            {"k": "thunk", "f": 464, "g": 1.25, "p": 0.1}, {"k": "thunk", "f": 690, "g": 1.35, "p": -0.1}, {"k": "whoosh", "f": 724, "g": 0.9, "p": 0.2}]      # (696: the two fists on the table, the vote)
+            {"k": "thunk", "f": 464, "g": 1.25, "p": 0.1}, {"k": "thunk", "f": 690, "g": 1.35, "p": -0.1}, {"k": "whoosh", "f": 723, "g": 0.9, "p": 0.2}]      # (696: the two fists on the table, the vote)
     beds = [{"k": "lap", "f0": 0, "f1": int(DUR * FPS), "g": 0.55}]
     spec = {"fps": FPS, "frames": int(DUR * FPS), "seed": 31, "cues": cues, "beds": beds}
     bus = fx.effects(spec)[:, :N]

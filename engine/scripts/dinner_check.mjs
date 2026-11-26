@@ -29,7 +29,9 @@
 // down in the head's frame, 11), turnCross (the crewman's face turning 0 to 40 degrees more through his first shot, 12).
 //   node scripts/dinner_check.mjs [--plant seatHigh|pudOff|handIn|float|capLow|missing|faceHide|mouthHand|oneArm|mouthOut|turnCross]
 import * as esbuild from "esbuild"; import fs from "node:fs"; import path from "node:path"; import { pathToFileURL } from "node:url";
-const NOTE6 = {};
+const NOTE6 = {}, NOTE8 = {}, STATE8 = {};
+/** the shots' own figures (as the tuner's MAIN): their faces never hidden at all */
+const OWN8 = { 1: ["crew", "captain"], 2: ["captain"], 3: ["crew"], 4: ["crew"], 5: ["boy"], 7: ["crew"], 8: ["crew"], 9: ["captain"], "10b": ["captain"], 11: ["captain"], 12: ["crew"], 13: ["crew"], 14: ["boy"], "15a": [], "15b": ["captain"] };
 const arg = (k) => (process.argv.includes(k) ? process.argv[process.argv.indexOf(k) + 1] : null), plant = arg("--plant");
 const out = "out/_din_check.mjs";
 // (flat.ts keeps its design's body sizes (A_SPEC) to itself: the bundle alone exports them to this check, the file is not changed)
@@ -37,7 +39,7 @@ const exportSpec = { name: "spec", setup(b) { b.onLoad({ filter: /designs[\\/]fl
 await esbuild.build({ plugins: [exportSpec], stdin: { contents: 'export * from "./src/craft/dinner3d/core"; export * from "./src/craft/dinner3d/figures"; export { captionAt, CAP_TOPS, camFx, bodyCaps, boxHitsCap, CAP_ON_BODY, ARM_CAPS } from "./src/craft/dinner3d/Dinner3D"; export { thighUnder, scaleOf, D, FM, jointPx, footY, heightOf } from "./src/craft/clips/clipKit"; export * as BG from "./src/craft/checks/bodyGeom"; export { kitOf, kitBody, beardOutline } from "./src/craft/wardrobe/kit"; export { A_SPEC } from "./src/craft/designs/flat";', resolveDir: ".", loader: "tsx" }, bundle: true, format: "esm", platform: "node", outfile: out, logLevel: "error", loader: { ".json": "json" }, external: ["remotion", "react"] });
 const M = await import(pathToFileURL(out).href); fs.rmSync(out);
 const { SHOTS, WHO, PLANT, placeOf, toScreen, feetOf, project, jointPx, handPx, FM, cardToWorld, thighUnder, scaleOf, D, captionAt, PUD_UP, TABLE_TOP } = M;
-const CHECK_PLANTS = { capLow: 6, missing: 7, faceHide: 8, mouthHand: 9, oneArm: 10, mouthOut: 11, turnCross: 12, seatEdge: 1, faceEdge: 13, frontArm: 10, smileCross: 14 }, RULE_OF = { seatHigh: 1, pudOff: 3, handIn: 4, handInBook: 4, float: 2, ...CHECK_PLANTS };
+const CHECK_PLANTS = { capLow: 6, missing: 7, faceHide: 8, headPeek: 8, hide40: 8, mouthHand: 9, oneArm: 10, mouthOut: 11, turnCross: 12, seatEdge: 1, faceEdge: 13, frontArm: 10, smileCross: 14 }, RULE_OF = { seatHigh: 1, pudOff: 3, handIn: 4, handInBook: 4, float: 2, ...CHECK_PLANTS };
 if (plant && !(plant in CHECK_PLANTS)) { if (!(plant in PLANT)) throw new Error("no such planted fault: " + plant); PLANT[plant] = true; }
 const { BG, A_SPEC, footY, VOICES, kitOf, kitBody } = M; if (D.id !== "flatA") throw new Error("the checks' body sizes are A's: the design is " + D.id); const BODY = A_SPEC.sir.B;
 // (an arm hidden by a named thing in the set, so it is no one-armed look: "shot:figure:near|far" -> the thing.
@@ -118,7 +120,7 @@ for (const S of SHOTS) {
         if (cut) faults.push(`13 ${S.id} frame ${fr} ${w.name}: the picture's edge cuts through his ${feats.indexOf(cut) === feats.length - 1 ? "mouth" : feats.indexOf(cut) === feats.length - 2 ? "nose" : "eye"}`);
         const s0 = scr("skull"), c0 = scr("crown"), hr = Math.hypot(c0[0] - s0[0], c0[1] - s0[1]) / 2 * (w.name === "captain" ? 1.35 : 1.08), hc = [(s0[0] + c0[0]) / 2, (s0[1] + c0[1]) / 2];
         let inn = 0; const N = 24; for (let k = 0; k < N; k++) for (const rr of [0.35, 0.7, 1]) { const a = (k / N) * 2 * Math.PI, x = hc[0] + rr * hr * Math.cos(a), y = hc[1] + rr * hr * Math.sin(a); if (x >= 0 && x <= FM.W && y >= 0 && y <= FM.H) inn++; }
-        const frac = inn / (N * 3); if (frac < 1 && frac > 0) { const k13 = `${S.id} ${w.name}`; NOTES13[k13] = Math.max(NOTES13[k13] ?? 0, frac); }
+        const frac = inn / (N * 3); if (frac < 1 && frac > 0) { const k13 = `${S.id} ${w.name}`; NOTES13[k13] = Math.max(NOTES13[k13] ?? 0, frac); if (frac > 0.25 && !(OWN8[S.id] ?? []).includes(w.name) && S.id !== "10b") faults.push(`13 ${S.id} frame ${fr} ${w.name}: ${Math.round(frac * 100)} % of his head at the picture's edge (a neighbour: a quarter or less, or whole)`); }      /* (the reviewer 26 Nov) */
         if (SPEAKS.some((v) => v.who === w.name && T >= v.t0 && T < v.t1) && feats.some((ring) => ring.filter(inF).length < ring.length)) faults.push(`13 ${S.id} frame ${fr} ${w.name}: he speaks with his face not whole in the picture`); }      /* (a speaker's eyes, nose and mouth whole; his hat or the back of his head may be cut, the close-up of 10b) */
       // 5 the edges
       for (const sd of ["L", "R"]) { const wr = scr("wr" + sd), tp = scr("tip" + sd), r = handPx(pl) * 0.45,      /* (half a hand round the line from wrist to fingertips: the open hand is about as wide as half its length) */ xs = [wr[0], tp[0]], ys = [wr[1], tp[1]];
@@ -182,9 +184,13 @@ for (const S of SHOTS) {
         return { name: w.name, depth: pl.depth, hc: [(s0[0] + c0[0]) / 2, (s0[1] + c0[1]) / 2], r: hr * 1.1, body }; });
       const inPoly = (pt, P) => { let c = false; for (let i = 0, j = P.length - 1; i < P.length; j = i++) if ((P[i][1] > pt[1]) !== (P[j][1] > pt[1]) && pt[0] < ((P[j][0] - P[i][0]) * (pt[1] - P[i][1])) / (P[j][1] - P[i][1]) + P[i][0]) c = !c; return c; };
       for (const far of geo) for (const near of geo) { if (near === far || near.depth >= far.depth) continue;
-        const pts = []; for (let k = 0; k < 16; k++) { const a = (k / 16) * Math.PI * 2; for (const rr of [0, 0.4, 0.8]) pts.push([far.hc[0] + Math.cos(a) * rr * far.r, far.hc[1] + 0.25 * far.r + Math.sin(a) * rr * far.r * 0.75]); }
-        const hit = pts.filter((q) => inPoly(q, near.body) || Math.hypot(q[0] - near.hc[0], q[1] - near.hc[1]) < near.r).length;
-        if (hit > 2) faults.push(`8 ${S.id} frame ${fr}: the ${far.name}'s face is under the ${near.name} (${hit} of ${pts.length} points)`); } }
+        const own8 = (OWN8[S.id] ?? []).includes(far.name), dx8 = !own8 && far.name === "boy" ? (plant === "headPeek" ? 1.3 : plant === "hide40" ? 0.75 : 0) * far.r : 0;      /* (the planted faults: the boy's head moved aside, a part of it out from behind (headPeek) or 40 % hidden (hide40)) */
+        const pts = []; for (let k = 0; k < 16; k++) { const a = (k / 16) * Math.PI * 2; for (const rr of [0, 0.4, 0.8]) pts.push([far.hc[0] + dx8 + Math.cos(a) * rr * far.r, far.hc[1] + 0.25 * far.r + Math.sin(a) * rr * far.r * 0.75]); }      /* (the face, every figure: rule 8) */
+        const inF = pts.filter((q) => q[0] >= 0 && q[0] <= FM.W && q[1] >= 0 && q[1] <= FM.H), hit = inF.filter((q) => inPoly(q, near.body) || Math.hypot(q[0] - near.hc[0], q[1] - near.hc[1]) < near.r).length;
+        if (own8) { if (hit > 2) faults.push(`8 ${S.id} frame ${fr}: the ${far.name}'s face is under the ${near.name} (${hit} of ${pts.length} points)`); }
+        else if (inF.length && hit > 2) faults.push(`8 ${S.id} frame ${fr}: the ${far.name}'s head ${Math.round((hit / inF.length) * 100)} % behind the ${near.name}`);      /* (rule 8 in full: no face, nor head, hidden at all, the reviewer 26 Nov) */
+        else if (false) { const fr8 = hit / inF.length, st = fr8 <= 0.1 ? "seen" : fr8 >= 0.98 ? "hidden" : "part";      /* (a background figure: his whole head with its hair and ears seen (10 % or less hidden) or none of it (98 % or more), one state through the shot: the reviewer, 26 Nov) */
+          if (st === "part") faults.push(`8 ${S.id} frame ${fr}: the ${far.name}'s head ${Math.round(fr8 * 100)} % behind the ${near.name} (neither clearly seen nor wholly hidden)`); else { (STATE8[`${S.id} ${far.name}`] ??= new Set()).add(st); if (st === "hidden") NOTE8[`${S.id} ${far.name}`] = true; } } } }
     // 7 nobody missing: a figure of the room that is not drawn in a shot must be wholly out of its picture (his head and feet projected)
     if (fr === 0) for (const nm of ["captain", "crew", "boy"]) { if (whos.some((w) => w.name === nm)) continue; const at = M.FIGS[nm], hh = nm === "boy" ? 1.5 : 1.75;
       for (const [dx, z] of [[0, 0], [0, hh * 0.5], [0, hh], [-0.35, hh * 0.6], [0.35, hh * 0.6], [-0.3, 0.3], [0.3, 0.3]]) { const q = project(S.id, 0, [at[0] + dx, at[1], z]); if (q[2] > 0 && q[0] > -20 && q[0] < FM.W + 20 && q[1] > -20 && q[1] < FM.H + 20) { faults.push(`7 ${S.id}: the ${nm} stands in the picture but is not drawn`); break; } } }
@@ -225,6 +231,8 @@ if (arg("--geom")) fs.writeFileSync("out/din3d/geom.json", JSON.stringify(geomOu
     const da = dirOf(a), db = dirOf(b), ang = (Math.acos(Math.min(1, da[0] * db[0] + da[1] * db[1] + da[2] * db[2])) * 180) / Math.PI, sz = Math.min(...both.map((nm) => Math.max(CUT15[a][nm], CUT15[b][nm]) / Math.min(CUT15[a][nm], CUT15[b][nm])));
     CUTS.push(`${a}->${b} ${both.join(",")}: ${ang.toFixed(0)} deg, ${sz.toFixed(2)}x`); if (ang < 30 || sz < 1.3) faults.push(`15 cut ${a}->${b} (${both.join(", ")}): ${ang.toFixed(0)} degrees, ${sz.toFixed(2)}x`); } }
 console.log("15 cuts: " + CUTS.join("; "));
+for (const [k, set] of Object.entries(STATE8)) if (set.size > 1) faults.push(`8 ${k}: seen and hidden in one shot (it must keep one state)`);
+console.log("8 (note) background heads wholly behind a nearer figure: " + (Object.keys(NOTE8).join(", ") || "none"));
 console.log("6 (note) words over a body where the shot had no free place (faces and hands kept clear): " + (Object.keys(NOTE6).join(", ") || "none"));
 const seen = new Set(), shown = [];
 for (const f of faults) { const k = f.replace(/frame \d+/, "").replace(/-?[\d.]+ (px|cm)/g, "").replace(/\(\d+-\d+\)/, ""); if (!seen.has(k)) { seen.add(k); shown.push(f); } }

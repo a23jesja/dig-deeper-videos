@@ -21,7 +21,7 @@ import { figure, D, scaleOf, heightOf, FM, jointPx, footY, thighUnder, px, reach
 /** the vote (the cloud session, 25 Nov): at "All in favour?" the sailor's left fist and the boy's right fist come down on the table on one beat,
  *  the contact frame 696 (23.20) with the thunk, and both say "Aye!" [OWN]; the captain beside them. Where each fist lands (on the table's top,
  *  clear of the book; a fist stands 2.4 cm over the top as the captain's) */
-export const VOTE = { hit: 696 / 30, lift0: 22.9, top0: 23.02, crew: [-1.22, 0.92] as [number, number], crewTop: 0.0, boy: [-0.72, 1.36] as [number, number] };      // (the sailor's fist on the 1724 rule book on the table, the boy's from across the table; crewTop set below from the book's top)
+export const VOTE = { hit: 690 / 30, lift0: 22.78, top0: 22.87, crew: [-1.22, 0.92] as [number, number], crewTop: 0.0, boy: [-1.38, 1.2] as [number, number] };      // (the sailor's fist on the 1724 rule book on the table, the boy's from across the table; crewTop set below from the book's top)
 /** a fist on the table by the rig's own reach (onto the spot where the lens sees it on his card), and the raised pose over it: the forearm
  *  lifted (the slap's way: searched, the raised pose had two near answers and flipped) */
 const fistOnTable = (id: string, fr: number, at: [number, number], h: number, sk: ReturnType<typeof solve>, q: Pose, heading: number, side: Side, spot: [number, number], top = 0.488) => {
@@ -30,7 +30,14 @@ const fistOnTable = (id: string, fr: number, at: [number, number], h: number, sk
   const r = reach("sir", px(0) - pelX * sc, { ...q, [`hand${side}`]: 0 } as Pose, heading, side, tgt, false, { mid: true, elbowDown: true }) as Pose & Record<string, [Seg2, Seg2]>;
   const aH = r[`arm${side}`] as [Seg2, Seg2]; return { aH, aT: [[aH[0][0] + 10, aH[0][1]], [aH[1][0] + 30, aH[1][1]]] as [Seg2, Seg2], P }; };
 const SV_OUT = [0, 70, 0, 90], SV_UP = [-10, 95, -10, 125];      // (the sailor's vote: out to his side, then up beside his cheek. Higher, the rig draws his head over the hand and it is gone, the vote stills)
+/** where the boy stands: his place at the far left in every shot he is seen in; in 15a, the vote's insert where only his sleeve and fist are
+ *  seen, he has stepped to the table's left end to bring his fist down (from his place it is out of reach) */
+export const BOY_AT = (id: string): [number, number] => (id === "14" || id === "15a" ? BOY_TABLE : FIGS.boy);
+/** the boy walks from his place to the table's left end while shots 12 and 13 show the sailor alone (18.7-22.0, 3.3 s): neither place is in
+ *  those pictures, and he is not drawn in them (the reviewer, 26 Nov: from (-2.3, 0.34) to the table's end in 0.35 s was impossible) */
+export const BOY_TABLE: [number, number] = [-1.65, 1.15], BOY_WALKING = ["12", "13"];
 const BOY_OUT = [0, 80, 0, 90], BOY_UP = [-10, 100, -10, 140], BOY_FOLD = [15, 18, 80, -55];      // (the boy's arm out to his side before it goes up: the vote raise never crosses his face)
+const SLAP_REF = new Map<string, [[number, number], [number, number]]>();
 const KF_CACHE = new Map<string, [[number, number], [number, number]]>();
 import SEATJ from "./props/seat.json";
 import { hand as inkHand, Ink, type P2 } from "../ink";
@@ -72,7 +79,7 @@ export const VOICES = [
   { id: "n1", who: "narrator", at: -0.05, p: N1 }, { id: "k2", who: "captain", at: 1.99, p: K2 }, { id: "n3", who: "narrator", at: 2.72, p: N3 },
   { id: "d4", who: "crew", at: 12.15, p: D4 }, { id: "n5", who: "narrator", at: 13.35, p: N5 }, { id: "k6", who: "captain", at: 15.4, p: K6 },
   { id: "n7", who: "narrator", at: 16.75, p: N7 }, { id: "w8", who: "boy", at: 22.0, p: W8 },
-  { id: "aye-crew", who: "crew", at: VOTE.hit, p: AYE_C }, { id: "aye-boy", who: "boy", at: VOTE.hit + 0.05, p: AYE_B }] as const;      // (the vote's "Aye!" [OWN], on the fists' beat)
+  { id: "aye-crew", who: "crew", at: 22.92, p: AYE_C }, { id: "aye-boy", who: "boy", at: 22.97, p: AYE_B }] as const;      // (the vote's "Aye!" [OWN], on the fists' beat)
 export const FILM_S = SHOTS[SHOTS.length - 1].t1;
 const SH = Object.fromEntries(SHOTS.map((s) => [s.id, s]));
 
@@ -162,8 +169,8 @@ const captain = (id: string): Who => { const s = SH[id], yaw = headingIn(id, FAC
   ease(m, T(16.7), { ...seat, lean: 20, head: H(-4) }, 0.01, F({ gaze: [-0.6, 0], smile: 0.34, brow: -0.6, lid: 0.1, sweat: 0.5 }));      /* (the proud face from the cut: a smile across 0.3 in the shot broke rule 14) */      // (11 opens as 10b ends: he sits down in this wider shot, not in the close-up (137 px a frame there, motion2))
   ease(m, T(16.75), { ...seat, lean: 4, head: H(-4) }, 0.45, F({ gaze: [-0.6, 0], smile: 0.34, brow: -0.6, lid: 0.1 }));      // (the chest beat, proud)
   ease(m, T(18.2), { ...seat, lean: 2, head: H(-6) }, 0.35, F({ gaze: [-0.4, 0], smile: 0.7, brow: 0.3, lid: 0.45 }));      // (pleased with himself)
-  ease(m, T(23.2), { ...seat, lean: 6, head: H(6) }, 0.01, F({ gaze: [-0.5, 0.5], smile: -0.6, brow: 0.6, sad: 0.8, lid: 0.1 }));
-  easeH(m, T(23.25), { ...seat, lean: 14, py: SIT.py - 0.02, head: H(5) }, 0.75, F({ gaze: [-0.5, 0.7], smile: -0.7, brow: 0.8, sad: 1, lid: 0.2 }));      // (15: his shoulders sink)
+  ease(m, T(23.48), { ...seat, lean: 6, head: H(6) }, 0.01, F({ gaze: [-0.5, 0.5], smile: -0.6, brow: 0.6, sad: 0.8, lid: 0.1 }));
+  easeH(m, T(23.5), { ...seat, lean: 14, py: SIT.py - 0.02, head: H(5) }, 0.7, F({ gaze: [-0.5, 0.7], smile: -0.7, brow: 0.8, sad: 1, lid: 0.2 }));      // (15: his shoulders sink)
   const mouth = id === "2" ? mouthOf(["k2"], s.t0, s.t1) : id === "9" ? mouthOf(["k6"], 15.38, s.t1) : id === "10b" ? mouthOf(["k6"], s.t0, s.t1) : null;      // (9: "That" before the cut, the voice from 15.38)
   const at = FIGS.captain;
   const hook = (t: number, p: Pose, heading: number): Pose => { const g = t, sk = solve(D.props("sir"), p, heading), pelX = (sk.j.pelvis as unknown as number[])[0];
@@ -241,8 +248,8 @@ const PCH: P3 = [0.24, 0.16, 0.66], PNOSE: P3 = [0.3, 0.08, 1.0], PMOUTH: P3 = [
 export type PK = P3 | { face: "mouth" | "nose" } | { fk: [Seg2, Seg2] };
 const KMOUTH: PK = { face: "mouth" },      /* (8: the toast is the pudding lifted before his chest toward his middle (PUP): out to his right, or up beside his head, it lay across the boy's face, my review of the 2 fps frames) */
   KNOSE: PK = { face: "nose" }, KHIGH: PK = { fk: [[120, 85], [190, 40]] };
-export const PUD_KF: [number, PK][] = [[1.6, PCH], [3.2, PCH], [3.9, KNOSE], [4.15, KNOSE], [4.8, KMOUTH], [4.95, KMOUTH], [5.45, PCH], [7.0, PCH], [7.4, PUP], [9.3, PUP],
-  [10.6, KMOUTH], [10.75, KMOUTH], [11.1, PCH], [11.4, PCH], [11.8, PAWAY], [12.1, PAWAY], [13.0, PUP], [13.3, PUP], [13.34, PCH], [18.9, PCH], [19.5, PUP], [20.2, PCH], [24.5, PCH]]      /* (12, the sailor alone: he lifts the pudding to show it and takes it back, 18.9-20.2, more life (the review); the boy is not in that picture) */;
+export const PUD_KF: [number, PK][] = [[1.6, PCH], [3.2, PCH], [3.9, KNOSE], [4.15, KNOSE], [4.8, KMOUTH], [4.95, KMOUTH], [5.45, PCH], [5.75, PCH], [6.2, PUP], [9.3, PUP],      /* (4: after the bite and his chewing, he lifts it to admire it, 5.75-6.2: the sailor's singles get something new every 1-2 s, the reviewer) */
+  [10.6, KMOUTH], [10.75, KMOUTH], [11.1, PCH], [11.4, PCH], [11.8, PAWAY], [12.1, PAWAY], [13.0, PUP], [13.3, PUP], [13.34, PCH], [18.9, PCH], [19.5, PUP], [20.2, PCH], [20.85, PCH], [21.3, PUP], [21.85, PCH], [24.5, PCH]]      /* (13: he lifts it again with the chin up, 20.85-21.85) */      /* (12, the sailor alone: he lifts the pudding to show it and takes it back, 18.9-20.2, more life (the review); the boy is not in that picture) */;
 /** the keyframe segment at t: [from, to, its eased weight] (after the last, his chest) */
 export const pudSeg = (t: number): [PK, PK, number, number, number] => { for (let k = 0; k + 1 < PUD_KF.length; k++) { const [a, A] = PUD_KF[k], [b, B] = PUD_KF[k + 1]; if (t >= a && t < b) return [A, B, span(t, a, b), k, k + 1]; } return [PCH, PCH, 0, -1, -1]; };      /* (k: the keyframes' indices; -1 after the toast: his chest) */      /* (after the toast: his chest, solved at 13.3 and 24) */
 /** a place on the drawn head in skeleton units (as the rig draws A's head: about the skull joint, turned with the face, tilted with the head) */
@@ -265,6 +272,7 @@ const crew = (id: string): Who => { const s = SH[id], yaw = headingIn(id, FACING
   ease(m, T(3.6), { lean: 2, head: H(-8) }, 0.25, F({ gaze: [0.3, -0.3], smile: 0.32, brow: 0.5, lid: 0.6 }));      /* (the sniff with his mouth shut: smiling, its corner stuck up over the pudding like a beak, the review) */      // (the sniff, eyes half shut; his lean kept while his hand lies on the book: leaning back it drew 2 cm off it)
   ease(m, T(4.2), { lean: 2, head: H(2, 4) }, 0.2, F({ gaze: [0.6, 0], smile: 0.9, smirk: 0.8, brow: 1, lid: 0.1 }));      // (brows up, a crooked grin)
   ease(m, T(4.7), { lean: 2, head: H(0) }, 0.01, F({ gaze: [0.6, 0.2], smile: 0.8, brow: 0.5, lid: 0.3, mouth: 0.24 }));      // (4: chewing; the mouth never under 0.22 in this shot)
+  ease(m, T(5.7), { lean: 2, head: H(0) }, 0.45, F({ gaze: [0.3, -0.3], smile: 0.9, smirk: 0.6, brow: 1, lid: 0.15, mouth: 0.24 }));      // (4: eyes up on the pudding as he lifts it, brows up)
   ease(m, T(6.4), { lean: 2, head: H(0) }, 0.01, F({ gaze: [-0.5, 0.2], smile: 0.6, smirk: 0.4, brow: 0.3, lid: 0.2 }));      // (5: eyeing the boy)
   ease(m, T(8.7), { lean: 12, head: H(-2) }, 0.01, F({ gaze: [0.8, 0], smile: 0.34, smirk: 0.8, brow: -1, lid: 0.25 }));      // (6: leans at the captain, points, mouth shut; set on the cut: eased over it his smile crossed 0.3 in the shot, rule 14)
   ease(m, T(9.8), { lean: 2, head: H(-8) }, 0.4, F({ gaze: [0.4, -0.5], smile: 0.9, brow: 0.8, lid: 0, wide: 0.2, mouth: 0.24 }));      // (7: admiring it high, then chewing)
@@ -280,7 +288,7 @@ const crew = (id: string): Who => { const s = SH[id], yaw = headingIn(id, FACING
   ease(m, T(21.1), { lean: 2, head: H(5) }, 0.15, F({ gaze: [0.6, 0], smile: 0.7, brow: 0.5, lid: 0.2 }));
   easeH(m, T(21.3), { lean: 0, head: H(0) }, 0.7, F({ gaze: [0.6, -0.2], smile: 0.8, brow: 0.7, lid: 0.15 }));      //  the chin up)
   ease(m, T(22.0), { lean: 0, head: H(-4) }, 0.01, F({ gaze: [-0.4, 0], smile: 0.8, brow: 0.6, lid: 0.1 }));      // (14: his hand up)
-  const talk = id === "8" ? mouthOf(["d4"], s.t0, s.t1) : id === "15" ? mouthOf(["aye-crew"], s.t0, s.t1) : null;
+  const talk = id === "8" ? mouthOf(["d4"], s.t0, s.t1) : id === "15a" || id === "15b" ? mouthOf(["aye-crew"], s.t0, s.t1) : null;
   const chewing = id === "4" ? (T0: number) => chew(T0, 4.95, 5.9) : id === "7" ? (T0: number) => chew(T0, 10.7, 11.5) : null;
   const at: [number, number] = FIGS.crew;
   const hook = (t: number, p: Pose, heading: number): Pose => { const g = t, sk = solve(D.props("sir"), p, heading), pelX = (sk.j.pelvis as unknown as number[])[0];
@@ -337,7 +345,11 @@ const crew = (id: string): Who => { const s = SH[id], yaw = headingIn(id, FACING
       //  fell short of it as he breathed, the check)
       if (up === 0) TARGETS[`${id}:${fr}:crew:L`] = { on: "book", w: top };
       const T0 = skSeen(id, fr, at, HEIGHTS.crew, pelX, top), sc = scaleOf("sir"), tgtAt = (v: number): [number, number] => [px(0) + (T0[0] - pelX) * sc, footY("sir") + (T0[1] - (0.08 * v) / ((scaleOf("sir") / FM.PPM) * (HEIGHTS.crew / heightOf("sir")))) * sc];
-      const rch = (v: number) => reach("sir", px(0) - pelX * sc, { ...q, handL: 0 }, heading, "L", tgtAt(v), false, { mid: true, elbowDown: true }), qH = rch(0);
+      // (the search started from the arm solved once at the contact frame on his own pose there (cached): started from his hanging arm, its pull
+      //  toward it changed as he breathed and the hand slid 3.5 px on the book, rule 4)
+      const key = `slap|${id}`; if (!SLAP_REF.has(key)) { const C0 = { name: "crew", m, who: "sir" as const, seed: 26 } as unknown as Parameters<typeof poseAt>[0], a0 = poseAt(C0, SLAP.hit), p0 = { ...a0.pose, twist: 0, armL: CREW_REST } as Pose, s0 = solve(D.props("sir"), p0, a0.heading), pX0 = (s0.j.pelvis as unknown as number[])[0], fr0 = Math.round((SLAP.hit - s.t0) * FM.FPS), T1 = skSeen(id, fr0, at, HEIGHTS.crew, pX0, top);
+        SLAP_REF.set(key, (reach("sir", px(0) - pX0 * sc, { ...p0, handL: 0 }, a0.heading, "L", [px(0) + (T1[0] - pX0) * sc, footY("sir") + T1[1] * sc], false, { mid: true, elbowDown: true }) as Pose).armL as [Seg2, Seg2]); }
+      const rch = (v: number) => reach("sir", px(0) - pelX * sc, { ...q, armL: SLAP_REF.get(key), handL: 0 } as Pose, heading, "L", tgtAt(v), false, { mid: true, elbowDown: true }), qH = rch(0);
       if (up > 0) { const aH = qH.armL as [Seg2, Seg2], aT: [Seg2, Seg2] = [[aH[0][0] + 8, aH[0][1]], [aH[1][0] + SLAP_UP, aH[1][1]]], v = 1 - up;      /* (the raised pose is the contact pose with the forearm lifted: searched, the raised pose had two near answers and flipped, motion2) */      /* (down from the raised pose to the contact pose, the angles lerped: searched every frame the elbow flipped at frame 1, motion2) */
         q = { ...qH, armL: [[lerp(aT[0][0], aH[0][0], v), lerp(aT[0][1], aH[0][1], v)], [lerp(aT[1][0], aH[1][0], v), lerp(aT[1][1], aH[1][1], v)]], handL: 0 } as Pose; }
       else q = { ...qH, handL: 0 } as Pose; }
@@ -348,7 +360,7 @@ const crew = (id: string): Who => { const s = SH[id], yaw = headingIn(id, FACING
   const kindL = s.t0 < 1.6 ? "grip" : s.t0 >= 2.7 && s.t0 < 4.7 ? "open" : "relaxed";
   return { name: "crew", at, walk: viewOf(id).right, h: HEIGHTS.crew, rimSide: -1, off: s.t0, sun: false, key: 0.5,
     cast: { name: "crew", m, who: "sir", look: CREW, seed: 26, armWipe: false, pose: hook,
-      hands: { L: id === "7" ? [[0, "point"], [10.0, "relaxed"]] : id === "15" ? [[0, "fist"]] : [[0, kindL]], R: [[0, "grip"]] },
+      hands: { L: id === "7" ? [[0, "point"], [10.0, "relaxed"]] : id === "15a" || id === "15b" ? [[0, "fist"]] : [[0, kindL]], R: [[0, "grip"]] },
       ...(talk ? { mouth: mouthTrack(s, talk) } : chewing ? { mouth: mouthTrack(s, (T0) => (T0 >= s.t0 && T0 < s.t1 ? chewing(T0) : null)) } : {}) } };
 };
 
@@ -378,19 +390,19 @@ const boy = (id: string): Who => { const s = SH[id], yaw = headingIn(id, FACING.
   ease(m, T(20.2), { lean: 2, head: H(0, 6) }, 0.2, F({ gaze: [0.7, 0], smile: 0.9, smirk: 0.8, brow: 0.6, lid: 0.3 }));      // (a crooked grin)
   ease(m, T(22.0), { lean: 0, head: H(-4) }, 0.01, F({ gaze: [0.5, -0.1], smile: 0.6, brow: 0.8, lid: 0, mouth: 0.22 }));      // (14: his hand up, "All in favour?")
   ease(m, T(22.8), { lean: 0, head: H(-6) }, 0.2, F({ gaze: [0.5, -0.1], smile: 1, brow: 0.8, lid: 0.25, mouth: 0.22 }));      // (grins)
-  const talk = id === "14" ? mouthOf(["w8"], s.t0, s.t1) : id === "15" ? mouthOf(["aye-boy"], s.t0, s.t1) : null;
+  const talk = id === "14" ? mouthOf(["w8"], s.t0, s.t1) : id === "15a" || id === "15b" ? mouthOf(["aye-boy"], s.t0, s.t1) : null;
   const AKIMBO: [Seg2, Seg2] = [[BOY_FOLD[0], BOY_FOLD[1]], [BOY_FOLD[2], BOY_FOLD[3]]];      /* (his arms folded before his chest, over the table: on his hips the table hid them, rule 10, now he stands behind it) */
   const hook = (t: number, p: Pose, heading: number): Pose => { const g = t, sk = solve(D.props("sir"), p, heading); void sk;
     let q: Pose = { ...p, armL: AKIMBO, armR: AKIMBO, twist: 0 };
     if (g >= 11.05 && g < 11.9) { const u = span(g, 11.1, 11.35) * (1 - span(g, 11.55, 11.85)); q = { ...q, armR: [[lerp(20, 70, u), lerp(25, 8, u)], [lerp(60, 90, u), 0]] } as Pose; }      // (7: his hand out for the pudding, back as it swings away)
-    if (g >= VOTE.lift0) { const fr = Math.round((t - s.t0) * FM.FPS), { aH, P } = fistOnTable(id, fr, FIGS.boy, HEIGHTS.boy, sk, q, heading, "R", VOTE.boy), UPP: [Seg2, Seg2] = [[BOY_UP[0], BOY_UP[1]], [BOY_UP[2], BOY_UP[3]]];      // (15: from his raised hand down onto the table on the beat)
+    if (g >= VOTE.lift0) { const fr = Math.round((t - s.t0) * FM.FPS), { aH, P } = fistOnTable(id, fr, BOY_AT(id), HEIGHTS.boy, sk, q, heading, "R", VOTE.boy), UPP: [Seg2, Seg2] = [[BOY_UP[0], BOY_UP[1]], [BOY_UP[2], BOY_UP[3]]];      // (15: from his raised hand down onto the table on the beat)
       if (g >= VOTE.hit + 0.0 - 0.005) TARGETS[`${id}:${fr}:boy:R`] = { on: "table", w: P };
       const v = span(g, VOTE.lift0 + 0.05, VOTE.hit - 0.005); q = { ...q, armR: [[lerp(UPP[0][0], aH[0][0], v), lerp(UPP[0][1], aH[0][1], v)], [lerp(UPP[1][0], aH[1][0], v), lerp(UPP[1][1], aH[1][1], v)]], handR: 0 } as Pose; }
     else if (g >= 21.0 && g < 23.2) { const u = span(g, 21.0, 22.35);      /* (slower: 0.2-0.3 s jumped 60-130 px, motion2) */      // (his right hand up by his ear, palm to the lens; down again in 15)
       const o = span(g, 21.0, 21.5), w = span(g, 21.4, 22.35), x1 = BOY_OUT;      /* (out to his side first, then up by his ear: straight there the hand crossed his face, test 6 frame 652) */
       q = { ...q, armR: [[lerp(lerp(20, x1[0], o), BOY_UP[0], w), lerp(lerp(25, x1[1], o), BOY_UP[1], w)], [lerp(lerp(60, x1[2], o), BOY_UP[2], w), lerp(lerp(0, x1[3], o), BOY_UP[3], w)]], handR: lerp((p as Pose & { handR?: number }).handR ?? 0, 0, u) } as Pose; }      /* (up beside his head from his side: to the forward raise the hand crossed his mouth in 13, my review) */
     return q; };
-  return { name: "boy", at: FIGS.boy, walk: viewOf(id).right, h: HEIGHTS.boy, rimSide: -1, off: s.t0, sun: false, key: 0.4,
+  return { name: "boy", at: BOY_AT(id), walk: viewOf(id).right, h: HEIGHTS.boy, rimSide: -1, off: s.t0, sun: false, key: 0.4,
     cast: { name: "boy", m, who: "sir", look: BOY, seed: 14, armWipe: false, pose: hook,
       hands: { L: [[0, "fist"]], R: id === "13" ? [[0, "fist"], [21.0, "open"]] : [[0, (s.t0 >= 22.0 && s.t0 < 22.9) || (s.t0 >= 8.7 && s.t0 < 12.1) ? "open" : "fist"]] },
       ...(talk ? { mouth: mouthTrack(s, talk) } : {}) } };
@@ -443,7 +455,7 @@ const DRAWN_HELD = ((DRAWN as unknown as { heldHands?: { who: string; at: P2; ri
 
 /** who is in each shot: everyone the shot's camera sees (any of his head, middle, sides or feet in the picture) */
 const BUILD: Record<string, (id: string) => Who> = { captain, crew, boy };
-export const inPicture = (id: string, nm: string) => { const at = FIGS[nm], hh = HEIGHTS[nm] ?? 1.75;
+export const inPicture = (id: string, nm: string) => { if (nm === "boy" && BOY_WALKING.includes(id)) return false; const at = nm === "boy" ? BOY_AT(id) : FIGS[nm], hh = HEIGHTS[nm] ?? 1.75;
   return [[0, 0], [0, hh * 0.5], [0, hh], [0, hh * 0.65], [0, hh * 0.8], [-0.45, hh * 0.75], [0.45, hh * 0.75], [-0.35, hh * 0.6], [0.35, hh * 0.6], [-0.3, 0.3], [0.3, 0.3]].some(      /* (the head's middle too: in a close-up nothing else of him is in the picture) */([dx, z]) => { const q = project(id, 0, [at[0] + dx, at[1], z]); return q[2] > 0 && q[0] > -20 && q[0] < FM.W + 20 && q[1] > -20 && q[1] < FM.H + 20; }); };
 export const WHO: Record<string, () => Who[]> = Object.fromEntries(SHOTS.map((S) => [S.id, () => ["boy", "crew", "captain"].filter((nm) => inPicture(S.id, nm)).map((nm) => BUILD[nm](S.id))]));
 export const EXTRAS: Record<string, Record<string, Extra>> = Object.fromEntries(SHOTS.map((S) => [S.id, { crew: crewExtra(S.id) }]));

@@ -96,3 +96,33 @@ Underlag: oberoende-granskning-v6-t13.md och granskarens villkor 12–13, samt m
 **8. Leverans:**
 - Filerna kaptenens-middag-v6.mp4 och kaptenens-middag-v6-telefon.mp4 (under 29 MB), md5 och commit.
 - Kontrollera att `git diff ad1a161` på de frysta filerna är tom.
+
+## Tillagt 25 nov kväll (molnsessionen)
+
+**Middag v6:**
+- I STOPP:en skrivs byggtiden från commit c01aaf4 (figurarket, se git log) till STOPP:en.
+
+**Piratveckans sex Shorts.** Kraven ändrades 25 nov kväll efter Jespers svar: "Nej shortsen ska vara bra, väl animerade med mycket händelser och action, precis som referens videosen. Men hoppas att det kommer ta mindre tid efter första shorten." Detta ersätter de fyra kraven ovan.
+- Ingen Short görs fattigare för att gå fortare. Det ska hända mycket hela tiden, och något nytt ska synas var 1–2 s.
+- "Högst två figurer i bild" gäller bara kompositionen: tvåbilder, bilder över axeln och närbilder. Det begränsar inte handlingen, och folkmassor i totalbilder är tillåtna.
+- Nya rörelser får användas. De byggs in i biblioteket en gång och återanvänds. De redovisas som kostnad i STOPP:en men stryks inte.
+- Takten ska komma från biblioteket och parallellt arbete, inte från färre handlingar.
+- Molnsessionen skriver själv manusen och skickar dem till granskaren efter middagens STOPP, på branchen claude/emu-short-cloud.
+- För mig gäller fortfarande bara middag v6 och STOPP:en 26 nov kl. 12:00.
+
+## 26 nov kl. 12:00: läge och plan A (ny staging den 27 nov)
+
+**Gjort 26 nov:**
+- Röstningen är delad i 15a (inklipp av bordet, båda nävarna på ruta 690 = 23,0) och 15b (kaptenens reaktion, 23,48–24,2). Filmen är 24,2 s.
+- Aye-rösterna ligger på 22,92 och 22,97, och svischen på ruta 723.
+- Pojken står på (-2,3; 0,34). I 12–13 går han till bordsänden (-1,65; 1,15), och kamerorna i 12–13 ser varken platserna eller gångvägen.
+- Regel 8 gäller ansiktet hos varje figur. Regel 13: en grannes flisa är högst 25 %, eller så är huvudet helt i bild.
+- Mer liv i sjömannens ensambilder (bild 4 och 13).
+- Slagets arm i bild 3 börjar sitt sök från kontaktposen.
+- ElevenLabs: 4237 före, 4249 vid senaste avläsningen. Slutvärdet skrivs i STOPP:en. Nyckelkontrollen gav 0.
+
+**Plan A:**
+1. Ta fram ett avståndsmått: minsta avstånd mellan Knopp-figurer för en ensambild på 60 %. Spara det i biblioteksplanen som mall för gruppbilderna i de sex nya Shortsen.
+2. Ny placering efter måttet, flytta kistan och boken i Blender, och solva om rörelserna som når bordet.
+3. Tuna om allt, rendera plattor, kör kontrollerna och en provrendering, gör egen granskning och leverera. Granskaren gör den oberoende granskningen vid STOPP:en.
+4. Ge STOPP-tiden cirka 10:00 den 27 nov.

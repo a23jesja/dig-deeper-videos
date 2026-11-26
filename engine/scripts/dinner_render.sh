@@ -14,6 +14,7 @@ node scripts/limb_check.mjs dinner > $LOG-limb.txt 2>&1 || true; tail -1 $LOG-li
 python scripts/motion2.py --root out/din3d/root --out $LOG-motion2.txt > /dev/null 2>&1 || true; grep -E "^(PASS|FAIL|largest)" $LOG-motion2.txt | head -3
 python scripts/flicker2.py "$OUT" out/din3d/regions.jsonl --cams out/din3d/root --out $LOG-flicker2.txt > /dev/null 2>&1 || true
 grep -E "^largest|^FAIL|^PASS" $LOG-flicker2.txt; grep -A40 "^FAIL" $LOG-flicker2.txt | grep "  frame" | cut -c1-150 | head -20
+python scripts/seam_check.py "$OUT" --out $LOG-seam.txt > /dev/null 2>&1 || true; sed -n 2,3p $LOG-seam.txt      # (the seam check: beard and sleeve meeting with no ink, the review of v6)
 python - <<'PY'
 import numpy as np, glob, json, os
 S = json.load(open('src/craft/dinner3d/shots.json'))

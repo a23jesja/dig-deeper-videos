@@ -166,17 +166,30 @@ for (const S of SHOTS) {
           if (hit) faults.push(`9 ${S.id} frame ${fr} crew: the pudding over his mouth while he speaks (${hit} of ${mp.length} mouth points)`); }
         // 10 a one-armed look (in a medium or close shot: its tallest figure 50 % of the picture or more; every figure whose head is in it)
         const shotTall = Math.max(...sil.map((o) => o.tall)), hc = g.scr(BG.headPt(g.sk, [0, -128]));
-        if (shotTall >= 0.5 && hc[0] > 0 && hc[0] < FM.W && hc[1] > 0 && hc[1] < FM.H) { const share = {};
+        if (shotTall >= 0.3 && hc[0] > 0 && hc[0] < FM.W && hc[1] > 0 && hc[1] < FM.H) { const share = {};
           for (const sd of ["L", "R"]) { const own = BG.occluders(g.sk, g.B, sd, g.kinds[g.sk.near], g.kit), seenOf = (polys) => { const pts = BG.fillPts(polys, 5); let inside = 0, seen = 0;
               for (const q of pts) { const p = g.scr(q); if (p[0] < 0 || p[0] > FM.W || p[1] < 0 || p[1] > FM.H) continue; inside++;
                 if (own.some((P) => BG.inPoly(q, P))) continue; if (sil.some((o) => o !== g && o.pl.depth < g.pl.depth && o.all.some((P) => BG.inPoly(p, P)))) continue; seen++; }
               return { n: pts.length, inside, seen }; };
-            share[sd] = { arm: seenOf(g.parts[sd].all), hand: seenOf(g.parts[sd].hand) }; }
+            share[sd] = { arm: seenOf(g.parts[sd].all), hand: seenOf(g.parts[sd].hand), sleeve: seenOf(g.parts[sd].sleeve) };
+            /* (v6c: a coat's sleeve lying over the coat is the coat's own red with no edge to read: the captain's far arm down his side in 2 and 15b
+               read as a hand out of the coat, the independent review of v6. For a coat, the sleeve counts as seen only off the torso) */
+            if (g.kit?.top === "coat" || g.kit?.top === "shirt") { const tp = BG.torsoPoly(g.sk, g.B), pts = BG.fillPts(g.parts[sd].sleeve, 5); let off = 0;
+              for (const q of pts) { const p = g.scr(q); if (p[0] < 0 || p[0] > FM.W || p[1] < 0 || p[1] > FM.H) continue; if (own.some((P) => BG.inPoly(q, P)) || BG.inPoly(q, tp)) continue;
+                if (sil.some((o) => o !== g && o.pl.depth < g.pl.depth && o.all.some((P) => BG.inPoly(p, P)))) continue; off++; }
+              share[sd].sleeve = { ...share[sd].sleeve, seen: Math.min(share[sd].sleeve.seen, off) }; } }
           for (const sd of ["L", "R"]) { const a = share[sd].arm, h = share[sd].hand, k = `${S.id}:${g.w.name}:${sd === g.sk.near ? "near" : "far"}`;
             if (a.inside < 0.3 * a.n) continue;      // (an arm mostly out of the picture is framing, not a missing arm)
             const fa = a.seen / a.n, fh = h.seen / h.n, st = (armStat[k] ??= { arm: 9, hand: 9 }); st.arm = Math.min(st.arm, fa); st.hand = Math.min(st.hand, fh);
             // (an arm reads as there when 15 % of its drawn area shows, or a quarter of its hand: shot 7's far hand on the table, behind the near one)
-            if (fa < 0.15 && fh < 0.25 && !HIDDEN_BY[k]) faults.push(`10 ${S.id} frame ${fr} ${g.w.name}: his ${sd === g.sk.near ? "near" : "far"} arm hidden, ${(fa * 100).toFixed(0)} % of it and ${(fh * 100).toFixed(0)} % of its hand seen (one-armed look)`); } } } }
+            /* (v6c, the independent review of v6: a hand seen with no sleeve to it (the captain's hand out of his coat at the hip in 2 and 15b, his
+               fingers behind the waistcoat in 1 and 11) and the boy one-armed in the 3/4 shots both passed, as a quarter of a hand counted as the
+               arm. Now the arm is seen only by its sleeve: 25 % of it at least, and a hand seen (10 %) with less sleeve than that fails) */
+            const fsl = share[sd].sleeve.seen / share[sd].sleeve.n;
+            if (process.env.DEBUG10 === `${S.id}:${fr}`) console.log(`DEBUG10 ${g.w.name} ${sd === g.sk.near ? "near" : "far"} sin ${g.sk.sin.toFixed(2)} sleeve ${fsl.toFixed(2)} hand ${fh.toFixed(2)} arm ${fa.toFixed(2)} inside ${a.inside}/${a.n} tall ${shotTall.toFixed(2)}`);
+            if (fsl < 0.25 && fh >= 0.1 && !HIDDEN_BY[k]) faults.push(`10 ${S.id} frame ${fr} ${g.w.name}: his ${sd === g.sk.near ? "near" : "far"} hand seen (${(fh * 100).toFixed(0)} %) without its arm (${(fsl * 100).toFixed(0)} % of the sleeve)`);
+            else if ((fsl < 0.25 || (fh < 0.1 && fsl < 0.5)) && !HIDDEN_BY[k]) faults.push(`10 ${S.id} frame ${fr} ${g.w.name}: his ${sd === g.sk.near ? "near" : "far"} arm hidden, ${(fsl * 100).toFixed(0)} % of its sleeve and ${(fh * 100).toFixed(0)} % of its hand seen (one-armed look)`);
+            if (false && fa < 0.15 && fh < 0.25 && !HIDDEN_BY[k]) faults.push(`10 ${S.id} frame ${fr} ${g.w.name}: his ${sd === g.sk.near ? "near" : "far"} arm hidden, ${(fa * 100).toFixed(0)} % of it and ${(fh * 100).toFixed(0)} % of its hand seen (one-armed look)`); } } } }
     // 8 no face covered: a farther figure's face (the head's circle below its cap, 0.8 of its radius) is not under a nearer figure's body (the
     //  hull of its joints and the head's circle) in any frame
     { const geo = placed.map(({ w, pl }) => { const J = (j) => toScreen(pl, jointPx(pl.f, j)), s0 = J("skull"), c0 = J("crown"), hr = Math.hypot(c0[0] - s0[0], c0[1] - s0[1]) / 2;
@@ -185,10 +198,10 @@ for (const S of SHOTS) {
       const inPoly = (pt, P) => { let c = false; for (let i = 0, j = P.length - 1; i < P.length; j = i++) if ((P[i][1] > pt[1]) !== (P[j][1] > pt[1]) && pt[0] < ((P[j][0] - P[i][0]) * (pt[1] - P[i][1])) / (P[j][1] - P[i][1]) + P[i][0]) c = !c; return c; };
       for (const far of geo) for (const near of geo) { if (near === far || near.depth >= far.depth) continue;
         const own8 = (OWN8[S.id] ?? []).includes(far.name), dx8 = !own8 && far.name === "boy" ? (plant === "headPeek" ? 1.3 : plant === "hide40" ? 0.75 : 0) * far.r : 0;      /* (the planted faults: the boy's head moved aside, a part of it out from behind (headPeek) or 40 % hidden (hide40)) */
-        const pts = []; for (let k = 0; k < 16; k++) { const a = (k / 16) * Math.PI * 2; for (const rr of [0, 0.4, 0.8]) pts.push([far.hc[0] + dx8 + Math.cos(a) * rr * far.r, far.hc[1] + 0.25 * far.r + Math.sin(a) * rr * far.r * 0.75]); }      /* (the face, every figure: rule 8) */
+        const pts = []; for (let k = 0; k < 24; k++) { const a = (k / 24) * Math.PI * 2; for (const rr of [0, 0.35, 0.7, 0.95]) pts.push([far.hc[0] + dx8 + Math.cos(a) * rr * far.r * 1.12, far.hc[1] + Math.sin(a) * rr * far.r]); }      /* (v6c: the whole head with its ears, cheeks and temples (the independent review of v6: the sailor's head over the captain's cheek and ear in 9, over the boy's temple in 12, missed by the face's inner ellipse)) */      /* (the face, every figure: rule 8) */
         const inF = pts.filter((q) => q[0] >= 0 && q[0] <= FM.W && q[1] >= 0 && q[1] <= FM.H), hit = inF.filter((q) => inPoly(q, near.body) || Math.hypot(q[0] - near.hc[0], q[1] - near.hc[1]) < near.r).length;
-        if (own8) { if (hit > 2) faults.push(`8 ${S.id} frame ${fr}: the ${far.name}'s face is under the ${near.name} (${hit} of ${pts.length} points)`); }
-        else if (inF.length && hit > 2) faults.push(`8 ${S.id} frame ${fr}: the ${far.name}'s head ${Math.round((hit / inF.length) * 100)} % behind the ${near.name}`);      /* (rule 8 in full: no face, nor head, hidden at all, the reviewer 26 Nov) */
+        if (own8) { if (hit > 0) faults.push(`8 ${S.id} frame ${fr}: the ${far.name}'s face is under the ${near.name} (${hit} of ${pts.length} points)`); }
+        else if (inF.length && hit > 0) faults.push(`8 ${S.id} frame ${fr}: the ${far.name}'s head ${Math.round((hit / inF.length) * 100)} % behind the ${near.name}`);      /* (rule 8 in full: no face, nor head, hidden at all, the reviewer 26 Nov) */
         else if (false) { const fr8 = hit / inF.length, st = fr8 <= 0.1 ? "seen" : fr8 >= 0.98 ? "hidden" : "part";      /* (a background figure: his whole head with its hair and ears seen (10 % or less hidden) or none of it (98 % or more), one state through the shot: the reviewer, 26 Nov) */
           if (st === "part") faults.push(`8 ${S.id} frame ${fr}: the ${far.name}'s head ${Math.round(fr8 * 100)} % behind the ${near.name} (neither clearly seen nor wholly hidden)`); else { (STATE8[`${S.id} ${far.name}`] ??= new Set()).add(st); if (st === "hidden") NOTE8[`${S.id} ${far.name}`] = true; } } } }
     // 7 nobody missing: a figure of the room that is not drawn in a shot must be wholly out of its picture (his head and feet projected)
@@ -237,6 +250,7 @@ console.log("6 (note) words over a body where the shot had no free place (faces 
 const seen = new Set(), shown = [];
 for (const f of faults) { const k = f.replace(/frame \d+/, "").replace(/-?[\d.]+ (px|cm)/g, "").replace(/\(\d+-\d+\)/, ""); if (!seen.has(k)) { seen.add(k); shown.push(f); } }
 for (const f of shown.slice(0, 40)) console.log("  " + f);
+if (process.env.ALL_FAULTS) fs.writeFileSync(process.env.ALL_FAULTS, faults.join(String.fromCharCode(10)) + String.fromCharCode(10));      // (every fault, one per line, for the planted-fault lists)
 const by = {}; for (const f of faults) { const k = f.split(" ").slice(0, 2).join(" "); by[k] = (by[k] ?? 0) + 1; } console.log(JSON.stringify(by));
 console.log("arms seen (far arms only, least share of the arm/of its hand, medium and close shots): " + Object.entries(armStat).filter(([k]) => k.endsWith("far")).map(([k, v]) => `${k} ${(v.arm * 100).toFixed(0)}/${(v.hand * 100).toFixed(0)}%`).join(", "));
 // (a sliver's hand at the edge passes only if it holds still in the shot: one ending at the edge mid-movement fails, the reviewer)

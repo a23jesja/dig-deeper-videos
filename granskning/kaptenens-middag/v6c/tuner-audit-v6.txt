@@ -1,0 +1,15 @@
+AUDIT 1: FAIL fill crew 40%
+AUDIT 2: ok
+AUDIT 3: FAIL fill crew 56%
+AUDIT 4: ok
+AUDIT 5: ok
+AUDIT 7: FAIL fill crew 51%
+AUDIT 8: ok
+AUDIT 9: FAIL fill captain 42%
+AUDIT 10b: ok
+AUDIT 11: FAIL fill captain 42%
+AUDIT 12: ok
+AUDIT 13: ok
+AUDIT 14: FAIL fill boy 51%
+AUDIT 15a: FAIL fill boy 39%
+AUDIT 15b: ok

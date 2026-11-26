@@ -40,7 +40,7 @@ const boxOf = (pl, nm, how) => { if (how === "close") return []; const f = pl.f,
 /** the checks a camera must pass over the shot's frames (every 4th) */
 const tryCam = (S, C, at, lens, prev) => { if (!inRoom(C)) return { ok: false, why: "room" }; const P = Pof(C, at, lens), n = Math.round((S.t1 - S.t0) * FM.FPS); setCam(S.id, Array.from({ length: n }, () => P));
   const whos = WHO[S.id](); if (!(MAIN[S.id] ?? []).every(([nm]) => whos.some((w) => w.name === nm))) return { ok: false, why: "own figure not in the picture", fitBad: 999 };
-  let fitBad = 0, fail = null, pen = 0; const STATE8 = {}, FILLY = {}, zs = {}, whole = {}, own = new Set((MAIN[S.id] ?? []).map(([nm]) => nm)), notes = new Set(), HP = {}, EDGE = {}, inP = (p) => p[0] >= 0 && p[0] <= W && p[1] >= 0 && p[1] <= H;
+  let fitBad = 0, fail = null, pen = 0; const STATE8 = {}, FILLY = {}, TOPY = {}, zs = {}, whole = {}, own = new Set((MAIN[S.id] ?? []).map(([nm]) => nm)), notes = new Set(), HP = {}, EDGE = {}, inP = (p) => p[0] >= 0 && p[0] <= W && p[1] >= 0 && p[1] <= H;
   for (let fr = 0; fr < n; fr += 6) for (const w of whos) { const pl = placeOf(S.id, fr, w), J = (j) => toScreen(pl, jointPx(pl.f, j)), how = (MAIN[S.id] ?? []).find(([nm]) => nm === w.name), close = how && how[1] === "close";
     // the head (its circle with the hat): the shot's own figures whole (10b: his face whole); a neighbour's head in, out, or a part without features
     const s0 = J("skull"), c0 = J("crown"), hr = (Math.hypot(c0[0] - s0[0], c0[1] - s0[1]) / 2) * (w.name === "captain" ? 1.35 : 1.08), hc = [(s0[0] + c0[0]) / 2, (s0[1] + c0[1]) / 2];
@@ -60,7 +60,7 @@ const tryCam = (S, C, at, lens, prev) => { if (!inRoom(C)) return { ok: false, w
       if (!inside && !gone) { if (seen || own.has(w.name) || !shIn) fail ??= `hand ${hk}`; else { EDGE[hk] = true; notes.add(`${hk} hand at the edge (a sliver)`); } } }      /* (a lone hand at the edge, its arm out of the picture, fails: Eiffel v11) */
     // the shot's own figures inside the margins
     if (how) { const bx = boxOf(pl, w.name, how[1]); for (const q of bx) if (q[0] < 0.05 * W || q[0] > 0.95 * W || q[1] < 0.04 * H || q[1] > 0.96 * H) fitBad++;
-      if (bx.length) { const ys = bx.map((q) => q[1]); (FILLY[fr] ??= [1e9, -1e9]); FILLY[fr][0] = Math.min(FILLY[fr][0], ...ys); FILLY[fr][1] = Math.max(FILLY[fr][1], how[1] === "whole" ? Math.max(...ys) : H); } } }
+      if (bx.length) { const ys = bx.map((q) => q[1]), feet = Math.max(...boxOf(pl, w.name, "whole").map((q) => q[1])); FILLY[`${fr}:${w.name}`] = [Math.min(...ys), Math.min(H, feet)]; TOPY[fr] = Math.min(TOPY[fr] ?? 1e9, ...ys); } } }      /* (v6c: each own figure fills 60 % from his head to his own feet or the picture's foot: before, a waist-up figure counted the floor under him to the foot, and 15a passed at 37 and 47 %, the reviewer 26 Nov) */
   // (rule 8 in the tuner: no own figure's face under a figure nearer the lens, its head, its torso or its arms: the boy behind the table was hidden
   //  by the sailor or by the captain in the foreground, the stills of 25 Nov)
   for (let fr = 0; fr < n; fr += 6) { const pls = whos.map((w) => ({ w, pl: placeOf(S.id, fr, w) }));
@@ -77,7 +77,8 @@ const tryCam = (S, C, at, lens, prev) => { if (!inRoom(C)) return { ok: false, w
   if (M.BOY_WALKING.includes(S.id)) for (const [x, y] of Array.from({ length: 9 }, (_, k) => [SPEC.figs.boy[0] + ((M.BOY_TABLE[0] - SPEC.figs.boy[0]) * k) / 8, SPEC.figs.boy[1] + ((M.BOY_TABLE[1] - SPEC.figs.boy[1]) * k) / 8])) for (const z of [0, 0.5, 1.0, 1.42]) for (const dx of [-0.35, 0, 0.35]) {      /* (his whole way, a corridor of his width and height: no empty floor where he should be walking, the reviewer) */ const v = [0, 1, 2].map((r) => P[r][0] * (x + dx) + P[r][1] * y + P[r][2] * z + P[r][3]); if (v[2] > 0) { const q = [v[0] / v[2], v[1] / v[2]]; if (q[0] > -40 && q[0] < W + 40 && q[1] > -40 && q[1] < H + 40) fail ??= "the boy's places in the picture"; } }
   // (the loop's seam: the last shot to the first is a cut like the others, the cloud session 25 Nov)
   if (S.id === SPEC.shots[SPEC.shots.length - 1].id) { const f = SPEC.shots[0].cam, da = norm(f.at.map((v, k) => v - f.from[0][k])), db = norm(at.map((v, k) => v - C[k])), ang = (Math.acos(Math.min(1, dot(da, db))) * 180) / Math.PI; if (ang < 31) fail ??= `loop cut ${ang.toFixed(0)} deg`; }
-  for (const [y0, y1] of Object.values(FILLY)) { const fill = (Math.min(H, y1) - Math.max(0, y0)) / H; if (fill < FILL_MIN) fail ??= `fill ${Math.round(fill * 100)}%`; else if (y0 > TOP_MAX * H) fail ??= `empty top ${Math.round((100 * y0) / H)}%`; }
+  for (const [k, [y0, y1]] of Object.entries(FILLY)) { const fill = (Math.min(H, y1) - Math.max(0, y0)) / H; if (fill < FILL_MIN) fail ??= `fill ${k.split(":")[1]} ${Math.round(fill * 100)}%`; }
+  for (const y0 of Object.values(TOPY)) if (y0 > TOP_MAX * H) fail ??= `empty top ${Math.round((100 * y0) / H)}%`;
   for (const hk of Object.keys(EDGE)) { const xs = HP[hk].map((q) => q[0]), ys = HP[hk].map((q) => q[1]); if (Math.max(...xs) - Math.min(...xs) > 15 || Math.max(...ys) - Math.min(...ys) > 15) fail ??= `a sliver's moving hand at the edge (${hk})`; }
   for (const p of EXTRA[S.id] ?? []) { const v = [0, 1, 2].map((r) => P[r][0] * p[0] + P[r][1] * p[1] + P[r][2] * p[2] + P[r][3]), q = [v[0] / v[2], v[1] / v[2]]; if (q[0] < 0.05 * W || q[0] > 0.95 * W || q[1] < 0.04 * H || q[1] > 0.96 * H) fitBad++; }
   if (prev) { const both = Object.keys(whole).filter((nm) => prev.whole[nm]); if (both.length) { const da = norm(prev.at.map((v, k) => v - prev.C[k])), db = norm(at.map((v, k) => v - C[k])), ang = (Math.acos(Math.min(1, dot(da, db))) * 180) / Math.PI;
@@ -105,6 +106,9 @@ const solveShot = (S, it, prev) => { const xs = (MAIN[S.id] ?? []).length ? (MAI
   if (!best) console.log(`  shot ${S.id}: nothing passes (${tried} cameras; last: ${lastWhy})`); else best.tried = tried;
   return best; };
 let prev = null; const found = {};
+// (--audit: every shot's present camera through every check, nothing written: which shots the stricter rules fail)
+if (process.argv.includes("--audit")) { for (const S of SHOTS) { const sc = SPEC.shots.find((q) => q.id === S.id).cam, r = tryCam(S, sc.from[0], sc.at, sc.lens, S.id === "10b" ? null : prev);
+    console.log(`AUDIT ${S.id}: ${r.ok ? "ok" : "FAIL " + (r.why ?? "")}`); prev = { C: sc.from[0], at: sc.at, whole: r.whole ?? {}, zs: r.zs ?? {} }; } process.exit(0); }
 const ONLY = process.argv.includes("--only") ? process.argv[process.argv.indexOf("--only") + 1].split(",") : null;      /* (--only 13,7: the rest keep their cameras and serve as the shot before) */
 if (!process.argv.includes("--debug")) for (const S of SHOTS) { const it = INT.find((q) => q.id === S.id); if (S.id === "10b") { prev = null; continue; }      /* (10b: the hand-placed close-up kept) */      /* (15b = shot 2's camera: the captain alone; the loop's seam to shot 1 is then the 1-2 cut, 41 degrees) */       /* (15 = shot 2's camera since 25 Nov: with shot 1's the loop's seam was a jump cut, the reviewer; its own camera reached 28 degrees, under 30) */
   if (ONLY && !ONLY.includes(S.id)) { const sc = SPEC.shots.find((q) => q.id === S.id).cam, r = tryCam(S, sc.from[0], sc.at, sc.lens, null); prev = { C: sc.from[0], at: sc.at, whole: r.whole ?? {}, zs: r.zs ?? {} }; continue; }

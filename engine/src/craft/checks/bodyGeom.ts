@@ -59,7 +59,12 @@ export const legPolys = (sk: Sk, B: Body, kit: Kit | null = null): P2[][] => (["
   return [...limb(h, kn, J(sk, "an", s), B.leg), ...(kit?.top === "coat" ? [seg(mid(h, kn, -0.1), mid(h, kn, 0.8), B.leg[0] + 16, B.leg[1] + 22, 0, 0.3, true)] : [])]; });      // (the long coat's skirt over the thigh, as kit.ts draws it)
 /** what the figure itself draws over its arm `side` (see the head of this file) */
 export const occluders = (sk: Sk, B: Body, side: Side, nearKind: HandKind, kit: Kit | null = null): P2[][] => {
-  if (Math.abs(sk.sin) <= 0.5 || side === sk.near) return [];
+  /* (v6c, the independent review of v6: the far arm is drawn behind the body from |sin| 0.15 (ARM_WIPE in kit.ts/flat.ts), its sleeve shown over
+     the body only as the sweep line passes it (past its middle once u is a half); counted from 0.5 only, the captain's hand out of his coat at
+     the hip in 2 and 15b (|sin| about 0.3) was taken for an arm in front, and a hand without its arm passed) */
+  const as = Math.abs(sk.sin);
+  if (as <= 0.15 || side === sk.near) return [];
+  if (as < 0.8 && (0.8 - as) / 0.65 >= 0.5) return [];
   return [...legPolys(sk, B, kit), torsoPoly(sk, B), ...headPolys(sk, kit), ...armParts(sk, sk.near, nearKind, B).all];
 };
 

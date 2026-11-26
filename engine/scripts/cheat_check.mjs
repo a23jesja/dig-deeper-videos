@@ -30,6 +30,11 @@ for (const [a, b] of pairs) {
 // (the boy's walk: in the shots he walks in, neither his place, the table's end nor his way between them is in the picture (the reviewer's corridor))
 for (const id of M.BOY_WALKING) { const A = M.FIGS.boy, B = M.BOY_TABLE; let hit = 0; for (let k = 0; k <= 8; k++) for (const z of [0, 0.5, 1.0, 1.42]) for (const dx of [-0.35, 0, 0.35]) { const p = [A[0] + ((B[0] - A[0]) * k) / 8 + dx, A[1] + ((B[1] - A[1]) * k) / 8, z]; if (seen(id, p)) hit++; }
   if (hit) faults.push(`${id}: the boy's way in the picture (${hit} points)`); else notes.push(`${id}: the boy's way not in the picture (checked)`); }
+// (and his time: from the end of his last shot seen at his place to the start of his first seen at the table's end, at least 1 s a metre (the reviewer))
+{ const atHome = SH.filter((x) => !M.BOY_WALKING.includes(x.id) && M.inPicture(x.id, "boy") && M.BOY_AT(x.id)[0] === M.FIGS.boy[0]), atTable = SH.filter((x) => M.inPicture(x.id, "boy") && M.BOY_AT(x.id)[0] === M.BOY_TABLE[0]);
+  const t0 = Math.max(...atHome.map((x) => x.t1)), t1 = Math.min(...atTable.map((x) => x.t0)), dist = Math.hypot(M.BOY_TABLE[0] - M.FIGS.boy[0], M.BOY_TABLE[1] - M.FIGS.boy[1]);
+  const line = `the boy's walk: last seen at his place until ${t0.toFixed(2)} s, first at the table's end from ${t1.toFixed(2)} s: ${(t1 - t0).toFixed(2)} s for ${dist.toFixed(2)} m (at least ${dist.toFixed(2)} s)`;
+  if (t1 - t0 < dist) faults.push(line); else notes.push(line); }
 const cheats = SH.filter((s) => s.cheat).map((s) => `${s.id}: ${Object.entries(s.cheat).map(([nm, d]) => `${nm} ${d.map((v) => v.toFixed(2)).join(", ")} m`).join("; ")}`);
 console.log("cheats: " + (cheats.join(" | ") || "none")); for (const n of notes) console.log("  " + n);
 console.log(faults.length ? `CHEAT CHECK FAILED: ${faults.length}\n` + faults.map((f) => "  " + f).join("\n") : "CHEAT CHECK OK");

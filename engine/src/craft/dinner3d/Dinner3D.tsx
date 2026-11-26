@@ -78,7 +78,7 @@ export const camFx = (t: number): { s: number; dx: number; dy: number } => {
   if (t >= HIT && t < 469 / FM.FPS) return { s: 1.03, dx: 0, dy: 0 };
   // (15a, the vote's insert: the same push onto the fists' thud on frame 696, held to the cut: the table jolts with the blow (the reviewer: something
   //  happens at the thud); the props are one still plate, so the picture itself moves)
-  const V = 690 / FM.FPS, V0 = V - 8 / FM.FPS; if (t >= V0 && t < V) return { s: 1 + 0.025 * sm((t - V0) / (V - V0)), dx: 0, dy: 0 }; if (t >= V && t < 23.48) return { s: 1.025, dx: 0, dy: 0 };      // (held to the cut: a shake or a push back out is a move out and back, and flicker2 failed it at every frame, 20000 px at the contact frame on test 4)
+  const V = 690 / FM.FPS, V0 = V - 8 / FM.FPS; if (t >= V0 && t < V) return { s: 1 + 0.025 * sm((t - V0) / (V - V0)), dx: 0, dy: 0 }; if (t >= V && t < 23.55) return { s: 1.025, dx: 0, dy: 0 };      // (held to the cut: a shake or a push back out is a move out and back, and flicker2 failed it at every frame, 20000 px at the contact frame on test 4)
   return { s: 1, dx: 0, dy: 0 }; };
 // (the loop: a hard cut from the last frame to the first, on a matching picture (15 is shot 1's camera); the seam is a cut like the others (the cloud session, 25 Nov: a dissolve reads as an end))
 export const Dinner3D: React.FC<{ muted?: boolean; plant?: string }> = ({ muted = false, plant }) => {

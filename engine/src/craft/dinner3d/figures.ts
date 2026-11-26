@@ -32,10 +32,11 @@ const fistOnTable = (id: string, fr: number, at: [number, number], h: number, sk
 const SV_OUT = [0, 70, 0, 90], SV_UP = [-10, 95, -10, 125];      // (the sailor's vote: out to his side, then up beside his cheek. Higher, the rig draws his head over the hand and it is gone, the vote stills)
 /** where the boy stands: his place at the far left in every shot he is seen in; in 15a, the vote's insert where only his sleeve and fist are
  *  seen, he has stepped to the table's left end to bring his fist down (from his place it is out of reach) */
-export const BOY_AT = (id: string): [number, number] => (["12", "13", "14", "15a"].includes(id) ? BOY_TABLE : FIGS.boy);
+export const BOY_AT = (id: string): [number, number] => FIGS.boy;      // (at his place the whole film (the walk is gone: the reviewer's choice 3, his fist into his own palm))
 /** the boy walks from his place to the table's left end while shots 12 and 13 show the sailor alone (18.7-22.0, 3.3 s): neither place is in
  *  those pictures, and he is not drawn in them (the reviewer, 26 Nov: from (-2.3, 0.34) to the table's end in 0.35 s was impossible) */
-export const BOY_TABLE: [number, number] = [-1.65, 1.15], BOY_WALKING = ["8", "9", "10b", "11"];      // (he walks while 8-11 look toward the captain's side (12.1-18.7, 6.6 s): in 12-13 the sailor faces right and every camera on his face saw the boy's way)
+export const BOY_TABLE: [number, number] = [-1.65, 1.15], BOY_WALKING: string[] = [];      // (he walks while 8-11 look toward the captain's side (12.1-18.7, 6.6 s): in 12-13 the sailor faces right and every camera on his face saw the boy's way)
+const BOY_PALM = [25, 15, 85, -50], BOY_HIT = [25, 15, 95, -40];      // (the vote: his left palm before his chest, his right fist down into it)
 const BOY_OUT = [0, 80, 0, 90], BOY_UP = [-10, 100, -10, 140], BOY_FOLD = [15, 18, 80, -55];      // (the boy's arm out to his side before it goes up: the vote raise never crosses his face)
 const SLAP_REF = new Map<string, [[number, number], [number, number]]>();
 const KF_CACHE = new Map<string, [[number, number], [number, number]]>();
@@ -84,7 +85,7 @@ export const VOICES = [
   { id: "n1", who: "narrator", at: -0.05, p: N1 }, { id: "k2", who: "captain", at: 1.99, p: K2 }, { id: "n3", who: "narrator", at: 2.72, p: N3 },
   { id: "d4", who: "crew", at: 12.15, p: D4 }, { id: "n5", who: "narrator", at: 13.35, p: N5 }, { id: "k6", who: "captain", at: 15.4, p: K6 },
   { id: "n7", who: "narrator", at: 16.75, p: N7 }, { id: "w8", who: "boy", at: 22.0, p: W8 },
-  { id: "aye-crew", who: "crew", at: 22.92, p: AYE_C }, { id: "aye-boy", who: "boy", at: 22.97, p: AYE_B }] as const;      // (the vote's "Aye!" [OWN], on the fists' beat)
+  { id: "aye-crew", who: "crew", at: 22.94, p: AYE_C }, { id: "aye-boy", who: "boy", at: 22.99, p: AYE_B }]      // (both within 2 frames of the contact, frame 690) as const;      // (the vote's "Aye!" [OWN], on the fists' beat)
 export const FILM_S = SHOTS[SHOTS.length - 1].t1;
 const SH = Object.fromEntries(SHOTS.map((s) => [s.id, s]));
 
@@ -174,8 +175,8 @@ const captain = (id: string): Who => { const s = SH[id], yaw = headingIn(id, FAC
   ease(m, T(16.7), { ...seat, lean: 20, head: H(-4) }, 0.01, F({ gaze: [-0.6, 0], smile: 0.34, brow: -0.6, lid: 0.1, sweat: 0.5 }));      /* (the proud face from the cut: a smile across 0.3 in the shot broke rule 14) */      // (11 opens as 10b ends: he sits down in this wider shot, not in the close-up (137 px a frame there, motion2))
   ease(m, T(16.75), { ...seat, lean: 4, head: H(-4) }, 0.45, F({ gaze: [-0.6, 0], smile: 0.34, brow: -0.6, lid: 0.1 }));      // (the chest beat, proud)
   ease(m, T(18.2), { ...seat, lean: 2, head: H(-6) }, 0.35, F({ gaze: [-0.4, 0], smile: 0.7, brow: 0.3, lid: 0.45 }));      // (pleased with himself)
-  ease(m, T(23.48), { ...seat, lean: 6, head: H(6) }, 0.01, F({ gaze: [-0.5, 0.5], smile: -0.6, brow: 0.6, sad: 0.8, lid: 0.1 }));
-  easeH(m, T(23.5), { ...seat, lean: 14, py: SIT.py - 0.02, head: H(5) }, 0.7, F({ gaze: [-0.5, 0.7], smile: -0.7, brow: 0.8, sad: 1, lid: 0.2 }));      // (15: his shoulders sink)
+  ease(m, T(23.55), { ...seat, lean: 6, head: H(6) }, 0.01, F({ gaze: [-0.5, 0.5], smile: -0.6, brow: 0.6, sad: 0.8, lid: 0.1 }));
+  easeH(m, T(23.57), { ...seat, lean: 14, py: SIT.py - 0.02, head: H(5) }, 0.68, F({ gaze: [-0.5, 0.7], smile: -0.7, brow: 0.8, sad: 1, lid: 0.2 }));      // (15: his shoulders sink)
   const mouth = id === "2" ? mouthOf(["k2"], s.t0, s.t1) : id === "9" ? mouthOf(["k6"], 15.38, s.t1) : id === "10b" ? mouthOf(["k6"], s.t0, s.t1) : null;      // (9: "That" before the cut, the voice from 15.38)
   const at = POS("captain", id);
   const hook = (t: number, p: Pose, heading: number): Pose => { const g = t, sk = solve(D.props("sir"), p, heading), pelX = (sk.j.pelvis as unknown as number[])[0];
@@ -293,6 +294,7 @@ const crew = (id: string): Who => { const s = SH[id], yaw = headingIn(id, FACING
   ease(m, T(21.1), { lean: 2, head: H(5) }, 0.15, F({ gaze: [0.6, 0], smile: 0.7, brow: 0.5, lid: 0.2 }));
   easeH(m, T(21.3), { lean: 0, head: H(0) }, 0.7, F({ gaze: [0.6, -0.2], smile: 0.8, brow: 0.7, lid: 0.15 }));      //  the chin up)
   ease(m, T(22.0), { lean: 0, head: H(-4) }, 0.01, F({ gaze: [-0.4, 0], smile: 0.8, brow: 0.6, lid: 0.1 }));      // (14: his hand up)
+  ease(m, T(22.78), { lean: 2, head: H(0) }, 0.01, F({ gaze: [0.4, 0.3], smile: 0.8, brow: -0.6, lid: 0.1, mouth: 0.24 }));      // (15a: the fist on the book, "Aye!": the mouth open from the cut, never across the lip's switch, rule 14)
   const talk = id === "8" ? mouthOf(["d4"], s.t0, s.t1) : id === "15a" || id === "15b" ? mouthOf(["aye-crew"], s.t0, s.t1) : null;
   const chewing = id === "4" ? (T0: number) => chew(T0, 4.95, 5.9) : id === "7" ? (T0: number) => chew(T0, 10.7, 11.5) : null;
   const at: [number, number] = POS("crew", id);
@@ -400,16 +402,15 @@ const boy = (id: string): Who => { const s = SH[id], yaw = headingIn(id, FACING.
   const hook = (t: number, p: Pose, heading: number): Pose => { const g = t, sk = solve(D.props("sir"), p, heading); void sk;
     let q: Pose = { ...p, armL: AKIMBO, armR: AKIMBO, twist: 0 };
     if (g >= 11.05 && g < 11.9) { const u = span(g, 11.1, 11.35) * (1 - span(g, 11.55, 11.85)); q = { ...q, armR: [[lerp(20, 70, u), lerp(25, 8, u)], [lerp(60, 90, u), 0]] } as Pose; }      // (7: his hand out for the pudding, back as it swings away)
-    if (g >= VOTE.lift0) { const fr = Math.round((t - s.t0) * FM.FPS), { aH, P } = fistOnTable(id, fr, BOY_AT(id), HEIGHTS.boy, sk, q, heading, "R", VOTE.boy), UPP: [Seg2, Seg2] = [[BOY_UP[0], BOY_UP[1]], [BOY_UP[2], BOY_UP[3]]];      // (15: from his raised hand down onto the table on the beat)
-      if (g >= VOTE.hit + 0.0 - 0.005) TARGETS[`${id}:${fr}:boy:R`] = { on: "table", w: P };
-      const v = span(g, VOTE.lift0 + 0.05, VOTE.hit - 0.005); q = { ...q, armR: [[lerp(UPP[0][0], aH[0][0], v), lerp(UPP[0][1], aH[0][1], v)], [lerp(UPP[1][0], aH[1][0], v), lerp(UPP[1][1], aH[1][1], v)]], handR: 0 } as Pose; }
+    if (g >= VOTE.lift0) { const UPP: [Seg2, Seg2] = [[BOY_UP[0], BOY_UP[1]], [BOY_UP[2], BOY_UP[3]]], PALM: [Seg2, Seg2] = [[BOY_PALM[0], BOY_PALM[1]], [BOY_PALM[2], BOY_PALM[3]]], HIT: [Seg2, Seg2] = [[BOY_HIT[0], BOY_HIT[1]], [BOY_HIT[2], BOY_HIT[3]]];      // (15a: his left palm up before his chest, his right fist from up by his ear down into it on the beat: out of the table's reach from his place, the reviewer's choice 3)
+      const v = span(g, VOTE.lift0 + 0.05, VOTE.hit - 0.005), w = span(g, VOTE.lift0, VOTE.lift0 + 0.12); q = { ...q, armL: [[lerp(AKIMBO[0][0], PALM[0][0], w), lerp(AKIMBO[0][1], PALM[0][1], w)], [lerp(AKIMBO[1][0], PALM[1][0], w), lerp(AKIMBO[1][1], PALM[1][1], w)]], handL: 0, armR: [[lerp(UPP[0][0], HIT[0][0], v), lerp(UPP[0][1], HIT[0][1], v)], [lerp(UPP[1][0], HIT[1][0], v), lerp(UPP[1][1], HIT[1][1], v)]], handR: 0 } as Pose; }
     else if (g >= 21.0 && g < 23.2) { const u = span(g, 21.0, 22.35);      /* (slower: 0.2-0.3 s jumped 60-130 px, motion2) */      // (his right hand up by his ear, palm to the lens; down again in 15)
       const o = span(g, 21.0, 21.5), w = span(g, 21.4, 22.35), x1 = BOY_OUT;      /* (out to his side first, then up by his ear: straight there the hand crossed his face, test 6 frame 652) */
       q = { ...q, armR: [[lerp(lerp(20, x1[0], o), BOY_UP[0], w), lerp(lerp(25, x1[1], o), BOY_UP[1], w)], [lerp(lerp(60, x1[2], o), BOY_UP[2], w), lerp(lerp(0, x1[3], o), BOY_UP[3], w)]], handR: lerp((p as Pose & { handR?: number }).handR ?? 0, 0, u) } as Pose; }      /* (up beside his head from his side: to the forward raise the hand crossed his mouth in 13, my review) */
     return q; };
   return { name: "boy", at: POS("boy", id), walk: viewOf(id).right, h: HEIGHTS.boy, rimSide: -1, off: s.t0, sun: false, key: 0.4,
     cast: { name: "boy", m, who: "sir", look: BOY, seed: 14, armWipe: false, pose: hook,
-      hands: { L: [[0, "fist"]], R: id === "13" ? [[0, "fist"], [21.0, "open"]] : [[0, (s.t0 >= 22.0 && s.t0 < 22.9) || (s.t0 >= 8.7 && s.t0 < 12.1) ? "open" : "fist"]] },
+      hands: { L: id === "15a" ? [[0, "fist"], [VOTE.lift0, "open"]] : [[0, "fist"]], R: id === "13" ? [[0, "fist"], [21.0, "open"]] : [[0, (s.t0 >= 22.0 && s.t0 < 22.9) || (s.t0 >= 8.7 && s.t0 < 12.1) ? "open" : "fist"]] },
       ...(talk ? { mouth: mouthTrack(s, talk) } : {}) } };
 };
 

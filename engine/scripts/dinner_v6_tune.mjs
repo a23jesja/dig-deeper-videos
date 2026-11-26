@@ -26,7 +26,10 @@ const MAIN = { 1: [["crew", "upper"], ["captain", "upper"]], 2: [["captain", "up
   11: [["captain", "upper"]], 12: [["crew", "upper"]], 13: [["crew", "upper"]], 14: [["boy", "upper"]], "15a": [["crew", "upper"], ["boy", "upper"]], "15b": [["captain", "upper"]] };      /* (15a: an insert of the table, the two fists (the cloud session's two-shot had a face under another from every side)) */      /* (the vote split in two (the cloud session, 26 Nov): with three Knopp heads in one picture a face was always under another) */
 /** the composition (the reviewer, 25 Nov, the style test's standard): the shot's own figures fill 60-90 % of the picture's height, the empty
  *  space over the highest head no larger than a quarter of it; a figure framed from the waist runs on to the picture's foot */
-const FILL_MIN = +(process.env.FILL_MIN ?? 0.6), TOP_MAX = 0.4;      // (the reviewer: the empty space over the heads no larger than the figures)
+const FILL_MIN = +(process.env.FILL_MIN ?? 0.6), TOP_MAX = 0.4;
+/** (the cloud session, 26 Nov: the acting figure head to feet, 60 % seated too; the one exception is the captain's rise and slam, shot 9 (RISE 14.4-15.45 s),
+ *  50 % with the whole move in the picture: the hands inside with a margin, as every shot) */
+const FILL_RISE = { 9: 0.5 };      // (the reviewer: the empty space over the heads no larger than the figures)
 const TOP = 0.488, EXTRA = { 1: [[SPEC.plate[0], SPEC.plate[1], TOP]], 3: [[SPEC.book[0], SPEC.book[1], TOP]], 9: [[-0.7, 1.02, TOP], [-0.78, 1.0, TOP]], "15a": [[-1.22, 0.92, TOP]] };      /* (9: where his fist lands; 15: where the two fists land) */
 /** a figure's drawn outline points in the picture: whole (figBox, the captain's brim wider), from the waist (no legs), the head; "close" (10b) none */
 const boxOf = (pl, nm, how) => { if (how === "close") return []; const f = pl.f, sc = M.scaleOf(f.who), c = jointPx(f, "crown");
@@ -77,7 +80,7 @@ const tryCam = (S, C, at, lens, prev) => { if (!inRoom(C)) return { ok: false, w
   if (M.BOY_WALKING.includes(S.id)) for (const [x, y] of Array.from({ length: 9 }, (_, k) => [SPEC.figs.boy[0] + ((M.BOY_TABLE[0] - SPEC.figs.boy[0]) * k) / 8, SPEC.figs.boy[1] + ((M.BOY_TABLE[1] - SPEC.figs.boy[1]) * k) / 8])) for (const z of [0, 0.5, 1.0, 1.42]) for (const dx of [-0.35, 0, 0.35]) {      /* (his whole way, a corridor of his width and height: no empty floor where he should be walking, the reviewer) */ const v = [0, 1, 2].map((r) => P[r][0] * (x + dx) + P[r][1] * y + P[r][2] * z + P[r][3]); if (v[2] > 0) { const q = [v[0] / v[2], v[1] / v[2]]; if (q[0] > -40 && q[0] < W + 40 && q[1] > -40 && q[1] < H + 40) fail ??= "the boy's places in the picture"; } }
   // (the loop's seam: the last shot to the first is a cut like the others, the cloud session 25 Nov)
   if (S.id === SPEC.shots[SPEC.shots.length - 1].id) { const f = SPEC.shots[0].cam, da = norm(f.at.map((v, k) => v - f.from[0][k])), db = norm(at.map((v, k) => v - C[k])), ang = (Math.acos(Math.min(1, dot(da, db))) * 180) / Math.PI; if (ang < 31) fail ??= `loop cut ${ang.toFixed(0)} deg`; }
-  for (const [k, [y0, y1]] of Object.entries(FILLY)) { const fill = (Math.min(H, y1) - Math.max(0, y0)) / H; if (fill < FILL_MIN) fail ??= `fill ${k.split(":")[1]} ${Math.round(fill * 100)}%`; }
+  for (const [k, [y0, y1]] of Object.entries(FILLY)) { const fill = (Math.min(H, y1) - Math.max(0, y0)) / H; if (fill < (FILL_RISE[S.id] ?? FILL_MIN)) fail ??= `fill ${k.split(":")[1]} ${Math.round(fill * 100)}%`; }
   for (const y0 of Object.values(TOPY)) if (y0 > TOP_MAX * H) fail ??= `empty top ${Math.round((100 * y0) / H)}%`;
   for (const hk of Object.keys(EDGE)) { const xs = HP[hk].map((q) => q[0]), ys = HP[hk].map((q) => q[1]); if (Math.max(...xs) - Math.min(...xs) > 15 || Math.max(...ys) - Math.min(...ys) > 15) fail ??= `a sliver's moving hand at the edge (${hk})`; }
   for (const p of EXTRA[S.id] ?? []) { const v = [0, 1, 2].map((r) => P[r][0] * p[0] + P[r][1] * p[1] + P[r][2] * p[2] + P[r][3]), q = [v[0] / v[2], v[1] / v[2]]; if (q[0] < 0.05 * W || q[0] > 0.95 * W || q[1] < 0.04 * H || q[1] > 0.96 * H) fitBad++; }

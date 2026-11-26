@@ -192,7 +192,7 @@ for (const S of SHOTS) {
         else if (false) { const fr8 = hit / inF.length, st = fr8 <= 0.1 ? "seen" : fr8 >= 0.98 ? "hidden" : "part";      /* (a background figure: his whole head with its hair and ears seen (10 % or less hidden) or none of it (98 % or more), one state through the shot: the reviewer, 26 Nov) */
           if (st === "part") faults.push(`8 ${S.id} frame ${fr}: the ${far.name}'s head ${Math.round(fr8 * 100)} % behind the ${near.name} (neither clearly seen nor wholly hidden)`); else { (STATE8[`${S.id} ${far.name}`] ??= new Set()).add(st); if (st === "hidden") NOTE8[`${S.id} ${far.name}`] = true; } } } }
     // 7 nobody missing: a figure of the room that is not drawn in a shot must be wholly out of its picture (his head and feet projected)
-    if (fr === 0) for (const nm of ["captain", "crew", "boy"]) { if (whos.some((w) => w.name === nm)) continue; const at = M.FIGS[nm], hh = nm === "boy" ? 1.5 : 1.75;
+    if (fr === 0) for (const nm of ["captain", "crew", "boy"]) { if (whos.some((w) => w.name === nm)) continue; const at = M.POS(nm, S.id), hh = nm === "boy" ? 1.5 : 1.75;
       for (const [dx, z] of [[0, 0], [0, hh * 0.5], [0, hh], [-0.35, hh * 0.6], [0.35, hh * 0.6], [-0.3, 0.3], [0.3, 0.3]]) { const q = project(S.id, 0, [at[0] + dx, at[1], z]); if (q[2] > 0 && q[0] > -20 && q[0] < FM.W + 20 && q[1] > -20 && q[1] < FM.H + 20) { faults.push(`7 ${S.id}: the ${nm} stands in the picture but is not drawn`); break; } } }
     // 6 the words
     const c = captionAt(T); if (c) { const b = [...c.box]; if (plant === "capLow") { b[1] += 300; b[3] += 300; }

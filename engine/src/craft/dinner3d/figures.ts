@@ -32,10 +32,10 @@ const fistOnTable = (id: string, fr: number, at: [number, number], h: number, sk
 const SV_OUT = [0, 70, 0, 90], SV_UP = [-10, 95, -10, 125];      // (the sailor's vote: out to his side, then up beside his cheek. Higher, the rig draws his head over the hand and it is gone, the vote stills)
 /** where the boy stands: his place at the far left in every shot he is seen in; in 15a, the vote's insert where only his sleeve and fist are
  *  seen, he has stepped to the table's left end to bring his fist down (from his place it is out of reach) */
-export const BOY_AT = (id: string): [number, number] => (id === "14" || id === "15a" ? BOY_TABLE : FIGS.boy);
+export const BOY_AT = (id: string): [number, number] => (["12", "13", "14", "15a"].includes(id) ? BOY_TABLE : FIGS.boy);
 /** the boy walks from his place to the table's left end while shots 12 and 13 show the sailor alone (18.7-22.0, 3.3 s): neither place is in
  *  those pictures, and he is not drawn in them (the reviewer, 26 Nov: from (-2.3, 0.34) to the table's end in 0.35 s was impossible) */
-export const BOY_TABLE: [number, number] = [-1.65, 1.15], BOY_WALKING = ["12", "13"];
+export const BOY_TABLE: [number, number] = [-1.65, 1.15], BOY_WALKING = ["8", "9", "10b", "11"];      // (he walks while 8-11 look toward the captain's side (12.1-18.7, 6.6 s): in 12-13 the sailor faces right and every camera on his face saw the boy's way)
 const BOY_OUT = [0, 80, 0, 90], BOY_UP = [-10, 100, -10, 140], BOY_FOLD = [15, 18, 80, -55];      // (the boy's arm out to his side before it goes up: the vote raise never crosses his face)
 const SLAP_REF = new Map<string, [[number, number], [number, number]]>();
 const KF_CACHE = new Map<string, [[number, number], [number, number]]>();
@@ -67,6 +67,11 @@ const lerp3 = (a: P3, b: P3, u: number): P3 => [lerp(a[0], b[0], u), lerp(a[1], 
 const span = (t: number, a: number, b: number) => smooth((t - a) / (b - a));
 export const CREW: Look = SAILOR_LOOK;
 const FIGS = SPEC.figs as unknown as Record<string, [number, number]>;
+/** the cheat per shot (the cloud session, 26 Nov: placing cheated per shot, as in film): a figure's place moved in one shot, out of the
+ *  picture or away from another's face; shots.json "cheat": { name: [dx, dy] } (the captain's chest moves with him in Blender) */
+export const POS = (nm: string, id: string): [number, number] => { const c = ((SPEC.shots as unknown as { id: string; cheat?: Record<string, [number, number]> }[]).find((s) => s.id === id)?.cheat ?? {})[nm] ?? [0, 0], b = nm === "boy" ? BOY_AT(id) : FIGS[nm]; return [b[0] + c[0] + (PLANT_CHEAT.id === id && PLANT_CHEAT.nm === nm ? PLANT_CHEAT.d[0] : 0), b[1] + c[1] + (PLANT_CHEAT.id === id && PLANT_CHEAT.nm === nm ? PLANT_CHEAT.d[1] : 0)]; };
+/** cheat_check's planted faults move a figure here (never in a film) */
+export const PLANT_CHEAT: { id: string; nm: string; d: [number, number] } = { id: "", nm: "", d: [0, 0] };
 export { FIGS };
 const FACING = (SPEC as unknown as { facing: Record<string, [number, number]> }).facing;
 export const PLATE: [number, number] = SPEC.plate as [number, number];
@@ -128,7 +133,7 @@ export const onCard = (id: string, fr: number, q: [number, number], at: [number,
 /** the head turned so the face is in the design's three-quarter drawing (|sin| of its turn 0.7), toward the side the body turns */
 const headTo = (yaw: number, nod = 0, tilt = 0): [number, number, number] => [Math.sign(yaw || 1) * 45 - yaw, nod, tilt];
 /** a point in a figure's own floor frame: f metres forward, r to his right, z up, from his floor point */
-const local = (nm: string, f: number, r: number, z: number): P3 => { const [x, y] = FIGS[nm], F = FACING[nm], l = Math.hypot(F[0], F[1]), fx = F[0] / l, fy = F[1] / l;
+const local = (nm: string, f: number, r: number, z: number, base?: [number, number]): P3 => { const [x, y] = base ?? FIGS[nm], F = FACING[nm], l = Math.hypot(F[0], F[1]), fx = F[0] / l, fy = F[1] / l;
   return [x + fx * f + fy * r, y + fy * f - fx * r, z]; };      // (his right: (fy, -fx))
 /** how far each solved hand fell short in the last frame (metres): the checks read it */
 export const MISS: Record<string, number> = {};
@@ -172,7 +177,7 @@ const captain = (id: string): Who => { const s = SH[id], yaw = headingIn(id, FAC
   ease(m, T(23.48), { ...seat, lean: 6, head: H(6) }, 0.01, F({ gaze: [-0.5, 0.5], smile: -0.6, brow: 0.6, sad: 0.8, lid: 0.1 }));
   easeH(m, T(23.5), { ...seat, lean: 14, py: SIT.py - 0.02, head: H(5) }, 0.7, F({ gaze: [-0.5, 0.7], smile: -0.7, brow: 0.8, sad: 1, lid: 0.2 }));      // (15: his shoulders sink)
   const mouth = id === "2" ? mouthOf(["k2"], s.t0, s.t1) : id === "9" ? mouthOf(["k6"], 15.38, s.t1) : id === "10b" ? mouthOf(["k6"], s.t0, s.t1) : null;      // (9: "That" before the cut, the voice from 15.38)
-  const at = FIGS.captain;
+  const at = POS("captain", id);
   const hook = (t: number, p: Pose, heading: number): Pose => { const g = t, sk = solve(D.props("sir"), p, heading), pelX = (sk.j.pelvis as unknown as number[])[0];
     let q: Pose = { ...p, twist: 0 };
     // (the seat on the chest's top every frame: the drawn underside of his thighs at the pelvis measured and the pelvis moved so it lies there;
@@ -290,7 +295,7 @@ const crew = (id: string): Who => { const s = SH[id], yaw = headingIn(id, FACING
   ease(m, T(22.0), { lean: 0, head: H(-4) }, 0.01, F({ gaze: [-0.4, 0], smile: 0.8, brow: 0.6, lid: 0.1 }));      // (14: his hand up)
   const talk = id === "8" ? mouthOf(["d4"], s.t0, s.t1) : id === "15a" || id === "15b" ? mouthOf(["aye-crew"], s.t0, s.t1) : null;
   const chewing = id === "4" ? (T0: number) => chew(T0, 4.95, 5.9) : id === "7" ? (T0: number) => chew(T0, 10.7, 11.5) : null;
-  const at: [number, number] = FIGS.crew;
+  const at: [number, number] = POS("crew", id);
   const hook = (t: number, p: Pose, heading: number): Pose => { const g = t, sk = solve(D.props("sir"), p, heading), pelX = (sk.j.pelvis as unknown as number[])[0];
     let q: Pose = { ...p, twist: 0 };
     const fr = Math.round((t - s.t0) * FM.FPS), seen = (w: P3): P3 => { const q = project(id, fr, w); return onCard(id, fr, [q[0], q[1]], at); };
@@ -299,7 +304,7 @@ const crew = (id: string): Who => { const s = SH[id], yaw = headingIn(id, FACING
       let tw: [number, number] = hb === 0 ? T1 : [T1[0] - 0.45 * sk.P.hand * sk.sin, T1[1]], r = armTo(sk, side, tw, hb !== 0);
       for (let it = 0; it < 3; it++) { const qq = { ...q, [`arm${side}`]: r.arm, [`hand${side}`]: hb ?? 90 - r.arm[1][0] } as Pose, sq = solve(D.props("sir"), qq, heading), Wj = sq.j[`wr${side}`] as unknown as number[], Tj = sq.j[`tip${side}`] as unknown as number[];
         const gx = Wj[0] + 0.45 * (Tj[0] - Wj[0]), gy = Wj[1] + 0.45 * (Tj[1] - Wj[1]); tw = [tw[0] + T1[0] - gx, tw[1] + T1[1] - gy]; r = armTo(sk, side, tw, hb !== 0); }      /* (the drawn grip onto its place, as the captain's) */ q = { ...q, [`arm${side}`]: r.arm, [`hand${side}`]: hb ?? 90 - r.arm[1][0] } as Pose; MISS[`crew ${id} ${side}`] = r.miss; return r; };
-    const pudW = (P: P3) => local("crew", P[0], P[1], P[2]);      // (the pudding's middle in the world)
+    const pudW = (P: P3) => local("crew", P[0], P[1], P[2], at);      /* (from his place in this shot, the cheat included) */      // (the pudding's middle in the world)
     const base = (P: P3): P3 => [P[0], P[1], P[2] - 0.9 * PUD_R];      // (on a palm: the grip under its middle)
     // the left hand: shot 1, round the pudding on the plate and lifting it; then on his hip, or the book (3), the point (6), up by his ear (14)
     const h0L = ((p as Pose & { handL?: number }).handL ?? 0), h0R = ((p as Pose & { handR?: number }).handR ?? 0);      /* (the hands' own rest bend: lerped to and from it, a set value jumped the fingertips, motion2) */
@@ -402,7 +407,7 @@ const boy = (id: string): Who => { const s = SH[id], yaw = headingIn(id, FACING.
       const o = span(g, 21.0, 21.5), w = span(g, 21.4, 22.35), x1 = BOY_OUT;      /* (out to his side first, then up by his ear: straight there the hand crossed his face, test 6 frame 652) */
       q = { ...q, armR: [[lerp(lerp(20, x1[0], o), BOY_UP[0], w), lerp(lerp(25, x1[1], o), BOY_UP[1], w)], [lerp(lerp(60, x1[2], o), BOY_UP[2], w), lerp(lerp(0, x1[3], o), BOY_UP[3], w)]], handR: lerp((p as Pose & { handR?: number }).handR ?? 0, 0, u) } as Pose; }      /* (up beside his head from his side: to the forward raise the hand crossed his mouth in 13, my review) */
     return q; };
-  return { name: "boy", at: BOY_AT(id), walk: viewOf(id).right, h: HEIGHTS.boy, rimSide: -1, off: s.t0, sun: false, key: 0.4,
+  return { name: "boy", at: POS("boy", id), walk: viewOf(id).right, h: HEIGHTS.boy, rimSide: -1, off: s.t0, sun: false, key: 0.4,
     cast: { name: "boy", m, who: "sir", look: BOY, seed: 14, armWipe: false, pose: hook,
       hands: { L: [[0, "fist"]], R: id === "13" ? [[0, "fist"], [21.0, "open"]] : [[0, (s.t0 >= 22.0 && s.t0 < 22.9) || (s.t0 >= 8.7 && s.t0 < 12.1) ? "open" : "fist"]] },
       ...(talk ? { mouth: mouthTrack(s, talk) } : {}) } };
@@ -455,7 +460,7 @@ const DRAWN_HELD = ((DRAWN as unknown as { heldHands?: { who: string; at: P2; ri
 
 /** who is in each shot: everyone the shot's camera sees (any of his head, middle, sides or feet in the picture) */
 const BUILD: Record<string, (id: string) => Who> = { captain, crew, boy };
-export const inPicture = (id: string, nm: string) => { if (nm === "boy" && BOY_WALKING.includes(id)) return false; const at = nm === "boy" ? BOY_AT(id) : FIGS[nm], hh = HEIGHTS[nm] ?? 1.75;
+export const inPicture = (id: string, nm: string) => { if (nm === "boy" && BOY_WALKING.includes(id)) return false; const at = POS(nm, id), hh = HEIGHTS[nm] ?? 1.75;
   return [[0, 0], [0, hh * 0.5], [0, hh], [0, hh * 0.65], [0, hh * 0.8], [-0.45, hh * 0.75], [0.45, hh * 0.75], [-0.35, hh * 0.6], [0.35, hh * 0.6], [-0.3, 0.3], [0.3, 0.3]].some(      /* (the head's middle too: in a close-up nothing else of him is in the picture) */([dx, z]) => { const q = project(id, 0, [at[0] + dx, at[1], z]); return q[2] > 0 && q[0] > -20 && q[0] < FM.W + 20 && q[1] > -20 && q[1] < FM.H + 20; }); };
 export const WHO: Record<string, () => Who[]> = Object.fromEntries(SHOTS.map((S) => [S.id, () => ["boy", "crew", "captain"].filter((nm) => inPicture(S.id, nm)).map((nm) => BUILD[nm](S.id))]));
 export const EXTRAS: Record<string, Record<string, Extra>> = Object.fromEntries(SHOTS.map((S) => [S.id, { crew: crewExtra(S.id) }]));

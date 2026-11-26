@@ -176,6 +176,7 @@ if CH:
                                             "sea chest band L": (-0.2, -0.17, -0.2, 0.2, 0.0, top + 0.002, IRON), "sea chest band R": (0.17, 0.2, -0.2, 0.2, 0.0, top + 0.002, IRON)}.items():
         o = box(nm, "seat", x0, x1, y0, y1, z0, z1, m_); o.parent = chest
     chest.location = (CH[0], CH[1], 0); chest.rotation_euler = (0, 0, math.radians(CH[3]))
+    SEAT_HOME = chest.location.copy()      # (the cheat per shot moves it with the captain: shots.json "cheat")
 MP = SPEC["map"]; plane("treasure map", "map", MP["at"], MP["w"], MP["d"], MP["rot"], flat_img("map", os.path.join(T, "map.png"), rough=0.9, glow=0.0), z=0.002)      # (a little light of its own: the red X read pale in the boot's shade, v31)
 
 # ------------------------------------------------------------------ the light ------------------------------------------------------------------
@@ -236,6 +237,7 @@ def pose_shot(shot, t):
     STOOL.location = Vector((0.25, 5.0, 0)) if "stool" in shot.get("hide", []) else STOOL_HOME.copy()
     fr = int(math.floor(t * FPS + 0.5)); P = {}
     STOOL.location = Vector((0.25, 5.0, 0))      # (v6: the captain sits on the sea chest; the stool is out of the room)
+    if CH: cc = shot.get("cheat", {}).get("captain", [0, 0]); chest.location = SEAT_HOME + Vector((cc[0], cc[1], 0))      # (the captain's chest goes where he is cheated to)
     if "chest" in P:
         q = P["chest"][max(0, min(len(P["chest"]) - 1, fr))]; CHEST.location = Vector(q); CHEST.rotation_euler = (0, 0, 0); CHEST.scale = (0.55, 0.55, 0.55); BO.location.x = q[0]      # (the bounce under it, moving with it)
     else: CHEST.location, CHEST.rotation_euler, CHEST.scale = CHEST_HOME[0].copy(), CHEST_HOME[1].copy(), CHEST_HOME[2].copy()

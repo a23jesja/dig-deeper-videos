@@ -280,8 +280,8 @@ const crew = (id: string): Who => { const s = SH[id], yaw = headingIn(id, FACING
   ease(m, T(2.7), { lean: 2, head: H(0) }, 0.01, F({ gaze: [0.6, 0.1], smile: 0.6, brow: 0.2, lid: 0.15 }));
   ease(m, T(3.6), { lean: 2, head: H(-8) }, 0.25, F({ gaze: [0.3, -0.3], smile: 0.32, brow: 0.5, lid: 0.6 }));      /* (the sniff with his mouth shut: smiling, its corner stuck up over the pudding like a beak, the review) */      // (the sniff, eyes half shut; his lean kept while his hand lies on the book: leaning back it drew 2 cm off it)
   ease(m, T(4.2), { lean: 2, head: H(2, 4) }, 0.2, F({ gaze: [0.6, 0], smile: 0.9, smirk: 0.8, brow: 1, lid: 0.1 }));      // (brows up, a crooked grin)
-  ease(m, T(4.7), { lean: 2, head: H(0) }, 0.01, F({ gaze: [0.6, 0.2], smile: 0.8, brow: 0.5, lid: 0.3, mouth: 0.24 }));      // (4: chewing; the mouth never under 0.22 in this shot)
-  ease(m, T(5.7), { lean: 2, head: H(0) }, 0.45, F({ gaze: [0.3, -0.3], smile: 0.9, smirk: 0.6, brow: 1, lid: 0.15, mouth: 0.24 }));      // (4: eyes up on the pudding as he lifts it, brows up)
+  ease(m, T(4.7), { lean: 2, head: H(0) }, 0.01, F({ gaze: [0.6, 0.2], smile: 0.8, brow: 0.5, lid: 0.25, mouth: 0.24 }));      // (v6b: lid 0.25, not 0.3 at castAt's switch: crossing it at 5.9 s flickered the eye, flicker2 frame 177) (4: chewing; the mouth never under 0.22 in this shot)
+  ease(m, T(5.55), { lean: 2, head: H(0) }, 0.8, F({ gaze: [0.3, -0.3], smile: 0.9, smirk: 0.6, brow: 1, lid: 0.15, mouth: 0.24 }));      // (4: eyes up on the pudding as he lifts it, brows up)
   ease(m, T(6.4), { lean: 2, head: H(0) }, 0.01, F({ gaze: [-0.5, 0.2], smile: 0.6, smirk: 0.4, brow: 0.3, lid: 0.2 }));      // (5: eyeing the boy)
   ease(m, T(8.7), { lean: 12, head: H(-2) }, 0.01, F({ gaze: [0.8, 0], smile: 0.34, smirk: 0.8, brow: -1, lid: 0.25 }));      // (6: leans at the captain, points, mouth shut; set on the cut: eased over it his smile crossed 0.3 in the shot, rule 14)
   ease(m, T(9.8), { lean: 2, head: H(-8) }, 0.8, F({ gaze: [0.4, -0.5], smile: 0.9, brow: 0.8, lid: 0, wide: 0.2, mouth: 0.24 }));      // (7: admiring it high, then chewing)

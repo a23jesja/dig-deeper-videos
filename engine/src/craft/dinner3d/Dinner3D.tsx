@@ -24,6 +24,9 @@ export const CAPS = (() => { const cuts = SHOTS.slice(1).map((s) => s.t0), out =
   const merged: typeof out = []; for (let i = 0; i < out.length; i++) { const c = out[i], n = out[i + 1], wi = WORDS[i], wn = WORDS[i + 1];
     if (n && wn && wn.line === wi.line && c.b - c.a < 0.2) { n.a = c.a; n.text = c.text + " " + n.text; continue; } merged.push(c); }
   for (const c of merged) for (const x of cuts) if (x > c.a + 0.15 && x < c.b && c.b - x < 0.4) c.b = x;
+  // (v6c: a word ending less than 0.2 s before the next begins holds until it: the boy's "FAVOUR?" ended a frame before his "AYE!" and the empty
+  //  frame between them flickered in flicker2, 7000 px, v6c-r2 frame 689)
+  merged.sort((p, q) => p.a - q.a); for (let i = 0; i + 1 < merged.length; i++) { const c = merged[i], n = merged[i + 1], gap = n.a - 0.03 - c.b; if (gap > 0 && gap < 0.2) c.b = n.a - 0.03; }
   return [QUESTION, ...merged]; })();
 /** the band's top per shot (px): the lower third, below faces and the hands at the table */
 /** each shot's caption band (its top, px): the first of these heights (low under the figures, then high over them) where the band, as wide as
@@ -112,7 +115,7 @@ export const paintCaption = (g: CanvasRenderingContext2D, T: number) => { const 
  *  0.25 s, the figures with the plate (the reviewer: scale and move the whole frame, no new plates). In picture pixels about the frame's middle */
 export const camFx = (t: number): { s: number; dx: number; dy: number } => {
   const sm = (u: number) => (u <= 0 ? 0 : u >= 1 ? 1 : u * u * (3 - 2 * u));
-  if (t >= 1.6 && t < 2.7) return { s: 1 + 0.04 * sm((t - 1.9) / 0.5), dx: 0, dy: 0 };
+  if (t >= 1.6 && t < 2.7) return { s: 1 + 0.03 * sm((t - 1.9) / 0.75), dx: 0, dy: 0 };      // (v6c: 3 % over 0.75 s, not 4 % over 0.5: the eyes scaled past flicker2's 40 px at 2.17 s, v6c-r2 frame 65)
   // (the slam: a 3 % push over the eight frames up to the contact frame, held to the cut into 10b.
   //  At most about 11 px a frame at the picture's edge: as a jump of 4 % on the contact frame it changed 67000 px at once, flicker2 on test 2)
   const HIT = 464 / FM.FPS, A = HIT - 8 / FM.FPS;      /* (eight frames: in four, the eyes near the picture's edge flickered, test 7) */

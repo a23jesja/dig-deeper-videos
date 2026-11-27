@@ -105,6 +105,7 @@ def face_tracks(meas):
         tracks[t] = nxt
     return fails, big
 
+START = 0
 def check(path, regions, root=None, fps=30):
     cams, pts, fpts = {}, {}, {}; FACE = {}; PAN = {}
     if root:
@@ -122,7 +123,7 @@ def check(path, regions, root=None, fps=30):
         sh = regions[F].get("shot"); start.setdefault(sh, F)
     seq, idx, rows, fails = [], [], [], []
     first, prev, steps = None, None, []
-    for F, fr in enumerate(fl.frames(path)):
+    for F, fr in enumerate(fl.frames(path), START):      # (--start N: a part of the film rendered from frame N, for a quick check of one place)
         if first is None: first = fr.copy()
         if prev is not None: steps.append(fl.changed(prev, fr))
         prev = fr; seq.append(fr); idx.append(F)
@@ -229,6 +230,7 @@ def main():
     a = sys.argv[1:]; outp = None; root = None
     if "--out" in a: i = a.index("--out"); outp = a[i + 1]; del a[i:i + 2]
     if "--cams" in a: i = a.index("--cams"); root = a[i + 1]; del a[i:i + 2]
+    if "--start" in a: i = a.index("--start"); globals()["START"] = int(a[i + 1]); del a[i:i + 2]
     video = a[0]; regions = {}
     for line in open(a[1], encoding="utf-8"):
         line = line.strip()

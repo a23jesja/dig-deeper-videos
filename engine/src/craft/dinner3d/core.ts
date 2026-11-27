@@ -60,7 +60,7 @@ export type Who = { name: string; cast: Cast; at: [number, number]; walk: [numbe
 /** our own blinks, across the cuts: half, half (the shot's last two frames but one), shut (its last frame and the next shot's first), half,
  *  half; each step held two frames, as the rig's blink. Inside a shot a blink changed an eye by 50-570 px from one frame to the next (flicker2);
  *  across a cut the measure starts again. By film frame of the cut (the next shot's first frame), per figure: about one every 5-6 s */
-export const CUT_BLINKS: Record<string, number[]> = { captain: [81, 192, 363, 561], crew: [48, 261, 469, 615], boy: [141, 501, 660] };      // (only where his face is still: a blink during a nod or a lean flickered, test 9 (the boy at 261, the sailor at 399))
+export const CUT_BLINKS: Record<string, number[]> = { captain: [81, 192, 363], crew: [48, 469, 615], boy: [141, 501, 660] };      // (v6c: the sailor's at 261 and the captain's at 561 left out: across those cuts his head moved and the half lid flickered, flicker2 frames 262 and 559 on v6c-r2)      // (only where his face is still: a blink during a nod or a lean flickered, test 9 (the boy at 261, the sailor at 399))
 export const placeOf = (id: string, fr: number, w: Who) => {
   // (no blinks in this film: the stage's own switch, a cut "0 s away" (motion.ts CUT, BLINK_CUT), so no blink is begun. A blink in these medium
   //  and close shots is 50-570 px of change in an eye from one frame to the next, the frozen flicker measure's fail (v6 test 2: 107 frames);

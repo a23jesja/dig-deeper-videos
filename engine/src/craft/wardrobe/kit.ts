@@ -153,7 +153,11 @@ export const pupilAt = (cx: number, cy: number, s: number, r: FR, avoid?: number
   //  middle it ended on the other side of it from the near pupil, and he looked cross-eyed)
   if (!FACE.pupilClear || !avoid || clear(base)) return base;
   const dx = base.x - avoid[0], dy = base.y - avoid[1], l = Math.hypot(dx, dy) || 1;
-  for (let t = 1; t <= 40; t++) { const q = { x: base.x + (dx / l) * t, y: base.y + (dy / l) * t, pr }; if (((q.x - cx) / (rx - pr * 0.5)) ** 2 + ((q.y - cy - 4 * s) / (ry - pr * 0.6)) ** 2 > 1) break; if (clear(q)) return q; }
+  // (v6c: the step that first clears, then halved down to the least that clears: in whole steps the pupil jumped a step and back as the gaze
+  //  eased past the nose, an eye flickering 43-88 px in flicker2, v6c-r2 shot 4 frames 170-178)
+  const at = (t: number) => ({ x: base.x + (dx / l) * t, y: base.y + (dy / l) * t, pr });
+  for (let t = 1; t <= 40; t++) { const q = at(t); if (((q.x - cx) / (rx - pr * 0.5)) ** 2 + ((q.y - cy - 4 * s) / (ry - pr * 0.6)) ** 2 > 1) break;
+    if (clear(q)) { let lo = t - 1, hi = t; for (let k = 0; k < 10; k++) { const md = (lo + hi) / 2; if (clear(at(md))) hi = md; else lo = md; } return at(hi); } }
   return { x: cx, y: cy - 0.3 * ry, pr }; };
 /** the pupil's place in the eye as drawn (-1..1 each way), kept inside the eye: the gaze's two parts were each taken to the edge, so a gaze
  *  down and to the side ([1, 0.9]) put the pupil outside the oval, clipped away, and both eyes stood empty (the shot types v4 draft, 06).

@@ -13,7 +13,7 @@ BEARD, SLEEVE = np.array([64, 31, 18]), np.array([101, 19, 29])
 a = sys.argv[1:]; vid = a[0]
 opt = lambda k: a[a.index(k) + 1] if k in a else None
 frames = [int(x) for x in opt("--frames").split(",")] if opt("--frames") else None
-outp = opt("--out"); DUMP = opt("--dump"); OPEN = "--raw" not in a; NOTCH = "--plant-notch" in a
+outp = opt("--out"); DUMP = opt("--dump"); OPEN = "--raw" not in a; NOTCH = "--plant-notch" in a; NOTCHM = "--plant-notch-mouth" in a
 R = {}
 for line in open("out/din3d/regions.jsonl", encoding="utf-8"):
     d = json.loads(line)
@@ -61,7 +61,13 @@ for f, im in all_frames():
     zone = Image.new("L", (x1 - x0, y1 - y0), 0); dr = ImageDraw.Draw(zone)
     for b in R[f]: dr.polygon([(q[0] - x0, q[1] - y0) for q in b["poly"]], fill=255, outline=255, width=40)      # (the outline widened by 20 px)
     c = im[y0:y1, x0:x1].astype(np.int16); z = np.asarray(zone) > 0
-    if NOTCH:      # (the planted fault: a 10 x 10 px patch of sleeve red cut into the beard just inside its outline, at its lowest point, the ink there gone)
+    if NOTCHM:      # (the planted fault the reviewer asked for: a 7 x 7 px notch of sleeve red cut into the beard 6 px below the mouth's box (the zone the
+        #  check leaves out), its ink gone: the mouth's exception must not hide a cut beside it)
+        mb = next((b["mouth"] for b in R[f] if b.get("mouth")), None)
+        if mb:
+            jx, jy = int((mb[0] + mb[2]) / 2) - x0, int(mb[3]) + 6 + 3 - y0
+            if 0 <= jy - 3 and jy + 4 < c.shape[0] and 0 <= jx - 3 and jx + 4 < c.shape[1]: c[jy - 3:jy + 4, jx - 3:jx + 4] = SLEEVE
+    if NOTCH and not NOTCHM:      # (the planted fault: a 10 x 10 px patch of sleeve red cut into the beard just inside its outline, at its lowest point, the ink there gone)
         Pb = R[f][0]["poly"]; lx, ly = max(Pb, key=lambda q: q[1]); jx, jy = int(lx) - x0, int(ly) - y0 - 14
         if 0 <= jy - 5 and jy + 5 < c.shape[0] and 0 <= jx - 5 and jx + 5 < c.shape[1]: c[jy - 5:jy + 5, jx - 5:jx + 5] = SLEEVE; c[jy - 9:jy + 9, jx - 9:jx + 9][(c[jy - 9:jy + 9, jx - 9:jx + 9, 0] < 48)] = BEARD
     # (v6c: not inside his mouth: its dark red inside (#5b1f2a) is within TOL of the sleeve's red, and in v6c's film every open mouth in the beard

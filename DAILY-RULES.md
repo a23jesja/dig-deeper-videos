@@ -213,6 +213,13 @@ Fiction about real, named people is avoided or clearly marked as invented, and t
 is fiction. Only Jesper starts Plan B.
 
 ## The review mailbox (Jesper 2026-11-18): the cloud session reviews so Jesper does not have to
+- **No waiting on a silent cloud session (2026-11-27, a whole build day lost waiting 10:00-20:30 for three answers):**
+  if a decision from the cloud session has not arrived within one hour, the reviewer decides by its own written
+  recommendation and the build goes on, as long as no rule is changed, no new paid call is made and nothing is
+  published. The decision is marked "taken without the cloud session" in the STOPP, and the cloud session can still
+  overturn it. A question only Jesper can answer goes to Jesper directly. Every decision is also written to
+  granskning/beslut-fran-molnsessionen.md, so a message that does not arrive is not lost.
+
 The session on the computer and the cloud session talk through git, because the cloud session cannot reach the
 computer.
 - **To ask for a review**, the computer session commits to `main` and pushes:

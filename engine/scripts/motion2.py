@@ -100,7 +100,7 @@ def main():
     for f in faults:
         key = f.split(":")[0].split(" moves ")[0] + f.split(": ")[-1].rsplit(" ", 1)[-1]
         uniq.append(f)
-    L.append(f"{'FAIL' if faults else 'PASS'}: {len(faults)} faults"); L += ["  " + f for f in uniq[:20]]
+    L.append(f"{'FAIL' if faults else 'PASS'}: {len(faults)} faults"); L += ["  " + f for f in uniq[:int(os.environ.get("MOTION_ALL", 20))]]
     txt = "\n".join(L) + "\n"
     if outp: open(outp, "w", encoding="utf-8").write(txt)
     print(txt, end=""); sys.exit(1 if faults else 0)

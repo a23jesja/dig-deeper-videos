@@ -37,6 +37,8 @@ export const BOY_AT = (id: string): [number, number] => FIGS.boy;      // (at hi
 /** the boy walks from his place to the table's left end while shots 12 and 13 show the sailor alone (18.7-22.0, 3.3 s): neither place is in
  *  those pictures, and he is not drawn in them (the reviewer, 26 Nov: from (-2.3, 0.34) to the table's end in 0.35 s was impossible) */
 export const BOY_TABLE: [number, number] = [-1.65, 1.15], BOY_WALKING: string[] = [];      // (he walks while 8-11 look toward the captain's side (12.1-18.7, 6.6 s): in 12-13 the sailor faces right and every camera on his face saw the boy's way)
+/** v6c: the boy's vote in 14: [wind-up from, wind-up done (the punch from), -, the wind-up's upper arm (swing, out) and forearm (swing, out), the point lowered from, to] */
+const BOY_VOTE = [21.85, 22.7, 0, 90, 20, 160, 20, 22.3, 22.85, 22.27, 48, 24, 90, 8];
 const BOY_POINT = [70, 14, 95, -12], BOY_PALM = [25, 15, 85, -50], BOY_HIT = [25, 15, 95, -40], BOY_WIND = [-80, 20, 200, 0];      // (v6c: the wind-up, his fist up by his ear)      // (the vote: his left palm before his chest, his right fist down into it)
 const BOY_OUT = [0, 80, 0, 90], BOY_UP = [-10, 100, -10, 140], BOY_FOLD = [15, 18, 80, -55], BOY_SIDE7: [Seg2, Seg2] = [[-12, 28], [8, 22]];      // (the boy's arm out to his side before it goes up: the vote raise never crosses his face)
 const SLAP_REF = new Map<string, [[number, number], [number, number]]>();
@@ -190,6 +192,12 @@ export const RISE = { up0: 14.4, hit: 15.45, down0: 16.75, down1: 18.4, lift: 0.
 //  arm lay under his coat and its fist came out beside the waistcoat at the table's edge with no sleeve, the reviewer on frame 463. Turned 5
 //  degrees more to the lens, the rig draws the far arm in front with its whole outline from the shoulder)
 const FLAT9_OFF = true;      // (v6c, the reviewer (b): in 9 his far fist lies along the forearm on the table, not bent down flat over it: bent, it lay over the cuff (55 % seen))
+/** v6c: the captain's right hand on his knee in 1, 2 and 15b (forward, to his right, up; metres); in 2 and 15b on the middle of his thigh, away from the
+ *  table's corner nearer the lens there (dinner_depth: 8 cells, 22 cm nearer than his hand) */
+const KNEE_R = (id: string): [number, number, number] => (id === "1" ? [0.2, 0.1, 0.27] : [0.22, -0.08, 0.29]);
+/** v6c, 11: the captain's left knee point (forward, right, up), the beat down to his chest, back to the knee, up to his shoulder (from, to), and the
+ *  lift's open-elbowed middle pose and where in the lift it lies */
+const CAP11: { k: number[]; tC: number[]; tB: number[]; tU: number[]; mid: number[][]; mAt: number; direct?: boolean; up?: number[][] } = { k: [0.28, -0.18, 0.3], tC: [16.72, 17.35], tB: [17.45, 18.2], tU: [18.9, 19.0], mid: [[25, 40], [100, 30]], mAt: 0.5 };      // (the lift to his shoulder after the beat left out (tU past the shot's end): every pose for it broke rule 16 (the elbow folded past 150 or the upper arm turned in across him) or motion2)
 const CAP_TURN: Record<string, number> = typeof process !== "undefined" && process.env?.CAPTURN ? JSON.parse(process.env.CAPTURN) : { "9": 5 };
 const captain = (id: string): Who => { const s = SH[id], y0 = headingIn(id, FACING.captain), yaw = y0 - Math.sign(y0) * (PLANT.capTurn0 ? 0 : CAP_TURN[id] ?? 0), m = figure("sir", 0, yaw); m.stand(40);
   const T = (x: number) => x - 0.02, H = (nod = 0, tilt = 0) => headTo(yaw, nod, tilt), seat = { ...SIT };
@@ -255,30 +263,35 @@ const captain = (id: string): Who => { const s = SH[id], y0 = headingIn(id, FACI
     const dz = (PLANT.handIn ? -0.04 : 0);
     let hR = CAP_HAND.R;
     let lifted = false;
-    const ox = 0.08 * span(g, 15.0, 15.25) * (1 - span(g, 16.8, 17.2)), back = g > 16.8 && g < 17.2 ? 0.03 * Math.sin(Math.PI * (g - 16.8) / 0.4) : 0;      /* (out over the table and back, both in the air: switched it jumped 8 cm, motion2; slid back on the table it broke rule 4) */
-    if (g >= 15.0 && g < 17.2) { const lift = (g < RISE.hit ? 0.05 * span(g, 15.0, 15.25) * (1 - span(g, 15.25, RISE.hit)) : 0) + back;      /* (down onto the table slowing to it: a hard stop is a jolt in motion2) */      // (fists up off the table and down on it at 15.45)
+    const ox = 0.08 * span(g, typeof process !== "undefined" && process.env?.OX0 ? +process.env.OX0 : 15.0, typeof process !== "undefined" && process.env?.OX1 ? +process.env.OX1 : 15.25) * (1 - span(g, 16.8, 17.2)), back = g > 16.8 && g < 17.2 ? 0.03 * Math.sin(Math.PI * (g - 16.8) / 0.4) : 0;      /* (out over the table and back, both in the air: switched it jumped 8 cm, motion2; slid back on the table it broke rule 4) */
+    if (g >= 15.0 && g < 17.2) { const lift = (g < RISE.hit ? (typeof process !== "undefined" && process.env?.LIFTA ? +process.env.LIFTA : 0.05) * span(g, typeof process !== "undefined" && process.env?.LIFT0 ? +process.env.LIFT0 : 15.0, 15.25) * (1 - span(g, 15.25, RISE.hit)) : 0) + back;      /* (down onto the table slowing to it: a hard stop is a jolt in motion2) */      // (fists up off the table and down on it at 15.45)
       hR = [CAP_HAND.R[0] - ox, CAP_HAND.R[1] - 0.02 * ox / 0.08, CAP_HAND.R[2] + lift * 1.2 + 0.012 * Math.min(1, ox / 0.08 + (g < 16.8 ? 1 : 0))]; lifted = lift > 0.001; }      /* (out over the table, away from his body: lifted 12 cm by his side it went behind him, rule 10 in 9) */      // (his right fist up off the table and down on it at 15.45; a fist stands 1.2 cm higher than a flat hand)      // (a fist stands 1.2 cm higher than a flat hand)
     // (v6c, the cuff decision: in 11 (turned 58 degrees from the lens) his far forearm is drawn over the coat, and by his body the near fist's
     //  beat lay over it, a hand with no sleeve; set further out on the table the forearm reaches past the beat)
-    hR = [hR[0] - (PLANT.capOutD5 && (id === "2" || id === "15b") ? (id === "2" ? 0.04 : 0.03) : CAP_OUT[id] ?? 0), hR[1], hR[2]];
+    const out9 = id === "9" ? 1 - (typeof process !== "undefined" && process.env?.O9K ? +process.env.O9K : 0.115) * span(g, typeof process !== "undefined" && process.env?.O9A ? +process.env.O9A : 14.9, typeof process !== "undefined" && process.env?.O9B ? +process.env.O9B : 15.35) : 1;      // (9: his hand back in toward him as he rises: held out, his arm reached its length and the elbow stopped dead, motion2 frame 59)
+    hR = [hR[0] - (PLANT.capOutD5 && (id === "2" || id === "15b") ? (id === "2" ? 0.04 : 0.03) : (CAP_OUT[id] ?? 0) * out9), hR[1], hR[2]];
     // (15: his hand stays on the table: from shot 2's low camera the plate's top is not seen and the hand on it was drawn 11.5 cm off, rule 4)
     // (v6c, 2 and 15b from the new camera (the hook's cut, rule 15): the table lies between the lens and him and his right hand cannot reach it
     //  on his card (16 cm off, rule 4); it rests on his right knee, as his left does)
-    if ((id === "1" || id === "2" || id === "15b") && !PLANT.capOutD5) { const kr2 = armTo(sk2, "R", skOf(id, at, HEIGHTS.captain, pel2, local("captain", 0.2, 0.1, 0.27))); q = { ...q, armR: kr2.arm, handR: 70 - kr2.arm[1][0] } as Pose; MISS["captain R"] = kr2.miss; }
+    if ((id === "1" || id === "2" || id === "15b") && !PLANT.capOutD5) { const kr2 = armTo(sk2, "R", skOf(id, at, HEIGHTS.captain, pel2, local("captain", ...KNEE_R(id)))); q = { ...q, armR: kr2.arm, handR: 70 - kr2.arm[1][0] } as Pose; MISS["captain R"] = kr2.miss; }
     else put("R", [hR[0], hR[1], hR[2] + dz], !(id === "9" && FLAT9_OFF), lifted ? null : "table");
     // his left hand: on his knee, and from there (blended from the knee's own solved arm, the hand's bend with it: switched from it the arm
     // jumped, motion2 on the v6 test) the fist up by his shoulder at "Hey!", the fist up as he rises and shouts, the beat on his chest
-    const kr = armTo(sk2, "L", skOf(id, at, HEIGHTS.captain, pel2, capKnee())), knee = kr.arm, kh = 70 - knee[1][0]; MISS["captain L"] = kr.miss;
+    // (v6c, motion2 on the v6c-r1 render and rule 16 without armHuman: in 11 the knee's arm lay straight across his body (armHuman bent it, and its
+    //  switch jumped his fist 172 px in a frame at 18.6 s); his left hand on the outside of his left knee there, the lift to his shoulder through an
+    //  open-elbowed middle pose, each move slower)
+    const C11 = typeof process !== "undefined" && process.env?.C11 ? JSON.parse(process.env.C11) : CAP11;
+    const kr = armTo(sk2, "L", skOf(id, at, HEIGHTS.captain, pel2, id === "11" ? local("captain", C11.k[0], C11.k[1], C11.k[2]) : capKnee())), knee = kr.arm, kh = 70 - knee[1][0]; MISS["captain L"] = kr.miss;
     const mixL = (tg: [Seg2, Seg2], u: number, hEnd = 0) => { q = { ...q, armL: [[lerp(knee[0][0], tg[0][0], u), lerp(knee[0][1], tg[0][1], u)], [lerp(knee[1][0], tg[1][0], u), lerp(knee[1][1], tg[1][1], u)]], handL: lerp(kh, hEnd, u) } as Pose; };
     if (g >= 1.4 && g < 2.7) mixL([[30, 66], [150, 46]], span(g, 1.4, 2.55), kh);      /* (the hand's bend kept as the fist goes up: turning it, the fist flickered at his knee, flicker2 frame 54) */      // ("Hey!": the fist out by his shoulder, clear of his beard and mouth)
     else if (g >= 14.7 && g < 16.7) mixL(knee, 0);      // (rising and shouting: the left fist clenched on his knee. Raised, the far arm is drawn over his body in this 3/4 view (the rig's front order) and the fist lay over his beard and mouth as he spoke, the v6 test 2 stills at 15.27-15.40)      // (rising and shouting: the fist stays up to the cut, lowered it went out through 10b's edge)
     else if (g >= 16.7 && g < 18.7) {      // (11: from the fist up (as at the cut) down onto his chest, a beat, back to his knee, then up by his shoulder)
       const lA = (x: [Seg2, Seg2], y: [Seg2, Seg2], u: number): [Seg2, Seg2] => [[lerp(x[0][0], y[0][0], u), lerp(x[0][1], y[0][1], u)], [lerp(x[1][0], y[1][0], u), lerp(x[1][1], y[1][1], u)]];
       const CHEST: [Seg2, Seg2] = [[20, 55], [110, 30]],      /* (v6c, the cuff decision: the beat out from his chest, over his far forearm drawn on the coat no more: at [[20, 10], [110, 0]] it covered it, a far hand with no sleeve, rule 10) */ UP: [Seg2, Seg2] = [[30, 66], [150, 46]], KN = knee as [Seg2, Seg2];      /* (the beat low on his chest, the fist up out by his shoulder as at "Hey!": higher on the chest and raised forward the far arm lay over his beard and mouth, the test 2 stills) */
-      const back = span(g, 17.35, 17.9), upu = span(g, 17.95, 18.65);      /* (the fist up after the others' hands, not with them: all at once the picture changed past flicker2's 2000 px) */
-      const tg = lA(lA(lA(KN, CHEST, span(g, 16.72, 17.3)), KN, back), UP, upu); mixL(tg, Math.max(1 - back, upu)); }      /* (from the knee, as at the cut) */
+      const back = span(g, C11.tB[0], C11.tB[1]), upu = span(g, C11.tU[0], C11.tU[1]), MIDU = C11.mid as [Seg2, Seg2], up2 = (u: number): [Seg2, Seg2] => (u < C11.mAt ? lA(KN, MIDU, u / C11.mAt) : lA(MIDU, UP, (u - C11.mAt) / (1 - C11.mAt)));      /* (the fist up after the others' hands, not with them: all at once the picture changed past flicker2's 2000 px) */
+      const tg = C11.direct ? lA(lA(KN, CHEST, span(g, C11.tC[0], C11.tC[1])), (C11.up ?? UP) as [Seg2, Seg2], upu) : upu > 0 ? up2(upu) : lA(lA(KN, CHEST, span(g, C11.tC[0], C11.tC[1])), KN, back); void back; mixL(tg, 1); }      /* (direct: from the beat on his chest straight up by his shoulder, not back to the knee first) */      /* (from the knee, as at the cut) */
     else mixL(knee, 0);
-    if ((g >= 13.3 && g < 15.62) || (g >= 16.7 && g < 18.7)) { q = armHuman(q, "L", heading); q = armHuman(q, "R", heading); }      // (v6c: the slam and the chest beat passed a folded or a straight arm across his body, rule 16)
+    if ((g >= 13.3 && g < 15.62) || (g >= 16.7 && g < 18.7)) { if (g < 16.7) q = armHuman(q, "L", heading); q = armHuman(q, "R", heading); }      // (v6c: the slam and the chest beat passed a folded or a straight arm across his body, rule 16)
     return q; };
   const fistAt = (t0: number) => (t0 >= 13.3 && t0 < 16.7 ? "fist" : "open");
   return { name: "captain", at, walk: viewOf(id).right, h: HEIGHTS.captain, rimSide: 1, off: s.t0, sun: false,
@@ -315,7 +328,7 @@ const KVOTE: PK = { fk: [[-10, 95], [-10, 125]] }, KMOUTH: PK = { face: "mouth" 
   KNOSE: PK = { face: "nose" }, KHIGH: PK = { fk: [[120, 85], [190, 40]] };
 export const PUD_KF: [number, PK][] = [[1.6, PCH], [3.2, PCH], [3.9, PMID], [4.69, PMID], [4.7, KMOUTH], [6.4, KMOUTH], [6.45, PUP], [9.3, PUP],      /* (4: the pudding kept at his mouth as he chews; it goes down on the cut, out of the picture in 5: coming down, his hand and the pudding flickered, flicker2 frames 157-166) */      /* (4: slower down from his mouth, no lift after: his striped sleeve moving fast flickered in the close shot, flicker2) */      /* (4: after the bite and his chewing, he lifts it to admire it, 5.75-6.2: the sailor's singles get something new every 1-2 s, the reviewer) */
   [9.9, PMID], [11.25, PMID],      /* (v6c, Jesper on v6's arms: 3 the pudding up before his chin (PMID), he eyes it (to his nose his near arm folded past 150 or reached across the boy's face); 7 up before his chin, the bite, back before his chin and down to his chest (high over his head and swung away, his near arm went up over the boy's head and out at him as if offering it): dinner_check 16) */
-  [11.8, PCH], [12.08, PCH], [12.1, PUP], [13.3, PUP], [13.9, PCH],      /* (8: the toast set on the cut, still in the shot: moving, his sleeve flickered) */ [18.9, PCH], [19.5, PUP], [20.2, PCH], [23.1, PCH], [23.3, KAYE], [24.6, KAYE]]      /* (13: no lift (his sleeve flickered); 15a: the pudding up toward his chin with his "Aye!", slow) */      /* (15a: his "Aye!" with the pudding lifted high on his near, seen side: his fist on the book lay behind him from every camera that sees his face) */      /* (13: he lifts it again with the chin up, 20.85-21.85) */      /* (12, the sailor alone: he lifts the pudding to show it and takes it back, 18.9-20.2, more life (the review); the boy is not in that picture) */;
+  [11.8, PCH], [12.08, PCH], [12.1, PUP], [13.3, PUP], [13.9, PCH],      /* (8: the toast set on the cut, still in the shot: moving, his sleeve flickered) */ [18.9, PCH], [19.5, PUP], [20.2, PCH], [22.45, PCH], [23.45, KAYE], [24.6, KAYE]]      /* (13: no lift (his sleeve flickered); 15a: the pudding up toward his chin with his "Aye!", slow) */      /* (15a: his "Aye!" with the pudding lifted high on his near, seen side: his fist on the book lay behind him from every camera that sees his face) */      /* (13: he lifts it again with the chin up, 20.85-21.85) */      /* (12, the sailor alone: he lifts the pudding to show it and takes it back, 18.9-20.2, more life (the review); the boy is not in that picture) */;
 /** the keyframe segment at t: [from, to, its eased weight] (after the last, his chest) */
 export const pudSeg = (t: number): [PK, PK, number, number, number] => { for (let k = 0; k + 1 < PUD_KF.length; k++) { const [a, A] = PUD_KF[k], [b, B] = PUD_KF[k + 1]; if (t >= a && t < b) return [A, B, span(t, a, b), k, k + 1]; } return [PCH, PCH, 0, -1, -1]; };      /* (k: the keyframes' indices; -1 after the toast: his chest) */      /* (after the toast: his chest, solved at 13.3 and 24) */
 /** a place on the drawn head in skeleton units (as the rig draws A's head: about the skull joint, turned with the face, tilted with the head) */
@@ -525,8 +538,12 @@ const boy = (id: string): Who => { const s = SH[id], yaw = headingIn(id, FACING.
     //  690 with his "Aye!" (choice b: a voting hand; the fist into the palm happened inside his chest's outline and did not read)
     const lA3 = (x: [Seg2, Seg2], y: [Seg2, Seg2], k: number): [Seg2, Seg2] => [[lerp(x[0][0], y[0][0], k), lerp(x[0][1], y[0][1], k)], [lerp(x[1][0], y[1][0], k), lerp(x[1][1], y[1][1], k)]];
     const PTL: [Seg2, Seg2] = [[90, 10], [90, 10]] as [Seg2, Seg2], WIND: [Seg2, Seg2] = [[BOY_WIND[0], BOY_WIND[1]], [BOY_WIND[2], BOY_WIND[3]]], UPV: [Seg2, Seg2] = [[170, 40], [175, 40]] as [Seg2, Seg2];
-    if (g >= 21.5 && g < 22.7) { const u = span(g, 21.5, 21.85) * (1 - span(g, 22.55, 22.72)); q = { ...q, armL: lA3(AKIMBO, PTL, u), handL: 0 } as Pose; }
-    if (g >= 22.73) q = { ...q, armR: g < 22.9 ? lA3(AKIMBO, WIND, span(g, 22.73, 22.9)) : lA3(WIND, UPV, span(g, 22.9, VOTE.hit - 0.005)), handR: 0 } as Pose;
+    // (v6c, motion2 on the v6c-r1 render: the wind-up in 5 frames and the punch in 3 moved his fist 100-270 px a frame (at most 40, eased): the
+    //  point lowered over 0.4 s, the wind-up by his ear from his folded arms over 0.4 s, the punch up from there over 0.3 s onto 690)
+    const BV = typeof process !== "undefined" && process.env?.BOYV ? JSON.parse(process.env.BOYV) : BOY_VOTE, WND: [Seg2, Seg2] = [[BV[3], BV[4]], [BV[5], BV[6]]];
+    if (g >= 21.5 && g < BV[8]) { const u = span(g, 21.5, 21.85) * (1 - span(g, BV[7], BV[8])); q = { ...q, armL: lA3(AKIMBO, PTL, u), handL: 0 } as Pose; }
+    const MIDV: [Seg2, Seg2] = [[BV[10], BV[11]], [BV[12], BV[13]]];      // (between his folded arms and his ear, the elbow open: lerped straight across it folded past 150 degrees, rule 16)
+    if (g >= BV[0]) q = { ...q, armR: g < BV[9] ? lA3(AKIMBO, MIDV, span(g, BV[0], BV[9])) : g < BV[1] ? lA3(MIDV, WND, span(g, BV[9], BV[1])) : lA3(WND, UPV, span(g, BV[1], VOTE.hit - 0.005)), handR: 0 } as Pose;
     if (g >= 22.6 && g < 23.1) q = armHuman(q, "R", heading);      // (v6c: the wind-up's lerps folded his arm to 175 degrees, rule 16)
     // (v6c, the review of v6 point 9: shot 5 stood still. He rubs his hands, eager, while the narrator tells of the captain's cabin: both
     //  forearms swinging a little in turn, 2.2 times a second, faded in and out)

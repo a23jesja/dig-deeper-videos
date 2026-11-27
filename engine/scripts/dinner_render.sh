@@ -17,11 +17,11 @@ grep -E "^largest|^FAIL|^PASS" $LOG-flicker2.txt; grep -A40 "^FAIL" $LOG-flicker
 python scripts/seam_check.py "$OUT" --out $LOG-seam.txt > /dev/null 2>&1 || true; sed -n 2,3p $LOG-seam.txt      # (the seam check: beard and sleeve meeting with no ink, the review of v6)
 python - <<'PY'
 import numpy as np, glob, json, os
-S = json.load(open('src/craft/dinner3d/shots.json'))
+S = json.load(open('src/craft/dinner3d/shots.json')); FIGS = json.load(open('out/din3d/root/out/cab3d/figs.json'))
 for s in S['shots']:
     p = f'out/din3d/root/out/cab3d/{s["id"]}/map.npz'
     if not os.path.exists(p): continue
-    z = np.load(p); n = round((s['t1'] - s['t0']) * 30)
-    if z['depth'].shape[0] == 1: np.savez_compressed(p, depth=np.repeat(z['depth'], n, 0), kind=np.repeat(z['kind'], n, 0), kinds=z['kinds'])      # (a held camera: its one map for every frame)
+    z = np.load(p); n = len(FIGS.get(s['id'], [])) or round((s['t1'] - s['t0']) * 30)      # (as many frames as the check's own rows: 15b's 0.75 s is 23 of them, rounded 22, and depth failed it)
+    if z['depth'].shape[0] != n and s.get('static', True): np.savez_compressed(p, depth=np.repeat(z['depth'][:1], n, 0), kind=np.repeat(z['kind'][:1], n, 0), kinds=z['kinds'])      # (a held camera: its one map for every frame)
 PY
 (cd out/din3d/root && python ../../../scripts/dinner_depth.py > ../$(basename $LOG)-depth.txt 2>&1 || true; python ../../../scripts/dinner_depth.py --plant > ../$(basename $LOG)-depth-plant.txt 2>&1 || true; python ../../../scripts/dinner_depth.py --plant-arm > ../$(basename $LOG)-depth-plant-arm.txt 2>&1 || true); tail -1 out/din3d/$(basename $LOG)-depth.txt; tail -1 out/din3d/$(basename $LOG)-depth-plant.txt; tail -1 out/din3d/$(basename $LOG)-depth-plant-arm.txt

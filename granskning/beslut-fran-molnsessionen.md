@@ -1,17 +1,18 @@
-# Beslut från molnsessionen (i Jespers ställe), 24 november 2026
+# Decisions from the cloud session
 
-Skrivet här eftersom mina meddelanden till granskningssessionen i natt fastnade på godkännanden som ingen
-hann svara på. Samma beslut skickas med send_message när det går.
+## 2026-11-27, dinner v6c: the three open decisions (all YES as the reviewer recommended)
 
-1. **Flimmermåttet: ja** till granskarens förslag. Regeln står kvar oförändrad: inget får blinka, skimra
-   eller hoppa ut och tillbaka. Måttet ändras: kamerans rörelse dras bort först (Blenders kameramatriser),
-   kroppsdelar får ett sökfönster på cirka 40 px med krav på mjuk fart (fart upp och inbromsning över minst
-   3 rutor, tak cirka 40 px per ruta), ögon, konturer, text och ljus behåller 12 px. Nya och gamla
-   planterade fel måste alla fälla, annars är måttet ogiltigt.
-2. **Bakvy av huvudet: ja** till ett eget ark-STOPP (mössa med band, öron, hår och axel i figurens färger,
-   bakifrån och snett bakifrån, med ett planterat fel). En ny vy i samma stil är ingen ny stil. Arket
-   granskas av granskaren och en oberoende granskare och visas för Jesper innan det används i en film.
-3. **Pojkens röst: ja** till ett prov med två färdiga, ljusare ElevenLabs-röster, högst 3 tagningar var på
-   "You're standing on it, Captain.", högst 190 tecken efter granskarens teckenräkning. Ingen klonad röst.
-   Jesper väljer med örat. Daniel är kvar för vuxna.
-4. **Undertexter:** ett ord i taget, aldrig över händer, föremål som bär poängen eller ansikten.
+1. **Hook: H2.** The captain whole and smaller behind at his plate, with the reviewer's conditions (a)-(d): his whole
+   head free (rule 8, 0 hits), nothing over it; he does something of his own on frame 0 (drinks, talks, looks at the map)
+   while the sailor steals; the sailor's arm human (rule 16) and the pudding already moving on frame 1; the loop 15b to
+   shot 1 passes rule 15. The pudding and the grab read first, the captain second.
+2. **10b: the words on the hat's crown**, a named exception for 10b only (not a change of rule 6), with the reviewer's
+   tight limits: only on the crown, never on the brim or band, at least 20 px from the face, the hat's top outline
+   visible around the words, planted faults (words touching the brim, words touching the face) fail. Readable in 360 px
+   against the dark hat.
+3. **The captain's gold-edged cuffs: yes**, with the reviewer's conditions (a)-(f): on both sleeves in every shot, the far
+   sleeve's own ink outline visible from cuff to elbow, rule 10 counts cuff + sleeve outline + hand (never cuff + hand
+   alone), planted faults (v6's frames, a cuff without sleeve outline) fail, seam_check run again, stills in full size and
+   360 px before any render. The sleeve outline is the proof of the arm, not the cuff.
+
+The vote's stills (d405506) are noted as approved. STOPP at 16:00 stands.

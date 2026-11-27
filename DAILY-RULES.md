@@ -253,6 +253,15 @@ figures nobody else uses. Until he has picked a design, no new video is built wi
 - **Process:** six clearly different directions for Sir Digsworth as one sheet (front, side, one action pose,
   next to one side character). Jesper picks one or mixes. Then the four views, then the craft kit continues.
 
+## Deadline Sunday 29 Nov (Jesper 2026-11-27)
+"Om detta inte fungerar tills söndag så kommer ja eventuellt besluta att gå tillbaka till EMU grafiken som användes
+då med den gick den o publicera en short om dagen." Working means: the dinner approved and with Jesper to publish,
+and the next Short (Roberts' bedtime) building on a plan that reaches about one Short a day. If not, Jesper may
+choose the Emu look again (commit 05fab8d, `engine/src/videos/emu`, toon.ts), see the next section. The six scripts in
+granskning/manus-batch-1/manus-v4.md work in either look. Trade-off to weigh on Sunday: the Emu figures are the
+round-head, stick-limb kind Jesper set aside on 18 Nov as too like other channels; they were fast because they had no
+sleeves, beards or layered clothes and were mostly seen in wider shots.
+
 ## The look: the emu Short (locked by Jesper 2026-11-16)
 After trying 3D dolls, flat 2D and Flow figure sheets, Jesper chose the look of the first approved Short,
 "Australia Lost a War to Emus (1932)" (commit 05fab8d, `engine/src/videos/emu`). Do not change it again without

@@ -1,0 +1,43 @@
+diff --git a/engine/src/craft/wardrobe/kit.ts b/engine/src/craft/wardrobe/kit.ts
+index 6c8b6e9..0eb1679 100644
+--- a/engine/src/craft/wardrobe/kit.ts
++++ b/engine/src/craft/wardrobe/kit.ts
+@@ -253,8 +253,12 @@ const beardOverlay = (k: Ink, sk: Sk, r: FR, B: Body, P: Props, over: Side[], ar
+   k.at(sk.j.skull[0], sk.j.skull[1], sk.headTilt, view !== "front" && flip, () => { const bp = beardPts(view); fl(k, bp, kit.col.beard);
+     k.clip(bp, () => { for (const [a, b, c] of BEARD_STRANDS[view]) k.line(spline([a, b, c], false, 8), 5, kit.col.beardHi ?? "#7a5638"); });
+     kitMouthDraw(k, view, r, sn * 34); });      /* (the mouth over the beard, under a hand that passes it) */
+-  if (arm) for (const sd of over) { const E = J(sk, "el", sd), W = J(sk, "wr", sd), T = J(sk, "tip", sd), hc: P2 = [(W[0] + T[0]) / 2, (W[1] + T[1]) / 2];
+-    const g = k.g; g.save(); g.beginPath(); k.trace(seg(E, W, B.arm[1] + 30, B.arm[2] + 30, 0, 0.3, true)); k.trace(ellPts(hc[0], hc[1], P.hand * 1.6, P.hand * 1.6, 0, 0, 360, 24)); k.trace(ellPts(E[0], E[1], B.arm[1] + 30, B.arm[1] + 30, 0, 0, 360, 16)); g.clip("nonzero"); arm(sd); g.restore(); }
++  // (v6c, the independent review of v6: the arm drawn again through a capsule 30 wider than the forearm and a circle at the elbow cut the
++  //  upper arm's red sleeve into the beard with no ink, notches in shot 11 (515-560), and covered the beard's ink against the coat (frames 0,
++  //  50); seam_check. Now only the forearm and the hand are drawn again, as a shape of their own with its whole ink outline, and only over the
++  //  beard (its outline grown by its ink): outside it nothing changes, and where the forearm passes before the beard its edge is inked)
++  if (arm) { const bo = beardOutline(sk), cx = bo.reduce((a, q) => a + q[0] / bo.length, 0), cy = bo.reduce((a, q) => a + q[1] / bo.length, 0), zone = bo.map(([x, y]) => { const dx = x - cx, dy = y - cy, l = Math.hypot(dx, dy) || 1; return [x + (dx / l) * 8, y + (dy / l) * 8] as P2; });
++    for (const sd of over) k.clip(zone, () => arm(sd)); }
+  };
+ /** two or three lighter strands in the beard, so it is not a flat dark hole in a close shot (the reviewer, cosmetic) */
+ const BEARD_STRANDS: Record<string, [P2, P2, P2][]> = { q: [[[-90, -40], [-80, 0], [-50, 26]], [[70, -10], [60, 20], [30, 40]], [[-20, 10], [-14, 30], [-4, 44]]],
+@@ -318,6 +322,10 @@ const drawFlat = (c: FlatSpec) => (k: Ink, sk: Sk, o: FigOpts) => {
+     //  follows the leg as he sits, on his lap and never through the stool under it)
+     if (kit?.top === "coat") { const h = J(sk, "hip", s), kn = J(sk, "kn", s), e = mid(h, kn, 0.8); k.group([seg(mid(h, kn, -0.1), e, B.leg[0] + 16, B.leg[1] + 22, 0, 0.3, true)], C.coat); }
+   };
++  /** the forearm (its cuff and its sleeve's lower piece, with its own ink) and the hand: what beardOverlay draws again over the beard */
++  const foreArm = (s: Side) => { const S = J(sk, "sh", s), E = J(sk, "el", s), W = J(sk, "wr", s), kind = (s === "L" ? o.handL : o.handR) ?? "relaxed";
++    if (!other) k.group([seg(mid(E, W, 0.8), mid(E, W, 1.04), B.arm[2] * 0.92, B.arm[2] * 0.92, 0, 0.3, true)], C.shirt);
++    k.group([limb(S, E, W, B.arm)[1]], other ? C.dress : c.noCoat ? C.shirt : C.coat); handAt(k, sk, s, kind, C.skin); };
+   const arm = (s: Side) => {
+     const S = J(sk, "sh", s), E = J(sk, "el", s), W = J(sk, "wr", s), kind = (s === "L" ? o.handL : o.handR) ?? "relaxed";
+     if (!other) k.group([seg(mid(E, W, 0.8), mid(E, W, 1.04), B.arm[2] * 0.92, B.arm[2] * 0.92, 0, 0.3, true)], C.shirt);
+@@ -480,10 +488,10 @@ const drawFlat = (c: FlatSpec) => (k: Ink, sk: Sk, o: FigOpts) => {
+     const HC = Math.max(Math.hypot(hc[0] - W2[0], hc[1] - W2[1]), P.hand * 0.6) + 12, circ: P2[] = Array.from({ length: 24 }, (_, i) => [hc[0] + HC * Math.cos((i * Math.PI) / 12), hc[1] + HC * Math.sin((i * Math.PI) / 12)] as P2);
+     if (u > 0 && u < 1) { const S2 = J(sk, "sh", far), E2 = J(sk, "el", far), cutLine = () => k.clip(torsoPoly, () => { for (const piece of limb(S2, E2, W2, B.arm)) k.clip(piece, () => k.line([[line, -B9], [line, B9]], k.ol)); });
+       if (!FACE.cuffSwap) outside(cutLine); else without(behindPts, () => without(circ, cutLine)); }
+-    arm(near); beardOverlay(k, sk, r, B, P, [near], arm); return;
++    arm(near); beardOverlay(k, sk, r, B, P, [near], foreArm); return;
+   }
+   layers(sk, { arm, leg, torso, head });
+-  beardOverlay(k, sk, r, B, P, Math.abs(sk.sin) > 0.5 ? [sk.near] : [sk.far, sk.near], arm);
++  beardOverlay(k, sk, r, B, P, Math.abs(sk.sin) > 0.5 ? [sk.near] : [sk.far, sk.near], foreArm);
+ };
+ /** where the far arm comes out from behind the body in a turn (|sin| of the facing); [0, 0] switches it in one frame at 0.5 (the v4 order,
+  *  the bytes check's planted fault) */

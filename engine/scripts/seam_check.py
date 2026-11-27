@@ -21,6 +21,11 @@ for line in open("out/din3d/regions.jsonl", encoding="utf-8"):
 
 
 def all_frames():
+    if vid.startswith("png:"):      # (png:<prefix>: stills named <prefix>NNNN.png, NNNN the film frame, for a check before a render)
+        import glob, re
+        for fn in sorted(glob.glob(vid[4:] + "*.png")):
+            yield int(re.search(r"(\d+)\.png$", fn).group(1)), np.asarray(Image.open(fn).convert("RGB"))
+        return
     p = subprocess.Popen(["ffmpeg", "-v", "error", "-nostdin", "-i", vid, "-f", "rawvideo", "-pix_fmt", "rgb24", "-"], stdout=subprocess.PIPE)
     n = 0
     while True:

@@ -22,6 +22,7 @@
 //  16  arms move like human arms: the elbow bent at most 150 degrees; a forearm or hand past the torso's midline only with its elbow seen and
 //      bent; the upper arm in toward the body's middle at most 30 degrees (Jesper on v6 shot 4 and 11-13 s; see the rule below)
 //  17  no crossing stripes on a striped sleeve (the review of v6, point 4)
+//  18  no lid's line across a pupil (the review of v6, point 9)
 //  12  the head's drawing does not change inside a shot: the face's turn never crosses 15-28 or 50-60 degrees within a shot, where the
 //      head and the tricorn change drawing (the sheet's review: the hat's shape jumps there)
 // Planted faults (each must fail, and on its own rule: the run exits 1 only when that rule fired): --plant seatHigh (the seat 5 cm over the
@@ -32,17 +33,17 @@
 // down in the head's frame, 11), turnCross (the crewman's face turning 0 to 40 degrees more through his first shot, 12).
 //   node scripts/dinner_check.mjs [--plant seatHigh|pudOff|handIn|float|capLow|missing|faceHide|mouthHand|oneArm|mouthOut|turnCross]
 import * as esbuild from "esbuild"; import fs from "node:fs"; import path from "node:path"; import { pathToFileURL } from "node:url";
-const NOTE6 = {}, NOTE8 = {}, STATE8 = {};
+const NOTE6 = {}, NOTE8 = {}, STATE8 = {}, NOTE18 = {};
 /** the shots' own figures (as the tuner's MAIN): their faces never hidden at all */
 const OWN8 = { 1: ["crew", "captain"], 2: ["captain"], 3: ["crew"], 4: ["crew"], 5: ["boy"], 7: ["crew"], 8: ["crew"], 9: ["captain"], "10b": ["captain"], 11: ["captain"], 12: ["crew"], 13: ["crew"], 14: ["boy"], "15a": [], "15b": ["captain"] };
 const arg = (k) => (process.argv.includes(k) ? process.argv[process.argv.indexOf(k) + 1] : null), plant = arg("--plant");
 const out = "out/_din_check.mjs";
 // (flat.ts keeps its design's body sizes (A_SPEC) to itself: the bundle alone exports them to this check, the file is not changed)
 const exportSpec = { name: "spec", setup(b) { b.onLoad({ filter: /designs[\\/]flat\.ts$/ }, (a) => ({ contents: fs.readFileSync(a.path, "utf8") + "\nexport { A_SPEC };\n", loader: "ts" })); } };
-await esbuild.build({ plugins: [exportSpec], stdin: { contents: 'export * from "./src/craft/dinner3d/core"; export * from "./src/craft/dinner3d/figures"; export { captionAt, CAP_TOPS, camFx, bodyCaps, boxHitsCap, CAP_ON_BODY, ARM_CAPS } from "./src/craft/dinner3d/Dinner3D"; export { thighUnder, scaleOf, D, FM, jointPx, footY, heightOf } from "./src/craft/clips/clipKit"; export * as BG from "./src/craft/checks/bodyGeom"; export { kitOf, kitBody, beardOutline } from "./src/craft/wardrobe/kit"; export { A_SPEC } from "./src/craft/designs/flat";', resolveDir: ".", loader: "tsx" }, bundle: true, format: "esm", platform: "node", outfile: out, logLevel: "error", loader: { ".json": "json" }, external: ["remotion", "react"] });
+await esbuild.build({ plugins: [exportSpec], stdin: { contents: 'export * from "./src/craft/dinner3d/core"; export * from "./src/craft/dinner3d/figures"; export { captionAt, CAP_TOPS, camFx, bodyCaps, boxHitsCap, CAP_ON_BODY, ARM_CAPS } from "./src/craft/dinner3d/Dinner3D"; export { thighUnder, scaleOf, D, FM, jointPx, footY, heightOf } from "./src/craft/clips/clipKit"; export * as BG from "./src/craft/checks/bodyGeom"; export { kitOf, kitBody, beardOutline, pupilAt, qPupils } from "./src/craft/wardrobe/kit"; export { A_SPEC } from "./src/craft/designs/flat";', resolveDir: ".", loader: "tsx" }, bundle: true, format: "esm", platform: "node", outfile: out, logLevel: "error", loader: { ".json": "json" }, external: ["remotion", "react"] });
 const M = await import(pathToFileURL(out).href); fs.rmSync(out);
 const { SHOTS, WHO, PLANT, placeOf, toScreen, feetOf, project, jointPx, handPx, FM, cardToWorld, thighUnder, scaleOf, D, captionAt, PUD_UP, TABLE_TOP } = M;
-const CHECK_PLANTS = { stripeNet: 17, sleeveNoInk: 10, capLow: 6, missing: 7, faceHide: 8, headPeek: 8, hide40: 8, mouthHand: 9, oneArm: 10, mouthOut: 11, turnCross: 12, seatEdge: 1, faceEdge: 13, frontArm: 10, smileCross: 14 }, RULE_OF = { seatHigh: 1, pudOff: 3, handIn: 4, handInBook: 4, float: 2, ...CHECK_PLANTS };
+const CHECK_PLANTS = { lidCut: 18, stripeNet: 17, sleeveNoInk: 10, capLow: 6, missing: 7, faceHide: 8, headPeek: 8, hide40: 8, mouthHand: 9, oneArm: 10, mouthOut: 11, turnCross: 12, seatEdge: 1, faceEdge: 13, frontArm: 10, smileCross: 14 }, RULE_OF = { seatHigh: 1, pudOff: 3, handIn: 4, handInBook: 4, float: 2, ...CHECK_PLANTS };
 if (plant && !(plant in CHECK_PLANTS)) { if (!(plant in PLANT)) throw new Error("no such planted fault: " + plant); PLANT[plant] = true; }
 const { BG, A_SPEC, footY, VOICES, kitOf, kitBody } = M; if (D.id !== "flatA") throw new Error("the checks' body sizes are A's: the design is " + D.id); const BODY = A_SPEC.sir.B;
 // (an arm hidden by a named thing in the set, so it is no one-armed look: "shot:figure:near|far" -> the thing.
@@ -83,6 +84,25 @@ for (const S of SHOTS) {
         row.push({ name: key, sil: false, depth: pl.depth, limbDepth: limbD, headDepth: jd("skull"), head: [Math.round((s0[0] + c0[0]) / 2), Math.round((s0[1] + c0[1]) / 2), Math.round(hr * 1.1)], headF: [+((s0[0] + c0[0]) / 2).toFixed(2), +((s0[1] + c0[1]) / 2).toFixed(2)],
           trunk: hull(["neck", "shL", "shR", "hipL", "hipR"].map((j) => scr(j))).map((q) => q.map((v) => Math.round(v))), limbs, lw });
         fig0[key] = w.at; }
+      // 18 no lid's line across a pupil (the independent review of v6, point 9: the sailor's lid cut his pupil in frame 0 and 616-658, the
+      //    boy's in 693-704): each eye drawn open (lid at most 0.93, squeeze at most 0.5), its pupil where kit.ts puts it (pupilAt, the far
+      //    eye at three-quarter kept clear of the nose), the upper lid's edge (lid > 0.02) and the smiling lower lid's (smile over 0.3) as
+      //    kit.ts lids() draws them (a bow of 0.12 and 0.1 of the eye's height), each with half its ink line (4.5): the band may not lie over
+      //    the pupil. A lid clear of the pupil, or over all of it, passes. Planted: v6 itself
+      { const fc = f.o.face ?? {}, kit = kitOf(f.o.look), lid = (fc.lid ?? 0.06) + (plant === "lidCut" && w.name === "boy" ? 0.25 : 0), smile = fc.smile ?? 0, wide = fc.wide ?? 0, g0 = fc.gaze ?? [0, 0];
+        const Fb = Math.round(fr + S.t0 * FM.FPS), blink = (M.CUT_BLINKS[w.name] ?? []).some((c) => Fb - c >= -3 && Fb - c <= 2);      /* (a blink over a cut (core.ts CUT_BLINKS): its two half-lid frames pass the lid over the pupil as any blink does; listed, not failed) */
+        if (blink) (NOTE18[`${S.id} ${w.name}`] ??= []).push(fr);
+        else if ((fc.squeeze ?? 0) <= 0.5 && lid <= 0.93) { const sn = Math.sin((f.sk.faceYaw * Math.PI) / 180), as = Math.abs(sn), view = as < 0.45 ? "front" : as < 0.85 ? "q" : "side", es = kit?.eyes ?? 1, ey = -118 + (es - 1) * 30, tx = sn * 34;
+          const low = 0.3 * smile * Math.max(0, Math.min(1, (smile - 0.3) / 0.4)), rr = { wide, pupil: fc.pupil ?? 1, gaze: g0 };
+          const gq = [Math.min(1, 0.45 + 0.7 * Math.max(0, g0[0])), g0[1]], NOSE = M.qPupils(fc).nose;
+          const eyes = view === "q" ? [[10 - (es - 1) * 20, ey, es, M.pupilAt(10 - (es - 1) * 20, ey, es, { ...rr, gaze: gq })], [76, ey, 0.8 * es, M.pupilAt(76, ey, 0.8 * es, { ...rr, gaze: gq }, NOSE)]]
+            : view === "side" ? [[66, ey, 0.9 * es, M.pupilAt(66, ey, 0.9 * es, { ...rr, gaze: [Math.max(0.35, g0[0]), g0[1]] })]]
+            : [-1, 1].map((sd) => { const cx = sd * 46 * (es > 1 ? 1.05 : 1) + tx; return [cx, ey, es, M.pupilAt(cx, ey, es, rr)]; });
+          for (const [cx, cy, sc, q] of eyes) { const rx = 30 * sc, ry = 40 * sc * (1 + 0.15 * wide), xn = Math.max(-1, Math.min(1, (q.x - cx) / (rx + 4))), HW = 4.5;
+            const bands = []; if (lid > 0.02) { const y0 = cy - ry + 2 * ry * lid; bands.push(["upper", y0 - ry * 0.12 + 2 * ry * 0.12 * (1 - xn * xn)]); }
+            if (low > 0.02) { const y1 = cy + ry - 2 * ry * low; bands.push(["lower", y1 + ry * 0.1 - 0.2 * ry * (1 - xn * xn)]); }
+            for (const [nm, ye] of bands) { const top = q.y - q.pr, bot = q.y + q.pr, over = nm === "upper" ? ye + HW - top : bot - (ye - HW);
+              if (ye + HW > top && ye - HW < bot && over < 2 * q.pr + 2 * HW) faults.push(`18 ${S.id} frame ${fr} ${w.name}: his ${nm} lid's line across his pupil (${Math.round((100 * Math.min(over, 2 * q.pr)) / (2 * q.pr))} % of its height under the lid)`); } } } }
       // 14 (the face's values this frame, gathered per shot and figure)
       { const fc = f.o.face ?? {}, k14 = `${S.id}:${w.name}`, sm = (fc.smile ?? 0) + (plant === "smileCross" && w.name === "crew" && fr > n / 2 ? -0.6 : 0); (FACE14[k14] ??= []).push([fc.mouth ?? 0, sm, fc.squeeze ?? 0]); }
       if (fr === 0) { const s0 = scr("skull"), c0 = scr("crown"), hr = Math.hypot(c0[0] - s0[0], c0[1] - s0[1]) / 2, hc = [(s0[0] + c0[0]) / 2, (s0[1] + c0[1]) / 2];
@@ -236,7 +256,7 @@ for (const S of SHOTS) {
         const across = fore.filter((q) => sideOf(q) * sS < -12 && seen(sd, q)).length;
         const ua = [El[0] - Sh[0], El[1] - Sh[1]], inward = (Math.atan2(-(ua[0] * dn[1] - ua[1] * dn[0]) * sS, ua[0] * dn[0] + ua[1] * dn[1]) * 180) / Math.PI;      /* (degrees from the down line, + toward the body's middle) */
         const who = `${S.id} frame ${fr} ${g.w.name}: his ${sd === sk.near ? "near" : "far"} arm`;
-        if (process.env.DEBUG16 && (process.env.DEBUG16 === "all" || process.env.DEBUG16 === `${S.id}:${g.w.name}`)) console.log(`DEBUG16 ${who} sin ${sk.sin.toFixed(2)} elbow ${ang.toFixed(0)} deg, elbow seen ${(elSeen * 100).toFixed(0)} %, sleeve seen ${(slSeen * 100).toFixed(0)} %, across ${across}, upper arm in ${inward.toFixed(0)} deg, elbow at ${g.scr(El).map((v) => Math.round(v)).join(",")}`);
+        if (process.env.DEBUG16 && (process.env.DEBUG16 === "all" || process.env.DEBUG16 === `${S.id}:${g.w.name}`)) console.log(`DEBUG16 ${who} (${sd}) sin ${sk.sin.toFixed(2)} elbow ${ang.toFixed(0)} deg, elbow seen ${(elSeen * 100).toFixed(0)} %, sleeve seen ${(slSeen * 100).toFixed(0)} %, across ${across}, upper arm in ${inward.toFixed(0)} deg, elbow at ${g.scr(El).map((v) => Math.round(v)).join(",")}`);
         if (ang < 30) faults.push(`16 ${who} bent ${(180 - ang).toFixed(0)} degrees at the elbow (at most 150)`);
         if (across && (elSeen < 0.5 || ang > 160)) faults.push(`16 ${who} across the body (${across} seen points past the midline) ${elSeen < 0.5 ? `with its elbow hidden (${(elSeen * 100).toFixed(0)} % seen)` : `straight (${ang.toFixed(0)} degrees at the elbow)`}`);
         if (inward > 30 && inward < 150) faults.push(`16 ${who}: the upper arm turned ${inward.toFixed(0)} degrees in across the body (at most 30 from the down line, or raised over 150)`);
@@ -319,6 +339,7 @@ console.log("arms seen (far arms only, least share of the arm/of its hand, mediu
 // (a sliver's hand at the edge passes only if it holds still in the shot: one ending at the edge mid-movement fails, the reviewer)
 for (const k of Object.keys(NOTES5)) { const P = HPOS[k] ?? [], xs = P.map((q) => q[0]), ys = P.map((q) => q[1]); if (P.length && (Math.max(...xs) - Math.min(...xs) > 15 || Math.max(...ys) - Math.min(...ys) > 15)) { faults.push(`5 ${k}: a sliver's hand moving at the picture's edge`); delete NOTES5[k]; } }
 console.log("5 (note) hands at the edge of a figure seen only as a sliver: " + (Object.keys(NOTES5).join(", ") || "none"));
+console.log("18 (note) blink frames over a cut, not judged: " + (Object.entries(NOTE18).map(([k, v]) => `${k} ${v.join(",")}`).join("; ") || "none"));
 console.log("13 (note) heads cut by the edge, the most of each in the picture: " + (Object.entries(NOTES13).map(([k, v]) => `${k} ${(v * 100).toFixed(0)}%`).join(", ") || "none"));
 console.log(`worst: seat ${(worst.seat * 100).toFixed(2)} cm from the chest, the pudding's base ${(worst.grip * 100).toFixed(2)} cm off the plate, hands on the table ${(worst.table[0] * 100).toFixed(1)} to ${(worst.table[1] * 100).toFixed(1)} cm over its top, a hand at most ${(worst.place ?? 0).toFixed(1)} cm from its place`);
 console.log(`DINNER CHECK ${plant ? "(planted: " + plant + ") " : ""}${faults.length ? "FAILED: " + faults.length + " faults" : "OK"} (${frames} frames)`);

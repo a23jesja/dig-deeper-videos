@@ -6,7 +6,7 @@
 // two-layer hand, paintPudding). His right hand slaps the book (shot 3) and points (shot 6). Every hand on a surface is solved onto it each
 // frame (armTo: the table, the plate, the book). Voices as v5 (the same takes, no new characters).
 import { SAILOR_LOOK } from "../wardrobe/cast";
-import { kitMouth } from "../wardrobe/kit";
+import { kitMouth, pupilAt, qPupils } from "../wardrobe/kit";
 import type { Pose, Side } from "../rig";
 import { solve } from "../rig";
 import { ease as ease0 } from "../stage/acting";
@@ -102,7 +102,23 @@ const mouthOf = (ids: string[], t0: number, t1: number) => { const n = Math.roun
 const chew = (T: number, a: number, b: number) => (T < a || T > b ? 0.24 : 0.24 + (0.09 - 0.09 * Math.cos((T - a) * 2 * Math.PI * 3.4)) * (1 - span(T, b - 0.3, b)));      /* (faded out at its end: it stopped mid-chew, and the mouth jumped under the eye, flicker2 frame 177) */
 /** a face kept clear of castAt's switches: the lid under 0.3 (over it the lid snaps to 0.42 or shut) and `wide` under 0.5 (over it the lid is
  *  forced open), so nothing pops in an eye between frames (flicker2 on the v6 test render: eye flicker at every crossing) */
-const capFace = (f: Record<string, unknown>) => ({ ...f, lid: Math.min(0.28, (f.lid as number) ?? 0.06), wide: Math.min(0.28, (f.wide as number) ?? 0) });
+/** v6c, the independent review of v6 point 9 (dinner_check 18): no lid's line across a pupil. The upper lid and the smiling lower lid are
+ *  kept off the pupil in every eye a head draws (front, three-quarter near and far, profile; the sailor's and the captain's eyes and the boy's
+ *  larger ones; the gaze either way, as a head turned left mirrors it), each line with half its ink (4.5) and 3 more, so a glance eased between two faces stays clear too: the lid comes down to just over the
+ *  pupil, the smile up to just under it. kit.ts draws them as before; only the values asked for are lowered */
+const LID_ES = [1, 1.22], lowOf = (sm: number) => 0.3 * sm * Math.max(0, Math.min(1, (sm - 0.3) / 0.4));
+const lidsClear = (f: Record<string, unknown>, lid: number, sm: number) => { const g = (f.gaze as [number, number]) ?? [0, 0], wide = (f.wide as number) ?? 0, low = lowOf(sm), HW = 7.5, NOSE = qPupils({}).nose;
+  for (const es of LID_ES) for (const gx of [g[0], -g[0]]) { const ey = -118 + (es - 1) * 30, rr = { wide, pupil: (f.pupil as number) ?? 1, gaze: [gx, g[1]] as [number, number] }, gq: [number, number] = [Math.min(1, 0.45 + 0.7 * Math.max(0, gx)), g[1]];
+    const eyes: [number, number, number, { x: number; y: number; pr: number }][] = [[10 - (es - 1) * 20, ey, es, pupilAt(10 - (es - 1) * 20, ey, es, { ...rr, gaze: gq } as never)], [76, ey, 0.8 * es, pupilAt(76, ey, 0.8 * es, { ...rr, gaze: gq } as never, NOSE)],
+      [66, ey, 0.9 * es, pupilAt(66, ey, 0.9 * es, { ...rr, gaze: [Math.max(0.35, gx), g[1]] } as never)], ...[-1, 1].map((sd) => { const cx = sd * 46 * (es > 1 ? 1.05 : 1); return [cx, ey, es, pupilAt(cx, ey, es, rr as never)] as [number, number, number, { x: number; y: number; pr: number }]; })];
+    for (const [cx, cy, sc, q] of eyes) { const ry = 40 * sc * (1 + 0.15 * wide), xn = Math.max(-1, Math.min(1, (q.x - cx) / (30 * sc + 4))), top = q.y - q.pr, bot = q.y + q.pr;
+      if (lid > 0.02) { const ye = cy - ry + 2 * ry * lid - ry * 0.12 + 0.24 * ry * (1 - xn * xn); if (ye + HW > top && ye - HW < bot) return false; }
+      if (low > 0.02) { const ye = cy + ry - 2 * ry * low + ry * 0.1 - 0.2 * ry * (1 - xn * xn); if (ye + HW > top && ye - HW < bot) return false; } } }
+  return true; };
+const capFace = (f: Record<string, unknown>) => { let lid = Math.min(0.28, (f.lid as number) ?? 0.06), sm = (f.smile as number) ?? 0; const wide = Math.min(0.28, (f.wide as number) ?? 0), g = { ...f, wide };
+  while (lid > 0 && !lidsClear(g, lid, 0)) lid = Math.max(0, +(lid - 0.01).toFixed(2));
+  while (sm > 0.31 && !lidsClear(g, 0, sm)) sm = Math.max(0.31, +(sm - 0.01).toFixed(2));
+  return { ...f, lid, smile: sm, wide }; };
 /** a track of mouth values by film frame (castAt reads it by the film's frame) */
 const mouthTrack = (s: { t1: number }, f: (T: number) => number | null) => ({ t0: 0, len: Math.round(s.t1 * FM.FPS), mouth: Array.from({ length: Math.round(s.t1 * FM.FPS) }, (_, k) => f(k / FM.FPS) ?? 0) });
 

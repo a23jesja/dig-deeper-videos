@@ -286,7 +286,7 @@ export const SLAP = { hit: 2.9 };
 const SLAP_UP = 18;      // (the forearm lifted 30 degrees over the contact pose before the slap)      // (frame 86: the hand from 10 cm over the cover in 5 frames; from 16 cm in 2 it jolted, motion2)
 /** where the pudding's middle is, in his own frame (forward, to his right, up; metres), at film time t, from shot 1's hand-over on (it lies on
  *  his right palm: the hand nearer the lens in the front views) */
-const PMID: P3 = [0.25, 0.0, 0.95], PAYE: P3 = [0.5, -0.25, 0.95] as P3,      /* (v6c 15a, the reviewer: with his "Aye!" the pudding held up forward and out to his right, away from his mouth and ear, its bowl seen) */ PCH: P3 = [0.24, 0.16, 0.66], PNOSE: P3 = [0.3, 0.08, 1.0], PMOUTH: P3 = [0.27, 0.06, 0.93], PHIGH: P3 = [0.12, 0.34, 1.22], PAWAY: P3 = [0.05, 0.46, 0.7], PTOAST: P3 = [0.12, 0.42, 1.1], PUP: P3 = [0.2, -0.08, 0.86];
+const PMID: P3 = [0.25, 0.0, 0.95], PAYE: P3 = [0.2, 0.55, 1.05] as P3,      /* (v6c 15a, the reviewer: with his "Aye!" the pudding held up forward and out to his right, away from his mouth and ear, its bowl seen) */ PCH: P3 = [0.24, 0.16, 0.66], PNOSE: P3 = [0.3, 0.08, 1.0], PMOUTH: P3 = [0.27, 0.06, 0.93], PHIGH: P3 = [0.12, 0.34, 1.22], PAWAY: P3 = [0.05, 0.46, 0.7], PTOAST: P3 = [0.12, 0.42, 1.1], PUP: P3 = [0.2, -0.08, 0.86];
 /** the pudding's keyframes from 1.6 on (film time, its middle in his own frame): between two, eased (span); the arm is solved on each and its angles
  *  lerped (in the hook). (3: up to his nose, a sniff, on to his mouth; 4: the bite at 4.80; 5: up, out of the boy's reach; 7: high, the big bite
  *  at 10.60, swung away at 11.50; 8: the toast by his face (toast: out to his right, never before his speaking mouth; up: toward his middle,
@@ -457,6 +457,7 @@ const crew = (id: string): Who => { const s = SH[id], yaw = headingIn(id, FACING
     if (PLANT.frontArm && g >= 2.7 && g < 4.7) q = { ...q, armL: [[-70, 12], [-30, 0]] } as Pose;      // (the planted fault for the proof: in shot 3, a front view, his left arm swung back behind his back)
     if (g >= 8.7 && g < 10.75) { const u = span(g, 8.7, 9.1) * (1 - span(g, 9.7, 10.75));      /* (eased in and out in the one shot 6-7) */ q = { ...q, armL: [[lerp(CREW_REST[0][0], 46, u), lerp(CREW_REST[0][1], 8, u)], [lerp(CREW_REST[1][0], 58, u), 0]] } as Pose; }      /* (the point stops short of the captain: at 62/74 the fingertip went into his beard, the review) */      // (6: pointing at the captain's chest: at his face the arm lay over it, the first check)
       // (13-14: his left hand up by his ear at "vote" (20.99), palm to the lens, kept up)
+    if (g >= 23.1 && g < 23.65) q = armHuman(q, "R", heading);      // (v6c: 15a's lift to "Aye!" kept within rule 16)
     return q; };
   const kindL = s.t0 < 1.6 ? "grip" : s.t0 >= 2.7 && s.t0 < 4.7 ? "open" : "relaxed";
   return { name: "crew", at, walk: viewOf(id).right, h: HEIGHTS.crew, rimSide: -1, off: s.t0, sun: false, key: 0.5,

@@ -114,6 +114,11 @@ for (const S of SHOTS) {
         if (!rising) worst.seat = Math.max(worst.seat, Math.abs(dz)); if (bad) faults.push(`1 ${S.id} frame ${fr}: the captain's seat ${(dz * 100).toFixed(1)} cm ${dz > 0 ? "over" : "into"} the chest${rising ? " (rising: 0-10 cm allowed)" : ""}`);
         const Fc = M.FIGS && JSON.parse(fs.readFileSync("src/craft/dinner3d/shots.json", "utf8")).facing.captain, fl = Math.hypot(Fc[0], Fc[1]), fx = Fc[0] / fl, fy = Fc[1] / fl, [ax, ay] = pl.at;
         for (const [r, fo] of [[0, 0], [0.21, 0], [-0.21, 0], [0, 0.12], [0, -0.12]]) if (!onChest(ax + fy * r + fx * fo, ay - fx * r + fy * fo)) { faults.push(`1 ${S.id} frame ${fr}: the captain's seat off the chest's top (${r ? "his hip" : fo ? "fore/aft" : "his pelvis"})`); break; } }
+      // 2b the seated captain's shoes drawn on the floor, never over his chest's lid (the review of v6: in 2 and 15b, seen from above, his shoes
+      //    lay on the lid's picture and he seemed to stand on it): no foot point of his on the floor inside the lid's outline as the lens sees it
+      if (w.name === "captain") { const c = Math.cos(CH_TURN), sn = Math.sin(CH_TURN), lid = [[-0.28, -0.2], [0.28, -0.2], [0.28, 0.2], [-0.28, 0.2]].map(([u, v]) => { const q = project(S.id, fr, [SEAT[0] + u * c - v * sn, SEAT[1] + u * sn + v * c, STOOL_TOP]); return [q[0], q[1]]; });
+        const inLid = (p) => { let k = false; for (let i = 0, j = lid.length - 1; i < lid.length; j = i++) if ((lid[i][1] > p[1]) !== (lid[j][1] > p[1]) && p[0] < ((lid[j][0] - lid[i][0]) * (p[1] - lid[i][1])) / (lid[j][1] - lid[i][1]) + lid[i][0]) k = !k; return k; };
+        for (const ft of feetOf(S.id, fr, w, pl)) for (const [px, nm] of [[ft.heelPx, "heel"], [ft.toePx, "toe"]]) if (px[1] > 0 && px[1] < FM.H && inLid(px)) { faults.push(`2 ${S.id} frame ${fr} captain ${ft.side} ${nm}: his shoe drawn over the chest's lid`); break; } }
       // 2 the feet
       for (const ft of feetOf(S.id, fr, w, pl)) for (const [pt, px, nm] of [[ft.heel, ft.heelPx, "heel"], [ft.toe, ft.toePx, "toe"]]) {
         if (pt[2] < -0.005) faults.push(`2 ${S.id} frame ${fr} ${w.name} ${ft.side} ${nm}: ${(-pt[2] * 100).toFixed(1)} cm into the floor`);

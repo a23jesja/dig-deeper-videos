@@ -189,8 +189,11 @@ const captain = (id: string): Who => { const s = SH[id], yaw = headingIn(id, FAC
   const T = (x: number) => x - 0.02, H = (nod = 0, tilt = 0) => headTo(yaw, nod, tilt), seat = { ...SIT };
   const F = (o: Record<string, unknown>) => ({ face: capFace({ pupil: 1, smile: 0, brow: 0, lid: 0.06, wide: 0, sad: 0, squeeze: 0, smirk: 0, teeth: 0, mouth: 0, ...o }) });      // (every value set: one left out kept the last, the squeeze of 6 stayed into 10)
   // the faces, on the words (film time)
-  ease(m, -1, { ...seat, head: H(6) }, 0.01, F({ gaze: [-0.4, 0.6], smile: 0.5, brow: 0.4, lid: 0.05 }));      // (1: looking down at his plate, pleased)
-  ease(m, T(0.9), { ...seat, head: H(0) }, 0.5, F({ gaze: [-0.8, 0.1], smile: 0.34, brow: 0.7, wide: 0.15 }));      // (his eyes follow the pudding away, left; the smile kept over 0.3 inside the shot)
+  // (v6c, the hook (the cloud session): in frame 0 he looks away from the sailor and does something: humming to himself, pleased, eyes away
+  //  up the cabin, his mouth moving; at 0.9 his eyes catch the pudding going. The mouth kept over 0.2 all through the shot, rule 14)
+  ease(m, -1, { ...seat, head: H(6) }, 0.01, F({ gaze: [0.7, -0.3], smile: 0.5, brow: 0.4, lid: 0.05, mouth: 0.26 }));      // (1: humming, eyes away)
+  for (const [tq, mo] of [[0.12, 0.32], [0.3, 0.24], [0.48, 0.34], [0.66, 0.25]] as [number, number][]) ease(m, T(tq), { ...seat, head: H(6) }, 0.14, F({ gaze: [0.7, -0.3], smile: 0.5, brow: 0.4, lid: 0.05, mouth: mo }));
+  ease(m, T(0.9), { ...seat, head: H(0) }, 0.5, F({ gaze: [-0.8, 0.1], smile: 0.34, brow: 0.7, wide: 0.15, mouth: 0.24 }));      // (his eyes follow the pudding away, left; the smile kept over 0.3 inside the shot)
   ease(m, T(1.6), { ...seat, head: H(-2) }, 0.01, F({ gaze: [-0.7, 0], smile: -0.5, brow: 1, wide: 0.6, lid: 0, mouth: 0.22 }));      // (2: eyes wide; the mouth from 0.22 in his talking shot, rule 14)
   ease(m, T(1.95), { ...seat, lean: 14, head: H(-6) }, 0.12, F({ gaze: [-0.6, -0.1], smile: -0.8, brow: -1, wide: 0.3, lid: 0 }));      // (the fist, "Hey!")
   ease(m, T(4.7), { ...seat, head: H(2) }, 0.01, F({ gaze: [-0.7, 0], smile: -0.6, brow: -0.4, lid: 0.15 }));      // (4: watching)
@@ -208,6 +211,7 @@ const captain = (id: string): Who => { const s = SH[id], yaw = headingIn(id, FAC
   ease(m, T(18.2), { ...seat, lean: 2, head: H(-6) }, 0.35, F({ gaze: [-0.4, 0], smile: 0.7, brow: 0.3, lid: 0.45 }));      // (pleased with himself)
   ease(m, T(23.6), { ...seat, lean: 6, head: H(6) }, 0.01, F({ gaze: [-0.5, 0.5], smile: -0.6, brow: 0.6, sad: 0.8, lid: 0.1 }));
   easeH(m, T(23.62), { ...seat, lean: 14, py: SIT.py - 0.02, head: H(5) }, 0.68, F({ gaze: [-0.5, 0.7], smile: -0.7, brow: 0.8, sad: 1, lid: 0.2 }));      // (15: his shoulders sink)
+  for (const [tq, mo] of [[23.9, 0.3], [24.02, 0.24], [24.14, 0.32], [24.26, 0.25]] as [number, number][]) ease(m, T(tq), { ...seat, lean: 14, py: SIT.py - 0.02, head: H(5) }, 0.1, F({ gaze: [-0.5, 0.7], smile: -0.7, brow: 0.8, sad: 1, lid: 0.2, mouth: mo }));      // (v6c, life in 15b: his lip trembles as he sinks)
   const mouth = id === "2" ? mouthOf(["k2"], s.t0, s.t1) : id === "9" ? mouthOf(["k6"], 15.38, s.t1) : id === "10b" ? mouthOf(["k6"], s.t0, s.t1) : null;      // (9: "That" before the cut, the voice from 15.38)
   const at = POS("captain", id);
   const hook = (t: number, p: Pose, heading: number): Pose => { const g = t, sk = solve(D.props("sir"), p, heading), pelX = (sk.j.pelvis as unknown as number[])[0];
@@ -260,7 +264,7 @@ const captain = (id: string): Who => { const s = SH[id], yaw = headingIn(id, FAC
       const back = span(g, 17.35, 17.9), upu = span(g, 17.95, 18.65);      /* (the fist up after the others' hands, not with them: all at once the picture changed past flicker2's 2000 px) */
       const tg = lA(lA(lA(KN, CHEST, span(g, 16.72, 17.3)), KN, back), UP, upu); mixL(tg, Math.max(1 - back, upu)); }      /* (from the knee, as at the cut) */
     else mixL(knee, 0);
-    if ((g >= 13.3 && g < 15.64) || (g >= 16.7 && g < 18.7)) { q = armHuman(q, "L", heading); q = armHuman(q, "R", heading); }      // (v6c: the slam and the chest beat passed a folded or a straight arm across his body, rule 16)
+    if ((g >= 13.3 && g < 15.62) || (g >= 16.7 && g < 18.7)) { q = armHuman(q, "L", heading); q = armHuman(q, "R", heading); }      // (v6c: the slam and the chest beat passed a folded or a straight arm across his body, rule 16)
     return q; };
   const fistAt = (t0: number) => (t0 >= 13.3 && t0 < 16.7 ? "fist" : "open");
   return { name: "captain", at, walk: viewOf(id).right, h: HEIGHTS.captain, rimSide: 1, off: s.t0, sun: false,
@@ -322,6 +326,7 @@ const crew = (id: string): Who => { const s = SH[id], yaw = headingIn(id, FACING
   ease(m, T(3.6), { lean: 2, head: H(-8, 0) }, 0.25, F({ gaze: [0.3, -0.3], smile: 0.32, brow: 0.5, lid: 0.6 }));      /* (the sniff with his mouth shut: smiling, its corner stuck up over the pudding like a beak, the review) */      // (the sniff, eyes half shut; his lean kept while his hand lies on the book: leaning back it drew 2 cm off it)
   ease(m, T(4.2), { lean: 2, head: H(2, 4) }, 0.2, F({ gaze: [0.6, 0], smile: 0.9, smirk: 0.8, brow: 1, lid: 0.1 }));      // (brows up, a crooked grin)
   ease(m, T(4.7), { lean: 6, head: H(8, 0) }, 0.01, F({ gaze: [0.6, 0.2], smile: 0.8, brow: 0.5, lid: 0.25, mouth: 0.24 }));      // (v6c: leaning into the bite, his head bent 8 and his body 6 toward the pudding at his mouth, Jesper on v6) (v6b: lid 0.25, not 0.3 at castAt's switch: crossing it at 5.9 s flickered the eye, flicker2 frame 177) (4: chewing; the mouth never under 0.22 in this shot)
+  ease(m, T(5.05), { lean: 8, head: H(8, 0) }, 0.45, F({ gaze: [0.6, 0.2], smile: 0.9, brow: 0.8, lid: 0.25, mouth: 0.24 }));      // (v6c, life in 4: he sways into the chewing, brows up, relishing it)
   ease(m, T(5.55), { lean: 6, head: H(8, 0) }, 0.8, F({ gaze: [0.3, -0.3], smile: 0.9, smirk: 0.6, brow: 1, lid: 0.15, mouth: 0.24 }));      // (4: eyes up on the pudding as he lifts it, brows up)
   ease(m, T(6.4), { lean: 2, head: H(0) }, 0.01, F({ gaze: [-0.5, 0.2], smile: 0.6, smirk: 0.4, brow: 0.3, lid: 0.2 }));      // (5: eyeing the boy)
   ease(m, T(8.7), { lean: 12, head: H(-2) }, 0.01, F({ gaze: [0.8, 0], smile: 0.34, smirk: 0.8, brow: -1, lid: 0.25 }));      // (6: leans at the captain, points, mouth shut; set on the cut: eased over it his smile crossed 0.3 in the shot, rule 14)
@@ -499,6 +504,10 @@ const boy = (id: string): Who => { const s = SH[id], yaw = headingIn(id, FACING.
     else if (g >= 21.4 && g < 23.2) { const u = span(g, 21.5, 22.2), PT = BOY_POINT;      // (14: "All in favour?" with his finger pointing out before him (the reviewer's choice): a raised hand had to come down to his palm too fast for motion2)
       q = { ...q, armR: [[lerp(AKIMBO[0][0], PT[0], u), lerp(AKIMBO[0][1], PT[1], u)], [lerp(AKIMBO[1][0], PT[2], u), lerp(AKIMBO[1][1], PT[3], u)]], handR: 0 } as Pose; }
     if (g >= 22.6 && g < 23.1) q = armHuman(q, "R", heading);      // (v6c: the wind-up's lerps folded his arm to 175 degrees, rule 16)
+    // (v6c, the review of v6 point 9: shot 5 stood still. He rubs his hands, eager, while the narrator tells of the captain's cabin: both
+    //  forearms swinging a little in turn, 2.2 times a second, faded in and out)
+    if (g >= 6.5 && g < 8.65) { const a = Math.sin((g - 6.5) * 2 * Math.PI * 2.2) * 7 * span(g, 6.5, 6.8) * (1 - span(g, 8.3, 8.65)), L0 = q.armL as unknown as [Seg2, Seg2], R0 = q.armR as unknown as [Seg2, Seg2];
+      q = { ...q, armL: [L0[0], [L0[1][0] + a, L0[1][1]]], armR: [R0[0], [R0[1][0] - a, R0[1][1]]] } as Pose; }
     return q; };
   return { name: "boy", at: POS("boy", id), walk: viewOf(id).right, h: HEIGHTS.boy, rimSide: -1, off: s.t0, sun: false, key: 0.4,
     cast: { name: "boy", m, who: "sir", look: BOY, seed: 14, armWipe: false, pose: hook,

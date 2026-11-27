@@ -43,7 +43,7 @@ const boxOf = (pl, nm, how) => { if (how === "close") return []; const f = pl.f,
 /** the checks a camera must pass over the shot's frames (every 4th) */
 const tryCam = (S, C, at, lens, prev) => { if (!inRoom(C)) return { ok: false, why: "room" }; const P = Pof(C, at, lens), n = Math.round((S.t1 - S.t0) * FM.FPS); setCam(S.id, Array.from({ length: n }, () => P));
   const whos = WHO[S.id](); if (!(MAIN[S.id] ?? []).every(([nm]) => whos.some((w) => w.name === nm))) return { ok: false, why: "own figure not in the picture", fitBad: 999 };
-  if (S.id === "1" && !whos.some((w) => w.name === "captain")) return { ok: false, why: "the captain's hand not in the hook", fitBad: 0 };      /* (v6c: the hook shows it is his dinner, the cloud session) */
+  if (S.id === "1" && !whos.some((w) => w.name === "captain")) return { ok: false, why: "the captain not in the hook", fitBad: 0 };      /* (v6c: the hook shows it is his dinner, the cloud session) */
   let fitBad = 0, fail = null, pen = 0; const STATE8 = {}, FILLY = {}, TOPY = {}, zs = {}, whole = {}, own = new Set((MAIN[S.id] ?? []).map(([nm]) => nm)), notes = new Set(), HP = {}, EDGE = {}, inP = (p) => p[0] >= 0 && p[0] <= W && p[1] >= 0 && p[1] <= H;
   for (let fr = 0; fr < n; fr += 6) for (const w of whos) { const pl = placeOf(S.id, fr, w), J = (j) => toScreen(pl, jointPx(pl.f, j)), how = (MAIN[S.id] ?? []).find(([nm]) => nm === w.name), close = how && how[1] === "close";
     // the head (its circle with the hat): the shot's own figures whole (10b: his face whole); a neighbour's head in, out, or a part without features
@@ -52,7 +52,9 @@ const tryCam = (S, C, at, lens, prev) => { if (!inRoom(C)) return { ok: false, w
     const frac = inn / 72, kit = M.kitOf(pl.f.o.look), sc0 = M.scaleOf(pl.f.who), sxy = (q) => toScreen(pl, [pl.f.x + q[0] * sc0, M.footY(pl.f.who) + q[1] * sc0]);
     if (frac < 1 && own.has(w.name) && !close) fail ??= `own head ${w.name} ${Math.round(frac * 100)}%`;
     for (const ring of M.BG.faceFeatures(pl.f.sk, kit, pl.f.o.face ?? {}).map((r) => r.map(sxy))) { const k2 = ring.filter(inP).length; if (k2 > 0 && k2 < ring.length) fail ??= `${w.name}'s face feature at the edge`; else if (close && k2 < ring.length) fail ??= "his face not whole"; }
-    if (S.id === "1" && w.name === "captain" && frac > 0.25) fail ??= `the captain more than a sliver in the hook (${Math.round(frac * 100)}%)`;      /* (v6c, the reviewer and the cloud session: the hook is the sailor close, the captain's hand, brim or coat by the plate a sliver at most) */
+    const HOOK = process.env.HOOK ?? "H2";      /* (v6c: H1 the captain a sliver at most; H2 (the reviewer's recommendation, awaiting the cloud session) the captain whole and small behind, his face free) */
+    if (S.id === "1" && w.name === "captain" && HOOK === "H1" && frac > 0.25) fail ??= `the captain more than a sliver in the hook (${Math.round(frac * 100)}%)`;
+    if (S.id === "1" && w.name === "captain" && HOOK === "H2" && frac < 1) fail ??= `the captain not whole in the hook (${Math.round(frac * 100)}%)`;      /* (v6c, the reviewer and the cloud session: the hook is the sailor close, the captain's hand, brim or coat by the plate a sliver at most) */
     if (frac > 0.25 && frac < 1 && !own.has(w.name)) fail ??= `${w.name}'s head ${Math.round(frac * 100)}% in the picture`;      /* (a neighbour at the edge: a sliver of a quarter of his head or less, or whole: the reviewer 26 Nov, rule 13) */
     if (frac > 0 && frac < 1 && !own.has(w.name)) { pen += (2 + 4 * Math.min(frac, 1 - frac)) / Math.ceil(n / 4); notes.add(`${w.name}'s head ${Math.round(frac * 100)}%`); }      /* (a head clearly in or out: the cloud session) */
     const seen = frac === 1;
@@ -62,7 +64,7 @@ const tryCam = (S, C, at, lens, prev) => { if (!inRoom(C)) return { ok: false, w
     for (const sd of ["L", "R"]) { const a = J("wr" + sd), b = J("tip" + sd), r = M.handPx(pl) * 0.45, x0 = Math.min(a[0], b[0]) - r, x1 = Math.max(a[0], b[0]) + r, y0 = Math.min(a[1], b[1]) - r, y1 = Math.max(a[1], b[1]) + r;
       const inside = x0 > 40 && x1 < W - 40 && y0 > 40 && y1 < H - 40, gone = x1 < 0 || x0 > W || y1 < 0 || y0 > H, hk = w.name + " " + sd; (HP[hk] ??= []).push([(x0 + x1) / 2, (y0 + y1) / 2]);
       const shp = J("sh" + sd), shIn = shp[0] > 0 && shp[0] < W && shp[1] > 0 && shp[1] < H;
-      if (S.id === "1" && w.name === "captain" && sd === "R" && !inside) fail ??= "the captain's hand by his plate not in the hook";      /* (v6c: the hook shows it is his dinner: his hand by the plate in the picture, the cloud session) */
+      if (S.id === "1" && w.name === "captain" && sd === "R" && !inside && (process.env.HOOK ?? "H2") === "H1") fail ??= "the captain's hand by his plate not in the hook";      /* (v6c: the hook shows it is his dinner: his hand by the plate in the picture, the cloud session) */
       if (!inside && !gone) { if (seen || own.has(w.name) || !shIn) fail ??= `hand ${hk}`; else { EDGE[hk] = true; notes.add(`${hk} hand at the edge (a sliver)`); } } }      /* (a lone hand at the edge, its arm out of the picture, fails: Eiffel v11) */
     // the shot's own figures inside the margins
     if (how) { const bx = boxOf(pl, w.name, how[1]); for (const q of bx) if (q[0] < 0.05 * W || q[0] > 0.95 * W || q[1] < 0.04 * H || q[1] > 0.96 * H) fitBad++;
@@ -124,7 +126,7 @@ if (process.argv.includes("--dolly")) { const ids = process.argv[process.argv.in
       // (the aim moved too, sideways along the picture and up or down, the least first: a pointing hand or a neighbour's head kept in)
       const shifts = [[0, 0], ...[0.1, -0.1, 0.2, -0.2, 0.3, -0.3].flatMap((p) => [[p, 0], [p, 0.1], [p, -0.1]]), [0, 0.1], [0, -0.1], [0, 0.2], [0, -0.2]];
       for (const [p, z] of shifts) { if (got) break; const at2 = sc.at.map((v, i) => +(v + rt[i] * p + (i === 2 ? z : 0)).toFixed(3)), from2 = sc.from[0].map((v, i) => +(v + rt[i] * p + (i === 2 ? z : 0)).toFixed(3));
-        for (let k = 0.98; !got && k >= 0.55; k -= 0.02) { const C2 = at2.map((v, i) => +(v + (from2[i] - v) * k).toFixed(3)), r2 = tryCam(S, C2, at2, sc.lens, S.id === "10b" ? null : pv); if (r2.ok) { got = k; C = C2; r = r2; AT = at2; } else { why = r2.why; if (process.env.DOLLY_WHY) console.log(`  ${S.id} ${p} ${z} ${k.toFixed(2)}: ${r2.why}`); } } }
+        for (const k of [...Array.from({ length: 22 }, (_, i) => 0.98 - i * 0.02), 1.04, 1.08, 1.12, 1.16, 1.2, 1.25, 1.3]) { if (got) break; const C2 = at2.map((v, i) => +(v + (from2[i] - v) * k).toFixed(3)), r2 = tryCam(S, C2, at2, sc.lens, S.id === "10b" ? null : pv); if (r2.ok) { got = k; C = C2; r = r2; AT = at2; } else { why = r2.why; if (process.env.DOLLY_WHY) console.log(`  ${S.id} ${p} ${z} ${k.toFixed(2)}: ${r2.why}`); } } }
       if (got) { const sh = SPEC.shots.find((q) => q.id === S.id); sh.cam = { ...sh.cam, from: [C, C], at: AT }; console.log(`DOLLY ${S.id}: ${Math.round(got * 100)} % of the distance, cam ${C.join(", ")}, aim ${AT.join(", ")}`); } else console.log(`DOLLY ${S.id}: nothing passes down to 55 % (last: ${why})`); }
     pv = { C, at: AT, whole: r.whole ?? {}, zs: r.zs ?? {} }; }
   fs.writeFileSync("src/craft/dinner3d/shots.json", JSON.stringify(SPEC, null, 1)); process.exit(0); }

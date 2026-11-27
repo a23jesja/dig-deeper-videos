@@ -197,8 +197,10 @@ const captain = (id: string): Who => { const s = SH[id], y0 = headingIn(id, FACI
   // the faces, on the words (film time)
   // (v6c, the hook (the cloud session): in frame 0 he looks away from the sailor and does something: humming to himself, pleased, eyes away
   //  up the cabin, his mouth moving; at 0.9 his eyes catch the pudding going. The mouth kept over 0.2 all through the shot, rule 14)
-  ease(m, -1, { ...seat, head: H(6) }, 0.01, F({ gaze: [0.7, -0.3], smile: 0.5, brow: 0.4, lid: 0.05, mouth: 0.26 }));      // (1: humming, eyes away)
-  for (const [tq, mo] of [[0.12, 0.32], [0.3, 0.24], [0.48, 0.34], [0.66, 0.25]] as [number, number][]) ease(m, T(tq), { ...seat, head: H(6) }, 0.14, F({ gaze: [0.7, -0.3], smile: 0.5, brow: 0.4, lid: 0.05, mouth: mo }));
+  const HF = (face: number, nod = 0): [number, number, number] => [face - yaw, nod, 0];      // (v6c, the hook A: his head turned to face the picture's right of the lens (a front view: a three-quarter head only looks the way it faces), away from the theft; his body stays turned to the table)
+  const FACE0 = typeof process !== "undefined" && process.env?.FACE0 ? +process.env.FACE0 : 0;
+  ease(m, -1, { ...seat, head: HF(FACE0, 6) }, 0.01, F({ gaze: [1, -0.75], smile: 0.5, brow: 0.4, lid: 0.05, mouth: 0.26 }));      // (1: humming, eyes away)
+  for (const [tq, mo] of [[0.12, 0.32], [0.3, 0.24], [0.48, 0.34], [0.66, 0.25]] as [number, number][]) ease(m, T(tq), { ...seat, head: HF(FACE0, 6) }, 0.14, F({ gaze: [1, -0.75], smile: 0.5, brow: 0.4, lid: 0.05, mouth: mo }));
   ease(m, T(0.9), { ...seat, head: H(0) }, 0.5, F({ gaze: [-0.8, 0.1], smile: 0.34, brow: 0.7, wide: 0.15, mouth: 0.24 }));      // (his eyes follow the pudding away, left; the smile kept over 0.3 inside the shot)
   ease(m, T(1.6), { ...seat, head: H(-2) }, 0.01, F({ gaze: [-0.7, 0], smile: -0.5, brow: 1, wide: 0.6, lid: 0, mouth: 0.22 }));      // (2: eyes wide; the mouth from 0.22 in his talking shot, rule 14)
   ease(m, T(1.95), { ...seat, lean: 14, head: H(-6) }, 0.12, F({ gaze: [-0.6, -0.1], smile: -0.8, brow: -1, wide: 0.3, lid: 0 }));      // (the fist, "Hey!")
@@ -262,7 +264,7 @@ const captain = (id: string): Who => { const s = SH[id], y0 = headingIn(id, FACI
     // (15: his hand stays on the table: from shot 2's low camera the plate's top is not seen and the hand on it was drawn 11.5 cm off, rule 4)
     // (v6c, 2 and 15b from the new camera (the hook's cut, rule 15): the table lies between the lens and him and his right hand cannot reach it
     //  on his card (16 cm off, rule 4); it rests on his right knee, as his left does)
-    if ((id === "2" || id === "15b") && !PLANT.capOutD5) { const kr2 = armTo(sk2, "R", skOf(id, at, HEIGHTS.captain, pel2, local("captain", 0.2, 0.1, 0.27))); q = { ...q, armR: kr2.arm, handR: 70 - kr2.arm[1][0] } as Pose; MISS["captain R"] = kr2.miss; }
+    if ((id === "1" || id === "2" || id === "15b") && !PLANT.capOutD5) { const kr2 = armTo(sk2, "R", skOf(id, at, HEIGHTS.captain, pel2, local("captain", 0.2, 0.1, 0.27))); q = { ...q, armR: kr2.arm, handR: 70 - kr2.arm[1][0] } as Pose; MISS["captain R"] = kr2.miss; }
     else put("R", [hR[0], hR[1], hR[2] + dz], !(id === "9" && FLAT9_OFF), lifted ? null : "table");
     // his left hand: on his knee, and from there (blended from the knee's own solved arm, the hand's bend with it: switched from it the arm
     // jumped, motion2 on the v6 test) the fist up by his shoulder at "Hey!", the fist up as he rises and shouts, the beat on his chest
@@ -332,7 +334,7 @@ export const pudAt = (t: number): P3 => {
 /** shot 1: his left hand round the pudding on the plate, lifted toward him (0.10-0.90); his right palm comes under it and takes it (1.30) */
 /** v6c, the hook H2: where his left hand holds the pudding up after taking it (forward, to his right (+), up; metres): on his own left side, so the arm
  *  that lifted it never lies across his body (rule 16) */
-const HOOK_HOLD: P3 = typeof process !== "undefined" && process.env?.HOOKP ? JSON.parse(process.env.HOOKP) : [0.28, -0.16, 0.86];
+const HOOK_HOLD: P3 = typeof process !== "undefined" && process.env?.HOOKP ? JSON.parse(process.env.HOOKP) : [0.3, -0.42, 0.97];
 export const HANDOVER = { lift0: -0.25, lift1: 0.4, under0: 0.45, give: 1.75 };      // (v6c, the hook H2: he keeps the pudding in his left hand through shot 1, his right at his side; the hand-over to his right hand falls in shot 2, where he is not in the picture: across his body in 1 his right arm broke rule 16 in the hook's view)      // (v6c, the hook (the cloud session): the pudding already rising off the captain's plate in frame 0, a third of the way up; the swish at frame 0)
 // (v6c, the hook H2: the sailor turned toward the lens in 1 so the rig draws his far arm, the one at the captain's plate, in front with its outline)
 const CREW_TURN: Record<string, number> = typeof process !== "undefined" && process.env?.CREWTURN ? JSON.parse(process.env.CREWTURN) : { "1": 30 };
@@ -382,7 +384,8 @@ const crew = (id: string): Who => { const s = SH[id], y0 = headingIn(id, FACING.
     const lA = (x: [Seg2, Seg2], y: [Seg2, Seg2], v: number): [Seg2, Seg2] => [[lerp(x[0][0], y[0][0], v), lerp(x[0][1], y[0][1], v)], [lerp(x[1][0], y[1][0], v), lerp(x[1][1], y[1][1], v)]];
     if (g < 1.6) { const P0: P3 = [PLATE[0], PLATE[1], PLATE_TOP + (PLANT.pudOff ? 0.01 : 0)], P1 = pudW([0.3, 0.02, 0.76]), u = span(g, HANDOVER.lift0, HANDOVER.lift1);
       const REST: [Seg2, Seg2] = CREW_REST, lA = (x: [Seg2, Seg2], y: [Seg2, Seg2], v: number): [Seg2, Seg2] => [[lerp(x[0][0], y[0][0], v), lerp(x[0][1], y[0][1], v)], [lerp(x[1][0], y[1][0], v), lerp(x[1][1], y[1][1], v)]];
-      if (g < HANDOVER.give + 0.02) { const PL = HANDOVER.give >= 1.6 ? pudW(HOOK_HOLD) : P1; if (u < 0.001) put("L", P0, 0, true, undefined, 0.9 * rSk); else put("L", lerp3(P0, [PL[0], PL[1], PL[2] - 0.9 * PUD_R], u), 0, true, undefined, 0.9 * rSk); }      /* (lifted the same way it lay: switched from the surface's projection to the card's it jumped 2-4 cm, motion2) */      /* (on the plate: its base where the lens sees the plate's top, his grip 0.9 r over it) */ else { const r = put("L", [P1[0], P1[1], P1[2] - 0.9 * PUD_R], 0, true, undefined, 0.9 * rSk), back = span(g, HANDOVER.give + 0.02, HANDOVER.give + 0.5); q = { ...q, armL: lA(r.arm as [Seg2, Seg2], REST, back), handL: lerp(0, h0L, back) } as Pose; }      /* (back to his side from where it let go: from fixed angles it jumped 120 px, motion2) */
+      if (g < HANDOVER.give + 0.02) { if (HANDOVER.give >= 1.6) { const c0: P3 = [P0[0], P0[1], P0[2] + 0.9 * PUD_R], c1 = pudW(HOOK_HOLD); put("L", base(lerp3(c0, c1, u))); }      /* (v6c, the hook A: on his flat left palm, the bowl on top and his fingers under, from the lift on (before frame 0): gripped round its side his fingers hid it, the reviewer) */
+        else { const PL = P1; if (u < 0.001) put("L", P0, 0, true, undefined, 0.9 * rSk); else put("L", lerp3(P0, [PL[0], PL[1], PL[2] - 0.9 * PUD_R], u), 0, true, undefined, 0.9 * rSk); } }      /* (lifted the same way it lay: switched from the surface's projection to the card's it jumped 2-4 cm, motion2) */      /* (on the plate: its base where the lens sees the plate's top, his grip 0.9 r over it) */ else { const r = put("L", [P1[0], P1[1], P1[2] - 0.9 * PUD_R], 0, true, undefined, 0.9 * rSk), back = span(g, HANDOVER.give + 0.02, HANDOVER.give + 0.5); q = { ...q, armL: lA(r.arm as [Seg2, Seg2], REST, back), handL: lerp(0, h0L, back) } as Pose; }      /* (back to his side from where it let go: from fixed angles it jumped 120 px, motion2) */
       // the right hand: from his hip up under the pudding (0.95-1.30), then carrying it to his chest
       if (g > HANDOVER.give) put("R", base(pudW(pudAt(g))));
       else if (g >= HANDOVER.give - 0.75 && HANDOVER.give < 1.6) { const qs = q, rB = put("R", base(P1)).arm as [Seg2, Seg2], u = span(g, HANDOVER.give - 0.75, HANDOVER.give);      /* (from his side to under the pudding, the angles lerped onto the arm solved there (exact at 1.30): solved per frame or eased onto, the elbow jumped, motion2) */
@@ -547,6 +550,7 @@ export const pudOf = (pl: Placed, side = false, hs: Side = "R") => { const f = p
  *  the plate's top, his gripping hand over its side; from the lift it eases onto his hand over 0.2 s (drawn from the hand alone its base stood
  *  14 px over the plate: the rig's limits move the drawn grip off the solved one, the check) */
 export const pudDrawn = (id: string, fr: number, pl: Placed, t: number) => { if (t >= HANDOVER.give) return { ...pudOf(pl, false, "R"), side: false };
+  if (HANDOVER.give >= 1.6) { const p = pudOf(pl, false, "L"), up = PLANT.pudLift ? 0.03 / p.mpp : 0; return { ...p, c: [p.c[0], p.c[1] - up] as P2, base: [p.base[0], p.base[1] - up] as P2, side: false }; }      // (v6c, the hook A: on his left palm; pudLift, the planted fault: 3 cm over it)
   const p = pudOf(pl, true, "L"), q = project(id, fr, [PLATE[0], PLATE[1], PLATE_TOP + (PLANT.pudOff ? 0.01 : 0)]), card: P2 = [(q[0] - FM.W / 2) / pl.z + pl.cx, (q[1] - FM.H / 2) / pl.z + pl.cy];
   const k = 1 - span(t, HANDOVER.lift0, HANDOVER.lift0 + 0.2), dx = (card[0] - p.base[0]) * k, dy = (card[1] - p.base[1]) * k;
   return { ...p, c: [p.c[0] + dx, p.c[1] + dy] as P2, base: [p.base[0] + dx, p.base[1] + dy] as P2, side: true }; };
@@ -582,6 +586,7 @@ export const crewExtra = (id: string): Extra => { const s = SH[id];
       let p = t < HANDOVER.give ? pudDrawn(id, fr, pl, t) : pudOf(pl, false, "R");
       if (t >= HANDOVER.give && t < HANDOVER.give + 0.2) { const a = pudOf(pl, true, "L"), u = span(t, HANDOVER.give, HANDOVER.give + 0.2); p = { ...p, c: [lerp(a.c[0], p.c[0], u), lerp(a.c[1], p.c[1], u)] as P2 }; }
       pudShape(h, p.c, p.r, bitesAt(t), 7 * sc);      // (v6c: its ink 7, a prop's, finer than the figures' 9: at 9 the bowl's band and rim ran together)
+      if (side === "L" && HANDOVER.give >= 1.6) return;      // (v6c, the hook A: on his palm the bowl lies over his hand, his fingers under it: no fingers drawn again over its edge)
       const hf = handFlip(sk, side, "grip"); h.save(); h.translate(f.x, footY(f.who)); h.scale(sc, sc);
       inkHand(new Ink(h, 9), hf.w, hf.d, sk.P.hand, "grip", (CREW.col?.skin ?? "#d9a079"), hf.flip, false, 9, "fingers"); DRAWN_HELD.push({ who: "crew", at: hf.w, rig: true }); h.restore(); } }; };
 const DRAWN_HELD = ((DRAWN as unknown as { heldHands?: { who: string; at: P2; rig: boolean }[] }).heldHands ??= []);

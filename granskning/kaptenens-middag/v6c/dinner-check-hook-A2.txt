@@ -1,0 +1,14 @@
+15 cuts: 1->2 captain: 36 deg, 1.40x; 3->4 crew: 32 deg, 1.45x; 7->8 crew: 38 deg, 1.43x; 12->13 crew: 31 deg, 1.43x; 15b->1 captain: 36 deg, 1.40x
+10 (note) the captain's cuff and sleeve, the least seen share with his hand seen: 1 near cuff 83 % sleeve 100 %, 1 far cuff 63 % sleeve 56 %, 2 near cuff 45 % sleeve 100 %, 2 far cuff 87 % sleeve 100 %, 9 near cuff 52 % sleeve 100 %, 9 far cuff 82 % sleeve 27 %, 11 near cuff 75 % sleeve 100 %, 11 far cuff 81 % sleeve 26 %, 15b near cuff 85 % sleeve 100 %, 15b far cuff 87 % sleeve 100 %
+6 (note) 10b words on the hat's crown, the least in any frame: 23 px inside its outline, 22 px above the brim's trim, 381 px from the face
+8 (note) background heads wholly behind a nearer figure: none
+6 (note) words over a body where the shot had no free place (faces and hands kept clear): 4, 8
+{}
+arms seen (far arms only, least share of the arm/of its hand, medium and close shots): 1:crew:far 100/100%, 1:captain:far 8/99%, 2:captain:far 100/100%, 3:boy:far 100/100%, 3:crew:far 100/100%, 4:crew:far 100/100%, 5:boy:far 100/100%, 7:crew:far 55/100%, 8:crew:far 100/100%, 9:captain:far 100/100%, 11:captain:far 26/100%, 12:crew:far 100/100%, 13:crew:far 100/100%, 14:boy:far 100/100%, 15a:crew:far 62/100%, 15b:captain:far 100/100%
+5 (note) hands at the edge of a figure seen only as a sliver: none
+18 (note) blink frames over a cut, not judged: 1 crew 45,46,47; 2 captain 30,31,32; 3 boy 57,58,59; 7 crew 0,1,2; 10b crew 0,1,2; 11 captain 57,58,59; 12 crew 51,52,53; 13 crew 0,1,2; 14 boy 0,1,2
+13 (note) heads cut by the edge, the most of each in the picture: 10b captain 68%
+3 (note) the hook's pudding at least 74 px from the sailor's head
+3 (note) the hook's pudding: at least 132 px wide, at most 0 % over his shirt, at most 0.0 cm off his palm; heads in shot 1 apart at least 35 px; the captain's hands at least 2.6 hand lengths from the pudding and the sailor's hand; his hat at least 17 px inside the picture
+worst: seat 0.61 cm from the chest, the pudding's base 0.00 cm off the plate, hands on the table 2.2 to 3.5 cm over its top, a hand at most 1.4 cm from its place
+DINNER CHECK OK (732 frames)

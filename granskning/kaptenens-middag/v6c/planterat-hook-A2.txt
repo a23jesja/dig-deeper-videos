@@ -1,0 +1,4 @@
+PLANTED pudBeard: rule 8 FIRED (48 new faults)
+PLANTED pudLift: rule 3 FIRED (48 new faults)
+PLANTED headTouch: rule 8 FIRED (48 new faults)
+NO_LEGS (the plates as 262fe44): {"19 1":89}

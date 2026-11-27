@@ -237,9 +237,9 @@ RB = {"crew": 0.2, "boy": 0.16, "captain": 0.24}      # (the body's radius; its 
 STAND = {}
 for nm in RB:
     parts = {}
-    for kind in ("body", "head"):
+    for kind in ("body", "head", "legL", "legR"):
         me = bpy.data.meshes.new(f"stand-in {nm} {kind}"); bm = bmesh.new()
-        if kind == "body": bmesh.ops.create_cone(bm, cap_ends=True, segments=16, radius1=1.0, radius2=1.0, depth=1.0); bmesh.ops.translate(bm, verts=bm.verts, vec=(0, 0, 0.5))
+        if kind != "head": bmesh.ops.create_cone(bm, cap_ends=True, segments=16, radius1=1.0, radius2=1.0, depth=1.0); bmesh.ops.translate(bm, verts=bm.verts, vec=(0, 0, 0.5))
         else: bmesh.ops.create_uvsphere(bm, u_segments=16, v_segments=10, radius=1.0)
         bm.to_mesh(me); bm.free(); o = bpy.data.objects.new(f"stand-in {nm} {kind}", me); sc.collection.objects.link(o)
         o.visible_camera = False; o.visible_diffuse = False; o.visible_glossy = False; o.visible_transmission = False; o.visible_volume_scatter = False; o.visible_shadow = True
@@ -248,12 +248,20 @@ for nm in RB:
 def place_standins(shot, fr=0):
     rows = STANDF.get(shot["id"], []); here = {} if os.environ.get("NO_STANDINS") or not rows else {w["name"]: w for w in rows[max(0, min(len(rows) - 1, fr))]}      # (NO_STANDINS=1: the plate as v6 had it)
     for nm, P in STAND.items():
-        if nm not in here: P["body"].location = (0, 0, -50); P["head"].location = (0, 0, -50); continue
+        if nm not in here:
+            for o in P.values(): o.location = (0, 0, -50)
+            continue
         w = here[nm]; px, py, _ = w["pelvis"]; nz = w["neck"][2]
         P["body"].location = (px, py, 0); P["body"].scale = (RB[nm], RB[nm], max(0.2, nz))
         P["head"].location = tuple(w["head"]); P["head"].scale = (w["r"] * 0.95, w["r"] * 0.95, w["r"] * 0.95)
+        # (v6c, the reviewer on hook A: each leg's own stand-in over its drawn shoe, from the floor to the knee, as wide as the shoe: the body's
+        #  cylinder round the pelvis was narrower than the drawn legs and shoes and the sun ran from the toe toward the lens)
+        for sd, (lx, ly, lr, lh) in zip(("legL", "legR"), w.get("legs", [])):
+            if os.environ.get("NO_LEGS"): P[sd].location = (0, 0, -50); continue
+            P[sd].location = (lx, ly, 0); P[sd].scale = (lr, lr, lh)
 def park_standins():
-    for P in STAND.values(): P["body"].location = (0, 0, -50); P["head"].location = (0, 0, -50)
+    for P in STAND.values():
+        for o in P.values(): o.location = (0, 0, -50)
 
 def pose_shot(shot, t):
     pose_cam(shot, t)

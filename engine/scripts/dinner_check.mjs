@@ -44,9 +44,10 @@ const exportSpec = { name: "spec", setup(b) { b.onLoad({ filter: /designs[\\/]fl
 await esbuild.build({ plugins: [exportSpec], stdin: { contents: 'export * from "./src/craft/dinner3d/core"; export * from "./src/craft/dinner3d/figures"; export { captionAt, crownPick, hatAt, crownGaps, CROWN, CAP_TOPS, camFx, bodyCaps, boxHitsCap, CAP_ON_BODY, ARM_CAPS, headZones } from "./src/craft/dinner3d/Dinner3D"; export { thighUnder, scaleOf, D, FM, jointPx, footY, heightOf } from "./src/craft/clips/clipKit"; export * as BG from "./src/craft/checks/bodyGeom"; export { kitOf, kitBody, beardOutline, pupilAt, qPupils, farForeOver, CUFF } from "./src/craft/wardrobe/kit"; export { A_SPEC } from "./src/craft/designs/flat";', resolveDir: ".", loader: "tsx" }, bundle: true, format: "esm", platform: "node", outfile: out, logLevel: "error", loader: { ".json": "json" }, external: ["remotion", "react"] });
 const M = await import(pathToFileURL(out).href); fs.rmSync(out);
 const { SHOTS, WHO, PLANT, placeOf, toScreen, feetOf, project, jointPx, handPx, FM, cardToWorld, thighUnder, scaleOf, D, captionAt, PUD_UP, TABLE_TOP } = M;
-const CHECK_PLANTS = { headTouch: 8, capOutD5: 10, crownBrim: 6, crownFace: 6, noFore: 10, cuffOnly: 10, lidCut: 18, stripeNet: 17, sleeveNoInk: 10, capLow: 6, missing: 7, faceHide: 8, headPeek: 8, hide40: 8, mouthHand: 9, oneArm: 10, mouthOut: 11, turnCross: 12, seatEdge: 1, faceEdge: 13, frontArm: 10, smileCross: 14 }, RULE_OF = { seatHigh: 1, pudOff: 3, pudLift: 3, handIn: 4, handInBook: 4, float: 2, ...CHECK_PLANTS };
+const CHECK_PLANTS = { pudBeard: 8, hookHi: 8, headTouch: 8, capOutD5: 10, crownBrim: 6, crownFace: 6, noFore: 10, cuffOnly: 10, lidCut: 18, stripeNet: 17, sleeveNoInk: 10, capLow: 6, missing: 7, faceHide: 8, headPeek: 8, hide40: 8, mouthHand: 9, oneArm: 10, mouthOut: 11, turnCross: 12, seatEdge: 1, faceEdge: 13, frontArm: 10, smileCross: 14 }, RULE_OF = { seatHigh: 1, pudOff: 3, pudLift: 3, handIn: 4, handInBook: 4, float: 2, ...CHECK_PLANTS };
 if (plant === "noFore") PLANT.capTurn0 = true;
 if (plant === "pudLift") PLANT.pudLift = true;
+if (plant === "hookHi") PLANT.hookHi = true;      // (hookHi: the hook's pudding held where 262fe44 had it, over the captain's beard on frame 47)
 if (plant === "capOutD5") { PLANT.capOutD5 = true; const old = JSON.parse(fs.readFileSync("scripts/plants/cams-d5e149d.json", "utf8")); M.setCam("2", old["2"]); M.setCam("15b", old["15b"]); }      // (with d5e149d's cameras of 2 and 15b)      // (capOutD5: the captain's far hand in 2 and 15b where d5e149d had it, the reviewer's NO on frames 53 and 716)      // (noFore: the captain's far arm as v6 drew it, under the coat, and in 9 turned 31 degrees from the lens)
 if (plant && !(plant in CHECK_PLANTS)) { if (!(plant in PLANT)) throw new Error("no such planted fault: " + plant); PLANT[plant] = true; }
 const { BG, A_SPEC, footY, VOICES, kitOf, kitBody } = M; if (D.id !== "flatA") throw new Error("the checks' body sizes are A's: the design is " + D.id); const BODY = A_SPEC.sir.B;
@@ -81,7 +82,11 @@ for (const S of SHOTS) {
     // (v6c, the reviewer: each frame's stand-in where the figure is, so a shadow follows a figure that rises or sinks (9, 11): his head's middle and
     //  radius and his neck, in the world, from his card)
     (STANDF[S.id] ??= []).push(placed.map(({ w, pl }) => { const f = pl.f, Wd = (j) => cardToWorld(w, pl, jointPx(f, j)), sk0 = Wd("skull"), cr0 = Wd("crown"), nk = Wd("neck"), pv = Wd("pelvis");
-      return { name: w.name, head: [0, 1, 2].map((k) => +((sk0[k] + cr0[k]) / 2).toFixed(3)), r: +(Math.hypot(cr0[0] - sk0[0], cr0[1] - sk0[1], cr0[2] - sk0[2]) / 2).toFixed(3), neck: nk.map((v) => +v.toFixed(3)), pelvis: pv.map((v) => +v.toFixed(3)) }; }));
+      /* (v6c, the reviewer on hook A frame 0: a strip of sun from the sailor's toe toward the lens, where his leg should shade it: the body's stand-in,
+         a cylinder round the pelvis, was narrower than his drawn legs and shoes. Each leg has its own, from the floor to the knee over the drawn
+         shoe (its middle, as wide as the shoe is long plus 4 cm)) */
+      const legs = ["L", "R"].map((sd) => { const he = Wd("heel" + sd), to = Wd("toe" + sd), kn = Wd("kn" + sd), cx = (he[0] + to[0]) / 2, cy = (he[1] + to[1]) / 2; return [+cx.toFixed(3), +cy.toFixed(3), +(Math.max(0.07, Math.hypot(to[0] - he[0], to[1] - he[1]) / 2 + 0.04)).toFixed(3), +Math.max(0.2, kn[2]).toFixed(3)]; });
+      return { name: w.name, head: [0, 1, 2].map((k) => +((sk0[k] + cr0[k]) / 2).toFixed(3)), r: +(Math.hypot(cr0[0] - sk0[0], cr0[1] - sk0[1], cr0[2] - sk0[2]) / 2).toFixed(3), neck: nk.map((v) => +v.toFixed(3)), pelvis: pv.map((v) => +v.toFixed(3)), legs }; }));
     for (const { w, pl } of placed) {
       const f = pl.f, scr = (j) => toScreen(pl, jointPx(f, j)), key = S.id + ":" + w.name;
       { const P = (j) => scr(j).map((v) => Math.round(v)), s0 = scr("skull"), c0 = scr("crown"), hr = Math.hypot(c0[0] - s0[0], c0[1] - s0[1]) / 2, lw = Math.round(0.17 * hr);
@@ -132,11 +137,14 @@ for (const S of SHOTS) {
       //    toward the lens where his shadow should lie). The low sun through the stern windows (core.ts PANES, SUN_BACK as set.py) lights the floor
       //    in strips: x within a pane, y from 3.2 - z1/0.42 to 3.2 - z0/0.42, less the table's shadow (x -1.447..-0.583, y down to 0.823 - 0.488/0.42).
       //    The figures cast no shadow (sun off), so no foot point on the floor may lie in a lit strip
-      for (const ft of feetOf(S.id, fr, w, pl)) for (const [pt, nm] of [[ft.heel, "heel"], [[pl.at[0], pl.at[1], 0], "floor point"]]) { if (pt[2] > 0.02) continue; const [x, y] = pt, SB = 1 / 0.42;      /* (his heels and his floor point, under him: a toe reaching out into the sun beside his shadow is lit, as it would be) */
+      /* (v6c, the reviewer on hook A: and the floor a foot's length on from each drawn foot toward the lens, the way the shadows fall, is not lit:
+         a strip of sun ran from the sailor's toe where his leg's shadow should lie. Planted: NO_LEGS, the plates' leg stand-ins left out) */
+      const legsNow = (STANDF[S.id]?.[fr] ?? []), legShade = (x, y) => legsNow.some((e) => (process.env.NO_LEGS ? [] : e.legs ?? []).some(([lx, ly, lr, lh]) => Math.abs(x - lx) <= lr && y <= ly + lr && y >= ly - lh / 0.42));
+      for (const ft of feetOf(S.id, fr, w, pl)) for (const [pt, nm] of [[ft.heel, "heel"], [[pl.at[0], pl.at[1], 0], "floor point"], ...[0, 1 / 3, 2 / 3, 1].map((u) => [[ft.toe[0], ft.toe[1] - u * Math.max(0.2, Math.hypot(ft.toe[0] - ft.heel[0], ft.toe[1] - ft.heel[1])), ft.toe[2]], `floor ${Math.round(u * 100)} % of a foot past the toe`])]) { if (pt[2] > 0.02) continue; const [x, y] = pt, SB = 1 / 0.42;      /* (his heels and his floor point, under him: a toe reaching out into the sun beside his shadow is lit, as it would be) */
         const lit = [[-1.6, -0.7, 0.95, 1.85], [-0.45, 0.45, 0.95, 1.85], [0.7, 1.6, 0.95, 1.85]].some(([x0, x1, z0, z1]) => x >= x0 && x <= x1 && y >= 3.2 - z1 * SB && y <= 3.2 - z0 * SB) && !(x >= -1.447 && x <= -0.583 && y <= 0.843 && y >= 0.823 - 0.488 * SB);
         /* (v6c: the plates have each drawn figure's shadow from its stand-in (set.py, a body of radius 0.16-0.24 m): a point in a stand-in's body
            shadow, beside it or toward the lens from it, is not in the sun) */
-        const R0 = { crew: 0.2, boy: 0.16, captain: 0.24 }, shaded = placed.some(({ w: w2, pl: p2 }) => Math.abs(x - p2.at[0]) <= (R0[w2.name] ?? 0.2) + 0.02 && y <= p2.at[1] + (R0[w2.name] ?? 0.2));
+        const R0 = { crew: 0.2, boy: 0.16, captain: 0.24 }, shaded = legShade(x, y) || placed.some(({ w: w2, pl: p2 }) => Math.abs(x - p2.at[0]) <= (R0[w2.name] ?? 0.2) + 0.02 && y <= p2.at[1] + (R0[w2.name] ?? 0.2));
         if (lit && !shaded && process.env.NO_STANDINS === undefined || (lit && process.env.NO_STANDINS !== undefined)) { const pq = project(S.id, fr, [x, y, 0]); if (pq[2] > 0 && pq[0] >= 0 && pq[0] <= FM.W && pq[1] >= 0 && pq[1] <= FM.H) { faults.push(`19 ${S.id} frame ${fr} ${w.name} ${ft.side} ${nm}: on the floor in the sun's strip with no shadow`); break; } } }
       // 2 the feet
       for (const ft of feetOf(S.id, fr, w, pl)) for (const [pt, px, nm] of [[ft.heel, ft.heelPx, "heel"], [ft.toe, ft.toePx, "toe"]]) {
@@ -157,7 +165,10 @@ for (const S of SHOTS) {
         /* (and seen against the room, not his striped shirt: no point of its bowl and dome over his torso or his other sleeve (the arm it rests on is under it), the reviewer condition 1) */
         { const sc = scaleOf(f.who), B = kitBody(BODY, kitOf(f.o.look)), sxy = (q) => toScreen(pl, [f.x + q[0] * sc, footY(f.who) + q[1] * sc]), body = [BG.torsoPoly(f.sk, B), ...BG.armParts(f.sk, "R", "grip", B).sleeve].map((P) => P.map(sxy));
           const pc = toScreen(pl, p.c), pr = 1.05 * p.r * pl.z; let over = 0, n = 0; for (let i = 0; i < 9; i++) for (let j = 0; j < 9; j++) { const x = -1 + i / 4, y = -1 + j / 4; if (x * x + y * y > 1) continue; n++; const q = [pc[0] + x * pr, pc[1] + y * pr]; if (body.some((P) => BG.inPoly(q, P))) over++; }
-          worst.pudOver = Math.max(worst.pudOver ?? 0, over / n); if (over) faults.push(`3 1 frame ${fr}: the pudding over his shirt (${over} of ${n} points)`); } }
+          worst.pudOver = Math.max(worst.pudOver ?? 0, over / n); if (over) faults.push(`3 1 frame ${fr}: the pudding over his shirt (${over} of ${n} points)`);
+          /* (and 10 px or more from his own head's outline, never a tangent at his chin, the reviewer on hook A frames 10 and 47) */
+          const head = BG.headPolys(f.sk, kitOf(f.o.look))[0].map(sxy); let dmin = 1e9; for (let i = 0; i < head.length; i++) { const a0 = head[i], b0 = head[(i + 1) % head.length], dx = b0[0] - a0[0], dy = b0[1] - a0[1], L = dx * dx + dy * dy || 1, u = Math.max(0, Math.min(1, ((pc[0] - a0[0]) * dx + (pc[1] - a0[1]) * dy) / L)); dmin = Math.min(dmin, Math.hypot(pc[0] - a0[0] - u * dx, pc[1] - a0[1] - u * dy)); }
+          const gapH = BG.inPoly(pc, head) ? -1 : dmin - pr - 4.5 * sc * pl.z; globalThis.CHIN3 = Math.min(globalThis.CHIN3 ?? 1e9, gapH); if (gapH < 10) faults.push(`3 1 frame ${fr}: the pudding ${gapH.toFixed(0)} px from his head's outline (10 px at least)`); } }
       if (w.name === "crew" && fr === 0 && 2 * PUD_R > 1.4 * (D.props("sir").hand * scaleOf("sir")) * (w.h / (FM.PPM * M.heightOf("sir")))) faults.push(`3 ${S.id}: the pudding wider than 1.4 of his hand's length`);      /* (v6c: a bowl carried from under it may be wider than the hand is long; 1.4 of it, about 24 cm, at most) */
       // 4 every hand put on a surface (the table, the plate, the book): the point on it (its top, 0.5 to 4 cm over it, inside its edges) and the
       //   drawn hand there in the picture (its grip within 8 px of where the lens sees that point; the hand short of it by at most 1 cm)
@@ -343,12 +354,24 @@ for (const S of SHOTS) {
     //  hull of its joints and the head's circle) in any frame
     { const geo = placed.map(({ w, pl }) => { const J = (j) => toScreen(pl, jointPx(pl.f, j)), s0 = J("skull"), c0 = J("crown"), hr = Math.hypot(c0[0] - s0[0], c0[1] - s0[1]) / 2;
         const body = hull(["neck", "shL", "shR", "elL", "elR", "wrL", "wrR", "tipL", "tipR", "hipL", "hipR", "knL", "knR", "anL", "anR"].map(J));
-        return { name: w.name, depth: pl.depth, hc: [(s0[0] + c0[0]) / 2, (s0[1] + c0[1]) / 2], r: hr * 1.1, body }; });
+        /* (v6c, the reviewer on hook A: the whole head is the head with its ears, hat and beard: the sailor's hand under the pudding lay 40 px into the
+           captain's beard on frame 47 and rule 8, counting the head's circle, gave 0. Its points: the circle as before, the hat's outline and the beard's,
+           filled. What lies over it: the body's hull, the head, and the pudding he holds (its bowl and dome, as drawn). Planted: hookHi, the
+           pudding held where 262fe44 had it) */
+        const f = pl.f, sc8 = scaleOf(f.who), sxy8 = (q) => toScreen(pl, [f.x + q[0] * sc8, footY(f.who) + q[1] * sc8]), kit8 = kitOf(f.o.look), hp = BG.headPolys(f.sk, kit8);
+        const extra = [...(hp.length > 1 ? BG.fillPts([hp[1]], 14) : []), ...(kit8?.beard === "full" ? BG.fillPts([M.beardOutline(f.sk)], 14) : [])].map(sxy8);
+        let pud = null; if (w.name === "crew") { const pdd = T < HANDOVER.give ? M.pudDrawn(S.id, fr, pl, T) : M.pudOf(pl, false, "R"); pud = { c: toScreen(pl, pdd.c), r: 1.05 * pdd.r * pl.z }; }
+        const B8 = kitBody(BODY, kit8), arms = ["L", "R"].flatMap((sd) => BG.armParts(f.sk, sd, f.o["hand" + sd] ?? "relaxed", B8).all.map((P) => P.map(sxy8)));      // (his drawn arms and hands, not only the joints' hull)
+        return { name: w.name, depth: pl.depth, hc: [(s0[0] + c0[0]) / 2, (s0[1] + c0[1]) / 2], r: hr * 1.1, body, extra, pud, arms }; });
       const inPoly = (pt, P) => { let c = false; for (let i = 0, j = P.length - 1; i < P.length; j = i++) if ((P[i][1] > pt[1]) !== (P[j][1] > pt[1]) && pt[0] < ((P[j][0] - P[i][0]) * (pt[1] - P[i][1])) / (P[j][1] - P[i][1]) + P[i][0]) c = !c; return c; };
       for (const far of geo) for (const near of geo) { if (near === far || near.depth >= far.depth) continue;
         const own8 = (OWN8[S.id] ?? []).includes(far.name), dx8 = !own8 && far.name === "boy" ? (plant === "headPeek" ? 1.3 : plant === "hide40" ? 0.75 : 0) * far.r : 0;      /* (the planted faults: the boy's head moved aside, a part of it out from behind (headPeek) or 40 % hidden (hide40)) */
         const pts = []; for (let k = 0; k < 24; k++) { const a = (k / 24) * Math.PI * 2; for (const rr of [0, 0.35, 0.7, 0.95]) pts.push([far.hc[0] + dx8 + Math.cos(a) * rr * far.r * 1.12, far.hc[1] + Math.sin(a) * rr * far.r]); }      /* (v6c: the whole head with its ears, cheeks and temples (the independent review of v6: the sailor's head over the captain's cheek and ear in 9, over the boy's temple in 12, missed by the face's inner ellipse)) */      /* (the face, every figure: rule 8) */
-        const inF = pts.filter((q) => q[0] >= 0 && q[0] <= FM.W && q[1] >= 0 && q[1] <= FM.H), hit = inF.filter((q) => inPoly(q, near.body) || Math.hypot(q[0] - near.hc[0], q[1] - near.hc[1]) < near.r).length;
+        pts.push(...far.extra.map((q) => [q[0] + dx8, q[1]]));
+        /* (pudBeard, the planted fault: in the hook the pudding moved onto the captain's beard, half its width over the beard's nearest edge point) */
+        if (plant === "pudBeard" && S.id === "1" && near.name === "crew" && far.name === "captain" && near.pud && far.extra.length) { const e = far.extra.reduce((m, q) => (Math.hypot(q[0] - near.pud.c[0], q[1] - near.pud.c[1]) < Math.hypot(m[0] - near.pud.c[0], m[1] - near.pud.c[1]) ? q : m), far.extra[0]), L = Math.hypot(e[0] - near.pud.c[0], e[1] - near.pud.c[1]) || 1;
+          near.pud = { ...near.pud, c: [e[0] - ((e[0] - near.pud.c[0]) / L) * near.pud.r * 0.5, e[1] - ((e[1] - near.pud.c[1]) / L) * near.pud.r * 0.5] }; }
+        const inF = pts.filter((q) => q[0] >= 0 && q[0] <= FM.W && q[1] >= 0 && q[1] <= FM.H), hit = inF.filter((q) => inPoly(q, near.body) || Math.hypot(q[0] - near.hc[0], q[1] - near.hc[1]) < near.r || (near.pud && Math.hypot(q[0] - near.pud.c[0], q[1] - near.pud.c[1]) < near.pud.r) || near.arms.some((P) => inPoly(q, P))).length;
         if (own8) { if (hit > 0) faults.push(`8 ${S.id} frame ${fr}: the ${far.name}'s face is under the ${near.name} (${hit} of ${pts.length} points)`); }
         else if (inF.length && hit > 0) faults.push(`8 ${S.id} frame ${fr}: the ${far.name}'s head ${Math.round((hit / inF.length) * 100)} % behind the ${near.name}`);      /* (rule 8 in full: no face, nor head, hidden at all, the reviewer 26 Nov) */
         else if (false) { const fr8 = hit / inF.length, st = fr8 <= 0.1 ? "seen" : fr8 >= 0.98 ? "hidden" : "part";      /* (a background figure: his whole head with its hair and ears seen (10 % or less hidden) or none of it (98 % or more), one state through the shot: the reviewer, 26 Nov) */
@@ -448,6 +471,7 @@ for (const k of Object.keys(NOTES5)) { const P = HPOS[k] ?? [], xs = P.map((q) =
 console.log("5 (note) hands at the edge of a figure seen only as a sliver: " + (Object.keys(NOTES5).join(", ") || "none"));
 console.log("18 (note) blink frames over a cut, not judged: " + (Object.entries(NOTE18).map(([k, v]) => `${k} ${v.join(",")}`).join("; ") || "none"));
 console.log("13 (note) heads cut by the edge, the most of each in the picture: " + (Object.entries(NOTES13).map(([k, v]) => `${k} ${(v * 100).toFixed(0)}%`).join(", ") || "none"));
+if (globalThis.CHIN3 !== undefined) console.log(`3 (note) the hook's pudding at least ${globalThis.CHIN3.toFixed(0)} px from the sailor's head`);
 if (globalThis.TAN8) console.log("8 (note) heads closer than 20 px, not judged outside the hook: " + Object.entries(globalThis.TAN8).map(([k, v]) => `${k} ${v.toFixed(0)} px`).join(", "));
 if (worst.pudW !== undefined) console.log(`3 (note) the hook's pudding: at least ${worst.pudW.toFixed(0)} px wide, at most ${Math.round((worst.pudOver ?? 0) * 100)} % over his shirt, at most ${worst.palm.toFixed(1)} cm off his palm; heads in shot 1 apart at least ${(globalThis.GAP8 ?? 0).toFixed(0)} px; the captain's hands at least ${(globalThis.APART3 ?? 0).toFixed(1)} hand lengths from the pudding and the sailor's hand; his hat at least ${(globalThis.HAT13 ?? 0).toFixed(0)} px inside the picture`);
 console.log(`worst: seat ${(worst.seat * 100).toFixed(2)} cm from the chest, the pudding's base ${(worst.grip * 100).toFixed(2)} cm off the plate, hands on the table ${(worst.table[0] * 100).toFixed(1)} to ${(worst.table[1] * 100).toFixed(1)} cm over its top, a hand at most ${(worst.place ?? 0).toFixed(1)} cm from its place`);

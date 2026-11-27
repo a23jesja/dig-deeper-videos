@@ -26,7 +26,7 @@ const MAIN = { 1: [["crew", "upper"]], 2: [["captain", "upper"]], 3: [["crew", "
   11: [["captain", "upper"]], 12: [["crew", "upper"]], 13: [["crew", "upper"]], 14: [["boy", "upper"]], "15a": [["crew", "upper"]], "15b": [["captain", "upper"]] };      /* (15a: an insert of the table, the two fists (the cloud session's two-shot had a face under another from every side)) */      /* (the vote split in two (the cloud session, 26 Nov): with three Knopp heads in one picture a face was always under another) */
 /** the composition (the reviewer, 25 Nov, the style test's standard): the shot's own figures fill 60-90 % of the picture's height, the empty
  *  space over the highest head no larger than a quarter of it; a figure framed from the waist runs on to the picture's foot */
-const FILL_MIN = +(process.env.FILL_MIN ?? 0.6), TOP_MAX = 0.4;
+const FILL_MIN = +(process.env.FILL_MIN ?? 0.6), TOP_MAX = 0.4, STEP = process.argv.includes("--audit") ? 1 : 6;      /* (v6c: --audit tries every frame, the search every sixth) */
 /** (the cloud session, 26 Nov: the acting figure head to feet, 60 % seated too; the one exception is the captain's rise and slam, shot 9 (RISE 14.4-15.45 s),
  *  50 % with the whole move in the picture: the hands inside with a margin, as every shot) */
 const FILL_RISE = { 9: 0.5 };      // (the reviewer: the empty space over the heads no larger than the figures)
@@ -35,6 +35,7 @@ const TOP = 0.488, EXTRA = { 1: [[SPEC.plate[0], SPEC.plate[1], TOP]], 3: [[SPEC
 const boxOf = (pl, nm, how) => { if (how === "close") return []; const f = pl.f, sc = M.scaleOf(f.who), c = jointPx(f, "crown");
   const hat = (nm === "captain" ? [[-200, -40], [200, -40], [0, -110]] : [[-140, -20], [140, -20], [0, -40]]).map(([dx, dy]) => [c[0] + dx * sc, c[1] + dy * sc]);
   let pts = [...figBox(f), ...hat];
+  if (how === "hat") return hat.map((q) => toScreen(pl, q));      /* (v6c: the head's top with its hair, bandana or hat, for the fill) */
   if (how === "headarmR") { const hd = jointPx(f, "skull")[1], pel = jointPx(f, "pelvis")[1]; return [...pts.filter((q) => q[1] <= hd + 0.1 * (pel - hd)), ...["shR", "elR", "wrR", "tipR"].map((j) => jointPx(f, j))].map((q) => toScreen(pl, q)); }      /* (14: the boy's head and his raised right arm) */
   if (how === "headarms") { const hd = jointPx(f, "skull")[1], pel = jointPx(f, "pelvis")[1]; return [...pts.filter((q) => q[1] <= hd + 0.1 * (pel - hd)), ...["shL", "elL", "wrL", "tipL", "shR", "elR", "wrR", "tipR"].map((j) => jointPx(f, j)).filter((q) => q[1] <= hd + 0.3 * (pel - hd))].map((q) => toScreen(pl, q)); }      /* (14: heads and the raised arms) */
   if (how === "headarm") { const hd = jointPx(f, "skull")[1], pel = jointPx(f, "pelvis")[1]; return [...pts.filter((q) => q[1] <= hd + 0.1 * (pel - hd)), ...["shL", "elL", "wrL", "tipL"].map((j) => jointPx(f, j))].map((q) => toScreen(pl, q)); }      /* (13: his head and his raised left arm to the shoulder) */
@@ -45,7 +46,7 @@ const tryCam = (S, C, at, lens, prev) => { if (!inRoom(C)) return { ok: false, w
   const whos = WHO[S.id](); if (!(MAIN[S.id] ?? []).every(([nm]) => whos.some((w) => w.name === nm))) return { ok: false, why: "own figure not in the picture", fitBad: 999 };
   if (S.id === "1" && !whos.some((w) => w.name === "captain")) return { ok: false, why: "the captain not in the hook", fitBad: 0 };      /* (v6c: the hook shows it is his dinner, the cloud session) */
   let fitBad = 0, fail = null, pen = 0; const STATE8 = {}, FILLY = {}, TOPY = {}, zs = {}, whole = {}, own = new Set((MAIN[S.id] ?? []).map(([nm]) => nm)), notes = new Set(), HP = {}, EDGE = {}, inP = (p) => p[0] >= 0 && p[0] <= W && p[1] >= 0 && p[1] <= H;
-  for (let fr = 0; fr < n; fr += 6) for (const w of whos) { const pl = placeOf(S.id, fr, w), J = (j) => toScreen(pl, jointPx(pl.f, j)), how = (MAIN[S.id] ?? []).find(([nm]) => nm === w.name), close = how && how[1] === "close";
+  for (let fr = 0; fr < n; fr += STEP) for (const w of whos) { const pl = placeOf(S.id, fr, w), J = (j) => toScreen(pl, jointPx(pl.f, j)), how = (MAIN[S.id] ?? []).find(([nm]) => nm === w.name), close = how && how[1] === "close";
     // the head (its circle with the hat): the shot's own figures whole (10b: his face whole); a neighbour's head in, out, or a part without features
     const s0 = J("skull"), c0 = J("crown"), hr = (Math.hypot(c0[0] - s0[0], c0[1] - s0[1]) / 2) * (w.name === "captain" ? 1.35 : 1.08), hc = [(s0[0] + c0[0]) / 2, (s0[1] + c0[1]) / 2];
     let inn = 0; for (let k = 0; k < 24; k++) for (const rr of [0.35, 0.7, 1]) { if (inP([hc[0] + rr * hr * Math.cos((k / 24) * 2 * Math.PI), hc[1] + rr * hr * Math.sin((k / 24) * 2 * Math.PI)])) inn++; }
@@ -68,10 +69,10 @@ const tryCam = (S, C, at, lens, prev) => { if (!inRoom(C)) return { ok: false, w
       if (!inside && !gone) { if (seen || own.has(w.name) || !shIn) fail ??= `hand ${hk}`; else { EDGE[hk] = true; notes.add(`${hk} hand at the edge (a sliver)`); } } }      /* (a lone hand at the edge, its arm out of the picture, fails: Eiffel v11) */
     // the shot's own figures inside the margins
     if (how) { const bx = boxOf(pl, w.name, how[1]); for (const q of bx) if (q[0] < 0.05 * W || q[0] > 0.95 * W || q[1] < 0.04 * H || q[1] > 0.96 * H) fitBad++;
-      if (bx.length) { const ys = bx.map((q) => q[1]), feet = Math.max(...boxOf(pl, w.name, "whole").map((q) => q[1])); FILLY[`${fr}:${w.name}`] = [Math.min(...ys), Math.min(H, feet)]; TOPY[fr] = Math.min(TOPY[fr] ?? 1e9, ...ys); } } }      /* (v6c: each own figure fills 60 % from his head to his own feet or the picture's foot: before, a waist-up figure counted the floor under him to the foot, and 15a passed at 37 and 47 %, the reviewer 26 Nov) */
+      if (bx.length) { const ys = bx.map((q) => q[1]), feet = Math.max(...boxOf(pl, w.name, "whole").map((q) => q[1])), headTop = Math.min(...boxOf(pl, w.name, "hat").map((q) => q[1])); FILLY[`${fr}:${w.name}`] = [headTop, Math.min(H, feet)]; TOPY[fr] = Math.min(TOPY[fr] ?? 1e9, ...ys); } } }      /* (v6c, the reviewer: the fill from the top of his hair or hat, never from a raised hand: the boy's fist up by his ear in 14 lifted it to 60 % while he filled 57 %) */      /* (v6c: each own figure fills 60 % from his head to his own feet or the picture's foot: before, a waist-up figure counted the floor under him to the foot, and 15a passed at 37 and 47 %, the reviewer 26 Nov) */
   // (rule 8 in the tuner: no own figure's face under a figure nearer the lens, its head, its torso or its arms: the boy behind the table was hidden
   //  by the sailor or by the captain in the foreground, the stills of 25 Nov)
-  for (let fr = 0; fr < n; fr += 6) { const pls = whos.map((w) => ({ w, pl: placeOf(S.id, fr, w) }));
+  for (let fr = 0; fr < n; fr += STEP) { const pls = whos.map((w) => ({ w, pl: placeOf(S.id, fr, w) }));
     for (const A of pls) { const J = (pl, j) => toScreen(pl, jointPx(pl.f, j)),      /* (every face in the picture, not only the shot's own: dinner_check's rule 8 fails a background face under a nearer figure too) */ s0 = J(A.pl, "skull"), c0 = J(A.pl, "crown"), hr = Math.hypot(c0[0] - s0[0], c0[1] - s0[1]) / 2, hc = [(s0[0] + c0[0]) / 2, (s0[1] + c0[1]) / 2];
       const pts = []; for (let k = 0; k < 16; k++) for (const rr of [0.2, 0.5, 0.75]) pts.push([hc[0] + rr * hr * Math.cos((k / 16) * 2 * Math.PI), hc[1] + 0.15 * hr + rr * hr * Math.sin((k / 16) * 2 * Math.PI)]);      /* (rule 8 is about faces: the face, below the hat, for every figure, as dinner_check) */      /* (a background figure: his whole head with its hair and ears, the reviewer) */
       for (const B of pls) { if (B === A || B.pl.depth >= A.pl.depth) continue; const b0 = J(B.pl, "skull"), b1 = J(B.pl, "crown"), hb = Math.hypot(b1[0] - b0[0], b1[1] - b0[1]) / 2, bc = [(b0[0] + b1[0]) / 2, (b0[1] + b1[1]) / 2];
@@ -91,7 +92,8 @@ const tryCam = (S, C, at, lens, prev) => { if (!inRoom(C)) return { ok: false, w
   for (const p of EXTRA[S.id] ?? []) { const v = [0, 1, 2].map((r) => P[r][0] * p[0] + P[r][1] * p[1] + P[r][2] * p[2] + P[r][3]), q = [v[0] / v[2], v[1] / v[2]]; if (q[0] < 0.05 * W || q[0] > 0.95 * W || q[1] < 0.04 * H || q[1] > 0.96 * H) fitBad++; }
   if (prev) { const both = Object.keys(whole).filter((nm) => prev.whole[nm]); if (both.length) { const da = norm(prev.at.map((v, k) => v - prev.C[k])), db = norm(at.map((v, k) => v - C[k])), ang = (Math.acos(Math.min(1, dot(da, db))) * 180) / Math.PI;
     const sz = Math.min(...both.map((nm) => Math.max(zs[nm], prev.zs[nm]) / Math.min(zs[nm], prev.zs[nm]))); if (ang < 31 || sz < 1.3) fail ??= `cut ${ang.toFixed(0)} deg ${sz.toFixed(2)}x`; } }
-  return { ok: !fail, why: fail, fitBad, whole, zs, pen, notes: [...notes] }; };
+  const fills = {}; for (const [k, [y0, y1]] of Object.entries(FILLY)) { const nm = k.split(":")[1], fr0 = +k.split(":")[0], f = (Math.min(H, y1) - Math.max(0, y0)) / H; if (fills[nm] === undefined || f < fills[nm][0]) fills[nm] = [f, fr0]; }
+  return { ok: !fail, why: fail, fitBad, whole, zs, pen, notes: [...notes], fills }; };
 /** the shot's camera: for each angle near the intent, the nearest distance at which its own figures fit (fitBad 0), checked as above */
 let HEADAT = [0, 0, 1.25];
 const solveShot = (S, it, prev) => { const xs = (MAIN[S.id] ?? []).length ? (MAIN[S.id] ?? []).map(([nm]) => SPEC.figs[nm]) : (EXTRA[S.id] ?? []).map((p) => [p[0], p[1]]), ctr = [xs.reduce((a, p) => a + p[0], 0) / xs.length, xs.reduce((a, p) => a + p[1], 0) / xs.length];
@@ -116,7 +118,7 @@ const solveShot = (S, it, prev) => { const xs = (MAIN[S.id] ?? []).length ? (MAI
 let prev = null; const found = {};
 // (--audit: every shot's present camera through every check, nothing written: which shots the stricter rules fail)
 if (process.argv.includes("--audit")) { for (const S of SHOTS) { const sc = SPEC.shots.find((q) => q.id === S.id).cam, r = tryCam(S, sc.from[0], sc.at, sc.lens, S.id === "10b" ? null : prev);
-    console.log(`AUDIT ${S.id}: ${r.ok ? "ok" : "FAIL " + (r.why ?? "")}`); prev = { C: sc.from[0], at: sc.at, whole: r.whole ?? {}, zs: r.zs ?? {} }; } process.exit(0); }
+    console.log(`AUDIT ${S.id}: ${r.ok ? "ok" : "FAIL " + (r.why ?? "")}  (least fill: ${Object.entries(r.fills ?? {}).map(([nm, [f, fr0]]) => `${nm} ${(f * 100).toFixed(1)} % at frame ${fr0}`).join(", ")})`); prev = { C: sc.from[0], at: sc.at, whole: r.whole ?? {}, zs: r.zs ?? {} }; } process.exit(0); }
 // (v6c, --dolly 3,7,...: each named shot's present camera moved straight toward its aim point, a step at a time (98 % of the distance down to
 //  55 %), until every check passes (fill first): the full search took more than 18 min a shot; the angle is kept, so the cuts' turns stay)
 if (process.argv.includes("--dolly")) { const ids = process.argv[process.argv.indexOf("--dolly") + 1].split(","); let pv = null;

@@ -23,6 +23,7 @@
 //      bent; the upper arm in toward the body's middle at most 30 degrees (Jesper on v6 shot 4 and 11-13 s; see the rule below)
 //  17  no crossing stripes on a striped sleeve (the review of v6, point 4)
 //  18  no lid's line across a pupil (the review of v6, point 9)
+//  19  no foot in the sun's strip on the floor with no shadow (the reviewer on the v6c stills); planted: NO_STANDINS=1 (no stand-in shadows, as v6)
 //  12  the head's drawing does not change inside a shot: the face's turn never crosses 15-28 or 50-60 degrees within a shot, where the
 //      head and the tricorn change drawing (the sheet's review: the hat's shape jumps there)
 // Planted faults (each must fail, and on its own rule: the run exits 1 only when that rule fired): --plant seatHigh (the seat 5 cm over the
@@ -33,7 +34,7 @@
 // down in the head's frame, 11), turnCross (the crewman's face turning 0 to 40 degrees more through his first shot, 12).
 //   node scripts/dinner_check.mjs [--plant seatHigh|pudOff|handIn|float|capLow|missing|faceHide|mouthHand|oneArm|mouthOut|turnCross]
 import * as esbuild from "esbuild"; import fs from "node:fs"; import path from "node:path"; import { pathToFileURL } from "node:url";
-const NOTE6 = {}, NOTE8 = {}, STATE8 = {}, NOTE18 = {};
+const NOTE6 = {}, NOTE8 = {}, STATE8 = {}, NOTE18 = {}, WHOJ = {};
 /** the shots' own figures (as the tuner's MAIN): their faces never hidden at all */
 const OWN8 = { 1: ["crew", "captain"], 2: ["captain"], 3: ["crew"], 4: ["crew"], 5: ["boy"], 7: ["crew"], 8: ["crew"], 9: ["captain"], "10b": ["captain"], 11: ["captain"], 12: ["crew"], 13: ["crew"], 14: ["boy"], "15a": [], "15b": ["captain"] };
 const arg = (k) => (process.argv.includes(k) ? process.argv[process.argv.indexOf(k) + 1] : null), plant = arg("--plant");
@@ -73,6 +74,7 @@ for (const S of SHOTS) {
   if (plant === "missing" && !missingDone && whos.some((w) => w.name === "boy")) { whos = whos.filter((w) => w.name !== "boy"); missingDone = true; }
   for (let fr = 0; fr < n; fr++) { frames++; const row = [], T = S.t0 + fr / FM.FPS;
     const placed = whos.map((w) => ({ w, pl: placeOf(S.id, fr, w) })), heads = [], hands = [], HEADS6 = [];
+    if (fr === 0) WHOJ[S.id] = placed.map(({ w, pl }) => ({ name: w.name, at: pl.at, h: w.h }));
     for (const { w, pl } of placed) {
       const f = pl.f, scr = (j) => toScreen(pl, jointPx(f, j)), key = S.id + ":" + w.name;
       { const P = (j) => scr(j).map((v) => Math.round(v)), s0 = scr("skull"), c0 = scr("crown"), hr = Math.hypot(c0[0] - s0[0], c0[1] - s0[1]) / 2, lw = Math.round(0.17 * hr);
@@ -119,6 +121,16 @@ for (const S of SHOTS) {
       if (w.name === "captain") { const c = Math.cos(CH_TURN), sn = Math.sin(CH_TURN), lid = [[-0.28, -0.2], [0.28, -0.2], [0.28, 0.2], [-0.28, 0.2]].map(([u, v]) => { const q = project(S.id, fr, [SEAT[0] + u * c - v * sn, SEAT[1] + u * sn + v * c, STOOL_TOP]); return [q[0], q[1]]; });
         const inLid = (p) => { let k = false; for (let i = 0, j = lid.length - 1; i < lid.length; j = i++) if ((lid[i][1] > p[1]) !== (lid[j][1] > p[1]) && p[0] < ((lid[j][0] - lid[i][0]) * (p[1] - lid[i][1])) / (lid[j][1] - lid[i][1]) + lid[i][0]) k = !k; return k; };
         for (const ft of feetOf(S.id, fr, w, pl)) for (const [px, nm] of [[ft.heelPx, "heel"], [ft.toePx, "toe"]]) if (px[1] > 0 && px[1] < FM.H && inLid(px)) { faults.push(`2 ${S.id} frame ${fr} captain ${ft.side} ${nm}: his shoe drawn over the chest's lid`); break; } }
+      // 19 no foot standing in the sun with no shadow (the reviewer on the v6c stills, 15a: the sun's strip on the floor began at his shoes and ran
+      //    toward the lens where his shadow should lie). The low sun through the stern windows (core.ts PANES, SUN_BACK as set.py) lights the floor
+      //    in strips: x within a pane, y from 3.2 - z1/0.42 to 3.2 - z0/0.42, less the table's shadow (x -1.447..-0.583, y down to 0.823 - 0.488/0.42).
+      //    The figures cast no shadow (sun off), so no foot point on the floor may lie in a lit strip
+      for (const ft of feetOf(S.id, fr, w, pl)) for (const [pt, nm] of [[ft.heel, "heel"], [[pl.at[0], pl.at[1], 0], "floor point"]]) { if (pt[2] > 0.02) continue; const [x, y] = pt, SB = 1 / 0.42;      /* (his heels and his floor point, under him: a toe reaching out into the sun beside his shadow is lit, as it would be) */
+        const lit = [[-1.6, -0.7, 0.95, 1.85], [-0.45, 0.45, 0.95, 1.85], [0.7, 1.6, 0.95, 1.85]].some(([x0, x1, z0, z1]) => x >= x0 && x <= x1 && y >= 3.2 - z1 * SB && y <= 3.2 - z0 * SB) && !(x >= -1.447 && x <= -0.583 && y <= 0.843 && y >= 0.823 - 0.488 * SB);
+        /* (v6c: the plates have each drawn figure's shadow from its stand-in (set.py, a body of radius 0.16-0.24 m): a point in a stand-in's body
+           shadow, beside it or toward the lens from it, is not in the sun) */
+        const R0 = { crew: 0.2, boy: 0.16, captain: 0.24 }, shaded = placed.some(({ w: w2, pl: p2 }) => Math.abs(x - p2.at[0]) <= (R0[w2.name] ?? 0.2) + 0.02 && y <= p2.at[1] + (R0[w2.name] ?? 0.2));
+        if (lit && !shaded && process.env.NO_STANDINS === undefined || (lit && process.env.NO_STANDINS !== undefined)) { const pq = project(S.id, fr, [x, y, 0]); if (pq[2] > 0 && pq[0] >= 0 && pq[0] <= FM.W && pq[1] >= 0 && pq[1] <= FM.H) { faults.push(`19 ${S.id} frame ${fr} ${w.name} ${ft.side} ${nm}: on the floor in the sun's strip with no shadow`); break; } } }
       // 2 the feet
       for (const ft of feetOf(S.id, fr, w, pl)) for (const [pt, px, nm] of [[ft.heel, ft.heelPx, "heel"], [ft.toe, ft.toePx, "toe"]]) {
         if (pt[2] < -0.005) faults.push(`2 ${S.id} frame ${fr} ${w.name} ${ft.side} ${nm}: ${(-pt[2] * 100).toFixed(1)} cm into the floor`);
@@ -326,6 +338,7 @@ if (!plant) {
   for (const s of spec.shots) { const n = Math.round((s.t1 - s.t0) * 30), fr = CAMS[s.id]; fs.writeFileSync(path.join(R, `src/craft/cabin3d/cam/${s.id}.json`), JSON.stringify({ id: s.id, frames: Array.from({ length: n }, (_, k) => fr[Math.min(k, fr.length - 1)]) }));
     const mp = `out/din3d/${s.id}/map.npz`; if (fs.existsSync(mp)) { fs.mkdirSync(path.join(R, "out/cab3d", s.id), { recursive: true }); fs.copyFileSync(mp, path.join(R, "out/cab3d", s.id, "map.npz")); } }
   fs.writeFileSync("out/din3d/regions.jsonl", regions.map((r) => JSON.stringify(r)).join("\n") + "\n");
+  fs.writeFileSync("out/din3d/who.json", JSON.stringify(WHOJ));      // (v6c: who is drawn in each shot and where: Blender casts their shadows from stand-ins, set.py)
 }
 if (arg("--geom")) fs.writeFileSync("out/din3d/geom.json", JSON.stringify(geomOut));
 { const CAMS = JSON.parse(fs.readFileSync("src/craft/dinner3d/cams.json", "utf8")), dirOf = (id) => { const P = CAMS[id][0][2], l = Math.hypot(P[0], P[1], P[2]); return [P[0] / l, P[1] / l, P[2] / l]; };

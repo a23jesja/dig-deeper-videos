@@ -229,6 +229,27 @@ def props_of(sid):
         PROPS[sid] = {th["name"]: th["frames"] for th in json.load(open(p))["things"]} if os.path.exists(p) else {}
     return PROPS[sid]
 
+# v6c (the reviewer on the v6c stills: the sun's strip on the floor ran from the sailor's shoes toward the lens, through him, where his shadow should
+# lie): each figure drawn in a shot has a stand-in here, a body and Knopp's big head, seen by nothing but the shadow rays, so the plate has the
+# figure's shadow in the sun (out/din3d/who.json from dinner_check: who is drawn in each shot and where, his cheat included)
+WHO_P = os.path.join(ENGINE, "out", "din3d", "who.json"); WHOJ = json.load(open(WHO_P)) if os.path.exists(WHO_P) else {}
+STAND = {}
+for nm, (rb, zb, rh, zh) in {"crew": (0.2, 0.95, 0.45, 1.45), "boy": (0.16, 0.71, 0.34, 1.07), "captain": (0.24, 0.7, 0.42, 0.98)}.items():
+    root = bpy.data.objects.new("stand-in " + nm, None); sc.collection.objects.link(root); parts = []
+    for kind, (rad, z) in (("body", (rb, zb)), ("head", (rh, zh))):
+        me = bpy.data.meshes.new(f"stand-in {nm} {kind}"); bm = bmesh.new()
+        if kind == "body": bmesh.ops.create_cone(bm, cap_ends=True, segments=16, radius1=rad, radius2=rad, depth=z); bmesh.ops.translate(bm, verts=bm.verts, vec=(0, 0, z / 2))
+        else: bmesh.ops.create_uvsphere(bm, u_segments=16, v_segments=10, radius=rad); bmesh.ops.translate(bm, verts=bm.verts, vec=(0, 0, z))
+        bm.to_mesh(me); bm.free(); o = bpy.data.objects.new(f"stand-in {nm} {kind}", me); sc.collection.objects.link(o); o.parent = root
+        o.visible_camera = False; o.visible_diffuse = False; o.visible_glossy = False; o.visible_transmission = False; o.visible_volume_scatter = False; o.visible_shadow = True
+        parts.append(o)
+    root.location = (0, 0, -50); STAND[nm] = root
+def place_standins(shot):
+    here = {w["name"]: w["at"] for w in WHOJ.get(shot["id"], [])}
+    for nm, root in STAND.items(): root.location = (here[nm][0], here[nm][1], 0) if nm in here else (0, 0, -50)
+def park_standins():
+    for root in STAND.values(): root.location = (0, 0, -50)
+
 def pose_shot(shot, t):
     pose_cam(shot, t)
     # the carried chest (piece S2): its place every frame from the figures' code (scripts/moves_props.mjs), at 0.55 of its size, its long
@@ -281,7 +302,8 @@ for shot in shots:
         pose_shot(shot, fr / FPS); sc.frame_set(0); bpy.context.view_layer.update()
         P, Mwc = projection(); cams.append({"f": fr, "P": P, "cam": list(Mwc.to_translation())})
         if CAMS_ONLY: continue
-        dep, kin, kinds = ray_map(Mwc); depths.append(dep); kinds_.append(kin)
+        park_standins(); bpy.context.view_layer.update(); dep, kin, kinds = ray_map(Mwc); depths.append(dep); kinds_.append(kin)      # (the depth map without the stand-ins)
+        place_standins(shot); bpy.context.view_layer.update()
         if not MAPS_ONLY: sc.render.filepath = os.path.join(outp, f"{fr + 1:04d}.jpg"); bpy.ops.render.render(write_still=True)
     secs = time.time() - t0; camdir = os.path.join(ENGINE, "src", "craft", "dinner3d", "cam"); os.makedirs(camdir, exist_ok=True)
     if FR is None: json.dump({"id": shot["id"], "frames": [c["P"] for c in cams]}, open(os.path.join(camdir, shot["id"] + ".json"), "w"))

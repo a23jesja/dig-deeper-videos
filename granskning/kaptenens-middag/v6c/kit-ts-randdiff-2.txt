@@ -1,0 +1,24 @@
+diff --git a/engine/src/craft/wardrobe/kit.ts b/engine/src/craft/wardrobe/kit.ts
+index ffc98b5..6c8b6e9 100644
+--- a/engine/src/craft/wardrobe/kit.ts
++++ b/engine/src/craft/wardrobe/kit.ts
+@@ -329,9 +329,16 @@ const drawFlat = (c: FlatSpec) => (k: Ink, sk: Sk, o: FigOpts) => {
+     const uS = ((v: P2): P2 => { const l = Math.hypot(v[0], v[1]) || 1; return [v[0] / l, v[1] / l]; })([S[0] - E[0], S[1] - E[1]]), uW = ((v: P2): P2 => { const l = Math.hypot(v[0], v[1]) || 1; return [v[0] / l, v[1] / l]; })([W[0] - E[0], W[1] - E[1]]);
+     const bend = (Math.acos(Math.max(-1, Math.min(1, -(uS[0] * uW[0] + uS[1] * uW[1])))) * 180) / Math.PI, nb0: P2 = [uS[0] - uW[0], uS[1] - uW[1]], nl = Math.hypot(nb0[0], nb0[1]), nb: P2 = nl > 1e-6 ? [nb0[0] / nl, nb0[1] / nl] : uS;
+     const sideOf = (off: number, sgn: number): P2[] => { const o: P2 = [E[0] - nb[0] * off, E[1] - nb[1] * off], t: P2 = [-nb[1], nb[0]], F = 1e4; return [[o[0] + t[0] * F, o[1] + t[1] * F], [o[0] + t[0] * F + nb[0] * sgn * F, o[1] + t[1] * F + nb[1] * sgn * F], [o[0] - t[0] * F + nb[0] * sgn * F, o[1] - t[1] * F + nb[1] * sgn * F], [o[0] - t[0] * F, o[1] - t[1] * F]]; };
+-    const own: [P2, P2, P2[]][] = [[S, E, sideOf(18 * Math.max(0, 1 - bend / 20), 1)], [E, W, sideOf(0, -1)]];
+-    if (kit?.top === "stripes") for (const piece of sleeve) k.clip(piece, () => { for (const [a, b, H] of own) k.clip(H, () => { const L = Math.hypot(b[0] - a[0], b[1] - a[1]) || 1, d: P2 = [(b[0] - a[0]) / L, (b[1] - a[1]) / L], n: P2 = [-d[1], d[0]];
+-      for (let u = 10; u < L + 10; u += 24) { const c0: P2 = [a[0] + d[0] * u, a[1] + d[1] * u]; k.line([[c0[0] - n[0] * 60, c0[1] - n[1] * 60], [c0[0] + n[0] * 60, c0[1] + n[1] * 60]], 10, kit.col.stripe); } }); });
++    // (and each family runs two stripes on past the elbow, into its own side up to the bisector: from 10 past it the forearm's first stripe left
++    //  the outer corner of a bent elbow bare, a white wedge, the reviewer on the v6c stills. Only past 20 degrees, where the line is the bisector itself:
++    //  under it a straight arm's line lies 17 past the elbow and an extra stripe showed short of it, so a straight arm draws as before)
++    // (and the forearm's stripes slide into step with the upper arm's as the elbow bends (their distances from the elbow the same mod 24, so
++    //  each pair meets on the bisector as a chevron): out of step, a stripe met a gap there and left a white wedge, the reviewer on the v6c
++    //  stills, frame 180. The slide grows with the bend from 10 degrees to its full at 30, none for a straight arm or one at rest)
++    const LA = Math.hypot(E[0] - S[0], E[1] - S[1]), dl = ((((LA - 20) % 24) + 24) % 24), ph = (dl > 12 ? dl - 24 : dl) * Math.max(0, Math.min(1, (bend - 10) / 20));
++    const ext = bend >= 20 ? 48 : 0, own: [P2, P2, P2[], number, number, number][] = [[S, E, sideOf(17 * Math.max(0, 1 - bend / 20), 1), 0, ext, 0], [E, W, sideOf(0, -1), ext, 0, ph]];
++    if (kit?.top === "stripes") for (const piece of sleeve) k.clip(piece, () => { for (const [a, b, H, pre, post, sh] of own) k.clip(H, () => { const L = Math.hypot(b[0] - a[0], b[1] - a[1]) || 1, d: P2 = [(b[0] - a[0]) / L, (b[1] - a[1]) / L], n: P2 = [-d[1], d[0]];
++      for (let u = 10 + sh - pre; u < L + 10 + post; u += 24) { const c0: P2 = [a[0] + d[0] * u, a[1] + d[1] * u]; k.line([[c0[0] - n[0] * 60, c0[1] - n[1] * 60], [c0[0] + n[0] * 60, c0[1] + n[1] * 60]], 10, kit.col.stripe); } }); });
+     handAt(k, sk, s, kind, C.skin);
+   };
+   let torsoPoly: P2[] = [];

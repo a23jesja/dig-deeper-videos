@@ -22,7 +22,7 @@ import { TOTAL as MONA2D_TOTAL } from "./videos/style2d/scenes";
 export const Root: React.FC = () => (
   <>
     <Composition id="KitSheet" component={KitSheet} durationInFrames={KIT_FRAMES} fps={30} width={KSW} height={KSH} />
-    <Composition id="SleeveSheet" component={SleeveSheet} durationInFrames={1} fps={30} width={SSW} height={SSH} />
+    <Composition id="SleeveSheet" component={SleeveSheet} durationInFrames={2} fps={30} width={SSW} height={SSH} />
     <Composition id="FlatStyle" component={FlatStyle} durationInFrames={FLAT_FRAMES} fps={30} width={FSW} height={FSH} />
     <Composition id="FlatMotionA" component={FlatMotionA} durationInFrames={FLAT_MOTION_FRAMES} fps={30} width={1080} height={1920} />
     {/* the eight shot types of the library in flat 2D, one clip each (Bildtyp-c01 ... c08) */}

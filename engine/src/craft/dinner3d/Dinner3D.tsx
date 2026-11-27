@@ -5,7 +5,6 @@ import { AbsoluteFill, Audio, Img, staticFile, useCurrentFrame } from "remotion"
 import { FM } from "../clips/clipKit";
 import { capWidth } from "../stage/film";
 import { BEARD_PLANT, tricornTrim, kitOf } from "../wardrobe/kit";
-import { headPt } from "../checks/bodyGeom";
 import { scaleOf, footY } from "../clips/clipKit";
 import { SHOTS, paintFigures, placeOf, toScreen, handPx, PLANT, project, type Who } from "./core";
 import SPEC_D from "./shots.json";
@@ -70,6 +69,10 @@ export const CAP_TOPS: Record<string, number> = (() => { const out: Record<strin
  *  brim (CROWN.brim), and CROWN.face px or more from his face. For one frame: the hat in the picture (the push camFx applied: the words do not
  *  move with it) and a box's distances to the hat's edge (inside: +), to the trim (above it: +) and to the face */
 export const CROWN = { edge: 16, brim: 16, face: 20 };
+/** a point of the head's own frame in skeleton units, as the head draws it (at the skull joint, turned by headTilt, mirrored when the face turns left;
+ *  the film's own copy: film code never imports the checks' code, limb_check's guard) */
+const headPt = (sk: { faceYaw: number; headTilt: number; j: { skull: unknown } }, p: [number, number]): [number, number] => { const R = Math.PI / 180, sn = Math.sin(sk.faceYaw * R), as = Math.abs(sn), view = as < 0.45 ? "front" : as < 0.85 ? "q" : "side", fx = view !== "front" && sn < 0 ? -p[0] : p[0];
+  const c = Math.cos(sk.headTilt * R), s2 = Math.sin(sk.headTilt * R), o = sk.j.skull as [number, number]; return [o[0] + fx * c - p[1] * s2, o[1] + fx * s2 + p[1] * c]; };
 const dSeg = (p: number[], a: number[], b: number[]) => { const dx = b[0] - a[0], dy = b[1] - a[1], L = dx * dx + dy * dy || 1, u = Math.max(0, Math.min(1, ((p[0] - a[0]) * dx + (p[1] - a[1]) * dy) / L)); return Math.hypot(p[0] - a[0] - u * dx, p[1] - a[1] - u * dy); };
 const inPg = (pt: number[], P: number[][]) => { let c = false; for (let i = 0, j = P.length - 1; i < P.length; j = i++) if ((P[i][1] > pt[1]) !== (P[j][1] > pt[1]) && pt[0] < ((P[j][0] - P[i][0]) * (pt[1] - P[i][1])) / (P[j][1] - P[i][1]) + P[i][0]) c = !c; return c; };
 export const hatAt = (id: string, fr: number) => { const cap = BUILT[id]?.find((w) => w.name === "captain"); if (!cap) return null; const pl = placeOf(id, fr, cap), f = pl.f, sk = f.sk, kit = kitOf(f.o.look); if (kit?.hat !== "tricorn") return null;

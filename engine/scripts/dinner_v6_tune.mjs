@@ -119,6 +119,18 @@ let prev = null; const found = {};
 // (--audit: every shot's present camera through every check, nothing written: which shots the stricter rules fail)
 if (process.argv.includes("--audit")) { for (const S of SHOTS) { const sc = SPEC.shots.find((q) => q.id === S.id).cam, r = tryCam(S, sc.from[0], sc.at, sc.lens, S.id === "10b" ? null : prev);
     console.log(`AUDIT ${S.id}: ${r.ok ? "ok" : "FAIL " + (r.why ?? "")}  (least fill: ${Object.entries(r.fills ?? {}).map(([nm, [f, fr0]]) => `${nm} ${(f * 100).toFixed(1)} % at frame ${fr0}`).join(", ")})`); prev = { C: sc.from[0], at: sc.at, whole: r.whole ?? {}, zs: r.zs ?? {} }; } process.exit(0); }
+// (v6c, --grid1: H2 hook cameras round the sailor and the plate, every check of tryCam, plus the hook's own: the sailor's head 1.4x the captain's or more)
+if (process.argv.includes("--grid1")) { const S = SHOTS.find((q) => q.id === "1"), out = []; let n = 0;
+  const hr = (pl) => { const a = toScreen(pl, jointPx(pl.f, "skull")), b = toScreen(pl, jointPx(pl.f, "crown")); return { r: Math.hypot(b[0] - a[0], b[1] - a[1]) / 2, c: [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2] }; };
+  for (const A of [[-1.2, 0.7], [-1.3, 0.62], [-1.1, 0.78]]) for (let ph = -150; ph <= -60; ph += 6) for (let dist = 0.9; dist <= 2.8; dist += 0.15) for (const cz of [1.0, 1.15, 1.3, 1.45, 1.6]) for (const az of [0.85, 1.0, 1.15]) for (const lens of [15, 18, 21]) {
+    const C = [+(A[0] + dist * Math.cos(ph * R)).toFixed(3), +(A[1] + dist * Math.sin(ph * R)).toFixed(3), cz], at = [A[0], A[1], az]; n++; const r = tryCam(S, C, at, lens, null); if (!r.ok) continue;
+    const ws = WHO["1"](), cr = ws.find((w) => w.name === "crew"), cp = ws.find((w) => w.name === "captain"); let ratio = 9; for (const fr of [0, 24, 47]) { const a = hr(placeOf("1", fr, cr)), b = hr(placeOf("1", fr, cp)); ratio = Math.min(ratio, a.r / b.r); }
+    out.push({ C, at, lens, ratio: +ratio.toFixed(2), fill: +(((r.fills ?? {}).crew ?? [0])[0] * 100).toFixed(1) }); }
+  out.sort((x, y) => (y.ratio >= 1.4) - (x.ratio >= 1.4) || y.fill - x.fill); console.log(`GRID1 ${n} cameras, ${out.length} pass, ${out.filter((o) => o.ratio >= 1.4).length} with the sailor's head 1.4x the captain's`); for (const o of out.slice(0, 12)) console.log(JSON.stringify(o)); process.exit(0); }
+// (v6c, --try <shot> x,y,z ax,ay,az lens: one camera through every check, nothing written; --try-write writes it)
+if (process.argv.includes("--try")) { const i = process.argv.indexOf("--try"), id = process.argv[i + 1], C = process.argv[i + 2].split(",").map(Number), at = process.argv[i + 3].split(",").map(Number), lens = +process.argv[i + 4], S = SHOTS.find((q) => q.id === id);
+  const r = tryCam(S, C, at, lens, null); console.log(`TRY ${id}: ${r.ok ? "ok" : "FAIL " + (r.why ?? "")}  fills ${Object.entries(r.fills ?? {}).map(([nm, [f, fr0]]) => `${nm} ${(f * 100).toFixed(1)} % at ${fr0}`).join(", ")}`);
+  if (process.argv.includes("--try-write") && r.ok) { const sh = SPEC.shots.find((q) => q.id === id); sh.cam = { ...sh.cam, from: [C, C], at, lens }; fs.writeFileSync("src/craft/dinner3d/shots.json", JSON.stringify(SPEC, null, 1)); console.log("written"); } process.exit(0); }
 // (v6c, --dolly 3,7,...: each named shot's present camera moved straight toward its aim point, a step at a time (98 % of the distance down to
 //  55 %), until every check passes (fill first): the full search took more than 18 min a shot; the angle is kept, so the cuts' turns stay)
 if (process.argv.includes("--dolly")) { const ids = process.argv[process.argv.indexOf("--dolly") + 1].split(","); let pv = null;

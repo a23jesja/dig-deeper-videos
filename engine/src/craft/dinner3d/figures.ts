@@ -177,7 +177,7 @@ export const TARGETS: Record<string, { on: "table" | "plate" | "book"; w: P3 }> 
 export const SIT = { pz: -0.52, py: -0.43, lean: 8 };
 /** where his hands rest: his right (the far one in the front views, on the table's side) on the table beside the plate, his left (the near one)
  *  on his left knee (across his body to the table it fell 9 cm short, the first check) */
-const CAP_OUT: Record<string, number> = { "2": 0.04, "9": 0.1, "11": 0.2, "15b": 0.03 };      // (v6c, the cuff decision: his far hand further out on the table, its forearm seen from the side to the fist, never end on behind the hand)
+const CAP_OUT: Record<string, number> = typeof process !== "undefined" && process.env?.CAPOUT ? JSON.parse(process.env.CAPOUT) : { "2": 0.04, "9": 0.105, "11": 0.2, "15b": 0.03 };      // (v6c, the cuff decision: his far hand further out on the table, its forearm seen from the side to the fist, never end on behind the hand)
 const CAP_HAND = { R: [-0.62, 1.0, TABLE_TOP + 0.022] as P3 };      // (by his own end of the table: by the plate it lay beside the sailor's hanging hand and read as the two holding hands, the independent review of v6-t13)
 /** the sailor's free arm hanging by his thigh (forward 16 and out 22 it lay by the captain's hand on the table in the picture: holding hands) */
 const CREW_REST: [[number, number], [number, number]] = [[4, 10], [14, 4]];
@@ -189,7 +189,8 @@ export const RISE = { up0: 14.4, hit: 15.45, down0: 16.75, down1: 18.4, lift: 0.
 // (v6c, the cloud session's cuff decision: in 9 he sat turned 31 degrees from the lens (|sin| 0.52), just past the rig's switch at 0.5, so his far
 //  arm lay under his coat and its fist came out beside the waistcoat at the table's edge with no sleeve, the reviewer on frame 463. Turned 5
 //  degrees more to the lens, the rig draws the far arm in front with its whole outline from the shoulder)
-const CAP_TURN: Record<string, number> = { "9": 5 };
+const FLAT9_OFF = true;      // (v6c, the reviewer (b): in 9 his far fist lies along the forearm on the table, not bent down flat over it: bent, it lay over the cuff (55 % seen))
+const CAP_TURN: Record<string, number> = typeof process !== "undefined" && process.env?.CAPTURN ? JSON.parse(process.env.CAPTURN) : { "9": 5 };
 const captain = (id: string): Who => { const s = SH[id], y0 = headingIn(id, FACING.captain), yaw = y0 - Math.sign(y0) * (PLANT.capTurn0 ? 0 : CAP_TURN[id] ?? 0), m = figure("sir", 0, yaw); m.stand(40);
   const T = (x: number) => x - 0.02, H = (nod = 0, tilt = 0) => headTo(yaw, nod, tilt), seat = { ...SIT };
   const F = (o: Record<string, unknown>) => ({ face: capFace({ pupil: 1, smile: 0, brow: 0, lid: 0.06, wide: 0, sad: 0, squeeze: 0, smirk: 0, teeth: 0, mouth: 0, ...o }) });      // (every value set: one left out kept the last, the squeeze of 6 stayed into 10)
@@ -257,9 +258,12 @@ const captain = (id: string): Who => { const s = SH[id], y0 = headingIn(id, FACI
       hR = [CAP_HAND.R[0] - ox, CAP_HAND.R[1] - 0.02 * ox / 0.08, CAP_HAND.R[2] + lift * 1.2 + 0.012 * Math.min(1, ox / 0.08 + (g < 16.8 ? 1 : 0))]; lifted = lift > 0.001; }      /* (out over the table, away from his body: lifted 12 cm by his side it went behind him, rule 10 in 9) */      // (his right fist up off the table and down on it at 15.45; a fist stands 1.2 cm higher than a flat hand)      // (a fist stands 1.2 cm higher than a flat hand)
     // (v6c, the cuff decision: in 11 (turned 58 degrees from the lens) his far forearm is drawn over the coat, and by his body the near fist's
     //  beat lay over it, a hand with no sleeve; set further out on the table the forearm reaches past the beat)
-    hR = [hR[0] - (CAP_OUT[id] ?? 0), hR[1], hR[2]];
+    hR = [hR[0] - (PLANT.capOutD5 && (id === "2" || id === "15b") ? (id === "2" ? 0.04 : 0.03) : CAP_OUT[id] ?? 0), hR[1], hR[2]];
     // (15: his hand stays on the table: from shot 2's low camera the plate's top is not seen and the hand on it was drawn 11.5 cm off, rule 4)
-    put("R", [hR[0], hR[1], hR[2] + dz], true, lifted ? null : "table");
+    // (v6c, 2 and 15b from the new camera (the hook's cut, rule 15): the table lies between the lens and him and his right hand cannot reach it
+    //  on his card (16 cm off, rule 4); it rests on his right knee, as his left does)
+    if ((id === "2" || id === "15b") && !PLANT.capOutD5) { const kr2 = armTo(sk2, "R", skOf(id, at, HEIGHTS.captain, pel2, local("captain", 0.2, 0.1, 0.27))); q = { ...q, armR: kr2.arm, handR: 70 - kr2.arm[1][0] } as Pose; MISS["captain R"] = kr2.miss; }
+    else put("R", [hR[0], hR[1], hR[2] + dz], !(id === "9" && FLAT9_OFF), lifted ? null : "table");
     // his left hand: on his knee, and from there (blended from the knee's own solved arm, the hand's bend with it: switched from it the arm
     // jumped, motion2 on the v6 test) the fist up by his shoulder at "Hey!", the fist up as he rises and shouts, the beat on his chest
     const kr = armTo(sk2, "L", skOf(id, at, HEIGHTS.captain, pel2, capKnee())), knee = kr.arm, kh = 70 - knee[1][0]; MISS["captain L"] = kr.miss;
@@ -326,8 +330,13 @@ export const pudAt = (t: number): P3 => {
   if (t >= 16.7 && t < 18.7) return lerp3(PCH, PHIGH, span(t, 17.1, 17.85));      // (11: hands up, the pudding with it (the arm by a set pose there))
   const [A, B, u] = pudSeg(t), w = (k: PK): P3 => (Array.isArray(k) ? k : (k as { face?: string }).face === "nose" ? PNOSE : (k as { face?: string }).face ? PMOUTH : PHIGH); return lerp3(w(A), w(B), u); };      /* (in metres for the record only: the hand goes by the keyframes) */
 /** shot 1: his left hand round the pudding on the plate, lifted toward him (0.10-0.90); his right palm comes under it and takes it (1.30) */
-export const HANDOVER = { lift0: -0.25, lift1: 0.4, under0: 0.45, give: 0.75 };      // (v6c, the hook (the cloud session): the pudding already rising off the captain's plate in frame 0, a third of the way up; the swish at frame 0)
-const crew = (id: string): Who => { const s = SH[id], yaw = headingIn(id, FACING.crew), m = figure("sir", 0, yaw); m.stand(40);
+/** v6c, the hook H2: where his left hand holds the pudding up after taking it (forward, to his right (+), up; metres): on his own left side, so the arm
+ *  that lifted it never lies across his body (rule 16) */
+const HOOK_HOLD: P3 = typeof process !== "undefined" && process.env?.HOOKP ? JSON.parse(process.env.HOOKP) : [0.28, -0.16, 0.86];
+export const HANDOVER = { lift0: -0.25, lift1: 0.4, under0: 0.45, give: 1.75 };      // (v6c, the hook H2: he keeps the pudding in his left hand through shot 1, his right at his side; the hand-over to his right hand falls in shot 2, where he is not in the picture: across his body in 1 his right arm broke rule 16 in the hook's view)      // (v6c, the hook (the cloud session): the pudding already rising off the captain's plate in frame 0, a third of the way up; the swish at frame 0)
+// (v6c, the hook H2: the sailor turned toward the lens in 1 so the rig draws his far arm, the one at the captain's plate, in front with its outline)
+const CREW_TURN: Record<string, number> = typeof process !== "undefined" && process.env?.CREWTURN ? JSON.parse(process.env.CREWTURN) : { "1": 30 };
+const crew = (id: string): Who => { const s = SH[id], y0 = headingIn(id, FACING.crew), yaw = y0 - Math.sign(y0) * (CREW_TURN[id] ?? 0), m = figure("sir", 0, yaw); m.stand(40);
   const T = (x: number) => x - 0.02, H = (nod = 0, tilt = 0) => headTo(yaw, nod, tilt), F = (o: Record<string, unknown>) => ({ face: capFace({ pupil: 1, smile: 0, brow: 0, lid: 0.06, wide: 0, sad: 0, squeeze: 0, smirk: 0, teeth: 0, mouth: 0, ...o }) });
   ease(m, -1, { lean: 4, head: H(4) }, 0.01, F({ gaze: [0.5, 0.4], smile: 0.9, brow: 0.4, lid: 0.2 }));      // (1: sly, taking it)
   ease(m, T(2.7), { lean: 2, head: H(0) }, 0.01, F({ gaze: [0.6, 0.1], smile: 0.6, brow: 0.2, lid: 0.15 }));
@@ -373,10 +382,10 @@ const crew = (id: string): Who => { const s = SH[id], yaw = headingIn(id, FACING
     const lA = (x: [Seg2, Seg2], y: [Seg2, Seg2], v: number): [Seg2, Seg2] => [[lerp(x[0][0], y[0][0], v), lerp(x[0][1], y[0][1], v)], [lerp(x[1][0], y[1][0], v), lerp(x[1][1], y[1][1], v)]];
     if (g < 1.6) { const P0: P3 = [PLATE[0], PLATE[1], PLATE_TOP + (PLANT.pudOff ? 0.01 : 0)], P1 = pudW([0.3, 0.02, 0.76]), u = span(g, HANDOVER.lift0, HANDOVER.lift1);
       const REST: [Seg2, Seg2] = CREW_REST, lA = (x: [Seg2, Seg2], y: [Seg2, Seg2], v: number): [Seg2, Seg2] => [[lerp(x[0][0], y[0][0], v), lerp(x[0][1], y[0][1], v)], [lerp(x[1][0], y[1][0], v), lerp(x[1][1], y[1][1], v)]];
-      if (g < HANDOVER.give + 0.02) { if (u < 0.001) put("L", P0, 0, true, undefined, 0.9 * rSk); else put("L", lerp3(P0, [P1[0], P1[1], P1[2] - 0.9 * PUD_R], u), 0, true, undefined, 0.9 * rSk); }      /* (lifted the same way it lay: switched from the surface's projection to the card's it jumped 2-4 cm, motion2) */      /* (on the plate: its base where the lens sees the plate's top, his grip 0.9 r over it) */ else { const r = put("L", [P1[0], P1[1], P1[2] - 0.9 * PUD_R], 0, true, undefined, 0.9 * rSk), back = span(g, HANDOVER.give + 0.02, HANDOVER.give + 0.5); q = { ...q, armL: lA(r.arm as [Seg2, Seg2], REST, back), handL: lerp(0, h0L, back) } as Pose; }      /* (back to his side from where it let go: from fixed angles it jumped 120 px, motion2) */
+      if (g < HANDOVER.give + 0.02) { const PL = HANDOVER.give >= 1.6 ? pudW(HOOK_HOLD) : P1; if (u < 0.001) put("L", P0, 0, true, undefined, 0.9 * rSk); else put("L", lerp3(P0, [PL[0], PL[1], PL[2] - 0.9 * PUD_R], u), 0, true, undefined, 0.9 * rSk); }      /* (lifted the same way it lay: switched from the surface's projection to the card's it jumped 2-4 cm, motion2) */      /* (on the plate: its base where the lens sees the plate's top, his grip 0.9 r over it) */ else { const r = put("L", [P1[0], P1[1], P1[2] - 0.9 * PUD_R], 0, true, undefined, 0.9 * rSk), back = span(g, HANDOVER.give + 0.02, HANDOVER.give + 0.5); q = { ...q, armL: lA(r.arm as [Seg2, Seg2], REST, back), handL: lerp(0, h0L, back) } as Pose; }      /* (back to his side from where it let go: from fixed angles it jumped 120 px, motion2) */
       // the right hand: from his hip up under the pudding (0.95-1.30), then carrying it to his chest
       if (g > HANDOVER.give) put("R", base(pudW(pudAt(g))));
-      else if (g >= HANDOVER.give - 0.75) { const qs = q, rB = put("R", base(P1)).arm as [Seg2, Seg2], u = span(g, HANDOVER.give - 0.75, HANDOVER.give);      /* (from his side to under the pudding, the angles lerped onto the arm solved there (exact at 1.30): solved per frame or eased onto, the elbow jumped, motion2) */
+      else if (g >= HANDOVER.give - 0.75 && HANDOVER.give < 1.6) { const qs = q, rB = put("R", base(P1)).arm as [Seg2, Seg2], u = span(g, HANDOVER.give - 0.75, HANDOVER.give);      /* (from his side to under the pudding, the angles lerped onto the arm solved there (exact at 1.30): solved per frame or eased onto, the elbow jumped, motion2) */
         q = { ...qs, armR: lA(REST, rB, u), handR: lerp(h0R, 90 - rB[1][0], u) } as Pose; }
       else q = { ...q, armR: REST } as Pose; }
     else { q = { ...q, armL: CREW_REST } as Pose;

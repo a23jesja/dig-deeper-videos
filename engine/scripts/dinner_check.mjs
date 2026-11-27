@@ -34,7 +34,7 @@
 // down in the head's frame, 11), turnCross (the crewman's face turning 0 to 40 degrees more through his first shot, 12).
 //   node scripts/dinner_check.mjs [--plant seatHigh|pudOff|handIn|float|capLow|missing|faceHide|mouthHand|oneArm|mouthOut|turnCross]
 import * as esbuild from "esbuild"; import fs from "node:fs"; import path from "node:path"; import { pathToFileURL } from "node:url";
-const NOTE6 = {}, NOTE8 = {}, STATE8 = {}, NOTE18 = {}, WHOJ = {};
+const NOTE6 = {}, NOTE8 = {}, STATE8 = {}, NOTE18 = {}, WHOJ = {}, STANDF = {};
 /** the shots' own figures (as the tuner's MAIN): their faces never hidden at all */
 const OWN8 = { 1: ["crew", "captain"], 2: ["captain"], 3: ["crew"], 4: ["crew"], 5: ["boy"], 7: ["crew"], 8: ["crew"], 9: ["captain"], "10b": ["captain"], 11: ["captain"], 12: ["crew"], 13: ["crew"], 14: ["boy"], "15a": [], "15b": ["captain"] };
 const arg = (k) => (process.argv.includes(k) ? process.argv[process.argv.indexOf(k) + 1] : null), plant = arg("--plant");
@@ -75,6 +75,10 @@ for (const S of SHOTS) {
   for (let fr = 0; fr < n; fr++) { frames++; const row = [], T = S.t0 + fr / FM.FPS;
     const placed = whos.map((w) => ({ w, pl: placeOf(S.id, fr, w) })), heads = [], hands = [], HEADS6 = [];
     if (fr === 0) WHOJ[S.id] = placed.map(({ w, pl }) => ({ name: w.name, at: pl.at, h: w.h }));
+    // (v6c, the reviewer: each frame's stand-in where the figure is, so a shadow follows a figure that rises or sinks (9, 11): his head's middle and
+    //  radius and his neck, in the world, from his card)
+    (STANDF[S.id] ??= []).push(placed.map(({ w, pl }) => { const f = pl.f, Wd = (j) => cardToWorld(w, pl, jointPx(f, j)), sk0 = Wd("skull"), cr0 = Wd("crown"), nk = Wd("neck"), pv = Wd("pelvis");
+      return { name: w.name, head: [0, 1, 2].map((k) => +((sk0[k] + cr0[k]) / 2).toFixed(3)), r: +(Math.hypot(cr0[0] - sk0[0], cr0[1] - sk0[1], cr0[2] - sk0[2]) / 2).toFixed(3), neck: nk.map((v) => +v.toFixed(3)), pelvis: pv.map((v) => +v.toFixed(3)) }; }));
     for (const { w, pl } of placed) {
       const f = pl.f, scr = (j) => toScreen(pl, jointPx(f, j)), key = S.id + ":" + w.name;
       { const P = (j) => scr(j).map((v) => Math.round(v)), s0 = scr("skull"), c0 = scr("crown"), hr = Math.hypot(c0[0] - s0[0], c0[1] - s0[1]) / 2, lw = Math.round(0.17 * hr);
@@ -339,6 +343,7 @@ if (!plant) {
     const mp = `out/din3d/${s.id}/map.npz`; if (fs.existsSync(mp)) { fs.mkdirSync(path.join(R, "out/cab3d", s.id), { recursive: true }); fs.copyFileSync(mp, path.join(R, "out/cab3d", s.id, "map.npz")); } }
   fs.writeFileSync("out/din3d/regions.jsonl", regions.map((r) => JSON.stringify(r)).join("\n") + "\n");
   fs.writeFileSync("out/din3d/who.json", JSON.stringify(WHOJ));      // (v6c: who is drawn in each shot and where: Blender casts their shadows from stand-ins, set.py)
+  fs.writeFileSync("out/din3d/standins.json", JSON.stringify(STANDF));      // (each frame's stand-ins for set.py)
 }
 if (arg("--geom")) fs.writeFileSync("out/din3d/geom.json", JSON.stringify(geomOut));
 { const CAMS = JSON.parse(fs.readFileSync("src/craft/dinner3d/cams.json", "utf8")), dirOf = (id) => { const P = CAMS[id][0][2], l = Math.hypot(P[0], P[1], P[2]); return [P[0] / l, P[1] / l, P[2] / l]; };

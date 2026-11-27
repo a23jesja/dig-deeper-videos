@@ -232,23 +232,28 @@ def props_of(sid):
 # v6c (the reviewer on the v6c stills: the sun's strip on the floor ran from the sailor's shoes toward the lens, through him, where his shadow should
 # lie): each figure drawn in a shot has a stand-in here, a body and Knopp's big head, seen by nothing but the shadow rays, so the plate has the
 # figure's shadow in the sun (out/din3d/who.json from dinner_check: who is drawn in each shot and where, his cheat included)
-WHO_P = os.path.join(ENGINE, "out", "din3d", "who.json"); WHOJ = json.load(open(WHO_P)) if os.path.exists(WHO_P) else {}
+WHO_P = os.path.join(ENGINE, "out", "din3d", "standins.json"); STANDF = json.load(open(WHO_P)) if os.path.exists(WHO_P) else {}
+RB = {"crew": 0.2, "boy": 0.16, "captain": 0.24}      # (the body's radius; its height to the neck and the head's middle and radius come each frame from dinner_check)
 STAND = {}
-for nm, (rb, zb, rh, zh) in {"crew": (0.2, 0.95, 0.45, 1.45), "boy": (0.16, 0.71, 0.34, 1.07), "captain": (0.24, 0.7, 0.42, 0.98)}.items():
-    root = bpy.data.objects.new("stand-in " + nm, None); sc.collection.objects.link(root); parts = []
-    for kind, (rad, z) in (("body", (rb, zb)), ("head", (rh, zh))):
+for nm in RB:
+    parts = {}
+    for kind in ("body", "head"):
         me = bpy.data.meshes.new(f"stand-in {nm} {kind}"); bm = bmesh.new()
-        if kind == "body": bmesh.ops.create_cone(bm, cap_ends=True, segments=16, radius1=rad, radius2=rad, depth=z); bmesh.ops.translate(bm, verts=bm.verts, vec=(0, 0, z / 2))
-        else: bmesh.ops.create_uvsphere(bm, u_segments=16, v_segments=10, radius=rad); bmesh.ops.translate(bm, verts=bm.verts, vec=(0, 0, z))
-        bm.to_mesh(me); bm.free(); o = bpy.data.objects.new(f"stand-in {nm} {kind}", me); sc.collection.objects.link(o); o.parent = root
+        if kind == "body": bmesh.ops.create_cone(bm, cap_ends=True, segments=16, radius1=1.0, radius2=1.0, depth=1.0); bmesh.ops.translate(bm, verts=bm.verts, vec=(0, 0, 0.5))
+        else: bmesh.ops.create_uvsphere(bm, u_segments=16, v_segments=10, radius=1.0)
+        bm.to_mesh(me); bm.free(); o = bpy.data.objects.new(f"stand-in {nm} {kind}", me); sc.collection.objects.link(o)
         o.visible_camera = False; o.visible_diffuse = False; o.visible_glossy = False; o.visible_transmission = False; o.visible_volume_scatter = False; o.visible_shadow = True
-        parts.append(o)
-    root.location = (0, 0, -50); STAND[nm] = root
-def place_standins(shot):
-    here = {w["name"]: w["at"] for w in WHOJ.get(shot["id"], [])}
-    for nm, root in STAND.items(): root.location = (here[nm][0], here[nm][1], 0) if nm in here else (0, 0, -50)
+        o.location = (0, 0, -50); parts[kind] = o
+    STAND[nm] = parts
+def place_standins(shot, fr=0):
+    rows = STANDF.get(shot["id"], []); here = {} if os.environ.get("NO_STANDINS") or not rows else {w["name"]: w for w in rows[max(0, min(len(rows) - 1, fr))]}      # (NO_STANDINS=1: the plate as v6 had it)
+    for nm, P in STAND.items():
+        if nm not in here: P["body"].location = (0, 0, -50); P["head"].location = (0, 0, -50); continue
+        w = here[nm]; px, py, _ = w["pelvis"]; nz = w["neck"][2]
+        P["body"].location = (px, py, 0); P["body"].scale = (RB[nm], RB[nm], max(0.2, nz))
+        P["head"].location = tuple(w["head"]); P["head"].scale = (w["r"] * 0.95, w["r"] * 0.95, w["r"] * 0.95)
 def park_standins():
-    for root in STAND.values(): root.location = (0, 0, -50)
+    for P in STAND.values(): P["body"].location = (0, 0, -50); P["head"].location = (0, 0, -50)
 
 def pose_shot(shot, t):
     pose_cam(shot, t)
@@ -303,7 +308,7 @@ for shot in shots:
         P, Mwc = projection(); cams.append({"f": fr, "P": P, "cam": list(Mwc.to_translation())})
         if CAMS_ONLY: continue
         park_standins(); bpy.context.view_layer.update(); dep, kin, kinds = ray_map(Mwc); depths.append(dep); kinds_.append(kin)      # (the depth map without the stand-ins)
-        place_standins(shot); bpy.context.view_layer.update()
+        place_standins(shot, fr); bpy.context.view_layer.update()
         if not MAPS_ONLY: sc.render.filepath = os.path.join(outp, f"{fr + 1:04d}.jpg"); bpy.ops.render.render(write_still=True)
     secs = time.time() - t0; camdir = os.path.join(ENGINE, "src", "craft", "dinner3d", "cam"); os.makedirs(camdir, exist_ok=True)
     if FR is None: json.dump({"id": shot["id"], "frames": [c["P"] for c in cams]}, open(os.path.join(camdir, shot["id"] + ".json"), "w"))

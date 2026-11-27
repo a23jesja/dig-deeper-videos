@@ -34,17 +34,18 @@
 // down in the head's frame, 11), turnCross (the crewman's face turning 0 to 40 degrees more through his first shot, 12).
 //   node scripts/dinner_check.mjs [--plant seatHigh|pudOff|handIn|float|capLow|missing|faceHide|mouthHand|oneArm|mouthOut|turnCross]
 import * as esbuild from "esbuild"; import fs from "node:fs"; import path from "node:path"; import { pathToFileURL } from "node:url";
-const NOTE6 = {}, NOTE8 = {}, STATE8 = {}, NOTE18 = {}, WHOJ = {}, STANDF = {};
+const HEADS6_OF = new Map(), NOTE6 = {}, NOTE8 = {}, STATE8 = {}, NOTE18 = {}, WHOJ = {}, STANDF = {};
 /** the shots' own figures (as the tuner's MAIN): their faces never hidden at all */
 const OWN8 = { 1: ["crew", "captain"], 2: ["captain"], 3: ["crew"], 4: ["crew"], 5: ["boy"], 7: ["crew"], 8: ["crew"], 9: ["captain"], "10b": ["captain"], 11: ["captain"], 12: ["crew"], 13: ["crew"], 14: ["boy"], "15a": [], "15b": ["captain"] };
 const arg = (k) => (process.argv.includes(k) ? process.argv[process.argv.indexOf(k) + 1] : null), plant = arg("--plant");
 const out = "out/_din_check.mjs";
 // (flat.ts keeps its design's body sizes (A_SPEC) to itself: the bundle alone exports them to this check, the file is not changed)
 const exportSpec = { name: "spec", setup(b) { b.onLoad({ filter: /designs[\\/]flat\.ts$/ }, (a) => ({ contents: fs.readFileSync(a.path, "utf8") + "\nexport { A_SPEC };\n", loader: "ts" })); } };
-await esbuild.build({ plugins: [exportSpec], stdin: { contents: 'export * from "./src/craft/dinner3d/core"; export * from "./src/craft/dinner3d/figures"; export { captionAt, CAP_TOPS, camFx, bodyCaps, boxHitsCap, CAP_ON_BODY, ARM_CAPS, headZones } from "./src/craft/dinner3d/Dinner3D"; export { thighUnder, scaleOf, D, FM, jointPx, footY, heightOf } from "./src/craft/clips/clipKit"; export * as BG from "./src/craft/checks/bodyGeom"; export { kitOf, kitBody, beardOutline, pupilAt, qPupils } from "./src/craft/wardrobe/kit"; export { A_SPEC } from "./src/craft/designs/flat";', resolveDir: ".", loader: "tsx" }, bundle: true, format: "esm", platform: "node", outfile: out, logLevel: "error", loader: { ".json": "json" }, external: ["remotion", "react"] });
+await esbuild.build({ plugins: [exportSpec], stdin: { contents: 'export * from "./src/craft/dinner3d/core"; export * from "./src/craft/dinner3d/figures"; export { captionAt, crownPick, hatAt, crownGaps, CROWN, CAP_TOPS, camFx, bodyCaps, boxHitsCap, CAP_ON_BODY, ARM_CAPS, headZones } from "./src/craft/dinner3d/Dinner3D"; export { thighUnder, scaleOf, D, FM, jointPx, footY, heightOf } from "./src/craft/clips/clipKit"; export * as BG from "./src/craft/checks/bodyGeom"; export { kitOf, kitBody, beardOutline, pupilAt, qPupils, farForeOver } from "./src/craft/wardrobe/kit"; export { A_SPEC } from "./src/craft/designs/flat";', resolveDir: ".", loader: "tsx" }, bundle: true, format: "esm", platform: "node", outfile: out, logLevel: "error", loader: { ".json": "json" }, external: ["remotion", "react"] });
 const M = await import(pathToFileURL(out).href); fs.rmSync(out);
 const { SHOTS, WHO, PLANT, placeOf, toScreen, feetOf, project, jointPx, handPx, FM, cardToWorld, thighUnder, scaleOf, D, captionAt, PUD_UP, TABLE_TOP } = M;
-const CHECK_PLANTS = { lidCut: 18, stripeNet: 17, sleeveNoInk: 10, capLow: 6, missing: 7, faceHide: 8, headPeek: 8, hide40: 8, mouthHand: 9, oneArm: 10, mouthOut: 11, turnCross: 12, seatEdge: 1, faceEdge: 13, frontArm: 10, smileCross: 14 }, RULE_OF = { seatHigh: 1, pudOff: 3, handIn: 4, handInBook: 4, float: 2, ...CHECK_PLANTS };
+const CHECK_PLANTS = { crownBrim: 6, crownFace: 6, noFore: 10, cuffOnly: 10, lidCut: 18, stripeNet: 17, sleeveNoInk: 10, capLow: 6, missing: 7, faceHide: 8, headPeek: 8, hide40: 8, mouthHand: 9, oneArm: 10, mouthOut: 11, turnCross: 12, seatEdge: 1, faceEdge: 13, frontArm: 10, smileCross: 14 }, RULE_OF = { seatHigh: 1, pudOff: 3, handIn: 4, handInBook: 4, float: 2, ...CHECK_PLANTS };
+if (plant === "noFore") PLANT.capTurn0 = true;      // (noFore: the captain's far arm as v6 drew it, under the coat, and in 9 turned 31 degrees from the lens)
 if (plant && !(plant in CHECK_PLANTS)) { if (!(plant in PLANT)) throw new Error("no such planted fault: " + plant); PLANT[plant] = true; }
 const { BG, A_SPEC, footY, VOICES, kitOf, kitBody } = M; if (D.id !== "flatA") throw new Error("the checks' body sizes are A's: the design is " + D.id); const BODY = A_SPEC.sir.B;
 // (an arm hidden by a named thing in the set, so it is no one-armed look: "shot:figure:near|far" -> the thing.
@@ -82,7 +83,7 @@ for (const S of SHOTS) {
     for (const { w, pl } of placed) {
       const f = pl.f, scr = (j) => toScreen(pl, jointPx(f, j)), key = S.id + ":" + w.name;
       { const P = (j) => scr(j).map((v) => Math.round(v)), s0 = scr("skull"), c0 = scr("crown"), hr = Math.hypot(c0[0] - s0[0], c0[1] - s0[1]) / 2, lw = Math.round(0.17 * hr);
-        heads.push([(s0[0] + c0[0]) / 2, (s0[1] + c0[1]) / 2, hr * 1.1]); HEADS6.push(...M.headZones(w.name, (s0[0] + c0[0]) / 2, (s0[1] + c0[1]) / 2, hr));
+        heads.push([(s0[0] + c0[0]) / 2, (s0[1] + c0[1]) / 2, hr * 1.1]); for (const hz of M.headZones(w.name, (s0[0] + c0[0]) / 2, (s0[1] + c0[1]) / 2, hr)) { HEADS6.push(hz); HEADS6_OF.set(hz, w.name); }
         const limbs = ["L", "R"].flatMap((d) => [[P("sh" + d), P("el" + d)], [P("el" + d), P("wr" + d)], [P("wr" + d), P("tip" + d)], [P("hip" + d), P("kn" + d)], [P("kn" + d), P("an" + d)], [P("an" + d), P("toe" + d)], [P("heel" + d), P("toe" + d)]]);
         // (each joint's own depth: the figure's floor point's depth less how far the joint stands toward the lens in the rig (sk.z), in metres)
         const kz = (scaleOf("sir") / FM.PPM) * (w.h / M.heightOf("sir")), jd = (j) => +(project(S.id, fr, cardToWorld(w, pl, jointPx(f, j)))[2] - ((f.sk.z[j] ?? 0) - f.sk.z.pelvis) * kz).toFixed(3);      /* (the joint's own point on his card, at its height: under a tilted lens a hand at 35 cm is 12 cm nearer than the floor point) */      /* (from the pelvis: the card stands on his pelvis's floor point) */
@@ -215,13 +216,30 @@ for (const S of SHOTS) {
               for (const q of pts) { const p = g.scr(q); if (p[0] < 0 || p[0] > FM.W || p[1] < 0 || p[1] > FM.H) continue; inside++;
                 if (own.some((P) => BG.inPoly(q, P))) continue; if (sil.some((o) => o !== g && o.pl.depth < g.pl.depth && o.all.some((P) => BG.inPoly(p, P)))) continue; seen++; }
               return { n: pts.length, inside, seen }; };
-            share[sd] = { arm: seenOf(g.parts[sd].all), hand: seenOf(g.parts[sd].hand), sleeve: seenOf(g.parts[sd].sleeve) };
+            /* (v6c, the cloud session's cuff decision: the arm is shown by its sleeve's own outline, never by the cuff and the hand alone, so the
+               sleeve is its two pieces only, without the cuff under them) */
+            const slv = g.parts[sd].sleeve.slice(1);
+            share[sd] = { arm: seenOf(g.parts[sd].all), hand: seenOf(g.parts[sd].hand), sleeve: seenOf(slv) };
+            /* (v6c: turned from the lens with no sweep (armWipe false, |sin| over 0.5) a coat's far forearm brought forward is drawn over the coat
+               from the elbow with its own outline, its cuff and its hand (kit.ts farForeOver): those lie under the head and the near arm only.
+               Planted: noFore draws it under the coat as v6 did; cuffOnly as a cuff and a hand with no sleeve's outline. Both must fail) */
+            const fore = sd === g.sk.far && plant !== "noFore" && M.farForeOver(g.sk, g.kit, g.f.o.armWipe);
+            if (fore) { const own2 = [...BG.headPolys(g.sk, g.kit), ...g.parts[g.sk.near].all], tp = BG.torsoPoly(g.sk, g.B);
+              const cnt = (polys, inkOwn) => { let n = 0, seen = 0; for (const q of BG.fillPts(polys, 5)) { n++; const p = g.scr(q); if (p[0] < 0 || p[0] > FM.W || p[1] < 0 || p[1] > FM.H) continue;
+                  const lower = BG.inPoly(q, slv[1]) || g.parts[sd].hand.some((P) => BG.inPoly(q, P));
+                  if (lower && inkOwn) { if (own2.some((P) => BG.inPoly(q, P))) continue; } else { if (own.some((P) => BG.inPoly(q, P)) || BG.inPoly(q, tp)) continue; }
+                  if (sil.some((o) => o !== g && o.pl.depth < g.pl.depth && o.all.some((P) => BG.inPoly(p, P)))) continue; seen++; } return { n, seen }; };
+              const sv = cnt(slv, plant !== "cuffOnly"), hv = cnt(g.parts[sd].hand, true);
+              share[sd] = { ...share[sd], sleeve: { ...share[sd].sleeve, seen: sv.seen, n: sv.n }, hand: { ...share[sd].hand, seen: hv.seen, n: hv.n }, fore: true }; }
             /* (v6c: a coat's sleeve lying over the coat is the coat's own red with no edge to read: the captain's far arm down his side in 2 and 15b
                read as a hand out of the coat, the independent review of v6. For a coat, the sleeve counts as seen only off the torso) */
             /* (the reviewer, 26 Nov: a near arm before the body has its whole own ink outline from shoulder to hand and reads; only a far arm drawn behind
                the body (|sin| over 0.15, ARM_WIPE), its sleeve shown over the body clipped by the sweep with no outline of its own, is the coat's colour
                with no edge. Planted: sleeveNoInk takes the near arm as having no outline either, and must fail) */
-            if ((g.kit?.top === "coat" || g.kit?.top === "shirt") && ((sd === g.sk.far && Math.abs(g.sk.sin) > 0.15) || plant === "sleeveNoInk")) { const tp = BG.torsoPoly(g.sk, g.B), pts = BG.fillPts(g.parts[sd].sleeve, 5); let off = 0;
+            /* (v6c: with no sweep (armWipe false) the far arm is drawn in front with its whole outline up to |sin| 0.5, as the near arm is (layers in
+               common.ts); behind the body past it) */
+            const behind = g.f.o.armWipe === false ? Math.abs(g.sk.sin) > 0.5 : Math.abs(g.sk.sin) > 0.15;
+            if (!share[sd].fore && (g.kit?.top === "coat" || g.kit?.top === "shirt") && ((sd === g.sk.far && behind) || plant === "sleeveNoInk")) { const tp = BG.torsoPoly(g.sk, g.B), pts = BG.fillPts(slv, 5); let off = 0;
               for (const q of pts) { const p = g.scr(q); if (p[0] < 0 || p[0] > FM.W || p[1] < 0 || p[1] > FM.H) continue; if (own.some((P) => BG.inPoly(q, P)) || BG.inPoly(q, tp)) continue;
                 if (sil.some((o) => o !== g && o.pl.depth < g.pl.depth && o.all.some((P) => BG.inPoly(p, P)))) continue; off++; }
               share[sd].sleeve = { ...share[sd].sleeve, seen: Math.min(share[sd].sleeve.seen, off) }; } }
@@ -233,7 +251,7 @@ for (const S of SHOTS) {
                fingers behind the waistcoat in 1 and 11) and the boy one-armed in the 3/4 shots both passed, as a quarter of a hand counted as the
                arm. Now the arm is seen only by its sleeve: 25 % of it at least, and a hand seen (10 %) with less sleeve than that fails) */
             const fsl = share[sd].sleeve.seen / share[sd].sleeve.n;
-            if (process.env.DEBUG10 === `${S.id}:${fr}`) console.log(`DEBUG10 ${g.w.name} ${sd === g.sk.near ? "near" : "far"} sin ${g.sk.sin.toFixed(2)} sleeve ${fsl.toFixed(2)} hand ${fh.toFixed(2)} arm ${fa.toFixed(2)} inside ${a.inside}/${a.n} tall ${shotTall.toFixed(2)}`);
+            if (process.env.DEBUG10 === `${S.id}:${fr}` || process.env.DEBUG10 === `${S.id}:*`) console.log(`DEBUG10 ${g.w.name} ${sd === g.sk.near ? "near" : "far"} sin ${g.sk.sin.toFixed(2)} sleeve ${fsl.toFixed(2)} hand ${fh.toFixed(2)} arm ${fa.toFixed(2)} inside ${a.inside}/${a.n} tall ${shotTall.toFixed(2)}`);
             if (fsl < 0.25 && fh >= 0.1 && !HIDDEN_BY[k]) faults.push(`10 ${S.id} frame ${fr} ${g.w.name}: his ${sd === g.sk.near ? "near" : "far"} hand seen (${(fh * 100).toFixed(0)} %) without its arm (${(fsl * 100).toFixed(0)} % of the sleeve)`);
             else if ((fsl < 0.25 || (fh < 0.1 && fsl < 0.5)) && !HIDDEN_BY[k]) faults.push(`10 ${S.id} frame ${fr} ${g.w.name}: his ${sd === g.sk.near ? "near" : "far"} arm hidden, ${(fsl * 100).toFixed(0)} % of its sleeve and ${(fh * 100).toFixed(0)} % of its hand seen (one-armed look)`);
             if (false && fa < 0.15 && fh < 0.25 && !HIDDEN_BY[k]) faults.push(`10 ${S.id} frame ${fr} ${g.w.name}: his ${sd === g.sk.near ? "near" : "far"} arm hidden, ${(fa * 100).toFixed(0)} % of it and ${(fh * 100).toFixed(0)} % of its hand seen (one-armed look)`); } } }
@@ -316,7 +334,17 @@ for (const S of SHOTS) {
     // 6 the words
     const c = captionAt(T); if (c) { const b = [...c.box]; if (plant === "capLow") { b[1] += 300; b[3] += 300; }
       if (b[1] < 0.15 * FM.H || b[3] > 0.85 * FM.H) faults.push(`6 ${S.id} frame ${fr}: "${c.text}" outside 15-85 % (${Math.round(b[1])}-${Math.round(b[3])})`);
-      for (const h of HEADS6) { const cx = Math.max(b[0], Math.min(h[0], b[2])), cy = Math.max(b[1], Math.min(h[1], b[3])); if (Math.hypot(cx - h[0], cy - h[1]) < h[2]) {      /* (v6c, the review of v6 and the cloud session: never over any part of a head, its cap, bandana, hair or hat included: the old test let the words lie over the head's top 0.55, "IT WAS / HIS OWN / CREW" on the sailor's bandana in shot 4) */ faults.push(`6 ${S.id} frame ${fr}: "${c.text}" over a head`); break; } }
+      /* (v6c, 10b, the cloud session's named exception (27 Nov): its words on the captain's hat, on the crown only: inside the hat's outline with
+         CROWN.edge px of it seen round them, CROWN.brim px above the gold trim along the brim, CROWN.face px from his face; every other head as
+         everywhere. Planted: crownBrim moves the words down onto the trim, crownFace down to 10 px from the face; both must fail) */
+      const H10 = S.id === "10b" ? M.hatAt("10b", fr) : null;
+      if (S.id === "10b") { if (!H10) faults.push(`6 10b frame ${fr}: no hat to put the words on`); else { const g0 = M.crownGaps(H10, [b[0] - 10, b[1] - 10, b[2] + 10, b[3] + 10]);
+        const dy = plant === "crownBrim" ? (() => { let d = 0; while (d < 1500 && M.crownGaps(H10, [b[0] - 10, b[1] - 10 + d, b[2] + 10, b[3] + 10 + d]).brim >= 0) d += 2; return d; })() : plant === "crownFace" ? (() => { let d = 0; while (d < 1500 && M.crownGaps(H10, [b[0] - 10, b[1] - 10 + d, b[2] + 10, b[3] + 10 + d]).face >= 10) d += 4; return d; })() : 0, bb = [b[0] - 10, b[1] - 10 + dy, b[2] + 10, b[3] + 10 + dy], g = dy ? M.crownGaps(H10, bb) : g0;
+        (globalThis.CROWN6 ??= { edge: 1e9, brim: 1e9, face: 1e9 }); for (const k of ["edge", "brim", "face"]) globalThis.CROWN6[k] = Math.min(globalThis.CROWN6[k], g[k]);
+        if (g.edge < M.CROWN.edge) faults.push(`6 10b frame ${fr}: "${c.text}" ${g.edge.toFixed(0)} px inside the hat's outline (at least ${M.CROWN.edge})`);
+        if (g.brim < M.CROWN.brim) faults.push(`6 10b frame ${fr}: "${c.text}" ${g.brim.toFixed(0)} px above the brim's trim (at least ${M.CROWN.brim})`);
+        if (g.face < M.CROWN.face) faults.push(`6 10b frame ${fr}: "${c.text}" ${g.face.toFixed(0)} px from the face (at least ${M.CROWN.face})`); } }
+      for (const h of (S.id === "10b" ? HEADS6.filter((h) => HEADS6_OF.get(h) !== "captain") : HEADS6)) { const cx = Math.max(b[0], Math.min(h[0], b[2])), cy = Math.max(b[1], Math.min(h[1], b[3])); if (Math.hypot(cx - h[0], cy - h[1]) < h[2]) {      /* (v6c, the review of v6 and the cloud session: never over any part of a head, its cap, bandana, hair or hat included: the old test let the words lie over the head's top 0.55, "IT WAS / HIS OWN / CREW" on the sailor's bandana in shot 4) */ faults.push(`6 ${S.id} frame ${fr}: "${c.text}" over a head`); break; } }
       for (const hb of hands) if (hb[0] < b[2] && hb[2] > b[0] && hb[1] < b[3] && hb[3] > b[1] && hb[2] > 0 && hb[0] < FM.W) { faults.push(`6 ${S.id} frame ${fr}: "${c.text}" over a hand`); break; }
       if (fr % 3 === 0) { let arm = false, body = false; for (const p of placed) M.bodyCaps(p.pl).forEach((cp, i) => { if (M.boxHitsCap(b, cp)) { if (i < M.ARM_CAPS) arm = true; else body = true; } });
         if (arm) faults.push(`6 ${S.id} frame ${fr}: "${c.text}" over an arm or a hand`); else if (body && !M.CAP_ON_BODY[S.id]) faults.push(`6 ${S.id} frame ${fr}: "${c.text}" over a body`); else if (body) NOTE6[S.id] = true; } }      /* (never over an arm or a hand; over a still torso only where the shot had no free place, the reviewer 25 Nov) */      /* (the reviewer 25 Nov: never over a body or an arm) */
@@ -352,12 +380,13 @@ if (arg("--geom")) fs.writeFileSync("out/din3d/geom.json", JSON.stringify(geomOu
     const da = dirOf(a), db = dirOf(b), ang = (Math.acos(Math.min(1, da[0] * db[0] + da[1] * db[1] + da[2] * db[2])) * 180) / Math.PI, sz = Math.min(...both.map((nm) => Math.max(CUT15[a][nm], CUT15[b][nm]) / Math.min(CUT15[a][nm], CUT15[b][nm])));
     CUTS.push(`${a}->${b} ${both.join(",")}: ${ang.toFixed(0)} deg, ${sz.toFixed(2)}x`); if (ang < 30 || sz < 1.3) faults.push(`15 cut ${a}->${b} (${both.join(", ")}): ${ang.toFixed(0)} degrees, ${sz.toFixed(2)}x`); } }
 console.log("15 cuts: " + CUTS.join("; "));
+if (globalThis.CROWN6) console.log(`6 (note) 10b words on the hat's crown, the least in any frame: ${globalThis.CROWN6.edge.toFixed(0)} px inside its outline, ${globalThis.CROWN6.brim.toFixed(0)} px above the brim's trim, ${globalThis.CROWN6.face.toFixed(0)} px from the face`);
 for (const [k, set] of Object.entries(STATE8)) if (set.size > 1) faults.push(`8 ${k}: seen and hidden in one shot (it must keep one state)`);
 console.log("8 (note) background heads wholly behind a nearer figure: " + (Object.keys(NOTE8).join(", ") || "none"));
 console.log("6 (note) words over a body where the shot had no free place (faces and hands kept clear): " + (Object.keys(NOTE6).join(", ") || "none"));
 const seen = new Set(), shown = [];
 for (const f of faults) { const k = f.replace(/frame \d+/, "").replace(/-?[\d.]+ (px|cm)/g, "").replace(/\(\d+-\d+\)/, ""); if (!seen.has(k)) { seen.add(k); shown.push(f); } }
-for (const f of shown.slice(0, 40)) console.log("  " + f);
+for (const f of shown.slice(0, +(process.env.SHOWN || 40))) console.log("  " + f);
 if (process.env.ALL_FAULTS) fs.writeFileSync(process.env.ALL_FAULTS, faults.join(String.fromCharCode(10)) + String.fromCharCode(10));      // (every fault, one per line, for the planted-fault lists)
 const by = {}; for (const f of faults) { const k = f.split(" ").slice(0, 2).join(" "); by[k] = (by[k] ?? 0) + 1; } console.log(JSON.stringify(by));
 console.log("arms seen (far arms only, least share of the arm/of its hand, medium and close shots): " + Object.entries(armStat).filter(([k]) => k.endsWith("far")).map(([k, v]) => `${k} ${(v.arm * 100).toFixed(0)}/${(v.hand * 100).toFixed(0)}%`).join(", "));

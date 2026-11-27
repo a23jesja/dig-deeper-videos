@@ -1,0 +1,51 @@
+15 cuts: 1->2 captain: 35 deg, 1.56x; 3->4 crew: 32 deg, 1.45x; 7->8 crew: 38 deg, 1.43x; 12->13 crew: 31 deg, 1.43x; 15b->1 captain: 37 deg, 1.68x
+6 (note) 10b words on the hat's crown, the least in any frame: 21 px inside its outline, 24 px above the brim's trim, 382 px from the face
+8 (note) background heads wholly behind a nearer figure: none
+6 (note) words over a body where the shot had no free place (faces and hands kept clear): 4, 8
+  10 1 frame 4 crew: his far hand seen (94 %) without its arm (22 % of the sleeve)
+  10 1 frame 5 crew: his far hand seen (77 %) without its arm (18 % of the sleeve)
+  16 1 frame 5 crew: his far arm: the upper arm turned 34 degrees in across the body (at most 30 from the down line, or raised over 150)
+  10 1 frame 6 crew: his far hand seen (57 %) without its arm (13 % of the sleeve)
+  16 1 frame 6 crew: his far arm: the upper arm turned 43 degrees in across the body (at most 30 from the down line, or raised over 150)
+  10 1 frame 7 crew: his far hand seen (33 %) without its arm (14 % of the sleeve)
+  16 1 frame 7 crew: his far arm: the upper arm turned 51 degrees in across the body (at most 30 from the down line, or raised over 150)
+  10 1 frame 8 crew: his far hand seen (18 %) without its arm (13 % of the sleeve)
+  16 1 frame 8 crew: his far arm: the upper arm turned 57 degrees in across the body (at most 30 from the down line, or raised over 150)
+  16 1 frame 8 crew: his near arm across the body (1 seen points past the midline) straight (171 degrees at the elbow)
+  10 1 frame 9 crew: his far arm hidden, 14 % of its sleeve and 6 % of its hand seen (one-armed look)
+  16 1 frame 9 crew: his far arm: the upper arm turned 63 degrees in across the body (at most 30 from the down line, or raised over 150)
+  16 1 frame 9 crew: his near arm across the body (2 seen points past the midline) straight (171 degrees at the elbow)
+  10 1 frame 10 crew: his far arm hidden, 14 % of its sleeve and 0 % of its hand seen (one-armed look)
+  16 1 frame 10 crew: his far arm: the upper arm turned 66 degrees in across the body (at most 30 from the down line, or raised over 150)
+  16 1 frame 10 crew: his near arm across the body (3 seen points past the midline) straight (171 degrees at the elbow)
+  16 1 frame 11 crew: his far arm: the upper arm turned 68 degrees in across the body (at most 30 from the down line, or raised over 150)
+  16 1 frame 11 crew: his near arm across the body (4 seen points past the midline) straight (172 degrees at the elbow)
+  16 1 frame 12 crew: his far arm: the upper arm turned 69 degrees in across the body (at most 30 from the down line, or raised over 150)
+  16 1 frame 12 crew: his near arm across the body (5 seen points past the midline) straight (172 degrees at the elbow)
+  16 1 frame 13 crew: his near arm across the body (6 seen points past the midline) straight (173 degrees at the elbow)
+  16 1 frame 14 crew: his near arm across the body (7 seen points past the midline) straight (173 degrees at the elbow)
+  16 1 frame 15 crew: his near arm across the body (9 seen points past the midline) straight (173 degrees at the elbow)
+  16 1 frame 16 crew: his near arm across the body (11 seen points past the midline) straight (174 degrees at the elbow)
+  16 1 frame 17 crew: his near arm across the body (13 seen points past the midline) straight (174 degrees at the elbow)
+  16 1 frame 17 crew: his near arm: the upper arm turned 32 degrees in across the body (at most 30 from the down line, or raised over 150)
+  16 1 frame 18 crew: his near arm across the body (14 seen points past the midline) straight (174 degrees at the elbow)
+  16 1 frame 18 crew: his near arm: the upper arm turned 34 degrees in across the body (at most 30 from the down line, or raised over 150)
+  16 1 frame 19 crew: his near arm across the body (15 seen points past the midline) straight (175 degrees at the elbow)
+  16 1 frame 19 crew: his near arm: the upper arm turned 36 degrees in across the body (at most 30 from the down line, or raised over 150)
+  16 1 frame 20 crew: his near arm across the body (16 seen points past the midline) straight (175 degrees at the elbow)
+  16 1 frame 20 crew: his near arm: the upper arm turned 38 degrees in across the body (at most 30 from the down line, or raised over 150)
+  16 1 frame 21 crew: his near arm: the upper arm turned 39 degrees in across the body (at most 30 from the down line, or raised over 150)
+  16 1 frame 22 crew: his near arm across the body (17 seen points past the midline) straight (175 degrees at the elbow)
+  10 1 frame 25 crew: his far arm hidden, 13 % of its sleeve and 0 % of its hand seen (one-armed look)
+  16 1 frame 25 crew: his far arm: the upper arm turned 62 degrees in across the body (at most 30 from the down line, or raised over 150)
+  16 1 frame 25 crew: his near arm across the body (14 seen points past the midline) straight (168 degrees at the elbow)
+  16 1 frame 26 crew: his far arm: the upper arm turned 55 degrees in across the body (at most 30 from the down line, or raised over 150)
+  10 1 frame 27 crew: his far arm hidden, 13 % of its sleeve and 6 % of its hand seen (one-armed look)
+  16 1 frame 27 crew: his far arm: the upper arm turned 47 degrees in across the body (at most 30 from the down line, or raised over 150)
+{"10 1":28,"16 1":51}
+arms seen (far arms only, least share of the arm/of its hand, medium and close shots): 1:crew:far 10/0%, 1:captain:far 11/100%, 2:captain:far 100/100%, 3:boy:far 100/100%, 3:crew:far 100/100%, 4:crew:far 100/100%, 5:boy:far 100/100%, 7:crew:far 55/100%, 8:crew:far 100/100%, 9:captain:far 100/100%, 11:captain:far 26/100%, 12:crew:far 100/100%, 13:crew:far 100/100%, 14:boy:far 100/100%, 15a:crew:far 62/100%, 15b:captain:far 100/100%
+5 (note) hands at the edge of a figure seen only as a sliver: none
+18 (note) blink frames over a cut, not judged: 1 crew 45,46,47; 2 captain 30,31,32; 3 boy 57,58,59; 7 crew 0,1,2; 10b crew 0,1,2; 11 captain 57,58,59; 12 crew 51,52,53; 13 crew 0,1,2; 14 boy 0,1,2
+13 (note) heads cut by the edge, the most of each in the picture: 10b captain 68%
+worst: seat 0.69 cm from the chest, the pudding's base 0.00 cm off the plate, hands on the table 2.2 to 3.5 cm over its top, a hand at most 1.5 cm from its place
+DINNER CHECK FAILED: 79 faults (732 frames)

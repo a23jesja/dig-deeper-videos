@@ -1,0 +1,5 @@
+PLANTED noFore: rule 10 FIRED (162 new faults)
+PLANTED cuffOnly: rule 10 FIRED (108 new faults)
+PLANTED sleeveNoInk: rule 10 FIRED (215 new faults)
+PLANTED crownBrim: rule 6 FIRED (31 new faults)
+PLANTED crownFace: rule 6 FIRED (93 new faults)

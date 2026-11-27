@@ -4,7 +4,9 @@ import React from "react";
 import { AbsoluteFill, Audio, Img, staticFile, useCurrentFrame } from "remotion";
 import { FM } from "../clips/clipKit";
 import { capWidth } from "../stage/film";
-import { BEARD_PLANT } from "../wardrobe/kit";
+import { BEARD_PLANT, tricornTrim, kitOf } from "../wardrobe/kit";
+import { headPt } from "../checks/bodyGeom";
+import { scaleOf, footY } from "../clips/clipKit";
 import { SHOTS, paintFigures, placeOf, toScreen, handPx, PLANT, project, type Who } from "./core";
 import SPEC_D from "./shots.json";
 import { jointPx } from "../clips/clipKit";
@@ -63,9 +65,42 @@ export const CAP_TOPS: Record<string, number> = (() => { const out: Record<strin
     for (const bodies of [true, false]) { for (const k of [1, 0.8, 0.65, 0.55]) { for (const xc of XCS) { const t = TOPS.find((tp) => clear(tp, xc, bodies, k)); if (t !== undefined) { pick = [t, xc]; CAP_SCALE[S.id] = k; break; } } if (pick) break; } if (pick) { CAP_ON_BODY[S.id] = !bodies; break; } }      /* (clear of bodies where it can be, the reviewer: "if it can"; else clear of faces and hands as before, noted) */
     out[S.id] = pick ? pick[0] : -1; CAP_X[S.id] = pick ? pick[1] : 540; void hgt; if (typeof process !== "undefined" && process.env?.DEBUGCAP === S.id) console.log("CAPWHY", S.id, JSON.stringify((globalThis as unknown as { CAPWHY?: Record<string, number> }).CAPWHY)); }
   return out; })();
+/** v6c, 10b (the cloud session's yes on 27 Nov, a named exception to rule 6 for 10b alone): the close-up has no free place, so its words lie on
+ *  the captain's hat, on its crown only: inside the hat's outline with that outline seen round them (CROWN.edge), above the gold trim along the
+ *  brim (CROWN.brim), and CROWN.face px or more from his face. For one frame: the hat in the picture (the push camFx applied: the words do not
+ *  move with it) and a box's distances to the hat's edge (inside: +), to the trim (above it: +) and to the face */
+export const CROWN = { edge: 16, brim: 16, face: 20 };
+const dSeg = (p: number[], a: number[], b: number[]) => { const dx = b[0] - a[0], dy = b[1] - a[1], L = dx * dx + dy * dy || 1, u = Math.max(0, Math.min(1, ((p[0] - a[0]) * dx + (p[1] - a[1]) * dy) / L)); return Math.hypot(p[0] - a[0] - u * dx, p[1] - a[1] - u * dy); };
+const inPg = (pt: number[], P: number[][]) => { let c = false; for (let i = 0, j = P.length - 1; i < P.length; j = i++) if ((P[i][1] > pt[1]) !== (P[j][1] > pt[1]) && pt[0] < ((P[j][0] - P[i][0]) * (pt[1] - P[i][1])) / (P[j][1] - P[i][1]) + P[i][0]) c = !c; return c; };
+export const hatAt = (id: string, fr: number) => { const cap = BUILT[id]?.find((w) => w.name === "captain"); if (!cap) return null; const pl = placeOf(id, fr, cap), f = pl.f, sk = f.sk, kit = kitOf(f.o.look); if (kit?.hat !== "tricorn") return null;
+  const sh = SHOTS.find((q) => q.id === id)!, cf = camFx(sh.t0 + fr / FM.FPS), sc = scaleOf(f.who), as = Math.abs(Math.sin((sk.faceYaw * Math.PI) / 180)), fwd = as < 0.45 ? 0 : as < 0.85 ? 0.7 : 1, t = tricornTrim(fwd);
+  const scr = (q: [number, number]) => { const p = headPt(sk, q), v = toScreen(pl, [f.x + p[0] * sc, footY(f.who) + p[1] * sc]); return [(v[0] - FM.W / 2) * cf.s + FM.W / 2 + cf.dx, (v[1] - FM.H / 2) * cf.s + FM.H / 2 + cf.dy]; };
+  const hull = t.hull.map(scr), trim = t.trim.map((r) => r.map(scr)), head = Array.from({ length: 60 }, (_, i) => scr([126 * Math.cos((i / 60) * 2 * Math.PI), -128 + 132 * Math.sin((i / 60) * 2 * Math.PI)]));
+  const face = head.filter((q) => !inPg(q, hull)), u = Math.hypot(...[0, 1].map((k) => scr([100, -128])[k] - scr([0, -128])[k])) / 100;
+  return { hull, trim, face, unit: u }; };
+/** a box [x0, y0, x1, y1] against the hat of one frame: edge (least distance inside the hat's outline, negative outside), brim (the box's bottom
+ *  above the trim, least over its width; negative: on or under it), face (least distance to the face's outline below the hat) */
+export const crownGaps = (H: NonNullable<ReturnType<typeof hatAt>>, b: number[]) => { const pts: number[][] = []; for (let i = 0; i <= 12; i++) { const x = b[0] + ((b[2] - b[0]) * i) / 12, y = b[1] + ((b[3] - b[1]) * i) / 12; pts.push([x, b[1]], [x, b[3]], [b[0], y], [b[2], y]); }
+  let edge = 1e9; for (const p of pts) { let d = 1e9; for (let i = 0; i < H.hull.length; i++) d = Math.min(d, dSeg(p, H.hull[i], H.hull[(i + 1) % H.hull.length])); edge = Math.min(edge, inPg(p, H.hull) ? d : -d); }
+  let brim = 1e9; for (const r of H.trim) for (let i = 0; i + 1 < r.length; i++) { const a = r[i], c = r[i + 1]; for (let k = 0; k <= 4; k++) { const x = a[0] + ((c[0] - a[0]) * k) / 4, y = a[1] + ((c[1] - a[1]) * k) / 4;
+    const half = 7 * H.unit; if (x >= b[0] - half && x <= b[2] + half) brim = Math.min(brim, y - half - b[3]); else brim = Math.min(brim, Math.hypot(Math.max(b[0] - x, 0, x - b[2]), Math.max(b[1] - y, 0, y - b[3])) - half); } }
+  let face = 1e9; for (const q of H.face) face = Math.min(face, Math.hypot(Math.max(b[0] - q[0], 0, q[0] - b[2]), Math.max(b[1] - q[1], 0, q[1] - b[3])));
+  return { edge, brim, face }; };
+/** 10b's words: the largest size and the place on the crown where the box keeps CROWN's distances in every frame of the shot (null: none) */
+let CROWN_PICK: { xc: number; top: number; k: number; gaps: { edge: number; brim: number; face: number } } | null | undefined;
+export const crownPick = () => { if (CROWN_PICK !== undefined) return CROWN_PICK; CROWN_PICK = null; const S = SHOTS.find((q) => q.id === "10b"); if (!S) return null;
+  const n = Math.round((S.t1 - S.t0) * FM.FPS), Hs = Array.from({ length: n }, (_, fr) => hatAt("10b", fr)); if (Hs.some((h) => !h)) return null;
+  const words = CAPS.filter((c) => c.b > S.t0 && c.a < S.t1), lines = Math.max(1, ...words.map((c) => c.text.split("|").length)), cw = Math.max(0.1, ...words.map((c) => Math.max(...c.text.split("|").map(capWidth)))), sz = Math.round(96 * Math.min(1, 8.9 / cw)), w = Math.min(1020, cw * 1.194 * sz);
+  for (const k of [1, 0.9, 0.8, 0.7, 0.6, 0.5]) { let best: typeof CROWN_PICK = null;
+    for (let xc = 120; xc <= 960; xc += 10) for (let top = Math.round(0.15 * FM.H); top <= Math.round(0.85 * FM.H); top += 6) { const t0 = top - (lines - 1) * sz * k * 1.1, bx = [xc - (w * k) / 2 - 10, t0 - 10, xc + (w * k) / 2 + 10, t0 + sz * k * 1.08 * lines + 10];      // (the words' box with their 9 px stroke)
+      if (bx[1] < 0.15 * FM.H || bx[3] > 0.85 * FM.H || bx[0] < 24 || bx[2] > FM.W - 24) continue;
+      let m = { edge: 1e9, brim: 1e9, face: 1e9 }, ok = true; for (const H of Hs) { const g = crownGaps(H!, bx); m = { edge: Math.min(m.edge, g.edge), brim: Math.min(m.brim, g.brim), face: Math.min(m.face, g.face) }; if (g.edge < CROWN.edge || g.brim < CROWN.brim || g.face < CROWN.face) { ok = false; break; } }
+      if (ok && (!best || Math.min(m.edge, m.brim) > Math.min(best.gaps.edge, best.gaps.brim))) best = { xc, top, k, gaps: m }; }
+    if (best) { CROWN_PICK = best; break; } }
+  return CROWN_PICK; };
 export const captionAt = (T: number) => { const c = CAPS.find((q) => T >= q.a - 0.03 && T < q.b); if (!c) return null; const sh = SHOTS.find((s) => T >= s.t0 && T < s.t1) ?? SHOTS[SHOTS.length - 1];
-  const lines = c.text.split("|"), cw = Math.max(...lines.map(capWidth)), sz = Math.round(96 * Math.min(1, 8.9 / cw) * (CAP_SCALE[sh.id] ?? 1)), w = Math.min(1020, cw * 1.194 * sz), top = (CAP_TOPS[sh.id] ?? 430) - (lines.length - 1) * sz * 1.1;
-  const xc = CAP_X[sh.id] ?? 540; return { text: c.text, lines, sz, xc, box: [xc - w / 2, top, xc + w / 2, top + sz * 1.08 * lines.length + (lines.length - 1) * sz * 0.02] as [number, number, number, number] }; };
+  const cp = sh.id === "10b" ? crownPick() : null, lines = c.text.split("|"), cw = Math.max(...lines.map(capWidth)), sz = Math.round(96 * Math.min(1, 8.9 / cw) * (cp ? cp.k : CAP_SCALE[sh.id] ?? 1)), w = Math.min(1020, cw * 1.194 * sz), top = (cp ? cp.top : CAP_TOPS[sh.id] ?? 430) - (lines.length - 1) * sz * 1.1;
+  const xc = cp ? cp.xc : CAP_X[sh.id] ?? 540; return { text: c.text, lines, sz, xc, box: [xc - w / 2, top, xc + w / 2, top + sz * 1.08 * lines.length + (lines.length - 1) * sz * 0.02] as [number, number, number, number] }; };
 export const paintCaption = (g: CanvasRenderingContext2D, T: number) => { const c = captionAt(T); if (!c) return;
   g.save(); g.setTransform(1, 0, 0, 1, 0, 0); g.font = `900 ${c.sz}px 'Arial Black', Arial, sans-serif`; g.textAlign = "center"; g.textBaseline = "top"; g.lineJoin = "round";
   g.lineWidth = 18; g.strokeStyle = "#141018"; g.fillStyle = "#fff4c2"; c.lines.forEach((l, i) => { const y = c.box[1] + i * c.sz * 1.1; g.strokeText(l, c.xc, y); g.fillText(l, c.xc, y); }); g.restore(); };

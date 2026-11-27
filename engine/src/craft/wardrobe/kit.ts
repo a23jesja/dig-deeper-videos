@@ -38,6 +38,10 @@ export const hatOutline = (kit: Kit, fwd: number): P2[] => {
   if (kit.hair === "messy") return messyHair(fwd);
   return [];
 };
+/** the tricorn's outline and the gold trim along its brim's edge toward us (head frame), as kitHat draws them: for 10b's words on the crown */
+export const tricornTrim = (fwd: number) => { const t = tricorn(fwd), runs: P2[][] = []; let run: P2[] = [];
+  for (const q of [...t.loop, t.loop[0]]) { if (q[2] > -20) run.push([q[0], q[1]]); else { if (run.length > 2) runs.push(run); run = []; } } if (run.length > 2) runs.push(run);
+  return { hull: t.hull, trim: runs }; };
 /** the tricorn as a 3D brim turned up in three corners (front, back left, back right) seen from the view's angle: the corners low (never
  *  under -206 in the head's frame, so above the brows at their highest, -192), the edges between them turned up to the crown */
 const tricorn = (fwd: number) => {
@@ -325,7 +329,12 @@ const drawFlat = (c: FlatSpec) => (k: Ink, sk: Sk, o: FigOpts) => {
   /** the forearm (its cuff and its sleeve's lower piece, with its own ink) and the hand: what beardOverlay draws again over the beard */
   const foreArm = (s: Side) => { const S = J(sk, "sh", s), E = J(sk, "el", s), W = J(sk, "wr", s), kind = (s === "L" ? o.handL : o.handR) ?? "relaxed";
     if (!other) k.group([seg(mid(E, W, 0.8), mid(E, W, 1.04), B.arm[2] * 0.92, B.arm[2] * 0.92, 0, 0.3, true)], C.shirt);
-    k.group([limb(S, E, W, B.arm)[1]], other ? C.dress : c.noCoat ? C.shirt : C.coat); handAt(k, sk, s, kind, C.skin); };
+    k.group([limb(S, E, W, B.arm)[1]], other ? C.dress : c.noCoat ? C.shirt : C.coat); if (kit?.top === "coat") goldCuff(S, E, W); handAt(k, sk, s, kind, C.skin); };
+  // (v6c, the cloud session's yes on 27 Nov: the captain's coat sleeves end in a cuff edged in gold, on both arms in every view, so a hand
+  //  reads as coming out of a sleeve; the sleeve's own outline, not the cuff, is what shows the arm (dinner_check 10). CUFF in this file)
+  const goldCuff = (S: P2, E: P2, W: P2) => { const w = B.arm[2] * CUFF[2], cf = seg(mid(E, W, CUFF[0]), mid(E, W, CUFF[1]), w, w, 0, 0.3, true); k.group([cf], C.coat);
+    const a = mid(E, W, CUFF[0]), L = Math.hypot(W[0] - E[0], W[1] - E[1]) || 1, d: P2 = [(W[0] - E[0]) / L, (W[1] - E[1]) / L], n: P2 = [-d[1], d[0]], c0: P2 = [a[0] + d[0] * 7, a[1] + d[1] * 7];
+    k.clip(cf, () => k.line([[c0[0] - n[0] * 60, c0[1] - n[1] * 60], [c0[0] + n[0] * 60, c0[1] + n[1] * 60]], 8, GOLD)); };
   const arm = (s: Side) => {
     const S = J(sk, "sh", s), E = J(sk, "el", s), W = J(sk, "wr", s), kind = (s === "L" ? o.handL : o.handR) ?? "relaxed";
     if (!other) k.group([seg(mid(E, W, 0.8), mid(E, W, 1.04), B.arm[2] * 0.92, B.arm[2] * 0.92, 0, 0.3, true)], C.shirt);
@@ -347,6 +356,7 @@ const drawFlat = (c: FlatSpec) => (k: Ink, sk: Sk, o: FigOpts) => {
     const ext = bend >= 20 ? 48 : 0, own: [P2, P2, P2[], number, number, number][] = [[S, E, sideOf(17 * Math.max(0, 1 - bend / 20), 1), 0, ext, 0], [E, W, sideOf(0, -1), ext, 0, ph]];
     if (kit?.top === "stripes") for (const piece of sleeve) k.clip(piece, () => { for (const [a, b, H, pre, post, sh] of own) k.clip(H, () => { const L = Math.hypot(b[0] - a[0], b[1] - a[1]) || 1, d: P2 = [(b[0] - a[0]) / L, (b[1] - a[1]) / L], n: P2 = [-d[1], d[0]];
       for (let u = 10 + sh - pre; u < L + 10 + post; u += 24) { const c0: P2 = [a[0] + d[0] * u, a[1] + d[1] * u]; k.line([[c0[0] - n[0] * 60, c0[1] - n[1] * 60], [c0[0] + n[0] * 60, c0[1] + n[1] * 60]], 10, kit.col.stripe); } }); });
+    if (kit?.top === "coat") goldCuff(S, E, W);
     handAt(k, sk, s, kind, C.skin);
   };
   let torsoPoly: P2[] = [];
@@ -490,12 +500,22 @@ const drawFlat = (c: FlatSpec) => (k: Ink, sk: Sk, o: FigOpts) => {
       if (!FACE.cuffSwap) outside(cutLine); else without(behindPts, () => without(circ, cutLine)); }
     arm(near); beardOverlay(k, sk, r, B, P, [near], foreArm); return;
   }
-  layers(sk, { arm, leg, torso, head });
+  // (v6c, the cloud session's yes on 27 Nov: turned from the lens (the side's order) the captain's far arm lies under his coat, and a forearm
+  //  brought forward to the table, his lap or his chin showed only its hand beside the waistcoat, a hand out of the coat, the review of v6 and
+  //  the reviewer on shot 9 frame 463. Brought forward (farForeOver), its forearm from the elbow, with its own outline, its cuff and its hand
+  //  are drawn over the coat, under the head and the near arm)
+  layers(sk, { arm, leg, torso: () => { torso(); if (!other && farForeOver(sk, kit, o.armWipe)) foreArm(sk.far); }, head });
   beardOverlay(k, sk, r, B, P, Math.abs(sk.sin) > 0.5 ? [sk.near] : [sk.far, sk.near], foreArm);
 };
 /** where the far arm comes out from behind the body in a turn (|sin| of the facing); [0, 0] switches it in one frame at 0.5 (the v4 order,
  *  the bytes check's planted fault) */
 export const ARM_WIPE: [number, number] = [0.15, 0.8];
+/** the captain's cuff: from and to (shares of the way from the elbow to the wrist) and its half-width against the sleeve's at the wrist */
+export const CUFF: [number, number, number] = [0.76, 1.0, 1.15];
+/** is a coat's far forearm drawn over the coat: in the side's order (|sin| over 0.5, with no sweep), always, so it never changes layer inside a
+ *  shot (by the forearm's angle it came and went in 11 as the hand moved on the table, a layer switch in one frame). The captain sits through the
+ *  film with his hands forward (the table, his knee, his chest); none hangs at his side behind him. For kit.ts and dinner_check 10 */
+export const farForeOver = (sk: Sk, kit: Kit | null, armWipe?: boolean) => kit?.top === "coat" && armWipe === false && Math.abs(sk.sin) > 0.5;
 /** where the far hand changes layer in a turn (|sin|): front's order under it, the side's over it */
 export const HAND_SWAP = 0.35;
 /** a shoe as drawn: no part of it below the ground line (y = 0): turning, lifting or setting down a foot, its toe went 5-10 px through the

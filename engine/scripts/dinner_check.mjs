@@ -19,6 +19,9 @@
 //  14  no face switch inside a shot (v57): a figure's mouth never crosses 0.2 (the lower lip comes and goes there) and his smile never 0.3 (the
 //      smiling lower lid starts there); his eyes never cross the squeeze's 0.5 (chevrons); planted smileCross: the crewman's smile 0.6 lower from halfway
 //  15  a cut between two shots that both show a figure's whole head turns the lens at least 30 degrees and changes his size at least 1.3 times
+//  16  arms move like human arms: the elbow bent at most 150 degrees; a forearm or hand past the torso's midline only with its elbow seen and
+//      bent; the upper arm in toward the body's middle at most 30 degrees (Jesper on v6 shot 4 and 11-13 s; see the rule below)
+//  17  no crossing stripes on a striped sleeve (the review of v6, point 4)
 //  12  the head's drawing does not change inside a shot: the face's turn never crosses 15-28 or 50-60 degrees within a shot, where the
 //      head and the tricorn change drawing (the sheet's review: the hat's shape jumps there)
 // Planted faults (each must fail, and on its own rule: the run exits 1 only when that rule fired): --plant seatHigh (the seat 5 cm over the
@@ -192,7 +195,60 @@ for (const S of SHOTS) {
             if (process.env.DEBUG10 === `${S.id}:${fr}`) console.log(`DEBUG10 ${g.w.name} ${sd === g.sk.near ? "near" : "far"} sin ${g.sk.sin.toFixed(2)} sleeve ${fsl.toFixed(2)} hand ${fh.toFixed(2)} arm ${fa.toFixed(2)} inside ${a.inside}/${a.n} tall ${shotTall.toFixed(2)}`);
             if (fsl < 0.25 && fh >= 0.1 && !HIDDEN_BY[k]) faults.push(`10 ${S.id} frame ${fr} ${g.w.name}: his ${sd === g.sk.near ? "near" : "far"} hand seen (${(fh * 100).toFixed(0)} %) without its arm (${(fsl * 100).toFixed(0)} % of the sleeve)`);
             else if ((fsl < 0.25 || (fh < 0.1 && fsl < 0.5)) && !HIDDEN_BY[k]) faults.push(`10 ${S.id} frame ${fr} ${g.w.name}: his ${sd === g.sk.near ? "near" : "far"} arm hidden, ${(fsl * 100).toFixed(0)} % of its sleeve and ${(fh * 100).toFixed(0)} % of its hand seen (one-armed look)`);
-            if (false && fa < 0.15 && fh < 0.25 && !HIDDEN_BY[k]) faults.push(`10 ${S.id} frame ${fr} ${g.w.name}: his ${sd === g.sk.near ? "near" : "far"} arm hidden, ${(fa * 100).toFixed(0)} % of it and ${(fh * 100).toFixed(0)} % of its hand seen (one-armed look)`); } } } }
+            if (false && fa < 0.15 && fh < 0.25 && !HIDDEN_BY[k]) faults.push(`10 ${S.id} frame ${fr} ${g.w.name}: his ${sd === g.sk.near ? "near" : "far"} arm hidden, ${(fa * 100).toFixed(0)} % of it and ${(fh * 100).toFixed(0)} % of its hand seen (one-armed look)`); } } }
+    // 16 the arm moves like a human arm (Jesper on v6, 27 Nov: "Handrörelserna på han som äter kaptenens pudding ser konstiga och onormala ut";
+    //    DAILY-RULES "Human bodies move like humans": elbows bend one way, 0-150 degrees). In every shot where the figure is 30 % of the picture
+    //    or more, for each arm whose sleeve shows (the elbow, the sleeve and the hand as the rig draws them, under what the figure itself and a
+    //    nearer figure draw over them, the far arm's sweep (ARM_WIPE) followed as kit.ts draws it):
+    //    a) the elbow bends at most 150 degrees: the drawn angle at the elbow between upper arm and forearm at least 30 degrees
+    //    b) an arm brought across the body shows its elbow: when any seen point of the forearm or hand lies past the torso's midline (neck to
+    //       pelvis) on the side away from its own shoulder, the elbow (a disc of the sleeve's width there) is at least half seen and the arm is
+    //       bent there (the angle at most 160 degrees). v6 shot 4: the far forearm came up across the chest to the mouth with its elbow behind
+    //       the body, the arm starting mid-chest; 11-13 s: the arm stretched straight across the belly, a rubber hose
+    //    c) the upper arm's turn in toward the body's middle (from the torso's down line, in the picture) at most 30 degrees, or raised past 150
+    //       (a hand up over the head): the flat rig draws every arm at its full length, so an upper arm held in across the chest is never seen
+    //       shortened toward the lens and reads as a hose (v6 shots 3, 4, 7, 8: 42 to 139 degrees in); the elbow hangs down or out
+    // 17 no stripes crossing on a striped sleeve (the review of v6, point 4: the stripes net on the folded arm, frames 141-191 and 405). kit.ts
+    //    draws each segment's stripes (across it, 24 apart, 120 long) through every piece of the sleeve; where the upper arm's and the forearm's
+    //    stripes meet at more than 20 degrees inside the drawn sleeve, at a point a viewer sees, they cross. None may (zero tolerance)
+    for (const g of sil) {
+      if (g.tall < 0.3) continue; const sk = g.sk, Jn = (n) => sk.j[n], as = Math.abs(sk.sin), torso = BG.torsoPoly(sk, g.B), heads = BG.headPolys(sk, g.kit), legs = BG.legPolys(sk, g.B, g.kit);
+      const wipe = g.f.o.armWipe !== false && !(as <= 0.15 || as >= 0.8), u = (0.8 - as) / 0.65;      /* (the far arm's sweep as kit.ts/flat.ts draw it; with armWipe false the layers' order: under the body past |sin| 0.5, over it before) */
+      const sweepShown = (() => { if (!wipe) return () => (g.f.o.armWipe === false ? as <= 0.5 : as <= 0.15); const far = sk.far, near = sk.near, m = sk.P.hand + 20;
+        const xs = [...torso.map((p) => p[0]), ...["sh", "el", "wr", "tip", "kn", "an", "hip"].flatMap((n) => [Jn(n + far)[0], Jn(n + near)[0]])], x0 = Math.min(...xs) - m, x1 = Math.max(...xs) + m;
+        const ax = ["sh", "el", "wr", "tip"].map((n) => Jn(n + far)[0]), aw = g.B.arm[0], a0 = Math.min(...ax) - aw, a1 = Math.max(...ax) + aw;
+        const side = Math.sign(Jn("sh" + far)[0] - Jn("sh" + near)[0]) || 1, xFar = side > 0 ? x1 : x0, xNear = side > 0 ? x0 : x1, aOut = side > 0 ? a1 : a0, aIn = side > 0 ? a0 : a1;
+        const line = u < 0.1 ? xFar + (aOut - xFar) * (u / 0.1) : u < 0.9 ? aOut + (aIn - aOut) * ((u - 0.1) / 0.8) : aIn + (xNear - aIn) * ((u - 0.9) / 0.1);
+        return (q) => (side > 0 ? q[0] > line : q[0] < line); })();
+      // (a point of arm sd, in skeleton units: seen when in the picture, not under what the figure draws over that arm, not under a nearer figure)
+      const seen = (sd, q) => { const p = g.scr(q); if (p[0] < 0 || p[0] > FM.W || p[1] < 0 || p[1] > FM.H) return false;
+        if (sd === sk.far && g.parts[sk.near].all.some((P) => BG.inPoly(q, P))) return false;
+        if (sd === sk.far && !sweepShown(q) && [torso, ...heads, ...legs].some((P) => BG.inPoly(q, P))) return false;
+        return !sil.some((o) => o !== g && o.pl.depth < g.pl.depth && o.all.some((P) => BG.inPoly(p, P))); };
+      const neck = Jn("neck"), pel = Jn("pelvis"), dn = [pel[0] - neck[0], pel[1] - neck[1]], dl = Math.hypot(dn[0], dn[1]) || 1, sideOf = (q) => ((q[0] - neck[0]) * dn[1] - (q[1] - neck[1]) * dn[0]) / dl;
+      for (const sd of ["L", "R"]) {
+        const Sh = Jn("sh" + sd), El = Jn("el" + sd), Wr = Jn("wr" + sd), Tp = Jn("tip" + sd), sl = BG.fillPts(g.parts[sd].sleeve, 6), slSeen = sl.filter((q) => seen(sd, q)).length / (sl.length || 1);
+        if (slSeen < 0.1) continue;      // (an arm not seen has no angle to judge; rule 10 judges a hidden arm)
+        const a1 = [Sh[0] - El[0], Sh[1] - El[1]], a2 = [Wr[0] - El[0], Wr[1] - El[1]], ang = (Math.acos(Math.max(-1, Math.min(1, (a1[0] * a2[0] + a1[1] * a2[1]) / ((Math.hypot(...a1) || 1) * (Math.hypot(...a2) || 1))))) * 180) / Math.PI;
+        const r = g.B.arm[1] * 0.9, disc = []; for (let i = 0; i < 7; i++) for (let j = 0; j < 7; j++) { const x = -r + (2 * r * i) / 6, y = -r + (2 * r * j) / 6; if (x * x + y * y <= r * r) disc.push([El[0] + x, El[1] + y]); }
+        const elSeen = disc.filter((q) => seen(sd, q)).length / disc.length, sS = Math.sign(sideOf(Sh)) || 1;
+        const fore = []; for (let i = 0; i <= 20; i++) { const t = i / 20; fore.push([El[0] + (Wr[0] - El[0]) * t, El[1] + (Wr[1] - El[1]) * t]); } for (let i = 1; i <= 6; i++) { const t = i / 6; fore.push([Wr[0] + (Tp[0] - Wr[0]) * t, Wr[1] + (Tp[1] - Wr[1]) * t]); }
+        const across = fore.filter((q) => sideOf(q) * sS < -12 && seen(sd, q)).length;
+        const ua = [El[0] - Sh[0], El[1] - Sh[1]], inward = (Math.atan2(-(ua[0] * dn[1] - ua[1] * dn[0]) * sS, ua[0] * dn[0] + ua[1] * dn[1]) * 180) / Math.PI;      /* (degrees from the down line, + toward the body's middle) */
+        const who = `${S.id} frame ${fr} ${g.w.name}: his ${sd === sk.near ? "near" : "far"} arm`;
+        if (process.env.DEBUG16 && (process.env.DEBUG16 === "all" || process.env.DEBUG16 === `${S.id}:${g.w.name}`)) console.log(`DEBUG16 ${who} sin ${sk.sin.toFixed(2)} elbow ${ang.toFixed(0)} deg, elbow seen ${(elSeen * 100).toFixed(0)} %, sleeve seen ${(slSeen * 100).toFixed(0)} %, across ${across}, upper arm in ${inward.toFixed(0)} deg, elbow at ${g.scr(El).map((v) => Math.round(v)).join(",")}`);
+        if (ang < 30) faults.push(`16 ${who} bent ${(180 - ang).toFixed(0)} degrees at the elbow (at most 150)`);
+        if (across && (elSeen < 0.5 || ang > 160)) faults.push(`16 ${who} across the body (${across} seen points past the midline) ${elSeen < 0.5 ? `with its elbow hidden (${(elSeen * 100).toFixed(0)} % seen)` : `straight (${ang.toFixed(0)} degrees at the elbow)`}`);
+        if (inward > 30 && inward < 150) faults.push(`16 ${who}: the upper arm turned ${inward.toFixed(0)} degrees in across the body (at most 30 from the down line, or raised over 150)`);
+        // 17 the stripes
+        if (g.kit?.top === "stripes" || plant === "stripeAll") { const fam = (a, b) => { const L = Math.hypot(b[0] - a[0], b[1] - a[1]) || 1, d = [(b[0] - a[0]) / L, (b[1] - a[1]) / L], n = [-d[1], d[0]], out = []; for (let k = 10; k < L + 10; k += 24) { const c = [a[0] + d[0] * k, a[1] + d[1] * k]; out.push([[c[0] - n[0] * 60, c[1] - n[1] * 60], [c[0] + n[0] * 60, c[1] + n[1] * 60]]); } return { d, out }; };
+          const A = fam(Sh, El), Bf = fam(El, Wr), cr = Math.abs(A.d[0] * Bf.d[1] - A.d[1] * Bf.d[0]), sleeve = g.parts[sd].sleeve.slice(1);      /* (the sleeve's two pieces; the cuff under them has no stripes) */
+          if (Math.asin(Math.min(1, cr)) * 180 / Math.PI > 20) { let x = 0;
+            for (const [p1, p2] of A.out) for (const [q1, q2] of Bf.out) { const r0 = [p2[0] - p1[0], p2[1] - p1[1]], s0 = [q2[0] - q1[0], q2[1] - q1[1]], den = r0[0] * s0[1] - r0[1] * s0[0]; if (Math.abs(den) < 1e-9) continue;
+              const t = ((q1[0] - p1[0]) * s0[1] - (q1[1] - p1[1]) * s0[0]) / den, v = ((q1[0] - p1[0]) * r0[1] - (q1[1] - p1[1]) * r0[0]) / den; if (t < 0 || t > 1 || v < 0 || v > 1) continue;
+              const q = [p1[0] + r0[0] * t, p1[1] + r0[1] * t]; if (sleeve.some((P) => BG.inPoly(q, P)) && seen(sd, q)) x++; }
+            if (x) faults.push(`17 ${who}'s stripes cross ${x} times (the upper arm's and the forearm's stripes at ${(Math.asin(Math.min(1, cr)) * 180 / Math.PI).toFixed(0)} degrees inside the sleeve)`); } } } }
+    }
     // 8 no face covered: a farther figure's face (the head's circle below its cap, 0.8 of its radius) is not under a nearer figure's body (the
     //  hull of its joints and the head's circle) in any frame
     { const geo = placed.map(({ w, pl }) => { const J = (j) => toScreen(pl, jointPx(pl.f, j)), s0 = J("skull"), c0 = J("crown"), hr = Math.hypot(c0[0] - s0[0], c0[1] - s0[1]) / 2;

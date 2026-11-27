@@ -6,6 +6,7 @@
 // two-layer hand, paintPudding). His right hand slaps the book (shot 3) and points (shot 6). Every hand on a surface is solved onto it each
 // frame (armTo: the table, the plate, the book). Voices as v5 (the same takes, no new characters).
 import { SAILOR_LOOK } from "../wardrobe/cast";
+import { kitMouth } from "../wardrobe/kit";
 import type { Pose, Side } from "../rig";
 import { solve } from "../rig";
 import { ease as ease0 } from "../stage/acting";
@@ -241,30 +242,35 @@ const captain = (id: string): Who => { const s = SH[id], yaw = headingIn(id, FAC
 // ------------------------------------------------------------------ the sailor ------------------------------------------------------------------
 /** the pudding (flat, his ink): its radius in metres, no wider than his hand is long; how many bites are gone by film time t */
 export const PUD_R = 0.08;      // (at 6.2 cm it read as a dot in the medium shots, the first stills; Knopp's hand is 17 cm long)
-export const bitesAt = (t: number) => (t >= 10.62 ? 2 : t >= 4.82 ? 1 : 0);
+export const bitesAt = (t: number) => (t >= 4.82 ? 1 : 0);      // (v6c: one bite, shot 4; in 7 he holds it up before his chin and chews: his near arm could not reach his mouth within the limits there, dinner_check 16)
 /** the slap on the book (shot 3): his right hand from over the book down onto its cover at 2.77 (the contact frame), then flat on it */
 export const SLAP = { hit: 2.9 };
 const SLAP_UP = 18;      // (the forearm lifted 30 degrees over the contact pose before the slap)      // (frame 86: the hand from 10 cm over the cover in 5 frames; from 16 cm in 2 it jolted, motion2)
 /** where the pudding's middle is, in his own frame (forward, to his right, up; metres), at film time t, from shot 1's hand-over on (it lies on
  *  his right palm: the hand nearer the lens in the front views) */
-const PCH: P3 = [0.24, 0.16, 0.66], PNOSE: P3 = [0.3, 0.08, 1.0], PMOUTH: P3 = [0.27, 0.06, 0.93], PHIGH: P3 = [0.12, 0.34, 1.22], PAWAY: P3 = [0.05, 0.46, 0.7], PTOAST: P3 = [0.12, 0.42, 1.1], PUP: P3 = [0.2, -0.08, 0.86];
+const PMID: P3 = [0.25, 0.0, 0.95], PCH: P3 = [0.24, 0.16, 0.66], PNOSE: P3 = [0.3, 0.08, 1.0], PMOUTH: P3 = [0.27, 0.06, 0.93], PHIGH: P3 = [0.12, 0.34, 1.22], PAWAY: P3 = [0.05, 0.46, 0.7], PTOAST: P3 = [0.12, 0.42, 1.1], PUP: P3 = [0.2, -0.08, 0.86];
 /** the pudding's keyframes from 1.6 on (film time, its middle in his own frame): between two, eased (span); the arm is solved on each and its angles
  *  lerped (in the hook). (3: up to his nose, a sniff, on to his mouth; 4: the bite at 4.80; 5: up, out of the boy's reach; 7: high, the big bite
  *  at 10.60, swung away at 11.50; 8: the toast by his face (toast: out to his right, never before his speaking mouth; up: toward his middle,
  *  away from the boy's eye; the first stills)) */
 /** a keyframe's place: a point in his own frame (metres, for places by his body), a place on his drawn face (the bites and the sniff: Knopp's
  *  head is half his height, so a point in metres "at his mouth" lay at his shoulder, the 360 px crops of test 2), or a set arm (up by his head) */
+/** how far out past his shoulder the pudding arm's elbow is kept (picture px at the rig's scale; dinner_check 16) */
+const ELB_OUT = 10;
 export type PK = P3 | { face: "mouth" | "nose" } | { fk: [Seg2, Seg2] };
 const KVOTE: PK = { fk: [[-10, 95], [-10, 125]] }, KMOUTH: PK = { face: "mouth" },      /* (8: the toast is the pudding lifted before his chest toward his middle (PUP): out to his right, or up beside his head, it lay across the boy's face, my review of the 2 fps frames) */
   KNOSE: PK = { face: "nose" }, KHIGH: PK = { fk: [[120, 85], [190, 40]] };
-export const PUD_KF: [number, PK][] = [[1.6, PCH], [3.2, PCH], [3.9, KNOSE], [4.15, KNOSE], [4.8, KMOUTH], [6.4, KMOUTH], [6.45, PUP], [9.3, PUP],      /* (4: the pudding kept at his mouth as he chews; it goes down on the cut, out of the picture in 5: coming down, his hand and the pudding flickered, flicker2 frames 157-166) */      /* (4: slower down from his mouth, no lift after: his striped sleeve moving fast flickered in the close shot, flicker2) */      /* (4: after the bite and his chewing, he lifts it to admire it, 5.75-6.2: the sailor's singles get something new every 1-2 s, the reviewer) */
-  [10.6, KMOUTH], [10.75, KMOUTH], [11.25, PCH], [11.4, PCH], [11.8, PAWAY], [12.08, PAWAY], [12.1, PUP], [13.3, PUP], [13.9, PCH],      /* (8: the toast set on the cut, still in the shot: moving, his sleeve flickered) */ [18.9, PCH], [19.5, PUP], [20.2, PCH], [22.2, PCH], [23.1, PUP], [24.5, PUP]]      /* (13: no lift (his sleeve flickered); 15a: the pudding up toward his chin with his "Aye!", slow) */      /* (15a: his "Aye!" with the pudding lifted high on his near, seen side: his fist on the book lay behind him from every camera that sees his face) */      /* (13: he lifts it again with the chin up, 20.85-21.85) */      /* (12, the sailor alone: he lifts the pudding to show it and takes it back, 18.9-20.2, more life (the review); the boy is not in that picture) */;
+export const PUD_KF: [number, PK][] = [[1.6, PCH], [3.2, PCH], [3.9, PMID], [4.69, PMID], [4.7, KMOUTH], [6.4, KMOUTH], [6.45, PUP], [9.3, PUP],      /* (4: the pudding kept at his mouth as he chews; it goes down on the cut, out of the picture in 5: coming down, his hand and the pudding flickered, flicker2 frames 157-166) */      /* (4: slower down from his mouth, no lift after: his striped sleeve moving fast flickered in the close shot, flicker2) */      /* (4: after the bite and his chewing, he lifts it to admire it, 5.75-6.2: the sailor's singles get something new every 1-2 s, the reviewer) */
+  [9.9, PMID], [11.25, PMID],      /* (v6c, Jesper on v6's arms: 3 the pudding up before his chin (PMID), he eyes it (to his nose his near arm folded past 150 or reached across the boy's face); 7 up before his chin, the bite, back before his chin and down to his chest (high over his head and swung away, his near arm went up over the boy's head and out at him as if offering it): dinner_check 16) */
+  [11.8, PCH], [12.08, PCH], [12.1, PUP], [13.3, PUP], [13.9, PCH],      /* (8: the toast set on the cut, still in the shot: moving, his sleeve flickered) */ [18.9, PCH], [19.5, PUP], [20.2, PCH], [22.2, PCH], [23.1, PUP], [24.5, PUP]]      /* (13: no lift (his sleeve flickered); 15a: the pudding up toward his chin with his "Aye!", slow) */      /* (15a: his "Aye!" with the pudding lifted high on his near, seen side: his fist on the book lay behind him from every camera that sees his face) */      /* (13: he lifts it again with the chin up, 20.85-21.85) */      /* (12, the sailor alone: he lifts the pudding to show it and takes it back, 18.9-20.2, more life (the review); the boy is not in that picture) */;
 /** the keyframe segment at t: [from, to, its eased weight] (after the last, his chest) */
 export const pudSeg = (t: number): [PK, PK, number, number, number] => { for (let k = 0; k + 1 < PUD_KF.length; k++) { const [a, A] = PUD_KF[k], [b, B] = PUD_KF[k + 1]; if (t >= a && t < b) return [A, B, span(t, a, b), k, k + 1]; } return [PCH, PCH, 0, -1, -1]; };      /* (k: the keyframes' indices; -1 after the toast: his chest) */      /* (after the toast: his chest, solved at 13.3 and 24) */
 /** a place on the drawn head in skeleton units (as the rig draws A's head: about the skull joint, turned with the face, tilted with the head) */
 const faceSk = (sk: ReturnType<typeof solve>, which: "mouth" | "nose"): [number, number] => {
   const R = Math.PI / 180, sn = Math.sin(sk.faceYaw * R), as = Math.abs(sn), view = as < 0.45 ? "front" : as < 0.85 ? "q" : "side";
-  const p: [number, number] = which === "mouth" ? (view === "front" ? [sn * 34, -40] : view === "q" ? [62, -44] : [92, -32]) : (view === "front" ? [sn * 40, -72] : view === "q" ? [82, -74] : [110, -70]);
+  // (v6c: the wardrobe figures draw their mouth where kitMouth puts it (q: 30, -64 shut), not at A's place (62, -44): the bites aimed at
+  //  A's mouth, low on the cheek)
+  const km = kitMouth(view, 0.24), p: [number, number] = which === "mouth" ? [km.x, km.y + 6] : (view === "front" ? [sn * 40, -72] : view === "q" ? [82, -74] : [110, -70]);
   const fx = view !== "front" && sn < 0 ? -p[0] : p[0], c = Math.cos(sk.headTilt * R), si = Math.sin(sk.headTilt * R), o = sk.j.skull as unknown as [number, number];
   return [o[0] + fx * c - p[1] * si, o[1] + fx * si + p[1] * c]; };
 /** where the pudding's middle is, in his own frame (forward, to his right, up; metres), at film time t (on his right palm from shot 1's hand-over) */
@@ -278,13 +284,15 @@ const crew = (id: string): Who => { const s = SH[id], yaw = headingIn(id, FACING
   const T = (x: number) => x - 0.02, H = (nod = 0, tilt = 0) => headTo(yaw, nod, tilt), F = (o: Record<string, unknown>) => ({ face: capFace({ pupil: 1, smile: 0, brow: 0, lid: 0.06, wide: 0, sad: 0, squeeze: 0, smirk: 0, teeth: 0, mouth: 0, ...o }) });
   ease(m, -1, { lean: 4, head: H(4) }, 0.01, F({ gaze: [0.5, 0.4], smile: 0.9, brow: 0.4, lid: 0.2 }));      // (1: sly, taking it)
   ease(m, T(2.7), { lean: 2, head: H(0) }, 0.01, F({ gaze: [0.6, 0.1], smile: 0.6, brow: 0.2, lid: 0.15 }));
-  ease(m, T(3.6), { lean: 2, head: H(-8) }, 0.25, F({ gaze: [0.3, -0.3], smile: 0.32, brow: 0.5, lid: 0.6 }));      /* (the sniff with his mouth shut: smiling, its corner stuck up over the pudding like a beak, the review) */      // (the sniff, eyes half shut; his lean kept while his hand lies on the book: leaning back it drew 2 cm off it)
+  ease(m, T(3.6), { lean: 2, head: H(-8, 0) }, 0.25, F({ gaze: [0.3, -0.3], smile: 0.32, brow: 0.5, lid: 0.6 }));      /* (the sniff with his mouth shut: smiling, its corner stuck up over the pudding like a beak, the review) */      // (the sniff, eyes half shut; his lean kept while his hand lies on the book: leaning back it drew 2 cm off it)
   ease(m, T(4.2), { lean: 2, head: H(2, 4) }, 0.2, F({ gaze: [0.6, 0], smile: 0.9, smirk: 0.8, brow: 1, lid: 0.1 }));      // (brows up, a crooked grin)
-  ease(m, T(4.7), { lean: 2, head: H(0) }, 0.01, F({ gaze: [0.6, 0.2], smile: 0.8, brow: 0.5, lid: 0.25, mouth: 0.24 }));      // (v6b: lid 0.25, not 0.3 at castAt's switch: crossing it at 5.9 s flickered the eye, flicker2 frame 177) (4: chewing; the mouth never under 0.22 in this shot)
-  ease(m, T(5.55), { lean: 2, head: H(0) }, 0.8, F({ gaze: [0.3, -0.3], smile: 0.9, smirk: 0.6, brow: 1, lid: 0.15, mouth: 0.24 }));      // (4: eyes up on the pudding as he lifts it, brows up)
+  ease(m, T(4.7), { lean: 6, head: H(8, 0) }, 0.01, F({ gaze: [0.6, 0.2], smile: 0.8, brow: 0.5, lid: 0.25, mouth: 0.24 }));      // (v6c: leaning into the bite, his head bent 8 and his body 6 toward the pudding at his mouth, Jesper on v6) (v6b: lid 0.25, not 0.3 at castAt's switch: crossing it at 5.9 s flickered the eye, flicker2 frame 177) (4: chewing; the mouth never under 0.22 in this shot)
+  ease(m, T(5.55), { lean: 6, head: H(8, 0) }, 0.8, F({ gaze: [0.3, -0.3], smile: 0.9, smirk: 0.6, brow: 1, lid: 0.15, mouth: 0.24 }));      // (4: eyes up on the pudding as he lifts it, brows up)
   ease(m, T(6.4), { lean: 2, head: H(0) }, 0.01, F({ gaze: [-0.5, 0.2], smile: 0.6, smirk: 0.4, brow: 0.3, lid: 0.2 }));      // (5: eyeing the boy)
   ease(m, T(8.7), { lean: 12, head: H(-2) }, 0.01, F({ gaze: [0.8, 0], smile: 0.34, smirk: 0.8, brow: -1, lid: 0.25 }));      // (6: leans at the captain, points, mouth shut; set on the cut: eased over it his smile crossed 0.3 in the shot, rule 14)
-  ease(m, T(9.8), { lean: 2, head: H(-8) }, 0.8, F({ gaze: [0.4, -0.5], smile: 0.9, brow: 0.8, lid: 0, wide: 0.2, mouth: 0.24 }));      // (7: admiring it high, then chewing)
+  ease(m, T(9.8), { lean: 2, head: H(-8) }, 0.5, F({ gaze: [0.4, -0.5], smile: 0.9, brow: 0.8, lid: 0, wide: 0.2, mouth: 0.24 }));      // (7: admiring it high, then chewing)
+  ease(m, T(10.35), { lean: 4, head: H(6, 0) }, 0.25, F({ gaze: [0.4, 0.3], smile: 0.9, brow: 0.8, lid: 0.3, wide: 0, mouth: 0.24 }));      // (v6c: 7, leaning to the pudding before his chin, eyes down on it)
+  ease(m, T(11.0), { lean: 2, head: H(0) }, 0.4, F({ gaze: [0.4, 0], smile: 0.9, brow: 0.8, lid: 0.1, wide: 0.2, mouth: 0.24 }));      // (up again, chewing)
   ease(m, T(12.1), { lean: 2, head: H(0) }, 0.01, F({ gaze: [0.7, 0], smile: 0.6, smirk: 0.8, brow: 0.5, lid: 0.15 }));      // (8: the toast, a crooked smile)
   easeH(m, T(12.5), { lean: 2, head: H(5) }, 0.7, F({ gaze: [0.7, 0], smile: 0.7, smirk: 0.8, brow: 0.6, lid: 0.3 }));      // (a nod)
   ease(m, T(13.08), { lean: 2, head: H(5) }, 0.15, F({ gaze: [0.7, 0], smile: 0.7, smirk: 0.8, brow: 0.6, lid: 0.2 }));
@@ -333,13 +341,56 @@ const crew = (id: string): Who => { const s = SH[id], yaw = headingIn(id, FACING
       const sc = scaleOf("sir"), CAST = { name: "crew", m, who: "sir" as const, seed: 26 } as unknown as Parameters<typeof poseAt>[0];
       const solveKF = (K: PK, tk: number): [Seg2, Seg2] => { if (!Array.isArray(K) && "fk" in K) return K.fk;
         const key = `${id}|${tk}|${JSON.stringify(K)}`, hit = KF_CACHE.get(key); if (hit) return hit;
-        const a = poseAt(CAST, tk), pk = { ...a.pose, twist: 0, armL: CREW_REST } as Pose, skk = solve(D.props("sir"), pk, a.heading), pX = (skk.j.pelvis as unknown as number[])[0], x0 = px(0) - pX * sc;
-        const T0 = Array.isArray(K) ? skOf(id, at, HEIGHTS.crew, pX, base(pudW(K as P3))) : ((F2) => [F2[0], F2[1] + 0.9 * rSk] as [number, number])(faceSk(skk, (K as { face: "mouth" | "nose" }).face));      /* (on his face: the pudding's middle there, his grip 0.9 r under it) */
+        const a = poseAt(CAST, Math.min(Math.max(tk, s.t0), s.t1 - 0.01)), pk = { ...a.pose, twist: 0, armL: CREW_REST } as Pose, skk = solve(D.props("sir"), pk, a.heading), pX = (skk.j.pelvis as unknown as number[])[0], x0 = px(0) - pX * sc;
+        const shSk = (skk.j.shR as unknown as number[])[0], skX = (skk.j.skull as unknown as number[])[0], bo = Math.sign(shSk - skX) * 1.3 * rSk;      /* (v6c: the pudding's side at the mouth's outer corner, toward his eating arm, its bite toward the lips; its middle on the mouth needed an arm folded past 150 degrees, rule 16) */
+        const T0 = Array.isArray(K) ? skOf(id, at, HEIGHTS.crew, pX, base(pudW(K as P3))) : ((F2) => [F2[0] + bo, F2[1] + 0.9 * rSk] as [number, number])(faceSk(skk, (K as { face: "mouth" | "nose" }).face));      /* (on his face: the pudding's middle there, his grip 0.9 r under it) */
         const tgt: [number, number] = [px(0) + (T0[0] - pX) * sc, footY("sir") + T0[1] * sc];
-        let r = reach("sir", x0, { ...pk, handR: 0 }, a.heading, "R", tgt, false, { mid: true }); const a1 = r.armR as [Seg2, Seg2];
-        r = reach("sir", x0, { ...pk, armR: a1, handR: 90 - a1[1][0] }, a.heading, "R", tgt, false, { mid: true });      /* (twice: the hand levelled under the pudding, then the grip found again) */
-        const out = r.armR as [Seg2, Seg2]; KF_CACHE.set(key, out); return out; };
-      const setR = (A: [Seg2, Seg2], B: [Seg2, Seg2], u: number, hB?: number) => { q = { ...q, armR: lA(A, B, u), handR: lerp(90 - A[1][0], hB ?? 90 - B[1][0], u) } as Pose; };
+        // (v6c, Jesper on v6: "Handrörelserna på han som äter kaptenens pudding ser konstiga och onormala ut": the search put the upper arm up and
+        //  in across his chest (139 degrees in, shot 4) with the elbow under his chin; dinner_check 16. The elbow is now kept out past his shoulder
+        //  (ELB_OUT px, on the shoulder's own side of his body) and under the line to the target: the upper arm hangs down and out, the forearm
+        //  brings the pudding in, as a person eats)
+        const shX = x0 + (skk.j.shR as unknown as number[])[0] * sc, nkX = x0 + (skk.j.neck as unknown as number[])[0] * sc, so = Math.sign(shX - nkX) || 1;
+        // (the arm as dinner_check 16 measures it in the drawing: the elbow's bend and the upper arm's turn in toward the body's middle. The
+        //  rig's own elbow limit (150) is not the drawn bend: with the arm's raise the drawing folded to 171-177 degrees, shots 7 and 8. So the
+        //  elbow is tried further out past the shoulder until the drawn arm is within the limits (140 / 20, a margin under the check's 150 / 30: the arm is held while he leans and breathes),
+        //  and of those the one whose grip comes nearest the target is kept)
+        const drawn = (arm: [Seg2, Seg2], tg: [number, number] = tgt) => { const s2 = solve(D.props("sir"), { ...pk, armR: arm, handR: 90 - arm[1][0] } as Pose, a.heading), J2 = (n: string) => s2.j[n as keyof typeof s2.j] as unknown as number[];
+          const S0 = J2("shR"), E0 = J2("elR"), W0 = J2("wrR"), T0 = J2("tipR"), nk = J2("neck"), pv = J2("pelvis"), u1 = [S0[0] - E0[0], S0[1] - E0[1]], u2 = [W0[0] - E0[0], W0[1] - E0[1]];
+          const flex = 180 - (Math.acos(Math.max(-1, Math.min(1, (u1[0] * u2[0] + u1[1] * u2[1]) / ((Math.hypot(u1[0], u1[1]) || 1) * (Math.hypot(u2[0], u2[1]) || 1))))) * 180) / Math.PI;
+          const dn = [pv[0] - nk[0], pv[1] - nk[1]], sS = Math.sign((S0[0] - nk[0]) * dn[1] - (S0[1] - nk[1]) * dn[0]) || 1, ua = [E0[0] - S0[0], E0[1] - S0[1]], inward = (Math.atan2(-(ua[0] * dn[1] - ua[1] * dn[0]) * sS, ua[0] * dn[0] + ua[1] * dn[1]) * 180) / Math.PI;
+          const gq = [x0 + (W0[0] + 0.45 * (T0[0] - W0[0])) * sc, footY("sir") + (W0[1] + 0.45 * (T0[1] - W0[1])) * sc], miss = Math.hypot(gq[0] - tg[0], gq[1] - tg[1]);
+          const bendSide = Math.sign((E0[0] - S0[0]) * (W0[1] - E0[1]) - (E0[1] - S0[1]) * (W0[0] - E0[0]));
+          return { bendSide, flex, inward, miss, bad: Math.max(0, flex - 140) + (inward < 150 ? Math.max(0, inward - 20) : 0) + (E0[1] < W0[1] ? 5 + (W0[1] - E0[1]) * 0.05 : 0) }; };      /* (the elbow under the wrist: raised over it, the arm at his mouth bent the other way from his chest's and folded through itself on the way, shot 7) */
+        // (v6c: every keyframe of a shot bent to the same side as his chest's (PCH, solved first) where an arm within the limits allows it: an arm
+        //  bent the other way has to open through straight between them, and his hand swung down to his hip and back, shots 3 and 7)
+        const pref = K === PCH ? 0 : drawn(solveKF(PCH, s.t0)).bendSide;
+        const searchAt = (tg: [number, number]) => { let best: { arm: [Seg2, Seg2]; bad: number; miss: number } | null = null;
+        for (const EO of [-40, -30, -20, -10, 0, ELB_OUT, 20, 30, 45, 60, 80]) { const eo = so > 0 ? shX + EO : -(shX - EO), opt = { mid: true, elbowOut: eo, elbowDown: true };
+          let r = reach("sir", x0, { ...pk, handR: 0 }, a.heading, "R", tg, false, opt); const a1 = r.armR as [Seg2, Seg2];
+          r = reach("sir", x0, { ...pk, armR: a1, handR: 90 - a1[1][0] }, a.heading, "R", tg, false, opt);      /* (twice: the hand levelled under the pudding, then the grip found again) */
+          const arm = r.armR as [Seg2, Seg2], m = drawn(arm, tg); const bd = m.bad + (pref && m.bendSide !== pref ? 3 : 0); if (!best || bd < best.bad - 1e-6 || (Math.abs(bd - best.bad) < 1e-6 && m.miss < best.miss)) best = { arm, bad: bd, miss: m.miss }; }
+          return best!; };
+        let best = searchAt(tgt);
+        // (v6c: a place on his face no arm within the limits reaches (the sniff in shot 3, his near arm: 190 px short, the drawn elbow folded
+        //  past 150 to get there) is brought down toward his chin, a quarter at a time, until one does: the pudding held up under his face and
+        //  his head bent to it, never an arm folded through itself)
+        if (!Array.isArray(K) && (best.miss > 40 || best.bad > 1e-6)) { const sk0 = skk.j.skull as unknown as number[], side = Math.sign(shSk - skX) || 1, chin: [number, number] = [px(0) + (sk0[0] + side * (rSk + 12) - pX) * sc, footY("sir") + (sk0[1] + 0.9 * rSk) * sc];
+          for (const k of [0.25, 0.5, 0.75, 1]) { const tg: [number, number] = [lerp(tgt[0], chin[0], k), lerp(tgt[1], chin[1], k)], b = searchAt(tg); if (b.bad < 1e-6 && b.miss < 25) { best = b; break; } if (k === 1 && b.bad <= best.bad) best = b; } }
+        const out = best!.arm; KF_CACHE.set(key, out);
+        return out; };
+      // (v6c: between two arms bent to opposite sides in the drawing, the angles lerped folded the drawn arm through itself, 157-178 degrees at
+      //  the elbow (dinner_check 16, shot 7: his chest's arm bent one way, his mouth's the other). Then (or when the lerp folds the drawn arm past 145 on the way) the
+      //  move goes through the arm straight, half way: it opens and bends again, as an arm does)
+      const sideR = (A: [Seg2, Seg2]) => { const s2 = solve(D.props("sir"), { ...q, armR: A, handR: 90 - A[1][0] } as Pose, heading), J2 = (n: string) => s2.j[n as keyof typeof s2.j] as unknown as number[], S0 = J2("shR"), E0 = J2("elR"), W0 = J2("wrR");
+        const u1 = [S0[0] - E0[0], S0[1] - E0[1]], u2 = [W0[0] - E0[0], W0[1] - E0[1]], flex = 180 - (Math.acos(Math.max(-1, Math.min(1, (u1[0] * u2[0] + u1[1] * u2[1]) / ((Math.hypot(u1[0], u1[1]) || 1) * (Math.hypot(u2[0], u2[1]) || 1))))) * 180) / Math.PI;
+        return { side: Math.sign((E0[0] - S0[0]) * (W0[1] - E0[1]) - (E0[1] - S0[1]) * (W0[0] - E0[0])), flex }; };
+      const folds = (A: [Seg2, Seg2], B: [Seg2, Seg2]) => sideR(A).side !== sideR(B).side || [0.25, 0.5, 0.75].some((v) => sideR(lA(A, B, v)).flex > 145);
+      const setR = (A: [Seg2, Seg2], B: [Seg2, Seg2], u: number, hB?: number) => { let arm = lA(A, B, u);
+        if (u > 0 && u < 1 && folds(A, B)) { const m0 = (A[0][0] + B[0][0]) / 2, m1 = (A[0][1] + B[0][1]) / 2, M: [Seg2, Seg2] = [[m0, m1], [m0, m1]]; arm = u < 0.5 ? lA(A, M, u * 2) : lA(M, B, u * 2 - 1); }
+        /* (and a frame that still folds past 145 has its forearm opened toward the upper arm's line, as little as keeps it there: continuous in u) */
+        if (u > 0 && u < 1 && sideR(arm).flex > 145) { let lo = 0, hi = 1; const open = (k: number): [Seg2, Seg2] => [arm[0], [lerp(arm[1][0], arm[0][0], k), lerp(arm[1][1], arm[0][1], k)]];
+          if (sideR(open(1)).flex <= 145) { for (let it = 0; it < 12; it++) { const mid = (lo + hi) / 2; if (sideR(open(mid)).flex > 145) lo = mid; else hi = mid; } arm = open(hi); } }
+        q = { ...q, armR: arm, handR: lerp(90 - A[1][0], hB ?? 90 - B[1][0], u) } as Pose; };
       // (a hold keeps the pose it was reached with: solved again at the hold's end the search gave another answer and the arm swung over to it, motion2 in 4)
       const solveIdx = (k: number): [Seg2, Seg2] => k < 0 ? solveKF(PCH, 13.3) : k > 0 && PUD_KF[k][1] === PUD_KF[k - 1][1] ? solveIdx(k - 1) : solveKF(PUD_KF[k][1], PUD_KF[k][0]);
       const [, , u, ka, kb] = pudSeg(g), sA = solveIdx(ka), sB = solveIdx(kb);

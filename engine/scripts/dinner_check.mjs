@@ -42,7 +42,7 @@ const exportSpec = { name: "spec", setup(b) { b.onLoad({ filter: /designs[\\/]fl
 await esbuild.build({ plugins: [exportSpec], stdin: { contents: 'export * from "./src/craft/dinner3d/core"; export * from "./src/craft/dinner3d/figures"; export { captionAt, CAP_TOPS, camFx, bodyCaps, boxHitsCap, CAP_ON_BODY, ARM_CAPS } from "./src/craft/dinner3d/Dinner3D"; export { thighUnder, scaleOf, D, FM, jointPx, footY, heightOf } from "./src/craft/clips/clipKit"; export * as BG from "./src/craft/checks/bodyGeom"; export { kitOf, kitBody, beardOutline } from "./src/craft/wardrobe/kit"; export { A_SPEC } from "./src/craft/designs/flat";', resolveDir: ".", loader: "tsx" }, bundle: true, format: "esm", platform: "node", outfile: out, logLevel: "error", loader: { ".json": "json" }, external: ["remotion", "react"] });
 const M = await import(pathToFileURL(out).href); fs.rmSync(out);
 const { SHOTS, WHO, PLANT, placeOf, toScreen, feetOf, project, jointPx, handPx, FM, cardToWorld, thighUnder, scaleOf, D, captionAt, PUD_UP, TABLE_TOP } = M;
-const CHECK_PLANTS = { sleeveNoInk: 10, capLow: 6, missing: 7, faceHide: 8, headPeek: 8, hide40: 8, mouthHand: 9, oneArm: 10, mouthOut: 11, turnCross: 12, seatEdge: 1, faceEdge: 13, frontArm: 10, smileCross: 14 }, RULE_OF = { seatHigh: 1, pudOff: 3, handIn: 4, handInBook: 4, float: 2, ...CHECK_PLANTS };
+const CHECK_PLANTS = { stripeNet: 17, sleeveNoInk: 10, capLow: 6, missing: 7, faceHide: 8, headPeek: 8, hide40: 8, mouthHand: 9, oneArm: 10, mouthOut: 11, turnCross: 12, seatEdge: 1, faceEdge: 13, frontArm: 10, smileCross: 14 }, RULE_OF = { seatHigh: 1, pudOff: 3, handIn: 4, handInBook: 4, float: 2, ...CHECK_PLANTS };
 if (plant && !(plant in CHECK_PLANTS)) { if (!(plant in PLANT)) throw new Error("no such planted fault: " + plant); PLANT[plant] = true; }
 const { BG, A_SPEC, footY, VOICES, kitOf, kitBody } = M; if (D.id !== "flatA") throw new Error("the checks' body sizes are A's: the design is " + D.id); const BODY = A_SPEC.sir.B;
 // (an arm hidden by a named thing in the set, so it is no one-armed look: "shot:figure:near|far" -> the thing.
@@ -243,10 +243,14 @@ for (const S of SHOTS) {
         // 17 the stripes
         if (g.kit?.top === "stripes" || plant === "stripeAll") { const fam = (a, b) => { const L = Math.hypot(b[0] - a[0], b[1] - a[1]) || 1, d = [(b[0] - a[0]) / L, (b[1] - a[1]) / L], n = [-d[1], d[0]], out = []; for (let k = 10; k < L + 10; k += 24) { const c = [a[0] + d[0] * k, a[1] + d[1] * k]; out.push([[c[0] - n[0] * 60, c[1] - n[1] * 60], [c[0] + n[0] * 60, c[1] + n[1] * 60]]); } return { d, out }; };
           const A = fam(Sh, El), Bf = fam(El, Wr), cr = Math.abs(A.d[0] * Bf.d[1] - A.d[1] * Bf.d[0]), sleeve = g.parts[sd].sleeve.slice(1);      /* (the sleeve's two pieces; the cuff under them has no stripes) */
+          const uS = [(Sh[0] - El[0]) / (Math.hypot(Sh[0] - El[0], Sh[1] - El[1]) || 1), (Sh[1] - El[1]) / (Math.hypot(Sh[0] - El[0], Sh[1] - El[1]) || 1)], uW = [(Wr[0] - El[0]) / (Math.hypot(Wr[0] - El[0], Wr[1] - El[1]) || 1), (Wr[1] - El[1]) / (Math.hypot(Wr[0] - El[0], Wr[1] - El[1]) || 1)];
+          const bendS = (Math.acos(Math.max(-1, Math.min(1, -(uS[0] * uW[0] + uS[1] * uW[1])))) * 180) / Math.PI, nb0 = [uS[0] - uW[0], uS[1] - uW[1]], nl = Math.hypot(nb0[0], nb0[1]), nb = nl > 1e-6 ? [nb0[0] / nl, nb0[1] / nl] : uS, offA = 18 * Math.max(0, 1 - bendS / 20);
           if (Math.asin(Math.min(1, cr)) * 180 / Math.PI > 20) { let x = 0;
             for (const [p1, p2] of A.out) for (const [q1, q2] of Bf.out) { const r0 = [p2[0] - p1[0], p2[1] - p1[1]], s0 = [q2[0] - q1[0], q2[1] - q1[1]], den = r0[0] * s0[1] - r0[1] * s0[0]; if (Math.abs(den) < 1e-9) continue;
               const t = ((q1[0] - p1[0]) * s0[1] - (q1[1] - p1[1]) * s0[0]) / den, v = ((q1[0] - p1[0]) * r0[1] - (q1[1] - p1[1]) * r0[0]) / den; if (t < 0 || t > 1 || v < 0 || v > 1) continue;
-              const q = [p1[0] + r0[0] * t, p1[1] + r0[1] * t]; if (sleeve.some((P) => BG.inPoly(q, P)) && seen(sd, q)) x++; }
+              const q = [p1[0] + r0[0] * t, p1[1] + r0[1] * t], fq = (q[0] - El[0]) * nb[0] + (q[1] - El[1]) * nb[1];
+              if (plant !== "stripeNet" && !(fq > -offA && fq < 0)) continue;      /* (kit.ts since v6c: each family on its own side of the elbow's bisector, the upper arm's 18 past it when straight; stripeNet, the planted fault, draws them as v6 did, through both pieces) */
+              if (sleeve.some((P) => BG.inPoly(q, P)) && seen(sd, q)) x++; }
             if (x) faults.push(`17 ${who}'s stripes cross ${x} times (the upper arm's and the forearm's stripes at ${(Math.asin(Math.min(1, cr)) * 180 / Math.PI).toFixed(0)} degrees inside the sleeve)`); } } } }
     }
     // 8 no face covered: a farther figure's face (the head's circle below its cap, 0.8 of its radius) is not under a nearer figure's body (the

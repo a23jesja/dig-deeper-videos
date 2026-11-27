@@ -322,8 +322,16 @@ const drawFlat = (c: FlatSpec) => (k: Ink, sk: Sk, o: FigOpts) => {
     const S = J(sk, "sh", s), E = J(sk, "el", s), W = J(sk, "wr", s), kind = (s === "L" ? o.handL : o.handR) ?? "relaxed";
     if (!other) k.group([seg(mid(E, W, 0.8), mid(E, W, 1.04), B.arm[2] * 0.92, B.arm[2] * 0.92, 0, 0.3, true)], C.shirt);
     const sleeve = limb(S, E, W, B.arm); k.group(sleeve, other ? C.dress : c.noCoat ? C.shirt : C.coat);
-    if (kit?.top === "stripes") for (const piece of sleeve) k.clip(piece, () => { for (const [a, b] of [[S, E], [E, W]] as [P2, P2][]) { const L = Math.hypot(b[0] - a[0], b[1] - a[1]) || 1, d: P2 = [(b[0] - a[0]) / L, (b[1] - a[1]) / L], n: P2 = [-d[1], d[0]];
-      for (let u = 10; u < L + 10; u += 24) { const c0: P2 = [a[0] + d[0] * u, a[1] + d[1] * u]; k.line([[c0[0] - n[0] * 60, c0[1] - n[1] * 60], [c0[0] + n[0] * 60, c0[1] + n[1] * 60]], 10, kit.col.stripe); } } });
+    // (v6c, the review of v6 point 4 and dinner_check 17: each segment's stripes were drawn through both pieces of the sleeve, so with the elbow
+    //  bent past about 20 degrees the upper arm's stripes ran on across the forearm and crossed its own, a net. Each family now stays on its own
+    //  side of the elbow's bisector; straight (bent under 20 degrees) the upper arm's side reaches 18 past the elbow, past its last stripe, so a
+    //  straight arm draws as before, pixel for pixel. Only the stripes' clip changes: their colour, width, spacing and the order are as before)
+    const uS = ((v: P2): P2 => { const l = Math.hypot(v[0], v[1]) || 1; return [v[0] / l, v[1] / l]; })([S[0] - E[0], S[1] - E[1]]), uW = ((v: P2): P2 => { const l = Math.hypot(v[0], v[1]) || 1; return [v[0] / l, v[1] / l]; })([W[0] - E[0], W[1] - E[1]]);
+    const bend = (Math.acos(Math.max(-1, Math.min(1, -(uS[0] * uW[0] + uS[1] * uW[1])))) * 180) / Math.PI, nb0: P2 = [uS[0] - uW[0], uS[1] - uW[1]], nl = Math.hypot(nb0[0], nb0[1]), nb: P2 = nl > 1e-6 ? [nb0[0] / nl, nb0[1] / nl] : uS;
+    const sideOf = (off: number, sgn: number): P2[] => { const o: P2 = [E[0] - nb[0] * off, E[1] - nb[1] * off], t: P2 = [-nb[1], nb[0]], F = 1e4; return [[o[0] + t[0] * F, o[1] + t[1] * F], [o[0] + t[0] * F + nb[0] * sgn * F, o[1] + t[1] * F + nb[1] * sgn * F], [o[0] - t[0] * F + nb[0] * sgn * F, o[1] - t[1] * F + nb[1] * sgn * F], [o[0] - t[0] * F, o[1] - t[1] * F]]; };
+    const own: [P2, P2, P2[]][] = [[S, E, sideOf(18 * Math.max(0, 1 - bend / 20), 1)], [E, W, sideOf(0, -1)]];
+    if (kit?.top === "stripes") for (const piece of sleeve) k.clip(piece, () => { for (const [a, b, H] of own) k.clip(H, () => { const L = Math.hypot(b[0] - a[0], b[1] - a[1]) || 1, d: P2 = [(b[0] - a[0]) / L, (b[1] - a[1]) / L], n: P2 = [-d[1], d[0]];
+      for (let u = 10; u < L + 10; u += 24) { const c0: P2 = [a[0] + d[0] * u, a[1] + d[1] * u]; k.line([[c0[0] - n[0] * 60, c0[1] - n[1] * 60], [c0[0] + n[0] * 60, c0[1] + n[1] * 60]], 10, kit.col.stripe); } }); });
     handAt(k, sk, s, kind, C.skin);
   };
   let torsoPoly: P2[] = [];

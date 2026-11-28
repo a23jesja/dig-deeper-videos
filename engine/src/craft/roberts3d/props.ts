@@ -29,7 +29,7 @@ export const faceGuard = (sk: Sk) => ({ beard: beardOutline(sk), mouth: mouthMid
  *  beside his head like a toast, as high as Knopp's short arm takes it while its body stays `gap` units clear of his head's outline and beard;
  *  the upper arm's middle and the elbow kept off the beard (the shoulder cap is never drawn over it, Jesper's fault of 21 Nov); found by search
  *  within rule 16's bend */
-export const hookMugPose = (heading: number, gap = 15, nod = -8): Pose => {
+export const hookMugPose = (heading: number, gap = 15, nod = -8, rise = RISE): Pose => {
   const base: Pose = { ...POSES.stand, head: [Math.sign(heading || 1) * 45 - heading, nod, 0] } as Pose;
   const sk0 = solve(D.props("sir"), base, heading), f = Math.sign(Math.sin(sk0.faceYaw * R) || 1), nk = sk0.j.neck as unknown as P2;
   const side: "L" | "R" = Math.sign((sk0.j.shR as unknown as P2)[0] - nk[0]) === f ? "R" : "L", key = side === "R" ? "armR" : "armL";
@@ -38,8 +38,11 @@ export const hookMugPose = (heading: number, gap = 15, nod = -8): Pose => {
     const arm: [[number, number], [number, number]] = [[s1, o1], [s2, 0]], sk = solve(D.props("sir"), { ...base, [key]: arm } as Pose, heading);
     const bend = armBendOf(sk, side); if (bend > 140 || bend < 60) continue;      // (the rig's elbow flex s2 at most HOOK_BEND: flexed harder, the kit's sleeve stripes fold into a loose triangle at the elbow, the reviewer 28 Nov)
     const S = sk.j[`sh${side}`] as unknown as P2, E = sk.j[`el${side}`] as unknown as P2, W = sk.j[`wr${side}`] as unknown as P2;
-    if (W[1] > E[1] - RISE) continue;      // (the forearm up: the wrist over the elbow)
-    const m = mugAt(sk, side), head = headOutline(sk), beard = beardOutline(sk), mp = edgePts(m.body), gH = gapTo(mp, head), gB = gapTo(mp, beard),      // (its whole outline, not only its corners: v3's first try measured corners and sat 6 px from the beard)
+    if (W[1] > E[1] - rise) continue;      // (the forearm up: the wrist over the elbow)
+    // (the gaps at the solved heading and 3 degrees either side: a standing figure's own small turn of the head (47 for 45 in the film) moved the
+    //  beard's edge 5 units nearer the mug than the solve at the heading alone)
+    const m = mugAt(sk, side), mp = edgePts(m.body), alt = [heading - 3, heading + 3].map((h) => solve(D.props("sir"), { ...base, [key]: arm } as Pose, h));
+    const head = headOutline(sk), beard = beardOutline(sk), gH = Math.min(gapTo(mp, head), ...alt.map((q) => gapTo(edgePts(mugAt(q, side).body), headOutline(q)))), gB = Math.min(gapTo(mp, beard), ...alt.map((q) => gapTo(edgePts(mugAt(q, side).body), beardOutline(q)))),      // (its whole outline, not only its corners: v3's first try measured corners and sat 6 px from the beard)
     gA = gapTo([E], beard);      // (the elbow off the beard; the upper arm may pass under it, the beard drawn over it (the reviewer, 28 Nov))
     const pen = (gH < gap ? 2000 + 20 * (gap - gH) : 0) + (gB < gap ? 2000 + 20 * (gap - gB) : 0) + (gA < 2 ? 2000 + 20 * (2 - gA) : 0);
     const cost = m.c[1] + pen;      // (higher is better: y grows downward)

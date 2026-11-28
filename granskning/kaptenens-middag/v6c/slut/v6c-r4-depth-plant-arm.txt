@@ -1,0 +1,14 @@
+dinner depth planted: 732 frames, 164 faults
+  1 frame 0 1:captain: 4 cells of the room (prop) nearer than him inside his outline
+  1 frame 1 1:captain: 4 cells of the room (prop) nearer than him inside his outline
+  1 frame 2 1:captain: 4 cells of the room (prop) nearer than him inside his outline
+  1 frame 3 1:captain: 4 cells of the room (prop) nearer than him inside his outline
+  1 frame 4 1:captain: 4 cells of the room (prop) nearer than him inside his outline
+  1 frame 5 1:captain: 4 cells of the room (prop) nearer than him inside his outline
+  1 frame 6 1:captain: 4 cells of the room (prop) nearer than him inside his outline
+  1 frame 7 1:captain: 4 cells of the room (prop) nearer than him inside his outline
+  1 frame 8 1:captain: 4 cells of the room (prop) nearer than him inside his outline
+  1 frame 9 1:captain: 4 cells of the room (prop) nearer than him inside his outline
+  1 frame 10 1:captain: 4 cells of the room (prop) nearer than him inside his outline
+  1 frame 11 1:captain: 4 cells of the room (prop) nearer than him inside his outline
+DINNER DEPTH FAILED

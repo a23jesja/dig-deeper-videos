@@ -1,0 +1,3 @@
+seam check: 266 frames with the captain's beard; beard-brown touching sleeve-red within 6 px with no ink between (a cut-in notch or a fleck)
+largest: 0 (frame 731)
+PASS: 0 frames

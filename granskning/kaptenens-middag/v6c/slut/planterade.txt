@@ -1,0 +1,32 @@
+pudBeard: PLANTED pudBeard: rule 8 FIRED (48 new faults)
+pudLift: PLANTED pudLift: rule 3 FIRED (48 new faults)
+headTouch: PLANTED headTouch: rule 8 FIRED (48 new faults)
+hookHi: PLANTED hookHi: rule 8 DID NOT FIRE
+capOutD5: PLANTED capOutD5: rule 10 FIRED (55 new faults)
+noFore: PLANTED noFore: rule 10 FIRED (243 new faults)
+cuffOnly: PLANTED cuffOnly: rule 10 FIRED (108 new faults)
+sleeveNoInk: PLANTED sleeveNoInk: rule 10 FIRED (262 new faults)
+crownBrim: PLANTED crownBrim: rule 6 FIRED (32 new faults)
+crownFace: PLANTED crownFace: rule 6 FIRED (96 new faults)
+lidCut: PLANTED lidCut: rule 18 FIRED (192 new faults)
+stripeNet: PLANTED stripeNet: rule 17 FIRED (347 new faults)
+capLow: PLANTED capLow: rule 6 FIRED (675 new faults)
+missing: PLANTED missing: rule 7 FIRED (1 new faults)
+faceHide: PLANTED faceHide: rule 8 FIRED (165 new faults)
+headPeek: PLANTED headPeek: rule 8 FIRED (60 new faults)
+hide40: PLANTED hide40: rule 8 FIRED (60 new faults)
+mouthHand: PLANTED mouthHand: rule 9 FIRED (105 new faults)
+oneArm: PLANTED oneArm: rule 10 FIRED (118 new faults)
+mouthOut: PLANTED mouthOut: rule 11 FIRED (824 new faults)
+turnCross: PLANTED turnCross: rule 12 FIRED (1 new faults)
+seatEdge: PLANTED seatEdge: rule 1 FIRED (266 new faults)
+faceEdge: PLANTED faceEdge: rule 13 FIRED (480 new faults)
+frontArm: PLANTED frontArm: rule 10 DID NOT FIRE
+smileCross: PLANTED smileCross: rule 14 FIRED (9 new faults)
+seatHigh: PLANTED seatHigh: rule 1 FIRED (145 new faults)
+pudOff: PLANTED pudOff: rule 3 DID NOT FIRE
+handIn: PLANTED handIn: rule 4 FIRED (139 new faults)
+float: PLANTED float: rule 2 FIRED (2836 new faults)
+handInBook: PLANTED handInBook: rule 4 FIRED (54 new faults)
+NO_STANDINS: {"19 1":137,"19 2":66,"19 3":120,"19 4":102,"19 7":204,"19 8":72,"19 9":140,"19 11":120,"19 12":108,"19 15a":32,"19 15b":46}
+NO_LEGS: {"19 1":89}

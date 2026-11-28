@@ -20,10 +20,22 @@ sc.render.engine = "CYCLES"; sc.cycles.samples = 16 if DRAFT else 64; sc.cycles.
 pr = bpy.context.preferences.addons["cycles"].preferences; pr.compute_device_type = "HIP"; pr.get_devices()
 for d in pr.devices: d.use = d.type == "HIP"
 sc.cycles.device = "GPU" if any(d.use for d in pr.devices) else "CPU"
-sc.view_settings.view_transform = "AgX"; sc.view_settings.exposure = 2.2 if LOOK == "night" else 0.7
+sc.view_settings.view_transform = "AgX"; sc.view_settings.exposure = 1.6 if LOOK == "night" else 0.7
 sc.render.image_settings.file_format = "JPEG"; sc.render.image_settings.quality = 94
-world = bpy.data.worlds.new("w"); sc.world = world; world.use_nodes = True; bg = world.node_tree.nodes["Background"]
-bg.inputs[0].default_value = hexc("#0d1730" if LOOK == "night" else "#8c98a8"); bg.inputs[1].default_value = 0.9 if LOOK == "night" else 1.0
+world = bpy.data.worlds.new("w"); sc.world = world; world.use_nodes = True; wn = world.node_tree.nodes; wl = world.node_tree.links; bg = wn["Background"]
+# the sky: a gradient from the horizon up (night: deep blue over a lighter blue haze, with stars; dawn: a warm band at the horizon under grey)
+tc = wn.new("ShaderNodeTexCoord"); sep = wn.new("ShaderNodeSeparateXYZ"); wl.new(tc.outputs["Generated"], sep.inputs[0])
+ramp = wn.new("ShaderNodeValToRGB"); wl.new(sep.outputs["Z"], ramp.inputs["Fac"]); el = ramp.color_ramp.elements
+if LOOK == "night": el[0].position = 0.0; el[0].color = hexc("#243a66"); el[1].position = 0.35; el[1].color = hexc("#070d1e")
+else: el[0].position = 0.0; el[0].color = hexc("#e6b48a"); el[1].position = 0.22; el[1].color = hexc("#9aa3b0"); e2 = el.new(0.06); e2.color = hexc("#d8b8a0")
+sky = ramp.outputs["Color"]
+if LOOK == "night":      # (stars: small bright points where a Voronoi cell's distance is tiny, above the horizon only)
+    vo = wn.new("ShaderNodeTexVoronoi"); vo.inputs["Scale"].default_value = 260.0; wl.new(tc.outputs["Generated"], vo.inputs["Vector"])
+    st = wn.new("ShaderNodeMapRange"); st.inputs["From Min"].default_value = 0.0; st.inputs["From Max"].default_value = 0.035; st.inputs["To Min"].default_value = 1.0; st.inputs["To Max"].default_value = 0.0; st.clamp = True; wl.new(vo.outputs["Distance"], st.inputs["Value"])
+    up = wn.new("ShaderNodeMath"); up.operation = "GREATER_THAN"; up.inputs[1].default_value = 0.08; wl.new(sep.outputs["Z"], up.inputs[0])
+    m1 = wn.new("ShaderNodeMath"); m1.operation = "MULTIPLY"; wl.new(st.outputs[0], m1.inputs[0]); wl.new(up.outputs[0], m1.inputs[1])
+    mx = wn.new("ShaderNodeMix"); mx.data_type = "RGBA"; mx.blend_type = "ADD"; wl.new(m1.outputs[0], mx.inputs["Factor"]); wl.new(ramp.outputs["Color"], mx.inputs[6]); mx.inputs[7].default_value = (0.9, 0.92, 1.0, 1); sky = mx.outputs[2]
+wl.new(sky, bg.inputs[0]); bg.inputs[1].default_value = 1.0
 
 def pbr(name, scale=1.0, tint=None):
     m = bpy.data.materials.new(name); m.use_nodes = True; nt = m.node_tree; n = nt.nodes; L = nt.links; bsdf = n["Principled BSDF"]
@@ -84,9 +96,17 @@ imp("barrel_03", (-3.2, 1.6, 0), 0, 1.0); imp("barrel_03", (-3.7, 1.2, 0), 40, 0
 imp("wooden_crate_01", (3.6, 1.7, 0), 10, 1.0); imp("barrel_03", (-2.6, 1.75, 0), 20, 0.9); imp("wine_barrel_01", (4.6, -1.6, 0), 70, 1.0); imp("wooden_crate_01", (-5.0, 1.5, 0), 30, 1.0); imp("wooden_crate_01", (3.6, 1.7, 0.36), 70, 0.9)
 LAMPS = []
 for k, (x, y) in enumerate(((-4.2, Y0), (-1.8, Y0), (1.2, Y0), (3.6, Y0), (-3.0, Y1), (0.0, Y1), (3.0, Y1))):      # the lanterns along both rails (night: lit)
-    imp("wooden_lantern_01", (x, y, 0.8), 0, 0.9)
+    lr = imp("wooden_lantern_01", (x, y, 0.8), 0, 0.9)
+    if LOOK == "night":      # (the glass glows warm: lit, the lantern reads from across the deck)
+        for o in lr.children_recursive:
+            if o.type == "MESH":
+                for ms in o.material_slots:
+                    if ms.material and "glass" in ms.material.name and "glow" not in ms.material.name:
+                        gm = ms.material.copy(); gm.name = ms.material.name + " glow"; b = gm.node_tree.nodes.get("Principled BSDF")
+                        if b: b.inputs["Emission Color"].default_value = hexc("#ffb060"); b.inputs["Emission Strength"].default_value = 18.0; b.inputs["Alpha"].default_value = 1.0
+                        ms.material = gm
     if LOOK == "night":
-        L = bpy.data.lights.new(f"lantern{k}", "POINT"); L.energy = 120; L.color = (1.0, 0.62, 0.3); L.shadow_soft_size = 0.06; o = bpy.data.objects.new(f"lantern{k}", L); sc.collection.objects.link(o); o.location = (x, y + (0.02 if y < 0 else -0.02), 1.0); LAMPS.append(o)
+        L = bpy.data.lights.new(f"lantern{k}", "POINT"); L.energy = 260; L.color = (1.0, 0.58, 0.26); L.shadow_soft_size = 0.06; o = bpy.data.objects.new(f"lantern{k}", L); sc.collection.objects.link(o); o.location = (x, y + (0.02 if y < 0 else -0.02), 1.0); LAMPS.append(o)
         bpy.ops.mesh.primitive_uv_sphere_add(radius=0.045, location=(x, y, 0.98)); gl = bpy.context.active_object; gl.name = f"flame{k}"; gl.data.materials.append(flat(f"flame{k}", "#ffb060", emit="#ffa040", estr=40.0)); gl.visible_shadow = False
 # the sea all round and the far horizon
 sea = bpy.data.materials.new("sea"); sea.use_nodes = True; sn = sea.node_tree.nodes; sb = sn["Principled BSDF"]; sb.inputs["Base Color"].default_value = hexc("#0a1a2c" if LOOK == "night" else "#5a6a78"); sb.inputs["Roughness"].default_value = 0.12
@@ -94,10 +114,12 @@ nz = sn.new("ShaderNodeTexNoise"); nz.inputs["Scale"].default_value = 18.0; bm =
 bpy.ops.mesh.primitive_plane_add(size=600, location=(0, 0, -1.4)); bpy.context.active_object.data.materials.append(sea); bpy.context.active_object.name = "sea"
 # the light
 if LOOK == "night":
-    moon = bpy.data.lights.new("moon", "SUN"); moon.color = hexc("#9fb8ff")[:3]; moon.energy = 2.2; moon.angle = math.radians(1.0)
+    moon = bpy.data.lights.new("moon", "SUN"); moon.color = hexc("#9fb8ff")[:3]; moon.energy = 0.9; moon.angle = math.radians(1.0)
     mo = bpy.data.objects.new("moon", moon); sc.collection.objects.link(mo); mo.rotation_euler = Vector((-0.95, -0.25, -0.45)).to_track_quat("-Z", "Y").to_euler()
-    bpy.ops.mesh.primitive_uv_sphere_add(radius=5, location=(150, -45, 40)); m = bpy.context.active_object; m.name = "moon disc"; m.data.materials.append(flat("moonlight", "#f2f0e0", emit="#f2f0e0", estr=6.0))
+    bpy.ops.mesh.primitive_uv_sphere_add(radius=4, location=(150, 18, 52)); m = bpy.context.active_object; m.name = "moon disc"; m.data.materials.append(flat("moonlight", "#f4eed8", emit="#f4eed8", estr=2.5)); m.visible_shadow = False
 else:
+    mist = bpy.data.materials.new("mist"); mist.use_nodes = True; mn = mist.node_tree.nodes; mn.remove(mn["Principled BSDF"]); vs = mn.new("ShaderNodeVolumePrincipled"); vs.inputs["Density"].default_value = 0.012; vs.inputs["Color"].default_value = hexc("#d6cfc8")
+    mist.node_tree.links.new(vs.outputs[0], mn["Material Output"].inputs["Volume"]); bpy.ops.mesh.primitive_cube_add(size=1, location=(60, 0, 3)); mb = bpy.context.active_object; mb.name = "mist"; mb.scale = (100, 140, 10); mb.data.materials.append(mist)
     dawn = bpy.data.lights.new("dawn", "SUN"); dawn.color = hexc("#d9c8b8")[:3]; dawn.energy = 1.6; dawn.angle = math.radians(6)
     do = bpy.data.objects.new("dawn", dawn); sc.collection.objects.link(do); do.rotation_euler = Vector((-0.3, -1.0, -0.15)).to_track_quat("-Z", "Y").to_euler()
 # the look camera: from aft, port side, over the hatch toward the mast and the bell

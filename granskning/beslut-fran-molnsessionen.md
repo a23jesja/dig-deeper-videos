@@ -16,3 +16,13 @@
    360 px before any render. The sleeve outline is the proof of the arm, not the cuff.
 
 The vote's stills (d405506) are noted as approved. STOPP at 16:00 stands.
+
+## 2026-11-28, dinner v6d: the captain's feet (point 7): YES to (a)
+
+The captain's dangling feet on the chest in shots 2, 9, 11 and 15b are accepted for this film; the check model is
+corrected to describe what is seen, and the next seated figure gets a seat no higher than his leg length. Conditions:
+1. The seat visibly on the lid, with contact and shadow.
+2. The knees bend at the chest's edge; the shins hang straight down or swing a little, never stiff and straight out.
+3. The feet cast a soft shadow on the floor below them, so they read as hanging, not floating.
+4. No foot under the lid or inside the chest.
+Fixes 1-6 for v6d are approved; above all point 1: the bite lands at the lips.

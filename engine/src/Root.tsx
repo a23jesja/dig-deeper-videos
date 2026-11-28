@@ -10,6 +10,7 @@ import { EiffelFilm, EiffelHook, EiffelShot, EIFFEL_IDS, eiffelFrames, FILM_S as
 import { Cabin3D, CABIN_S } from "./craft/cabin3d/Cabin3D";
 import { Moves3D, MOVES_S } from "./craft/moves3d/Moves3D";
 import { Dinner3D, DINNER_S } from "./craft/dinner3d/Dinner3D";
+import { Roberts3D, ROBERTS_S } from "./craft/roberts3d/Roberts3D";
 import { KitSheet, KSW, KSH, KIT_FRAMES } from "./craft/wardrobe/KitSheet";
 import { SleeveSheet, SSW, SSH } from "./craft/wardrobe/SleeveSheet";
 import { PirateSheet, PSW, PSH, PIRATE_FRAMES } from "./craft/wardrobe/PirateSheet";
@@ -32,6 +33,7 @@ export const Root: React.FC = () => (
     {/* Alcatraz in the new style, the style test (22-23 Nov): Blender plates, the flat figures on their floor */}
     {/* the Short "The captain's dinner" (24 Nov evening) */}
     <Composition id="Dinner3D" component={Dinner3D} defaultProps={{ muted: true }} durationInFrames={Math.round(DINNER_S * 30)} fps={30} width={1080} height={1920} />
+    <Composition id="Roberts3D" component={Roberts3D} defaultProps={{ muted: true }} durationInFrames={Math.round(ROBERTS_S * 30)} fps={30} width={1080} height={1920} />
     {/* 3D step 2, the movement sheet (24 Nov) */}
     <Composition id="Moves3D" component={Moves3D} durationInFrames={Math.round(MOVES_S * 30)} fps={30} width={1080} height={1920} />
     <Composition id="Cabin3D" component={Cabin3D} defaultProps={{ muted: true }} durationInFrames={Math.round(CABIN_S * 30)} fps={30} width={1080} height={1920} />

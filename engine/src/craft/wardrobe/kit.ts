@@ -12,7 +12,7 @@ import { Design, FigOpts, Face, Who, frame, torsoPts, J, limb, handAt, shoePts, 
 export type Kit = {
   name: string;
   /** what is on the head */ hat: "tricorn" | "scarf" | "none";
-  /** the hair under or instead of it */ hair: "messy" | "none";
+  /** the hair under or instead of it (queue: long hair tied back at the nape, under a hat; the reviewer's yes for Roberts, 28 Nov) */ hair: "messy" | "none" | "queue";
   /** the beard */ beard: "full" | "stubble" | "none";
   /** a child's face: the eyes this much larger and a little lower */ eyes?: number;
   /** the body: the torso's rows scaled across (w) and in depth (d), the arms' and legs' widths */ body: { w: number; d: number; arm: number[]; leg: number[]; hem?: number };
@@ -274,13 +274,26 @@ const BEARD_STRANDS: Record<string, [P2, P2, P2][]> = { q: [[[-90, -40], [-80, 0
 
 // ---------------- the kit's head parts (in the head's own frame, facing +x; fwd as hatOutline) ----------------
 /** behind the head: the scarf's knot and tails */
-const kitBack = (k: Ink, fwd: number) => { const kit = KIT.k; if (!kit) return; if (kit.hat === "scarf") for (const p of scarfKnot(fwd)) fl(k, p, kit.col.scarf); };
+const kitBack = (k: Ink, fwd: number) => { const kit = KIT.k; if (!kit) return; if (kit.hat === "scarf") for (const p of scarfKnot(fwd)) fl(k, p, kit.col.scarf);
+  if (kit.hair === "queue") for (const p of queueTail(fwd)) fl(k, p, kit.col.hair); };
+/** long hair tied back (Roberts, the reviewer's yes 28 Nov): its tail hangs at the nape behind the head, tied with a dark ribbon; seen from the
+ *  side and three-quarter only (from the front the head hides it) */
+const queueTail = (fwd: number): P2[][] => { if (fwd < 0.3) return []; const bx = -118 * fwd;
+  return [spline([[bx + 6, -150], [bx - 20, -118], [bx - 30, -60], [bx - 18, -30], [bx - 6, -62], [bx + 2, -112]]), ellPts(bx - 6, -140, 14, 12)]; };
+/** the hair seen under the hat's brim at the head's back side and over the ear's top (a crescent on the head's outline, inside it) */
+const queueHair = (fwd: number): P2[] => { const out: P2[] = [];
+  // (from the brim's lowest (-206) down to the ear's top (-150) at the back; from the front a thin band each side)
+  const back = fwd < 0.3 ? null : -1;
+  for (let i = 0; i <= 40; i++) { const a = Math.PI * (0.5 + i / 40), x = 126 * Math.cos(a), y = -128 + 132 * Math.sin(a); if (y >= -214 && y <= -128 && (back === null || x < -40 * fwd)) out.push([x, y]); }
+  for (let i = 40; i >= 0; i--) { const a = Math.PI * (0.5 + i / 40), x = 108 * Math.cos(a), y = -128 + 118 * Math.sin(a); if (y >= -214 && y <= -128 && (back === null || x < -40 * fwd)) out.push([x, y]); }
+  return out; };
 /** on the face, before the brows, the mouth and the eyes (so the mouth is always drawn over a beard): stubble, a beard, the hair */
 const kitFace = (k: Ink, view: "front" | "q" | "side", fwd: number) => { const kit = KIT.k; if (!kit) return;
   const head = ellPts(0, -128, 126, 132, 0, 0, 360, 60);
   if (kit.beard === "stubble") k.clip(head, () => { const st = stubblePts(view); k.shape(st, kit.col.stubble, 0); k.clip(st, () => { for (let x = -130; x < 150; x += 16) for (let y = -70; y < 20; y += 14) k.dot(x + ((y / 14) % 2) * 8, y, 2.2, "rgba(60,40,32,0.55)"); }); });
   // (the full beard is not drawn here: beardOverlay draws it after the arms, so it lies over the arms' upper part, and the mouth over it)
   if (kit.hat === "none" && kit.hair === "messy") fl(k, messyHair(fwd), kit.col.hair);
+  if (kit.hair === "queue") { const q = queueHair(fwd); if (q.length > 2) k.clip(head, () => fl(k, q, kit.col.hair)); if (fwd < 0.3) k.clip(head, () => { const m: P2[] = queueHair(fwd).map(([x, y]) => [-x, y]); if (m.length > 2) fl(k, m, kit.col.hair); }); }
 };
 /** sweat (the captain's rage, the list): two drops at the temple on the head's back side, under the hat's brim, clear of the eyes, the brows and
  *  the beard (the reviewer's rules: never into an eye nor over the beard), inside the head's outline; they grow with `sweat` (0-1) */
@@ -294,8 +307,15 @@ const kitHat = (k: Ink, fwd: number) => { const kit = KIT.k; if (!kit) return; k
     // (the gold trim along the brim's edge on the side toward us)
     const front = t.loop.map(([x, y, z]) => (z > -20 ? [x, y] : null)); let run: P2[] = [];
     const flush = () => { if (run.length > 2) band(k, run, 7, GOLD, k.ol * 0.4); run = []; };
-    for (const q of [...front, ...front.slice(0, 1)]) { if (q) run.push(q as P2); else flush(); } flush(); }
+    for (const q of [...front, ...front.slice(0, 1)]) { if (q) run.push(q as P2); else flush(); } flush();
+    if (kit.col.feather) for (const p of hatFeather(fwd)) fl(k, p, kit.col.feather); }
 };
+/** a red feather in the tricorn (Roberts: Johnson 1724, "a red Feather in his Hat"; the reviewer's yes 28 Nov): from the crown's back half, up and
+ *  back over it, never over the face (all of it above the brim's top, -270, and behind the head's middle as it turns) */
+const hatFeather = (fwd: number): P2[][] => { const bx = -40 - 50 * fwd, lean = -1 - 0.6 * fwd;
+  const tip: P2 = [bx + 70 * lean, -400], base: P2 = [bx, -292];
+  const leaf = spline([[base[0] + 8, base[1]], [base[0] + 24 + 30 * lean, -340], [tip[0] + 6, tip[1] + 8], [tip[0], tip[1]], [tip[0] - 10, tip[1] + 22], [base[0] - 22 + 26 * lean, -334], [base[0] - 8, base[1]]]);
+  return [leaf]; };
 
 // ---------------- the specification of one direction ----------------
 type Body = { rows: number[][]; arm: number[]; leg: number[]; shoeW: number; neck: number };

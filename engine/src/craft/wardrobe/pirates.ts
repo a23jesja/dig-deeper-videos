@@ -1,12 +1,12 @@
 // The pirates of Roberts' bedtime (pirate week, Short 1, the plan b3ccac2 and the reviewer's yes): four people on the one skeleton, each with
 // his own headwear, hair, face, build and clothes (the wardrobe's rules 9 and 10; the cap, monocle and moustache are Sir's alone). Built from the
-// kit's parts as they are (kit.ts unchanged): Roberts' hair tied back and the feather on his hat are proposals awaiting the reviewer's yes.
+// kit's parts; Roberts' hair tied back (queue) and the red feather in his hat (Johnson 1724) were added to kit.ts with the reviewer's yes, 28 Nov.
 import type { Look } from "../designs/common";
 import type { Kit } from "./kit";
 
 /** Bartholomew Roberts: tall and slim, clean-shaven, a black tricorn, a crimson coat over a light waistcoat */
-export const ROBERTS_KIT: Kit = { name: "roberts", hat: "tricorn", hair: "none", beard: "none", top: "coat",
-  body: { w: 0.92, d: 0.9, arm: [21, 18, 16], leg: [24, 21, 18], hem: -34 }, col: { hat: "#16121a" } };
+export const ROBERTS_KIT: Kit = { name: "roberts", hat: "tricorn", hair: "queue", beard: "none", top: "coat",
+  body: { w: 0.92, d: 0.9, arm: [21, 18, 16], leg: [24, 21, 18], hem: -34 }, col: { hat: "#16121a", hair: "#2a1d16", feather: "#c41e2a" } };
 /** the rum pirate (Daniel's voice): short and wide, a red spotted scarf, a ginger beard, a striped shirt */
 export const RUM_KIT: Kit = { name: "rum", hat: "scarf", hair: "none", beard: "full", top: "stripes",
   body: { w: 1.22, d: 1.15, arm: [25, 21, 18], leg: [27, 23, 20] }, col: { scarf: "#b8322b", beard: "#b8602a", beardHi: "#df8a4c", stripe: "#7a2e2e" } };

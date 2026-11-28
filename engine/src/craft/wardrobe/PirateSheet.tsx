@@ -11,7 +11,7 @@ import { FLAT } from "../designs/flat";
 import { KIT_DESIGN } from "./kit";
 import { ROBERTS_LOOK, RUM_LOOK, YOUNG_LOOK, GUNNER_LOOK, PIRATE_HEIGHTS } from "./pirates";
 
-export const PSW = 2400, PSH = 1500, PIRATE_FRAMES = 2;
+export const PSW = 2400, PSH = 1500, PIRATE_FRAMES = 3;
 const BG = "#efe6d2", TXT = "#2b1d12";
 type G = CanvasRenderingContext2D;
 type Person = { name: string; D: Design; o: FigOpts; h: number };
@@ -37,7 +37,6 @@ const sheet0 = (g: G) => {
   PEOPLE.forEach((p, i) => { draw(g, p, pose, 38, SMILE, xs[i], base, sc); text(g, p.name, xs[i], base + 50, 26); });
   text(g, "Samma fem som siluetter", 1880, 70, 44);
   PEOPLE.forEach((p, i) => silhouette(g, p, pose, 38, 1480 + i * 205, base, sc * 0.78));
-  text(g, "Roberts: håret i knut och en röd fjäder på hatten är förslag (kit.ts, ditt ja); här utan dem", 1200, 1060, 30, 400);
   text(g, "Framifrån (0°)", 700, 1140, 36);
   PEOPLE.slice(1).forEach((p, i) => draw(g, p, { ...POSES.stand, head: [0, 0, 0] }, 0, SMILE, 350 + i * 520, 1470, 0.5));
 };
@@ -52,5 +51,11 @@ const sheet1 = (g: G) => {
     draw(g, p, { ...POSES.stand, head: [0, 0, 0] }, y, { pupil: 1, mouth: 0.85, smile: 0.1, gaze: [0.2, 0] }, x, bases[r], 0.46); }));
 };
 
+/** Roberts with his hair tied back and the red feather (the reviewer's yes, 28 Nov): 0 to 60 degrees in 5-degree steps, both ways round, standing and speaking */
+const sheet2 = (g: G) => { const R = PEOPLE[1];
+  text(g, "Roberts med knut och röd fjäder: 0-60° i steg om 5°, åt höger (övre raden) och åt vänster (nedre)", 1200, 60, 36);
+  for (let i = 0; i <= 12; i++) { const y = i * 5, x = 110 + i * 182;
+    draw(g, R, { ...POSES.stand, head: [0, 0, 0] }, y, SMILE, x, 700, 0.62); text(g, `${y}°`, x, 740, 26);
+    draw(g, R, { ...POSES.stand, head: [0, 0, 0] }, -y, { pupil: 1, mouth: i % 3 === 0 ? 0.8 : 0, smile: 0.3, gaze: [0.2, 0] }, x, 1400, 0.62); text(g, `-${y}°`, x, 1440, 26); } };
 export const PirateSheet: React.FC = () => { const fr = useCurrentFrame();
-  return <AbsoluteFill style={{ background: BG }}><canvas width={PSW} height={PSH} ref={(cv) => { if (!cv) return; const g = cv.getContext("2d")!; g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, PSW, PSH); (fr === 0 ? sheet0 : sheet1)(g); }} /></AbsoluteFill>; };
+  return <AbsoluteFill style={{ background: BG }}><canvas width={PSW} height={PSH} ref={(cv) => { if (!cv) return; const g = cv.getContext("2d")!; g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, PSW, PSH); (fr === 0 ? sheet0 : fr === 1 ? sheet1 : sheet2)(g); }} /></AbsoluteFill>; };

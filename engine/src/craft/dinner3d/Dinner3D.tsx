@@ -130,9 +130,14 @@ export const camFx = (t: number): { s: number; dx: number; dy: number } => {
   const V = 690 / FM.FPS, V0 = V - 8 / FM.FPS; if (t >= V0 && t < V) return { s: 1 + 0.025 * sm((t - V0) / (V - V0)), dx: 0, dy: 0 }; if (t >= V && t < 23.1) return { s: 1.025, dx: 0, dy: 0 };      // (held to the cut: a shake or a push back out is a move out and back, and flicker2 failed it at every frame, 20000 px at the contact frame on test 4)
   return { s: 1, dx: 0, dy: 0 }; };
 // (the loop: a hard cut from the last frame to the first, on a matching picture (15 is shot 1's camera); the seam is a cut like the others (the cloud session, 25 Nov: a dissolve reads as an end))
-export const Dinner3D: React.FC<{ muted?: boolean; plant?: string }> = ({ muted = false, plant }) => {
+export const Dinner3D: React.FC<{ muted?: boolean; plant?: string; only?: string }> = ({ muted = false, plant, only }) => {
   if (plant === "beardHoles") BEARD_PLANT.holes = true; else if (plant) (PLANT as Record<string, boolean>)[plant] = true;      // (a planted fault for a proof still only: PROPS='{"plant":"frontArm"}')
   const t = useCurrentFrame() / FM.FPS, { s, fr } = shotAtD(t), pf = s.static ? 0 : fr, fx = camFx(t);
+  // (v6d, point 6, a measuring still only: PROPS='{"only":"crew"}' draws that one figure on nothing, no plate, no words, no prop, so the fill can be
+  //  read off its drawn ink)
+  if (only) return <AbsoluteFill><AbsoluteFill style={{ transform: `translate(${fx.dx}px, ${fx.dy}px) scale(${fx.s})`, transformOrigin: "50% 50%" }}>
+    <AbsoluteFill><canvas width={FM.W} height={FM.H} ref={(cv) => { if (cv) { const g = cv.getContext("2d")!; g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, FM.W, FM.H); paintFigures(g, s.id, fr, BUILT[s.id].filter((w) => w.name === only), {}); } }} /></AbsoluteFill>
+  </AbsoluteFill></AbsoluteFill>;
   return <AbsoluteFill style={{ background: "#1a1210" }}>
     <AbsoluteFill style={{ transform: `translate(${fx.dx}px, ${fx.dy}px) scale(${fx.s})`, transformOrigin: "50% 50%" }}>
       <Img src={staticFile(`din3d/${s.id}/${String(pf + 1).padStart(4, "0")}.jpg`)} style={{ width: FM.W, height: FM.H }} />

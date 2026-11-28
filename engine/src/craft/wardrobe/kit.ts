@@ -94,6 +94,66 @@ export const beardOutline = (sk: Sk): P2[] => { const sn = Math.sin(sk.faceYaw *
   return beardPts(view).map(([x, y]) => [o[0] + fx * x * c - y * si, o[1] + fx * x * si + y * c] as P2); };
 /** the beard check's planted fault: the beard cut with holes a little wider than the arm (the v6-t13 bug) */
 export const BEARD_PLANT = { holes: false };
+/** the sleeve's planted faults (the reviewer's yes, 28 Nov): noFade, a stripe's short piece drawn whole however short (17b); stepFillet, the inner
+ *  crease's rounding switched on whole at 20 degrees instead of growing (17c's jump); noFillet, the crease left a sharp V (17c) */
+export const SLEEVE_PLANT = { noFade: false, stepFillet: false, noFillet: false };
+const smoothK = (u: number) => (u <= 0 ? 0 : u >= 1 ? 1 : u * u * (3 - 2 * u));
+/** the inner crease of a bent arm rounded (28 Nov, the reviewer's yes: the two capsules met there in a sharp V, a notch where the sleeve went
+ *  under the beard): a circle tangent to both inner edges, its radius from 0 with the arm straight to 0.6 of the elbow's half-width across 20-40
+ *  degrees of bend (no jump as the arm bends), kept short of either piece's end. Returns the fill patch (the elbow, the tangent points and the arc
+ *  between them, the side toward the corner) and the radius, for the checks; null when straight */
+export const creaseFillet = (S: P2, E: P2, W: P2, w1: number): { patch: P2[]; R: number; X: P2; T1: P2; T2: P2 } | null => {
+  const nrm = (v: P2): P2 => { const l = Math.hypot(v[0], v[1]) || 1; return [v[0] / l, v[1] / l]; }, uS = nrm([S[0] - E[0], S[1] - E[1]]), uW = nrm([W[0] - E[0], W[1] - E[1]]);
+  const cosA = Math.max(-1, Math.min(1, uS[0] * uW[0] + uS[1] * uW[1])), bend = 180 - (Math.acos(cosA) * 180) / Math.PI, phi = Math.acos(cosA) / 2;
+  const k = SLEEVE_PLANT.noFillet ? 0 : SLEEVE_PLANT.stepFillet ? (bend >= 20 ? 1 : 0) : smoothK((bend - 20) / 20); if (k <= 0 || phi < 0.05) return null;
+  const bi = nrm([uS[0] + uW[0], uS[1] + uW[1]]), LA = Math.hypot(S[0] - E[0], S[1] - E[1]), LF = Math.hypot(W[0] - E[0], W[1] - E[1]);
+  const X: P2 = [E[0] + bi[0] * (w1 / Math.sin(phi)), E[1] + bi[1] * (w1 / Math.sin(phi))], R = Math.min(0.6 * w1 * k, 0.5 * Math.min(LA, LF) * Math.tan(phi)), t = R / Math.tan(phi);
+  const T1: P2 = [X[0] + uS[0] * t, X[1] + uS[1] * t], T2: P2 = [X[0] + uW[0] * t, X[1] + uW[1] * t], C: P2 = [X[0] + bi[0] * (R / Math.sin(phi)), X[1] + bi[1] * (R / Math.sin(phi))];
+  const a1 = Math.atan2(T1[1] - C[1], T1[0] - C[0]), a2 = Math.atan2(T2[1] - C[1], T2[0] - C[0]), ax = Math.atan2(X[1] - C[1], X[0] - C[0]);
+  let d = a2 - a1; while (d > Math.PI) d -= 2 * Math.PI; while (d < -Math.PI) d += 2 * Math.PI;
+  const mid = a1 + d / 2, dd = Math.cos(mid - ax) > 0 ? d : d > 0 ? d - 2 * Math.PI : d + 2 * Math.PI;      // (the arc on the corner's side)
+  const arc = Array.from({ length: 9 }, (_, i): P2 => [C[0] + R * Math.cos(a1 + (dd * i) / 8), C[1] + R * Math.sin(a1 + (dd * i) / 8)]);
+  return { patch: [E, ...arc], R, X, T1, T2 }; };
+/** a striped sleeve's two stripe families (the upper arm's and the forearm's: from, to, its side H, the stripes before and after, its phase),
+ *  as arm() draws them (v6c and after); exported for the checks (sleeve_check.mjs) so they measure what is drawn */
+export const stripeFamilies = (S: P2, E: P2, W: P2): [P2, P2, P2[], number, number, number][] => {
+    const uS = ((v: P2): P2 => { const l = Math.hypot(v[0], v[1]) || 1; return [v[0] / l, v[1] / l]; })([S[0] - E[0], S[1] - E[1]]), uW = ((v: P2): P2 => { const l = Math.hypot(v[0], v[1]) || 1; return [v[0] / l, v[1] / l]; })([W[0] - E[0], W[1] - E[1]]);
+    const bend = (Math.acos(Math.max(-1, Math.min(1, -(uS[0] * uW[0] + uS[1] * uW[1])))) * 180) / Math.PI, nb0: P2 = [uS[0] - uW[0], uS[1] - uW[1]], nl = Math.hypot(nb0[0], nb0[1]), nb: P2 = nl > 1e-6 ? [nb0[0] / nl, nb0[1] / nl] : uS;
+    const sideOf = (off: number, sgn: number): P2[] => { const o: P2 = [E[0] - nb[0] * off, E[1] - nb[1] * off], t: P2 = [-nb[1], nb[0]], F = 1e4; return [[o[0] + t[0] * F, o[1] + t[1] * F], [o[0] + t[0] * F + nb[0] * sgn * F, o[1] + t[1] * F + nb[1] * sgn * F], [o[0] - t[0] * F + nb[0] * sgn * F, o[1] - t[1] * F + nb[1] * sgn * F], [o[0] - t[0] * F, o[1] - t[1] * F]]; };
+    // (and each family runs two stripes on past the elbow, into its own side up to the bisector: from 10 past it the forearm's first stripe left
+    //  the outer corner of a bent elbow bare, a white wedge, the reviewer on the v6c stills. Only past 20 degrees, where the line is the bisector itself:
+    //  under it a straight arm's line lies 17 past the elbow and an extra stripe showed short of it, so a straight arm draws as before)
+    // (and the forearm's stripes slide into step with the upper arm's as the elbow bends (their distances from the elbow the same mod 24, so
+    //  each pair meets on the bisector as a chevron): out of step, a stripe met a gap there and left a white wedge, the reviewer on the v6c
+    //  stills, frame 180. The slide grows with the bend from 10 degrees to its full at 30, none for a straight arm or one at rest)
+    const LA = Math.hypot(E[0] - S[0], E[1] - S[1]), dl = ((((LA - 20) % 24) + 24) % 24), ph = (dl > 12 ? dl - 24 : dl) * Math.max(0, Math.min(1, (bend - 10) / 20));
+    const ext = bend >= 20 ? 48 : 0; return [[S, E, sideOf(17 * Math.max(0, 1 - bend / 20), 1), 0, ext, 0], [E, W, sideOf(0, -1), ext, 0, ph]];
+    // (28 Nov, the reviewer's yes: each stripe's run across the whole sleeve (its pieces merged, within its family's side) fades out as it gets
+    //  short, gone at its own width, whole from twice it: the loose tips a bent elbow's outer corner cut off went with no jump. A stripe whose run
+    //  is long draws exactly as before: drawn whole, clipped by the pieces)
+};
+/** the elbow's bend in the picture (0 straight), as stripeFamilies measures it */
+export const elbowBend = (S: P2, E: P2, W: P2) => { const a: P2 = [S[0] - E[0], S[1] - E[1]], b: P2 = [W[0] - E[0], W[1] - E[1]]; return (Math.acos(Math.max(-1, Math.min(1, -(a[0] * b[0] + a[1] * b[1]) / ((Math.hypot(a[0], a[1]) || 1) * (Math.hypot(b[0], b[1]) || 1))))) * 180) / Math.PI; };
+/** a stripe's length inside the sleeve (the union of its pieces, within its family's side H), in the stripe's own t (0-1 along p0-p1) */
+const convexSpan = (p0: P2, p1: P2, poly: P2[]): [number, number] | null => { let t0 = 0, t1 = 1; const cx = poly.reduce((s0, q) => s0 + q[0], 0) / poly.length, cy = poly.reduce((s0, q) => s0 + q[1], 0) / poly.length, d: P2 = [p1[0] - p0[0], p1[1] - p0[1]];
+  for (let i = 0; i < poly.length; i++) { const a = poly[i], b = poly[(i + 1) % poly.length], n: P2 = [-(b[1] - a[1]), b[0] - a[0]], sgn = Math.sign(n[0] * (cx - a[0]) + n[1] * (cy - a[1])) || 1;
+    const num = sgn * (n[0] * (p0[0] - a[0]) + n[1] * (p0[1] - a[1])), den = sgn * (n[0] * d[0] + n[1] * d[1]);
+    if (Math.abs(den) < 1e-9) { if (num < 0) return null; continue; } const t = -num / den; if (den > 0) t0 = Math.max(t0, t); else t1 = Math.min(t1, t); if (t0 > t1) return null; }
+  return [t0, t1]; };
+const hull = (pts: P2[]): P2[] => { const P = [...pts].sort((a, b) => a[0] - b[0] || a[1] - b[1]), cr = (o: P2, a: P2, b: P2) => (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]), lo: P2[] = [], up: P2[] = [];
+  for (const p of P) { while (lo.length >= 2 && cr(lo[lo.length - 2], lo[lo.length - 1], p) <= 0) lo.pop(); lo.push(p); } for (const p of P.reverse()) { while (up.length >= 2 && cr(up[up.length - 2], up[up.length - 1], p) <= 0) up.pop(); up.push(p); }
+  return lo.slice(0, -1).concat(up.slice(0, -1)); };
+/** the visible pieces of one stripe line across a sleeve (each a [t0, t1] of the line, merged over the sleeve's pieces, within H) */
+export const stripeRuns = (p0: P2, p1: P2, pieces: P2[][], H: P2[], half = 5): [number, number][] => {
+  // (over the stripe's whole width, its middle and both edges: by its middle line alone, a stripe lying along its side's edge (a nearly straight
+  //  arm) went in or out whole in one frame while the clip only thinned it; the sweep's jump, 0.87 in a frame)
+  const v: P2 = [p1[0] - p0[0], p1[1] - p0[1]], l = Math.hypot(v[0], v[1]) || 1, n: P2 = [-v[1] / l, v[0] / l], iv: [number, number][] = [];
+  for (const o of [-half, 0, half]) { const q0: P2 = [p0[0] + n[0] * o, p0[1] + n[1] * o], q1: P2 = [p1[0] + n[0] * o, p1[1] + n[1] * o], hs = convexSpan(q0, q1, H); if (!hs) continue;
+    for (const q of pieces) { const sp = convexSpan(q0, q1, hull(q)); if (sp) { const r: [number, number] = [Math.max(sp[0], hs[0]), Math.min(sp[1], hs[1])]; if (r[1] > r[0]) iv.push(r); } } }
+  iv.sort((x, y) => x[0] - y[0]);
+  const out: [number, number][] = []; for (const r of iv) { const L = out[out.length - 1]; if (L && r[0] <= L[1] + 1e-6) L[1] = Math.max(L[1], r[1]); else out.push([...r]); } return out; };
+/** a stripe run's opacity by its length (stripe width w): gone at w, whole from 3.5 w, smoothly between; a short loose piece fades as it shrinks */
+export const stripeAlpha = (len: number, w: number, bend = 90) => (SLEEVE_PLANT.noFade ? 1 : 1 - smoothK((bend - 20) / 20) * (1 - smoothK((len - w) / (2.5 * w))));      // (and only on a bent elbow, growing in across 20-40 degrees as the crease's rounding: the loose tips come from a bent elbow's outer corner; nearly straight, v6c's own side clip already thins a stripe, and a fade on top jumped)      // (the band w to 3.5 w: across w alone a fast elbow faded a run in 2 frames, 0.61 a frame on the sweep)
 const GOLD = "#e8b630", MOUTH = "#5b1f2a", TONGUE = "#e46a6a", TEAR = "#7cc8ee", WHITE = "#ffffff";
 /** the face check's switch (scripts/face_order.mjs): false draws the nose before the monocle's ring at three-quarter, as in v4 */
 /** cuffSwap: the far hand changes layer in a turn as the sweep passes the coat's edge at the cuff (false: at HAND_SWAP, v6/v7 draft, a notch) */
@@ -362,24 +422,17 @@ const drawFlat = (c: FlatSpec) => (k: Ink, sk: Sk, o: FigOpts) => {
   const arm = (s: Side) => {
     const S = J(sk, "sh", s), E = J(sk, "el", s), W = J(sk, "wr", s), kind = (s === "L" ? o.handL : o.handR) ?? "relaxed";
     if (!other) k.group([seg(mid(E, W, 0.8), mid(E, W, 1.04), B.arm[2] * 0.92, B.arm[2] * 0.92, 0, 0.3, true)], C.shirt);
-    const sleeve = limb(S, E, W, B.arm); k.group(sleeve, other ? C.dress : c.noCoat ? C.shirt : C.coat);
+    const sleeve = limb(S, E, W, B.arm), fil = creaseFillet(S, E, W, B.arm[1]); k.group(fil ? [...sleeve, fil.patch] : sleeve, other ? C.dress : c.noCoat ? C.shirt : C.coat);      // (the crease's rounding drawn as a piece of the sleeve: one ink round all)
     // (v6c, the review of v6 point 4 and dinner_check 17: each segment's stripes were drawn through both pieces of the sleeve, so with the elbow
     //  bent past about 20 degrees the upper arm's stripes ran on across the forearm and crossed its own, a net. Each family now stays on its own
     //  side of the elbow's bisector; straight (bent under 20 degrees) the upper arm's side reaches 18 past the elbow, past its last stripe, so a
     //  straight arm draws as before, pixel for pixel. Only the stripes' clip changes: their colour, width, spacing and the order are as before)
-    const uS = ((v: P2): P2 => { const l = Math.hypot(v[0], v[1]) || 1; return [v[0] / l, v[1] / l]; })([S[0] - E[0], S[1] - E[1]]), uW = ((v: P2): P2 => { const l = Math.hypot(v[0], v[1]) || 1; return [v[0] / l, v[1] / l]; })([W[0] - E[0], W[1] - E[1]]);
-    const bend = (Math.acos(Math.max(-1, Math.min(1, -(uS[0] * uW[0] + uS[1] * uW[1])))) * 180) / Math.PI, nb0: P2 = [uS[0] - uW[0], uS[1] - uW[1]], nl = Math.hypot(nb0[0], nb0[1]), nb: P2 = nl > 1e-6 ? [nb0[0] / nl, nb0[1] / nl] : uS;
-    const sideOf = (off: number, sgn: number): P2[] => { const o: P2 = [E[0] - nb[0] * off, E[1] - nb[1] * off], t: P2 = [-nb[1], nb[0]], F = 1e4; return [[o[0] + t[0] * F, o[1] + t[1] * F], [o[0] + t[0] * F + nb[0] * sgn * F, o[1] + t[1] * F + nb[1] * sgn * F], [o[0] - t[0] * F + nb[0] * sgn * F, o[1] - t[1] * F + nb[1] * sgn * F], [o[0] - t[0] * F, o[1] - t[1] * F]]; };
-    // (and each family runs two stripes on past the elbow, into its own side up to the bisector: from 10 past it the forearm's first stripe left
-    //  the outer corner of a bent elbow bare, a white wedge, the reviewer on the v6c stills. Only past 20 degrees, where the line is the bisector itself:
-    //  under it a straight arm's line lies 17 past the elbow and an extra stripe showed short of it, so a straight arm draws as before)
-    // (and the forearm's stripes slide into step with the upper arm's as the elbow bends (their distances from the elbow the same mod 24, so
-    //  each pair meets on the bisector as a chevron): out of step, a stripe met a gap there and left a white wedge, the reviewer on the v6c
-    //  stills, frame 180. The slide grows with the bend from 10 degrees to its full at 30, none for a straight arm or one at rest)
-    const LA = Math.hypot(E[0] - S[0], E[1] - S[1]), dl = ((((LA - 20) % 24) + 24) % 24), ph = (dl > 12 ? dl - 24 : dl) * Math.max(0, Math.min(1, (bend - 10) / 20));
-    const ext = bend >= 20 ? 48 : 0, own: [P2, P2, P2[], number, number, number][] = [[S, E, sideOf(17 * Math.max(0, 1 - bend / 20), 1), 0, ext, 0], [E, W, sideOf(0, -1), ext, 0, ph]];
+    const own = stripeFamilies(S, E, W);
     if (kit?.top === "stripes") for (const piece of sleeve) k.clip(piece, () => { for (const [a, b, H, pre, post, sh] of own) k.clip(H, () => { const L = Math.hypot(b[0] - a[0], b[1] - a[1]) || 1, d: P2 = [(b[0] - a[0]) / L, (b[1] - a[1]) / L], n: P2 = [-d[1], d[0]];
-      for (let u = 10 + sh - pre; u < L + 10 + post; u += 24) { const c0: P2 = [a[0] + d[0] * u, a[1] + d[1] * u]; k.line([[c0[0] - n[0] * 60, c0[1] - n[1] * 60], [c0[0] + n[0] * 60, c0[1] + n[1] * 60]], 10, kit.col.stripe); } }); });
+      for (let u = 10 + sh - pre; u < L + 10 + post; u += 24) { const c0: P2 = [a[0] + d[0] * u, a[1] + d[1] * u], p0: P2 = [c0[0] - n[0] * 60, c0[1] - n[1] * 60], p1: P2 = [c0[0] + n[0] * 60, c0[1] + n[1] * 60];
+        const runs = stripeRuns(p0, p1, sleeve, H), at = (t: number): P2 => [p0[0] + (p1[0] - p0[0]) * t, p0[1] + (p1[1] - p0[1]) * t], bend = elbowBend(S, E, W);
+        if (runs.every(([t0, t1]) => stripeAlpha((t1 - t0) * 120, 10, bend) >= 1)) { k.line([p0, p1], 10, kit.col.stripe); continue; }      // (every run long: as before, the whole line)
+        for (const [t0, t1] of runs) { const al = stripeAlpha((t1 - t0) * 120, 10, bend); if (al <= 0.001) continue; k.g.globalAlpha = al; k.line([at(t0 - 0.06), at(t1 + 0.06)], 10, kit.col.stripe, "butt"); k.g.globalAlpha = 1; } } }); });
     if (kit?.top === "coat") goldCuff(S, E, W);
     handAt(k, sk, s, kind, C.skin);
   };
@@ -562,7 +615,7 @@ const CA: Col = { skin: "#f7c9a3", nose: "#ef9f86", hair: "#4a2e1e", cap: "#9b6b
 const ADA_HAIR_A = "#2e2a3a";
 /** A's moustache, the right half (8 higher than on the sheet, with the mouth: a chin under the open mouth) */
 const MOUS_A: P2[] = [[0, -72], [30, -80], [62, -74], [88, -84], [98, -106], [112, -100], [102, -68], [66, -58], [30, -62], [0, -66]];
-const A_SPEC: FlatSpec = {
+export const A_SPEC: FlatSpec = {
   id: "flatA", name: "A Knopp", ol: 9, faceW: 160, turn: 34,
   sir: { P: { thigh: 70, shin: 64, ankle: 16, foot: 92, hipW: 40, shW: 60, spine: 150, shDrop: 18, neck: 4, head: 262, upper: 74, fore: 68, hand: 60 },
     B: { rows: [[-34, 58, 50, 46], [0, 66, 64, 50], [50, 74, 76, 52], [100, 70, 66, 48], [132, 62, 50, 42], [150, 40, 34, 30], [162, 22, 22, 20]], arm: [23, 19, 17], leg: [27, 23, 20], shoeW: 42, neck: 0 } },

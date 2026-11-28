@@ -1,0 +1,162 @@
+sleeve check (planted: noFade): the elbow's half-width 21, the stripe 10 wide, the rounding's full radius 12.6
+the sweep: largest change of the rounding's radius in a frame 3.98 (at most 4.20, a third of its full radius), of a stripe run's opacity 0.00 (at most 0.35)
+FAIL: 34
+17b frame 29 (bend 42): a stripe run 10.7 long drawn at 100 %
+17b frame 29 (bend 42): a stripe run 10.7 long drawn at 100 %
+17b frame 30 (bend 46): a stripe run 11.4 long drawn at 100 %
+17b frame 30 (bend 46): a stripe run 11.4 long drawn at 100 %
+17b frame 31 (bend 51): a stripe run 12.1 long drawn at 100 %
+17b frame 31 (bend 51): a stripe run 12.1 long drawn at 100 %
+17b frame 32 (bend 55): a stripe run 12.8 long drawn at 100 %
+17b frame 32 (bend 55): a stripe run 12.8 long drawn at 100 %
+17b frame 33 (bend 59): a stripe run 13.4 long drawn at 100 %
+17b frame 33 (bend 59): a stripe run 13.4 long drawn at 100 %
+17b frame 34 (bend 63): a stripe run 14.0 long drawn at 100 %
+17b frame 34 (bend 63): a stripe run 14.0 long drawn at 100 %
+17b frame 35 (bend 67): a stripe run 14.7 long drawn at 100 %
+17b frame 35 (bend 67): a stripe run 14.7 long drawn at 100 %
+17b frame 85 (bend 67): a stripe run 14.7 long drawn at 100 %
+17b frame 85 (bend 67): a stripe run 14.7 long drawn at 100 %
+17b frame 86 (bend 63): a stripe run 14.0 long drawn at 100 %
+17b frame 86 (bend 63): a stripe run 14.0 long drawn at 100 %
+17b frame 87 (bend 59): a stripe run 13.4 long drawn at 100 %
+17b frame 87 (bend 59): a stripe run 13.4 long drawn at 100 %
+17b frame 88 (bend 55): a stripe run 12.8 long drawn at 100 %
+17b frame 88 (bend 55): a stripe run 12.8 long drawn at 100 %
+17b frame 89 (bend 51): a stripe run 12.1 long drawn at 100 %
+17b frame 89 (bend 51): a stripe run 12.1 long drawn at 100 %
+17b frame 90 (bend 46): a stripe run 11.4 long drawn at 100 %
+17b frame 90 (bend 46): a stripe run 11.4 long drawn at 100 %
+17b frame 91 (bend 42): a stripe run 10.7 long drawn at 100 %
+17b frame 91 (bend 42): a stripe run 10.7 long drawn at 100 %
+17b hook 45: a stripe run 11.6 long drawn at 100 %
+17b hook 45: a stripe run 11.6 long drawn at 100 %
+17b hook -45: a stripe run 11.6 long drawn at 100 %
+17b hook -45: a stripe run 11.6 long drawn at 100 %
+17b hook 30: a stripe run 14.7 long drawn at 100 %
+17b hook 30: a stripe run 14.7 long drawn at 100 %
+
+frame	bend	R	runs under full opacity (family:stripe:run length/opacity)
+0	24.3	1.50	
+1	24.2	1.46	
+2	24.0	1.33	
+3	23.7	1.12	
+4	23.2	0.86	
+5	22.6	0.57	
+6	21.8	0.28	
+7	20.9	0.07	
+8	19.8	0.00	
+9	18.6	0.00	
+10	17.2	0.00	
+11	15.7	0.00	
+12	14.0	0.00	
+13	12.1	0.00	
+14	10.1	0.00	
+15	7.9	0.00	
+16	5.5	0.00	
+17	2.9	0.00	
+18	0.2	0.00	
+19	2.8	0.00	
+20	6.0	0.00	
+21	9.3	0.00	
+22	12.9	0.00	
+23	16.6	0.00	
+24	20.5	0.03	
+25	24.6	1.71	
+26	28.8	5.21	
+27	33.2	9.19	
+28	37.6	12.08	
+29	42.0	12.60	
+30	46.4	12.60	
+31	50.8	12.60	
+32	55.1	12.60	
+33	59.3	12.60	
+34	63.4	12.60	
+35	67.3	12.60	
+36	71.0	12.60	
+37	74.5	12.60	
+38	77.9	12.60	
+39	81.1	12.60	
+40	84.1	12.60	
+41	86.9	12.60	
+42	89.5	12.60	
+43	91.9	12.60	
+44	94.2	12.60	
+45	96.3	12.60	
+46	98.3	12.60	
+47	100.1	12.60	
+48	101.8	12.60	
+49	103.3	12.60	
+50	104.7	12.60	
+51	105.9	12.60	
+52	107.0	12.60	
+53	108.0	12.60	
+54	108.8	12.60	
+55	109.5	12.60	
+56	110.1	12.60	
+57	110.5	12.60	
+58	110.8	12.60	
+59	111.0	12.60	
+60	111.1	12.60	
+61	111.0	12.60	
+62	110.8	12.60	
+63	110.5	12.60	
+64	110.1	12.60	
+65	109.5	12.60	
+66	108.8	12.60	
+67	108.0	12.60	
+68	107.0	12.60	
+69	105.9	12.60	
+70	104.7	12.60	
+71	103.3	12.60	
+72	101.8	12.60	
+73	100.1	12.60	
+74	98.3	12.60	
+75	96.3	12.60	
+76	94.2	12.60	
+77	91.9	12.60	
+78	89.5	12.60	
+79	86.9	12.60	
+80	84.1	12.60	
+81	81.1	12.60	
+82	77.9	12.60	
+83	74.5	12.60	
+84	71.0	12.60	
+85	67.3	12.60	
+86	63.4	12.60	
+87	59.3	12.60	
+88	55.1	12.60	
+89	50.8	12.60	
+90	46.4	12.60	
+91	42.0	12.60	
+92	37.6	12.08	
+93	33.2	9.19	
+94	28.8	5.21	
+95	24.6	1.71	
+96	20.5	0.03	
+97	16.6	0.00	
+98	12.9	0.00	
+99	9.3	0.00	
+100	6.0	0.00	
+101	2.8	0.00	
+102	0.2	0.00	
+103	2.9	0.00	
+104	5.5	0.00	
+105	7.9	0.00	
+106	10.1	0.00	
+107	12.1	0.00	
+108	14.0	0.00	
+109	15.7	0.00	
+110	17.2	0.00	
+111	18.6	0.00	
+112	19.8	0.00	
+113	20.9	0.07	
+114	21.8	0.28	
+115	22.6	0.57	
+116	23.2	0.86	
+117	23.7	1.12	
+118	24.0	1.33	
+119	24.2	1.46	
+hook 45	61.2	12.60	
+hook -45	61.2	12.60	
+hook 30	60.0	12.60	

@@ -1,0 +1,194 @@
+sleeve check (planted: noFillet): the elbow's half-width 21, the stripe 10 wide, the rounding's full radius 12.6
+the sweep: largest change of the rounding's radius in a frame 0.00 (at most 4.20, a third of its full radius), of a stripe run's opacity 0.32 (at most 0.35)
+FAIL: 66
+17c frame 29 (bend 42): the crease rounded to 0.0 (at least 6.3)
+17c frame 30 (bend 46): the crease rounded to 0.0 (at least 6.3)
+17c frame 31 (bend 51): the crease rounded to 0.0 (at least 6.3)
+17c frame 32 (bend 55): the crease rounded to 0.0 (at least 6.3)
+17c frame 33 (bend 59): the crease rounded to 0.0 (at least 6.3)
+17c frame 34 (bend 63): the crease rounded to 0.0 (at least 6.3)
+17c frame 35 (bend 67): the crease rounded to 0.0 (at least 6.3)
+17c frame 36 (bend 71): the crease rounded to 0.0 (at least 6.3)
+17c frame 37 (bend 75): the crease rounded to 0.0 (at least 6.3)
+17c frame 38 (bend 78): the crease rounded to 0.0 (at least 6.3)
+17c frame 39 (bend 81): the crease rounded to 0.0 (at least 6.3)
+17c frame 40 (bend 84): the crease rounded to 0.0 (at least 6.3)
+17c frame 41 (bend 87): the crease rounded to 0.0 (at least 6.3)
+17c frame 42 (bend 89): the crease rounded to 0.0 (at least 6.3)
+17c frame 43 (bend 92): the crease rounded to 0.0 (at least 6.3)
+17c frame 44 (bend 94): the crease rounded to 0.0 (at least 6.3)
+17c frame 45 (bend 96): the crease rounded to 0.0 (at least 6.3)
+17c frame 46 (bend 98): the crease rounded to 0.0 (at least 6.3)
+17c frame 47 (bend 100): the crease rounded to 0.0 (at least 6.3)
+17c frame 48 (bend 102): the crease rounded to 0.0 (at least 6.3)
+17c frame 49 (bend 103): the crease rounded to 0.0 (at least 6.3)
+17c frame 50 (bend 105): the crease rounded to 0.0 (at least 6.3)
+17c frame 51 (bend 106): the crease rounded to 0.0 (at least 6.3)
+17c frame 52 (bend 107): the crease rounded to 0.0 (at least 6.3)
+17c frame 53 (bend 108): the crease rounded to 0.0 (at least 6.3)
+17c frame 54 (bend 109): the crease rounded to 0.0 (at least 6.3)
+17c frame 55 (bend 110): the crease rounded to 0.0 (at least 6.3)
+17c frame 56 (bend 110): the crease rounded to 0.0 (at least 6.3)
+17c frame 57 (bend 111): the crease rounded to 0.0 (at least 6.3)
+17c frame 58 (bend 111): the crease rounded to 0.0 (at least 6.3)
+17c frame 59 (bend 111): the crease rounded to 0.0 (at least 6.3)
+17c frame 60 (bend 111): the crease rounded to 0.0 (at least 6.3)
+17c frame 61 (bend 111): the crease rounded to 0.0 (at least 6.3)
+17c frame 62 (bend 111): the crease rounded to 0.0 (at least 6.3)
+17c frame 63 (bend 111): the crease rounded to 0.0 (at least 6.3)
+17c frame 64 (bend 110): the crease rounded to 0.0 (at least 6.3)
+17c frame 65 (bend 110): the crease rounded to 0.0 (at least 6.3)
+17c frame 66 (bend 109): the crease rounded to 0.0 (at least 6.3)
+17c frame 67 (bend 108): the crease rounded to 0.0 (at least 6.3)
+17c frame 68 (bend 107): the crease rounded to 0.0 (at least 6.3)
+17c frame 69 (bend 106): the crease rounded to 0.0 (at least 6.3)
+17c frame 70 (bend 105): the crease rounded to 0.0 (at least 6.3)
+17c frame 71 (bend 103): the crease rounded to 0.0 (at least 6.3)
+17c frame 72 (bend 102): the crease rounded to 0.0 (at least 6.3)
+17c frame 73 (bend 100): the crease rounded to 0.0 (at least 6.3)
+17c frame 74 (bend 98): the crease rounded to 0.0 (at least 6.3)
+17c frame 75 (bend 96): the crease rounded to 0.0 (at least 6.3)
+17c frame 76 (bend 94): the crease rounded to 0.0 (at least 6.3)
+17c frame 77 (bend 92): the crease rounded to 0.0 (at least 6.3)
+17c frame 78 (bend 89): the crease rounded to 0.0 (at least 6.3)
+17c frame 79 (bend 87): the crease rounded to 0.0 (at least 6.3)
+17c frame 80 (bend 84): the crease rounded to 0.0 (at least 6.3)
+17c frame 81 (bend 81): the crease rounded to 0.0 (at least 6.3)
+17c frame 82 (bend 78): the crease rounded to 0.0 (at least 6.3)
+17c frame 83 (bend 75): the crease rounded to 0.0 (at least 6.3)
+17c frame 84 (bend 71): the crease rounded to 0.0 (at least 6.3)
+17c frame 85 (bend 67): the crease rounded to 0.0 (at least 6.3)
+17c frame 86 (bend 63): the crease rounded to 0.0 (at least 6.3)
+17c frame 87 (bend 59): the crease rounded to 0.0 (at least 6.3)
+17c frame 88 (bend 55): the crease rounded to 0.0 (at least 6.3)
+17c frame 89 (bend 51): the crease rounded to 0.0 (at least 6.3)
+17c frame 90 (bend 46): the crease rounded to 0.0 (at least 6.3)
+17c frame 91 (bend 42): the crease rounded to 0.0 (at least 6.3)
+17c hook 45 (bend 61): the crease rounded to 0.0
+17c hook -45 (bend 61): the crease rounded to 0.0
+17c hook 30 (bend 60): the crease rounded to 0.0
+
+frame	bend	R	runs under full opacity (family:stripe:run length/opacity)
+0	24.3	0.00	0:3:0:2/0.88
+1	24.2	0.00	0:3:0:2/0.88
+2	24.0	0.00	0:3:0:2/0.89
+3	23.7	0.00	0:3:0:2/0.91
+4	23.2	0.00	0:3:0:2/0.93
+5	22.6	0.00	0:3:0:1/0.96
+6	21.8	0.00	0:3:0:0/0.98
+7	20.9	0.00	
+8	19.8	0.00	
+9	18.6	0.00	
+10	17.2	0.00	
+11	15.7	0.00	
+12	14.0	0.00	
+13	12.1	0.00	
+14	10.1	0.00	
+15	7.9	0.00	
+16	5.5	0.00	
+17	2.9	0.00	
+18	0.2	0.00	
+19	2.8	0.00	
+20	6.0	0.00	
+21	9.3	0.00	
+22	12.9	0.00	
+23	16.6	0.00	
+24	20.5	0.00	
+25	24.6	0.00	0:3:0:3/0.86
+26	28.8	0.00	0:3:0:5/0.59 1:1:0:4/0.59
+27	33.2	0.00	0:3:0:7/0.27 1:1:0:7/0.27
+28	37.6	0.00	0:3:0:9/0.04 1:1:0:9/0.04
+29	42.0	0.00	0:3:0:11/0.00 1:1:0:11/0.00
+30	46.4	0.00	0:3:0:11/0.01 1:1:0:11/0.01
+31	50.8	0.00	0:3:0:12/0.02 1:1:0:12/0.02
+32	55.1	0.00	0:3:0:13/0.03 1:1:0:13/0.03
+33	59.3	0.00	0:3:0:13/0.05 1:1:0:13/0.05
+34	63.4	0.00	0:3:0:14/0.07 1:1:0:14/0.07
+35	67.3	0.00	0:3:0:15/0.09 1:1:0:15/0.09
+36	71.0	0.00	0:3:0:15/0.12 1:1:0:15/0.12
+37	74.5	0.00	0:3:0:15/0.12 1:1:0:15/0.12
+38	77.9	0.00	0:3:0:15/0.12 1:1:0:15/0.12 1:4:0:34/0.99
+39	81.1	0.00	0:3:0:16/0.13 1:1:0:16/0.13 1:4:0:34/1.00
+40	84.1	0.00	0:3:0:16/0.14 1:1:0:16/0.14 1:4:0:34/1.00
+41	86.9	0.00	0:3:0:16/0.15 1:1:0:16/0.15 1:4:0:35/1.00
+42	89.5	0.00	0:3:0:16/0.15 1:1:0:16/0.15
+43	91.9	0.00	0:3:0:16/0.16 1:1:0:16/0.16
+44	94.2	0.00	0:3:0:17/0.18 1:1:0:17/0.18
+45	96.3	0.00	0:3:0:17/0.19 1:1:0:17/0.19
+46	98.3	0.00	0:3:0:17/0.20 1:1:0:17/0.20
+47	100.1	0.00	0:3:0:17/0.21 1:1:0:17/0.21
+48	101.8	0.00	0:3:0:17/0.21 1:1:0:17/0.21
+49	103.3	0.00	0:3:0:17/0.21 1:1:0:17/0.21
+50	104.7	0.00	0:3:0:17/0.21 1:1:0:17/0.21
+51	105.9	0.00	0:3:0:17/0.21 1:1:0:17/0.21
+52	107.0	0.00	0:3:0:17/0.21 1:1:0:17/0.21
+53	108.0	0.00	0:3:0:17/0.21 1:1:0:17/0.21
+54	108.8	0.00	0:3:0:17/0.21 1:1:0:17/0.21
+55	109.5	0.00	0:3:0:17/0.21 1:1:0:17/0.21 1:2:0:35/1.00
+56	110.1	0.00	0:3:0:17/0.21 1:1:0:17/0.21 1:2:0:35/1.00
+57	110.5	0.00	0:3:0:17/0.21 1:1:0:17/0.21 1:2:0:35/1.00
+58	110.8	0.00	0:3:0:17/0.21 1:1:0:17/0.21 1:2:0:34/1.00
+59	111.0	0.00	0:3:0:17/0.21 1:1:0:17/0.21 1:2:0:34/1.00
+60	111.1	0.00	0:3:0:17/0.21 1:1:0:17/0.21 1:2:0:34/1.00
+61	111.0	0.00	0:3:0:17/0.21 1:1:0:17/0.21 1:2:0:34/1.00
+62	110.8	0.00	0:3:0:17/0.21 1:1:0:17/0.21 1:2:0:34/1.00
+63	110.5	0.00	0:3:0:17/0.21 1:1:0:17/0.21 1:2:0:35/1.00
+64	110.1	0.00	0:3:0:17/0.21 1:1:0:17/0.21 1:2:0:35/1.00
+65	109.5	0.00	0:3:0:17/0.21 1:1:0:17/0.21 1:2:0:35/1.00
+66	108.8	0.00	0:3:0:17/0.21 1:1:0:17/0.21
+67	108.0	0.00	0:3:0:17/0.21 1:1:0:17/0.21
+68	107.0	0.00	0:3:0:17/0.21 1:1:0:17/0.21
+69	105.9	0.00	0:3:0:17/0.21 1:1:0:17/0.21
+70	104.7	0.00	0:3:0:17/0.21 1:1:0:17/0.21
+71	103.3	0.00	0:3:0:17/0.21 1:1:0:17/0.21
+72	101.8	0.00	0:3:0:17/0.21 1:1:0:17/0.21
+73	100.1	0.00	0:3:0:17/0.21 1:1:0:17/0.21
+74	98.3	0.00	0:3:0:17/0.20 1:1:0:17/0.20
+75	96.3	0.00	0:3:0:17/0.19 1:1:0:17/0.19
+76	94.2	0.00	0:3:0:17/0.18 1:1:0:17/0.18
+77	91.9	0.00	0:3:0:16/0.16 1:1:0:16/0.16
+78	89.5	0.00	0:3:0:16/0.15 1:1:0:16/0.15
+79	86.9	0.00	0:3:0:16/0.15 1:1:0:16/0.15 1:4:0:35/1.00
+80	84.1	0.00	0:3:0:16/0.14 1:1:0:16/0.14 1:4:0:34/1.00
+81	81.1	0.00	0:3:0:16/0.13 1:1:0:16/0.13 1:4:0:34/1.00
+82	77.9	0.00	0:3:0:15/0.12 1:1:0:15/0.12 1:4:0:34/0.99
+83	74.5	0.00	0:3:0:15/0.12 1:1:0:15/0.12
+84	71.0	0.00	0:3:0:15/0.12 1:1:0:15/0.12
+85	67.3	0.00	0:3:0:15/0.09 1:1:0:15/0.09
+86	63.4	0.00	0:3:0:14/0.07 1:1:0:14/0.07
+87	59.3	0.00	0:3:0:13/0.05 1:1:0:13/0.05
+88	55.1	0.00	0:3:0:13/0.03 1:1:0:13/0.03
+89	50.8	0.00	0:3:0:12/0.02 1:1:0:12/0.02
+90	46.4	0.00	0:3:0:11/0.01 1:1:0:11/0.01
+91	42.0	0.00	0:3:0:11/0.00 1:1:0:11/0.00
+92	37.6	0.00	0:3:0:9/0.04 1:1:0:9/0.04
+93	33.2	0.00	0:3:0:7/0.27 1:1:0:7/0.27
+94	28.8	0.00	0:3:0:5/0.59 1:1:0:4/0.59
+95	24.6	0.00	0:3:0:3/0.86
+96	20.5	0.00	
+97	16.6	0.00	
+98	12.9	0.00	
+99	9.3	0.00	
+100	6.0	0.00	
+101	2.8	0.00	
+102	0.2	0.00	
+103	2.9	0.00	
+104	5.5	0.00	
+105	7.9	0.00	
+106	10.1	0.00	
+107	12.1	0.00	
+108	14.0	0.00	
+109	15.7	0.00	
+110	17.2	0.00	
+111	18.6	0.00	
+112	19.8	0.00	
+113	20.9	0.00	
+114	21.8	0.00	0:3:0:0/0.98
+115	22.6	0.00	0:3:0:1/0.96
+116	23.2	0.00	0:3:0:2/0.93
+117	23.7	0.00	0:3:0:2/0.91
+118	24.0	0.00	0:3:0:2/0.89
+119	24.2	0.00	0:3:0:2/0.88
+hook 45	61.2	0.00	0:3:0:12/0.01 1:1:0:12/0.01 1:4:0:33/0.99
+hook -45	61.2	0.00	0:3:0:12/0.01 1:1:0:12/0.01 1:4:0:33/0.99
+hook 30	60.0	0.00	0:3:0:15/0.09 1:1:0:15/0.09

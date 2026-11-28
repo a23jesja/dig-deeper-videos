@@ -1,0 +1,130 @@
+flicker check, new measure: out/rob/sweep-step.mp4
+frames checked: 118
+the camera's movement taken out by its matrices: NO (no --cams given)
+a pixel flickers when it differs by more than 40 from the frame before and the frame after while those two differ by less than 16; it is movement when a steady step explains it: up to 12 px in eyes, text and outlines, up to 40 px elsewhere (the step before and after the same way, close in size); a jump out and back is never movement
+fails: more than 2000 flickering pixels in a frame, more than 40 in an eye's circle, more than 150 in a box of text
+largest: picture 1706 (frame 102), eye 0, text 0; raw: picture 1833, eye 0, text 0
+the face track (phase correlation round each eye): largest speed 0.0 px a frame (frame None), speed change 0.0 (frame None), out and back 0.0 (frame None); limits 12 px, speed change 4.5 px, out and back (outer changes over 1 px, middle over 2.5) never
+the loop: 0.0 % of the picture changes from the last frame to the first (95 % inside the shots 0.4 % or less)
+
+PASS: no frame flickers
+
+every frame: frame, picture, eye, text, then the raw picture, eye, text
+1	0	0	0	0	0	0
+2	1	0	0	1	0	0
+3	4	0	0	4	0	0
+4	0	0	0	9	0	0
+5	8	0	0	15	0	0
+6	11	0	0	24	0	0
+7	10	0	0	34	0	0
+8	18	0	0	45	0	0
+9	24	0	0	49	0	0
+10	11	0	0	57	0	0
+11	39	0	0	78	0	0
+12	37	0	0	86	0	0
+13	34	0	0	108	0	0
+14	59	0	0	161	0	0
+15	64	0	0	156	0	0
+16	85	0	0	196	0	0
+17	760	0	0	1057	0	0
+18	1704	0	0	1833	0	0
+19	72	0	0	598	0	0
+20	85	0	0	573	0	0
+21	84	0	0	566	0	0
+22	112	0	0	514	0	0
+23	118	0	0	529	0	0
+24	161	0	0	485	0	0
+25	150	0	0	495	0	0
+26	118	0	0	487	0	0
+27	165	0	0	496	0	0
+28	117	0	0	453	0	0
+29	181	0	0	493	0	0
+30	130	0	0	418	0	0
+31	79	0	0	430	0	0
+32	145	0	0	446	0	0
+33	98	0	0	461	0	0
+34	101	0	0	447	0	0
+35	122	0	0	464	0	0
+36	68	0	0	457	0	0
+37	88	0	0	505	0	0
+38	95	0	0	525	0	0
+39	82	0	0	541	0	0
+40	76	0	0	582	0	0
+41	73	0	0	630	0	0
+42	42	0	0	709	0	0
+43	62	0	0	896	0	0
+44	56	0	0	807	0	0
+45	52	0	0	665	0	0
+46	34	0	0	358	0	0
+47	43	0	0	297	0	0
+48	39	0	0	210	0	0
+49	36	0	0	151	0	0
+50	25	0	0	79	0	0
+51	25	0	0	44	0	0
+52	9	0	0	16	0	0
+53	9	0	0	15	0	0
+54	5	0	0	5	0	0
+55	1	0	0	3	0	0
+56	2	0	0	2	0	0
+57	1	0	0	2	0	0
+58	0	0	0	0	0	0
+59	0	0	0	0	0	0
+60	6	0	0	53	0	0
+61	0	0	0	0	0	0
+62	0	0	0	0	0	0
+63	1	0	0	2	0	0
+64	1	0	0	2	0	0
+65	2	0	0	4	0	0
+66	6	0	0	6	0	0
+67	12	0	0	15	0	0
+68	7	0	0	14	0	0
+69	27	0	0	42	0	0
+70	31	0	0	86	0	0
+71	27	0	0	131	0	0
+72	24	0	0	183	0	0
+73	36	0	0	322	0	0
+74	34	0	0	408	0	0
+75	52	0	0	630	0	0
+76	59	0	0	852	0	0
+77	58	0	0	803	0	0
+78	53	0	0	743	0	0
+79	76	0	0	561	0	0
+80	90	0	0	608	0	0
+81	91	0	0	505	0	0
+82	109	0	0	556	0	0
+83	106	0	0	476	0	0
+84	67	0	0	473	0	0
+85	106	0	0	460	0	0
+86	108	0	0	451	0	0
+87	67	0	0	442	0	0
+88	115	0	0	444	0	0
+89	116	0	0	437	0	0
+90	129	0	0	454	0	0
+91	199	0	0	476	0	0
+92	109	0	0	482	0	0
+93	180	0	0	496	0	0
+94	115	0	0	497	0	0
+95	168	0	0	498	0	0
+96	125	0	0	497	0	0
+97	110	0	0	521	0	0
+98	96	0	0	531	0	0
+99	82	0	0	603	0	0
+100	72	0	0	586	0	0
+101	85	0	0	605	0	0
+102	1706	0	0	1820	0	0
+103	781	0	0	1081	0	0
+104	70	0	0	183	0	0
+105	57	0	0	157	0	0
+106	58	0	0	152	0	0
+107	44	0	0	118	0	0
+108	35	0	0	72	0	0
+109	35	0	0	77	0	0
+110	12	0	0	59	0	0
+111	21	0	0	41	0	0
+112	16	0	0	39	0	0
+113	13	0	0	30	0	0
+114	10	0	0	22	0	0
+115	12	0	0	18	0	0
+116	1	0	0	10	0	0
+117	4	0	0	6	0	0
+118	1	0	0	1	0	0

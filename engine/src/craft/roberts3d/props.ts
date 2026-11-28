@@ -36,7 +36,7 @@ export const hookMugPose = (heading: number, gap = 15, nod = -8): Pose => {
   let best: { arm: [[number, number], [number, number]]; cost: number } | null = null;
   for (let s1 = 0; s1 <= 170; s1 += 5) for (let o1 = -20; o1 <= 80; o1 += 10) for (let s2 = 0; s2 <= 150; s2 += 5) {
     const arm: [[number, number], [number, number]] = [[s1, o1], [s2, 0]], sk = solve(D.props("sir"), { ...base, [key]: arm } as Pose, heading);
-    const bend = armBendOf(sk, side); if (bend > 140 || bend < 60) continue;
+    const bend = armBendOf(sk, side); if (bend > 140 || bend < 60) continue;      // (the rig's elbow flex s2 at most HOOK_BEND: flexed harder, the kit's sleeve stripes fold into a loose triangle at the elbow, the reviewer 28 Nov)
     const S = sk.j[`sh${side}`] as unknown as P2, E = sk.j[`el${side}`] as unknown as P2, W = sk.j[`wr${side}`] as unknown as P2;
     if (W[1] > E[1] - RISE) continue;      // (the forearm up: the wrist over the elbow)
     const m = mugAt(sk, side), head = headOutline(sk), beard = beardOutline(sk), mp = edgePts(m.body), gH = gapTo(mp, head), gB = gapTo(mp, beard),      // (its whole outline, not only its corners: v3's first try measured corners and sat 6 px from the beard)
@@ -47,6 +47,7 @@ export const hookMugPose = (heading: number, gap = 15, nod = -8): Pose => {
   return { ...base, [key]: best!.arm, [`hand${side}`]: 0 } as Pose; };
 /** a polygon's outline sampled every few units (for gaps measured along edges, not at corners) */
 export const edgePts = (P: P2[], n = 8): P2[] => P.flatMap((a, i) => { const b = P[(i + 1) % P.length]; return Array.from({ length: n }, (_, k): P2 => [a[0] + ((b[0] - a[0]) * k) / n, a[1] + ((b[1] - a[1]) * k) / n]); });
+export let HOOK_BEND = 110; export const setHookBend = (b: number) => { HOOK_BEND = b; };
 export let RISE = 15; export const setRise = (r: number) => { RISE = r; };
 const armBendOf = (sk: Sk, side: "L" | "R") => { const S = sk.j[`sh${side}`] as unknown as P2, E = sk.j[`el${side}`] as unknown as P2, Wr = sk.j[`wr${side}`] as unknown as P2;
   const u1 = [S[0] - E[0], S[1] - E[1]], u2 = [Wr[0] - E[0], Wr[1] - E[1]]; return 180 - (Math.acos(Math.max(-1, Math.min(1, (u1[0] * u2[0] + u1[1] * u2[1]) / ((Math.hypot(u1[0], u1[1]) || 1) * (Math.hypot(u2[0], u2[1]) || 1))))) * 180) / Math.PI; };
@@ -126,3 +127,11 @@ export const POUR_BACK = 0.12;
 export const POUR_ARM: [[number, number], [number, number]] = [[10, 10], [20, 0]];      // (v3: held low, at his waist, so the long bottle tilted 38 degrees bottom-up reaches it)
 /** the pour's tilt from straight down: 52, the bottle's bottom 38 degrees over its neck (the reviewer: at least 35) */
 export const POUR_TILT = 52;
+
+// ---- Roberts' teacup (shots 1, 18, 21): a cup on its saucer held in front of his chest on his face's side, the saucer on his fingers ----
+export const TEA = { w: 44, h: 30, sw: 70, sd: 12 };
+/** the teacup pose: his face-side forearm level in front of his chest, the hand under the saucer (within rule 16) */
+export const teaPose = (heading: number, head: [number, number, number]) => { const sk0 = solve(D.props("sir"), { ...POSES.stand, head } as Pose, heading), f = Math.sign(Math.sin(sk0.faceYaw * R) || 1);
+  return reachPose(heading, [f * 92, -222], head, mugSide(sk0), { clearFace: 20, elbowDown: true }); };
+/** the saucer's middle (on the grip) and the cup over it */
+export const teaAt = (sk: Sk, side: "L" | "R") => { const g = gripOf(sk, side), s: P2 = [g[0], g[1] - 10]; return { saucer: s, cup: [s[0], s[1] - TEA.sd / 2 - TEA.h / 2] as P2 }; };

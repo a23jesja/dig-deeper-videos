@@ -108,11 +108,13 @@ for side, y in (("port", Y0 + 0.1), ("starboard", Y1 - 0.1)):
         a = Vector((0.6, 0.2, 8.6)); b = Vector((0.6 + dx, y, 0.8)); d = b - a; bpy.ops.mesh.primitive_cylinder_add(radius=0.018, depth=d.length, location=(a + b) / 2, vertices=8)
         r = bpy.context.active_object; r.name = f"shroud {side} {dx}"; r.rotation_euler = d.to_track_quat("Z", "Y").to_euler(); r.data.materials.append(ROPE)
 # things on deck (Poly Haven CC0)
-imp("wine_barrel_01", (-3.2, 1.6, 0), 0, 1.0); imp("wine_barrel_01", (-3.7, 1.2, 0), 40, 0.95); imp("wine_barrel_01", (-0.8, -1.6, 0), 15, 1.0)
+imp("wine_barrel_01", (-3.2, 1.6, 0), 0, 1.0); imp("wine_barrel_01", (-3.7, 1.2, 0), 40, 0.95); imp("wine_barrel_01", (-0.34, -1.74, 0), 15, 1.0)
 imp("wooden_crate_01", (3.6, 1.7, 0), 10, 1.0); imp("wine_barrel_01", (-2.6, 1.75, 0), 20, 0.9); imp("wine_barrel_01", (4.6, -1.6, 0), 70, 1.0); imp("wooden_crate_01", (-5.0, 1.5, 0), 30, 1.0); imp("wooden_crate_01", (3.6, 1.7, 0.36), 70, 0.9)
 LAMPS = []
-for k, (x, y) in enumerate(((-4.2, Y0), (-1.8, Y0), (1.2, Y0), (3.6, Y0), (-3.0, Y1), (0.0, Y1), (3.0, Y1))):      # the lanterns along both rails (night: lit)
-    lr = imp("wooden_lantern_01", (x, y, 0.8), 0, 0.9)
+BARREL_LAMP = (-0.34, -1.74, 0.9)      # (Roberts' lantern on the barrel, shots 1 and 21: the barrel's lid at 0.9 m; its pool offset toward the deck)
+for k, xyz in enumerate(((-4.2, Y0), (-1.8, Y0), (1.2, Y0), (3.6, Y0), (-3.0, Y1), (0.0, Y1), (3.0, Y1), BARREL_LAMP)):      # the lanterns along both rails and on the barrel (night: lit)
+    x, y = xyz[:2]; dz = (xyz[2] - 0.8) if len(xyz) > 2 else 0.0
+    lr = imp("wooden_lantern_01", (x, y, 0.8 + dz), 0, 0.9); GLOWS = []
     if LOOK == "night":      # (the glass glows warm: lit, the lantern reads from across the deck)
         for o in lr.children_recursive:
             if o.type == "MESH":
@@ -120,12 +122,13 @@ for k, (x, y) in enumerate(((-4.2, Y0), (-1.8, Y0), (1.2, Y0), (3.6, Y0), (-3.0,
                     if ms.material and "glass" in ms.material.name and "glow" not in ms.material.name:
                         gm = ms.material.copy(); gm.name = ms.material.name + " glow"; b = gm.node_tree.nodes.get("Principled BSDF")
                         if b: b.inputs["Emission Color"].default_value = hexc("#ffb060"); b.inputs["Emission Strength"].default_value = 18.0; b.inputs["Alpha"].default_value = 1.0
-                        ms.material = gm
+                        ms.material = gm; GLOWS.append(gm)
     if LOOK == "night":
-        L = bpy.data.lights.new(f"lantern{k}", "POINT"); L.energy = 260; L.color = (1.0, 0.58, 0.26); L.shadow_soft_size = 0.06; o = bpy.data.objects.new(f"lantern{k}", L); sc.collection.objects.link(o); o.location = (x, y + (0.02 if y < 0 else -0.02), 1.0); LAMPS.append(o)
+        L = bpy.data.lights.new(f"lantern{k}", "POINT"); L.energy = 260; L.color = (1.0, 0.58, 0.26); L.shadow_soft_size = 0.06; o = bpy.data.objects.new(f"lantern{k}", L); sc.collection.objects.link(o); o.location = (x, y + (0.02 if y < 0 else -0.02), 1.0 + dz)
         sp = bpy.data.lights.new(f"pool{k}", "SPOT"); sp.energy = 320; sp.color = (1.0, 0.6, 0.3); sp.spot_size = math.radians(120); sp.spot_blend = 0.9; sp.shadow_soft_size = 0.1
-        so = bpy.data.objects.new(f"pool{k}", sp); sc.collection.objects.link(so); so.location = (x, y + (0.25 if y < 0 else -0.25), 0.95); so.rotation_euler = (0, 0, 0)      # (a warm pool of light on the deck and the rail under each lantern)
-        bpy.ops.mesh.primitive_uv_sphere_add(radius=0.045, location=(x, y, 0.98)); gl = bpy.context.active_object; gl.name = f"flame{k}"; gl.data.materials.append(flat(f"flame{k}", "#ffb060", emit="#ffa040", estr=40.0)); gl.visible_shadow = False
+        so = bpy.data.objects.new(f"pool{k}", sp); sc.collection.objects.link(so); so.location = (x, y + (0.25 if y < 0 else -0.25), 0.95 + dz); so.rotation_euler = (0, 0, 0)      # (a warm pool of light on the deck and the rail under each lantern)
+        bpy.ops.mesh.primitive_uv_sphere_add(radius=0.045, location=(x, y, 0.98 + dz)); gl = bpy.context.active_object; gl.name = f"flame{k}"; gl.data.materials.append(flat(f"flame{k}", "#ffb060", emit="#ffa040", estr=40.0)); gl.visible_shadow = False
+        LAMPS.append({"k": k, "lights": [L, sp], "flame": gl, "glows": GLOWS})      # (to put a lantern out for a shot's later plates: shots.json "lamps")
 # the sea all round and the far horizon
 sea = bpy.data.materials.new("sea"); sea.use_nodes = True; sn = sea.node_tree.nodes; sb = sn["Principled BSDF"]; sb.inputs["Base Color"].default_value = hexc("#0a1a2c" if LOOK == "night" else "#5a6a78"); sb.inputs["Roughness"].default_value = 0.12
 nz = sn.new("ShaderNodeTexNoise"); nz.inputs["Scale"].default_value = 18.0; bm = sn.new("ShaderNodeBump"); bm.inputs["Strength"].default_value = 0.25; sea.node_tree.links.new(nz.outputs["Fac"], bm.inputs["Height"]); sea.node_tree.links.new(bm.outputs["Normal"], sb.inputs["Normal"])
@@ -175,6 +178,19 @@ if SHOTS_MODE:
         outp = os.path.join(ENGINE, "public", "rob3d", shot["id"]); outd = os.path.join(ENGINE, "out", "rob3d", shot["id"]); os.makedirs(outp, exist_ok=True); os.makedirs(outd, exist_ok=True)
         dep, kin, kinds = ray_map(Mwc); np.savez_compressed(os.path.join(outd, "map.npz"), depth=np.stack([dep]), kind=np.stack([kin]), kinds=np.array(kinds))
         sc.render.filepath = os.path.join(outp, "0001.jpg"); bpy.ops.render.render(write_still=True)
-        print(f"SHOT {shot['id']} ({LOOK}): 1 plate in {time.time() - t0:.1f} s", flush=True)
+        # (a shot's lanterns going out: shots.json "lamps" [{"at": s, "out": [k, ...]}, ...], each a further plate 0002, 0003, ... with those
+        #  lanterns (and every one before) dark: no light, no flame, the glass unlit; the film fades between them, Roberts3D.tsx plateMix)
+        gone = []
+        for j, st in enumerate(shot.get("lamps", [])):
+            gone += st["out"]
+            for lp in LAMPS:
+                if lp["k"] in gone:
+                    for L in lp["lights"]: L.energy = 0.0
+                    lp["flame"].hide_render = True
+                    for gm in lp["glows"]:
+                        b = gm.node_tree.nodes.get("Principled BSDF")
+                        if b: b.inputs["Emission Strength"].default_value = 0.0
+            sc.render.filepath = os.path.join(outp, f"{j + 2:04d}.jpg"); bpy.ops.render.render(write_still=True)
+        print(f"SHOT {shot['id']} ({LOOK}): {1 + len(shot.get('lamps', []))} plates in {time.time() - t0:.1f} s", flush=True)
     sys.exit(0)
 out = os.path.join(ENGINE, "out", "deck"); os.makedirs(out, exist_ok=True); sc.render.filepath = os.path.join(out, f"look-{LOOK}.jpg"); bpy.ops.render.render(write_still=True); print("LOOK", LOOK, flush=True)

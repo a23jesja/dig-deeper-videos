@@ -81,6 +81,14 @@ export const paintCaption = (g: CanvasRenderingContext2D, T: number) => { const 
  *  0.25 s, the figures with the plate (the reviewer: scale and move the whole frame, no new plates). In picture pixels about the frame's middle */
 export const camFx = (t: number): { s: number; dx: number; dy: number } => { void t; return { s: 1, dx: 0, dy: 0 }; };      // (pushes per shot when the shots are built)
 // (the loop: a hard cut from the last frame to the first, on a matching picture (15 is shot 1's camera); the seam is a cut like the others (the cloud session, 25 Nov: a dissolve reads as an end))
+/** a static shot's plates as its lanterns go out (shots.json "lamps": plate 2, 3, ... from each one's time), each new one faded in over 4 frames
+ *  over the one before (a flame dying, no jump: the reviewer's film-STOPP condition for shot 2); [plate number, opacity] in drawing order */
+const LAMP_FADE = 4;
+export const plateMix = (id: string, fr: number, pf: number): [number, number][] => { const sh = SHOTS.find((q) => q.id === id) as unknown as { static?: boolean; lamps?: { at: number }[] };
+  if (!sh.static || !sh.lamps?.length) return [[pf + 1, 1]];
+  const T = fr / FM.FPS; let out: [number, number][] = [[1, 1]];
+  sh.lamps.forEach((l, j) => { const u = (T - l.at) * FM.FPS / LAMP_FADE; if (u <= 0) return; if (u >= 1) out = [[j + 2, 1]]; else out = [...out, [j + 2, u]]; });
+  return out; };
 export const Roberts3D: React.FC<{ muted?: boolean; plant?: string; only?: string }> = ({ muted = false, plant, only }) => {
   if (plant === "beardHoles") BEARD_PLANT.holes = true; else if (plant) (PLANT as Record<string, boolean>)[plant] = true;      // (a planted fault for a proof still only: PROPS='{"plant":"frontArm"}')
   const t = useCurrentFrame() / FM.FPS, { s, fr } = shotAtD(t), pf = s.static ? 0 : fr, fx = camFx(t);
@@ -91,7 +99,7 @@ export const Roberts3D: React.FC<{ muted?: boolean; plant?: string; only?: strin
   </AbsoluteFill></AbsoluteFill>;
   return <AbsoluteFill style={{ background: "#1a1210" }}>
     <AbsoluteFill style={{ transform: `translate(${fx.dx}px, ${fx.dy}px) scale(${fx.s})`, transformOrigin: "50% 50%" }}>
-      <Img src={staticFile(`rob3d/${s.id}/${String(pf + 1).padStart(4, "0")}.jpg`)} style={{ width: FM.W, height: FM.H }} />
+      {plateMix(s.id, fr, pf).map(([n, op]) => <Img key={n} src={staticFile(`rob3d/${s.id}/${String(n).padStart(4, "0")}.jpg`)} style={{ width: FM.W, height: FM.H, position: "absolute", opacity: op }} />)}
       <AbsoluteFill><canvas width={FM.W} height={FM.H} ref={(cv) => { if (cv) { const g = cv.getContext("2d")!; g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, FM.W, FM.H); paintFigures(g, s.id, fr, BUILT[s.id], EXTRAS[s.id]); } }} /></AbsoluteFill>
     </AbsoluteFill>
     <AbsoluteFill><canvas width={FM.W} height={FM.H} ref={(cv) => { if (cv) { const g = cv.getContext("2d")!; g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, FM.W, FM.H); paintCaption(g, t); } }} /></AbsoluteFill>

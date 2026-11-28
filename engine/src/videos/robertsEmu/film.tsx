@@ -97,7 +97,7 @@ const teaShot = (blow: boolean): Shot => ({ id: "b3", blur: 3, focus: 1.8, drift
   actors: [{ o: ROBERTS, h: 1.86, at: still(-0.96, -1.36), sharp: true, f: (t) => stand({ facing: 1, expr: blow ? (t < 0.6 ? "whistle" : "smile_closed") : "smile", look: 0.5, headTilt: blow ? 6 : 3, reachR: [400, 600], reachL: blow ? undefined : [190, 520] }),
     hold: (p, h, t) => { teacup(p, h[1], blow ? 1 - t : 0.4); if (!blow) { teapot(p, h[0], 30 * ease(t / 0.4)); if (t > 0.35) { p.g.save(); p.g.globalAlpha = 0.9; p.stroke([[h[0][0] - 100, h[0][1] - 30], [h[1][0] - 10, h[1][1] - 40]], 6, "#7a4a2a"); p.g.restore(); } }
       if (!blow) { p.stroke([[h[1][0] + 20, h[1][1] - 10], [h[1][0] + 46, h[1][1] - 40]], 9, INK); p.stroke([[h[1][0] + 20, h[1][1] - 10], [h[1][0] + 46, h[1][1] - 40]], 5, "#ffe2c2"); } } },      // (his little finger out)
-    ...(blow ? [{ o: RUM, h: 1.62, at: still(-1.95, -1.78), f: (t: number) => stand({ facing: 1, expr: t < 0.4 ? "neutral" : "pained", headTilt: -6 }), hold: (p: Pen, h: P2[]) => mug(p, h[1], 0, true) } as Actor] : [])] });
+    ...(blow ? [{ o: RUM, h: 1.62, at: still(-1.95, -1.78), f: (t: number) => stand({ mode: "sit", facing: 1, expr: t < 0.4 ? "neutral" : "pained", headTilt: -6 }), hold: (p: Pen, h: P2[]) => mug(p, h[1], 0, true) } as Actor] : [])] });
 const b3 = teaShot(false), b4 = teaShot(true);
 
 // ---- b5 (14.0-15.6): the hatch bangs open; the rum pirate climbs up with his mug, grinning; two more after him ----
@@ -122,7 +122,7 @@ const b6: Shot = { id: "b6", blur: 2, focus: 2.6, drift: [1.05, 1.0, 0, 0], capY
 const b7: Shot = { id: "b7", blur: 2.5, focus: 3.0, drift: [1.0, 1.06, 0, 0], capY: 1600, tint: "rgba(8,14,40,0.12)", moon: true,
   actors: [{ o: RUM, h: 1.62, at: still(-2.515, 0.4), sharp: true, f: (t) => stand({ facing: 1, expr: "grin", look: 0.5, headTilt: 8, reachR: [430, 560] }), hold: (p, h, t) => { mug(p, h[1], 0, true, 0.4); const u = (t * 3) % 1; p.ell(h[1][0] + 30 - 40 * u, h[1][1] - 80 - 60 * u + 90 * u * u, 7, 9, "#b0682a", 3); p.ell(h[1][0] - 20 + 50 * u, h[1][1] - 80 - 40 * u + 80 * u * u, 6, 8, "#b0682a", 3); } },
     { o: GUNNER, h: 1.78, at: still(-1.778, 1.139), sharp: true, f: (t) => stand({ facing: -1, expr: "grin", look: -0.5, reachL: [160, 430] }), hold: (p, h) => bottle(p, h[0], -125) },
-    { o: YOUNG, h: 1.48, at: still(-3.8, 0.24), f: (t) => stand({ facing: 1, expr: "nervous", headTilt: 10 + 4 * Math.sin(t * 3), look: 0.4 }) }] };
+    { o: YOUNG, h: 1.48, at: still(-3.4, 0.35), f: (t) => stand({ facing: 1, expr: "nervous", headTilt: 10 + 4 * Math.sin(t * 3), look: 0.4 }) }] };
 
 // ---- b8 (18.9-20.6): a thick book thumps onto the deck in a puff of dust; its pages flutter ----
 const b8: Shot = { id: "b8", blur: 2, drift: [1.0, 1.04, 0, 0], capY: 1600, tint: "rgba(8,14,40,0.10)", moon: true, actors: [],
@@ -136,9 +136,9 @@ const b9: Shot = { id: "b3", blur: 3, focus: 1.8, drift: [1.04, 1.1, 0, -20], ca
 
 // ---- b10 (22.0-23.3): Roberts turns an hourglass over; behind him two pirates glance at each other ----
 const b10: Shot = { id: "b3", blur: 3, focus: 1.8, drift: [1.1, 1.04, 0, 0], capY: 1600, tint: "rgba(8,14,40,0.12)", moon: true,
-  actors: [{ o: ROBERTS, h: 1.86, at: still(-0.96, -1.36), sharp: true, f: () => stand({ facing: 1, expr: "stern", look: 0.6, reachR: [430, 560] }), hold: (p, h, t) => hourglass(p, h[1], 180 * ease(t / 0.4), clamp((t - 0.4) / 1.0)) },
-    { o: crew(92), h: 1.7, at: still(-1.95, -1.78), f: (t) => stand({ facing: t < 0.6 ? 1 : -1, expr: "grin", look: t < 0.6 ? 0.8 : -0.8 }) },
-    { o: crew(93), h: 1.66, at: still(-2.45, -1.2), f: (t) => stand({ facing: t < 0.7 ? -1 : 1, expr: "grin", look: t < 0.7 ? -0.8 : 0.8 }) }] };
+  actors: [{ o: ROBERTS, h: 1.86, at: still(-0.8, -1.5), sharp: true, f: () => stand({ facing: 1, expr: "stern", look: 0.6, reachR: [430, 560] }), hold: (p, h, t) => hourglass(p, h[1], 180 * ease(t / 0.4), clamp((t - 0.4) / 1.0)) },
+    { o: crew(92), h: 1.7, at: still(-1.7, -1.9), f: (t) => stand({ mode: "sit", facing: t < 0.6 ? 1 : -1, expr: "grin", look: t < 0.6 ? 0.8 : -0.8 }) },
+    { o: crew(93), h: 1.66, at: still(-2.05, -1.95), f: (t) => stand({ mode: "sit", facing: t < 0.7 ? -1 : 1, expr: "grin", look: t < 0.7 ? -0.8 : 0.8 }) }] };
 
 // ---- b11 (23.3-24.3): smash cut: the moonlit deck partying wilder than before ----
 const B11 = crowdPlaces(32, -4.8, 3.2, -1.9, 1.9, 51);
@@ -187,20 +187,23 @@ const c3: Shot = { ...c1, drift: [1.08, 1.0, 0, 0],
 
 // ---- c4 (29.4-31.0): the young pirate staggers in with a keg; the rum pirate knocks its lid in with a belaying pin; the adults dip their mugs ----
 const c4: Shot = { id: "c4", blur: 2.5, focus: 2.3, drift: [1.0, 1.06, 0, 0], tint: DK, moon: true,
-  actors: [{ o: YOUNG, h: 1.48, at: (t) => [lerp(-1.0, 0.0, ease(t / 0.5)), lerp(1.3, 0.75, ease(t / 0.5))], sharp: true, rot: (t) => (t < 0.5 ? 6 * Math.sin(t * 20) : 0),
+  actors: [{ o: YOUNG, h: 1.48, at: (t) => [lerp(-1.0, -0.15, ease(t / 0.5)), lerp(1.3, 0.7, ease(t / 0.5))], sharp: true, rot: (t) => (t < 0.5 ? 6 * Math.sin(t * 20) : 0),
       f: (t) => stand({ mode: t < 0.5 ? "march" : "stand", phase: t * 4, expr: t < 0.5 ? "pained" : "relief", facing: -1, reachL: [230, 640], reachR: [370, 640] }), hold: (p, h, t) => { if (t < 0.5) keg(p, [300, 760], 220, 0); } },
-    { o: RUM, h: 1.62, at: still(-0.25, 0.2), sharp: true, f: (t) => stand({ facing: 1, expr: t < 0.9 ? "grin" : "laugh", reachR: t < 0.9 ? [460, 260 + 260 * ease((t - 0.55) / 0.25)] : [470, 600] }), hold: (p, h, t) => { if (t < 0.9) pin(p, h[1], -30 + 70 * ease((t - 0.55) / 0.25)); else mug(p, h[1], 20, true, 0.5); } },
-    { o: GUNNER, h: 1.78, at: still(0.9, 0.75), sharp: true, f: (t) => stand({ facing: -1, expr: "grin", reachL: t > 1.0 ? [180, 700] : undefined }), hold: (p, h, t) => { if (t > 1.0) mug(p, h[0], -20, true, 0.5); } }],
+    { o: RUM, h: 1.62, at: still(-0.25, 0.2), sharp: true, f: (t) => stand({ facing: 1, expr: t < 0.9 ? "grin" : "laugh", reachR: t < 0.9 ? [460, 260 + 260 * ease((t - 0.55) / 0.25)] : undefined, reachL: t < 0.9 ? undefined : [140, 560] }), hold: (p, h, t) => { if (t < 0.9) pin(p, h[1], -30 + 70 * ease((t - 0.55) / 0.25)); else mug(p, h[0], -20, true, 0.5); } },
+    { o: GUNNER, h: 1.78, at: still(0.8, 0.3), sharp: true, f: (t) => stand({ facing: -1, expr: "grin", reachL: t > 1.0 ? [180, 700] : undefined }), hold: (p, h, t) => { if (t > 1.0) mug(p, h[0], -20, true, 0.5); } }],
   over: (g, t) => { if (t < 0.5) return; const q = proj("c4", [0.3, -0.05, 0]), w = (proj("c4", [0.3, -0.05, 0.5])[1] - q[1]) * -1.1; keg(new Pen(g), [q[0], q[1]], w, t > 0.8 ? 1 : 0);
     if (t > 0.8 && t < 1.0) { g.save(); g.translate(q[0], q[1] - w * 0.9); const p = new Pen(g); g.scale(0.6, 0.6); fxBurst(p, (t - 0.8) / 0.2); g.restore(); } } };
 
 // ---- c5 (31.0-32.6): a pile of empty bottles topples with a clink; the pirates drop asleep one after another in heaps, snoring ----
-const C5 = crowdPlaces(10, -3.3, -0.6, -1.8, 0.5, 91);
+// (only those standing inside the picture; each falls towards the side with room for his head, no further than that room allows)
+const C5 = crowdPlaces(10, -3.3, -0.6, -1.8, 0.5, 91).filter((q) => { const x = proj("c1", [q[0], q[1], 0])[0]; return x > 140 && x < 940; });
+const c5Rot = (q: [number, number], h: number) => { const f = proj("c1", [q[0], q[1], 0]), L = 0.85 * (f[1] - proj("c1", [q[0], q[1], h])[1]), r = 940 - f[0], l = f[0] - 140;
+  return (r >= l ? 1 : -1) * (Math.asin(Math.min(0.97, Math.max(r, l) / L)) * 180) / Math.PI; };
 const c5: Shot = { id: "c1", blur: 2.5, focus: 2.8, drift: [1.08, 1.0, 0, 20], tint: "rgba(8,14,40,0.2)", moon: true,
-  actors: C5.map((q, i): Actor => ({ o: crew(140 + i), h: 1.6 + 0.25 * rnd(i, 3), at: () => q, rot: (t) => (t > 0.15 * i ? (q[0] > -1 ? 75 : -75) * ease((t - 0.15 * i) / 0.25) : 6 * Math.sin(t * 5 + i)),
+  actors: C5.map((q, i): Actor => ({ o: crew(140 + i), h: 1.6 + 0.25 * rnd(i, 3), at: () => q, rot: (t) => (t > 0.15 * i ? c5Rot(q, 1.6 + 0.25 * rnd(i, 3)) * ease((t - 0.15 * i) / 0.25) : 6 * Math.sin(t * 5 + i)),
     f: (t) => (t > 0.15 * i ? stand({ mode: "fall", expr: "dazed", facing: 1 }) : stand({ expr: "dazed", facing: 1, mode: "march", phase: t * 2 })), fx: (p, t, toD) => { if (t > 0.15 * i + 0.3) { void toD; } } })),
-  over: (g, t) => { const b = proj("c1", [-1.2, -1.2, 0]); for (let i = 0; i < 9; i++) { const fall = clamp((t - 0.05 * i) / 0.4), row = Math.floor(i / 3), col = i % 3, x = b[0] - 90 + col * 70 + (row % 2) * 30 + fall * (i - 4) * 50, y = b[1] - row * 110 + fall * row * 110;
-      g.save(); g.translate(x, y); g.rotate(fall * (i % 2 ? 1.4 : -1.4)); bottle(new Pen(g), [0, 0], 0); g.restore(); }
+  extraZones: () => [[200, 1440, 820, 1800]], over: (g, t) => { const b = proj("c1", [-0.1, 0.3, 0]); for (let i = 0; i < 9; i++) { const fall = clamp((t - 0.05 * i) / 0.4), row = Math.floor(i / 3), col = i % 3, x = b[0] - 90 + col * 70 + (row % 2) * 30 + fall * (i - 4) * 35, y = b[1] - row * 110 + fall * row * 110;
+      g.save(); g.translate(x, y); g.rotate(fall * (i % 2 ? 1.4 : -1.4)); bottle(new Pen(g), [0, 0], 0); g.restore(); }      // (the bottles on the open deck in front of them all, where they are seen to topple, never over a face; no word over them)
     C5.forEach((q, i) => { if (t > 0.15 * i + 0.35) { const h = proj("c1", [q[0], q[1], 0.6]); zzz(g, h[0], h[1], t + i * 0.3, 0.8); } }); } };
 
 // ---- c6 (32.6-34.0): dawn: the sun up over the sea; the sleepers in heaps; a gull lands on one sleeping head ----
@@ -256,7 +259,7 @@ const c10: Shot = { id: "c10", blur: 2.5, focus: 2.4, drift: [1.04, 1.1, 0, 10],
 
 // ---- c11 (39.7-41.6): low: Roberts pulls down his hat brim, sets his teacup on the rail, draws his cutlass ----
 const c11: Shot = { id: "c11", blur: 2, focus: 1.8, drift: [1.0, 1.08, 0, 30],
-  actors: [{ o: ROBERTS, h: 1.86, at: still(1.2, -1.65), sharp: true, f: (t) => stand({ facing: -1, expr: "stern", headTilt: t < 0.5 ? 8 : 0, reachR: t < 0.5 ? [380, 160] : t < 1.1 ? [470, 560] : [520, 300], reachL: t > 1.1 ? [200, 600] : undefined }),
+  actors: [{ o: ROBERTS, h: 1.86, at: still(1.2, -1.65), sharp: true, f: (t) => stand({ facing: -1, expr: "stern", headTilt: t < 0.5 ? 8 : 0, reachR: t < 0.5 ? [455, 265] : t < 1.1 ? [470, 560] : [520, 300], reachL: t > 1.1 ? [200, 600] : undefined }),
     hold: (p, h, t) => { if (t > 0.5 && t < 1.1) teacup(p, h[1]); if (t > 1.1) cutlass(p, h[1], lerp(150, 20, ease((t - 1.1) / 0.35))); } }],
   over: (g, t) => { if (t > 1.1) { const q = proj("c11", [1.6, -2.1, 0.86]); teacup(new Pen(g), [q[0], q[1]], 0); } } };
 

@@ -27,7 +27,25 @@ way of working changes. Nothing is built or sent that does not pass all six gate
    a code check before the next video.
 Until gates 2, 3 and 5 exist, no new Short is built. A few days without videos is better than more of these.
 
-## THE LOOK IS FROZEN: flat 2D, direction A "Knopp" (Jesper 2026-11-21)
+## THE LOOK NOW (Jesper 2026-11-28) - overrides every look section below
+"Gå tillbaka till EMU grafiken, behåll den fina bakgrunds grafiken men kör emu grafiken eventuellt grafiken som
+användes i 1500 talet danssjukan, vilken av dem som blir lättast. För middags videon idag håller inte i närheten måtten
+som jag vill, det är ingen action, inga händelser, bara en berättare och still bilder i princip + saker ser fortfarande
+dåliga ut."
+- **Figures:** the 2D figures of the dancing-plague Short (`engine/src/videos/style2d`, fig.tsx: big heads, costumes,
+  crowds), the easier of the two and still on main; the Emu figures (05fab8d, `engine/src/videos/emu`) only if the build
+  session shows they are faster. The Knopp 3D-card build (dinner v6e, Roberts 3D) is stopped and not published.
+- **Backgrounds:** the fine 3D-rendered places (the cabin, the deck and new ones) as background pictures with a slow
+  camera drift; the figures stand in front on one ground line, as in the dance Short. No 3D staging of the figures,
+  so no depth, seat or cheat checks.
+- **What it must have that the dinner lacked:** action all the time like the Emu Short: things happen on screen
+  (running, falling, fighting, chasing, crowds, objects flying), something new every 1-2 seconds, never a narrator over
+  still pictures. Faces act. The checks kept: no impossible things (limb count, nothing through anything), no
+  flicker, words never over faces or hands.
+- **Pace:** a Short built in about a day, from the six scripts in granskning/manus-batch-1/manus-v4.md (Roberts' voice
+  is already recorded).
+
+## THE LOOK IS FROZEN: flat 2D, direction A "Knopp" (Jesper 2026-11-21) - replaced on 2026-11-28, see above
 Overrides every older look section below (the emu look, the 3D cabin lighting, the frozen sprattelgubbe).
 - **Flat 2D drawn in code:** even thick outlines, flat colours, no pattern, no lighting, painted flat backgrounds
   with a ground line. Big round head about half the height, small round body, short legs, tall white oval eyes with

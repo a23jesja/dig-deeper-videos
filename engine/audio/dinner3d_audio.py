@@ -38,7 +38,7 @@ def main():
     #  plate (0.333, the lift's start), the thud of the sailor's hand on the book (2.767, the contact frame), his sniff with the pudding at his
     #  nose (3.85), chewing at each bite (4.83 and 10.60), the captain's fist on the table (15.467, the contact frame), the swish into the loop)
     cues = [{"k": "whoosh", "f": 0, "g": 1.3, "p": 0.2}, {"k": "book", "f": 87, "g": 1.25, "p": -0.1},
-            {"k": "sniff", "f": 116, "g": 1.0, "p": -0.1}, {"k": "munch", "f": 175, "g": 1.0, "p": -0.1}, 
+            {"k": "sniff", "f": 116, "g": 1.0, "p": -0.1}, {"k": "munch", "f": 174, "g": 1.0, "p": -0.1}, 
             {"k": "thunk", "f": 464, "g": 1.25, "p": 0.1}, {"k": "whoosh", "f": 688, "g": 0.7, "p": -0.1}, {"k": "whoosh", "f": int(DUR * FPS) - 3, "g": 0.9, "p": 0.2}]      # (v6c: no ting (the pudding is lifting at frame 0, the hook), no munch at 318 (one bite, shot 4); the vote in 14, the sailor's "Aye!" at 23.05 in 15a)      # (696: the two fists on the table, the vote)
     beds = [{"k": "lap", "f0": 0, "f1": int(DUR * FPS), "g": 0.55}]
     spec = {"fps": FPS, "frames": int(DUR * FPS), "seed": 31, "cues": cues, "beds": beds}

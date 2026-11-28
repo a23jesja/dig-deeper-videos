@@ -46,7 +46,7 @@ const BOY_POINT = [70, 14, 95, -12], BOY_PALM = [25, 15, 85, -50], BOY_HIT = [25
 const BOY_OUT = [0, 80, 0, 90], BOY_UP = [-10, 100, -10, 140], BOY_FOLD = [15, 18, 80, -55], BOY_SIDE7: [Seg2, Seg2] = [[-12, 28], [8, 22]];      // (the boy's arm out to his side before it goes up: the vote raise never crosses his face)
 const SLAP_REF = new Map<string, [[number, number], [number, number]]>();
 const KF_CACHE = new Map<string, [[number, number], [number, number]]>();
-const SPOON_KF = new Map<string, { aB: [Seg2, Seg2]; aG1: [Seg2, Seg2]; aG2: [Seg2, Seg2] } | null>();
+export const SPOON_KF = new Map<string, { aD: [Seg2, Seg2]; aG1: [Seg2, Seg2]; aG2: [Seg2, Seg2]; pRD: [Seg2, Seg2][]; pDG: [Seg2, Seg2][]; pGR: [Seg2, Seg2][] } | null>();
 import SEATJ from "./props/seat.json";
 import { hand as inkHand, Ink, type P2 } from "../ink";
 import { DRAWN } from "../alcatraz/alcatraz";
@@ -318,7 +318,7 @@ const captain = (id: string): Who => { const s = SH[id], y0 = headingIn(id, FACI
  *  curled fingers, drawn over it, hid the bowl and most of the dome, the reviewer's 1:1 crop of frame 180) */
 export const PUD_HOLD = 1.2;
 export const PUD_R = 0.11;      // (v6c: 0.11, a bowl about 22 cm across, carried from under it: at 0.08 it was a blob of ink under his fist at 360 px, the reviewer)      // (at 6.2 cm it read as a dot in the medium shots, the first stills; Knopp's hand is 17 cm long)
-export const bitesAt = (t: number) => (t >= SPOON.grab + 0.08 ? 1 : 0);      // (v6c: the spoonful taken out of it as the spoon comes out, 4.95)      // (v6c: one bite, shot 4; in 7 he holds it up before his chin and chews: his near arm could not reach his mouth within the limits there, dinner_check 16)
+export const bitesAt = (t: number) => (t >= SPOON.dipOut ? 1 : 0);      // (v6c: the spoonful taken out of it as the spoon comes out, 4.95)      // (v6c: one bite, shot 4; in 7 he holds it up before his chin and chews: his near arm could not reach his mouth within the limits there, dinner_check 16)
 /** the slap on the book (shot 3): his right hand from over the book down onto its cover at 2.77 (the contact frame), then flat on it */
 export const SLAP = { hit: 2.9 };
 const SLAP_UP = 18;      // (the forearm lifted 30 degrees over the contact pose before the slap)      // (frame 86: the hand from 10 cm over the cover in 5 frames; from 16 cm in 2 it jolted, motion2)
@@ -519,47 +519,68 @@ const crew = (id: string): Who => { const s = SH[id], y0 = headingIn(id, FACING.
     if (PLANT.frontArm && g >= 2.7 && g < 4.7) q = { ...q, armL: [[-70, 12], [-30, 0]] } as Pose;      // (the planted fault for the proof: in shot 3, a front view, his left arm swung back behind his back)
     if (g >= 8.7 && g < 10.75) { const u = span(g, 8.7, 9.1) * (1 - span(g, 9.7, 10.75));      /* (eased in and out in the one shot 6-7) */ q = { ...q, armL: [[lerp(CREW_REST[0][0], 46, u), lerp(CREW_REST[0][1], 8, u)], [lerp(CREW_REST[1][0], 58, u), 0]] } as Pose; }      /* (the point stops short of the captain: at 62/74 the fingertip went into his beard, the review) */      // (6: pointing at the captain's chest: at his face the arm lay over it, the first check)
       // (13-14: his left hand up by his ear at "vote" (20.99), palm to the lens, kept up)
-    // (v6c, the spoon in 4 (the reviewer's choice A): his right hand holds the pudding still before his chest; his left comes from his side to the
-    //  spoon's handle (4.70-4.95), lifts it out and brings its bowl to his mouth's front corner (4.95-5.30, the contact), holds it there (to
-    //  5.55), then down by the pudding, the spoon held up (5.55-6.00). Each keyframe's arm solved onto the grip (as put does), the angles lerped)
-    // (the left arm's three keyframes (the grab at the handle's top, the grip under the bowl at his mouth, the rest by the pudding) solved once, on his
-    //  pose at the grab, and cached: solved on every frame, the elbow's place chosen among several flipped from frame to frame, a hand jumping, rule 21)
+    // (v6d, choice B, 4: his right hand holds the pudding still before his chest; his left, holding the spoon up, comes to it and dips the bowl
+    //  into the cream (to SPOON.dip), lifts the spoonful out and to his mouth's front corner (dipOut-contact), holds it there (to back), then
+    //  holds it up by the pudding (rest). The three keyframes' arms (the dip, the grip under the bowl at his mouth, the rest) solved once on his
+    //  pose at the dip and cached (solved on every frame the elbow's place flipped, a hand jumping, rule 21), the angles lerped)
     const armsAt = (q: Pose, heading: number) => { const s2 = solve(D.props("sir"), q, heading), J2 = (n: string) => s2.j[n as keyof typeof s2.j] as unknown as number[], Wr = J2("wrR"), Tr = J2("tipR");
-      const gR: V2 = [Wr[0] + 0.45 * (Tr[0] - Wr[0]), Wr[1] + 0.45 * (Tr[1] - Wr[1])], C: V2 = [gR[0], gR[1] - PUD_HOLD * rSk], out = Math.sign(C[0] - J2("skull")[0]) || 1, ip = spoonInPud(C, rSk, out);
-      const mc = mouthCornerSk(s2), far = 0, bowlT: V2 = [mc.corner[0] + mc.v[0] * (SPOON.near + far) * rSk, mc.corner[1] + mc.v[1] * (SPOON.near + far) * rSk];
-      const G2: V2 = [C[0] - out * 0.95 * rSk, C[1] + 0.2 * rSk];
-      // (the rig's reach, its arm raised out to the side too: the two-link solver in his own plane fell 100-700 units short of the pudding before him)
-      // (the elbow tried out past his left shoulder at several places, as for the pudding arm, and the arm kept that dinner_check 16 passes (the
-      //  drawn bend at most 140, the upper arm at most 20 in toward his middle) and whose grip comes nearest: left to the rig's choice the upper arm
-      //  swung 53-71 degrees in across his chest)
+      const gR: V2 = [Wr[0] + 0.45 * (Tr[0] - Wr[0]), Wr[1] + 0.45 * (Tr[1] - Wr[1])], C: V2 = [gR[0], gR[1] - PUD_HOLD * rSk], out = Math.sign(C[0] - J2("skull")[0]) || 1;
+      const mc = mouthCornerSk(s2), bowlT: V2 = [mc.corner[0] + mc.v[0] * SPOON.near * rSk, mc.corner[1] + mc.v[1] * SPOON.near * rSk], creamT: V2 = [C[0] - out * 0.25 * rSk, C[1] - 0.3 * rSk];
+      const G2: V2 = [C[0] - out * 0.95 * rSk, C[1] + 0.2 * rSk], dl = (SPOON_DIP * Math.PI) / 180, GD: V2 = [creamT[0] - out * Math.sin(dl) * SPOON.Lr * rSk, creamT[1] - Math.cos(dl) * SPOON.Lr * rSk];
       const sc4 = scaleOf("sir"), pX4 = J2("pelvis")[0], x04 = px(0) - pX4 * sc4, shL = x04 + J2("shL")[0] * sc4, nkX = x04 + J2("neck")[0] * sc4, soL = Math.sign(shL - nkX) || 1;
       const metric = (arm: [Seg2, Seg2], T1: V2) => { const sq = solve(D.props("sir"), { ...q, armL: arm, handL: 0 } as Pose, heading), J = (n: string) => sq.j[n as keyof typeof sq.j] as unknown as number[], S0 = J("shL"), E0 = J("elL"), W0 = J("wrL"), T0 = J("tipL"), nk = J("neck"), pv = J("pelvis");
         const u1 = [S0[0] - E0[0], S0[1] - E0[1]], u2 = [W0[0] - E0[0], W0[1] - E0[1]], flex = 180 - (Math.acos(Math.max(-1, Math.min(1, (u1[0] * u2[0] + u1[1] * u2[1]) / ((Math.hypot(u1[0], u1[1]) || 1) * (Math.hypot(u2[0], u2[1]) || 1))))) * 180) / Math.PI;
         const dn = [pv[0] - nk[0], pv[1] - nk[1]], sS = Math.sign((S0[0] - nk[0]) * dn[1] - (S0[1] - nk[1]) * dn[0]) || 1, ua = [E0[0] - S0[0], E0[1] - S0[1]], inward = (Math.atan2(-(ua[0] * dn[1] - ua[1] * dn[0]) * sS, ua[0] * dn[0] + ua[1] * dn[1]) * 180) / Math.PI;
-        const gx = W0[0] + 0.45 * (T0[0] - W0[0]), gy = W0[1] + 0.45 * (T0[1] - W0[1]); return { bad: Math.max(0, flex - LIM16[0]) + (inward < 150 ? Math.max(0, inward - LIM16[1]) : 0), miss: Math.hypot(gx - T1[0], gy - T1[1]), g: [gx, gy] as V2 }; };
-      const gripTo = (T1: V2): [Seg2, Seg2] => { let best: { arm: [Seg2, Seg2]; bad: number; miss: number } | null = null;
-        for (const EO of [-40, -20, 0, 20, 40, 60, 80, 100]) { const opt = { mid: true, elbowOut: soL > 0 ? shL + EO : -(shL - EO), elbowDown: true };
+        const gx = W0[0] + 0.45 * (T0[0] - W0[0]), gy = W0[1] + 0.45 * (T0[1] - W0[1]); return { bad: Math.max(0, flex - LIM16[0]) + (inward < 150 ? Math.max(0, inward - LIM16[1]) : 0) + Math.max(0, -arm[0][0] - 30), miss: Math.hypot(gx - T1[0], gy - T1[1]), g: [gx, gy] as V2 }; };
+      const EOS = [-40, -20, 0, 20, 40, 60, 80, 100], EO_OF = new Map<string, number>(), key2 = (a: [Seg2, Seg2]) => a.flat().join(",");
+      const gripTo = (T1: V2, lab = "spoon", prev: [Seg2, Seg2] | null = null, only: number | null = null): [Seg2, Seg2] => { let best: { arm: [Seg2, Seg2]; bad: number; miss: number; eo: number } | null = null;      /* (prev: of two near answers the one nearer the arm before, 0.3 unit a degree, so the elbow does not flip between keyframes) */
+        for (const EO of only === null ? EOS : [only]) { const opt = { mid: true, elbowOut: soL > 0 ? shL + EO : -(shL - EO), elbowDown: true };
           let aim: [number, number] = [x04 + T1[0] * sc4, footY("sir") + T1[1] * sc4], r = reach("sir", x04, { ...q, handL: 0 } as Pose, heading, "L", aim, false, opt);
           for (let it = 0; it < 3; it++) { r = reach("sir", x04, { ...q, armL: r.armL, handL: 0 } as Pose, heading, "L", aim, false, opt); const m = metric(r.armL as [Seg2, Seg2], T1); aim = [aim[0] + (T1[0] - m.g[0]) * sc4, aim[1] + (T1[1] - m.g[1]) * sc4]; }
-          const m = metric(r.armL as [Seg2, Seg2], T1); if (!best || m.bad < best.bad - 1e-6 || (Math.abs(m.bad - best.bad) < 1e-6 && m.miss < best.miss)) best = { arm: r.armL as [Seg2, Seg2], bad: m.bad, miss: m.miss }; }
-        MISS[`crew 4 L spoon`] = best!.miss; return best!.arm; };
-      const tB: V2 = [ip.b[0], ip.b[1] - SPH * rSk], aB = gripTo(tB), gB = metric(aB, tB).g, L4 = Math.max(SPOON.Lr, Math.min(2.3, Math.hypot(gB[0] - ip.a[0], gB[1] - ip.a[1]) / rSk) + 0.5);
-      const G1: V2 = [bowlT[0] + mc.v[0] * L4 * rSk, bowlT[1] + mc.v[1] * L4 * rSk], aG1 = gripTo(G1), aG2 = gripTo(G2)
-      return { aB, aG1, aG2 }; };
-    if (id === "4" && g >= 4.7 && SPOON_KF.get(id) !== null) { let kfs = SPOON_KF.get(id); if (kfs === undefined) { SPOON_KF.set(id, null); const CASTk = { name: "crew", m, who: "sir" as const, seed: 26 } as unknown as Parameters<typeof poseAt>[0], ak = poseAt(CASTk, SPOON.grab);
-        kfs = armsAt(hook(SPOON.grab, ak.pose, ak.heading), ak.heading); SPOON_KF.set(id, kfs); }
-      const REST = CREW_REST as [Seg2, Seg2], { aB, aG1, aG2 } = kfs!;
-      // (from the cut his left hand is already on its way, below the handle, and comes up to it: from his side it swept across his body, the
-      //  words had no place left in 4 and the hand moved 44-71 px a frame, rules 6 and 21)
-      const near: [Seg2, Seg2] = [[aB[0][0] - 12, aB[0][1]], [aB[1][0] - 25, aB[1][1]]];
-      const arm = g < SPOON.grab ? lA(near, aB, span(g, 4.7, SPOON.grab)) : g < SPOON.contact ? lA(aB, aG1, span(g, SPOON.grab + 0.1, SPOON.contact)) : g < SPOON.back ? aG1 : lA(aG1, aG2, span(g, SPOON.back, SPOON.rest));
+          const m0 = metric(r.armL as [Seg2, Seg2], T1), dA = prev ? Math.abs(r.armL[0][0] - prev[0][0]) + Math.abs(r.armL[0][1] - prev[0][1]) + Math.abs(r.armL[1][0] - prev[1][0]) : 0, m = { ...m0, miss: m0.miss + 0.3 * dA }; if (!best || m.bad < best.bad - 1e-6 || (Math.abs(m.bad - best.bad) < 1e-6 && m.miss < best.miss)) best = { arm: r.armL as [Seg2, Seg2], bad: m.bad, miss: m.miss, eo: EO }; }
+        MISS[`crew 4 L ${lab}`] = best!.miss; MISS[`crew 4 L ${lab} bad`] = best!.bad; EO_OF.set(key2(best!.arm), best!.eo); return best!.arm; };
+            // (the grip at the bite: the handle's way from the bowl tried at several angles (down, from back to front of his chin) and the arm kept that
+      //  reaches nearest within rule 16, so the bowl, the spoon's length from his grip, lands at the mouth's corner)
+      let b1: { arm: [Seg2, Seg2]; miss: number } | null = null; for (let ad = 20; ad <= 160; ad += 10) { const w: V2 = [Math.cos((ad * Math.PI) / 180), Math.sin((ad * Math.PI) / 180)], G1: V2 = [bowlT[0] + w[0] * SPOON.Lr * rSk, bowlT[1] + w[1] * SPOON.Lr * rSk], arm = gripTo(G1, "bite"), mm = metric(arm, G1);
+        const dd = Math.abs(Math.hypot(mm.g[0] - bowlT[0], mm.g[1] - bowlT[1]) - SPOON.Lr * rSk) + (mm.bad > 0 ? 1e4 : 0); if (!b1 || dd < b1.miss) b1 = { arm, miss: dd }; }
+      MISS["crew 4 L bite len"] = b1!.miss; const aG1 = b1!.arm, eo1 = EO_OF.get(key2(aG1)) ?? null; void GD;
+      // (the dip found as the bite is: the spoon's way into the cream tried at several angles, his elbow placed as at the bite, and the arm kept
+      //  that puts the bowl, the spoon's length from his grip, in the cream within rule 16 and nearest the bite's arm)
+      let bD: { arm: [Seg2, Seg2]; miss: number } | null = null; for (let ad = -170; ad <= 0; ad += 10) { const w: V2 = [Math.cos((ad * Math.PI) / 180), Math.sin((ad * Math.PI) / 180)], Gd: V2 = [creamT[0] + w[0] * SPOON.Lr * rSk, creamT[1] + w[1] * SPOON.Lr * rSk], arm = gripTo(Gd, "dip", aG1, eo1), mm = metric(arm, Gd);
+        const dd = Math.abs(Math.hypot(mm.g[0] - creamT[0], mm.g[1] - creamT[1]) - SPOON.Lr * rSk) + (mm.bad > 0 ? 1e4 : 0) + 0.2 * (Math.abs(arm[0][0] - aG1[0][0]) + Math.abs(arm[0][1] - aG1[0][1])); if (!bD || dd < bD.miss) bD = { arm, miss: dd }; }
+      const aD = bD!.arm, R0 = CREW_REST as [Seg2, Seg2], mixA = (a: [Seg2, Seg2], b: [Seg2, Seg2], u: number): [Seg2, Seg2] => [[a[0][0] + (b[0][0] - a[0][0]) * u, a[0][1] + (b[0][1] - a[0][1]) * u], [a[1][0] + (b[1][0] - a[1][0]) * u, a[1][1] + (b[1][1] - a[1][1]) * u]];
+      // (the rest after the bite: his arm let down from the bite toward his hanging arm, the least way down that is within rule 16, the spoon held up)
+      const aG2 = [0.35, 0.45, 0.55, 0.65, 0.75].map((u) => mixA(aG1, R0, u)).find((a) => metric(a, [0, 0]).bad === 0) ?? gripTo(G2, "rest", aG1); void G2; MISS["crew 4 L dip len"] = bD!.miss;      // (the dip and the rest with the elbow placed as at the bite: one family of arms, so the ways between stay within rule 16)
+      // (between keyframes, the grip's way in thirds, each solved within rule 16 near the arm before: the angles lerped straight between the
+      //  three keyframes bent his elbow 153-180 degrees, dinner_check 16, and swung his hand 50-77 px a frame, 21)
+      // (between keyframes the angles taken in an order that keeps every in-between within rule 16: straight, the upper arm's lift out first, its
+      //  swing first, or the forearm first; tried at 12 points each, the first that passes kept. Straight, the elbow bent 153-180 degrees on the way)
+      const REST0 = CREW_REST as [Seg2, Seg2], L1 = (x: number, y: number, u: number) => x + (y - x) * Math.max(0, Math.min(1, u));
+      const orders: ((a: [Seg2, Seg2], b: [Seg2, Seg2], u: number) => [Seg2, Seg2])[] = [
+        (a, b, u) => [[L1(a[0][0], b[0][0], u), L1(a[0][1], b[0][1], u)], [L1(a[1][0], b[1][0], u), L1(a[1][1], b[1][1], u)]],
+        (a, b, u) => [[L1(a[0][0], b[0][0], 2 * u - 1), L1(a[0][1], b[0][1], 2 * u)], [L1(a[1][0], b[1][0], u), L1(a[1][1], b[1][1], u)]],
+        (a, b, u) => [[L1(a[0][0], b[0][0], 2 * u), L1(a[0][1], b[0][1], 2 * u - 1)], [L1(a[1][0], b[1][0], u), L1(a[1][1], b[1][1], u)]],
+        (a, b, u) => [[L1(a[0][0], b[0][0], 2 * u - 1), L1(a[0][1], b[0][1], 2 * u - 1)], [L1(a[1][0], b[1][0], 2 * u), L1(a[1][1], b[1][1], 2 * u)]],
+        (a, b, u) => [[L1(a[0][0], b[0][0], 2 * u), L1(a[0][1], b[0][1], 2 * u)], [L1(a[1][0], b[1][0], 2 * u - 1), L1(a[1][1], b[1][1], 2 * u - 1)]]];
+      const path = (a: [Seg2, Seg2], b: [Seg2, Seg2]): [Seg2, Seg2][] => { let pick = orders[0], worst = 1e9; for (const o of orders) { let w = 0; for (let i = 1; i < 12; i++) w = Math.max(w, metric(o(a, b, i / 12), [0, 0]).bad); if (w < worst - 1e-6) { worst = w; pick = o; } if (w === 0) break; }
+        MISS[`crew 4 L path bad`] = Math.max(MISS[`crew 4 L path bad`] ?? 0, worst); return Array.from({ length: 13 }, (_, i) => pick(a, b, i / 12)); };
+      return { aD, aG1, aG2, pRD: path(REST0, aD), pDG: path(aD, aG1), pGR: path(aG1, aG2) }; };
+    // (v6d B: he bends to the spoon, leaning in and nodding down to meet it, as one does: the arm, within rule 16, does not bring a hand
+    //  nearer his mouth than about 3.5 of the pudding's radius)
+    if (id === "4") { const bw = span(g, SPOON.dipOut - 0.1, SPOON.contact) * (1 - span(g, SPOON.back + 0.05, SPOON.rest)), hq = q.head ?? [0, 0, 0];
+      q = { ...q, lean: (q.lean ?? 0) + EAT_LEAN[0] * bw, head: [hq[0], hq[1] + EAT_LEAN[1] * bw, hq[2]] } as Pose; }
+    const armsAt3 = (qq: Pose[], heading: number) => armsAt(qq[1], heading);      // (one pose, the bite's: the three keyframes and the ways between them solved together, so they meet)
+    if (id === "4" && g >= 4.7 && SPOON_KF.get(id) !== null) { let kfs = SPOON_KF.get(id); if (kfs === undefined) { SPOON_KF.set(id, null); const CASTk = { name: "crew", m, who: "sir" as const, seed: 26 } as unknown as Parameters<typeof poseAt>[0], ak = poseAt(CASTk, SPOON.dip), ac = poseAt(CASTk, SPOON.contact), ar = poseAt(CASTk, SPOON.rest);
+        kfs = armsAt3([hook(SPOON.dip, ak.pose, ak.heading), hook(SPOON.contact, ac.pose, ac.heading), hook(SPOON.rest, ar.pose, ar.heading)], ak.heading); SPOON_KF.set(id, kfs); }
+      const { aD, aG1, pRD, pDG, pGR } = kfs!, along = (P: [Seg2, Seg2][], u: number) => { const x = Math.max(0, Math.min(0.9999, u)) * (P.length - 1), i = Math.floor(x); return lA(P[i], P[i + 1], x - i); };
+      const arm = g < SPOON.dip ? along(pRD, span(g, 4.7, SPOON.dip)) : g < SPOON.dipOut ? aD : g < SPOON.contact ? along(pDG, span(g, SPOON.dipOut, SPOON.contact)) : g < SPOON.back ? aG1 : along(pGR, span(g, SPOON.back, SPOON.rest));
       q = { ...q, armL: arm, handL: 0 } as Pose; }
     if (g >= 23.1 && g < 23.65) q = armHuman(q, "R", heading);      // (v6c: 15a's lift to "Aye!" kept within rule 16)
     return q; };
   const kindL = s.t0 < 1.6 ? "grip" : s.t0 >= 2.7 && s.t0 < 4.7 ? "open" : "relaxed";
   return { name: "crew", at, walk: viewOf(id).right, h: HEIGHTS.crew, rimSide: -1, off: s.t0, sun: false, key: 0.5,
     cast: { name: "crew", m, who: "sir", look: CREW, seed: 26, armWipe: false, pose: hook,
-      hands: { L: id === "4" ? [[0, "relaxed"], [SPOON.grab - 0.02, "grip"]] : id === "7" ? [[0, "point"], [10.0, "relaxed"]] : id === "15a" || id === "15b" ? [[0, "fist"]] : [[0, kindL]], R: [[0, "grip"]] },
+      hands: { L: s.t0 >= 2.7 ? [[0, "grip"]] : [[0, kindL]], R: [[0, "grip"]] },      /* (v6d B: from 3 on his left hand holds the spoon: in 7 he points with it, in 15a his "Aye!" fist holds it) */
       ...(talk ? { mouth: mouthTrack(s, talk) } : chewing ? { mouth: mouthTrack(s, (T0) => (T0 >= s.t0 && T0 < s.t1 ? chewing(T0) : null)) } : {}) } };
 };
 
@@ -662,63 +683,66 @@ const pudShape = (h: G, c: P2, r: number, bites: number, ol: number) => {
  *  bowl comes to his mouth's front corner (contact, the munch) and stays there (back), and he holds it up by the pudding (rest) to the shot's end.
  *  Lengths in the pudding's radius: grip to the bowl's middle Lr, the handle behind the grip butt, the bowl bl long and bw wide, its middle
  *  near from the corner along the way it came (down and back from the mouth, away from the nose) */
-const LIM16: number[] = [147, 28];      // (the left arm's limits when it eats with the spoon: the bend and the upper arm's turn in, under dinner_check 16's 150 and 30)
-const SPOON_LATER: number = typeof process !== "undefined" && process.env?.SPL ? Number(process.env.SPL) : 70;
-const SPOON_LATER_X: number = typeof process !== "undefined" && process.env?.SPLX ? Number(process.env.SPLX) : 0.45;
-const SPOON_HOOK = 15;      // (degrees: the hook's spoon leans this far from upright, away from his head)
-const SPH: number = typeof process !== "undefined" && process.env?.SPH ? Number(process.env.SPH) : 1.5;      // (his grab aimed this many pudding radii over the handle's top: the hand comes up to it and the spoon stands at about 45 degrees)
-export const SPOON = { grab: 150 / 30, turn: 162 / 30, contact: 175 / 30, back: 180 / 30, rest: 191 / 30, Lr: 2.0, butt: 0.35, bl: 0.36, bw: 0.24, near: 0.3, tilt: 28, up: 1.0, v: [-0.45, 0.89] as [number, number] };
+const LIM16: number[] = typeof process !== "undefined" && process.env?.LIM16 ? JSON.parse(process.env.LIM16) : [147, 28];      // (the left arm's limits when it eats with the spoon: the bend and the upper arm's turn in, under dinner_check 16's 150 and 30)
+const SPOON_LATER: number = typeof process !== "undefined" && process.env?.SPL ? Number(process.env.SPL) : 30;      // (degrees from upright, away from his head, the spoon stands in the pudding from 7 on)
+const SPOON_LATER_X: number = typeof process !== "undefined" && process.env?.SPLX ? Number(process.env.SPLX) : 0.3;      // (and its foot that far out from the cream's middle, away from his head)
+const EAT_LEAN: number[] = typeof process !== "undefined" && process.env?.EATL ? JSON.parse(process.env.EATL) : [5, 10];      // (his lean in and nod down at the bite, degrees)
+const SPOON_HOOK = 15;
+const PT_SPOON = ["7"];      // (the shots where his left arm points: the spoon points the way his hand does)
+const SPOON_DIP: number = typeof process !== "undefined" && process.env?.SPD ? Number(process.env.SPD) : 40;      // (degrees from upright, toward his body, the spoon stands as it dips into the cream)      // (degrees: the hook's spoon leans this far from upright, away from his head)
+/** v6d (the reviewer's choice B): a spoon of ordinary length. In the hook it stands in the pudding; in 2 (he is out of the picture) he takes it in
+ *  his left hand, holds it up in 3, and in 4 dips it into the cream (dip-dipOut), brings the spoonful to his mouth's front corner (contact-back),
+ *  then holds it up by the pudding (rest); in 5 (out of the picture) he puts it back, and from 7 on it stands in the pudding again.
+ *  Lengths in the pudding's radius: grip to the bowl's middle Lr, the handle behind the grip butt, the bowl bl long and bw wide, up the handle
+ *  seen out of the cream; near: the bowl's middle from the mouth's corner along v (down and back from the mouth, away from the nose) */
+export const SPOON = { dip: 158 / 30, dipOut: 162 / 30, contact: 174 / 30, back: 178 / 30, rest: 191 / 30, Lr: (typeof process !== "undefined" && process.env?.SPLR ? Number(process.env.SPLR) : 3.6), butt: 0.45, bl: 0.42, bw: 0.28, up: 3.0, near: (typeof process !== "undefined" && process.env?.SPN ? Number(process.env.SPN) : 0.5), v: (typeof process !== "undefined" && process.env?.SPV ? JSON.parse(process.env.SPV) : [0, 1]) as [number, number], held: 15 };
 type V2 = [number, number];
 const nrm = (v: V2): V2 => { const l = Math.hypot(v[0], v[1]) || 1; return [v[0] / l, v[1] / l]; };
 const slerp2 = (a: V2, b: V2, u: number): V2 => { const t0 = Math.atan2(a[1], a[0]); let d = Math.atan2(b[1], b[0]) - t0; while (d > Math.PI) d -= 2 * Math.PI; while (d < -Math.PI) d += 2 * Math.PI; const t = t0 + d * u; return [Math.cos(t), Math.sin(t)]; };
 /** the spoon standing in the pudding (middle c, radius r, out: +1 when the pudding is on the picture's right of his head): where its handle
  *  leaves the cream (a), its top (b), its line up (d) */
-export const spoonInPud = (c: V2, r: number, out: number) => { const t = (SPOON.tilt * Math.PI) / 180, d: V2 = [-Math.sin(t) * out, -Math.cos(t)], a: V2 = [c[0] + 0.2 * r * out, c[1] - 0.55 * r]; return { a, b: [a[0] + d[0] * SPOON.up * r, a[1] + d[1] * SPOON.up * r] as V2, d }; };
+export const spoonInPud = (c: V2, r: number, out: number, lean: number, ax: number) => { const t = (lean * Math.PI) / 180, d: V2 = [Math.sin(t) * out, -Math.cos(t)], a: V2 = [c[0] + ax * r * out, c[1] - (0.55 - 0.25 * ax) * r]; return { a, b: [a[0] + d[0] * SPOON.up * r, a[1] + d[1] * SPOON.up * r] as V2, d }; };
 /** his mouth's front corner (or, planted, his nose) and the way the spoon comes to it (down and back), in skeleton units */
 export const mouthCornerSk = (sk: ReturnType<typeof solve>) => { const R = Math.PI / 180, sn = Math.sin(sk.faceYaw * R), as = Math.abs(sn), view = as < 0.45 ? "front" : as < 0.85 ? "q" : "side", km = kitMouth(view, 0.24);
   const c = Math.cos(sk.headTilt * R), si = Math.sin(sk.headTilt * R), o = sk.j.skull as unknown as number[], fl = view !== "front" && sn < 0 ? -1 : 1;
   const tf = (p: V2): V2 => [o[0] + fl * p[0] * c - p[1] * si, o[1] + fl * p[0] * si + p[1] * c], hp: V2 = [km.x + km.w, km.y];
   const corner = tf(hp), z = tf([0, 0]), v = nrm([tf(SPOON.v)[0] - z[0], tf(SPOON.v)[1] - z[1]]); return { corner, v }; };
-/** the spoon's way at t in his hand (grip g, toward the bowl), given where the bowl must come at the contact (bowlT) and its line in the pudding (d) */
-export const spoonDir = (t: number, g: V2, bowlT: V2, d: V2): V2 => { const uC = nrm([bowlT[0] - g[0], bowlT[1] - g[1]]), down: V2 = [-d[0], -d[1]], up: V2 = [0, -1];
-  // (drawn out of the cream sideways first, low by the pudding, then carried up to the mouth: turned upright first its bowl stood over his eye
-  //  (v6d stills 158), turned on the way up it swung past his nose)
-  //  One eased way from the pudding to the mouth, its angle a curve through "side" (v6d: two eased turns stopped it at "side" and swung the bowl
-  //  58 px a frame)
-  const side = nrm([down[0] + uC[0], down[1] + uC[1]]), ang = (v: V2) => Math.atan2(v[1], v[0]), a0 = ang(down), un = (x: number) => { let y = x - a0; while (y > Math.PI) y -= 2 * Math.PI; while (y < -Math.PI) y += 2 * Math.PI; return a0 + y; };
-  const a1 = un(ang(side)), a2 = a1 + (() => { let y = ang(uC) - a1; while (y > Math.PI) y -= 2 * Math.PI; while (y < -Math.PI) y += 2 * Math.PI; return y; })(), sB = span(t, SPOON.grab, SPOON.contact), aB = (1 - sB) * (1 - sB) * a0 + 2 * sB * (1 - sB) * a1 + sB * sB * a2;
-  return t < SPOON.contact ? [Math.cos(aB), Math.sin(aB)] as V2 : t < SPOON.back ? uC : slerp2(uC, up, span(t, SPOON.back, SPOON.rest)); };
+/** the spoon's way at t in his hand (grip g, toward the bowl): held up (upH) in 3 and 4 until it goes down into the cream (creamT), out of it and
+ *  along one eased curve through "side" to the mouth (bowlT), held there, then up again by the pudding */
+export const spoonDir = (t: number, g: V2, bowlT: V2, creamT: V2, upH: V2): V2 => { const uC = nrm([bowlT[0] - g[0], bowlT[1] - g[1]]), uD = nrm([creamT[0] - g[0], creamT[1] - g[1]]);
+  if (t < SPOON.dip) return slerp2(upH, uD, span(t, SH["4"].t0 - 0.12, SPOON.dip));      // (turned down to the cream first, low, as his hand comes up: held up as it rose it passed his chin) if (t < SPOON.dipOut) return uD;
+  // (one eased way from the cream to the mouth, its angle a curve through "side" (v6d: two eased turns stopped it at "side" and swung the bowl 58 px a frame))
+  const side = nrm([uD[0] + uC[0], uD[1] + uC[1]]), ang = (v: V2) => Math.atan2(v[1], v[0]), a0 = ang(uD), wr = (y: number) => { while (y > Math.PI) y -= 2 * Math.PI; while (y < -Math.PI) y += 2 * Math.PI; return y; };
+  const a1 = a0 + wr(ang(side) - a0), a2 = a1 + wr(ang(uC) - a1), sB = span(t, SPOON.dipOut, SPOON.contact), aB = (1 - sB) * (1 - sB) * a0 + 2 * sB * (1 - sB) * a1 + sB * sB * a2;
+  const upR = slerp2(uC, uD, 0.6);      // (after the bite the spoon tipped back down toward the pudding, ready for the next spoonful: turned up and out, the long spoon came to his chin)
+  return t < SPOON.contact ? [Math.cos(aB), Math.sin(aB)] as V2 : t < SPOON.back ? uC : slerp2(uC, upR, span(t, SPOON.back + 0.05, SPOON.rest)); };      // (drawn down from his mouth first, then turned up: turned at once, its bowl swung up over his cheek)
 /** the spoon as drawn (card px) in a frame of shot id: in the pudding (handle a-b) or in his left hand (handle from h0 to h1, the bowl's middle q,
  *  its way u); null when there is no pudding to draw (or, planted, spoonGone in 7) */
-/** (in 4 the spoon stands in the pudding pointing at where his left hand's grip comes at the grab, so the hand takes its handle's top exactly: the
- *  rig's reach falls 10-12 units short of a set handle, and the spoon jumped into his hand) */
-let SP4: { d: V2; up: number } | null = null;
-const spoon4 = () => { if (SP4) return SP4; const w = WHO["4"]().find((q) => q.name === "crew")!, fr = Math.round((SPOON.grab - SH["4"].t0) * FM.FPS), pl = placeOf("4", fr, w), f = pl.f, p = SPOON.grab < HANDOVER.give ? pudDrawn("4", fr, pl, SPOON.grab) : pudOf(pl, false, "R");
-  const ip = spoonInPud(p.c, p.r, Math.sign(p.c[0] - jointPx(f, "skull")[0]) || 1), Wl = jointPx(f, "wrL"), Tl = jointPx(f, "tipL"), g: V2 = [Wl[0] + 0.45 * (Tl[0] - Wl[0]), Wl[1] + 0.45 * (Tl[1] - Wl[1])], v: V2 = [g[0] - ip.a[0], g[1] - ip.a[1]];
-  const o4 = Math.sign(p.c[0] - jointPx(f, "skull")[0]) || 1, d4 = nrm(v); SP4 = { d: [d4[0] * o4, d4[1]] as V2, up: Math.max(0.7, Math.min(3.2, Math.hypot(v[0], v[1]) / p.r)) + SPOON.butt }; return SP4; };      // (its top the butt's length above his grip: the handle the same length above his hand as it stood in the pudding)
+export const inHand = (t: number) => t >= HANDOVER.give;
 export const spoonDrawn = (id: string, fr: number, pl: Placed, t: number) => { if (PLANT.spoonGone && id === "7") return null;
-  const f = pl.f, p = t < HANDOVER.give ? pudDrawn(id, fr, pl, t) : pudOf(pl, false, "R"), sk0 = jointPx(f, "skull"), out = Math.sign(p.c[0] - sk0[0]) || 1, ip0 = spoonInPud(p.c, p.r, out), s4 = spoon4();
-  // (the same spoon in every shot: its line in the pudding (taken to his side, d stored for the side away from his head) and its length as shot 4 needs them)
-  // (in the hook, the pudding on his left palm before he takes it in his right hand (in 2, out of the picture), and from 7 on, after he has
-  //  put it back (in 5, out of the picture), the spoon leans away from his head: leaning toward his body, as it must in 3 and 4 where his left
-  //  hand takes it, its handle came to his chin, rule 3 and 3c)
-  const hl = (SPOON_HOOK * Math.PI) / 180, hl7 = (SPOON_LATER * Math.PI) / 180, d: V2 = t < HANDOVER.give && id === "1" ? [out * Math.sin(hl), -Math.cos(hl)] : t >= SH["4"].t1 ? [out * Math.sin(hl7), -Math.cos(hl7)] : [s4.d[0] * out, s4.d[1]], a0: V2 = t >= SH["4"].t1 ? [p.c[0] + SPOON_LATER_X * p.r * out, ip0.a[1] + 0.25 * SPOON_LATER_X * p.r] : ip0.a, ip = { a: a0, d, b: [a0[0] + d[0] * s4.up * p.r, a0[1] + d[1] * s4.up * p.r] as V2 };
-  if (id !== "4" || t < SPOON.grab) return { mode: "pud" as const, full: false, ...ip, r: p.r, c: p.c };
+  const f = pl.f, p = t < HANDOVER.give ? pudDrawn(id, fr, pl, t) : pudOf(pl, false, "R"), sk0 = jointPx(f, "skull"), out = Math.sign(p.c[0] - sk0[0]) || 1;
+  // (planted spoonSwap: in 7 for two frames the spoon stands in his pudding)
+  if (!inHand(t) || (PLANT.spoonSwap && id === "7" && (fr === 30 || fr === 31))) { const ip = t < HANDOVER.give ? spoonInPud(p.c, p.r, out, SPOON_HOOK, 0.2) : spoonInPud(p.c, p.r, out, SPOON_LATER, SPOON_LATER_X); return { mode: "pud" as const, full: false, ...ip, r: p.r, c: p.c }; }
   const sc = scaleOf(f.who), Wl = jointPx(f, "wrL"), Tl = jointPx(f, "tipL"), g: V2 = [Wl[0] + 0.45 * (Tl[0] - Wl[0]), Wl[1] + 0.45 * (Tl[1] - Wl[1])], mc = mouthCornerSk(f.sk), card = (q: V2): V2 => [f.x + q[0] * sc, footY(f.who) + q[1] * sc];
-  const cw = card(mc.corner), far = 0, bowlT: V2 = [cw[0] + mc.v[0] * (SPOON.near + far) * p.r, cw[1] + mc.v[1] * (SPOON.near + far) * p.r], u = spoonDir(t, g, bowlT, ip.d);
-  const L = Math.max(SPOON.Lr, s4.up - SPOON.butt + 0.5); let q: V2 = [g[0] + u[0] * L * p.r, g[1] + u[1] * L * p.r];
-  // (planted, at the bite only: spoonNose the bowl on his nose; spoonFar the bowl's edge 30 px (in the picture) off the mouth's front corner, along
-  //  the way it came. The handle follows from his grip)
+  const nk = jointPx(f, "neck"), sH = Math.sign(g[0] - nk[0]) || 1, hd = (SPOON.held * Math.PI) / 180, upH: V2 = [sH * Math.sin(hd), -Math.cos(hd)], creamT: V2 = [p.c[0] - out * 0.25 * p.r, p.c[1] - 0.3 * p.r];
+  const cw = card(mc.corner), bowlT: V2 = [cw[0] + mc.v[0] * SPOON.near * p.r, cw[1] + mc.v[1] * SPOON.near * p.r], u = id === "4" ? spoonDir(t, g, bowlT, creamT, upH) : t >= SH["4"].t1 && Math.hypot(Tl[0] - Wl[0], Tl[1] - Wl[1]) > 1 && PT_SPOON.includes(id) ? nrm([Tl[0] - Wl[0], Tl[1] - Wl[1]]) : upH;      // (pointing, the spoon carries on from his forearm's line: he points with it)
+  let q: V2 = [g[0] + u[0] * SPOON.Lr * p.r, g[1] + u[1] * SPOON.Lr * p.r];
+  // (planted, at the bite only: spoonNose the bowl on his nose; spoonFar the bowl's edge 30 px (in the picture) off the mouth's front corner, out
+  //  past the corner beside the mouth. The handle follows from his grip)
   if ((PLANT.spoonNose || PLANT.spoonFar) && t >= SPOON.contact && t <= SPOON.back) { const tf = (hp: V2): V2 => { const R = Math.PI / 180, c = Math.cos(f.sk.headTilt * R), si = Math.sin(f.sk.headTilt * R), o = f.sk.j.skull as unknown as number[], fl = Math.sin(f.sk.faceYaw * R) < 0 ? -1 : 1; return card([o[0] + fl * hp[0] * c - hp[1] * si, o[1] + fl * hp[0] * si + hp[1] * c]); };
     if (PLANT.spoonNose) q = tf([104, -84]); else { const ol = 3.5 * sc, z0 = tf([0, 0]), z1 = tf([10, 0]), w = nrm([z1[0] - z0[0], z1[1] - z0[1]]), n: V2 = [-u[1], u[0]], A = SPOON.bl * p.r + ol, B = SPOON.bw * p.r + ol;
-      const gap = 30 / (pl.z || 1) + Math.hypot(A * (u[0] * w[0] + u[1] * w[1]), B * (n[0] * w[0] + n[1] * w[1])); q = [cw[0] + w[0] * gap, cw[1] + w[1] * gap]; } }      // (out past the corner, beside the mouth)
-  const u2 = nrm([q[0] - g[0], q[1] - g[1]]); u[0] = u2[0]; u[1] = u2[1];      // (grip to the bowl at least 0.5 r more than the handle stood out of the pudding: the bowl inside it at the grab)
-  return { mode: "hand" as const, full: t < SPOON.contact + 2 / FM.FPS, g, u, q, h0: [g[0] - u[0] * SPOON.butt * p.r, g[1] - u[1] * SPOON.butt * p.r] as V2, h1: [q[0] - u[0] * SPOON.bl * p.r, q[1] - u[1] * SPOON.bl * p.r] as V2, r: p.r, c: p.c, cornerPx: cw }; };
+      const gap = 30 / (pl.z || 1) + Math.hypot(A * (u[0] * w[0] + u[1] * w[1]), B * (n[0] * w[0] + n[1] * w[1])); q = [cw[0] + w[0] * gap, cw[1] + w[1] * gap]; } }
+  const uq = nrm([q[0] - g[0], q[1] - g[1]]);
+  return { mode: "hand" as const, full: t >= SPOON.dipOut - 1 / FM.FPS && t < SPOON.contact + 2 / FM.FPS, g, u: uq, q, h0: [g[0] - uq[0] * SPOON.butt * p.r, g[1] - uq[1] * SPOON.butt * p.r] as V2, h1: [q[0] - uq[0] * SPOON.bl * p.r, q[1] - uq[1] * SPOON.bl * p.r] as V2, r: p.r, c: p.c, cornerPx: cw, creamT }; };
 const spoonDraw = (h: G, sp: NonNullable<ReturnType<typeof spoonDrawn>>, ol: number) => { const k = new Ink(h, ol), r = sp.r, METAL = "#c8ccd2";
   const stroke = (A: V2, B: V2, w: number) => { k.line([A, B], w + 2 * ol, k.ink); k.line([A, B], w, METAL); };
-  if (sp.mode === "pud") { stroke(sp.a, sp.b, 0.13 * r); return; }
+  // (v6d: drawn as a spoon, not a stick: a flat handle widening from the bowl to a rounded end (0.09 to 0.2 of the pudding's radius))
+  const handle = (A: V2, B: V2) => { const u = nrm([B[0] - A[0], B[1] - A[1]]), n: V2 = [-u[1], u[0]], w0 = 0.045 * r, w1 = 0.1 * r, P: P2[] = [[A[0] + n[0] * w0, A[1] + n[1] * w0], [B[0] + n[0] * w1, B[1] + n[1] * w1],
+      ...Array.from({ length: 9 }, (_, i) => { const a = (i / 8) * Math.PI; return [B[0] + n[0] * w1 * Math.cos(a) + u[0] * w1 * Math.sin(a), B[1] + n[1] * w1 * Math.cos(a) + u[1] * w1 * Math.sin(a)] as P2; }), [A[0] - n[0] * w0, A[1] - n[1] * w0]];
+    k.group([P], METAL); };
+  if (sp.mode === "pud") { handle(sp.a, sp.b); return; }
   const n: V2 = [-sp.u[1], sp.u[0]], bowl: P2[] = Array.from({ length: 24 }, (_, i) => { const a = (i / 24) * 2 * Math.PI; return [sp.q[0] + sp.u[0] * SPOON.bl * r * Math.cos(a) + n[0] * SPOON.bw * r * Math.sin(a), sp.q[1] + sp.u[1] * SPOON.bl * r * Math.cos(a) + n[1] * SPOON.bw * r * Math.sin(a)] as P2; });
-  stroke(sp.h0, sp.h1, 0.13 * r); k.group([bowl], METAL);
+  handle(sp.h1, sp.h0); k.group([bowl], METAL); void stroke;
   // (a spoonful of the cream on the bowl from the pudding to his mouth, gone after the bite)
   if (sp.full) k.group([Array.from({ length: 20 }, (_, i) => { const a = (i / 20) * 2 * Math.PI; return [sp.q[0] + sp.u[0] * 0.7 * SPOON.bl * r * Math.cos(a) + n[0] * 0.8 * SPOON.bw * r * Math.sin(a) - n[0] * 0.08 * r, sp.q[1] + sp.u[1] * 0.7 * SPOON.bl * r * Math.cos(a) + n[1] * 0.8 * SPOON.bw * r * Math.sin(a) - n[1] * 0.08 * r] as P2; })], "#f4ecd8"); };
 /** the sailor's extra drawing: the pudding (behind his hand in shot 1, on it after) and his fingers over its edge; a contact shadow while it

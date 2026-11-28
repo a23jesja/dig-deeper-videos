@@ -44,13 +44,15 @@ const exportSpec = { name: "spec", setup(b) { b.onLoad({ filter: /designs[\\/]fl
 await esbuild.build({ plugins: [exportSpec], stdin: { contents: 'export * from "./src/craft/dinner3d/core"; export * from "./src/craft/dinner3d/figures"; export { captionAt, crownPick, hatAt, crownGaps, CROWN, CAP_TOPS, camFx, bodyCaps, boxHitsCap, CAP_ON_BODY, ARM_CAPS, headZones } from "./src/craft/dinner3d/Dinner3D"; export { thighUnder, scaleOf, D, FM, jointPx, footY, heightOf } from "./src/craft/clips/clipKit"; export * as BG from "./src/craft/checks/bodyGeom"; export { kitOf, kitBody, beardOutline, pupilAt, qPupils, farForeOver, CUFF, kitMouth as kitMouthOf } from "./src/craft/wardrobe/kit"; export { A_SPEC } from "./src/craft/designs/flat";', resolveDir: ".", loader: "tsx" }, bundle: true, format: "esm", platform: "node", outfile: out, logLevel: "error", loader: { ".json": "json" }, external: ["remotion", "react"] });
 const M = await import(pathToFileURL(out).href); fs.rmSync(out);
 const { SHOTS, WHO, PLANT, SPOON, placeOf, toScreen, feetOf, project, jointPx, handPx, FM, cardToWorld, thighUnder, scaleOf, D, captionAt, PUD_UP, TABLE_TOP } = M;
-const CHECK_PLANTS = { spoonNose: "3c", spoonFar: "3c", spoonGone: 22, fistTurn: 21, capFlash: "6d", oldBlink: "18b", pudBeard: 8, hookHi: 8, headTouch: 8, capOutD5: 10, crownBrim: 6, crownFace: 6, noFore: 10, cuffOnly: 10, lidCut: 18, stripeNet: 17, sleeveNoInk: 10, capLow: 6, missing: 7, faceHide: 8, headPeek: 8, hide40: 8, mouthHand: 9, oneArm: 10, mouthOut: 11, turnCross: 12, seatEdge: 1, faceEdge: 13, frontArm: 10, smileCross: 14 }, RULE_OF = { seatHigh: 1, pudOff: 3, pudLift: 3, handIn: 4, handInBook: 4, float: 2, ...CHECK_PLANTS };
+const SPMODE = {};
+const CHECK_PLANTS = { spoonSwap: "22b", spoonNose: "3c", spoonFar: "3c", spoonGone: 22, fistTurn: 21, capFlash: "6d", oldBlink: "18b", pudBeard: 8, hookHi: 8, headTouch: 8, capOutD5: 10, crownBrim: 6, crownFace: 6, noFore: 10, cuffOnly: 10, lidCut: 18, stripeNet: 17, sleeveNoInk: 10, capLow: 6, missing: 7, faceHide: 8, headPeek: 8, hide40: 8, mouthHand: 9, oneArm: 10, mouthOut: 11, turnCross: 12, seatEdge: 1, faceEdge: 13, frontArm: 10, smileCross: 14 }, RULE_OF = { seatHigh: 1, pudOff: 3, pudLift: 3, handIn: 4, handInBook: 4, float: 2, ...CHECK_PLANTS };
 if (plant === "noFore") PLANT.capTurn0 = true;
 if (plant === "pudLift") PLANT.pudLift = true;
 if (plant === "oldBlink") PLANT.oldBlink = true;
 if (plant === "spoonNose") PLANT.spoonNose = true;
 if (plant === "spoonFar") PLANT.spoonFar = true;
 if (plant === "spoonGone") PLANT.spoonGone = true;
+if (plant === "spoonSwap") PLANT.spoonSwap = true;
 if (plant === "fistTurn") PLANT.fistTurn = true;
 if (plant === "hookHi") PLANT.hookHi = true;      // (hookHi: the hook's pudding held where 262fe44 had it, over the captain's beard on frame 47)
 if (plant === "capOutD5") { PLANT.capOutD5 = true; const old = JSON.parse(fs.readFileSync("scripts/plants/cams-d5e149d.json", "utf8")); M.setCam("2", old["2"]); M.setCam("15b", old["15b"]); }      // (with d5e149d's cameras of 2 and 15b)      // (capOutD5: the captain's far hand in 2 and 15b where d5e149d had it, the reviewer's NO on frames 53 and 716)      // (noFore: the captain's far arm as v6 drew it, under the coat, and in 9 turned 31 degrees from the lens)
@@ -432,9 +434,28 @@ for (const S of SHOTS) {
       const onNose = nosePts.filter((q) => inPud(q) || hands.some((P) => BG.inPoly(q, P)) || onSpoon(q)).length; if (onNose) faults.push(`3c ${S.id} frame ${fr} crew: the pudding, a hand or the spoon over his nose (${onNose} points)`);
       // (and standing in the pudding the spoon, its part out of the cream, is 10 px or more from his head's outline, never touching his face or
       //  chin: v6d stills 140 and 300. The cream itself may lie at his chin, 15a, accepted on v6c)
-      if (sp?.mode === "pud" && pudSeen) { const head = BG.headPolys(f.sk, kit)[0].map(sxy), segPts = Array.from({ length: 21 }, (_, i) => [hd[0][0] + ((hd[1][0] - hd[0][0]) * i) / 20, hd[0][1] + ((hd[1][1] - hd[0][1]) * i) / 20]);
+      // (v6d B: held up in his hand too, in 3 and in 4 before it goes down to the cream and after the bite, its handle and bowl)
+      if (sp && pudSeen && (sp.mode === "pud" || T < SPOON.dip - 0.2 || T >= SPOON.rest - 1e-6)) { const head = BG.headPolys(f.sk, kit)[0].map(sxy), segPts = [...Array.from({ length: 21 }, (_, i) => [hd[0][0] + ((hd[1][0] - hd[0][0]) * i) / 20, hd[0][1] + ((hd[1][1] - hd[0][1]) * i) / 20]), ...bowl];
         const dH = Math.min(1e9, ...segPts.filter((q) => !inPud(q)).map((q) => (BG.inPoly(q, head) ? -1 : Math.min(...head.map((h0, i) => dSeg(q, h0, head[(i + 1) % head.length])))))) - hd[2];
-        (globalThis.SPOONH ??= {})[S.id] = Math.min(globalThis.SPOONH[S.id] ?? 1e9, dH); if (dH < 10) faults.push(`3c ${S.id} frame ${fr} crew: the spoon in his pudding ${dH.toFixed(0)} px from his head (10 px at least)`); }
+        (globalThis.SPOONH ??= {})[S.id] = Math.min(globalThis.SPOONH[S.id] ?? 1e9, dH); if (dH < 10) faults.push(`3c ${S.id} frame ${fr} crew: the spoon ${sp.mode === "pud" ? "in his pudding" : "held up"} ${dH.toFixed(0)} px from his head (10 px at least)`); }
+      // (v6d B', the reviewer's conditions: 13c in 4 his whole head with its bandana 20 px or more inside the picture; 3d no part of the spoon over
+      //  his cheek or face above his mouth (over the mouth line, toward his eyes, inside his head's outline), the bite's corner aside (4 px);
+      //  22b within a shot the spoon never changes place (hand or pudding); 23 the spoon whole in the picture (in 7, as he points with it, at most
+      //  its bowl out) and never over another figure's head)
+      if (S.id === "4") { const hp = BG.headPolys(f.sk, kit).flat().map(sxy), e = Math.min(...hp.map((q) => Math.min(q[0], FM.W - q[0], q[1], FM.H - q[1]))) - 4.5 * sc * pl.z;
+        globalThis.HEAD13c = Math.min(globalThis.HEAD13c ?? 1e9, e); if (e < 20) faults.push(`13c 4 frame ${fr} crew: his head with its bandana ${e.toFixed(0)} px from the picture's edge (20 px inside at least)`); }
+      if (sp) { const kS = `${S.id}`; SPMODE[kS] ??= sp.mode; if (SPMODE[kS] !== sp.mode) faults.push(`22b ${S.id} frame ${fr} crew: the spoon changes place in the shot (${SPMODE[kS]} to ${sp.mode})`); SPMODE[kS] = sp.mode;
+        const hPts = Array.from({ length: 21 }, (_, i) => [hd[0][0] + ((hd[1][0] - hd[0][0]) * i) / 20, hd[0][1] + ((hd[1][1] - hd[0][1]) * i) / 20]), allP = [...hPts, ...bowl];
+        const outH = hPts.filter((q) => q[0] < 0 || q[0] > FM.W || q[1] < 0 || q[1] > FM.H).length, outB = bowl.filter((q) => q[0] < 0 || q[0] > FM.W || q[1] < 0 || q[1] > FM.H).length;
+        if (outH + outB < hPts.length + bowl.length && (outH || (outB && S.id !== "7"))) faults.push(`23 ${S.id} frame ${fr} crew: the spoon cut by the picture's edge (${outH} handle points, ${outB} bowl points out)`);
+        for (const o of placed) { if (o.w.name === "crew") continue; const of = o.pl.f, osc = scaleOf(of.who), oh = BG.headPolys(of.sk, kitOf(of.o.look)).map((P) => P.map((q) => toScreen(o.pl, [of.x + q[0] * osc, footY(of.who) + q[1] * osc])));
+          const n = allP.filter((q) => oh.some((P) => BG.inPoly(q, P))).length; if (n) faults.push(`23 ${S.id} frame ${fr} crew: the spoon over the ${o.w.name}'s head (${n} points)`); }
+        if (sp.mode === "hand") { const sn = Math.sin((f.sk.faceYaw * Math.PI) / 180), as = Math.abs(sn), view = as < 0.45 ? "front" : as < 0.85 ? "q" : "side", km = M.kitMouthOf(view, f.o.face?.mouth ?? 0.24), cs2 = [[km.x - km.w, km.y], [km.x + km.w, km.y]].map((q) => sxy(BG.headPt(f.sk, q)));
+          const eC = eyes.flat().reduce((m, q, i, A) => [m[0] + q[0] / A.length, m[1] + q[1] / A.length], [0, 0]), dx = cs2[1][0] - cs2[0][0], dy = cs2[1][1] - cs2[0][1], L = Math.hypot(dx, dy) || 1; let nx = -dy / L, ny = dx / L;
+          if ((eC[0] - cs2[0][0]) * nx + (eC[1] - cs2[0][1]) * ny < 0) { nx = -nx; ny = -ny; } const headO = BG.headPolys(f.sk, kit)[0].map(sxy);
+          const up3 = allP.filter((q) => BG.inPoly(q, headO) && (q[0] - cs2[0][0]) * nx + (q[1] - cs2[0][1]) * ny > 4).length; globalThis.CHEEK3d = Math.max(globalThis.CHEEK3d ?? 0, up3);
+          if (up3) faults.push(`3d ${S.id} frame ${fr} crew: the spoon over his face above his mouth (${up3} points)`); }
+        const tot = sp.mode === "hand" ? (SPOON.butt + SPOON.Lr + SPOON.bl) : Math.hypot(sp.b[0] - sp.a[0], sp.b[1] - sp.a[1]) / sp.r; (globalThis.SPLEN ??= {})[S.id] = tot; }
       if (bowl.length) { const onEye = eyes.flatMap((P) => [...P, ...BG.fillPts([P], 2)]).filter((q) => BG.inPoly(q, bowl)).length; if (onEye) faults.push(`3c ${S.id} frame ${fr} crew: the spoon's bowl over his eye (${onEye} points)`); }
       if (sp?.mode === "hand" && T >= SPOON.contact - 1e-6 && T <= SPOON.back + 1e-6) { const sn = Math.sin((f.sk.faceYaw * Math.PI) / 180), as = Math.abs(sn), view = as < 0.45 ? "front" : as < 0.85 ? "q" : "side", km = M.kitMouthOf(view, f.o.face?.mouth ?? 0.24);
         const corners = [[km.x - km.w, km.y], [km.x + km.w, km.y]].map((q) => sxy(BG.headPt(f.sk, q))), nc = noseS.reduce((m, q) => [m[0] + q[0] / noseS.length, m[1] + q[1] / noseS.length], [0, 0]);
@@ -541,7 +562,8 @@ console.log("5 (note) hands at the edge of a figure seen only as a sliver: " + (
 console.log("18 (note) blink frames over a cut, not judged: " + (Object.entries(NOTE18).map(([k, v]) => `${k} ${v.join(",")}`).join("; ") || "none"));
 console.log("13 (note) heads cut by the edge, the most of each in the picture: " + (Object.entries(NOTES13).map(([k, v]) => `${k} ${(v * 100).toFixed(0)}%`).join(", ") || "none"));
 if (globalThis.HAND21 !== undefined) console.log(`21 (note) a drawn hand moved at most ${globalThis.HAND21.toFixed(0)} px more than its wrist in a frame`);
-if (globalThis.SPOONH) console.log(`3c (note) the spoon in his pudding, the least px from his head by shot: ${Object.entries(globalThis.SPOONH).map(([k, v]) => k + " " + v.toFixed(0)).join(", ")}`);
+if (globalThis.SPLEN) console.log(`22 (note) the spoon's length by shot (pudding radii; in the hook the handle seen out of the cream): ${Object.entries(globalThis.SPLEN).map(([k, v]) => k + " " + v.toFixed(2)).join(", ")}; his head in 4 at least ${(globalThis.HEAD13c ?? 0).toFixed(0)} px inside; spoon points over his face above the mouth at most ${globalThis.CHEEK3d ?? 0}`);
+if (globalThis.SPOONH) console.log(`3c (note) the spoon held up or in his pudding, the least px from his head by shot: ${Object.entries(globalThis.SPOONH).map(([k, v]) => k + " " + v.toFixed(0)).join(", ")}`);
 if (globalThis.SPOON3) console.log(`3 (note) the hook's spoon handle: at least ${globalThis.SPOON3.chin.toFixed(0)} px from his head, ${globalThis.SPOON3.edge.toFixed(0)} px inside the picture, at most ${globalThis.SPOON3.shirt} points over his shirt`);
 if (globalThis.BITE3 !== undefined) console.log(`3c (note) at the bite the spoon's bowl at most ${globalThis.BITE3.toFixed(0)} px from his mouth's front corner; mouth points under it past the corner: ${globalThis.BITE3o ?? 0}`);
 if (globalThis.CHIN3 !== undefined) console.log(`3 (note) the hook's pudding at least ${globalThis.CHIN3.toFixed(0)} px from the sailor's head`);

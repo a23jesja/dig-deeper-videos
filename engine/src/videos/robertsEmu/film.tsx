@@ -136,7 +136,7 @@ const b9: Shot = { id: "b3", blur: 3, focus: 1.8, drift: [1.04, 1.1, 0, -20], ca
 
 // ---- b10 (22.0-23.3): Roberts turns an hourglass over; behind him two pirates glance at each other ----
 const b10: Shot = { id: "b3", blur: 3, focus: 1.8, drift: [1.1, 1.04, 0, 0], capY: 1600, tint: "rgba(8,14,40,0.12)", moon: true,
-  actors: [{ o: ROBERTS, h: 1.86, at: still(-0.8, -1.5), sharp: true, f: () => stand({ facing: 1, expr: "stern", look: 0.6, reachR: [430, 560] }), hold: (p, h, t) => hourglass(p, h[1], 180 * ease(t / 0.4), clamp((t - 0.4) / 1.0)) },
+  actors: [{ o: ROBERTS, h: 1.86, at: still(-0.8, -1.5), sharp: true, f: () => stand({ facing: 1, expr: "stern", look: 0.6, reachR: [410, 730] }), hold: (p, h, t) => hourglass(p, h[1], 180 * ease(t / 0.4), clamp((t - 0.4) / 1.0)) },
     { o: crew(92), h: 1.7, at: still(-1.7, -1.9), f: (t) => stand({ mode: "sit", facing: t < 0.6 ? 1 : -1, expr: "grin", look: t < 0.6 ? 0.8 : -0.8 }) },
     { o: crew(93), h: 1.66, at: still(-2.05, -1.95), f: (t) => stand({ mode: "sit", facing: t < 0.7 ? -1 : 1, expr: "grin", look: t < 0.7 ? -0.8 : 0.8 }) }] };
 

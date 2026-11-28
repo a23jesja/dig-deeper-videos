@@ -11,6 +11,7 @@ A = os.path.join(HERE, "..", "cabin", "assets"); T = os.path.join(HERE, "..", "c
 argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
 LOOK = argv[argv.index("--look") + 1] if "--look" in argv else "night"; DRAFT = "--draft" in argv
 W, H = 1080, 1920
+MOON = Vector((150, 18, 52))      # (the moon's disc; the moonlight comes from it, so its path on the sea lies under it, the reviewer 28 Nov)
 
 def hexc(h, a=1.0): h = h.lstrip("#"); c = [int(h[i:i + 2], 16) / 255 for i in (0, 2, 4)]; return [((x + 0.055) / 1.055) ** 2.4 if x > 0.04045 else x / 12.92 for x in c] + [a]
 
@@ -35,6 +36,12 @@ if LOOK == "night":      # (stars: small bright points where a Voronoi cell's di
     up = wn.new("ShaderNodeMath"); up.operation = "GREATER_THAN"; up.inputs[1].default_value = 0.08; wl.new(sep.outputs["Z"], up.inputs[0])
     m1 = wn.new("ShaderNodeMath"); m1.operation = "MULTIPLY"; wl.new(st.outputs[0], m1.inputs[0]); wl.new(up.outputs[0], m1.inputs[1])
     mx = wn.new("ShaderNodeMix"); mx.data_type = "RGBA"; mx.blend_type = "ADD"; wl.new(m1.outputs[0], mx.inputs["Factor"]); wl.new(ramp.outputs["Color"], mx.inputs[6]); mx.inputs[7].default_value = (0.9, 0.92, 1.0, 1); sky = mx.outputs[2]
+    # (a soft glow round the moon in the sky: the direction's closeness to the moon's, raised to a power)
+    md = MOON.normalized(); dv = wn.new("ShaderNodeVectorMath"); dv.operation = "DOT_PRODUCT"; wl.new(tc.outputs["Generated"], dv.inputs[0]); dv.inputs[1].default_value = (md.x, md.y, md.z)
+    cl = wn.new("ShaderNodeMath"); cl.operation = "MAXIMUM"; cl.inputs[1].default_value = 0.0; wl.new(dv.outputs["Value"], cl.inputs[0])
+    pw = wn.new("ShaderNodeMath"); pw.operation = "POWER"; pw.inputs[1].default_value = 900.0; wl.new(cl.outputs[0], pw.inputs[0])
+    gm = wn.new("ShaderNodeMath"); gm.operation = "MULTIPLY"; gm.inputs[1].default_value = 0.55; wl.new(pw.outputs[0], gm.inputs[0])
+    m2 = wn.new("ShaderNodeMix"); m2.data_type = "RGBA"; m2.blend_type = "ADD"; wl.new(gm.outputs[0], m2.inputs["Factor"]); wl.new(sky, m2.inputs[6]); m2.inputs[7].default_value = (0.75, 0.8, 0.95, 1); sky = m2.outputs[2]
 wl.new(sky, bg.inputs[0]); bg.inputs[1].default_value = 1.0
 
 def pbr(name, scale=1.0, tint=None):
@@ -107,6 +114,8 @@ for k, (x, y) in enumerate(((-4.2, Y0), (-1.8, Y0), (1.2, Y0), (3.6, Y0), (-3.0,
                         ms.material = gm
     if LOOK == "night":
         L = bpy.data.lights.new(f"lantern{k}", "POINT"); L.energy = 260; L.color = (1.0, 0.58, 0.26); L.shadow_soft_size = 0.06; o = bpy.data.objects.new(f"lantern{k}", L); sc.collection.objects.link(o); o.location = (x, y + (0.02 if y < 0 else -0.02), 1.0); LAMPS.append(o)
+        sp = bpy.data.lights.new(f"pool{k}", "SPOT"); sp.energy = 320; sp.color = (1.0, 0.6, 0.3); sp.spot_size = math.radians(120); sp.spot_blend = 0.9; sp.shadow_soft_size = 0.1
+        so = bpy.data.objects.new(f"pool{k}", sp); sc.collection.objects.link(so); so.location = (x, y + (0.25 if y < 0 else -0.25), 0.95); so.rotation_euler = (0, 0, 0)      # (a warm pool of light on the deck and the rail under each lantern)
         bpy.ops.mesh.primitive_uv_sphere_add(radius=0.045, location=(x, y, 0.98)); gl = bpy.context.active_object; gl.name = f"flame{k}"; gl.data.materials.append(flat(f"flame{k}", "#ffb060", emit="#ffa040", estr=40.0)); gl.visible_shadow = False
 # the sea all round and the far horizon
 sea = bpy.data.materials.new("sea"); sea.use_nodes = True; sn = sea.node_tree.nodes; sb = sn["Principled BSDF"]; sb.inputs["Base Color"].default_value = hexc("#0a1a2c" if LOOK == "night" else "#5a6a78"); sb.inputs["Roughness"].default_value = 0.12
@@ -115,8 +124,8 @@ bpy.ops.mesh.primitive_plane_add(size=600, location=(0, 0, -1.4)); bpy.context.a
 # the light
 if LOOK == "night":
     moon = bpy.data.lights.new("moon", "SUN"); moon.color = hexc("#9fb8ff")[:3]; moon.energy = 0.9; moon.angle = math.radians(1.0)
-    mo = bpy.data.objects.new("moon", moon); sc.collection.objects.link(mo); mo.rotation_euler = Vector((-0.95, -0.25, -0.45)).to_track_quat("-Z", "Y").to_euler()
-    bpy.ops.mesh.primitive_uv_sphere_add(radius=4, location=(150, 18, 52)); m = bpy.context.active_object; m.name = "moon disc"; m.data.materials.append(flat("moonlight", "#f4eed8", emit="#f4eed8", estr=2.5)); m.visible_shadow = False
+    mo = bpy.data.objects.new("moon", moon); sc.collection.objects.link(mo); mo.rotation_euler = (-MOON).to_track_quat("-Z", "Y").to_euler()
+    bpy.ops.mesh.primitive_uv_sphere_add(radius=4, location=tuple(MOON)); m = bpy.context.active_object; m.name = "moon disc"; m.data.materials.append(flat("moonlight", "#f4eed8", emit="#f4eed8", estr=2.5)); m.visible_shadow = False
 else:
     mist = bpy.data.materials.new("mist"); mist.use_nodes = True; mn = mist.node_tree.nodes; mn.remove(mn["Principled BSDF"]); vs = mn.new("ShaderNodeVolumePrincipled"); vs.inputs["Density"].default_value = 0.012; vs.inputs["Color"].default_value = hexc("#d6cfc8")
     mist.node_tree.links.new(vs.outputs[0], mn["Material Output"].inputs["Volume"]); bpy.ops.mesh.primitive_cube_add(size=1, location=(60, 0, 3)); mb = bpy.context.active_object; mb.name = "mist"; mb.scale = (100, 140, 10); mb.data.materials.append(mist)

@@ -98,11 +98,16 @@ export type Extra = { back?: (h: G, pl: Placed, fr: number) => void; front?: (h:
  *  rim on the lens's far side: night, the lanterns' warm edge; dawn, a pale one (the cabin had the sunset's warm rim, dinner3d) */
 const GRADE: Record<string, number[]> = { night: [0.62, 0.66, 0.82, 4, 6, 14], dawn: [0.78, 0.76, 0.76, 6, 6, 8] };
 const RIMC: Record<string, number[]> = { night: [1.22, 1.08, 0.9, 58, 26, 4], dawn: [1.08, 1.08, 1.1, 30, 28, 30] };
-/** the figures dimmed as a shot's lanterns go out (shots.json lamps: each one's light off its fill, faded over the plate's own 4 frames),
- *  so a figure never stays lit on a deck gone dark; also the lanterns already out at its start (dark) */
-export const dimAt = (id: string, fr: number) => { const sh = SHOTS.find((q) => q.id === id) as unknown as { lamps?: { at: number; out: number[] }[]; dark?: number[] };
-  const T = fr / FM.FPS; let n = (sh.dark ?? []).length * 0.5; for (const l of sh.lamps ?? []) n += l.out.length * Math.max(0, Math.min(1, ((T - l.at) * FM.FPS) / 4));
-  return Math.max(0.55, 1 - 0.07 * n); };
+/** how much of a shot's lantern light is still lit (1 all lit, 0 all out): each lantern's weight (1, or shots.json lampW, e.g. Roberts' barrel
+ *  lantern 3 in shot 1, the light he and the rum pirate stand in), out from the shot's start (dark) or fading over the plate's own 4 frames (lamps) */
+export const litAt = (id: string, fr: number) => { const sh = SHOTS.find((q) => q.id === id) as unknown as { lamps?: { at: number; out: number[] }[]; dark?: number[]; lampW?: Record<string, number> };
+  const W = (k: number) => sh.lampW?.[String(k)] ?? 1, all = [0, 1, 2, 3, 4, 5, 6, 7].reduce((a, k) => a + W(k), 0), T = fr / FM.FPS;
+  let out = (sh.dark ?? []).reduce((a, k) => a + W(k), 0); for (const l of sh.lamps ?? []) out += l.out.reduce((a, k) => a + W(k), 0) * Math.max(0, Math.min(1, ((T - l.at) * FM.FPS) / 4));
+  return Math.max(0, 1 - out / all); };
+/** the figures dimmed as the lanterns go out (the independent review: in shot 1 the faces fell 6 %, in shot 2 a face at 121 on a deck at 10):
+ *  the grade's channels times 0.42 + 0.58 x the light still lit; at night the warm lantern rim gives way to the moon's cool one as it goes */
+export const dimAt = (id: string, fr: number) => 0.55 + 0.45 * litAt(id, fr);      // (0.42 at the bottom made the figures muddy grey on a dark deck)
+const MOON_RIM = [1.0, 1.04, 1.16, 4, 10, 26];
 export const paintFigures = (g: G, id: string, fr: number, whos: Who[], extras: Record<string, Extra> = {}) => {
   const order = whos.map((w) => ({ w, pl: placeOf(id, fr, w) })).sort((p, q) => q.pl.depth - p.pl.depth);
   for (const { w, pl } of order) {
@@ -125,7 +130,7 @@ export const paintFigures = (g: G, id: string, fr: number, whos: Who[], extras: 
     const img = h.getImageData(0, 0, FM.W, FM.H), Dd = img.data, Wd = FM.W, N = Wd * FM.H, rim = Math.max(5, Math.round(16 * pl.z)), dx = w.rimSide;
     const s0 = toScreen(pl, jointPx(f, "skull")), c0 = toScreen(pl, jointPx(f, "crown")), hr = Math.hypot(c0[0] - s0[0], c0[1] - s0[1]) / 2, hc: P2 = [(s0[0] + c0[0]) / 2, (s0[1] + c0[1]) / 2 + hr * 0.2];
     const ru = w.redAt === undefined ? 0 : smooth((fr / FM.FPS + w.off - w.redAt) / 0.5) * (w.redMax ?? 1);
-    const dm = dimAt(id, fr), GR0 = GRADE[(SHOTS.find((S) => S.id === id)?.light) ?? "night"], GR = [GR0[0] * dm, GR0[1] * dm, GR0[2] * dm, GR0[3], GR0[4], GR0[5]], RIM = RIMC[(SHOTS.find((S) => S.id === id)?.light) ?? "night"];
+    const dm = dimAt(id, fr), lit = litAt(id, fr), lightK = (SHOTS.find((S) => S.id === id)?.light) ?? "night", GR0 = GRADE[lightK], GR = [GR0[0] * dm, GR0[1] * dm, GR0[2] * dm, GR0[3], GR0[4], GR0[5]], RIM0 = RIMC[lightK], RIM = lightK === "night" ? RIM0.map((v, i) => MOON_RIM[i] + (v - MOON_RIM[i]) * lit) : RIM0;
     const A = (i: number) => Dd[i * 4 + 3] / 255, wf = (k: number) => Math.min(1, Math.max(0, (Math.abs(Dd[k] - 36) + Math.abs(Dd[k + 1] - 23) + Math.abs(Dd[k + 2] - 38) - 30) / 40)) * (Dd[k + 3] / 255);
     const out = new Float32Array(N * 3); let kx0 = Wd, kx1 = 0; if (w.key) for (let y = 0; y < FM.H; y += 8) for (let x = 0; x < Wd; x += 4) if (Dd[(y * Wd + x) * 4 + 3] > 128) { kx0 = Math.min(kx0, x); kx1 = Math.max(kx1, x); }
     for (let y = 0; y < FM.H; y++) for (let x = 0; x < Wd; x++) { const i = y * Wd + x, k = i * 4; if (Dd[k + 3] < 2) continue; const f0 = wf(k); if (f0 <= 0) { out[i * 3] = Dd[k]; out[i * 3 + 1] = Dd[k + 1]; out[i * 3 + 2] = Dd[k + 2]; continue; }

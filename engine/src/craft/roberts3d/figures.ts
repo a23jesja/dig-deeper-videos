@@ -9,7 +9,9 @@ import { ease as ease0 } from "../stage/acting";
 import { figure, FM, scaleOf, footY } from "../clips/clipKit";
 import { Ink } from "../ink";
 import { KIT_DESIGN } from "../wardrobe/kit";
-import { hookMugPose, mugSide, mugAt, mugOpening, holdOutPose, POUR_ARM, reachPose, gripOf, teaPose } from "./props";
+import { hookMugPose, mugSide, mugAt, mugOpening, holdOutPose, POUR_ARM, reachPose, gripOf, teaPose, INK_PAIR, edgePts, gapTo, POUR_BACK } from "./props";
+import { beardOutline } from "../wardrobe/kit";
+import { headOutline } from "./rum";
 import { drawMug, bottle, mugFront, fingers, SKIN, PEWTER, PEWTER_IN, drawTea, drawPuff } from "./propsDraw";
 import { RUM, mouthMid, type P2 } from "./rum";
 import { ROBERTS_LOOK, RUM_LOOK, YOUNG_LOOK, GUNNER_LOOK } from "../wardrobe/pirates";
@@ -78,7 +80,7 @@ const ACTS: Record<string, Record<string, Act>> = {
       ease(m, s.t0 + BLOW1.a, { head: [head[0], 8, -6] as [number, number, number] }, 0.25, F({ mouth: 0.32, gaze: [0.7, 0.35], wide: 0.1 }));
       ease(m, s.t0 + BLOW1.b, { head }, 0.35, F({ mouth: 0, gaze: [0.4, 0.1], smile: 0.3 }));
       return { hands: { [r.side]: [[0, "grip"]] } }; },
-    rum: (m, yaw, s) => { const p = hookMugPose(yaw, gapUnits("1", "rum", yaw)), sd = p.armR !== (POSES_STAND_ARM.R as unknown) && JSON.stringify(p.armR) !== JSON.stringify(STAND.armR) ? "R" : "L";
+    rum: (m, yaw, s) => { const p0 = hookMugPose(yaw, gapUnits("1", "rum", yaw), -8, 0), sd0 = JSON.stringify(p0.armR) !== JSON.stringify(STAND.armR) ? "R" : "L", p = refineGap("1", "rum", yaw, p0, sd0, s.t0 + 0.15, BLOW1.out - 0.15, [43, 55, 71]), sd =      /* (the forearm level: with the ink counted the mug cannot reach his chin 20 px clear; it is frozen at his chest on its way up) */ p.armR !== (POSES_STAND_ARM.R as unknown) && JSON.stringify(p.armR) !== JSON.stringify(STAND.armR) ? "R" : "L";
     ease(m, s.t0 + 0.15, { head: p.head, [`arm${sd}`]: (p as unknown as Record<string, unknown>)[`arm${sd}`] } as Partial<Pose>, BLOW1.out - 0.15);      // (it comes to rest as the lantern dies: frozen in the dark)
     return { hands: { [sd]: [[0, "grip"]] } }; } },
   // shot 2: the young pirate hauls the bell rope twice (the rope drawn by us, shots.json hide; its pulls ROPE2)
@@ -94,9 +96,12 @@ const ACTS: Record<string, Record<string, Act>> = {
     ease(m, s.t0 + 1.6, { head: p.head }, 0.4,      /* (the pose solved for this nod (14): the beard comes nearer the mug as he leans in) */ F({ gaze: [0.85, 0.6], lid: 0.45, squeeze: 0.25, brow: -0.6 }));      // (he leans in closer, the squint harder)
     return { hands: { [sd]: [[0, "grip"]] } }; } },
   // shot 8, the pour: the young pirate holds his mug out at his waist (POUR_ARM); the rum pirate's arm is set per the pair's placing (POUR8 below)
-  "8": { young: (m, yaw, s) => { const p = holdOutPose(yaw, POUR_ARM), sd = JSON.stringify(p.armR) !== JSON.stringify(STAND.armR) ? "R" : "L";
-    ease(m, s.t0, { [`arm${sd}`]: (p as unknown as Record<string, unknown>)[`arm${sd}`] } as Partial<Pose>, 0.01); return { hands: { [sd]: [[0, "grip"]] } }; },
-    rum: (m, yaw, s) => { const r = POUR8(); ease(m, s.t0, { head: r.pose.head, [`arm${r.side}`]: (r.pose as unknown as Record<string, unknown>)[`arm${r.side}`] } as Partial<Pose>, 0.01); void yaw; return { hands: { [r.side]: [[0, "grip"]] } }; } } };
+  // (the reviewer, 28 Nov: the young pirate never has a drink; the rum pirate holds out his mug, the gunner pours (the rum pirate's own bottle
+  //  came within 16 px of his beard), the young pirate watches)
+  "8": { rum: (m, yaw, s, F) => { const p = holdOutPose(yaw, POUR8_ARM), sd = JSON.stringify(p.armR) !== JSON.stringify(STAND.armR) ? "R" : "L";
+    ease(m, s.t0, { head: [headTo(yaw)[0], 12, 0] as [number, number, number], [`arm${sd}`]: (p as unknown as Record<string, unknown>)[`arm${sd}`] } as Partial<Pose>, 0.01, F({ gaze: [0.4, 0.8], wide: 0.25, smile: 0.7, mouth: 0.35 })); return { hands: { [sd]: [[0, "grip"]] } }; },
+    young: (m, yaw, s, F) => { ease(m, s.t0, { head: [headTo(yaw)[0], 10, -4] as [number, number, number] }, 0.01, F({ gaze: [0.6, 0.5], wide: 0.15, mouth: 0.15 })); return {}; },
+    gunner: (m, yaw, s) => { const r = POUR8(); ease(m, s.t0, { head: r.pose.head, [`arm${r.side}`]: (r.pose as unknown as Record<string, unknown>)[`arm${r.side}`] } as Partial<Pose>, 0.01); void yaw; return { hands: { [r.side]: [[0, "grip"]] } }; } } };
 const groan: (m: ReturnType<typeof figure>, yaw: number, s: { t0: number }, F: (o: Record<string, unknown>) => Record<string, unknown>, lag: number) => void = (m, yaw, s, F, lag) => {
   const lamps = ((SH["3"] as unknown as { lamps?: { at: number }[] }).lamps ?? []).map((l) => l.at), h = headTo(yaw);
   lamps.forEach((at, i) => { ease(m, s.t0 + at + lag, { head: [h[0], 6 + 4 * i, 0] as [number, number, number] }, 0.3, F({ sad: 0.4 + 0.2 * i, mouth: 0.45, gaze: [0.2, -0.2], brow: -0.3 })); }); };
@@ -127,9 +132,21 @@ let R2: { side: "L" | "R"; up: unknown; down: unknown } | null = null;
 const ROPE2 = () => { if (R2) return R2; const id = "2", yaw = YAW(id, "young")!, pl = placeOf(id, 0, standWho(id, "young", yaw)), at = (z: number) => { const q = project(id, 0, [ROPE.x, ROPE.y, z]); return fromScreen(pl, [q[0], q[1]]); };
   const up = reachPose(yaw, at(ROPE.hold), headTo(yaw), undefined, { clearFace: 20 }), down = reachPose(yaw, at(ROPE.pull), headTo(yaw), up.side, { clearFace: 20 });
   R2 = { side: up.side, up: (up.pose as unknown as Record<string, unknown>)[`arm${up.side}`], down: (down.pose as unknown as Record<string, unknown>)[`arm${up.side}`] }; return R2; };
+/** the mug's arm checked on the film's own figure (its sway and nod are the motion's own, deterministic in time): around the solved arm, the
+ *  highest mug whose seen gap to the beard and the head stays 22 px or more over the given frames (shot-local); the solve's own margin was a guess */
+const refineGap = (id: string, nm: string, yaw: number, p: Pose, sd: "L" | "R", t0: number, dur: number, frames: number[]): Pose => {
+  const key = `arm${sd}` as "armL" | "armR", a0 = p[key] as unknown as [[number, number], [number, number]], s = SH[id];
+  const pl0 = placeOf(id, 0, standWho(id, nm, yaw)), need = 22 / (pl0.z * scaleOf(pl0.f.who)) + INK_PAIR;
+  let best: { arm: unknown; y: number } | null = null, fallback: { arm: unknown; g: number } | null = null;
+  for (let d1 = -15; d1 <= 15; d1 += 5) for (let dO = -20; dO <= 40; dO += 10) for (let d2 = -15; d2 <= 15; d2 += 5) {
+    const arm = [[a0[0][0] + d1, a0[0][1] + dO], [a0[1][0] + d2, a0[1][1]]], w = standWho(id, nm, yaw), m = (w.cast as unknown as { m: ReturnType<typeof figure> }).m;
+    ease(m, t0, { head: p.head, [key]: arm } as Partial<Pose>, dur);
+    let g = 1e9, y = 0; for (const fr of frames) { const pl = placeOf(id, fr, w), sk = pl.f.sk, mm = mugAt(sk, sd), e = edgePts(mm.body); g = Math.min(g, gapTo(e, beardOutline(sk)), gapTo(e, headOutline(sk))); y = mm.c[1]; }
+    if (g >= need) { if (!best || y < best.y) best = { arm, y }; } else if (!fallback || g > fallback.g) fallback = { arm, g }; }
+  void s; return { ...p, [key]: (best ?? fallback)!.arm } as Pose; };
 /** the 20 px the reviewer wants between a vessel and the face, in a figure's skeleton units at his size in this shot (+2 px): measured on the
  *  sheet at its own scale, 24 px became 19 in shot 1, where the rum pirate stands smaller (the contact review of the Sunday stills) */
-const gapUnits = (id: string, nm: string, yaw: number) => { const pl = placeOf(id, 0, standWho(id, nm, yaw)), ppu = pl.z * scaleOf(pl.f.who); return Math.min(25, Math.max(15, 22 / ppu + 2)); };      // (+2 px for the figure's own small sway; the solve itself holds the gap across 3 degrees of head turn either way (props.ts); 25 the most the arm reaches with the forearm up)
+const gapUnits = (id: string, nm: string, yaw: number) => { const pl = placeOf(id, 0, standWho(id, nm, yaw)), ppu = pl.z * scaleOf(pl.f.who); return 22 / ppu + INK_PAIR + 6; };      /* (+6: in the film the standing figure still came 6 units nearer than the solve, the sway and nod over the shot) */      // (22 px seen: 20 and 2 for the figure's own small sway, plus both outlines' ink (props.ts INK_PAIR): the independent review saw 0-5 px where the bare outlines were 16-21 apart; the solve holds the gap across 3 degrees of head turn either way)
 /** a figure's own card space on the layer paintFigures hands its extras (the transform it draws the figure with) */
 const inCard = (h: CanvasRenderingContext2D, pl: Placed) => { const sc = scaleOf(pl.f.who); h.translate(pl.f.x, footY(pl.f.who)); h.scale(sc, sc); return new Ink(h, KIT_DESIGN.ol); };
 const toCardOf = (pl: Placed, q: P2): P2 => { const sc = scaleOf(pl.f.who); return [pl.z * (pl.f.x + sc * q[0] - pl.cx) + FM.W / 2, pl.z * (footY(pl.f.who) + sc * q[1] - pl.cy) + FM.H / 2]; };      // (skeleton units to the picture)
@@ -159,23 +176,28 @@ EXTRAS["1"].rum = { front: (h, pl, fr) => { const k = inCard(h as unknown as Can
  *  figures' placings (the camera is still); the bottle drawn on the young pirate's layer (the rum pirate stands 4 cm farther, drawn first),
  *  then the mug's front wall over its neck, then both men's fingers */
 let P8: { pose: Pose; side: "L" | "R"; residual: number } | null = null;
-const POUR8 = () => { if (P8) return P8; const id = "8", yy = YAW(id, "young")!, yr = YAW(id, "rum")!;
-  const young = { name: "young", cast: { name: "young", m: (() => { const m = figure("sir", 0, yy); m.stand(40); const p = holdOutPose(yy, POUR_ARM); ease(m, SH[id].t0, { head: headTo(yy), armR: p.armR, armL: p.armL } as Partial<Pose>, 0.01); return m; })(), who: "sir", look: YOUNG_LOOK, seed: 31, armWipe: false, hands: { L: [[0, "grip"]], R: [[0, "grip"]] } }, at: POS("young", id), walk: viewOf(id).right, h: HEIGHTS.young, rimSide: -1, off: SH[id].t0 } as unknown as Who;
-  const rumS = { name: "rum", cast: { name: "rum", m: (() => { const m = figure("sir", 0, yr); m.stand(40); ease(m, -1, { head: headTo(yr) }, 0.01); return m; })(), who: "sir", look: RUM_LOOK, seed: 31, armWipe: false, hands: { L: [[0, "relaxed"]], R: [[0, "relaxed"]] } }, at: POS("rum", id), walk: viewOf(id).right, h: HEIGHTS.rum, rimSide: -1, off: SH[id].t0 } as unknown as Who;
+/** the gunner's hold for the pour: the mug low at his side (he is taller than the rum pirate: held at his waist the bottle's grip came to the
+ *  pourer's beard) */
+const POUR8_ARM: [[number, number], [number, number]] = [[0, 5], [0, 0]];
+/** shot 8's tilt from straight down: 54, the bottom 36 degrees over the neck (at least 35); at 52 the grip came 17 px (seen) from the pourer's beard */
+const POUR8_TILT = 54;
+const POUR8 = () => { if (P8) return P8; const id = "8", yy = YAW(id, "rum")!, yr = YAW(id, "gunner")!;      // (yy the holder's, the rum pirate; yr the pourer's, the gunner)
+  const young = { name: "rum", cast: { name: "rum", m: (() => { const m = figure("sir", 0, yy); m.stand(40); const p = holdOutPose(yy, POUR8_ARM); ease(m, SH[id].t0, { head: [headTo(yy)[0], 12, 0] as [number, number, number], armR: p.armR, armL: p.armL } as Partial<Pose>, 0.01); return m; })(), who: "sir", look: RUM_LOOK, seed: 31, armWipe: false, hands: { L: [[0, "grip"]], R: [[0, "grip"]] } }, at: POS("rum", id), walk: viewOf(id).right, h: HEIGHTS.rum, rimSide: -1, off: SH[id].t0 } as unknown as Who;
+  const rumS = { name: "gunner", cast: { name: "gunner", m: (() => { const m = figure("sir", 0, yr); m.stand(40); ease(m, -1, { head: headTo(yr) }, 0.01); return m; })(), who: "sir", look: GUNNER_LOOK, seed: 31, armWipe: false, hands: { L: [[0, "relaxed"]], R: [[0, "relaxed"]] } }, at: POS("gunner", id), walk: viewOf(id).right, h: HEIGHTS.gunner, rimSide: -1, off: SH[id].t0 } as unknown as Who;
   const py = placeOf(id, 0, young), pr = placeOf(id, 0, rumS), b = bottleOf(py.f.sk), gR = fromScreen(pr, toCardOf(py, b.g));
-  const r = reachPose(yr, gR, [Math.sign(yr || 1) * 45 - yr, 10, 0], mugSide(pr.f.sk), { clearFace: 45 });
+  const r = reachPose(yr, gR, [Math.sign(yr || 1) * 45 - yr, 10, 0], mugSide(pr.f.sk), { clearFace: 33 });      // (33: the bottle's base is in his hand, so the grip is held 20 px (seen, ink off: 20 / 1.1 + 15) clear of his beard)
   P8 = { pose: r.pose, side: r.side, residual: r.cost }; return P8; };
 /** the pour's bottle in the young pirate's skeleton units: the neck's tip in his mug's opening (its near side), the bottle up and out toward the
  *  pourer at POUR_TILT (props.ts pourInto) */
 const bottleOf = (sk: Parameters<typeof mugSide>[0]) => { const m = mugAt(sk, mugSide(sk)), op = mugOpening(m), f = Math.sign(Math.sin(sk.faceYaw * Math.PI / 180) || 1);
   return { m, ...pourIntoF([(op.x0 + op.x1) / 2 - f * 14, op.y], op.y, -f) }; };
-EXTRAS["8"].young = { front: (h, pl, fr) => { const g = h as unknown as CanvasRenderingContext2D, k = inCard(g, pl), b = bottleOf(pl.f.sk);
-  const rw = BUILT_WHO["8"]?.rum, pr = rw ? placeOf("8", fr, rw) : null;
+EXTRAS["8"].rum = { front: (h, pl, fr) => { const g = h as unknown as CanvasRenderingContext2D, k = inCard(g, pl), b = bottleOf(pl.f.sk);
+  const rw = BUILT_WHO["8"]?.gunner, pr = rw ? placeOf("8", fr, rw) : null;      // (the pourer)
   // (the bottle's grip end where the rum pirate's hand actually is: from the neck's tip toward his grip, its length kept)
   let p = b; if (pr) { const gR = fromScreen(pl, toCardOf(pr, gripOf(pr.f.sk, P8!.side))), d = [b.n[0] - gR[0], b.n[1] - gR[1]], l = Math.hypot(d[0], d[1]) || 1, u: P2 = [d[0] / l, d[1] / l]; p = { ...b, ...pourAlong(b.n, u) }; }
-  k.group([b.m.body], PEWTER); k.group([b.m.rim], PEWTER_IN); bottle(k, p); mugFront(k, b.m); fingers(k, pl.f.sk, mugSide(pl.f.sk), SKIN(YOUNG_LOOK));
-  if (pr) { g.setTransform(pr.z, 0, 0, pr.z, FM.W / 2 - pr.z * pr.cx, FM.H / 2 - pr.z * pr.cy); fingers(inCard(g, pr), pr.f.sk, P8!.side, SKIN(RUM_LOOK)); } } };
+  k.group([b.m.body], PEWTER); k.group([b.m.rim], PEWTER_IN); bottle(k, p); mugFront(k, b.m); fingers(k, pl.f.sk, mugSide(pl.f.sk), SKIN(RUM_LOOK));
+  if (pr) { g.setTransform(pr.z, 0, 0, pr.z, FM.W / 2 - pr.z * pr.cx, FM.H / 2 - pr.z * pr.cy); fingers(inCard(g, pr), pr.f.sk, P8!.side, SKIN(GUNNER_LOOK)); } } };
 /** the bottle from its neck's tip n back along -u (u: its way down, grip to neck), held near its bottom (props.ts POUR_BACK) */
-const pourAlong = (n: P2, u: P2) => { const back = 0.12, L = RUM.body * (1 - back) + RUM.neck, g: P2 = [n[0] - u[0] * L, n[1] - u[1] * L];
+const pourAlong = (n: P2, u: P2) => { const back = POUR_BACK, L = RUM.body * (1 - back) + RUM.neck, g: P2 = [n[0] - u[0] * L, n[1] - u[1] * L];
   return { u, n, g, b0: [g[0] - u[0] * RUM.body * back, g[1] - u[1] * RUM.body * back] as P2, b1: [g[0] + u[0] * RUM.body * (1 - back), g[1] + u[1] * RUM.body * (1 - back)] as P2 }; };
-const pourIntoF = (into: P2, rimY: number, side: number) => { const a = (52 * Math.PI) / 180, n: P2 = [into[0], rimY + 14]; return pourAlong(n, [side * Math.sin(a), Math.cos(a)]); };
+const pourIntoF = (into: P2, rimY: number, side: number) => { const a = (POUR8_TILT * Math.PI) / 180, n: P2 = [into[0], rimY + 14]; return pourAlong(n, [side * Math.sin(a), Math.cos(a)]); };

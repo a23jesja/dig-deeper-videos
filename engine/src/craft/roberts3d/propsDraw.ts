@@ -20,8 +20,15 @@ export const drawMug = (k: Ink, sk: ReturnType<typeof solve>, side: "L" | "R", s
   const hf = handFlip(sk, side, "grip"); inkHand(k, hf.w, hf.d, sk.P.hand, "grip", skin, hf.flip, false, k.ol, "fingers");
   return { ...m, c: [m.c[0] + dx, m.c[1] + dy] as P2 }; };
 export const SKIN = (L: unknown) => (L as { col: { skin: string } }).col.skin;
-export const bottle = (k: Ink, p: { u: P2; n: P2; b0: P2; b1: P2 }) => { const nn: P2 = [-p.u[1], p.u[0]], sd = (c: P2, w: number, s2: number): P2 => [c[0] + nn[0] * w * s2, c[1] + nn[1] * w * s2];
-  k.group([[sd(p.b0, RUM.bodyW / 2, 1), sd(p.b1, RUM.bodyW / 2, 1), sd(p.b1, RUM.neckW / 2, 1), sd(p.n, RUM.neckW / 2, 1), sd(p.n, RUM.neckW / 2, -1), sd(p.b1, RUM.neckW / 2, -1), sd(p.b1, RUM.bodyW / 2, -1), sd(p.b0, RUM.bodyW / 2, -1)]], GLASS); };
+/** the rum bottle (the independent review, 28 Nov: a box and a stick read as a green knife): a rounded bottom, straight sides, a sloping
+ *  shoulder over the last fifth of the body, the neck with a lip ring at its mouth, and a pale stripe of shine down the glass */
+export const bottle = (k: Ink, p: { u: P2; n: P2; b0: P2; b1: P2 }) => { const u = p.u, nn: P2 = [-u[1], u[0]], at = (c: P2, along: number, w: number): P2 => [c[0] + u[0] * along + nn[0] * w, c[1] + u[1] * along + nn[1] * w];
+  const BW = RUM.bodyW / 2, NW = RUM.neckW / 2, body = Math.hypot(p.b1[0] - p.b0[0], p.b1[1] - p.b0[1]), sh = body * 0.2, r = BW * 0.45;
+  const side = (sg: number): P2[] => [at(p.b0, r, sg * BW), at(p.b0, r * 0.3, sg * BW * 0.9), at(p.b0, 0, sg * (BW - r))];
+  const out: P2[] = [...side(1).reverse(), ...side(-1), at(p.b1, -sh, -BW), at(p.b1, -sh * 0.45, -BW * 0.82), at(p.b1, 0, -NW * 1.15), at(p.n, -7, -NW), at(p.n, -6, -NW * 1.35), at(p.n, 0, -NW * 1.35),
+    at(p.n, 0, NW * 1.35), at(p.n, -6, NW * 1.35), at(p.n, -7, NW), at(p.b1, 0, NW * 1.15), at(p.b1, -sh * 0.45, BW * 0.82), at(p.b1, -sh, BW)];
+  k.group([out], GLASS);
+  const kk = new Ink(k.g, 0); kk.group([[at(p.b0, r + 6, BW * 0.38), at(p.b1, -sh - 4, BW * 0.38), at(p.b1, -sh - 4, BW * 0.12), at(p.b0, r + 6, BW * 0.12)]], "#6f9a76", 0); };      // (the shine, no ink)
 /** the mug's front wall (from the rim's front half down), drawn over a neck poured into it */
 export const mugFront = (k: Ink, m: { c: P2 }) => { const y = m.c[1] - MUG.h / 2;
   k.group([[...Array.from({ length: 11 }, (_, i): P2 => [m.c[0] - MUG.w / 2 + (MUG.w * i) / 10, y + (MUG.rd / 2) * Math.sin((i / 10) * Math.PI)]), [m.c[0] + MUG.w / 2, m.c[1] + MUG.h / 2], [m.c[0] - MUG.w / 2, m.c[1] + MUG.h / 2]]], PEWTER); };

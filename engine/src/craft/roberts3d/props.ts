@@ -15,6 +15,8 @@ const dSeg = (p: P2, a: P2, b: P2) => { const dx = b[0] - a[0], dy = b[1] - a[1]
 export const gapTo = (pts: P2[], P: P2[]) => Math.min(...pts.map((q) => (inPoly(q, P) ? -1 : Math.min(...P.map((a, i) => dSeg(q, a, P[(i + 1) % P.length]))))));
 
 /** a mug (pewter): its body w x h, the rim an ellipse of depth rd, a handle on the side away from the drinker's face */
+/** two drawn outlines' ink between two shapes (skeleton units): each shape's ink lies 0.85 of the kit's line (9) outside its outline (Ink.group strokes 1.7 wide on it); a gap the eye sees is the outlines' gap less this */
+export const INK_PAIR = 2 * 0.85 * 9;
 export const MUG = { w: 62, h: 74, rd: 16 };
 /** the mug in a hand: its middle a little up from the grip (the fingers round its body), upright; outline points for the checks */
 export const mugAt = (sk: Sk, side: "L" | "R", lift = 0): { c: P2; body: P2[]; rim: P2[] } => {
@@ -34,7 +36,7 @@ export const hookMugPose = (heading: number, gap = 15, nod = -8, rise = RISE): P
   const sk0 = solve(D.props("sir"), base, heading), f = Math.sign(Math.sin(sk0.faceYaw * R) || 1), nk = sk0.j.neck as unknown as P2;
   const side: "L" | "R" = Math.sign((sk0.j.shR as unknown as P2)[0] - nk[0]) === f ? "R" : "L", key = side === "R" ? "armR" : "armL";
   let best: { arm: [[number, number], [number, number]]; cost: number } | null = null;
-  for (let s1 = 0; s1 <= 170; s1 += 5) for (let o1 = -20; o1 <= 80; o1 += 10) for (let s2 = 0; s2 <= 150; s2 += 5) {
+  for (let s1 = 0; s1 <= 170; s1 += 5) for (let o1 = -20; o1 <= 120; o1 += 10) for (let s2 = 0; s2 <= 150; s2 += 5) {
     const arm: [[number, number], [number, number]] = [[s1, o1], [s2, 0]], sk = solve(D.props("sir"), { ...base, [key]: arm } as Pose, heading);
     const bend = armBendOf(sk, side); if (bend > 140 || bend < 60) continue;      // (the rig's elbow flex s2 at most HOOK_BEND: flexed harder, the kit's sleeve stripes fold into a loose triangle at the elbow, the reviewer 28 Nov)
     const S = sk.j[`sh${side}`] as unknown as P2, E = sk.j[`el${side}`] as unknown as P2, W = sk.j[`wr${side}`] as unknown as P2;
@@ -99,12 +101,12 @@ export const reachPose = (heading: number, want: P2, head: [number, number, numb
 /** the pour as a pair: the young pirate (heading yaw, scale sY px per unit) holds his mug out; the rum pirate (scale sR) stands dx px away on
  *  the young one's face side, his heading turned back to face him; the bottle from his grip down into the mug, neck tip `depth` under its rim.
  *  The distance is searched so his grip lands on the bottle's (residual under 4 units). Points in the young pirate's units unless named R. */
-export const pourPair = (yaw: number, sY: number, sR: number, tilt = 35, depth = 14, fault = false, arm: [[number, number], [number, number]] = [[55, 10], [70, 0]]) => {
+export const pourPair = (yaw: number, sY: number, sR: number, tilt = 35, depth = 14, fault = false, arm: [[number, number], [number, number]] = [[55, 10], [70, 0]], clearF = 45) => {
   const young = solve(D.props("sir"), holdOutPose(yaw, arm), yaw), side = mugSide(young), m = mugAt(young, side), op = mugOpening(m), f = Math.sign(Math.sin(young.faceYaw * R) || 1);
   const into: P2 = fault ? [op.x1 + 6, op.y + 26] : [(op.x0 + op.x1) / 2 - f * 14, op.y], p = pourInto(into, op.y, tilt, fault ? 0 : depth, -f);      // (the tip toward the opening's near side: a flat neck then crosses the rim line inside the opening, not through the wall)      // (the fault: the neck's tip on the mug's side wall, under its rim, drawn over it: through the wall)
   const rumHeading = -Math.sign(yaw || 1) * 15, nod: [number, number, number] = [Math.sign(rumHeading || 1) * 45 - rumHeading, 10, 0], rumArm = mugSide(solve(D.props("sir"), POSES.stand as Pose, rumHeading));      // (his arm on his face's side, toward the young pirate: drawn in front of his body, never a hand poking out from behind his beard)
   let best: { dx: number; r: ReturnType<typeof reachPose>; score: number } | null = null;
-  for (let dx = Math.round(330 * sY); dx <= 760; dx += 10) { /* (from 330 young units: the two heads about 50 px apart, never touching) */ const want: P2 = [(p.g[0] * sY - f * dx) / sR, (p.g[1] * sY) / sR], r = reachPose(rumHeading, want, nod, rumArm, { clearFace: 45 });
+  for (let dx = Math.round(330 * sY); dx <= 760; dx += 10) { /* (from 330 young units: the two heads about 50 px apart, never touching) */ const want: P2 = [(p.g[0] * sY - f * dx) / sR, (p.g[1] * sY) / sR], r = reachPose(rumHeading, want, nod, rumArm, { clearFace: clearF });
     // (among the distances he reaches, the one keeping the bottle's bottom, his grip and his hand farthest from his own beard and face)
     const sk = solve(D.props("sir"), r.pose, rumHeading), toR = (q: P2): P2 => [(q[0] * sY - f * dx) / sR, (q[1] * sY) / sR];
     const pts: P2[] = [toR(p.b0), toR([(p.b0[0] + p.g[0]) / 2, (p.b0[1] + p.g[1]) / 2]), toR(p.g), sk.j[`wr${r.side}`] as unknown as P2, sk.j[`tip${r.side}`] as unknown as P2];
@@ -126,7 +128,7 @@ export const dipPose = (yaw: number, fault = false) => {
   return { sk, side: r.side, m, keg: { x: kx2, rimY, floorY: 0, x0: kx2 - KEG.w / 2 + 12, x1: kx2 + KEG.w / 2 - 12 }, f, residual: r.cost }; };
 /** the young pirate's arm holding his mug out for the pour: low enough that the bottle's bottom stays 37 px or more from the pourer's beard (sheet v3) */
 /** where the pourer's hand holds the bottle: this share of its body behind the grip (a pour is held near the bottom, so the rest shows toward the mug) */
-export const POUR_BACK = 0.12;
+export const POUR_BACK = 0.03;      // (the base at his hand: further back it lay over his cuff, the independent review)
 export const POUR_ARM: [[number, number], [number, number]] = [[10, 10], [20, 0]];      // (v3: held low, at his waist, so the long bottle tilted 38 degrees bottom-up reaches it)
 /** the pour's tilt from straight down: 52, the bottle's bottom 38 degrees over its neck (the reviewer: at least 35) */
 export const POUR_TILT = 52;

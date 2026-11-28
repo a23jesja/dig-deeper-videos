@@ -1,0 +1,1931 @@
+flicker check, new measure: out/remu/roberts-emu-v3f.mp4
+frames checked: 1378
+the camera's movement taken out by its matrices: NO (no --cams given)
+a pixel flickers when it differs by more than 40 from the frame before and the frame after while those two differ by less than 16; it is movement when a steady step explains it: up to 12 px in eyes, text and outlines, up to 40 px elsewhere (the step before and after the same way, close in size); a jump out and back is never movement
+fails: more than 2000 flickering pixels in a frame, more than 40 in an eye's circle, more than 150 in a box of text
+largest: picture 37184 (frame 576), eye 0, text 0; raw: picture 41809, eye 0, text 0
+the face track (phase correlation round each eye): largest speed 0.0 px a frame (frame None), speed change 0.0 (frame None), out and back 0.0 (frame None); limits 12 px, speed change 4.5 px, out and back (outer changes over 1 px, middle over 2.5) never
+the loop: 91.9 % of the picture changes from the last frame to the first (95 % inside the shots 12.1 % or less)
+
+FAIL: 541 frames
+  frame 2 (0.07 s): 2766 pixels flicker in the picture (at most 2000)
+  frame 3 (0.10 s): 2550 pixels flicker in the picture (at most 2000)
+  frame 7 (0.23 s): 3170 pixels flicker in the picture (at most 2000)
+  frame 8 (0.27 s): 2159 pixels flicker in the picture (at most 2000)
+  frame 13 (0.43 s): 2619 pixels flicker in the picture (at most 2000)
+  frame 15 (0.50 s): 4200 pixels flicker in the picture (at most 2000)
+  frame 18 (0.60 s): 2113 pixels flicker in the picture (at most 2000)
+  frame 19 (0.63 s): 6326 pixels flicker in the picture (at most 2000)
+  frame 20 (0.67 s): 2056 pixels flicker in the picture (at most 2000)
+  frame 21 (0.70 s): 3309 pixels flicker in the picture (at most 2000)
+  frame 22 (0.73 s): 4134 pixels flicker in the picture (at most 2000)
+  frame 23 (0.77 s): 7050 pixels flicker in the picture (at most 2000)
+  frame 24 (0.80 s): 4389 pixels flicker in the picture (at most 2000)
+  frame 25 (0.83 s): 4780 pixels flicker in the picture (at most 2000)
+  frame 26 (0.87 s): 3048 pixels flicker in the picture (at most 2000)
+  frame 29 (0.97 s): 2427 pixels flicker in the picture (at most 2000)
+  frame 30 (1.00 s): 2435 pixels flicker in the picture (at most 2000)
+  frame 31 (1.03 s): 2832 pixels flicker in the picture (at most 2000)
+  frame 32 (1.07 s): 6975 pixels flicker in the picture (at most 2000)
+  frame 33 (1.10 s): 6057 pixels flicker in the picture (at most 2000)
+  frame 34 (1.13 s): 7051 pixels flicker in the picture (at most 2000)
+  frame 72 (2.40 s): 2765 pixels flicker in the picture (at most 2000)
+  frame 73 (2.43 s): 16262 pixels flicker in the picture (at most 2000)
+  frame 74 (2.47 s): 18676 pixels flicker in the picture (at most 2000)
+  frame 75 (2.50 s): 20605 pixels flicker in the picture (at most 2000)
+  frame 76 (2.53 s): 16652 pixels flicker in the picture (at most 2000)
+  frame 77 (2.57 s): 3256 pixels flicker in the picture (at most 2000)
+  frame 78 (2.60 s): 3003 pixels flicker in the picture (at most 2000)
+  frame 79 (2.63 s): 3130 pixels flicker in the picture (at most 2000)
+  frame 80 (2.67 s): 3544 pixels flicker in the picture (at most 2000)
+  frame 81 (2.70 s): 16172 pixels flicker in the picture (at most 2000)
+  frame 82 (2.73 s): 16243 pixels flicker in the picture (at most 2000)
+  frame 83 (2.77 s): 14778 pixels flicker in the picture (at most 2000)
+  frame 84 (2.80 s): 17801 pixels flicker in the picture (at most 2000)
+  frame 85 (2.83 s): 3677 pixels flicker in the picture (at most 2000)
+  frame 86 (2.87 s): 3520 pixels flicker in the picture (at most 2000)
+  frame 87 (2.90 s): 3616 pixels flicker in the picture (at most 2000)
+  frame 90 (3.00 s): 12581 pixels flicker in the picture (at most 2000)
+  frame 91 (3.03 s): 13859 pixels flicker in the picture (at most 2000)
+  frame 92 (3.07 s): 16253 pixels flicker in the picture (at most 2000)
+  frame 93 (3.10 s): 17772 pixels flicker in the picture (at most 2000)
+  frame 94 (3.13 s): 4557 pixels flicker in the picture (at most 2000)
+  frame 95 (3.17 s): 5686 pixels flicker in the picture (at most 2000)
+  frame 96 (3.20 s): 6147 pixels flicker in the picture (at most 2000)
+  frame 97 (3.23 s): 5650 pixels flicker in the picture (at most 2000)
+  frame 98 (3.27 s): 14347 pixels flicker in the picture (at most 2000)
+  frame 99 (3.30 s): 19257 pixels flicker in the picture (at most 2000)
+  frame 100 (3.33 s): 20174 pixels flicker in the picture (at most 2000)
+  frame 101 (3.37 s): 22276 pixels flicker in the picture (at most 2000)
+  frame 102 (3.40 s): 3518 pixels flicker in the picture (at most 2000)
+  frame 103 (3.43 s): 3443 pixels flicker in the picture (at most 2000)
+  frame 104 (3.47 s): 3418 pixels flicker in the picture (at most 2000)
+  frame 105 (3.50 s): 3471 pixels flicker in the picture (at most 2000)
+  frame 106 (3.53 s): 3762 pixels flicker in the picture (at most 2000)
+  frame 107 (3.57 s): 2460 pixels flicker in the picture (at most 2000)
+  frame 203 (6.77 s): 2088 pixels flicker in the picture (at most 2000)
+  frame 222 (7.40 s): 8573 pixels flicker in the picture (at most 2000)
+  frame 223 (7.43 s): 6518 pixels flicker in the picture (at most 2000)
+  frame 224 (7.47 s): 7200 pixels flicker in the picture (at most 2000)
+  frame 225 (7.50 s): 11277 pixels flicker in the picture (at most 2000)
+  frame 226 (7.53 s): 13634 pixels flicker in the picture (at most 2000)
+  frame 227 (7.57 s): 31649 pixels flicker in the picture (at most 2000)
+  frame 228 (7.60 s): 14830 pixels flicker in the picture (at most 2000)
+  frame 229 (7.63 s): 15517 pixels flicker in the picture (at most 2000)
+  frame 230 (7.67 s): 15782 pixels flicker in the picture (at most 2000)
+  frame 231 (7.70 s): 14250 pixels flicker in the picture (at most 2000)
+  frame 232 (7.73 s): 30899 pixels flicker in the picture (at most 2000)
+  frame 233 (7.77 s): 14843 pixels flicker in the picture (at most 2000)
+  frame 234 (7.80 s): 15902 pixels flicker in the picture (at most 2000)
+  frame 235 (7.83 s): 16972 pixels flicker in the picture (at most 2000)
+  frame 236 (7.87 s): 14298 pixels flicker in the picture (at most 2000)
+  frame 237 (7.90 s): 31728 pixels flicker in the picture (at most 2000)
+  frame 238 (7.93 s): 8484 pixels flicker in the picture (at most 2000)
+  frame 240 (8.00 s): 5565 pixels flicker in the picture (at most 2000)
+  frame 241 (8.03 s): 21371 pixels flicker in the picture (at most 2000)
+  frame 242 (8.07 s): 30878 pixels flicker in the picture (at most 2000)
+  frame 243 (8.10 s): 18065 pixels flicker in the picture (at most 2000)
+  frame 244 (8.13 s): 13087 pixels flicker in the picture (at most 2000)
+  frame 245 (8.17 s): 10445 pixels flicker in the picture (at most 2000)
+  frame 246 (8.20 s): 4976 pixels flicker in the picture (at most 2000)
+  frame 247 (8.23 s): 16862 pixels flicker in the picture (at most 2000)
+  frame 248 (8.27 s): 11588 pixels flicker in the picture (at most 2000)
+  frame 249 (8.30 s): 11255 pixels flicker in the picture (at most 2000)
+  frame 250 (8.33 s): 12240 pixels flicker in the picture (at most 2000)
+  frame 251 (8.37 s): 13110 pixels flicker in the picture (at most 2000)
+  frame 252 (8.40 s): 13283 pixels flicker in the picture (at most 2000)
+  frame 253 (8.43 s): 10067 pixels flicker in the picture (at most 2000)
+  frame 254 (8.47 s): 10042 pixels flicker in the picture (at most 2000)
+  frame 255 (8.50 s): 11607 pixels flicker in the picture (at most 2000)
+  frame 256 (8.53 s): 11057 pixels flicker in the picture (at most 2000)
+  frame 257 (8.57 s): 10857 pixels flicker in the picture (at most 2000)
+  frame 258 (8.60 s): 10624 pixels flicker in the picture (at most 2000)
+  frame 259 (8.63 s): 11681 pixels flicker in the picture (at most 2000)
+  frame 260 (8.67 s): 11056 pixels flicker in the picture (at most 2000)
+  frame 261 (8.70 s): 11024 pixels flicker in the picture (at most 2000)
+  frame 262 (8.73 s): 11504 pixels flicker in the picture (at most 2000)
+  frame 263 (8.77 s): 9160 pixels flicker in the picture (at most 2000)
+  frame 266 (8.87 s): 2788 pixels flicker in the picture (at most 2000)
+  frame 273 (9.10 s): 7287 pixels flicker in the picture (at most 2000)
+  frame 309 (10.30 s): 2102 pixels flicker in the picture (at most 2000)
+  frame 327 (10.90 s): 4681 pixels flicker in the picture (at most 2000)
+  frame 419 (13.97 s): 15549 pixels flicker in the picture (at most 2000)
+  frame 428 (14.27 s): 4672 pixels flicker in the picture (at most 2000)
+  frame 429 (14.30 s): 5400 pixels flicker in the picture (at most 2000)
+  frame 430 (14.33 s): 6466 pixels flicker in the picture (at most 2000)
+  frame 431 (14.37 s): 7135 pixels flicker in the picture (at most 2000)
+  frame 432 (14.40 s): 8221 pixels flicker in the picture (at most 2000)
+  frame 433 (14.43 s): 8049 pixels flicker in the picture (at most 2000)
+  frame 434 (14.47 s): 7459 pixels flicker in the picture (at most 2000)
+  frame 435 (14.50 s): 6073 pixels flicker in the picture (at most 2000)
+  frame 436 (14.53 s): 9389 pixels flicker in the picture (at most 2000)
+  frame 437 (14.57 s): 2831 pixels flicker in the picture (at most 2000)
+  frame 438 (14.60 s): 8309 pixels flicker in the picture (at most 2000)
+  frame 439 (14.63 s): 2967 pixels flicker in the picture (at most 2000)
+  frame 440 (14.67 s): 9439 pixels flicker in the picture (at most 2000)
+  frame 441 (14.70 s): 5253 pixels flicker in the picture (at most 2000)
+  frame 442 (14.73 s): 7032 pixels flicker in the picture (at most 2000)
+  frame 443 (14.77 s): 4744 pixels flicker in the picture (at most 2000)
+  frame 444 (14.80 s): 3515 pixels flicker in the picture (at most 2000)
+  frame 445 (14.83 s): 6949 pixels flicker in the picture (at most 2000)
+  frame 446 (14.87 s): 3809 pixels flicker in the picture (at most 2000)
+  frame 447 (14.90 s): 3396 pixels flicker in the picture (at most 2000)
+  frame 448 (14.93 s): 8170 pixels flicker in the picture (at most 2000)
+  frame 449 (14.97 s): 7015 pixels flicker in the picture (at most 2000)
+  frame 450 (15.00 s): 13712 pixels flicker in the picture (at most 2000)
+  frame 451 (15.03 s): 8469 pixels flicker in the picture (at most 2000)
+  frame 452 (15.07 s): 7870 pixels flicker in the picture (at most 2000)
+  frame 453 (15.10 s): 8475 pixels flicker in the picture (at most 2000)
+  frame 454 (15.13 s): 8341 pixels flicker in the picture (at most 2000)
+  frame 455 (15.17 s): 13547 pixels flicker in the picture (at most 2000)
+  frame 456 (15.20 s): 6532 pixels flicker in the picture (at most 2000)
+  frame 457 (15.23 s): 7914 pixels flicker in the picture (at most 2000)
+  frame 458 (15.27 s): 3668 pixels flicker in the picture (at most 2000)
+  frame 459 (15.30 s): 11712 pixels flicker in the picture (at most 2000)
+  frame 460 (15.33 s): 18034 pixels flicker in the picture (at most 2000)
+  frame 461 (15.37 s): 9438 pixels flicker in the picture (at most 2000)
+  frame 462 (15.40 s): 11729 pixels flicker in the picture (at most 2000)
+  frame 463 (15.43 s): 8480 pixels flicker in the picture (at most 2000)
+  frame 464 (15.47 s): 9006 pixels flicker in the picture (at most 2000)
+  frame 465 (15.50 s): 13010 pixels flicker in the picture (at most 2000)
+  frame 466 (15.53 s): 9981 pixels flicker in the picture (at most 2000)
+  frame 467 (15.57 s): 17376 pixels flicker in the picture (at most 2000)
+  frame 468 (15.60 s): 7664 pixels flicker in the picture (at most 2000)
+  frame 469 (15.63 s): 4698 pixels flicker in the picture (at most 2000)
+  frame 470 (15.67 s): 4298 pixels flicker in the picture (at most 2000)
+  frame 471 (15.70 s): 4403 pixels flicker in the picture (at most 2000)
+  frame 472 (15.73 s): 5119 pixels flicker in the picture (at most 2000)
+  frame 473 (15.77 s): 9270 pixels flicker in the picture (at most 2000)
+  frame 474 (15.80 s): 6386 pixels flicker in the picture (at most 2000)
+  frame 475 (15.83 s): 6003 pixels flicker in the picture (at most 2000)
+  frame 476 (15.87 s): 4270 pixels flicker in the picture (at most 2000)
+  frame 477 (15.90 s): 6509 pixels flicker in the picture (at most 2000)
+  frame 478 (15.93 s): 8613 pixels flicker in the picture (at most 2000)
+  frame 479 (15.97 s): 4966 pixels flicker in the picture (at most 2000)
+  frame 480 (16.00 s): 5947 pixels flicker in the picture (at most 2000)
+  frame 481 (16.03 s): 4876 pixels flicker in the picture (at most 2000)
+  frame 482 (16.07 s): 4997 pixels flicker in the picture (at most 2000)
+  frame 483 (16.10 s): 7973 pixels flicker in the picture (at most 2000)
+  frame 484 (16.13 s): 3995 pixels flicker in the picture (at most 2000)
+  frame 485 (16.17 s): 3936 pixels flicker in the picture (at most 2000)
+  frame 486 (16.20 s): 4317 pixels flicker in the picture (at most 2000)
+  frame 487 (16.23 s): 3948 pixels flicker in the picture (at most 2000)
+  frame 489 (16.30 s): 6802 pixels flicker in the picture (at most 2000)
+  frame 490 (16.33 s): 3081 pixels flicker in the picture (at most 2000)
+  frame 491 (16.37 s): 4284 pixels flicker in the picture (at most 2000)
+  frame 492 (16.40 s): 4946 pixels flicker in the picture (at most 2000)
+  frame 493 (16.43 s): 5721 pixels flicker in the picture (at most 2000)
+  frame 494 (16.47 s): 4439 pixels flicker in the picture (at most 2000)
+  frame 495 (16.50 s): 5914 pixels flicker in the picture (at most 2000)
+  frame 496 (16.53 s): 5852 pixels flicker in the picture (at most 2000)
+  frame 497 (16.57 s): 5620 pixels flicker in the picture (at most 2000)
+  frame 498 (16.60 s): 5799 pixels flicker in the picture (at most 2000)
+  frame 499 (16.63 s): 4358 pixels flicker in the picture (at most 2000)
+  frame 500 (16.67 s): 3392 pixels flicker in the picture (at most 2000)
+  frame 501 (16.70 s): 5329 pixels flicker in the picture (at most 2000)
+  frame 502 (16.73 s): 3608 pixels flicker in the picture (at most 2000)
+  frame 503 (16.77 s): 3337 pixels flicker in the picture (at most 2000)
+  frame 504 (16.80 s): 5645 pixels flicker in the picture (at most 2000)
+  frame 505 (16.83 s): 3352 pixels flicker in the picture (at most 2000)
+  frame 506 (16.87 s): 3939 pixels flicker in the picture (at most 2000)
+  frame 507 (16.90 s): 3925 pixels flicker in the picture (at most 2000)
+  frame 508 (16.93 s): 3440 pixels flicker in the picture (at most 2000)
+  frame 509 (16.97 s): 5637 pixels flicker in the picture (at most 2000)
+  frame 510 (17.00 s): 4605 pixels flicker in the picture (at most 2000)
+  frame 511 (17.03 s): 4127 pixels flicker in the picture (at most 2000)
+  frame 512 (17.07 s): 3587 pixels flicker in the picture (at most 2000)
+  frame 513 (17.10 s): 4731 pixels flicker in the picture (at most 2000)
+  frame 514 (17.13 s): 3264 pixels flicker in the picture (at most 2000)
+  frame 515 (17.17 s): 6940 pixels flicker in the picture (at most 2000)
+  frame 571 (19.03 s): 19034 pixels flicker in the picture (at most 2000)
+  frame 572 (19.07 s): 18146 pixels flicker in the picture (at most 2000)
+  frame 573 (19.10 s): 4247 pixels flicker in the picture (at most 2000)
+  frame 574 (19.13 s): 13586 pixels flicker in the picture (at most 2000)
+  frame 575 (19.17 s): 12412 pixels flicker in the picture (at most 2000)
+  frame 576 (19.20 s): 37184 pixels flicker in the picture (at most 2000)
+  frame 577 (19.23 s): 3983 pixels flicker in the picture (at most 2000)
+  frame 578 (19.27 s): 6362 pixels flicker in the picture (at most 2000)
+  frame 579 (19.30 s): 2585 pixels flicker in the picture (at most 2000)
+  frame 580 (19.33 s): 3279 pixels flicker in the picture (at most 2000)
+  frame 586 (19.53 s): 3398 pixels flicker in the picture (at most 2000)
+  frame 587 (19.57 s): 5784 pixels flicker in the picture (at most 2000)
+  frame 588 (19.60 s): 7703 pixels flicker in the picture (at most 2000)
+  frame 589 (19.63 s): 7300 pixels flicker in the picture (at most 2000)
+  frame 590 (19.67 s): 10990 pixels flicker in the picture (at most 2000)
+  frame 591 (19.70 s): 7106 pixels flicker in the picture (at most 2000)
+  frame 592 (19.73 s): 2071 pixels flicker in the picture (at most 2000)
+  frame 593 (19.77 s): 2023 pixels flicker in the picture (at most 2000)
+  frame 596 (19.87 s): 8413 pixels flicker in the picture (at most 2000)
+  frame 597 (19.90 s): 8512 pixels flicker in the picture (at most 2000)
+  frame 598 (19.93 s): 17038 pixels flicker in the picture (at most 2000)
+  frame 599 (19.97 s): 16284 pixels flicker in the picture (at most 2000)
+  frame 600 (20.00 s): 23027 pixels flicker in the picture (at most 2000)
+  frame 601 (20.03 s): 19173 pixels flicker in the picture (at most 2000)
+  frame 602 (20.07 s): 4534 pixels flicker in the picture (at most 2000)
+  frame 603 (20.10 s): 28400 pixels flicker in the picture (at most 2000)
+  frame 605 (20.17 s): 12261 pixels flicker in the picture (at most 2000)
+  frame 606 (20.20 s): 11973 pixels flicker in the picture (at most 2000)
+  frame 607 (20.23 s): 10026 pixels flicker in the picture (at most 2000)
+  frame 608 (20.27 s): 12184 pixels flicker in the picture (at most 2000)
+  frame 609 (20.30 s): 12294 pixels flicker in the picture (at most 2000)
+  frame 610 (20.33 s): 10477 pixels flicker in the picture (at most 2000)
+  frame 611 (20.37 s): 12190 pixels flicker in the picture (at most 2000)
+  frame 612 (20.40 s): 8580 pixels flicker in the picture (at most 2000)
+  frame 613 (20.43 s): 4603 pixels flicker in the picture (at most 2000)
+  frame 619 (20.63 s): 2898 pixels flicker in the picture (at most 2000)
+  frame 625 (20.83 s): 2096 pixels flicker in the picture (at most 2000)
+  frame 626 (20.87 s): 2450 pixels flicker in the picture (at most 2000)
+  frame 627 (20.90 s): 2498 pixels flicker in the picture (at most 2000)
+  frame 628 (20.93 s): 2604 pixels flicker in the picture (at most 2000)
+  frame 635 (21.17 s): 2333 pixels flicker in the picture (at most 2000)
+  frame 636 (21.20 s): 2519 pixels flicker in the picture (at most 2000)
+  frame 637 (21.23 s): 2593 pixels flicker in the picture (at most 2000)
+  frame 638 (21.27 s): 2382 pixels flicker in the picture (at most 2000)
+  frame 644 (21.47 s): 2005 pixels flicker in the picture (at most 2000)
+  frame 645 (21.50 s): 2401 pixels flicker in the picture (at most 2000)
+  frame 646 (21.53 s): 2411 pixels flicker in the picture (at most 2000)
+  frame 654 (21.80 s): 2267 pixels flicker in the picture (at most 2000)
+  frame 655 (21.83 s): 2458 pixels flicker in the picture (at most 2000)
+  frame 656 (21.87 s): 2175 pixels flicker in the picture (at most 2000)
+  frame 659 (21.97 s): 2802 pixels flicker in the picture (at most 2000)
+  frame 664 (22.13 s): 2225 pixels flicker in the picture (at most 2000)
+  frame 665 (22.17 s): 2323 pixels flicker in the picture (at most 2000)
+  frame 666 (22.20 s): 2752 pixels flicker in the picture (at most 2000)
+  frame 699 (23.30 s): 8800 pixels flicker in the picture (at most 2000)
+  frame 700 (23.33 s): 10204 pixels flicker in the picture (at most 2000)
+  frame 701 (23.37 s): 9434 pixels flicker in the picture (at most 2000)
+  frame 702 (23.40 s): 24372 pixels flicker in the picture (at most 2000)
+  frame 703 (23.43 s): 5695 pixels flicker in the picture (at most 2000)
+  frame 704 (23.47 s): 8347 pixels flicker in the picture (at most 2000)
+  frame 705 (23.50 s): 3027 pixels flicker in the picture (at most 2000)
+  frame 706 (23.53 s): 5544 pixels flicker in the picture (at most 2000)
+  frame 707 (23.57 s): 11450 pixels flicker in the picture (at most 2000)
+  frame 708 (23.60 s): 9258 pixels flicker in the picture (at most 2000)
+  frame 709 (23.63 s): 5706 pixels flicker in the picture (at most 2000)
+  frame 710 (23.67 s): 5962 pixels flicker in the picture (at most 2000)
+  frame 711 (23.70 s): 23635 pixels flicker in the picture (at most 2000)
+  frame 712 (23.73 s): 5498 pixels flicker in the picture (at most 2000)
+  frame 713 (23.77 s): 6046 pixels flicker in the picture (at most 2000)
+  frame 714 (23.80 s): 4657 pixels flicker in the picture (at most 2000)
+  frame 715 (23.83 s): 9128 pixels flicker in the picture (at most 2000)
+  frame 716 (23.87 s): 7528 pixels flicker in the picture (at most 2000)
+  frame 717 (23.90 s): 17780 pixels flicker in the picture (at most 2000)
+  frame 718 (23.93 s): 11381 pixels flicker in the picture (at most 2000)
+  frame 719 (23.97 s): 13879 pixels flicker in the picture (at most 2000)
+  frame 720 (24.00 s): 12461 pixels flicker in the picture (at most 2000)
+  frame 721 (24.03 s): 5411 pixels flicker in the picture (at most 2000)
+  frame 722 (24.07 s): 3554 pixels flicker in the picture (at most 2000)
+  frame 723 (24.10 s): 5332 pixels flicker in the picture (at most 2000)
+  frame 724 (24.13 s): 8826 pixels flicker in the picture (at most 2000)
+  frame 725 (24.17 s): 4817 pixels flicker in the picture (at most 2000)
+  frame 726 (24.20 s): 4781 pixels flicker in the picture (at most 2000)
+  frame 727 (24.23 s): 11054 pixels flicker in the picture (at most 2000)
+  frame 728 (24.27 s): 15051 pixels flicker in the picture (at most 2000)
+  frame 729 (24.30 s): 3255 pixels flicker in the picture (at most 2000)
+  frame 756 (25.20 s): 2019 pixels flicker in the picture (at most 2000)
+  frame 757 (25.23 s): 4482 pixels flicker in the picture (at most 2000)
+  frame 785 (26.17 s): 6885 pixels flicker in the picture (at most 2000)
+  frame 786 (26.20 s): 10933 pixels flicker in the picture (at most 2000)
+  frame 787 (26.23 s): 9621 pixels flicker in the picture (at most 2000)
+  frame 788 (26.27 s): 6173 pixels flicker in the picture (at most 2000)
+  frame 789 (26.30 s): 6834 pixels flicker in the picture (at most 2000)
+  frame 790 (26.33 s): 6387 pixels flicker in the picture (at most 2000)
+  frame 791 (26.37 s): 6846 pixels flicker in the picture (at most 2000)
+  frame 792 (26.40 s): 15195 pixels flicker in the picture (at most 2000)
+  frame 793 (26.43 s): 19760 pixels flicker in the picture (at most 2000)
+  frame 794 (26.47 s): 13976 pixels flicker in the picture (at most 2000)
+  frame 795 (26.50 s): 10713 pixels flicker in the picture (at most 2000)
+  frame 796 (26.53 s): 10831 pixels flicker in the picture (at most 2000)
+  frame 797 (26.57 s): 11315 pixels flicker in the picture (at most 2000)
+  frame 798 (26.60 s): 13483 pixels flicker in the picture (at most 2000)
+  frame 799 (26.63 s): 20087 pixels flicker in the picture (at most 2000)
+  frame 800 (26.67 s): 21194 pixels flicker in the picture (at most 2000)
+  frame 801 (26.70 s): 19555 pixels flicker in the picture (at most 2000)
+  frame 802 (26.73 s): 22936 pixels flicker in the picture (at most 2000)
+  frame 803 (26.77 s): 17608 pixels flicker in the picture (at most 2000)
+  frame 804 (26.80 s): 18623 pixels flicker in the picture (at most 2000)
+  frame 805 (26.83 s): 19168 pixels flicker in the picture (at most 2000)
+  frame 806 (26.87 s): 23051 pixels flicker in the picture (at most 2000)
+  frame 807 (26.90 s): 24657 pixels flicker in the picture (at most 2000)
+  frame 808 (26.93 s): 23158 pixels flicker in the picture (at most 2000)
+  frame 809 (26.97 s): 21492 pixels flicker in the picture (at most 2000)
+  frame 810 (27.00 s): 21426 pixels flicker in the picture (at most 2000)
+  frame 811 (27.03 s): 24186 pixels flicker in the picture (at most 2000)
+  frame 812 (27.07 s): 24719 pixels flicker in the picture (at most 2000)
+  frame 813 (27.10 s): 22550 pixels flicker in the picture (at most 2000)
+  frame 814 (27.13 s): 20846 pixels flicker in the picture (at most 2000)
+  frame 815 (27.17 s): 19574 pixels flicker in the picture (at most 2000)
+  frame 816 (27.20 s): 17600 pixels flicker in the picture (at most 2000)
+  frame 817 (27.23 s): 16211 pixels flicker in the picture (at most 2000)
+  frame 818 (27.27 s): 16330 pixels flicker in the picture (at most 2000)
+  frame 819 (27.30 s): 8333 pixels flicker in the picture (at most 2000)
+  frame 820 (27.33 s): 2364 pixels flicker in the picture (at most 2000)
+  frame 828 (27.60 s): 8238 pixels flicker in the picture (at most 2000)
+  frame 829 (27.63 s): 6879 pixels flicker in the picture (at most 2000)
+  frame 830 (27.67 s): 18368 pixels flicker in the picture (at most 2000)
+  frame 831 (27.70 s): 9209 pixels flicker in the picture (at most 2000)
+  frame 832 (27.73 s): 11252 pixels flicker in the picture (at most 2000)
+  frame 833 (27.77 s): 15450 pixels flicker in the picture (at most 2000)
+  frame 834 (27.80 s): 7304 pixels flicker in the picture (at most 2000)
+  frame 835 (27.83 s): 14802 pixels flicker in the picture (at most 2000)
+  frame 836 (27.87 s): 15257 pixels flicker in the picture (at most 2000)
+  frame 837 (27.90 s): 9100 pixels flicker in the picture (at most 2000)
+  frame 838 (27.93 s): 16198 pixels flicker in the picture (at most 2000)
+  frame 839 (27.97 s): 7466 pixels flicker in the picture (at most 2000)
+  frame 840 (28.00 s): 24706 pixels flicker in the picture (at most 2000)
+  frame 841 (28.03 s): 9789 pixels flicker in the picture (at most 2000)
+  frame 842 (28.07 s): 8073 pixels flicker in the picture (at most 2000)
+  frame 843 (28.10 s): 21921 pixels flicker in the picture (at most 2000)
+  frame 844 (28.13 s): 6153 pixels flicker in the picture (at most 2000)
+  frame 845 (28.17 s): 13989 pixels flicker in the picture (at most 2000)
+  frame 846 (28.20 s): 18320 pixels flicker in the picture (at most 2000)
+  frame 847 (28.23 s): 7778 pixels flicker in the picture (at most 2000)
+  frame 848 (28.27 s): 19153 pixels flicker in the picture (at most 2000)
+  frame 849 (28.30 s): 7944 pixels flicker in the picture (at most 2000)
+  frame 850 (28.33 s): 24100 pixels flicker in the picture (at most 2000)
+  frame 851 (28.37 s): 10607 pixels flicker in the picture (at most 2000)
+  frame 852 (28.40 s): 7834 pixels flicker in the picture (at most 2000)
+  frame 853 (28.43 s): 27876 pixels flicker in the picture (at most 2000)
+  frame 854 (28.47 s): 5399 pixels flicker in the picture (at most 2000)
+  frame 855 (28.50 s): 16172 pixels flicker in the picture (at most 2000)
+  frame 856 (28.53 s): 26751 pixels flicker in the picture (at most 2000)
+  frame 857 (28.57 s): 7656 pixels flicker in the picture (at most 2000)
+  frame 858 (28.60 s): 17299 pixels flicker in the picture (at most 2000)
+  frame 859 (28.63 s): 6126 pixels flicker in the picture (at most 2000)
+  frame 860 (28.67 s): 18390 pixels flicker in the picture (at most 2000)
+  frame 861 (28.70 s): 12673 pixels flicker in the picture (at most 2000)
+  frame 862 (28.73 s): 7864 pixels flicker in the picture (at most 2000)
+  frame 863 (28.77 s): 24941 pixels flicker in the picture (at most 2000)
+  frame 864 (28.80 s): 7486 pixels flicker in the picture (at most 2000)
+  frame 865 (28.83 s): 16799 pixels flicker in the picture (at most 2000)
+  frame 866 (28.87 s): 26186 pixels flicker in the picture (at most 2000)
+  frame 867 (28.90 s): 6281 pixels flicker in the picture (at most 2000)
+  frame 868 (28.93 s): 22656 pixels flicker in the picture (at most 2000)
+  frame 869 (28.97 s): 6109 pixels flicker in the picture (at most 2000)
+  frame 870 (29.00 s): 14773 pixels flicker in the picture (at most 2000)
+  frame 871 (29.03 s): 17419 pixels flicker in the picture (at most 2000)
+  frame 872 (29.07 s): 6861 pixels flicker in the picture (at most 2000)
+  frame 873 (29.10 s): 16719 pixels flicker in the picture (at most 2000)
+  frame 874 (29.13 s): 5773 pixels flicker in the picture (at most 2000)
+  frame 875 (29.17 s): 21643 pixels flicker in the picture (at most 2000)
+  frame 876 (29.20 s): 20537 pixels flicker in the picture (at most 2000)
+  frame 877 (29.23 s): 5137 pixels flicker in the picture (at most 2000)
+  frame 878 (29.27 s): 35254 pixels flicker in the picture (at most 2000)
+  frame 879 (29.30 s): 6792 pixels flicker in the picture (at most 2000)
+  frame 880 (29.33 s): 10885 pixels flicker in the picture (at most 2000)
+  frame 881 (29.37 s): 4696 pixels flicker in the picture (at most 2000)
+  frame 891 (29.70 s): 3011 pixels flicker in the picture (at most 2000)
+  frame 892 (29.73 s): 3190 pixels flicker in the picture (at most 2000)
+  frame 893 (29.77 s): 2543 pixels flicker in the picture (at most 2000)
+  frame 894 (29.80 s): 4092 pixels flicker in the picture (at most 2000)
+  frame 895 (29.83 s): 3538 pixels flicker in the picture (at most 2000)
+  frame 896 (29.87 s): 2034 pixels flicker in the picture (at most 2000)
+  frame 930 (31.00 s): 11722 pixels flicker in the picture (at most 2000)
+  frame 931 (31.03 s): 6093 pixels flicker in the picture (at most 2000)
+  frame 932 (31.07 s): 6044 pixels flicker in the picture (at most 2000)
+  frame 933 (31.10 s): 3278 pixels flicker in the picture (at most 2000)
+  frame 934 (31.13 s): 10645 pixels flicker in the picture (at most 2000)
+  frame 935 (31.17 s): 12753 pixels flicker in the picture (at most 2000)
+  frame 936 (31.20 s): 6168 pixels flicker in the picture (at most 2000)
+  frame 937 (31.23 s): 4778 pixels flicker in the picture (at most 2000)
+  frame 938 (31.27 s): 5003 pixels flicker in the picture (at most 2000)
+  frame 939 (31.30 s): 9753 pixels flicker in the picture (at most 2000)
+  frame 940 (31.33 s): 7814 pixels flicker in the picture (at most 2000)
+  frame 941 (31.37 s): 15513 pixels flicker in the picture (at most 2000)
+  frame 942 (31.40 s): 6434 pixels flicker in the picture (at most 2000)
+  frame 943 (31.43 s): 8486 pixels flicker in the picture (at most 2000)
+  frame 944 (31.47 s): 13890 pixels flicker in the picture (at most 2000)
+  frame 945 (31.50 s): 17781 pixels flicker in the picture (at most 2000)
+  frame 946 (31.53 s): 7277 pixels flicker in the picture (at most 2000)
+  frame 947 (31.57 s): 23704 pixels flicker in the picture (at most 2000)
+  frame 948 (31.60 s): 11634 pixels flicker in the picture (at most 2000)
+  frame 949 (31.63 s): 10212 pixels flicker in the picture (at most 2000)
+  frame 950 (31.67 s): 9918 pixels flicker in the picture (at most 2000)
+  frame 951 (31.70 s): 9717 pixels flicker in the picture (at most 2000)
+  frame 952 (31.73 s): 10544 pixels flicker in the picture (at most 2000)
+  frame 953 (31.77 s): 22423 pixels flicker in the picture (at most 2000)
+  frame 954 (31.80 s): 10704 pixels flicker in the picture (at most 2000)
+  frame 955 (31.83 s): 6465 pixels flicker in the picture (at most 2000)
+  frame 956 (31.87 s): 7232 pixels flicker in the picture (at most 2000)
+  frame 957 (31.90 s): 6728 pixels flicker in the picture (at most 2000)
+  frame 958 (31.93 s): 8610 pixels flicker in the picture (at most 2000)
+  frame 959 (31.97 s): 11126 pixels flicker in the picture (at most 2000)
+  frame 960 (32.00 s): 15811 pixels flicker in the picture (at most 2000)
+  frame 961 (32.03 s): 9389 pixels flicker in the picture (at most 2000)
+  frame 962 (32.07 s): 14901 pixels flicker in the picture (at most 2000)
+  frame 963 (32.10 s): 4717 pixels flicker in the picture (at most 2000)
+  frame 964 (32.13 s): 6388 pixels flicker in the picture (at most 2000)
+  frame 965 (32.17 s): 5851 pixels flicker in the picture (at most 2000)
+  frame 966 (32.20 s): 4833 pixels flicker in the picture (at most 2000)
+  frame 967 (32.23 s): 2300 pixels flicker in the picture (at most 2000)
+  frame 986 (32.87 s): 2328 pixels flicker in the picture (at most 2000)
+  frame 987 (32.90 s): 3005 pixels flicker in the picture (at most 2000)
+  frame 988 (32.93 s): 3496 pixels flicker in the picture (at most 2000)
+  frame 989 (32.97 s): 4269 pixels flicker in the picture (at most 2000)
+  frame 990 (33.00 s): 4973 pixels flicker in the picture (at most 2000)
+  frame 991 (33.03 s): 5444 pixels flicker in the picture (at most 2000)
+  frame 992 (33.07 s): 5175 pixels flicker in the picture (at most 2000)
+  frame 993 (33.10 s): 3795 pixels flicker in the picture (at most 2000)
+  frame 994 (33.13 s): 3283 pixels flicker in the picture (at most 2000)
+  frame 995 (33.17 s): 3988 pixels flicker in the picture (at most 2000)
+  frame 996 (33.20 s): 4880 pixels flicker in the picture (at most 2000)
+  frame 997 (33.23 s): 5216 pixels flicker in the picture (at most 2000)
+  frame 998 (33.27 s): 3579 pixels flicker in the picture (at most 2000)
+  frame 1098 (36.60 s): 19074 pixels flicker in the picture (at most 2000)
+  frame 1099 (36.63 s): 7445 pixels flicker in the picture (at most 2000)
+  frame 1100 (36.67 s): 8512 pixels flicker in the picture (at most 2000)
+  frame 1101 (36.70 s): 8551 pixels flicker in the picture (at most 2000)
+  frame 1102 (36.73 s): 5132 pixels flicker in the picture (at most 2000)
+  frame 1103 (36.77 s): 12528 pixels flicker in the picture (at most 2000)
+  frame 1104 (36.80 s): 5050 pixels flicker in the picture (at most 2000)
+  frame 1105 (36.83 s): 8248 pixels flicker in the picture (at most 2000)
+  frame 1106 (36.87 s): 8972 pixels flicker in the picture (at most 2000)
+  frame 1107 (36.90 s): 8172 pixels flicker in the picture (at most 2000)
+  frame 1108 (36.93 s): 12102 pixels flicker in the picture (at most 2000)
+  frame 1109 (36.97 s): 8117 pixels flicker in the picture (at most 2000)
+  frame 1110 (37.00 s): 7915 pixels flicker in the picture (at most 2000)
+  frame 1111 (37.03 s): 8052 pixels flicker in the picture (at most 2000)
+  frame 1112 (37.07 s): 4883 pixels flicker in the picture (at most 2000)
+  frame 1113 (37.10 s): 13657 pixels flicker in the picture (at most 2000)
+  frame 1114 (37.13 s): 3978 pixels flicker in the picture (at most 2000)
+  frame 1115 (37.17 s): 8078 pixels flicker in the picture (at most 2000)
+  frame 1116 (37.20 s): 7180 pixels flicker in the picture (at most 2000)
+  frame 1117 (37.23 s): 7357 pixels flicker in the picture (at most 2000)
+  frame 1118 (37.27 s): 9001 pixels flicker in the picture (at most 2000)
+  frame 1119 (37.30 s): 14980 pixels flicker in the picture (at most 2000)
+  frame 1120 (37.33 s): 4746 pixels flicker in the picture (at most 2000)
+  frame 1121 (37.37 s): 6315 pixels flicker in the picture (at most 2000)
+  frame 1122 (37.40 s): 15163 pixels flicker in the picture (at most 2000)
+  frame 1123 (37.43 s): 16834 pixels flicker in the picture (at most 2000)
+  frame 1124 (37.47 s): 27630 pixels flicker in the picture (at most 2000)
+  frame 1125 (37.50 s): 11093 pixels flicker in the picture (at most 2000)
+  frame 1126 (37.53 s): 7868 pixels flicker in the picture (at most 2000)
+  frame 1127 (37.57 s): 5849 pixels flicker in the picture (at most 2000)
+  frame 1128 (37.60 s): 3795 pixels flicker in the picture (at most 2000)
+  frame 1129 (37.63 s): 9835 pixels flicker in the picture (at most 2000)
+  frame 1132 (37.73 s): 9689 pixels flicker in the picture (at most 2000)
+  frame 1133 (37.77 s): 6701 pixels flicker in the picture (at most 2000)
+  frame 1134 (37.80 s): 8685 pixels flicker in the picture (at most 2000)
+  frame 1137 (37.90 s): 2549 pixels flicker in the picture (at most 2000)
+  frame 1139 (37.97 s): 3611 pixels flicker in the picture (at most 2000)
+  frame 1140 (38.00 s): 6409 pixels flicker in the picture (at most 2000)
+  frame 1141 (38.03 s): 7821 pixels flicker in the picture (at most 2000)
+  frame 1142 (38.07 s): 7104 pixels flicker in the picture (at most 2000)
+  frame 1143 (38.10 s): 8830 pixels flicker in the picture (at most 2000)
+  frame 1144 (38.13 s): 6564 pixels flicker in the picture (at most 2000)
+  frame 1145 (38.17 s): 5142 pixels flicker in the picture (at most 2000)
+  frame 1146 (38.20 s): 4191 pixels flicker in the picture (at most 2000)
+  frame 1147 (38.23 s): 3447 pixels flicker in the picture (at most 2000)
+  frame 1148 (38.27 s): 2601 pixels flicker in the picture (at most 2000)
+  frame 1149 (38.30 s): 9204 pixels flicker in the picture (at most 2000)
+  frame 1150 (38.33 s): 8518 pixels flicker in the picture (at most 2000)
+  frame 1151 (38.37 s): 2718 pixels flicker in the picture (at most 2000)
+  frame 1152 (38.40 s): 2098 pixels flicker in the picture (at most 2000)
+  frame 1153 (38.43 s): 14186 pixels flicker in the picture (at most 2000)
+  frame 1154 (38.47 s): 15464 pixels flicker in the picture (at most 2000)
+  frame 1155 (38.50 s): 17129 pixels flicker in the picture (at most 2000)
+  frame 1156 (38.53 s): 5960 pixels flicker in the picture (at most 2000)
+  frame 1157 (38.57 s): 6820 pixels flicker in the picture (at most 2000)
+  frame 1158 (38.60 s): 6881 pixels flicker in the picture (at most 2000)
+  frame 1159 (38.63 s): 6974 pixels flicker in the picture (at most 2000)
+  frame 1160 (38.67 s): 13758 pixels flicker in the picture (at most 2000)
+  frame 1161 (38.70 s): 22056 pixels flicker in the picture (at most 2000)
+  frame 1162 (38.73 s): 22970 pixels flicker in the picture (at most 2000)
+  frame 1163 (38.77 s): 6553 pixels flicker in the picture (at most 2000)
+  frame 1164 (38.80 s): 4251 pixels flicker in the picture (at most 2000)
+  frame 1165 (38.83 s): 4434 pixels flicker in the picture (at most 2000)
+  frame 1166 (38.87 s): 4792 pixels flicker in the picture (at most 2000)
+  frame 1167 (38.90 s): 5336 pixels flicker in the picture (at most 2000)
+  frame 1168 (38.93 s): 21320 pixels flicker in the picture (at most 2000)
+  frame 1169 (38.97 s): 23366 pixels flicker in the picture (at most 2000)
+  frame 1170 (39.00 s): 22808 pixels flicker in the picture (at most 2000)
+  frame 1171 (39.03 s): 7330 pixels flicker in the picture (at most 2000)
+  frame 1172 (39.07 s): 6471 pixels flicker in the picture (at most 2000)
+  frame 1173 (39.10 s): 5335 pixels flicker in the picture (at most 2000)
+  frame 1174 (39.13 s): 3704 pixels flicker in the picture (at most 2000)
+  frame 1175 (39.17 s): 8839 pixels flicker in the picture (at most 2000)
+  frame 1176 (39.20 s): 16015 pixels flicker in the picture (at most 2000)
+  frame 1177 (39.23 s): 17118 pixels flicker in the picture (at most 2000)
+  frame 1178 (39.27 s): 4754 pixels flicker in the picture (at most 2000)
+  frame 1179 (39.30 s): 5061 pixels flicker in the picture (at most 2000)
+  frame 1180 (39.33 s): 7013 pixels flicker in the picture (at most 2000)
+  frame 1181 (39.37 s): 7884 pixels flicker in the picture (at most 2000)
+  frame 1182 (39.40 s): 7884 pixels flicker in the picture (at most 2000)
+  frame 1183 (39.43 s): 22245 pixels flicker in the picture (at most 2000)
+  frame 1184 (39.47 s): 23357 pixels flicker in the picture (at most 2000)
+  frame 1185 (39.50 s): 22773 pixels flicker in the picture (at most 2000)
+  frame 1186 (39.53 s): 5434 pixels flicker in the picture (at most 2000)
+  frame 1187 (39.57 s): 5001 pixels flicker in the picture (at most 2000)
+  frame 1188 (39.60 s): 4535 pixels flicker in the picture (at most 2000)
+  frame 1189 (39.63 s): 5060 pixels flicker in the picture (at most 2000)
+  frame 1190 (39.67 s): 15004 pixels flicker in the picture (at most 2000)
+  frame 1258 (41.93 s): 2372 pixels flicker in the picture (at most 2000)
+  frame 1261 (42.03 s): 2009 pixels flicker in the picture (at most 2000)
+  frame 1302 (43.40 s): 2356 pixels flicker in the picture (at most 2000)
+  frame 1303 (43.43 s): 3203 pixels flicker in the picture (at most 2000)
+  frame 1314 (43.80 s): 8985 pixels flicker in the picture (at most 2000)
+  frame 1315 (43.83 s): 2189 pixels flicker in the picture (at most 2000)
+  frame 1316 (43.87 s): 3139 pixels flicker in the picture (at most 2000)
+  frame 1317 (43.90 s): 2628 pixels flicker in the picture (at most 2000)
+  frame 1318 (43.93 s): 2524 pixels flicker in the picture (at most 2000)
+  frame 1321 (44.03 s): 3551 pixels flicker in the picture (at most 2000)
+  frame 1322 (44.07 s): 2434 pixels flicker in the picture (at most 2000)
+  frame 1324 (44.13 s): 2339 pixels flicker in the picture (at most 2000)
+  frame 1327 (44.23 s): 3428 pixels flicker in the picture (at most 2000)
+  frame 1329 (44.30 s): 4831 pixels flicker in the picture (at most 2000)
+  frame 1332 (44.40 s): 2011 pixels flicker in the picture (at most 2000)
+  frame 1333 (44.43 s): 6397 pixels flicker in the picture (at most 2000)
+  frame 1334 (44.47 s): 2790 pixels flicker in the picture (at most 2000)
+  frame 1335 (44.50 s): 3635 pixels flicker in the picture (at most 2000)
+  frame 1336 (44.53 s): 3975 pixels flicker in the picture (at most 2000)
+  frame 1337 (44.57 s): 6754 pixels flicker in the picture (at most 2000)
+  frame 1338 (44.60 s): 5086 pixels flicker in the picture (at most 2000)
+  frame 1339 (44.63 s): 4936 pixels flicker in the picture (at most 2000)
+  frame 1340 (44.67 s): 2628 pixels flicker in the picture (at most 2000)
+  frame 1343 (44.77 s): 2262 pixels flicker in the picture (at most 2000)
+  frame 1344 (44.80 s): 2246 pixels flicker in the picture (at most 2000)
+  frame 1345 (44.83 s): 2628 pixels flicker in the picture (at most 2000)
+  frame 1346 (44.87 s): 6038 pixels flicker in the picture (at most 2000)
+  frame 1347 (44.90 s): 4008 pixels flicker in the picture (at most 2000)
+  frame 1348 (44.93 s): 5864 pixels flicker in the picture (at most 2000)
+  frame 1379 (45.97 s): the loop: 91.9 % of the picture changes from the last frame to the first (95 % of frame changes inside the shots are 12.1 % or less)
+
+every frame: frame, picture, eye, text, then the raw picture, eye, text
+1	1997	0	0	5265	0	0
+2	2766	0	0	5277	0	0
+3	2550	0	0	5665	0	0
+4	1893	0	0	4246	0	0
+5	1207	0	0	3595	0	0
+6	1296	0	0	3431	0	0
+7	3170	0	0	7521	0	0
+8	2159	0	0	4227	0	0
+9	1614	0	0	3973	0	0
+10	1741	0	0	3973	0	0
+11	1522	0	0	3825	0	0
+12	1845	0	0	3915	0	0
+13	2619	0	0	3645	0	0
+14	1040	0	0	2053	0	0
+15	4200	0	0	6974	0	0
+16	485	0	0	1562	0	0
+17	862	0	0	1504	0	0
+18	2113	0	0	4004	0	0
+19	6326	0	0	8248	0	0
+20	2056	0	0	4596	0	0
+21	3309	0	0	5975	0	0
+22	4134	0	0	6168	0	0
+23	7050	0	0	14932	0	0
+24	4389	0	0	8562	0	0
+25	4780	0	0	10063	0	0
+26	3048	0	0	6734	0	0
+27	1916	0	0	4285	0	0
+28	975	0	0	2807	0	0
+29	2427	0	0	5615	0	0
+30	2435	0	0	5588	0	0
+31	2832	0	0	5758	0	0
+32	6975	0	0	9331	0	0
+33	6057	0	0	12123	0	0
+34	7051	0	0	11591	0	0
+35	1703	0	0	1833	0	0
+36	73	0	0	76	0	0
+37	1	0	0	1	0	0
+38	1	0	0	6	0	0
+39	1	0	0	2	0	0
+40	1	0	0	4	0	0
+41	4	0	0	5	0	0
+42	0	0	0	4	0	0
+43	5	0	0	5	0	0
+44	3	0	0	8	0	0
+45	0	0	0	0	0	0
+46	2	0	0	4	0	0
+47	0	0	0	1	0	0
+48	0	0	0	1	0	0
+49	307	0	0	324	0	0
+50	297	0	0	333	0	0
+51	0	0	0	5	0	0
+52	3	0	0	9	0	0
+53	1	0	0	10	0	0
+54	0	0	0	6	0	0
+55	1	0	0	10	0	0
+56	4	0	0	12	0	0
+57	2	0	0	10	0	0
+58	216	0	0	240	0	0
+59	521	0	0	568	0	0
+60	534	0	0	563	0	0
+61	534	0	0	574	0	0
+62	800	0	0	933	0	0
+63	946	0	0	1054	0	0
+64	959	0	0	1116	0	0
+65	940	0	0	1131	0	0
+66	978	0	0	1115	0	0
+67	554	0	0	711	0	0
+68	458	0	0	529	0	0
+69	231	0	0	269	0	0
+70	1	0	0	3	0	0
+71	70	0	0	73	0	0
+72	2765	0	0	2978	0	0
+73	16262	0	0	17236	0	0
+74	18676	0	0	19752	0	0
+75	20605	0	0	21672	0	0
+76	16652	0	0	18133	0	0
+77	3256	0	0	4567	0	0
+78	3003	0	0	4660	0	0
+79	3130	0	0	4540	0	0
+80	3544	0	0	5227	0	0
+81	16172	0	0	18116	0	0
+82	16243	0	0	17795	0	0
+83	14778	0	0	16344	0	0
+84	17801	0	0	19464	0	0
+85	3677	0	0	4951	0	0
+86	3520	0	0	4739	0	0
+87	3616	0	0	4343	0	0
+88	1398	0	0	2092	0	0
+89	1177	0	0	1955	0	0
+90	12581	0	0	14265	0	0
+91	13859	0	0	14675	0	0
+92	16253	0	0	17303	0	0
+93	17772	0	0	18909	0	0
+94	4557	0	0	6092	0	0
+95	5686	0	0	7178	0	0
+96	6147	0	0	7988	0	0
+97	5650	0	0	7402	0	0
+98	14347	0	0	15996	0	0
+99	19257	0	0	20539	0	0
+100	20174	0	0	21194	0	0
+101	22276	0	0	23368	0	0
+102	3518	0	0	4484	0	0
+103	3443	0	0	4524	0	0
+104	3418	0	0	4495	0	0
+105	3471	0	0	4769	0	0
+106	3762	0	0	5388	0	0
+107	2460	0	0	2699	0	0
+108	19	0	0	19	0	0
+109	1	0	0	1	0	0
+110	6	0	0	6	0	0
+111	1	0	0	1	0	0
+112	112	0	0	162	0	0
+113	139	0	0	167	0	0
+114	13	0	0	14	0	0
+115	2	0	0	5	0	0
+116	3	0	0	4	0	0
+117	3	0	0	3	0	0
+118	3	0	0	3	0	0
+119	10	0	0	10	0	0
+120	10	0	0	14	0	0
+121	4	0	0	4	0	0
+122	9	0	0	9	0	0
+123	150	0	0	190	0	0
+124	230	0	0	269	0	0
+125	13	0	0	13	0	0
+126	4	0	0	4	0	0
+127	4	0	0	7	0	0
+128	4	0	0	4	0	0
+129	4	0	0	4	0	0
+130	3	0	0	3	0	0
+131	5	0	0	5	0	0
+132	13	0	0	13	0	0
+133	89	0	0	108	0	0
+134	169	0	0	187	0	0
+135	1	0	0	1	0	0
+136	1	0	0	1	0	0
+137	1	0	0	1	0	0
+138	3	0	0	3	0	0
+139	0	0	0	0	0	0
+140	9	0	0	13	0	0
+141	0	0	0	0	0	0
+142	1	0	0	1	0	0
+143	0	0	0	0	0	0
+144	166	0	0	166	0	0
+145	19	0	0	19	0	0
+146	35	0	0	35	0	0
+147	43	0	0	43	0	0
+148	18	0	0	18	0	0
+149	17	0	0	17	0	0
+150	32	0	0	32	0	0
+151	78	0	0	78	0	0
+152	8	0	0	8	0	0
+153	2	0	0	2	0	0
+154	4	0	0	4	0	0
+155	9	0	0	9	0	0
+156	36	0	0	36	0	0
+157	8	0	0	8	0	0
+158	10	0	0	10	0	0
+159	6	0	0	6	0	0
+160	26	0	0	26	0	0
+161	19	0	0	19	0	0
+162	2	0	0	2	0	0
+163	6	0	0	6	0	0
+164	9	0	0	9	0	0
+165	104	0	0	104	0	0
+166	65	0	0	69	0	0
+167	2	0	0	2	0	0
+168	4	0	0	4	0	0
+169	33	0	0	34	0	0
+170	42	0	0	42	0	0
+171	32	0	0	32	0	0
+172	15	0	0	15	0	0
+173	64	0	0	65	0	0
+174	21	0	0	21	0	0
+175	1	0	0	2	0	0
+176	16	0	0	18	0	0
+177	36	0	0	36	0	0
+178	35	0	0	35	0	0
+179	210	0	0	210	0	0
+180	2	0	0	2	0	0
+181	0	0	0	2	0	0
+182	0	0	0	3	0	0
+183	204	0	0	209	0	0
+184	1	0	0	5	0	0
+185	3	0	0	11	0	0
+186	665	0	0	826	0	0
+187	0	0	0	3	0	0
+188	531	0	0	577	0	0
+189	12	0	0	17	0	0
+190	0	0	0	4	0	0
+191	21	0	0	24	0	0
+192	73	0	0	101	0	0
+193	0	0	0	5	0	0
+194	11	0	0	15	0	0
+195	1	0	0	2	0	0
+196	797	0	0	1050	0	0
+197	0	0	0	3	0	0
+198	0	0	0	6	0	0
+199	604	0	0	809	0	0
+200	1520	0	0	2253	0	0
+201	1466	0	0	2287	0	0
+202	1840	0	0	2342	0	0
+203	2088	0	0	2552	0	0
+204	1594	0	0	2477	0	0
+205	1266	0	0	1960	0	0
+206	702	0	0	1046	0	0
+207	0	0	0	5	0	0
+208	0	0	0	10	0	0
+209	1589	0	0	1599	0	0
+210	1855	0	0	1857	0	0
+211	1204	0	0	1255	0	0
+212	1490	0	0	1702	0	0
+213	886	0	0	893	0	0
+214	1195	0	0	1213	0	0
+215	1647	0	0	1649	0	0
+216	12	0	0	17	0	0
+217	858	0	0	1101	0	0
+218	623	0	0	707	0	0
+219	37	0	0	54	0	0
+220	0	0	0	2	0	0
+221	75	0	0	75	0	0
+222	8573	0	0	8624	0	0
+223	6518	0	0	9009	0	0
+224	7200	0	0	10558	0	0
+225	11277	0	0	17077	0	0
+226	13634	0	0	21481	0	0
+227	31649	0	0	37668	0	0
+228	14830	0	0	26243	0	0
+229	15517	0	0	24212	0	0
+230	15782	0	0	25493	0	0
+231	14250	0	0	25877	0	0
+232	30899	0	0	38222	0	0
+233	14843	0	0	25825	0	0
+234	15902	0	0	25615	0	0
+235	16972	0	0	26179	0	0
+236	14298	0	0	24127	0	0
+237	31728	0	0	37284	0	0
+238	8484	0	0	13427	0	0
+239	1649	0	0	2129	0	0
+240	5565	0	0	7590	0	0
+241	21371	0	0	24727	0	0
+242	30878	0	0	31400	0	0
+243	18065	0	0	18981	0	0
+244	13087	0	0	16846	0	0
+245	10445	0	0	13723	0	0
+246	4976	0	0	7272	0	0
+247	16862	0	0	17298	0	0
+248	11588	0	0	14548	0	0
+249	11255	0	0	12658	0	0
+250	12240	0	0	13308	0	0
+251	13110	0	0	15115	0	0
+252	13283	0	0	15660	0	0
+253	10067	0	0	10809	0	0
+254	10042	0	0	10689	0	0
+255	11607	0	0	13738	0	0
+256	11057	0	0	13014	0	0
+257	10857	0	0	11614	0	0
+258	10624	0	0	11489	0	0
+259	11681	0	0	14202	0	0
+260	11056	0	0	12660	0	0
+261	11024	0	0	11728	0	0
+262	11504	0	0	12801	0	0
+263	9160	0	0	9304	0	0
+264	0	0	0	0	0	0
+265	0	0	0	0	0	0
+266	2788	0	0	2795	0	0
+267	45	0	0	45	0	0
+268	46	0	0	46	0	0
+269	147	0	0	147	0	0
+270	69	0	0	71	0	0
+271	176	0	0	179	0	0
+272	646	0	0	648	0	0
+273	7287	0	0	7287	0	0
+274	316	0	0	317	0	0
+275	5	0	0	5	0	0
+276	0	0	0	0	0	0
+277	3	0	0	3	0	0
+278	0	0	0	0	0	0
+279	0	0	0	0	0	0
+280	2	0	0	2	0	0
+281	4	0	0	4	0	0
+282	3	0	0	3	0	0
+283	9	0	0	9	0	0
+284	762	0	0	812	0	0
+285	962	0	0	1025	0	0
+286	1135	0	0	1161	0	0
+287	706	0	0	733	0	0
+288	987	0	0	1089	0	0
+289	1734	0	0	1932	0	0
+290	1	0	0	1	0	0
+291	1	0	0	1	0	0
+292	3	0	0	3	0	0
+293	2	0	0	2	0	0
+294	1	0	0	1	0	0
+295	0	0	0	0	0	0
+296	2	0	0	2	0	0
+297	1	0	0	1	0	0
+298	1	0	0	1	0	0
+299	1	0	0	1	0	0
+300	2	0	0	2	0	0
+301	2	0	0	2	0	0
+302	2	0	0	2	0	0
+303	0	0	0	0	0	0
+304	0	0	0	0	0	0
+305	8	0	0	10	0	0
+306	1	0	0	1	0	0
+307	1	0	0	1	0	0
+308	40	0	0	40	0	0
+309	2102	0	0	2102	0	0
+310	1100	0	0	2435	0	0
+311	477	0	0	1693	0	0
+312	592	0	0	2444	0	0
+313	1334	0	0	4386	0	0
+314	757	0	0	3971	0	0
+315	783	0	0	3898	0	0
+316	1060	0	0	5005	0	0
+317	859	0	0	4475	0	0
+318	868	0	0	4616	0	0
+319	562	0	0	2917	0	0
+320	523	0	0	2962	0	0
+321	626	0	0	3039	0	0
+322	271	0	0	1446	0	0
+323	202	0	0	912	0	0
+324	225	0	0	1052	0	0
+325	75	0	0	385	0	0
+326	50	0	0	272	0	0
+327	4681	0	0	5670	0	0
+328	235	0	0	480	0	0
+329	3	0	0	7	0	0
+330	4	0	0	10	0	0
+331	1	0	0	5	0	0
+332	1	0	0	11	0	0
+333	1	0	0	5	0	0
+334	1	0	0	6	0	0
+335	1	0	0	3	0	0
+336	1	0	0	3	0	0
+337	0	0	0	7	0	0
+338	2	0	0	7	0	0
+339	0	0	0	10	0	0
+340	1	0	0	4	0	0
+341	0	0	0	4	0	0
+342	0	0	0	3	0	0
+343	1	0	0	6	0	0
+344	1	0	0	6	0	0
+345	0	0	0	8	0	0
+346	0	0	0	5	0	0
+347	2	0	0	7	0	0
+348	2	0	0	5	0	0
+349	2	0	0	6	0	0
+350	719	0	0	793	0	0
+351	258	0	0	297	0	0
+352	9	0	0	26	0	0
+353	11	0	0	34	0	0
+354	15	0	0	57	0	0
+355	15	0	0	99	0	0
+356	22	0	0	86	0	0
+357	16	0	0	70	0	0
+358	18	0	0	67	0	0
+359	16	0	0	57	0	0
+360	14	0	0	39	0	0
+361	7	0	0	18	0	0
+362	12	0	0	23	0	0
+363	5	0	0	32	0	0
+364	0	0	0	12	0	0
+365	0	0	0	4	0	0
+366	0	0	0	12	0	0
+367	0	0	0	18	0	0
+368	0	0	0	5	0	0
+369	2	0	0	18	0	0
+370	0	0	0	11	0	0
+371	0	0	0	17	0	0
+372	0	0	0	14	0	0
+373	1	0	0	17	0	0
+374	0	0	0	15	0	0
+375	0	0	0	16	0	0
+376	2	0	0	13	0	0
+377	0	0	0	16	0	0
+378	0	0	0	10	0	0
+379	1	0	0	50	0	0
+380	0	0	0	8	0	0
+381	0	0	0	8	0	0
+382	0	0	0	8	0	0
+383	0	0	0	5	0	0
+384	1	0	0	7	0	0
+385	0	0	0	15	0	0
+386	0	0	0	13	0	0
+387	0	0	0	12	0	0
+388	0	0	0	11	0	0
+389	301	0	0	384	0	0
+390	319	0	0	413	0	0
+391	0	0	0	41	0	0
+392	2	0	0	31	0	0
+393	1	0	0	28	0	0
+394	0	0	0	27	0	0
+395	0	0	0	32	0	0
+396	0	0	0	24	0	0
+397	0	0	0	31	0	0
+398	1	0	0	21	0	0
+399	0	0	0	27	0	0
+400	0	0	0	27	0	0
+401	0	0	0	27	0	0
+402	0	0	0	29	0	0
+403	0	0	0	26	0	0
+404	1	0	0	27	0	0
+405	0	0	0	30	0	0
+406	0	0	0	28	0	0
+407	2	0	0	33	0	0
+408	72	0	0	103	0	0
+409	70	0	0	101	0	0
+410	2	0	0	31	0	0
+411	0	0	0	27	0	0
+412	2	0	0	31	0	0
+413	1	0	0	22	0	0
+414	1	0	0	30	0	0
+415	1	0	0	31	0	0
+416	1	0	0	26	0	0
+417	1	0	0	29	0	0
+418	0	0	0	30	0	0
+419	15549	0	0	15549	0	0
+420	10	0	0	10	0	0
+421	0	0	0	0	0	0
+422	1	0	0	4	0	0
+423	0	0	0	0	0	0
+424	1	0	0	1	0	0
+425	6	0	0	6	0	0
+426	13	0	0	14	0	0
+427	862	0	0	956	0	0
+428	4672	0	0	4886	0	0
+429	5400	0	0	5677	0	0
+430	6466	0	0	6879	0	0
+431	7135	0	0	7536	0	0
+432	8221	0	0	8789	0	0
+433	8049	0	0	8913	0	0
+434	7459	0	0	8158	0	0
+435	6073	0	0	6944	0	0
+436	9389	0	0	10147	0	0
+437	2831	0	0	4304	0	0
+438	8309	0	0	9794	0	0
+439	2967	0	0	4050	0	0
+440	9439	0	0	12537	0	0
+441	5253	0	0	10664	0	0
+442	7032	0	0	12062	0	0
+443	4744	0	0	8677	0	0
+444	3515	0	0	6632	0	0
+445	6949	0	0	10125	0	0
+446	3809	0	0	6839	0	0
+447	3396	0	0	5772	0	0
+448	8170	0	0	10807	0	0
+449	7015	0	0	8671	0	0
+450	13712	0	0	15854	0	0
+451	8469	0	0	9288	0	0
+452	7870	0	0	8470	0	0
+453	8475	0	0	9100	0	0
+454	8341	0	0	9438	0	0
+455	13547	0	0	16128	0	0
+456	6532	0	0	8283	0	0
+457	7914	0	0	9041	0	0
+458	3668	0	0	4341	0	0
+459	11712	0	0	13423	0	0
+460	18034	0	0	22346	0	0
+461	9438	0	0	12451	0	0
+462	11729	0	0	13878	0	0
+463	8480	0	0	10318	0	0
+464	9006	0	0	10546	0	0
+465	13010	0	0	14463	0	0
+466	9981	0	0	11518	0	0
+467	17376	0	0	17728	0	0
+468	7664	0	0	8426	0	0
+469	4698	0	0	8204	0	0
+470	4298	0	0	7620	0	0
+471	4403	0	0	7578	0	0
+472	5119	0	0	10615	0	0
+473	9270	0	0	16531	0	0
+474	6386	0	0	11638	0	0
+475	6003	0	0	10531	0	0
+476	4270	0	0	8908	0	0
+477	6509	0	0	12224	0	0
+478	8613	0	0	13091	0	0
+479	4966	0	0	8509	0	0
+480	5947	0	0	9378	0	0
+481	4876	0	0	8686	0	0
+482	4997	0	0	9047	0	0
+483	7973	0	0	11454	0	0
+484	3995	0	0	6142	0	0
+485	3936	0	0	6152	0	0
+486	4317	0	0	6654	0	0
+487	3948	0	0	6191	0	0
+488	1972	0	0	2839	0	0
+489	6802	0	0	8437	0	0
+490	3081	0	0	5841	0	0
+491	4284	0	0	6382	0	0
+492	4946	0	0	6951	0	0
+493	5721	0	0	8439	0	0
+494	4439	0	0	9107	0	0
+495	5914	0	0	10152	0	0
+496	5852	0	0	10527	0	0
+497	5620	0	0	11406	0	0
+498	5799	0	0	10375	0	0
+499	4358	0	0	8253	0	0
+500	3392	0	0	6707	0	0
+501	5329	0	0	8340	0	0
+502	3608	0	0	6344	0	0
+503	3337	0	0	5876	0	0
+504	5645	0	0	8974	0	0
+505	3352	0	0	6363	0	0
+506	3939	0	0	6780	0	0
+507	3925	0	0	7449	0	0
+508	3440	0	0	5860	0	0
+509	5637	0	0	8682	0	0
+510	4605	0	0	7833	0	0
+511	4127	0	0	7567	0	0
+512	3587	0	0	6502	0	0
+513	4731	0	0	7349	0	0
+514	3264	0	0	6606	0	0
+515	6940	0	0	7118	0	0
+516	97	0	0	110	0	0
+517	6	0	0	27	0	0
+518	8	0	0	21	0	0
+519	7	0	0	14	0	0
+520	4	0	0	16	0	0
+521	4	0	0	12	0	0
+522	24	0	0	31	0	0
+523	14	0	0	26	0	0
+524	15	0	0	42	0	0
+525	151	0	0	162	0	0
+526	93	0	0	110	0	0
+527	13	0	0	34	0	0
+528	10	0	0	21	0	0
+529	3	0	0	14	0	0
+530	4	0	0	14	0	0
+531	12	0	0	22	0	0
+532	13	0	0	17	0	0
+533	19	0	0	34	0	0
+534	10	0	0	39	0	0
+535	149	0	0	168	0	0
+536	90	0	0	104	0	0
+537	10	0	0	30	0	0
+538	14	0	0	31	0	0
+539	2	0	0	8	0	0
+540	3	0	0	12	0	0
+541	10	0	0	23	0	0
+542	24	0	0	34	0	0
+543	14	0	0	22	0	0
+544	10	0	0	47	0	0
+545	160	0	0	188	0	0
+546	103	0	0	120	0	0
+547	4	0	0	30	0	0
+548	11	0	0	28	0	0
+549	3	0	0	12	0	0
+550	4	0	0	14	0	0
+551	15	0	0	24	0	0
+552	16	0	0	31	0	0
+553	12	0	0	23	0	0
+554	11	0	0	29	0	0
+555	165	0	0	196	0	0
+556	93	0	0	113	0	0
+557	5	0	0	18	0	0
+558	5	0	0	21	0	0
+559	7	0	0	20	0	0
+560	5	0	0	14	0	0
+561	10	0	0	19	0	0
+562	17	0	0	28	0	0
+563	15	0	0	25	0	0
+564	12	0	0	44	0	0
+565	181	0	0	203	0	0
+566	352	0	0	352	0	0
+567	0	0	0	0	0	0
+568	0	0	0	0	0	0
+569	0	0	0	0	0	0
+570	0	0	0	0	0	0
+571	19034	0	0	21215	0	0
+572	18146	0	0	20103	0	0
+573	4247	0	0	4266	0	0
+574	13586	0	0	13603	0	0
+575	12412	0	0	13043	0	0
+576	37184	0	0	38669	0	0
+577	3983	0	0	6185	0	0
+578	6362	0	0	6934	0	0
+579	2585	0	0	2875	0	0
+580	3279	0	0	4652	0	0
+581	117	0	0	118	0	0
+582	162	0	0	173	0	0
+583	57	0	0	115	0	0
+584	3	0	0	25	0	0
+585	30	0	0	126	0	0
+586	3398	0	0	3413	0	0
+587	5784	0	0	6014	0	0
+588	7703	0	0	7761	0	0
+589	7300	0	0	7945	0	0
+590	10990	0	0	11084	0	0
+591	7106	0	0	7327	0	0
+592	2071	0	0	2136	0	0
+593	2023	0	0	2061	0	0
+594	13	0	0	13	0	0
+595	183	0	0	513	0	0
+596	8413	0	0	8525	0	0
+597	8512	0	0	8896	0	0
+598	17038	0	0	17487	0	0
+599	16284	0	0	16674	0	0
+600	23027	0	0	23634	0	0
+601	19173	0	0	19480	0	0
+602	4534	0	0	4867	0	0
+603	28400	0	0	28579	0	0
+604	11	0	0	19	0	0
+605	12261	0	0	12647	0	0
+606	11973	0	0	12109	0	0
+607	10026	0	0	10324	0	0
+608	12184	0	0	12777	0	0
+609	12294	0	0	12527	0	0
+610	10477	0	0	11650	0	0
+611	12190	0	0	12341	0	0
+612	8580	0	0	8826	0	0
+613	4603	0	0	4739	0	0
+614	70	0	0	99	0	0
+615	25	0	0	45	0	0
+616	82	0	0	100	0	0
+617	3	0	0	3	0	0
+618	1926	0	0	1926	0	0
+619	2898	0	0	3336	0	0
+620	1989	0	0	2486	0	0
+621	1595	0	0	1933	0	0
+622	1232	0	0	1701	0	0
+623	856	0	0	1307	0	0
+624	963	0	0	1476	0	0
+625	2096	0	0	2648	0	0
+626	2450	0	0	3157	0	0
+627	2498	0	0	2936	0	0
+628	2604	0	0	2981	0	0
+629	1933	0	0	2267	0	0
+630	1890	0	0	2295	0	0
+631	1097	0	0	1530	0	0
+632	798	0	0	1418	0	0
+633	574	0	0	1134	0	0
+634	800	0	0	1239	0	0
+635	2333	0	0	2909	0	0
+636	2519	0	0	3041	0	0
+637	2593	0	0	2950	0	0
+638	2382	0	0	2649	0	0
+639	1508	0	0	1764	0	0
+640	1159	0	0	1419	0	0
+641	1110	0	0	1557	0	0
+642	506	0	0	1019	0	0
+643	633	0	0	1080	0	0
+644	2005	0	0	2725	0	0
+645	2401	0	0	2900	0	0
+646	2411	0	0	2712	0	0
+647	1994	0	0	2300	0	0
+648	1756	0	0	2025	0	0
+649	1124	0	0	1308	0	0
+650	742	0	0	903	0	0
+651	991	0	0	1426	0	0
+652	399	0	0	812	0	0
+653	706	0	0	1063	0	0
+654	2267	0	0	2809	0	0
+655	2458	0	0	2745	0	0
+656	2175	0	0	2378	0	0
+657	1988	0	0	2159	0	0
+658	1076	0	0	1155	0	0
+659	2802	0	0	3045	0	0
+660	1349	0	0	1475	0	0
+661	209	0	0	417	0	0
+662	797	0	0	1365	0	0
+663	1421	0	0	2240	0	0
+664	2225	0	0	2635	0	0
+665	2323	0	0	2878	0	0
+666	2752	0	0	3188	0	0
+667	1994	0	0	2777	0	0
+668	1643	0	0	2791	0	0
+669	1925	0	0	3055	0	0
+670	959	0	0	1619	0	0
+671	307	0	0	533	0	0
+672	21	0	0	112	0	0
+673	0	0	0	8	0	0
+674	0	0	0	2	0	0
+675	1	0	0	4	0	0
+676	0	0	0	1	0	0
+677	2	0	0	6	0	0
+678	4	0	0	13	0	0
+679	0	0	0	3	0	0
+680	0	0	0	3	0	0
+681	8	0	0	10	0	0
+682	2	0	0	6	0	0
+683	1	0	0	1	0	0
+684	0	0	0	2	0	0
+685	1	0	0	3	0	0
+686	1	0	0	2	0	0
+687	1	0	0	4	0	0
+688	0	0	0	0	0	0
+689	0	0	0	0	0	0
+690	3	0	0	9	0	0
+691	0	0	0	0	0	0
+692	0	0	0	3	0	0
+693	2	0	0	4	0	0
+694	0	0	0	1	0	0
+695	0	0	0	5	0	0
+696	2	0	0	4	0	0
+697	1	0	0	3	0	0
+698	103	0	0	106	0	0
+699	8800	0	0	9674	0	0
+700	10204	0	0	20619	0	0
+701	9434	0	0	20538	0	0
+702	24372	0	0	38141	0	0
+703	5695	0	0	12587	0	0
+704	8347	0	0	20335	0	0
+705	3027	0	0	8789	0	0
+706	5544	0	0	10506	0	0
+707	11450	0	0	19912	0	0
+708	9258	0	0	19183	0	0
+709	5706	0	0	13725	0	0
+710	5962	0	0	14137	0	0
+711	23635	0	0	36270	0	0
+712	5498	0	0	13640	0	0
+713	6046	0	0	13007	0	0
+714	4657	0	0	11362	0	0
+715	9128	0	0	17766	0	0
+716	7528	0	0	15718	0	0
+717	17780	0	0	31816	0	0
+718	11381	0	0	22453	0	0
+719	13879	0	0	25051	0	0
+720	12461	0	0	22215	0	0
+721	5411	0	0	12855	0	0
+722	3554	0	0	9189	0	0
+723	5332	0	0	10238	0	0
+724	8826	0	0	15223	0	0
+725	4817	0	0	11053	0	0
+726	4781	0	0	12652	0	0
+727	11054	0	0	20124	0	0
+728	15051	0	0	16084	0	0
+729	3255	0	0	3401	0	0
+730	1052	0	0	1198	0	0
+731	145	0	0	417	0	0
+732	90	0	0	616	0	0
+733	183	0	0	732	0	0
+734	385	0	0	1058	0	0
+735	452	0	0	1298	0	0
+736	482	0	0	1340	0	0
+737	457	0	0	1526	0	0
+738	441	0	0	1379	0	0
+739	189	0	0	1061	0	0
+740	111	0	0	646	0	0
+741	136	0	0	348	0	0
+742	614	0	0	968	0	0
+743	301	0	0	565	0	0
+744	1716	0	0	2481	0	0
+745	408	0	0	926	0	0
+746	602	0	0	1445	0	0
+747	1435	0	0	2509	0	0
+748	1063	0	0	2283	0	0
+749	1021	0	0	2604	0	0
+750	1400	0	0	3289	0	0
+751	1426	0	0	3442	0	0
+752	1547	0	0	3418	0	0
+753	1574	0	0	3782	0	0
+754	1550	0	0	3604	0	0
+755	1409	0	0	3258	0	0
+756	2019	0	0	4085	0	0
+757	4482	0	0	4836	0	0
+758	5	0	0	23	0	0
+759	8	0	0	20	0	0
+760	15	0	0	33	0	0
+761	7	0	0	24	0	0
+762	5	0	0	13	0	0
+763	3	0	0	11	0	0
+764	3	0	0	11	0	0
+765	7	0	0	15	0	0
+766	5	0	0	12	0	0
+767	3	0	0	6	0	0
+768	1	0	0	2	0	0
+769	3	0	0	10	0	0
+770	1	0	0	7	0	0
+771	1	0	0	7	0	0
+772	3	0	0	10	0	0
+773	186	0	0	186	0	0
+774	0	0	0	0	0	0
+775	449	0	0	449	0	0
+776	32	0	0	172	0	0
+777	24	0	0	776	0	0
+778	64	0	0	1347	0	0
+779	114	0	0	1758	0	0
+780	126	0	0	2141	0	0
+781	190	0	0	2571	0	0
+782	406	0	0	2849	0	0
+783	793	0	0	3671	0	0
+784	1495	0	0	4515	0	0
+785	6885	0	0	10831	0	0
+786	10933	0	0	16286	0	0
+787	9621	0	0	15735	0	0
+788	6173	0	0	12225	0	0
+789	6834	0	0	13353	0	0
+790	6387	0	0	12960	0	0
+791	6846	0	0	13307	0	0
+792	15195	0	0	21663	0	0
+793	19760	0	0	26614	0	0
+794	13976	0	0	23625	0	0
+795	10713	0	0	21389	0	0
+796	10831	0	0	22710	0	0
+797	11315	0	0	22457	0	0
+798	13483	0	0	24346	0	0
+799	20087	0	0	30176	0	0
+800	21194	0	0	29202	0	0
+801	19555	0	0	26762	0	0
+802	22936	0	0	30486	0	0
+803	17608	0	0	28098	0	0
+804	18623	0	0	30515	0	0
+805	19168	0	0	31326	0	0
+806	23051	0	0	34090	0	0
+807	24657	0	0	35735	0	0
+808	23158	0	0	33775	0	0
+809	21492	0	0	29991	0	0
+810	21426	0	0	28287	0	0
+811	24186	0	0	31180	0	0
+812	24719	0	0	32126	0	0
+813	22550	0	0	28715	0	0
+814	20846	0	0	27085	0	0
+815	19574	0	0	26055	0	0
+816	17600	0	0	24096	0	0
+817	16211	0	0	22597	0	0
+818	16330	0	0	20514	0	0
+819	8333	0	0	11422	0	0
+820	2364	0	0	5571	0	0
+821	1276	0	0	4663	0	0
+822	414	0	0	4293	0	0
+823	203	0	0	3794	0	0
+824	61	0	0	3341	0	0
+825	34	0	0	2691	0	0
+826	43	0	0	1822	0	0
+827	179	0	0	181	0	0
+828	8238	0	0	8400	0	0
+829	6879	0	0	13199	0	0
+830	18368	0	0	27903	0	0
+831	9209	0	0	13324	0	0
+832	11252	0	0	19197	0	0
+833	15450	0	0	24098	0	0
+834	7304	0	0	17021	0	0
+835	14802	0	0	20320	0	0
+836	15257	0	0	25635	0	0
+837	9100	0	0	15909	0	0
+838	16198	0	0	23522	0	0
+839	7466	0	0	14947	0	0
+840	24706	0	0	36923	0	0
+841	9789	0	0	13149	0	0
+842	8073	0	0	15182	0	0
+843	21921	0	0	31375	0	0
+844	6153	0	0	13736	0	0
+845	13989	0	0	21756	0	0
+846	18320	0	0	29311	0	0
+847	7778	0	0	13273	0	0
+848	19153	0	0	26905	0	0
+849	7944	0	0	15955	0	0
+850	24100	0	0	35537	0	0
+851	10607	0	0	14004	0	0
+852	7834	0	0	15535	0	0
+853	27876	0	0	34811	0	0
+854	5399	0	0	11726	0	0
+855	16172	0	0	22297	0	0
+856	26751	0	0	40564	0	0
+857	7656	0	0	13284	0	0
+858	17299	0	0	25127	0	0
+859	6126	0	0	14042	0	0
+860	18390	0	0	26283	0	0
+861	12673	0	0	17360	0	0
+862	7864	0	0	16466	0	0
+863	24941	0	0	30501	0	0
+864	7486	0	0	13338	0	0
+865	16799	0	0	23882	0	0
+866	26186	0	0	38542	0	0
+867	6281	0	0	11756	0	0
+868	22656	0	0	28984	0	0
+869	6109	0	0	13584	0	0
+870	14773	0	0	20797	0	0
+871	17419	0	0	22533	0	0
+872	6861	0	0	15556	0	0
+873	16719	0	0	22091	0	0
+874	5773	0	0	11899	0	0
+875	21643	0	0	30059	0	0
+876	20537	0	0	30231	0	0
+877	5137	0	0	10232	0	0
+878	35254	0	0	41809	0	0
+879	6792	0	0	13820	0	0
+880	10885	0	0	15834	0	0
+881	4696	0	0	4835	0	0
+882	651	0	0	708	0	0
+883	864	0	0	1501	0	0
+884	1951	0	0	2931	0	0
+885	817	0	0	2131	0	0
+886	1079	0	0	1966	0	0
+887	1431	0	0	2177	0	0
+888	1041	0	0	1426	0	0
+889	931	0	0	1230	0	0
+890	796	0	0	1168	0	0
+891	3011	0	0	4391	0	0
+892	3190	0	0	4875	0	0
+893	2543	0	0	4301	0	0
+894	4092	0	0	6126	0	0
+895	3538	0	0	5397	0	0
+896	2034	0	0	2336	0	0
+897	143	0	0	249	0	0
+898	8	0	0	74	0	0
+899	6	0	0	15	0	0
+900	102	0	0	347	0	0
+901	589	0	0	969	0	0
+902	1396	0	0	1871	0	0
+903	1746	0	0	2284	0	0
+904	1271	0	0	2259	0	0
+905	210	0	0	589	0	0
+906	164	0	0	191	0	0
+907	0	0	0	16	0	0
+908	178	0	0	213	0	0
+909	202	0	0	231	0	0
+910	1	0	0	26	0	0
+911	17	0	0	38	0	0
+912	16	0	0	34	0	0
+913	0	0	0	14	0	0
+914	0	0	0	10	0	0
+915	0	0	0	13	0	0
+916	0	0	0	21	0	0
+917	0	0	0	19	0	0
+918	1	0	0	12	0	0
+919	0	0	0	12	0	0
+920	0	0	0	12	0	0
+921	0	0	0	10	0	0
+922	0	0	0	17	0	0
+923	0	0	0	11	0	0
+924	0	0	0	12	0	0
+925	1	0	0	17	0	0
+926	0	0	0	11	0	0
+927	0	0	0	22	0	0
+928	1	0	0	19	0	0
+929	217	0	0	217	0	0
+930	11722	0	0	12238	0	0
+931	6093	0	0	10593	0	0
+932	6044	0	0	12371	0	0
+933	3278	0	0	5584	0	0
+934	10645	0	0	14778	0	0
+935	12753	0	0	18546	0	0
+936	6168	0	0	13027	0	0
+937	4778	0	0	8018	0	0
+938	5003	0	0	9987	0	0
+939	9753	0	0	18092	0	0
+940	7814	0	0	14287	0	0
+941	15513	0	0	25773	0	0
+942	6434	0	0	12122	0	0
+943	8486	0	0	16234	0	0
+944	13890	0	0	21067	0	0
+945	17781	0	0	25716	0	0
+946	7277	0	0	13513	0	0
+947	23704	0	0	30640	0	0
+948	11634	0	0	17076	0	0
+949	10212	0	0	15266	0	0
+950	9918	0	0	15215	0	0
+951	9717	0	0	13731	0	0
+952	10544	0	0	14650	0	0
+953	22423	0	0	27287	0	0
+954	10704	0	0	14336	0	0
+955	6465	0	0	8886	0	0
+956	7232	0	0	10281	0	0
+957	6728	0	0	8464	0	0
+958	8610	0	0	10182	0	0
+959	11126	0	0	12635	0	0
+960	15811	0	0	16570	0	0
+961	9389	0	0	10492	0	0
+962	14901	0	0	16092	0	0
+963	4717	0	0	6334	0	0
+964	6388	0	0	7742	0	0
+965	5851	0	0	7008	0	0
+966	4833	0	0	6201	0	0
+967	2300	0	0	3279	0	0
+968	452	0	0	752	0	0
+969	94	0	0	149	0	0
+970	41	0	0	114	0	0
+971	62	0	0	169	0	0
+972	59	0	0	155	0	0
+973	92	0	0	188	0	0
+974	47	0	0	119	0	0
+975	61	0	0	145	0	0
+976	74	0	0	140	0	0
+977	436	0	0	440	0	0
+978	216	0	0	234	0	0
+979	272	0	0	360	0	0
+980	167	0	0	310	0	0
+981	209	0	0	445	0	0
+982	693	0	0	1014	0	0
+983	848	0	0	1091	0	0
+984	1101	0	0	1298	0	0
+985	1644	0	0	1851	0	0
+986	2328	0	0	2542	0	0
+987	3005	0	0	3199	0	0
+988	3496	0	0	3672	0	0
+989	4269	0	0	4365	0	0
+990	4973	0	0	5095	0	0
+991	5444	0	0	5624	0	0
+992	5175	0	0	5444	0	0
+993	3795	0	0	4077	0	0
+994	3283	0	0	3530	0	0
+995	3988	0	0	4232	0	0
+996	4880	0	0	5014	0	0
+997	5216	0	0	5323	0	0
+998	3579	0	0	3756	0	0
+999	1910	0	0	2111	0	0
+1000	673	0	0	908	0	0
+1001	381	0	0	529	0	0
+1002	274	0	0	617	0	0
+1003	147	0	0	433	0	0
+1004	166	0	0	509	0	0
+1005	119	0	0	424	0	0
+1006	132	0	0	387	0	0
+1007	172	0	0	315	0	0
+1008	158	0	0	271	0	0
+1009	148	0	0	273	0	0
+1010	123	0	0	274	0	0
+1011	128	0	0	223	0	0
+1012	136	0	0	294	0	0
+1013	124	0	0	355	0	0
+1014	153	0	0	512	0	0
+1015	132	0	0	514	0	0
+1016	106	0	0	456	0	0
+1017	126	0	0	371	0	0
+1018	132	0	0	313	0	0
+1019	378	0	0	378	0	0
+1020	52	0	0	58	0	0
+1021	0	0	0	0	0	0
+1022	0	0	0	0	0	0
+1023	0	0	0	0	0	0
+1024	0	0	0	0	0	0
+1025	0	0	0	0	0	0
+1026	0	0	0	0	0	0
+1027	0	0	0	0	0	0
+1028	0	0	0	0	0	0
+1029	0	0	0	0	0	0
+1030	0	0	0	0	0	0
+1031	0	0	0	1	0	0
+1032	0	0	0	1	0	0
+1033	0	0	0	3	0	0
+1034	0	0	0	4	0	0
+1035	0	0	0	4	0	0
+1036	0	0	0	9	0	0
+1037	0	0	0	13	0	0
+1038	0	0	0	8	0	0
+1039	0	0	0	16	0	0
+1040	0	0	0	57	0	0
+1041	0	0	0	22	0	0
+1042	0	0	0	35	0	0
+1043	0	0	0	71	0	0
+1044	0	0	0	124	0	0
+1045	0	0	0	120	0	0
+1046	0	0	0	150	0	0
+1047	0	0	0	116	0	0
+1048	0	0	0	159	0	0
+1049	0	0	0	226	0	0
+1050	0	0	0	248	0	0
+1051	0	0	0	193	0	0
+1052	0	0	0	238	0	0
+1053	0	0	0	242	0	0
+1054	0	0	0	265	0	0
+1055	1232	0	0	1245	0	0
+1056	90	0	0	90	0	0
+1057	12	0	0	16	0	0
+1058	35	0	0	41	0	0
+1059	37	0	0	50	0	0
+1060	22	0	0	35	0	0
+1061	19	0	0	40	0	0
+1062	49	0	0	60	0	0
+1063	21	0	0	37	0	0
+1064	32	0	0	54	0	0
+1065	28	0	0	33	0	0
+1066	28	0	0	34	0	0
+1067	24	0	0	27	0	0
+1068	50	0	0	52	0	0
+1069	27	0	0	47	0	0
+1070	31	0	0	38	0	0
+1071	34	0	0	47	0	0
+1072	29	0	0	40	0	0
+1073	32	0	0	49	0	0
+1074	107	0	0	125	0	0
+1075	633	0	0	657	0	0
+1076	190	0	0	523	0	0
+1077	152	0	0	476	0	0
+1078	91	0	0	291	0	0
+1079	96	0	0	280	0	0
+1080	52	0	0	126	0	0
+1081	84	0	0	153	0	0
+1082	137	0	0	338	0	0
+1083	158	0	0	384	0	0
+1084	181	0	0	436	0	0
+1085	199	0	0	359	0	0
+1086	320	0	0	347	0	0
+1087	215	0	0	241	0	0
+1088	376	0	0	459	0	0
+1089	410	0	0	752	0	0
+1090	196	0	0	668	0	0
+1091	173	0	0	497	0	0
+1092	210	0	0	400	0	0
+1093	105	0	0	185	0	0
+1094	106	0	0	188	0	0
+1095	46	0	0	95	0	0
+1096	68	0	0	104	0	0
+1097	172	0	0	185	0	0
+1098	19074	0	0	19302	0	0
+1099	7445	0	0	9044	0	0
+1100	8512	0	0	9515	0	0
+1101	8551	0	0	9555	0	0
+1102	5132	0	0	6533	0	0
+1103	12528	0	0	13768	0	0
+1104	5050	0	0	6554	0	0
+1105	8248	0	0	9289	0	0
+1106	8972	0	0	10148	0	0
+1107	8172	0	0	9532	0	0
+1108	12102	0	0	13724	0	0
+1109	8117	0	0	9949	0	0
+1110	7915	0	0	9274	0	0
+1111	8052	0	0	8835	0	0
+1112	4883	0	0	5786	0	0
+1113	13657	0	0	15492	0	0
+1114	3978	0	0	5271	0	0
+1115	8078	0	0	9066	0	0
+1116	7180	0	0	8188	0	0
+1117	7357	0	0	8565	0	0
+1118	9001	0	0	9710	0	0
+1119	14980	0	0	15201	0	0
+1120	4746	0	0	5222	0	0
+1121	6315	0	0	6501	0	0
+1122	15163	0	0	15837	0	0
+1123	16834	0	0	16976	0	0
+1124	27630	0	0	27912	0	0
+1125	11093	0	0	11355	0	0
+1126	7868	0	0	8107	0	0
+1127	5849	0	0	6068	0	0
+1128	3795	0	0	3958	0	0
+1129	9835	0	0	10267	0	0
+1130	72	0	0	76	0	0
+1131	146	0	0	146	0	0
+1132	9689	0	0	10137	0	0
+1133	6701	0	0	6903	0	0
+1134	8685	0	0	9402	0	0
+1135	82	0	0	85	0	0
+1136	109	0	0	109	0	0
+1137	2549	0	0	2557	0	0
+1138	1891	0	0	3341	0	0
+1139	3611	0	0	5415	0	0
+1140	6409	0	0	7748	0	0
+1141	7821	0	0	8439	0	0
+1142	7104	0	0	7637	0	0
+1143	8830	0	0	10930	0	0
+1144	6564	0	0	7132	0	0
+1145	5142	0	0	5731	0	0
+1146	4191	0	0	5198	0	0
+1147	3447	0	0	4920	0	0
+1148	2601	0	0	4287	0	0
+1149	9204	0	0	9858	0	0
+1150	8518	0	0	9595	0	0
+1151	2718	0	0	3794	0	0
+1152	2098	0	0	2872	0	0
+1153	14186	0	0	15779	0	0
+1154	15464	0	0	17640	0	0
+1155	17129	0	0	18804	0	0
+1156	5960	0	0	7823	0	0
+1157	6820	0	0	9321	0	0
+1158	6881	0	0	9896	0	0
+1159	6974	0	0	9495	0	0
+1160	13758	0	0	16214	0	0
+1161	22056	0	0	23503	0	0
+1162	22970	0	0	24138	0	0
+1163	6553	0	0	7849	0	0
+1164	4251	0	0	5241	0	0
+1165	4434	0	0	5730	0	0
+1166	4792	0	0	6233	0	0
+1167	5336	0	0	7228	0	0
+1168	21320	0	0	23382	0	0
+1169	23366	0	0	26162	0	0
+1170	22808	0	0	25109	0	0
+1171	7330	0	0	9183	0	0
+1172	6471	0	0	8198	0	0
+1173	5335	0	0	6794	0	0
+1174	3704	0	0	5407	0	0
+1175	8839	0	0	9999	0	0
+1176	16015	0	0	16774	0	0
+1177	17118	0	0	18156	0	0
+1178	4754	0	0	5938	0	0
+1179	5061	0	0	6734	0	0
+1180	7013	0	0	9313	0	0
+1181	7884	0	0	10803	0	0
+1182	7884	0	0	10723	0	0
+1183	22245	0	0	24874	0	0
+1184	23357	0	0	26035	0	0
+1185	22773	0	0	24512	0	0
+1186	5434	0	0	6764	0	0
+1187	5001	0	0	6409	0	0
+1188	4535	0	0	5767	0	0
+1189	5060	0	0	6402	0	0
+1190	15004	0	0	15732	0	0
+1191	177	0	0	201	0	0
+1192	0	0	0	0	0	0
+1193	0	0	0	0	0	0
+1194	0	0	0	0	0	0
+1195	3	0	0	14	0	0
+1196	0	0	0	0	0	0
+1197	0	0	0	0	0	0
+1198	0	0	0	0	0	0
+1199	0	0	0	0	0	0
+1200	0	0	0	0	0	0
+1201	0	0	0	0	0	0
+1202	0	0	0	0	0	0
+1203	0	0	0	1	0	0
+1204	0	0	0	0	0	0
+1205	534	0	0	561	0	0
+1206	818	0	0	932	0	0
+1207	116	0	0	116	0	0
+1208	2	0	0	3	0	0
+1209	1	0	0	1	0	0
+1210	1	0	0	2	0	0
+1211	2	0	0	2	0	0
+1212	2	0	0	2	0	0
+1213	6	0	0	6	0	0
+1214	8	0	0	8	0	0
+1215	0	0	0	2	0	0
+1216	0	0	0	0	0	0
+1217	2	0	0	4	0	0
+1218	0	0	0	0	0	0
+1219	1	0	0	21	0	0
+1220	2	0	0	9	0	0
+1221	2	0	0	2	0	0
+1222	0	0	0	0	0	0
+1223	1	0	0	17	0	0
+1224	46	0	0	46	0	0
+1225	205	0	0	205	0	0
+1226	1	0	0	6	0	0
+1227	1	0	0	5	0	0
+1228	2	0	0	5	0	0
+1229	1	0	0	3	0	0
+1230	1	0	0	4	0	0
+1231	0	0	0	3	0	0
+1232	1	0	0	4	0	0
+1233	0	0	0	4	0	0
+1234	0	0	0	3	0	0
+1235	1	0	0	2	0	0
+1236	1	0	0	1	0	0
+1237	0	0	0	2	0	0
+1238	0	0	0	4	0	0
+1239	1	0	0	9	0	0
+1240	0	0	0	6	0	0
+1241	0	0	0	4	0	0
+1242	1	0	0	3	0	0
+1243	1	0	0	3	0	0
+1244	0	0	0	4	0	0
+1245	0	0	0	1	0	0
+1246	1	0	0	2	0	0
+1247	237	0	0	237	0	0
+1248	1173	0	0	1173	0	0
+1249	1316	0	0	1318	0	0
+1250	570	0	0	572	0	0
+1251	1644	0	0	1644	0	0
+1252	110	0	0	117	0	0
+1253	961	0	0	969	0	0
+1254	33	0	0	33	0	0
+1255	379	0	0	381	0	0
+1256	1937	0	0	1937	0	0
+1257	639	0	0	641	0	0
+1258	2372	0	0	2393	0	0
+1259	212	0	0	331	0	0
+1260	711	0	0	741	0	0
+1261	2009	0	0	2031	0	0
+1262	696	0	0	697	0	0
+1263	0	0	0	5	0	0
+1264	2	0	0	2	0	0
+1265	81	0	0	133	0	0
+1266	0	0	0	93	0	0
+1267	5	0	0	120	0	0
+1268	150	0	0	310	0	0
+1269	75	0	0	321	0	0
+1270	123	0	0	239	0	0
+1271	86	0	0	301	0	0
+1272	53	0	0	300	0	0
+1273	150	0	0	257	0	0
+1274	80	0	0	303	0	0
+1275	25	0	0	308	0	0
+1276	110	0	0	224	0	0
+1277	2	0	0	128	0	0
+1278	12	0	0	209	0	0
+1279	126	0	0	126	0	0
+1280	149	0	0	149	0	0
+1281	435	0	0	435	0	0
+1282	382	0	0	402	0	0
+1283	137	0	0	152	0	0
+1284	34	0	0	37	0	0
+1285	561	0	0	586	0	0
+1286	24	0	0	36	0	0
+1287	57	0	0	61	0	0
+1288	633	0	0	670	0	0
+1289	45	0	0	47	0	0
+1290	176	0	0	201	0	0
+1291	482	0	0	510	0	0
+1292	40	0	0	59	0	0
+1293	256	0	0	306	0	0
+1294	278	0	0	288	0	0
+1295	158	0	0	227	0	0
+1296	146	0	0	180	0	0
+1297	111	0	0	143	0	0
+1298	121	0	0	234	0	0
+1299	272	0	0	413	0	0
+1300	1057	0	0	1288	0	0
+1301	1608	0	0	1787	0	0
+1302	2356	0	0	2550	0	0
+1303	3203	0	0	3226	0	0
+1304	146	0	0	146	0	0
+1305	0	0	0	1	0	0
+1306	0	0	0	0	0	0
+1307	0	0	0	0	0	0
+1308	1	0	0	1	0	0
+1309	0	0	0	0	0	0
+1310	0	0	0	1	0	0
+1311	1	0	0	1	0	0
+1312	1	0	0	1	0	0
+1313	86	0	0	88	0	0
+1314	8985	0	0	9288	0	0
+1315	2189	0	0	5596	0	0
+1316	3139	0	0	6026	0	0
+1317	2628	0	0	6141	0	0
+1318	2524	0	0	5188	0	0
+1319	1490	0	0	4312	0	0
+1320	1117	0	0	3514	0	0
+1321	3551	0	0	8625	0	0
+1322	2434	0	0	4556	0	0
+1323	686	0	0	2146	0	0
+1324	2339	0	0	5233	0	0
+1325	1590	0	0	4080	0	0
+1326	1792	0	0	3722	0	0
+1327	3428	0	0	4874	0	0
+1328	1100	0	0	2348	0	0
+1329	4831	0	0	7756	0	0
+1330	548	0	0	1398	0	0
+1331	1618	0	0	3256	0	0
+1332	2011	0	0	3612	0	0
+1333	6397	0	0	8611	0	0
+1334	2790	0	0	7206	0	0
+1335	3635	0	0	6352	0	0
+1336	3975	0	0	5915	0	0
+1337	6754	0	0	14091	0	0
+1338	5086	0	0	9691	0	0
+1339	4936	0	0	10621	0	0
+1340	2628	0	0	5672	0	0
+1341	1766	0	0	3543	0	0
+1342	814	0	0	2166	0	0
+1343	2262	0	0	5507	0	0
+1344	2246	0	0	5362	0	0
+1345	2628	0	0	5518	0	0
+1346	6038	0	0	8066	0	0
+1347	4008	0	0	9907	0	0
+1348	5864	0	0	8687	0	0
+1349	1769	0	0	1972	0	0
+1350	388	0	0	467	0	0
+1351	23	0	0	71	0	0
+1352	33	0	0	97	0	0
+1353	36	0	0	72	0	0
+1354	39	0	0	77	0	0
+1355	41	0	0	81	0	0
+1356	33	0	0	68	0	0
+1357	29	0	0	91	0	0
+1358	34	0	0	73	0	0
+1359	33	0	0	65	0	0
+1360	32	0	0	88	0	0
+1361	47	0	0	81	0	0
+1362	42	0	0	81	0	0
+1363	32	0	0	66	0	0
+1364	38	0	0	85	0	0
+1365	46	0	0	86	0	0
+1366	253	0	0	304	0	0
+1367	23	0	0	75	0	0
+1368	24	0	0	67	0	0
+1369	27	0	0	77	0	0
+1370	29	0	0	76	0	0
+1371	19	0	0	74	0	0
+1372	30	0	0	73	0	0
+1373	22	0	0	55	0	0
+1374	353	0	0	428	0	0
+1375	166	0	0	218	0	0
+1376	34	0	0	81	0	0
+1377	38	0	0	90	0	0
+1378	42	0	0	85	0	0

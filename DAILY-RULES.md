@@ -32,9 +32,12 @@ Until gates 2, 3 and 5 exist, no new Short is built. A few days without videos i
 användes i 1500 talet danssjukan, vilken av dem som blir lättast. För middags videon idag håller inte i närheten måtten
 som jag vill, det är ingen action, inga händelser, bara en berättare och still bilder i princip + saker ser fortfarande
 dåliga ut."
-- **Figures:** the 2D figures of the dancing-plague Short (`engine/src/videos/style2d`, fig.tsx: big heads, costumes,
-  crowds), the easier of the two and still on main; the Emu figures (05fab8d, `engine/src/videos/emu`) only if the build
-  session shows they are faster. The Knopp 3D-card build (dinner v6e, Roberts 3D) is stopped and not published.
+- **Figures and world: the published Emu Short** ("Australia Lost a War to Emus (1932)", Jesper's screen recording
+  2026-11-28: "Denna EMU videon pratar jag om"), built with `engine/src/videos/emu` at commit 05fab8d (emutoon.ts,
+  castbase.ts, cardshade.ts, lensblur.ts, lights.ts): toon figures with round heads and simple uniforms as cards in a
+  rich 3D world (grass, trees, windmill, farmhouse, sky), thousands of animals or people in wide shots, big faces in
+  close-ups, soft depth of field. Restore that code from 05fab8d. The dancing-plague style (style2d) only if the Emu
+  code cannot be brought back quickly. The Knopp 3D-card build (dinner v6e, Roberts 3D) is stopped and not published.
 - **Backgrounds:** the fine 3D-rendered places (the cabin, the deck and new ones) as background pictures with a slow
   camera drift; the figures stand in front on one ground line, as in the dance Short. No 3D staging of the figures,
   so no depth, seat or cheat checks.

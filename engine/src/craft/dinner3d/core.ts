@@ -24,7 +24,7 @@ export const setCam = (id: string, frames: Mat[]) => { CAMS[id] = frames; };
 export const smooth = (u: number) => (u <= 0 ? 0 : u >= 1 ? 1 : u * u * (3 - 2 * u));
 
 /** the planted faults of the movement checks (scripts/moves_check.mjs): each must fail */
-export const PLANT = { spoonSwap: false, spoonNose: false, spoonFar: false, spoonGone: false, fistTurn: false, biteNose: false, oldBlink: false, hookHi: false, pudLift: false, capOutD5: false, capTurn0: false, seatHigh: false, pudOff: false, handIn: false, armIn: false, float: false, handInBook: false, frontArm: false };
+export const PLANT = { noSpoon: false, spoonSwap: false, spoonNose: false, spoonFar: false, spoonGone: false, fistTurn: false, biteNose: false, oldBlink: false, hookHi: false, pudLift: false, capOutD5: false, capTurn0: false, seatHigh: false, pudOff: false, handIn: false, armIn: false, float: false, handInBook: false, frontArm: false };
 
 /** a world point (metres) in picture pixels at frame fr of a shot, and its depth along the lens */
 export const project = (id: string, fr: number, p: [number, number, number]): [number, number, number] => {

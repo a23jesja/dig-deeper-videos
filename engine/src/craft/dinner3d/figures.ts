@@ -340,7 +340,7 @@ const KVOTE: PK = { fk: [[-10, 95], [-10, 125]] }, KMOUTH: PK = { face: "mouth" 
   KNOSE: PK = { face: "nose" }, KHIGH: PK = { fk: [[120, 85], [190, 40]] };
 export const PUD_KF: [number, PK][] = [[1.6, PCH], [3.2, PCH], [3.9, PMID], [4.69, PMID], [4.7, P4], [6.4, P4], [6.45, PUP], [9.3, PUP],      /* (4: the pudding kept at his mouth as he chews; it goes down on the cut, out of the picture in 5: coming down, his hand and the pudding flickered, flicker2 frames 157-166) */      /* (4: slower down from his mouth, no lift after: his striped sleeve moving fast flickered in the close shot, flicker2) */      /* (4: after the bite and his chewing, he lifts it to admire it, 5.75-6.2: the sailor's singles get something new every 1-2 s, the reviewer) */
   [9.9, PMID], [11.25, PMID],      /* (v6c, Jesper on v6's arms: 3 the pudding up before his chin (PMID), he eyes it (to his nose his near arm folded past 150 or reached across the boy's face); 7 up before his chin, the bite, back before his chin and down to his chest (high over his head and swung away, his near arm went up over the boy's head and out at him as if offering it): dinner_check 16) */
-  [11.8, PCH], [12.08, PCH], [12.1, PUP], [13.3, PUP], [13.9, PCH],      /* (8: the toast set on the cut, still in the shot: moving, his sleeve flickered) */ [18.9, PCH], [19.5, PUP], [20.2, PCH], [22.45, PCH], [23.45, KAYE], [24.6, KAYE]]      /* (13: no lift (his sleeve flickered); 15a: the pudding up toward his chin with his "Aye!", slow) */      /* (15a: his "Aye!" with the pudding lifted high on his near, seen side: his fist on the book lay behind him from every camera that sees his face) */      /* (13: he lifts it again with the chin up, 20.85-21.85) */      /* (12, the sailor alone: he lifts the pudding to show it and takes it back, 18.9-20.2, more life (the review); the boy is not in that picture) */;
+  [11.98, PCH], [12.08, PCH], [12.1, PUP], [13.3, PUP], [13.9, PCH],      /* (8: the toast set on the cut, still in the shot: moving, his sleeve flickered) */ [18.9, PCH], [19.5, PUP], [20.2, PCH], [22.45, PCH], [23.45, KAYE], [24.6, KAYE]]      /* (13: no lift (his sleeve flickered); 15a: the pudding up toward his chin with his "Aye!", slow) */      /* (15a: his "Aye!" with the pudding lifted high on his near, seen side: his fist on the book lay behind him from every camera that sees his face) */      /* (13: he lifts it again with the chin up, 20.85-21.85) */      /* (12, the sailor alone: he lifts the pudding to show it and takes it back, 18.9-20.2, more life (the review); the boy is not in that picture) */;
 /** the keyframe segment at t: [from, to, its eased weight] (after the last, his chest) */
 export const pudSeg = (t: number): [PK, PK, number, number, number] => { for (let k = 0; k + 1 < PUD_KF.length; k++) { const [a, A] = PUD_KF[k], [b, B] = PUD_KF[k + 1]; if (t >= a && t < b) return [A, B, span(t, a, b), k, k + 1]; } return [PCH, PCH, 0, -1, -1]; };      /* (k: the keyframes' indices; -1 after the toast: his chest) */      /* (after the toast: his chest, solved at 13.3 and 24) */
 /** a place on the drawn head in skeleton units (as the rig draws A's head: about the skull joint, turned with the face, tilted with the head) */
@@ -389,7 +389,7 @@ const crew = (id: string): Who => { const s = SH[id], y0 = headingIn(id, FACING.
   ease(m, T(6.4), { lean: 2, head: H(0) }, 0.01, F({ gaze: [-0.5, 0.2], smile: 0.6, smirk: 0.4, brow: 0.3, lid: 0.2 }));      // (5: eyeing the boy)
   ease(m, T(8.7), { lean: 12, head: H(-2) }, 0.01, F({ gaze: [0.8, 0], smile: 0.34, smirk: 0.8, brow: 0.05, lid: 0.25 }));      // (6: leans at the captain, points, mouth shut; set on the cut: eased over it his smile crossed 0.3 in the shot, rule 14)
   ease(m, T(9.55), { lean: 2, head: H(-8) }, 0.85, F({ gaze: [0.4, -0.5], smile: 0.9, brow: 0.8, lid: 0, wide: 0.2, mouth: 0.24 }));      // (7: admiring it high, then chewing)
-  ease(m, T(10.35), { lean: 4, head: H(6, 0) }, 0.25, F({ gaze: [0.4, 0.3], smile: 0.9, brow: 0.8, lid: 0.3, wide: 0, mouth: 0.24 }));      // (v6c: 7, leaning to the pudding before his chin, eyes down on it)
+  ease(m, T(10.4), { lean: 4, head: H(6, 0) }, 0.4, F({ gaze: [0.4, 0.3], smile: 0.9, brow: 0.8, lid: 0.3, wide: 0, mouth: 0.24 }));      // (v6c: 7, leaning to the pudding before his chin, eyes down on it)
   ease(m, T(11.0), { lean: 2, head: H(0) }, 0.4, F({ gaze: [0.4, 0], smile: 0.9, brow: 0.8, lid: 0.1, wide: 0.2, mouth: 0.24 }));      // (up again, chewing)
   ease(m, T(12.1), { lean: 2, head: H(0) }, 0.01, F({ gaze: [0.7, 0], smile: 0.6, smirk: 0.8, brow: 0.5, lid: 0.15 }));      // (8: the toast, a crooked smile)
   easeH(m, T(12.5), { lean: 2, head: H(5) }, 0.7, F({ gaze: [0.7, 0], smile: 0.7, smirk: 0.8, brow: 0.6, lid: 0.3 }));      // (a nod)
@@ -517,7 +517,7 @@ const crew = (id: string): Who => { const s = SH[id], y0 = headingIn(id, FACING.
         q = { ...qH, armL: [[lerp(aT[0][0], aH[0][0], v), lerp(aT[0][1], aH[0][1], v)], [lerp(aT[1][0], aH[1][0], v), lerp(aT[1][1], aH[1][1], v)]], handL: 0 } as Pose; }
       else q = { ...qH, handL: 0 } as Pose; }
     if (PLANT.frontArm && g >= 2.7 && g < 4.7) q = { ...q, armL: [[-70, 12], [-30, 0]] } as Pose;      // (the planted fault for the proof: in shot 3, a front view, his left arm swung back behind his back)
-    if (g >= 8.7 && g < 11.0) { const u = span(g, 8.7, 9.1) * (1 - span(g, 9.7, 11.0));      /* (v6d: lowered over 1.3 s: with 7 filled to 60 % drawn its speed change was 14.1, motion2) */      /* (eased in and out in the one shot 6-7) */ q = { ...q, armL: [[lerp(CREW_REST[0][0], 46, u), lerp(CREW_REST[0][1], 8, u)], [lerp(CREW_REST[1][0], 58, u), 0]] } as Pose; }      /* (the point stops short of the captain: at 62/74 the fingertip went into his beard, the review) */      // (6: pointing at the captain's chest: at his face the arm lay over it, the first check)
+    if (g >= 8.7 && g < 11.0) { const u = span(g, 8.7, 9.4) * (1 - span(g, 9.7, 11.0));      /* (v6d: lowered over 1.3 s: with 7 filled to 60 % drawn its speed change was 14.1, motion2) */      /* (eased in and out in the one shot 6-7) */ q = { ...q, armL: [[lerp(CREW_REST[0][0], 46, u), lerp(CREW_REST[0][1], 8, u)], [lerp(CREW_REST[1][0], 58, u), 0]] } as Pose; }      /* (the point stops short of the captain: at 62/74 the fingertip went into his beard, the review) */      // (6: pointing at the captain's chest: at his face the arm lay over it, the first check)
       // (13-14: his left hand up by his ear at "vote" (20.99), palm to the lens, kept up)
     // (v6d, choice B, 4: his right hand holds the pudding still before his chest; his left, holding the spoon up, comes to it and dips the bowl
     //  into the cream (to SPOON.dip), lifts the spoonful out and to his mouth's front corner (dipOut-contact), holds it there (to back), then
@@ -541,13 +541,13 @@ const crew = (id: string): Who => { const s = SH[id], y0 = headingIn(id, FACING.
         MISS[`crew 4 L ${lab}`] = best!.miss; MISS[`crew 4 L ${lab} bad`] = best!.bad; EO_OF.set(key2(best!.arm), best!.eo); return best!.arm; };
             // (the grip at the bite: the handle's way from the bowl tried at several angles (down, from back to front of his chin) and the arm kept that
       //  reaches nearest within rule 16, so the bowl, the spoon's length from his grip, lands at the mouth's corner)
-      let b1: { arm: [Seg2, Seg2]; miss: number } | null = null; for (let ad = 20; ad <= 160; ad += 10) { const w: V2 = [Math.cos((ad * Math.PI) / 180), Math.sin((ad * Math.PI) / 180)], G1: V2 = [bowlT[0] + w[0] * SPOON.Lr * rSk, bowlT[1] + w[1] * SPOON.Lr * rSk], arm = gripTo(G1, "bite"), mm = metric(arm, G1);
-        const dd = Math.abs(Math.hypot(mm.g[0] - bowlT[0], mm.g[1] - bowlT[1]) - SPOON.Lr * rSk) + (mm.bad > 0 ? 1e4 : 0); if (!b1 || dd < b1.miss) b1 = { arm, miss: dd }; }
+      let b1: { arm: [Seg2, Seg2]; miss: number; ad: number } | null = null; for (let ad = 20; ad <= 160; ad += 10) { const w: V2 = [Math.cos((ad * Math.PI) / 180), Math.sin((ad * Math.PI) / 180)], G1: V2 = [bowlT[0] + w[0] * SPOON.Lr * rSk, bowlT[1] + w[1] * SPOON.Lr * rSk], arm = gripTo(G1, "bite"), mm = metric(arm, G1);
+        const dd = Math.abs(Math.hypot(mm.g[0] - bowlT[0], mm.g[1] - bowlT[1]) - SPOON.Lr * rSk) + (mm.bad > 0 ? 1e4 : 0); if (!b1 || dd < b1.miss) b1 = { arm, miss: dd, ad }; }
       MISS["crew 4 L bite len"] = b1!.miss; const aG1 = b1!.arm, eo1 = EO_OF.get(key2(aG1)) ?? null; void GD;
       // (the dip found as the bite is: the spoon's way into the cream tried at several angles, his elbow placed as at the bite, and the arm kept
       //  that puts the bowl, the spoon's length from his grip, in the cream within rule 16 and nearest the bite's arm)
       let bD: { arm: [Seg2, Seg2]; miss: number } | null = null; for (let ad = -170; ad <= 0; ad += 10) { const w: V2 = [Math.cos((ad * Math.PI) / 180), Math.sin((ad * Math.PI) / 180)], Gd: V2 = [creamT[0] + w[0] * SPOON.Lr * rSk, creamT[1] + w[1] * SPOON.Lr * rSk], arm = gripTo(Gd, "dip", aG1, eo1), mm = metric(arm, Gd);
-        const dd = Math.abs(Math.hypot(mm.g[0] - creamT[0], mm.g[1] - creamT[1]) - SPOON.Lr * rSk) + (mm.bad > 0 ? 1e4 : 0) + 0.2 * (Math.abs(arm[0][0] - aG1[0][0]) + Math.abs(arm[0][1] - aG1[0][1])); if (!bD || dd < bD.miss) bD = { arm, miss: dd }; }
+        const dd = Math.abs(Math.hypot(mm.g[0] - creamT[0], mm.g[1] - creamT[1]) - SPOON.Lr * rSk) + (mm.bad > 0 ? 1e4 : 0) + 0.2 * (Math.abs(arm[0][0] - aG1[0][0]) + Math.abs(arm[0][1] - aG1[0][1])) + DIP_TURN * Math.abs(((ad + 360) % 360) - ((b1!.ad + 360) % 360)); if (!bD || dd < bD.miss) bD = { arm, miss: dd }; }      /* (and the spoon's line in the cream near its line at the bite: turned far between them its long handle flickered, flicker2 166-172) */
       const aD = bD!.arm, R0 = CREW_REST as [Seg2, Seg2], mixA = (a: [Seg2, Seg2], b: [Seg2, Seg2], u: number): [Seg2, Seg2] => [[a[0][0] + (b[0][0] - a[0][0]) * u, a[0][1] + (b[0][1] - a[0][1]) * u], [a[1][0] + (b[1][0] - a[1][0]) * u, a[1][1] + (b[1][1] - a[1][1]) * u]];
       // (the rest after the bite: his arm let down from the bite toward his hanging arm, the least way down that is within rule 16, the spoon held up)
       const aG2 = [0.35, 0.45, 0.55, 0.65, 0.75].map((u) => mixA(aG1, R0, u)).find((a) => metric(a, [0, 0]).bad === 0) ?? gripTo(G2, "rest", aG1); void G2; MISS["crew 4 L dip len"] = bD!.miss;      // (the dip and the rest with the elbow placed as at the bite: one family of arms, so the ways between stay within rule 16)
@@ -567,13 +567,13 @@ const crew = (id: string): Who => { const s = SH[id], y0 = headingIn(id, FACING.
       return { aD, aG1, aG2, pRD: path(REST0, aD), pDG: path(aD, aG1), pGR: path(aG1, aG2) }; };
     // (v6d B: he bends to the spoon, leaning in and nodding down to meet it, as one does: the arm, within rule 16, does not bring a hand
     //  nearer his mouth than about 3.5 of the pudding's radius)
-    if (id === "4") { const bw = span(g, SPOON.dipOut - 0.1, SPOON.contact) * (1 - span(g, SPOON.back + 0.05, SPOON.rest)), hq = q.head ?? [0, 0, 0];
+    if (id === "4") { const bw = span(g, SPOON.dipOut - 0.1, SPOON.contact),      /* (he stays bent to it, chewing, to the cut: straightening up after the bite his eyes flickered, flicker2 184-189) */ hq = q.head ?? [0, 0, 0];
       q = { ...q, lean: (q.lean ?? 0) + EAT_LEAN[0] * bw, head: [hq[0], hq[1] + EAT_LEAN[1] * bw, hq[2]] } as Pose; }
     const armsAt3 = (qq: Pose[], heading: number) => armsAt(qq[1], heading);      // (one pose, the bite's: the three keyframes and the ways between them solved together, so they meet)
     if (id === "4" && g >= 4.7 && SPOON_KF.get("4") !== null) { let kfs = SPOON_KF.get("4"); if (kfs === undefined) { SPOON_KF.set("4", null); const CASTk = { name: "crew", m, who: "sir" as const, seed: 26 } as unknown as Parameters<typeof poseAt>[0], ak = poseAt(CASTk, SPOON.dip), ac = poseAt(CASTk, SPOON.contact), ar = poseAt(CASTk, SPOON.rest);
         kfs = armsAt3([hook(SPOON.dip, ak.pose, ak.heading), hook(SPOON.contact, ac.pose, ac.heading), hook(SPOON.rest, ar.pose, ar.heading)], ak.heading); SPOON_KF.set("4", kfs); }
       const { aD, aG1, pRD, pDG, pGR } = kfs!, along = (P: [Seg2, Seg2][], u: number) => { const x = Math.max(0, Math.min(0.9999, u)) * (P.length - 1), i = Math.floor(x); return lA(P[i], P[i + 1], x - i); };
-      const arm = g < SPOON.dip ? along(pRD, 0.3 + 0.7 * span(g, 4.7, SPOON.dip))      /* (v6d: from the cut his hand is a third of the way up (in 3 it lies on the book, so the cut moves it anyway): from his hanging arm it moved 41 px a frame, motion2) */ : g < SPOON.dipOut ? aD : g < SPOON.contact ? along(pDG, span(g, SPOON.dipOut, SPOON.contact)) : g < SPOON.back ? aG1 : along(pGR, span(g, SPOON.back, SPOON.rest));
+      const arm = g < SPOON.dip ? along(pRD, 0.55 + 0.45 * span(g, 4.7, SPOON.dip))      /* (v6d: from the cut his hand is a third of the way up (in 3 it lies on the book, so the cut moves it anyway): from his hanging arm it moved 41 px a frame, motion2) */ : g < SPOON.dipOut ? aD : g < SPOON.contact ? along(pDG, span(g, SPOON.dipOut, SPOON.contact)) : g < SPOON.back ? aG1 : along(pGR, span(g, SPOON.back, SPOON.rest));
       q = { ...q, armL: arm, handL: 0 } as Pose; }
     if (g >= 23.1 && g < 23.65) q = armHuman(q, "R", heading);      // (v6c: 15a's lift to "Aye!" kept within rule 16)
     return q; };
@@ -688,6 +688,9 @@ const SPOON_LATER: number = typeof process !== "undefined" && process.env?.SPL ?
 const SPOON_LATER_X: number = typeof process !== "undefined" && process.env?.SPLX ? Number(process.env.SPLX) : 0.3;      // (and its foot that far out from the cream's middle, away from his head)
 const EAT_LEAN: number[] = typeof process !== "undefined" && process.env?.EATL ? JSON.parse(process.env.EATL) : [5, 10];      // (his lean in and nod down at the bite, degrees)
 const SPOON_HOOK = 15;
+const SP3_LOW: number = typeof process !== "undefined" && process.env?.SP3L ? Number(process.env.SP3L) : 1.5;
+const DIP_TURN: number = typeof process !== "undefined" && process.env?.DIPT ? Number(process.env.DIPT) : 0;
+const SPOON_INK: number = typeof process !== "undefined" && process.env?.SPINK ? Number(process.env.SPINK) : 2.2;      // (the spoon's ink, finer than the pudding's 7 and the figures' 9: a thin metal thing; at 3.5 its long handle moving fast flickered, flicker2 148-172)
 const PT_SPOON = ["7"];      // (the shots where his left arm points: the spoon points the way his hand does)
 const SPOON_DIP: number = typeof process !== "undefined" && process.env?.SPD ? Number(process.env.SPD) : 40;      // (degrees from upright, toward his body, the spoon stands as it dips into the cream)      // (degrees: the hook's spoon leans this far from upright, away from his head)
 /** v6d (the reviewer's choice B): a spoon of ordinary length. In the hook it stands in the pudding; in 2 (he is out of the picture) he takes it in
@@ -695,9 +698,11 @@ const SPOON_DIP: number = typeof process !== "undefined" && process.env?.SPD ? N
  *  then holds it up by the pudding (rest); in 5 (out of the picture) he puts it back, and from 7 on it stands in the pudding again.
  *  Lengths in the pudding's radius: grip to the bowl's middle Lr, the handle behind the grip butt, the bowl bl long and bw wide, up the handle
  *  seen out of the cream; near: the bowl's middle from the mouth's corner along v (down and back from the mouth, away from the nose) */
-export const SPOON = { dip: 159 / 30, dipOut: 162 / 30, contact: 175 / 30, back: 178 / 30, rest: 191 / 30, Lr: (typeof process !== "undefined" && process.env?.SPLR ? Number(process.env.SPLR) : 3.6), butt: 0.45, bl: 0.42, bw: 0.28, up: 3.0, near: (typeof process !== "undefined" && process.env?.SPN ? Number(process.env.SPN) : 0.49), v: (typeof process !== "undefined" && process.env?.SPV ? JSON.parse(process.env.SPV) : [0, 1]) as [number, number], held: 15 };
+export const SPOON = { dip: 158 / 30, dipOut: 161 / 30, contact: 179 / 30, back: 6.4, rest: 6.6, Lr: (typeof process !== "undefined" && process.env?.SPLR ? Number(process.env.SPLR) : 3.6), butt: 0.45, bl: 0.42, bw: 0.28, up: 3.0, near: (typeof process !== "undefined" && process.env?.SPN ? Number(process.env.SPN) : 0.52), v: (typeof process !== "undefined" && process.env?.SPV ? JSON.parse(process.env.SPV) : [0, 1]) as [number, number], held: 15 };
 type V2 = [number, number];
 const nrm = (v: V2): V2 => { const l = Math.hypot(v[0], v[1]) || 1; return [v[0] / l, v[1] / l]; };
+/** a turn from a to b the way that passes downward (the spoon tipped down past his side, never up past his face) */
+const turnDown = (a: V2, b: V2, u: number): V2 => { const t0 = Math.atan2(a[1], a[0]); let d = Math.atan2(b[1], b[0]) - t0; while (d > Math.PI) d -= 2 * Math.PI; while (d < -Math.PI) d += 2 * Math.PI; if (Math.sin(t0 + d / 2) < 0) d -= Math.sign(d) * 2 * Math.PI; const t = t0 + d * u; return [Math.cos(t), Math.sin(t)]; };
 const slerp2 = (a: V2, b: V2, u: number): V2 => { const t0 = Math.atan2(a[1], a[0]); let d = Math.atan2(b[1], b[0]) - t0; while (d > Math.PI) d -= 2 * Math.PI; while (d < -Math.PI) d += 2 * Math.PI; const t = t0 + d * u; return [Math.cos(t), Math.sin(t)]; };
 /** the spoon standing in the pudding (middle c, radius r, out: +1 when the pudding is on the picture's right of his head): where its handle
  *  leaves the cream (a), its top (b), its line up (d) */
@@ -710,7 +715,7 @@ export const mouthCornerSk = (sk: ReturnType<typeof solve>) => { const R = Math.
 /** the spoon's way at t in his hand (grip g, toward the bowl): held up (upH) in 3 and 4 until it goes down into the cream (creamT), out of it and
  *  along one eased curve through "side" to the mouth (bowlT), held there, then up again by the pudding */
 export const spoonDir = (t: number, g: V2, bowlT: V2, creamT: V2, upH: V2): V2 => { const uC = nrm([bowlT[0] - g[0], bowlT[1] - g[1]]), uD = nrm([creamT[0] - g[0], creamT[1] - g[1]]);
-  if (t < SPOON.dip) return slerp2(upH, uD, span(t, SH["4"].t0 - 0.3, SPOON.dip));      // (turned down to the cream first, low, as his hand comes up: held up as it rose it passed his chin) if (t < SPOON.dipOut) return uD;
+  if (t < SPOON.dip) return uD;      // (it points at the cream from the cut, as his hand, on the book in 3, comes a third of the way up: turned in the shot its long handle flickered, flicker2 148-154; turned at the end of 3 it passed his chin or the picture's foot)      // (turned down to the cream first, low, as his hand comes up: held up as it rose it passed his chin) if (t < SPOON.dipOut) return uD;
   // (one eased way from the cream to the mouth, its angle a curve through "side" (v6d: two eased turns stopped it at "side" and swung the bowl 58 px a frame))
   const side = nrm([uD[0] + uC[0], uD[1] + uC[1]]), ang = (v: V2) => Math.atan2(v[1], v[0]), a0 = ang(uD), wr = (y: number) => { while (y > Math.PI) y -= 2 * Math.PI; while (y < -Math.PI) y += 2 * Math.PI; return y; };
   const a1 = a0 + wr(ang(side) - a0), a2 = a1 + wr(ang(uC) - a1), sB = span(t, SPOON.dipOut, SPOON.contact), aB = (1 - sB) * (1 - sB) * a0 + 2 * sB * (1 - sB) * a1 + sB * sB * a2;
@@ -719,13 +724,13 @@ export const spoonDir = (t: number, g: V2, bowlT: V2, creamT: V2, upH: V2): V2 =
 /** the spoon as drawn (card px) in a frame of shot id: in the pudding (handle a-b) or in his left hand (handle from h0 to h1, the bowl's middle q,
  *  its way u); null when there is no pudding to draw (or, planted, spoonGone in 7) */
 export const inHand = (t: number) => t >= HANDOVER.give;
-export const spoonDrawn = (id: string, fr: number, pl: Placed, t: number) => { if (PLANT.spoonGone && id === "7") return null;
+export const spoonDrawn = (id: string, fr: number, pl: Placed, t: number) => { if ((PLANT.spoonGone && id === "7") || PLANT.noSpoon) return null;      // (noSpoon: a measuring render only)
   const f = pl.f, p = t < HANDOVER.give ? pudDrawn(id, fr, pl, t) : pudOf(pl, false, "R"), sk0 = jointPx(f, "skull"), out = Math.sign(p.c[0] - sk0[0]) || 1;
   // (planted spoonSwap: in 7 for two frames the spoon stands in his pudding)
   if (!inHand(t) || (PLANT.spoonSwap && id === "7" && (fr === 30 || fr === 31))) { const ip = t < HANDOVER.give ? spoonInPud(p.c, p.r, out, SPOON_HOOK, 0.2) : spoonInPud(p.c, p.r, out, SPOON_LATER, SPOON_LATER_X); return { mode: "pud" as const, full: false, ...ip, r: p.r, c: p.c }; }
   const sc = scaleOf(f.who), Wl = jointPx(f, "wrL"), Tl = jointPx(f, "tipL"), g: V2 = [Wl[0] + 0.45 * (Tl[0] - Wl[0]), Wl[1] + 0.45 * (Tl[1] - Wl[1])], mc = mouthCornerSk(f.sk), card = (q: V2): V2 => [f.x + q[0] * sc, footY(f.who) + q[1] * sc];
   const nk = jointPx(f, "neck"), sH = Math.sign(g[0] - nk[0]) || 1, hd = (SPOON.held * Math.PI) / 180, upH: V2 = [sH * Math.sin(hd), -Math.cos(hd)], creamT: V2 = [p.c[0] - out * 0.25 * p.r, p.c[1] - 0.3 * p.r];
-  const cw = card(mc.corner), bowlT: V2 = [cw[0] + mc.v[0] * SPOON.near * p.r, cw[1] + mc.v[1] * SPOON.near * p.r], u = id === "4" ? spoonDir(t, g, bowlT, creamT, upH) : t >= SH["4"].t1 && Math.hypot(Tl[0] - Wl[0], Tl[1] - Wl[1]) > 1 && PT_SPOON.includes(id) ? nrm([Tl[0] - Wl[0], Tl[1] - Wl[1] + 0.3 * Math.hypot(Tl[0] - Wl[0], Tl[1] - Wl[1])]) : upH;      /* (a little below his hand's line: level, its handle ran off the picture's edge in 7, rule 23) */      // (pointing, the spoon carries on from his forearm's line: he points with it)
+  const cw = card(mc.corner), bowlT: V2 = [cw[0] + mc.v[0] * SPOON.near * p.r, cw[1] + mc.v[1] * SPOON.near * p.r], u = id === "4" ? spoonDir(t, g, bowlT, creamT, upH) :  t >= SH["4"].t1 && Math.hypot(Tl[0] - Wl[0], Tl[1] - Wl[1]) > 1 && PT_SPOON.includes(id) ? nrm([Tl[0] - Wl[0], Tl[1] - Wl[1] + 0.3 * Math.hypot(Tl[0] - Wl[0], Tl[1] - Wl[1])]) : upH;      /* (a little below his hand's line: level, its handle ran off the picture's edge in 7, rule 23) */      // (pointing, the spoon carries on from his forearm's line: he points with it)
   let q: V2 = [g[0] + u[0] * SPOON.Lr * p.r, g[1] + u[1] * SPOON.Lr * p.r];
   // (planted, at the bite only: spoonNose the bowl on his nose; spoonFar the bowl's edge 30 px (in the picture) off the mouth's front corner, out
   //  past the corner beside the mouth. The handle follows from his grip)
@@ -761,7 +766,7 @@ export const crewExtra = (id: string): Extra => { const s = SH[id];
       // (the spoon: in the pudding, drawn over it; in his hand behind the pudding while its bowl is still inside it, then over everything, his
       //  left hand's fingers drawn again over its handle: the two-layer hand, the fingers before the handle and the palm behind it)
       const sp = spoonDrawn(id, fr, pl, t), behind = sp?.mode === "hand" && ((sp.q[0] - p.c[0]) / (1.1 * p.r)) ** 2 + ((sp.q[1] - p.c[1]) / (1.1 * p.r)) ** 2 < 1;
-      const drawSp = () => { if (!sp) return; h.save(); h.translate(0, 0); spoonDraw(h, sp, 3.5 * sc); h.restore(); };
+      const drawSp = () => { if (!sp) return; h.save(); h.translate(0, 0); spoonDraw(h, sp, SPOON_INK * sc); h.restore(); };
       if (behind) drawSp();
       pudShape(h, p.c, p.r, bitesAt(t), 7 * sc);      // (v6c: its ink 7, a prop's, finer than the figures' 9: at 9 the bowl's band and rim ran together)
       if (!behind) drawSp();

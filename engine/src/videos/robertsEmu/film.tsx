@@ -39,10 +39,10 @@ const a2: Shot = { id: "a2", blur: 3, focus: 3, drift: [1.0, 1.06, 10, 0], capY:
 const BELL: [number, number, number] = [2.38, -1.14, 1.62];
 const a3: Shot = { id: "a3", blur: 2.5, focus: 2.4, drift: [1.02, 1.08, 0, 10], capY: 1500,
   actors: [{ o: YOUNG, h: 1.48, at: (t) => [2.38 + 0.12 * Math.sin(t * 7), -0.98], lift: (t) => 0.22 + 0.08 * Math.sin(t * 7 + 1), rot: (t) => 8 * Math.sin(t * 7), sharp: true,
-    f: (t) => stand({ mode: "fall", expr: t % 0.6 < 0.3 ? "grin" : "shock", facing: 1, cheer: 1 }),
+    f: (t) => stand({ mode: "fall", expr: t < 0.5 ? "grin" : "shock", facing: 1, cheer: 1 }),
     hold: (p, h, t, toD) => { const q = proj("a3", BELL), b = toD([q[0], q[1]]), mid: P2 = [h[1][0], h[1][1] + 6];
       p.stroke([b, mid, [mid[0], mid[1] + 40]], 16, INK); p.stroke([b, mid, [mid[0], mid[1] + 40]], 9, "#c9b48a"); },
-    fx: (p, t, toD) => { const q = proj("a3", BELL), b = toD([q[0], q[1]]), u = (t * 7) % 2; if (u < 1) { p.g.globalAlpha = 1 - u; for (const r of [90, 140]) p.arc(b[0], b[1], r + 40 * u, r + 40 * u, 200, 340, 9, "#ffe9a8"); p.g.globalAlpha = 1; } } }] };
+    fx: (p, t, toD) => { const q = proj("a3", BELL), b = toD([q[0], q[1]]), u = (t * 7) % 2; if (u < 1) { p.g.globalAlpha = Math.sin(Math.PI * u); for (const r of [90, 140]) p.arc(b[0], b[1], r + 40 * u, r + 40 * u, 200, 340, 9, "#ffe9a8"); p.g.globalAlpha = 1; } } }] };
 
 // ---- a4 (3.6-4.8): high from the bow, the starboard lanterns go out pang-pang-pang; the crew below groan, slumping at each ----
 const A4_LAMPS: [number, number, number][] = [[-3.0, 2.2, 1.0], [0.0, 2.2, 1.0], [3.0, 2.2, 1.0]], A4_AT = [0.15, 0.5, 0.85];
@@ -253,7 +253,7 @@ const c10: Shot = { id: "c10", blur: 2.5, focus: 2.4, drift: [1.04, 1.1, 0, 10],
   actors: [{ o: YOUNG, h: 1.48, at: (t) => [2.38 + 0.12 * Math.sin(t * 8), -0.98], lift: (t) => (t > 0.4 ? 0.22 + 0.08 * Math.sin(t * 8 + 1) : 0), rot: (t) => (t > 0.4 ? 8 * Math.sin(t * 8) : 0), sharp: true, talk: (t) => talkOf(["w13"], t + 37.9),
     f: (t) => (t < 0.4 ? stand({ expr: "shock", facing: 1, reachR: [420, 400] }) : stand({ mode: "fall", expr: "shock", facing: 1, cheer: 1 })),
     hold: (p, h, t, toD) => { if (t < 0.4) telescope(p, h[1], -60 + 200 * ease(t / 0.4)); else { const q = proj("c10", BELL), b = toD([q[0], q[1]]), mid: P2 = [h[1][0], h[1][1] + 6]; p.stroke([b, mid, [mid[0], mid[1] + 40]], 16, INK); p.stroke([b, mid, [mid[0], mid[1] + 40]], 9, "#c9b48a"); } },
-    fx: (p, t, toD) => { if (t < 0.4) return; const q = proj("c10", BELL), b = toD([q[0], q[1]]), u = (t * 8) % 2; if (u < 1) { p.g.globalAlpha = 1 - u; for (const r of [90, 140]) p.arc(b[0], b[1], r + 40 * u, r + 40 * u, 200, 340, 9, "#ffe9a8"); p.g.globalAlpha = 1; } } },
+    fx: (p, t, toD) => { if (t < 0.4) return; const q = proj("c10", BELL), b = toD([q[0], q[1]]), u = (t * 8) % 2; if (u < 1) { p.g.globalAlpha = Math.sin(Math.PI * u); for (const r of [90, 140]) p.arc(b[0], b[1], r + 40 * u, r + 40 * u, 200, 340, 9, "#ffe9a8"); p.g.globalAlpha = 1; } } },
     ...([[1.0, -0.6], [0.2, 0.2], [1.6, 0.6], [-0.4, -0.9]] as [number, number][]).map((q, i): Actor => ({ o: crew(190 + i), h: 1.65, at: () => q, rot: (t) => (t < 0.7 + 0.1 * i ? 80 : 80 * (1 - ease((t - 0.7 - 0.1 * i) / 0.15))),
       f: (t) => (t < 0.7 + 0.1 * i ? stand({ mode: "fall", expr: "smile_closed", facing: 1 }) : stand({ mode: "sit", expr: "shock", facing: 1 })) }))] };
 

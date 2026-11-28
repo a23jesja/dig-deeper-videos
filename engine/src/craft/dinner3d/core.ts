@@ -10,6 +10,7 @@ import { CUT } from "../motion";
 import { Ink } from "../ink";
 import SPEC from "./shots.json";
 import CAMS_ALL from "./cams.json";
+import SEAT_J from "./props/seat.json";
 
 type G = CanvasRenderingContext2D;
 type P2 = [number, number];
@@ -24,7 +25,7 @@ export const setCam = (id: string, frames: Mat[]) => { CAMS[id] = frames; };
 export const smooth = (u: number) => (u <= 0 ? 0 : u >= 1 ? 1 : u * u * (3 - 2 * u));
 
 /** the planted faults of the movement checks (scripts/moves_check.mjs): each must fail */
-export const PLANT = { noSpoon: false, spoonSwap: false, spoonNose: false, spoonFar: false, spoonGone: false, fistTurn: false, biteNose: false, oldBlink: false, hookHi: false, pudLift: false, capOutD5: false, capTurn0: false, seatHigh: false, pudOff: false, handIn: false, armIn: false, float: false, handInBook: false, frontArm: false };
+export const PLANT = { noCapShadow: false, shadowOff: false, noSpoon: false, spoonSwap: false, spoonNose: false, spoonFar: false, spoonGone: false, fistTurn: false, biteNose: false, oldBlink: false, hookHi: false, pudLift: false, capOutD5: false, capTurn0: false, seatHigh: false, pudOff: false, handIn: false, armIn: false, float: false, handInBook: false, frontArm: false };
 
 /** a world point (metres) in picture pixels at frame fr of a shot, and its depth along the lens */
 export const project = (id: string, fr: number, p: [number, number, number]): [number, number, number] => {
@@ -128,6 +129,34 @@ export type Extra = { back?: (h: G, pl: Placed, fr: number) => void; front?: (h:
 
 /** the figures of a shot over the plate, the farthest first: contact shadows, the figure (with a piece's extra drawing in his own layer), the
  *  cabin's light on his fill (the ink kept), his cast shadow where the sun falls. Nothing but the rig's own two hands is drawn for a hand */
+/** v6e (the cloud's decision on the captain's feet, condition 1 and 3): in 2, 9, 11 and 15b, where he sits on the chest, the chest as the lens sees
+ *  it (its eight corners, hull), the floor just under its outline below each of his drawn shoes (his feet hang in front of its face: their soft shadow
+ *  lies on the floor there, never on the chest's face or a foot), and his seat's contact on its lid */
+export const CAP_SEATED = ["2", "9", "11", "15b"];
+const CAP_SH_K = 1.15;      // (the hanging foot's shadow a little stronger than a standing foot's: it falls on floor already in his body's shadow from the plate, where a fainter one was 8 levels darker at most and did not read)
+const SEAT0 = (SEAT_J as { things: { frames: number[][] }[] }).things[0].frames[0];
+export const chestHull = (id: string, fr: number): P2[] => { const [cx, cy, top, deg] = SEAT0, a = (deg * Math.PI) / 180, c = Math.cos(a), s = Math.sin(a), pts: P2[] = [];
+  for (const [u, v] of [[-0.28, -0.2], [0.28, -0.2], [0.28, 0.2], [-0.28, 0.2]]) for (const z of [0, top]) { const q = project(id, fr, [cx + u * c - v * s, cy + u * s + v * c, z]); pts.push([q[0], q[1]]); }
+  const P = [...pts].sort((p, q) => p[0] - q[0] || p[1] - q[1]), cr = (o: P2, a2: P2, b: P2) => (a2[0] - o[0]) * (b[1] - o[1]) - (a2[1] - o[1]) * (b[0] - o[0]), lo: P2[] = [], up: P2[] = [];
+  for (const p of P) { while (lo.length >= 2 && cr(lo[lo.length - 2], lo[lo.length - 1], p) <= 0) lo.pop(); lo.push(p); }
+  for (const p of [...P].reverse()) { while (up.length >= 2 && cr(up[up.length - 2], up[up.length - 1], p) <= 0) up.pop(); up.push(p); }
+  return [...lo.slice(0, -1), ...up.slice(0, -1)]; };
+/** the lowest y of a hull's outline at x (null when x is outside it) */
+export const hullBottom = (H: P2[], x: number): number | null => { let y: number | null = null; for (let i = 0; i < H.length; i++) { const a = H[i], b = H[(i + 1) % H.length]; if ((a[0] - x) * (b[0] - x) > 0 || a[0] === b[0]) continue; const t = (x - a[0]) / (b[0] - a[0]), yy = a[1] + t * (b[1] - a[1]); y = y === null ? yy : Math.max(y, yy); } return y; };
+/** where the captain's foot shadow lies for a drawn shoe from sx0 to sx1 with its sole at sy (picture px): on the floor just under the chest's outline,
+ *  or at the sole when the shoe is drawn on the floor beside it. PLANT.shadowOff: 30 px up onto the chest's face */
+export const capFootShadow = (id: string, fr: number, sx0: number, sx1: number, sy: number): { c: P2; hang: number } => { const H = chestHull(id, fr), xm = (sx0 + sx1) / 2, yb = hullBottom(H, xm);
+  const y0 = yb !== null && yb > sy ? yb + 3 : sy + 22; return { c: [xm, y0 - (PLANT.shadowOff ? 30 : 0)], hang: yb !== null && yb > sy ? y0 - sy : 0 }; };      // (on the floor beside the chest (11): 6 px under the sole, so it shows past the shoe)
+/** the lid's outline as the lens sees it, and the seat's soft contact shadow on it: an ellipse round his pelvis's point at the lid's height, the
+ *  hips' width across, clipped to the lid (never on the chest's face) */
+export const lidQuad = (id: string, fr: number): P2[] => { const [cx, cy, top, deg] = SEAT0, a = (deg * Math.PI) / 180, c = Math.cos(a), s = Math.sin(a);
+  return [[-0.28, -0.2], [0.28, -0.2], [0.28, 0.2], [-0.28, 0.2]].map(([u, v]) => { const q = project(id, fr, [cx + u * c - v * s, cy + u * s + v * c, top]); return [q[0], q[1]] as P2; }); };
+export const seatShadow = (id: string, fr: number, pl: Placed) => { const top = SEAT0[2], c0 = project(id, fr, [pl.at[0], pl.at[1], top]), ex = project(id, fr, [pl.at[0] + 0.13, pl.at[1], top]), ey = project(id, fr, [pl.at[0], pl.at[1] + 0.13, top]);
+  const L1 = Math.hypot(ex[0] - c0[0], ex[1] - c0[1]), L2 = Math.hypot(ey[0] - c0[0], ey[1] - c0[1]); return { c: [c0[0], c0[1] + (PLANT.shadowOff ? 30 : 0)] as P2, rx: Math.max(L1, L2), ry: Math.max(3, Math.min(L1, L2)) }; };
+const paintSeatShadow = (g: G, id: string, fr: number, pl: Placed) => { const L = lidQuad(id, fr), sh = seatShadow(id, fr, pl);
+  g.save(); g.beginPath(); L.forEach((q, i) => (i ? g.lineTo(q[0], q[1]) : g.moveTo(q[0], q[1]))); g.closePath(); g.clip();
+  g.setTransform(1, 0, 0, sh.ry / sh.rx, sh.c[0], sh.c[1]); const gr = g.createRadialGradient(0, 0, 0, 0, 0, sh.rx); gr.addColorStop(0, "rgba(14,7,5,0.42)"); gr.addColorStop(0.6, "rgba(14,7,5,0.25)"); gr.addColorStop(1, "rgba(14,7,5,0)");
+  g.fillStyle = gr; g.beginPath(); g.arc(0, 0, sh.rx, 0, Math.PI * 2); g.fill(); g.restore(); };
 export const paintFigures = (g: G, id: string, fr: number, whos: Who[], extras: Record<string, Extra> = {}) => {
   const order = whos.map((w) => ({ w, pl: placeOf(id, fr, w) })).sort((p, q) => q.pl.depth - p.pl.depth);
   for (const { w, pl } of order) {
@@ -135,11 +164,14 @@ export const paintFigures = (g: G, id: string, fr: number, whos: Who[], extras: 
     for (const ft of feetOf(id, fr, w, pl)) {      // contact shadows under each foot, smaller and fainter as it lifts
       const up = Math.min(ft.heel[2], ft.toe[2]), mid: [number, number] = [(ft.heel[0] + ft.toe[0]) / 2, (ft.heel[1] + ft.toe[1]) / 2];
       const c0 = project(id, fr, [mid[0], mid[1] + 0.02, 0]), ex = project(id, fr, [mid[0] + 0.16, mid[1] + 0.02, 0]), ey = project(id, fr, [mid[0], mid[1] + 0.12, 0]);
-      const an = jointPx(f, "an" + ft.side), c = toScreen(pl, [an[0], footY(f.who) - 4]);
+      const an = jointPx(f, "an" + ft.side); let c = toScreen(pl, [an[0], footY(f.who) - 4]), hangK = 1;
+      if (w.name === "captain" && CAP_SEATED.includes(id) && !PLANT.noCapShadow) { const xs = [ft.heelPx[0], ft.toePx[0]], fs = capFootShadow(id, fr, Math.min(...xs), Math.max(...xs), Math.max(ft.heelPx[1], ft.toePx[1])); c = fs.c; hangK = fs.hang > 4 ? CAP_SH_K : 1; }      /* (v6e: on the floor under the chest's outline, fainter and wider as the foot hangs over it) */
       const kl = 1 - 0.5 * Math.min(1, Math.max(0, up) / 0.04), L1 = Math.hypot(ex[0] - c0[0], ex[1] - c0[1]), L2 = Math.hypot(ey[0] - c0[0], ey[1] - c0[1]);
-      const rx = Math.max(4, kl * Math.max(L1, L2)), ry = Math.max(2, Math.min(0.6 * rx, kl * Math.min(L1, L2))), al = up > 0.004 ? 0.75 : 0.8;
-      g.save(); g.setTransform(1, 0, 0, ry / rx, c[0], c[1]); const gr = g.createRadialGradient(0, 0, 0, 0, 0, rx); gr.addColorStop(0, `rgba(14,7,5,${al})`); gr.addColorStop(0.55, `rgba(14,7,5,${al * 0.6})`); gr.addColorStop(1, "rgba(14,7,5,0)");
+      const rx = Math.max(4, kl * Math.max(L1, L2)) * (hangK < 1 ? 1.25 : 1), ry = Math.max(2, Math.min(0.6 * rx, kl * Math.min(L1, L2))) * (hangK < 1 ? 0.8 : 1), al = (up > 0.004 ? 0.75 : 0.8) * hangK;
+      g.save(); if (w.name === "captain" && CAP_SEATED.includes(id) && !PLANT.noCapShadow) { const Hc = chestHull(id, fr); g.beginPath(); g.rect(0, 0, FM.W, FM.H); Hc.forEach((q, i) => (i ? g.lineTo(q[0], q[1]) : g.moveTo(q[0], q[1]))); g.closePath(); g.clip("evenodd"); }      /* (v6e: on the floor only, never on the chest) */
+      g.setTransform(1, 0, 0, ry / rx, c[0], c[1]); const gr = g.createRadialGradient(0, 0, 0, 0, 0, rx); gr.addColorStop(0, `rgba(14,7,5,${al})`); gr.addColorStop(0.55, `rgba(14,7,5,${al * 0.6})`); gr.addColorStop(1, "rgba(14,7,5,0)");
       g.fillStyle = gr; g.beginPath(); g.arc(0, 0, rx, 0, Math.PI * 2); g.fill(); g.restore(); }
+    if (w.name === "captain" && CAP_SEATED.includes(id) && !PLANT.noCapShadow) paintSeatShadow(g, id, fr, pl);      // (v6e: his seat's soft contact on the lid, under him)
     OFF ??= cnv(); const o = OFF, h = o.getContext("2d", { willReadFrequently: true }) as unknown as G; h.setTransform(1, 0, 0, 1, 0, 0); h.clearRect(0, 0, FM.W, FM.H);
     h.setTransform(pl.z, 0, 0, pl.z, FM.W / 2 - pl.z * pl.cx, FM.H / 2 - pl.z * pl.cy);
     const ex = extras[w.name]; if (ex?.back) { h.save(); ex.back(h, pl, fr); h.restore(); }

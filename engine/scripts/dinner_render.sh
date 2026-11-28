@@ -7,7 +7,7 @@ cd "$(dirname "$0")/.."
 OUT=${OUT:?set OUT}; WAV=${WAV:-public/craft/dinner3d.wav}; export REMOTION_TMP="C:/Users/sweje/AppData/Local/Temp/remotion-tmp"
 BIG=out/din3d/_2x.mp4; LOG=${OUT%.mp4}
 MEM_START=8 MEM_LOG=$LOG.log bash scripts/mem_guard.sh npx remotion render src/index.ts Dinner3D "$BIG" --scale 2 --gl=angle --codec h264 --crf 10 --x264-preset veryfast --concurrency 1 --muted --browser-executable "C:/Program Files/Google/Chrome/Application/chrome.exe" < /dev/null > $LOG.out 2>&1 || { tail -5 $LOG.out; exit 1; }
-timeout 600 ffmpeg -nostdin -v error -y -i "$BIG" -i "$WAV" -map 0:v -map 1:a -vf "scale=1080:1920:flags=lanczos:in_range=pc:out_range=tv:in_color_matrix=bt601:out_color_matrix=bt709,format=yuv420p" -c:v libx264 -preset slow -crf 16 -x264-params aq-mode=3 -r 30 -fps_mode cfr -color_range tv -colorspace bt709 -color_primaries bt709 -color_trc bt709 -c:a aac -b:a 192k -shortest -movflags +faststart "$OUT" < /dev/null
+timeout 600 ffmpeg -nostdin -v error -y -i "$BIG" -i "$WAV" -map 0:v -map 1:a -vf "scale=1080:1920:flags=lanczos:in_range=pc:out_range=tv:in_color_matrix=bt601:out_color_matrix=bt709,format=yuv420p" -c:v libx264 -preset slow -crf ${CRF:-16} -x264-params aq-mode=3 -r 30 -fps_mode cfr -color_range tv -colorspace bt709 -color_primaries bt709 -color_trc bt709 -c:a aac -b:a 192k -shortest -movflags +faststart "$OUT" < /dev/null
 rm -f "$BIG"
 node scripts/dinner_check.mjs > $LOG-check.txt 2>&1 || true; tail -1 $LOG-check.txt
 node scripts/limb_check.mjs dinner > $LOG-limb.txt 2>&1 || true; tail -1 $LOG-limb.txt

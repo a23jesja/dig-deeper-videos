@@ -1,0 +1,20 @@
+hook 45°                   ok             mugg till: mouth 181, eyes 171, nose 130, beard 56 px
+hook -45°                  ok             mugg till: mouth 181, eyes 171, nose 130, beard 56 px
+hook 15°                   ok             mugg till: mouth 166, eyes 180, nose 146, beard 36 px
+hook 45°                   FÅNGAT (rätt)  mugg till: mouth INNE, eyes INNE, nose 36, beard INNE px
+hook -45°                  FÅNGAT (rätt)  mugg till: mouth INNE, eyes INNE, nose 36, beard INNE px
+hook 15°                   FÅNGAT (rätt)  mugg till: mouth INNE, eyes INNE, nose 36, beard INNE px
+häll 45°                   ok             halsens spets i öppningen, under kanten; korsar kanten i öppningen; flaska/hand till unga: mouth 147, eyes 143, nose 128; till rompiraten: mouth 134, eyes 146, nose 123, beard 53 px
+häll -45°                  ok             halsens spets i öppningen, under kanten; korsar kanten i öppningen; flaska/hand till unga: mouth 147, eyes 143, nose 128; till rompiraten: mouth 134, eyes 146, nose 123, beard 53 px
+häll 25°                   ok             halsens spets i öppningen, under kanten; korsar kanten i öppningen; flaska/hand till unga: mouth 140, eyes 138, nose 123; till rompiraten: mouth 135, eyes 146, nose 123, beard 54 px
+häll 45°                   FÅNGAT (rätt)  halsens spets UTANFÖR öppningen; korsar kanten I VÄGGEN; flaska/hand till unga: mouth 158, eyes 152, nose 135; till rompiraten: mouth 125, eyes 134, nose 112, beard 46 px
+häll -45°                  FÅNGAT (rätt)  halsens spets UTANFÖR öppningen; korsar kanten I VÄGGEN; flaska/hand till unga: mouth 129, eyes 126, nose 111; till rompiraten: mouth 127, eyes 135, nose 112, beard 47 px
+häll 25°                   FÅNGAT (rätt)  halsens spets UTANFÖR öppningen; korsar kanten I VÄGGEN; flaska/hand till unga: mouth 151, eyes 145, nose 129; till rompiraten: mouth 126, eyes 135, nose 112, beard 47 px
+dopp 45°                   ok             muggens botten 56 px under kanten; muggen x 124..208, öppningen 97..268 px; inne i kaggen; handen 1.8 enheter från greppet
+dopp -45°                  ok             muggens botten 56 px under kanten; muggen x -208..-124, öppningen -268..-97 px; inne i kaggen; handen 1.8 enheter från greppet
+dopp 25°                   ok             muggens botten 58 px under kanten; muggen x 123..207, öppningen 97..268 px; inne i kaggen; handen 1.8 enheter från greppet
+dopp 45°                   FÅNGAT (rätt)  muggens botten 56 px under kanten; muggen x 124..208, öppningen 166..337 px; GENOM VÄGGEN; handen 1.8 enheter från greppet
+dopp -45°                  FÅNGAT (rätt)  muggens botten 56 px under kanten; muggen x -208..-124, öppningen -337..-166 px; GENOM VÄGGEN; handen 1.8 enheter från greppet
+dopp 25°                   FÅNGAT (rätt)  muggens botten 58 px under kanten; muggen x 123..207, öppningen 165..335 px; GENOM VÄGGEN; handen 1.8 enheter från greppet
+
+Rätt bilder godkända: 9, rätt bilder fällda: 0, planterade fel fångade: 9, planterade fel missade: 0

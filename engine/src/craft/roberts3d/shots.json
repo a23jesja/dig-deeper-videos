@@ -1,0 +1,834 @@
+{
+ "note": "Roberts' bedtime (pirate week, Short 1): shot list v5 (granskning/roberts-laggdags/stopp-manus-bildlista.md, the reviewer's yes 28 Nov). figs: each figure's pelvis floor point on the deck (x along the ship toward the bow, y across, port negative); place per shot overrides it; facing: the floor direction; every camera holds still.",
+ "fps": 30,
+ "W": 1080,
+ "H": 1920,
+ "heights": {
+  "roberts": 1.86,
+  "rum": 1.62,
+  "young": 1.48,
+  "gunner": 1.78
+ },
+ "figs": {
+  "roberts": [
+   0.25,
+   -0.5
+  ],
+  "rum": [
+   -3.2,
+   1.55
+  ],
+  "young": [
+   2.0,
+   -1.0
+  ],
+  "gunner": [
+   -1.9,
+   -0.7
+  ]
+ },
+ "facing": {
+  "roberts": [
+   -0.6,
+   -0.8
+  ],
+  "rum": [
+   0.6,
+   -0.8
+  ],
+  "young": [
+   -0.5,
+   -0.85
+  ],
+  "gunner": [
+   0.6,
+   -0.8
+  ]
+ },
+ "shots": [
+  {
+   "id": "1",
+   "t0": 0.0,
+   "t1": 2.4,
+   "what": "Roberts (teacup) blows out the lantern on the barrel; behind him the rum pirate pours rum into his mouth and freezes as it goes dark; bell stroke on frame 1",
+   "static": true,
+   "light": "night",
+   "cam": {
+    "from": [
+     [
+      -2.6,
+      -3.0,
+      1.35
+     ],
+     [
+      -2.6,
+      -3.0,
+      1.35
+     ]
+    ],
+    "at": [
+     -0.9,
+     -1.0,
+     1.05
+    ],
+    "lens": 24,
+    "fstop": 4,
+    "focus": "roberts"
+   },
+   "place": {
+    "roberts": [
+     -1.25,
+     -1.35
+    ],
+    "rum": [
+     -0.4,
+     0.3
+    ]
+   }
+  },
+  {
+   "id": "2",
+   "t0": 2.4,
+   "t1": 4.1,
+   "what": "the young pirate hauls the bell rope; the lanterns along the rail go out one by one behind him",
+   "static": true,
+   "light": "night",
+   "cam": {
+    "from": [
+     [
+      0.4,
+      -0.2,
+      1.4
+     ],
+     [
+      0.4,
+      -0.2,
+      1.4
+     ]
+    ],
+    "at": [
+     2.25,
+     -1.1,
+     1.3
+    ],
+    "lens": 24,
+    "fstop": 4,
+    "focus": "young"
+   },
+   "place": {
+    "young": [
+     2.0,
+     -1.05
+    ]
+   }
+  },
+  {
+   "id": "3",
+   "t0": 4.1,
+   "t1": 5.8,
+   "what": "wide from the mast: the gunner and the young pirate groan as the lights go out left to right; the moon takes over",
+   "static": true,
+   "light": "night",
+   "cam": {
+    "from": [
+     [
+      1.6,
+      0.9,
+      2.3
+     ],
+     [
+      1.6,
+      0.9,
+      2.3
+     ]
+    ],
+    "at": [
+     -2.0,
+     -0.4,
+     0.9
+    ],
+    "lens": 18,
+    "fstop": 4,
+    "focus": "gunner"
+   },
+   "place": {
+    "gunner": [
+     -1.9,
+     -0.7
+    ],
+    "young": [
+     -2.6,
+     0.2
+    ]
+   }
+  },
+  {
+   "id": "4",
+   "t0": 5.8,
+   "t1": 8.7,
+   "what": "close: the rum pirate squints into his mug in the dark: 'Oi! I can't see my rum!'",
+   "static": true,
+   "light": "night",
+   "cam": {
+    "from": [
+     [
+      -1.2,
+      -1.3,
+      1.25
+     ],
+     [
+      -1.2,
+      -1.3,
+      1.25
+     ]
+    ],
+    "at": [
+     -2.4,
+     0.9,
+     1.1
+    ],
+    "lens": 30,
+    "fstop": 4,
+    "focus": "rum"
+   },
+   "place": {
+    "rum": [
+     -2.5,
+     1.0
+    ]
+   }
+  },
+  {
+   "id": "5",
+   "t0": 8.7,
+   "t1": 11.7,
+   "what": "Roberts taps LIGHTS AND CANDLES OUT AT 8 on the articles on the mast, then pours tea",
+   "static": true,
+   "light": "night",
+   "cam": {
+    "from": [
+     [
+      -1.6,
+      -1.8,
+      1.5
+     ],
+     [
+      -1.6,
+      -1.8,
+      1.5
+     ]
+    ],
+    "at": [
+     0.5,
+     0.0,
+     1.35
+    ],
+    "lens": 24,
+    "fstop": 4,
+    "focus": "roberts"
+   },
+   "place": {
+    "roberts": [
+     0.25,
+     -0.5
+    ]
+   }
+  },
+  {
+   "id": "6",
+   "t0": 11.7,
+   "t1": 13.4,
+   "what": "close: Roberts blows on his tea, little finger out, eyes shut",
+   "static": true,
+   "light": "night",
+   "cam": {
+    "from": [
+     [
+      -0.9,
+      -1.9,
+      1.55
+     ],
+     [
+      -0.9,
+      -1.9,
+      1.55
+     ]
+    ],
+    "at": [
+     0.25,
+     -0.5,
+     1.6
+    ],
+    "lens": 35,
+    "fstop": 4,
+    "focus": "roberts"
+   },
+   "place": {
+    "roberts": [
+     0.25,
+     -0.5
+    ]
+   }
+  },
+  {
+   "id": "7",
+   "t0": 13.4,
+   "t1": 15.9,
+   "what": "two-shot: Roberts in three-quarter in front; the rum pirate rises through the hatch behind him with a bottle",
+   "static": true,
+   "light": "night",
+   "cam": {
+    "from": [
+     [
+      0.6,
+      -2.0,
+      1.4
+     ],
+     [
+      0.6,
+      -2.0,
+      1.4
+     ]
+    ],
+    "at": [
+     -1.6,
+     0.0,
+     1.0
+    ],
+    "lens": 22,
+    "fstop": 4,
+    "focus": "roberts"
+   },
+   "place": {
+    "roberts": [
+     -0.3,
+     -1.3
+    ],
+    "rum": [
+     -1.7,
+     -0.05
+    ]
+   }
+  },
+  {
+   "id": "8",
+   "t0": 15.9,
+   "t1": 18.8,
+   "what": "the open deck in moonlight: the rum pirate plonks onto a barrel and pours; the young pirate holds out a cup; the gunner joins",
+   "static": true,
+   "light": "night",
+   "cam": {
+    "from": [
+     [
+      -0.4,
+      -1.6,
+      1.3
+     ],
+     [
+      -0.4,
+      -1.6,
+      1.3
+     ]
+    ],
+    "at": [
+     -3.0,
+     1.2,
+     0.9
+    ],
+    "lens": 20,
+    "fstop": 4,
+    "focus": "rum"
+   },
+   "place": {
+    "rum": [
+     -3.2,
+     1.55
+    ],
+    "young": [
+     -2.3,
+     0.6
+    ],
+    "gunner": [
+     -3.9,
+     0.4
+    ]
+   }
+  },
+  {
+   "id": "9",
+   "t0": 18.8,
+   "t1": 20.7,
+   "what": "object, under 2 s: a book opens by a candle stub, the title page A GENERAL HISTORY OF THE PYRATES, 1724",
+   "static": true,
+   "light": "night",
+   "cam": {
+    "from": [
+     [
+      3.2,
+      1.1,
+      1.15
+     ],
+     [
+      3.2,
+      1.1,
+      1.15
+     ]
+    ],
+    "at": [
+     3.6,
+     1.7,
+     0.72
+    ],
+    "lens": 35,
+    "fstop": 4,
+    "focus": "none"
+   },
+   "place": {}
+  },
+  {
+   "id": "10",
+   "t0": 20.7,
+   "t1": 23.2,
+   "what": "Roberts looks down at the deck, hopeful, lifts his teacup and nods",
+   "static": true,
+   "light": "night",
+   "cam": {
+    "from": [
+     [
+      1.6,
+      -1.6,
+      1.5
+     ],
+     [
+      1.6,
+      -1.6,
+      1.5
+     ]
+    ],
+    "at": [
+     0.25,
+     -0.5,
+     1.35
+    ],
+    "lens": 28,
+    "fstop": 4,
+    "focus": "roberts"
+   },
+   "place": {
+    "roberts": [
+     0.25,
+     -0.5
+    ]
+   }
+  },
+  {
+   "id": "11",
+   "t0": 23.2,
+   "t1": 24.2,
+   "what": "a cork shoots out of the rum pirate's bottle past the lens (no pan)",
+   "static": true,
+   "light": "night",
+   "cam": {
+    "from": [
+     [
+      -1.6,
+      0.2,
+      1.2
+     ],
+     [
+      -1.6,
+      0.2,
+      1.2
+     ]
+    ],
+    "at": [
+     -3.2,
+     1.5,
+     1.05
+    ],
+    "lens": 32,
+    "fstop": 4,
+    "focus": "rum"
+   },
+   "place": {
+    "rum": [
+     -3.2,
+     1.55
+    ]
+   }
+  },
+  {
+   "id": "12",
+   "t0": 24.2,
+   "t1": 25.7,
+   "what": "the rum pirate raises his mug: 'To the captain!'; the young pirate and the gunner raise theirs",
+   "static": true,
+   "light": "night",
+   "cam": {
+    "from": [
+     [
+      -0.9,
+      -0.9,
+      1.3
+     ],
+     [
+      -0.9,
+      -0.9,
+      1.3
+     ]
+    ],
+    "at": [
+     -3.0,
+     1.1,
+     1.1
+    ],
+    "lens": 22,
+    "fstop": 4,
+    "focus": "rum"
+   },
+   "place": {
+    "rum": [
+     -3.2,
+     1.55
+    ],
+    "young": [
+     -2.4,
+     0.7
+    ],
+    "gunner": [
+     -3.9,
+     0.6
+    ]
+   }
+  },
+  {
+   "id": "13",
+   "t0": 25.7,
+   "t1": 28.5,
+   "what": "wide in moonlight: Roberts' ship beside the captured ship; barrels swing across on a rope; the gunner and the young pirate haul them in",
+   "static": true,
+   "light": "night",
+   "cam": {
+    "from": [
+     [
+      4.8,
+      -1.6,
+      2.6
+     ],
+     [
+      4.8,
+      -1.6,
+      2.6
+     ]
+    ],
+    "at": [
+     -1.0,
+     2.2,
+     1.2
+    ],
+    "lens": 18,
+    "fstop": 4,
+    "focus": "gunner"
+   },
+   "place": {
+    "gunner": [
+     -0.6,
+     1.4
+    ],
+    "young": [
+     0.2,
+     1.5
+    ]
+   }
+  },
+  {
+   "id": "14",
+   "t0": 28.5,
+   "t1": 32.3,
+   "what": "three pirates roll a barrel and knock out the bung; drink spurts into mugs; the sky greys",
+   "static": true,
+   "light": "night",
+   "cam": {
+    "from": [
+     [
+      0.3,
+      -1.8,
+      1.3
+     ],
+     [
+      0.3,
+      -1.8,
+      1.3
+     ]
+    ],
+    "at": [
+     -1.8,
+     0.6,
+     0.8
+    ],
+    "lens": 20,
+    "fstop": 4,
+    "focus": "rum"
+   },
+   "place": {
+    "rum": [
+     -1.6,
+     0.5
+    ],
+    "young": [
+     -2.4,
+     -0.3
+    ],
+    "gunner": [
+     -0.8,
+     1.0
+    ]
+   }
+  },
+  {
+   "id": "15",
+   "t0": 32.3,
+   "t1": 35.1,
+   "what": "dawn, wide from the bow: a navy warship looms out of the grey; its gunports open one after another",
+   "static": true,
+   "light": "dawn",
+   "cam": {
+    "from": [
+     [
+      5.6,
+      0.0,
+      2.0
+     ],
+     [
+      5.6,
+      0.0,
+      2.0
+     ]
+    ],
+    "at": [
+     40.0,
+     -18.0,
+     3.0
+    ],
+    "lens": 24,
+    "fstop": 4,
+    "focus": "none"
+   },
+   "place": {}
+  },
+  {
+   "id": "16",
+   "t0": 35.1,
+   "t1": 37.8,
+   "what": "the rum pirate snores against a barrel, the gunner asleep beside; the bottle rolls away",
+   "static": true,
+   "light": "dawn",
+   "cam": {
+    "from": [
+     [
+      -1.6,
+      -0.4,
+      1.0
+     ],
+     [
+      -1.6,
+      -0.4,
+      1.0
+     ]
+    ],
+    "at": [
+     -3.3,
+     1.4,
+     0.5
+    ],
+    "lens": 24,
+    "fstop": 4,
+    "focus": "rum"
+   },
+   "place": {
+    "rum": [
+     -3.0,
+     1.2
+    ],
+    "gunner": [
+     -3.8,
+     0.7
+    ]
+   }
+  },
+  {
+   "id": "17",
+   "t0": 37.8,
+   "t1": 39.6,
+   "what": "the young pirate drops his telescope and clangs the bell: 'Wake up! Warship!'; the rum pirate jolts awake behind",
+   "static": true,
+   "light": "dawn",
+   "cam": {
+    "from": [
+     [
+      0.2,
+      -0.4,
+      1.3
+     ],
+     [
+      0.2,
+      -0.4,
+      1.3
+     ]
+    ],
+    "at": [
+     2.3,
+     -1.0,
+     1.25
+    ],
+    "lens": 22,
+    "fstop": 4,
+    "focus": "young"
+   },
+   "place": {
+    "young": [
+     2.0,
+     -0.85
+    ],
+    "rum": [
+     3.4,
+     0.9
+    ]
+   }
+  },
+  {
+   "id": "18",
+   "t0": 39.6,
+   "t1": 41.6,
+   "what": "low angle: Roberts pulls down his hat brim, sets his teacup on the rail, draws his cutlass",
+   "static": true,
+   "light": "dawn",
+   "cam": {
+    "from": [
+     [
+      0.6,
+      0.2,
+      0.6
+     ],
+     [
+      0.6,
+      0.2,
+      0.6
+     ]
+    ],
+    "at": [
+     1.2,
+     -1.7,
+     1.6
+    ],
+    "lens": 20,
+    "fstop": 4,
+    "focus": "roberts"
+   },
+   "place": {
+    "roberts": [
+     1.2,
+     -1.65
+    ]
+   }
+  },
+  {
+   "id": "19",
+   "t0": 41.6,
+   "t1": 42.7,
+   "what": "wide: the warship's broadside, smoke and a flash in the plate, a held push in, no shake",
+   "static": true,
+   "light": "dawn",
+   "cam": {
+    "from": [
+     [
+      5.6,
+      0.0,
+      2.0
+     ],
+     [
+      5.6,
+      0.0,
+      2.0
+     ]
+    ],
+    "at": [
+     40.0,
+     -18.0,
+     3.0
+    ],
+    "lens": 30,
+    "fstop": 4,
+    "focus": "none"
+   },
+   "place": {}
+  },
+  {
+   "id": "20",
+   "t0": 42.7,
+   "t1": 43.7,
+   "what": "close: the teacup alone on the rail, the tea rippling; where Roberts stood is empty",
+   "static": true,
+   "light": "dawn",
+   "cam": {
+    "from": [
+     [
+      1.0,
+      -1.2,
+      1.05
+     ],
+     [
+      1.0,
+      -1.2,
+      1.05
+     ]
+    ],
+    "at": [
+     1.4,
+     -2.15,
+     0.84
+    ],
+    "lens": 35,
+    "fstop": 4,
+    "focus": "none"
+   },
+   "place": {}
+  },
+  {
+   "id": "21",
+   "t0": 43.7,
+   "t1": 46.0,
+   "what": "the night before: Roberts' hand with the teacup reaches into frame toward the lantern; cut to frame 1",
+   "static": true,
+   "light": "night",
+   "cam": {
+    "from": [
+     [
+      -2.2,
+      -2.6,
+      1.3
+     ],
+     [
+      -2.2,
+      -2.6,
+      1.3
+     ]
+    ],
+    "at": [
+     -0.9,
+     -1.6,
+     1.0
+    ],
+    "lens": 28,
+    "fstop": 4,
+    "focus": "roberts"
+   },
+   "place": {
+    "roberts": [
+     -1.25,
+     -1.35
+    ]
+   }
+  }
+ ]
+}

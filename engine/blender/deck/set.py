@@ -3,13 +3,19 @@
 # set the cabin uses (../cabin/assets, licences in granskning/3d/licenser.md). No .blend files, no scripts from any pack.
 # The light: night (the lanterns along the rail lit, the moon low over the sea, cool) or dawn (the lanterns out, a grey sky brightening).
 #   blender -b --factory-startup --disable-autoexec --python set.py -- --look night|dawn [--draft]      (a look still for the STOPP)
-import bpy, json, math, os, sys
+#   blender ... --python set.py -- --shots <id|all> [--draft] [--cams-only]      (Roberts' plates: each shot in its own light, from src/craft/roberts3d/shots.json;
+#     writes public/rob3d/<id>/NNNN.jpg, src/craft/roberts3d/cam/<id>.json (each frame's projection) and out/rob3d/<id>/map.npz (the solid map))
+import bpy, json, math, os, sys, time
+import numpy as np
 from mathutils import Vector
 
 HERE = os.path.dirname(os.path.abspath(__file__)); ENGINE = os.path.abspath(os.path.join(HERE, "..", ".."))
 A = os.path.join(HERE, "..", "cabin", "assets"); T = os.path.join(HERE, "..", "cabin", "tex")
 argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
-LOOK = argv[argv.index("--look") + 1] if "--look" in argv else "night"; DRAFT = "--draft" in argv
+SHOTS_MODE = "--shots" in argv; WHICH = argv[argv.index("--shots") + 1] if SHOTS_MODE else None; CAMS_ONLY = "--cams-only" in argv
+RSPEC = json.load(open(os.path.join(ENGINE, "src", "craft", "roberts3d", "shots.json")))
+LOOK = argv[argv.index("--look") + 1] if "--look" in argv else (argv[argv.index("--light") + 1] if "--light" in argv else "night"); DRAFT = "--draft" in argv
+OBJ = {}      # object name -> kind, for the solid map
 W, H = 1080, 1920
 MOON = Vector((150, 18, 52))      # (the moon's disc; the moonlight comes from it, so its path on the sea lies under it, the reviewer 28 Nov)
 
@@ -61,9 +67,9 @@ def flat(name, col, rough=0.6, metal=0.0, emit=None, estr=0.0):
     m = bpy.data.materials.new(name); m.use_nodes = True; b = m.node_tree.nodes["Principled BSDF"]; b.inputs["Base Color"].default_value = hexc(col); b.inputs["Roughness"].default_value = rough; b.inputs["Metallic"].default_value = metal
     if emit: b.inputs["Emission Color"].default_value = hexc(emit); b.inputs["Emission Strength"].default_value = estr
     return m
-def box(name, x0, x1, y0, y1, z0, z1, mat):
+def box(name, x0, x1, y0, y1, z0, z1, mat, kind="prop"):
     bpy.ops.mesh.primitive_cube_add(size=1, location=((x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2)); o = bpy.context.active_object; o.name = name; o.scale = (x1 - x0, y1 - y0, z1 - z0)
-    bpy.ops.object.transform_apply(scale=True); o.data.materials.append(mat); return o
+    bpy.ops.object.transform_apply(scale=True); o.data.materials.append(mat); OBJ[name] = kind; return o
 def cyl(name, x, y, z0, z1, r, mat, rot=None):
     bpy.ops.mesh.primitive_cylinder_add(radius=r, depth=z1 - z0, location=(x, y, (z0 + z1) / 2), vertices=24); o = bpy.context.active_object; o.name = name; o.data.materials.append(mat)
     if rot: o.rotation_euler = rot
@@ -73,12 +79,15 @@ def imp(asset, loc, rotz=0.0, s=1.0):
     new = [o for o in bpy.data.objects if o not in before]; root = bpy.data.objects.new(asset + " root", None); sc.collection.objects.link(root)
     for o in new:
         if o.parent is None: o.parent = root
-    root.location = loc; root.rotation_euler = (0, 0, math.radians(rotz)); root.scale = (s, s, s); return root
+    root.location = loc; root.rotation_euler = (0, 0, math.radians(rotz)); root.scale = (s, s, s)
+    for o in new:
+        if o.type == "MESH": OBJ[o.name.split(".")[0]] = "prop"
+    return root
 
 PLANK = pbr("old_wooden_floor_02", 0.8, "#b89a7a"); RAIL = pbr("rough_wood", 1.5, "#7a5a40"); DARK = pbr("dark_wooden_planks", 1.0)
 # the deck: 12 m along the ship (x), 4.4 m across (y), the port rail at y = -2.2 (nearest the usual lens), starboard at +2.2
 X0, X1, Y0, Y1 = -6.0, 6.0, -2.2, 2.2
-box("deck", X0, X1, Y0, Y1, -0.12, 0.0, PLANK)
+box("deck", X0, X1, Y0, Y1, -0.12, 0.0, PLANK, "floor")
 for side, y in (("port", Y0), ("starboard", Y1)):
     box(f"{side} bulwark", X0, X1, y - 0.06, y + 0.06, 0.0, 0.72, DARK)
     box(f"{side} rail", X0, X1, y - 0.1, y + 0.1, 0.72, 0.8, RAIL)
@@ -99,8 +108,8 @@ for side, y in (("port", Y0 + 0.1), ("starboard", Y1 - 0.1)):
         a = Vector((0.6, 0.2, 8.6)); b = Vector((0.6 + dx, y, 0.8)); d = b - a; bpy.ops.mesh.primitive_cylinder_add(radius=0.018, depth=d.length, location=(a + b) / 2, vertices=8)
         r = bpy.context.active_object; r.name = f"shroud {side} {dx}"; r.rotation_euler = d.to_track_quat("Z", "Y").to_euler(); r.data.materials.append(ROPE)
 # things on deck (Poly Haven CC0)
-imp("barrel_03", (-3.2, 1.6, 0), 0, 1.0); imp("barrel_03", (-3.7, 1.2, 0), 40, 0.95); imp("wine_barrel_01", (-0.8, -1.6, 0), 15, 1.0)
-imp("wooden_crate_01", (3.6, 1.7, 0), 10, 1.0); imp("barrel_03", (-2.6, 1.75, 0), 20, 0.9); imp("wine_barrel_01", (4.6, -1.6, 0), 70, 1.0); imp("wooden_crate_01", (-5.0, 1.5, 0), 30, 1.0); imp("wooden_crate_01", (3.6, 1.7, 0.36), 70, 0.9)
+imp("wine_barrel_01", (-3.2, 1.6, 0), 0, 1.0); imp("wine_barrel_01", (-3.7, 1.2, 0), 40, 0.95); imp("wine_barrel_01", (-0.8, -1.6, 0), 15, 1.0)
+imp("wooden_crate_01", (3.6, 1.7, 0), 10, 1.0); imp("wine_barrel_01", (-2.6, 1.75, 0), 20, 0.9); imp("wine_barrel_01", (4.6, -1.6, 0), 70, 1.0); imp("wooden_crate_01", (-5.0, 1.5, 0), 30, 1.0); imp("wooden_crate_01", (3.6, 1.7, 0.36), 70, 0.9)
 LAMPS = []
 for k, (x, y) in enumerate(((-4.2, Y0), (-1.8, Y0), (1.2, Y0), (3.6, Y0), (-3.0, Y1), (0.0, Y1), (3.0, Y1))):      # the lanterns along both rails (night: lit)
     lr = imp("wooden_lantern_01", (x, y, 0.8), 0, 0.9)
@@ -135,4 +144,37 @@ else:
 camd = bpy.data.cameras.new("cam"); cam = bpy.data.objects.new("cam", camd); sc.collection.objects.link(cam); sc.camera = cam; camd.sensor_fit = "VERTICAL"; camd.sensor_height = 24.0; camd.lens = 18
 cam.location = (-5.2, -1.3, 1.6); tg = bpy.data.objects.new("tg", None); sc.collection.objects.link(tg); tg.location = (1.2, 0.5, 1.5)
 c = cam.constraints.new("TRACK_TO"); c.target = tg; c.track_axis = "TRACK_NEGATIVE_Z"; c.up_axis = "UP_Y"
+def projection():
+    dg = bpy.context.evaluated_depsgraph_get(); co = cam.evaluated_get(dg); Mw = co.matrix_world.inverted(); f = camd.lens / camd.sensor_height * H
+    R = Mw.to_3x3(); tr = Mw.to_translation(); P = []
+    for row in range(3):
+        if row == 0: a = [f * R[0][j] - (W / 2) * R[2][j] for j in range(3)]; b = f * tr[0] - (W / 2) * tr[2]
+        elif row == 1: a = [-f * R[1][j] - (H / 2) * R[2][j] for j in range(3)]; b = -f * tr[1] - (H / 2) * tr[2]
+        else: a = [-R[2][j] for j in range(3)]; b = -tr[2]
+        P.append(a + [b])
+    return P, co.matrix_world.copy()
+GRID = 20
+def ray_map(Mwc):
+    dg = bpy.context.evaluated_depsgraph_get(); f = camd.lens / camd.sensor_height * H
+    origin = Mwc.to_translation(); R = Mwc.to_3x3(); fwd = -(R @ Vector((0, 0, 1)))
+    nx, ny = W // GRID, H // GRID; depth = np.full((ny, nx), np.inf, np.float32); kind = np.zeros((ny, nx), np.uint8)
+    kinds = sorted(set(OBJ.values())); kid = {k: i + 1 for i, k in enumerate(kinds)}
+    for j in range(ny):
+        for i in range(nx):
+            px, py = (i + 0.5) * GRID, (j + 0.5) * GRID; d = R @ Vector(((px - W / 2) / f, -(py - H / 2) / f, -1.0)); d.normalize()
+            hit, loc, nor, idx, ob, _ = sc.ray_cast(dg, origin, d)
+            if hit: depth[j, i] = (loc - origin).dot(fwd); kind[j, i] = kid.get(OBJ.get(ob.name.split(".")[0], "prop"), 0)
+    return depth, kind, kinds
+if SHOTS_MODE:
+    camd.dof.use_dof = False
+    for shot in [q for q in RSPEC["shots"] if (WHICH == "all" or q["id"] == WHICH) and q.get("light", "night") == LOOK]:
+        C = shot["cam"]; cam.location = Vector(C["from"][0]); tg.location = Vector(C["at"]); camd.lens = C["lens"]; bpy.context.view_layer.update()
+        n = int(math.floor((shot["t1"] - shot["t0"]) * RSPEC["fps"] + 0.5)); P, Mwc = projection(); t0 = time.time()
+        camdir = os.path.join(ENGINE, "src", "craft", "roberts3d", "cam"); os.makedirs(camdir, exist_ok=True); json.dump({"id": shot["id"], "frames": [P] * n}, open(os.path.join(camdir, shot["id"] + ".json"), "w"))
+        if CAMS_ONLY: print("CAMS", shot["id"], flush=True); continue
+        outp = os.path.join(ENGINE, "public", "rob3d", shot["id"]); outd = os.path.join(ENGINE, "out", "rob3d", shot["id"]); os.makedirs(outp, exist_ok=True); os.makedirs(outd, exist_ok=True)
+        dep, kin, kinds = ray_map(Mwc); np.savez_compressed(os.path.join(outd, "map.npz"), depth=np.stack([dep]), kind=np.stack([kin]), kinds=np.array(kinds))
+        sc.render.filepath = os.path.join(outp, "0001.jpg"); bpy.ops.render.render(write_still=True)
+        print(f"SHOT {shot['id']} ({LOOK}): 1 plate in {time.time() - t0:.1f} s", flush=True)
+    sys.exit(0)
 out = os.path.join(ENGINE, "out", "deck"); os.makedirs(out, exist_ok=True); sc.render.filepath = os.path.join(out, f"look-{LOOK}.jpg"); bpy.ops.render.render(write_still=True); print("LOOK", LOOK, flush=True)

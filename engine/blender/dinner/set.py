@@ -130,7 +130,8 @@ imp("dutch_ship_medium", (TABLE[0] - 0.22, TABLE[1] + 0.12, TOP + 0.03), 70, 0.0
 imp("wooden_candlestick", (TABLE[0] + 0.1, TABLE[1] + 0.2, TOP), 0, 1.0)
 imp("carved_wooden_plate", (TABLE[0] + 0.32, TABLE[1] + 0.16, TOP), 0, 1.0)
 imp("jug_01", (TABLE[0] - 0.42, TABLE[1] - 0.1, TOP), 120, 1.0)
-imp("vintage_oil_lamp", (TABLE[0] - 0.05, TABLE[1] + 0.26, TOP), 0, 0.55)
+LAMP = imp("vintage_oil_lamp", (TABLE[0] - 0.05, TABLE[1] + 0.26, TOP), 0, 0.55); LAMP_HOME = LAMP.location.copy()
+LAMP_CHEAT = {"1": (0.22, 0.0)}      # (v6c, the reviewer on v6c: in the hook its black chimney stood straight over the pudding's cherry and read as a stalk the pudding has nowhere else; moved 22 cm aside in shot 1 only)
 CHEST = imp("treasure_chest", (1.55, 2.45, 0), -18, 1.0); CHEST_HOME = (CHEST.location.copy(), CHEST.rotation_euler.copy(), CHEST.scale.copy())      # (step 2: carried in piece S2, moved by props/S2.json)
 imp("wine_barrel_01", (-1.85, 2.55, 0), 20, 1.0); imp("barrel_03", (-1.95, 1.95, 0), 0, 0.95); imp("barrel_03", (-1.4, 2.75, 0), 40, 0.9)
 imp("wooden_crate_01", (1.95, 1.3, 0), 88, 1.0); imp("wooden_crate_01", (1.95, 1.3, 0.35), 80, 0.9)
@@ -265,6 +266,7 @@ def park_standins():
 
 def pose_shot(shot, t):
     pose_cam(shot, t)
+    dx, dy = LAMP_CHEAT.get(shot["id"], (0.0, 0.0)); LAMP.location = (LAMP_HOME[0] + dx, LAMP_HOME[1] + dy, LAMP_HOME[2])
     # the carried chest (piece S2): its place every frame from the figures' code (scripts/moves_props.mjs), at 0.55 of its size, its long
     # axis along the way (x), its lock toward the lens; elsewhere it stands in its corner as in step 1
     BOUNCE.energy = shot.get("bounce", 0)

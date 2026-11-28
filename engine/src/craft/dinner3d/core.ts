@@ -24,7 +24,7 @@ export const setCam = (id: string, frames: Mat[]) => { CAMS[id] = frames; };
 export const smooth = (u: number) => (u <= 0 ? 0 : u >= 1 ? 1 : u * u * (3 - 2 * u));
 
 /** the planted faults of the movement checks (scripts/moves_check.mjs): each must fail */
-export const PLANT = { hookHi: false, pudLift: false, capOutD5: false, capTurn0: false, seatHigh: false, pudOff: false, handIn: false, armIn: false, float: false, handInBook: false, frontArm: false };
+export const PLANT = { spoonNose: false, spoonFar: false, spoonGone: false, fistTurn: false, biteNose: false, oldBlink: false, hookHi: false, pudLift: false, capOutD5: false, capTurn0: false, seatHigh: false, pudOff: false, handIn: false, armIn: false, float: false, handInBook: false, frontArm: false };
 
 /** a world point (metres) in picture pixels at frame fr of a shot, and its depth along the lens */
 export const project = (id: string, fr: number, p: [number, number, number]): [number, number, number] => {
@@ -68,8 +68,10 @@ export const placeOf = (id: string, fr: number, w: Who) => {
   const cutWas = CUT.left; CUT.left = 0;
   const f0 = castAt([w.cast], fr / FM.FPS + w.off)[0], k = w.h / heightOf(w.cast.who);
   CUT.left = cutWas;
-  { const F = Math.round(fr + w.off * FM.FPS), k0 = (CUT_BLINKS[w.name] ?? []).map((c) => F - c).find((d) => d >= -3 && d <= 2);
-    if (k0 !== undefined) f0.o.face = { ...(f0.o.face ?? {}), lid: k0 === -1 || k0 === 0 ? 1 : 0.42 }; }
+  // (v6c, the reviewer: no shot may open with a lid more than half shut in its first 3 frames: 14 opened on a shut eye, 660. The lid shuts on the
+  //  outgoing shot's last frame only, half before it and on the next shot's first two. Planted: oldBlink, shut on both sides of the cut as v6c)
+  { const F = Math.round(fr + w.off * FM.FPS), k0 = (CUT_BLINKS[w.name] ?? []).map((c) => F - c).find((d) => (PLANT.oldBlink ? d >= -3 : d >= -2) && d <= (PLANT.oldBlink ? 2 : 1));
+    if (k0 !== undefined) f0.o.face = { ...(f0.o.face ?? {}), lid: PLANT.oldBlink ? (k0 === -1 || k0 === 0 ? 1 : 0.42) : k0 === -1 ? 1 : 0.42 }; }
   const at: [number, number] = [w.at[0], w.at[1]];      // (his pelvis's floor point: the seat over the stool, a standing man over his feet)
   const ft = project(id, fr, [at[0], at[1], 0]), hd = project(id, fr, [at[0], at[1], w.h]), dy = PLANT.float ? -12 : 0;
   const z = (ft[1] - hd[1]) / (FM.PPM * heightOf(w.cast.who)), pelX = jointPx(f0, "pelvis")[0] - f0.x;

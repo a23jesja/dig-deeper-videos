@@ -26,8 +26,12 @@ export const CAPS = (() => { const cuts = SHOTS.slice(1).map((s) => s.t0), out =
   for (const c of merged) for (const x of cuts) if (x > c.a + 0.15 && x < c.b && c.b - x < 0.4) c.b = x;
   // (v6c: a word ending less than 0.2 s before the next begins holds until it: the boy's "FAVOUR?" ended a frame before his "AYE!" and the empty
   //  frame between them flickered in flicker2, 7000 px, v6c-r2 frame 689)
-  merged.sort((p, q) => p.a - q.a); for (let i = 0; i + 1 < merged.length; i++) { const c = merged[i], n = merged[i + 1], gap = n.a - 0.03 - c.b; if (gap > 0 && gap < 0.2) c.b = n.a - 0.03; }
-  return [QUESTION, ...merged]; })();
+  //  (never across a cut: held into the next shot, "SAYS", "THAT" and "HIM OUT" showed there one frame in a new place, the reviewer on v6c)
+  merged.sort((p, q) => p.a - q.a); for (let i = 0; i + 1 < merged.length; i++) { const c = merged[i], n = merged[i + 1], gap = n.a - 0.03 - c.b; if (gap > 0 && gap < 0.2 && !cuts.some((x) => x > c.b - 1e-6 && x < n.a)) c.b = n.a - 0.03; }
+  // (v6c, the reviewer: no word on the screen in one place for under 6 frames: a word ending within 6 frames after a cut ends at the cut; one
+  //  starting within 6 frames before a cut starts at it)
+  for (const c of merged) for (const x of cuts) if (x > c.a - 0.03 && x < c.b) { if (c.b - x < 6 / 30) c.b = x; else if (x - (c.a - 0.03) < 6 / 30) c.a = x + 0.03; }
+  return [QUESTION, ...merged.filter((c) => c.b - (c.a - 0.03) > 1e-6)]; })();
 /** the band's top per shot (px): the lower third, below faces and the hands at the table */
 /** each shot's caption band (its top, px): the first of these heights (low under the figures, then high over them) where the band, as wide as
  *  the shot's widest word, meets no face (the head's circle below its cap) and no hand in any frame of the shot (dinner_check 6) */

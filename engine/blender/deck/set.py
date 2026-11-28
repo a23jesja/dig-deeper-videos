@@ -177,20 +177,32 @@ if SHOTS_MODE:
         if CAMS_ONLY: print("CAMS", shot["id"], flush=True); continue
         outp = os.path.join(ENGINE, "public", "rob3d", shot["id"]); outd = os.path.join(ENGINE, "out", "rob3d", shot["id"]); os.makedirs(outp, exist_ok=True); os.makedirs(outd, exist_ok=True)
         dep, kin, kinds = ray_map(Mwc); np.savez_compressed(os.path.join(outd, "map.npz"), depth=np.stack([dep]), kind=np.stack([kin]), kinds=np.array(kinds))
-        sc.render.filepath = os.path.join(outp, "0001.jpg"); bpy.ops.render.render(write_still=True)
-        # (a shot's lanterns going out: shots.json "lamps" [{"at": s, "out": [k, ...]}, ...], each a further plate 0002, 0003, ... with those
-        #  lanterns (and every one before) dark: no light, no flame, the glass unlit; the film fades between them, Roberts3D.tsx plateMix)
-        gone = []
-        for j, st in enumerate(shot.get("lamps", [])):
-            gone += st["out"]
+        # (a shot's own changes to the set: "hide" objects the film draws itself (shot 2's bell rope, hauled), "dark" lanterns already out
+        #  at its start (shot 2 opens with the barrel's lantern out: Roberts blew it out in shot 1))
+        hidden = [o for o in sc.objects if o.name.split(".")[0] in shot.get("hide", [])]
+        for o in hidden: o.hide_render = True
+        def lamps_out(ks):
             for lp in LAMPS:
-                if lp["k"] in gone:
+                if lp["k"] in ks:
                     for L in lp["lights"]: L.energy = 0.0
                     lp["flame"].hide_render = True
                     for gm in lp["glows"]:
                         b = gm.node_tree.nodes.get("Principled BSDF")
                         if b: b.inputs["Emission Strength"].default_value = 0.0
+        saved = [(lp, [L.energy for L in lp["lights"]], [gm.node_tree.nodes.get("Principled BSDF").inputs["Emission Strength"].default_value for gm in lp["glows"]]) for lp in LAMPS]
+        lamps_out(shot.get("dark", []))
+        sc.render.filepath = os.path.join(outp, "0001.jpg"); bpy.ops.render.render(write_still=True)
+        # (a shot's lanterns going out: shots.json "lamps" [{"at": s, "out": [k, ...]}, ...], each a further plate 0002, 0003, ... with those
+        #  lanterns (and every one before) dark: no light, no flame, the glass unlit; the film fades between them, Roberts3D.tsx plateMix)
+        gone = list(shot.get("dark", []))
+        for j, st in enumerate(shot.get("lamps", [])):
+            gone += st["out"]; lamps_out(gone)
             sc.render.filepath = os.path.join(outp, f"{j + 2:04d}.jpg"); bpy.ops.render.render(write_still=True)
+        for o in hidden: o.hide_render = False
+        for lp, en, es in saved:      # (every lantern lit again for the next shot)
+            for L, e in zip(lp["lights"], en): L.energy = e
+            lp["flame"].hide_render = False
+            for gm, e in zip(lp["glows"], es): gm.node_tree.nodes.get("Principled BSDF").inputs["Emission Strength"].default_value = e
         print(f"SHOT {shot['id']} ({LOOK}): {1 + len(shot.get('lamps', []))} plates in {time.time() - t0:.1f} s", flush=True)
     sys.exit(0)
 out = os.path.join(ENGINE, "out", "deck"); os.makedirs(out, exist_ok=True); sc.render.filepath = os.path.join(out, f"look-{LOOK}.jpg"); bpy.ops.render.render(write_still=True); print("LOOK", LOOK, flush=True)

@@ -81,6 +81,10 @@ const ACTS: Record<string, Record<string, Act>> = {
     rum: (m, yaw, s) => { const p = hookMugPose(yaw), sd = p.armR !== (POSES_STAND_ARM.R as unknown) && JSON.stringify(p.armR) !== JSON.stringify(STAND.armR) ? "R" : "L";
     ease(m, s.t0 + 0.15, { head: p.head, [`arm${sd}`]: (p as unknown as Record<string, unknown>)[`arm${sd}`] } as Partial<Pose>, BLOW1.out - 0.15);      // (it comes to rest as the lantern dies: frozen in the dark)
     return { hands: { [sd]: [[0, "grip"]] } }; } },
+  // shot 2: the young pirate hauls the bell rope twice (the rope drawn by us, shots.json hide; its pulls ROPE2)
+  "2": { young: (m, yaw, s, F) => { const r = ROPE2(); ease(m, -1, { [`arm${r.side}`]: r.up } as Partial<Pose>, 0.01, F({ gaze: [0.5, -0.3], mouth: 0.2 }));
+      for (const [a, d] of ROPE2_PULLS) { ease(m, s.t0 + a, { [`arm${r.side}`]: r.down } as Partial<Pose>, 0.22, F({ gaze: [0.5, -0.4], mouth: 0.5, squeeze: 0.3 })); ease(m, s.t0 + a + d, { [`arm${r.side}`]: r.up } as Partial<Pose>, 0.32, F({ gaze: [0.5, -0.3], mouth: 0.2 })); }
+      return { hands: { [r.side]: [[0, "grip"]] } }; } },
   // shot 8, the pour: the young pirate holds his mug out at his waist (POUR_ARM); the rum pirate's arm is set per the pair's placing (POUR8 below)
   "8": { young: (m, yaw, s) => { const p = holdOutPose(yaw, POUR_ARM), sd = JSON.stringify(p.armR) !== JSON.stringify(STAND.armR) ? "R" : "L";
     ease(m, s.t0, { [`arm${sd}`]: (p as unknown as Record<string, unknown>)[`arm${sd}`] } as Partial<Pose>, 0.01); return { hands: { [sd]: [[0, "grip"]] } }; },
@@ -104,10 +108,29 @@ export const inPicture = (id: string, nm: string) => { const pl = (SH[id] as unk
   const at = POS(nm, id), hh = HEIGHTS[nm] ?? 1.75; return [[0, 0], [0, hh * 0.5], [0, hh * 0.9]].some(([dx, z]) => { const q = project(id, 0, [at[0] + dx, at[1], z]); return q[2] > 0 && q[0] > -200 && q[0] < FM.W + 200 && q[1] > -200 && q[1] < FM.H + 200; }); };
 export const WHO: Record<string, () => Who[]> = Object.fromEntries(SHOTS.map((S) => [S.id, () => ["gunner", "young", "rum", "roberts"].filter((nm) => inPicture(S.id, nm)).map((nm) => BUILD[nm](S.id))]));
 export const EXTRAS: Record<string, Record<string, Extra>> = Object.fromEntries(SHOTS.map((S) => [S.id, {}]));
+/** a figure standing in a shot (no action), to place props and solve reaches before its own build */
+const standWho = (id: string, nm: string, yaw: number) => ({ name: nm, cast: { name: nm, m: (() => { const m = figure("sir", 0, yaw); m.stand(40); ease(m, -1, { head: headTo(yaw) }, 0.01); return m; })(), who: "sir", look: LOOKS[nm], seed: 31, armWipe: false, hands: { L: [[0, "relaxed"]], R: [[0, "relaxed"]] } }, at: POS(nm, id), walk: viewOf(id).right, h: HEIGHTS[nm], rimSide: -1, off: SH[id].t0 } as unknown as Who);
+/** shot 2's bell rope (set.py: the bell's rope at 2.38, -1.14, from 1.6 m down to 0.7), held at 1.05 m and pulled down to 0.88 */
+const ROPE = { x: 2.38, y: -1.14, top: 1.6, bot: 0.7, hold: 1.05, pull: 0.88 }, ROPE2_PULLS: [number, number][] = [[0.12, 0.3], [0.8, 0.3]];
+let R2: { side: "L" | "R"; up: unknown; down: unknown } | null = null;
+const ROPE2 = () => { if (R2) return R2; const id = "2", yaw = YAW(id, "young")!, pl = placeOf(id, 0, standWho(id, "young", yaw)), at = (z: number) => { const q = project(id, 0, [ROPE.x, ROPE.y, z]); return fromScreen(pl, [q[0], q[1]]); };
+  const up = reachPose(yaw, at(ROPE.hold), headTo(yaw), undefined, { clearFace: 20 }), down = reachPose(yaw, at(ROPE.pull), headTo(yaw), up.side, { clearFace: 20 });
+  R2 = { side: up.side, up: (up.pose as unknown as Record<string, unknown>)[`arm${up.side}`], down: (down.pose as unknown as Record<string, unknown>)[`arm${up.side}`] }; return R2; };
 /** a figure's own card space on the layer paintFigures hands its extras (the transform it draws the figure with) */
 const inCard = (h: CanvasRenderingContext2D, pl: Placed) => { const sc = scaleOf(pl.f.who); h.translate(pl.f.x, footY(pl.f.who)); h.scale(sc, sc); return new Ink(h, KIT_DESIGN.ol); };
 const toCardOf = (pl: Placed, q: P2): P2 => { const sc = scaleOf(pl.f.who); return [pl.z * (pl.f.x + sc * q[0] - pl.cx) + FM.W / 2, pl.z * (footY(pl.f.who) + sc * q[1] - pl.cy) + FM.H / 2]; };      // (skeleton units to the picture)
 const fromScreen = (pl: Placed, p: P2): P2 => { const sc = scaleOf(pl.f.who); return [((p[0] - FM.W / 2) / pl.z + pl.cx - pl.f.x) / sc, ((p[1] - FM.H / 2) / pl.z + pl.cy - footY(pl.f.who)) / sc]; };
+// shot 2: the rope from the bell down through the young pirate's grip, its tail hanging below his hand (pulled down as far as his hand
+// went: its length kept), between his palm and his fingers; the bell's ring at the bottom of each pull
+EXTRAS["2"].young = { front: (h, pl, fr) => { const g = h as unknown as CanvasRenderingContext2D, k = inCard(g, pl), sk = pl.f.sk, r = ROPE2(), T = fr / FM.FPS;
+  const P = (z: number) => { const q = project("2", fr, [ROPE.x, ROPE.y, z]); return fromScreen(pl, [q[0], q[1]]); }, top = P(ROPE.top), hand = gripOf(sk, r.side), h0 = P(ROPE.hold);
+  const ppm = (P(ROPE.bot)[1] - P(ROPE.top)[1]) / (ROPE.top - ROPE.bot), tail: P2 = [hand[0], hand[1] + (ROPE.hold - ROPE.bot) * ppm];      // (the tail hangs straight down from his hand, its length the rope's below his grip); void h0
+  void h0;
+  const line = (pts: P2[], w: number, c: string) => { g.save(); g.lineCap = "round"; g.lineJoin = "round"; g.strokeStyle = c; g.lineWidth = w; g.beginPath(); g.moveTo(pts[0][0], pts[0][1]); for (const q of pts.slice(1)) g.lineTo(q[0], q[1]); g.stroke(); g.restore(); };
+  line([top, hand, tail], 15, "#241a1e"); line([top, hand, tail], 7, "#c9b48a");
+  fingers(k, sk, r.side, SKIN(YOUNG_LOOK));
+  for (const [a] of ROPE2_PULLS) { const u = (T - a - 0.2) / 0.3; if (u > 0 && u < 1) { const b = P(1.72); g.save(); g.strokeStyle = `rgba(255,236,170,${Math.sin(Math.PI * u)})`; g.lineWidth = 6; g.lineCap = "round";
+      for (const sd of [-1, 1]) for (const rr of [60, 95]) { g.beginPath(); g.arc(b[0], b[1], rr + 20 * u, sd < 0 ? Math.PI * 0.8 : -Math.PI * 0.2, sd < 0 ? Math.PI * 1.2 : Math.PI * 0.2); g.stroke(); } g.restore(); } } } };
 // shot 1: Roberts' teacup, and his breath toward the lantern on the barrel while he blows
 const LAMP1: [number, number, number] = [-0.34, -1.74, 1.08];      // (the barrel's lantern's glass, set.py BARREL_LAMP + its middle)
 EXTRAS["1"].roberts = { front: (h, pl, fr) => { const g = h as unknown as CanvasRenderingContext2D, k = inCard(g, pl), sk = pl.f.sk, T = fr / FM.FPS;

@@ -17,7 +17,9 @@ export const shotAtD = (t: number) => { let i = 0; while (i + 1 < SHOTS.length &
 /** the hook's question (the first line's own six words), whole, while it is said and a little after (2.0 s); then the spoken words one at a
  *  time (DAILY-RULES 6), each until the next starts or 0.3 s past its end, never running on past a cut by less than 0.4 s */
 const QUESTION = { a: 0, b: 2.4, text: "ONE PIRATE CREW|HAD A BEDTIME" };      // (v6: whole while shot 1 lasts, 0-1.6 s, the list)      // (two lines: in one the six words were 37 px, too small on a phone)
-const WORDS = VOICES.filter((v) => v.id !== "n1").flatMap((v) => (v.p.words as { w: string; a: number; b: number }[]).map((w) => ({ w: w.w, a: w.a + v.at + 0.05, b: w.b + v.at + 0.05, line: v.id })));
+/** whisper splits "o'clock" into "o" and "'clock": a word that starts with an apostrophe joins the one before it (one caption word, no space) */
+const joinApos = (ws: { w: string; a: number; b: number }[]) => ws.reduce<{ w: string; a: number; b: number }[]>((o, w) => { const L = o[o.length - 1]; if (L && /^['’]/.test(w.w)) o[o.length - 1] = { w: L.w + w.w, a: L.a, b: w.b }; else o.push({ ...w }); return o; }, []);
+const WORDS = VOICES.filter((v) => v.id !== "n1").flatMap((v) => joinApos(v.p.words as { w: string; a: number; b: number }[]).map((w) => ({ w: w.w, a: w.a + v.at + 0.05, b: w.b + v.at + 0.05, line: v.id })));
 export const CAPS = (() => { const cuts = SHOTS.slice(1).map((s) => s.t0), out = WORDS.map((w, i) => { const n = WORDS[i + 1], b = n && n.line === w.line && n.a - w.b < 0.3 ? n.a : w.b + 0.3;
   return { a: w.a, b, text: w.w.toUpperCase().replace(/[.,":;]/g, "") }; });
   // (a word shown under 0.2 s ("the", "a") joins the next word of its line: alone it popped on for a frame or two, a flicker in the text, t1 20.67 s)

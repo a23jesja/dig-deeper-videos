@@ -25,23 +25,31 @@ export const mugAt = (sk: Sk, side: "L" | "R", lift = 0): { c: P2; body: P2[]; r
 /** the face's parts the mug must keep clear of (skeleton units): the beard's outline and the head's lower face as eyes, nose and mouth sit in it
  *  (the mouth's middle with its size; the check measures each in picture px) */
 export const faceGuard = (sk: Sk) => ({ beard: beardOutline(sk), mouth: mouthMid(sk, 0.7), head: headOutline(sk) });
-/** the hook's pose: the arm on his face's side raised so the mug stands beside the beard at the chin's height, clear of the beard by `gap`
- *  skeleton units (the check wants 20 px in the picture), within rule 16's bend; found by search; u (0-1) eases it up from his chest */
-export const hookMugPose = (heading: number, gap = 24, nod = -6): Pose => {
+/** the hook's pose (sheet v3, the reviewer: v2's arm stood straight out, level, like half a T-pose): the elbow bent, the forearm up, the mug raised
+ *  beside his head like a toast, as high as Knopp's short arm takes it while its body stays `gap` units clear of his head's outline and beard;
+ *  the upper arm's middle and the elbow kept off the beard (the shoulder cap is never drawn over it, Jesper's fault of 21 Nov); found by search
+ *  within rule 16's bend */
+export const hookMugPose = (heading: number, gap = 15, nod = -8): Pose => {
   const base: Pose = { ...POSES.stand, head: [Math.sign(heading || 1) * 45 - heading, nod, 0] } as Pose;
   const sk0 = solve(D.props("sir"), base, heading), f = Math.sign(Math.sin(sk0.faceYaw * R) || 1), nk = sk0.j.neck as unknown as P2;
   const side: "L" | "R" = Math.sign((sk0.j.shR as unknown as P2)[0] - nk[0]) === f ? "R" : "L", key = side === "R" ? "armR" : "armL";
-  const beard0 = beardOutline(sk0), chinY = Math.max(...beard0.map((q) => q[1])) - 20, edgeX = f > 0 ? Math.max(...beard0.map((q) => q[0])) : Math.min(...beard0.map((q) => q[0]));
-  const want: P2 = [edgeX + f * (MUG.w / 2 + gap + 6), chinY];
   let best: { arm: [[number, number], [number, number]]; cost: number } | null = null;
-  for (let s1 = 0; s1 <= 170; s1 += 10) for (let o1 = -20; o1 <= 80; o1 += 10) for (let s2 = 0; s2 <= 150; s2 += 10) {
+  for (let s1 = 0; s1 <= 170; s1 += 5) for (let o1 = -20; o1 <= 80; o1 += 10) for (let s2 = 0; s2 <= 150; s2 += 5) {
     const arm: [[number, number], [number, number]] = [[s1, o1], [s2, 0]], sk = solve(D.props("sir"), { ...base, [key]: arm } as Pose, heading);
-    const S = sk.j[`sh${side}`] as unknown as P2, E = sk.j[`el${side}`] as unknown as P2, Wr = sk.j[`wr${side}`] as unknown as P2;
-    const u1 = [S[0] - E[0], S[1] - E[1]], u2 = [Wr[0] - E[0], Wr[1] - E[1]], bend = 180 - (Math.acos(Math.max(-1, Math.min(1, (u1[0] * u2[0] + u1[1] * u2[1]) / ((Math.hypot(u1[0], u1[1]) || 1) * (Math.hypot(u2[0], u2[1]) || 1))))) * 180) / Math.PI;
-    if (bend > 140) continue;
-    const m = mugAt(sk, side), g = gapTo(m.body, beardOutline(sk)), cost = Math.hypot(m.c[0] - want[0], m.c[1] - want[1]) + (g < gap ? 40 * (gap - g) : 0);
+    const bend = armBendOf(sk, side); if (bend > 140 || bend < 60) continue;
+    const S = sk.j[`sh${side}`] as unknown as P2, E = sk.j[`el${side}`] as unknown as P2, W = sk.j[`wr${side}`] as unknown as P2;
+    if (W[1] > E[1] - RISE) continue;      // (the forearm up: the wrist over the elbow)
+    const m = mugAt(sk, side), head = headOutline(sk), beard = beardOutline(sk), mp = edgePts(m.body), gH = gapTo(mp, head), gB = gapTo(mp, beard),      // (its whole outline, not only its corners: v3's first try measured corners and sat 6 px from the beard)
+    gA = gapTo([E], beard);      // (the elbow off the beard; the upper arm may pass under it, the beard drawn over it (the reviewer, 28 Nov))
+    const pen = (gH < gap ? 2000 + 20 * (gap - gH) : 0) + (gB < gap ? 2000 + 20 * (gap - gB) : 0) + (gA < 2 ? 2000 + 20 * (2 - gA) : 0);
+    const cost = m.c[1] + pen;      // (higher is better: y grows downward)
     if (!best || cost < best.cost) best = { arm, cost }; }
   return { ...base, [key]: best!.arm, [`hand${side}`]: 0 } as Pose; };
+/** a polygon's outline sampled every few units (for gaps measured along edges, not at corners) */
+export const edgePts = (P: P2[], n = 8): P2[] => P.flatMap((a, i) => { const b = P[(i + 1) % P.length]; return Array.from({ length: n }, (_, k): P2 => [a[0] + ((b[0] - a[0]) * k) / n, a[1] + ((b[1] - a[1]) * k) / n]); });
+export let RISE = 15; export const setRise = (r: number) => { RISE = r; };
+const armBendOf = (sk: Sk, side: "L" | "R") => { const S = sk.j[`sh${side}`] as unknown as P2, E = sk.j[`el${side}`] as unknown as P2, Wr = sk.j[`wr${side}`] as unknown as P2;
+  const u1 = [S[0] - E[0], S[1] - E[1]], u2 = [Wr[0] - E[0], Wr[1] - E[1]]; return 180 - (Math.acos(Math.max(-1, Math.min(1, (u1[0] * u2[0] + u1[1] * u2[1]) / ((Math.hypot(u1[0], u1[1]) || 1) * (Math.hypot(u2[0], u2[1]) || 1))))) * 180) / Math.PI; };
 export const mugSide = (sk: Sk): "L" | "R" => { const f = Math.sign(Math.sin(sk.faceYaw * R) || 1), nk = sk.j.neck as unknown as P2; return Math.sign((sk.j.shR as unknown as P2)[0] - nk[0]) === f ? "R" : "L"; };
 void RUM;
 
@@ -115,4 +123,6 @@ export const dipPose = (yaw: number, fault = false) => {
 /** the young pirate's arm holding his mug out for the pour: low enough that the bottle's bottom stays 37 px or more from the pourer's beard (sheet v3) */
 /** where the pourer's hand holds the bottle: this share of its body behind the grip (a pour is held near the bottom, so the rest shows toward the mug) */
 export const POUR_BACK = 0.12;
-export const POUR_ARM: [[number, number], [number, number]] = [[45, 10], [30, 0]];
+export const POUR_ARM: [[number, number], [number, number]] = [[10, 10], [20, 0]];      // (v3: held low, at his waist, so the long bottle tilted 38 degrees bottom-up reaches it)
+/** the pour's tilt from straight down: 52, the bottle's bottom 38 degrees over its neck (the reviewer: at least 35) */
+export const POUR_TILT = 52;

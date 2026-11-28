@@ -17,7 +17,7 @@ export const headPtR = (sk: Sk, p: P2): P2 => { const sn = Math.sin(sk.faceYaw *
 export const mouthMid = (sk: Sk, m: number): { c: P2; hw: number; hh: number } => { const sn = Math.sin(sk.faceYaw * R), as = Math.abs(sn), view = as < 0.45 ? "front" : as < 0.85 ? "q" : "side", km = kitMouth(view, m);
   const H = 61 * km.s * km.m0; return { c: headPtR(sk, [km.x, km.y + 0.45 * H]), hw: km.w * 0.8, hh: H * 0.45 }; };
 /** the bottle's sizes (skeleton units): its body and its neck */
-export const RUM = { body: 84, bodyW: 34, neck: 52, neckW: 13, sag: 16 };      // (one bottle for every shot: grip to neck 97, what the arm reaches to the mouth's corner with the bottom 20 degrees up)
+export const RUM = { body: 130, bodyW: 38, neck: 72, neckW: 14, sag: 16 };      // (one rum bottle for every shot, 1.5 times sheet v2's: the reviewer, 28 Nov, "a real rum bottle")
 /** the bottle and the stream for a solved skeleton: the grip (the right hand's middle), the bottle's way u (from the grip toward the mouth), its
  *  body (b0-b1), its neck's tip n, and the stream's three points (neck tip, a sag, the mouth's middle); off: the planted fault, the stream's end
  *  moved that many skeleton units aside (out past the mouth's corner) */

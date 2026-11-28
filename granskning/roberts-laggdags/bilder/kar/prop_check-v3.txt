@@ -1,0 +1,18 @@
+hook 45°                   ok             mugg till: head 75, mouth 149, eyes 135, nose 94, beard 24 px
+hook -45°                  ok             mugg till: head 75, mouth 149, eyes 135, nose 94, beard 24 px
+hook 30°                   ok             mugg till: head 85, mouth 153, eyes 156, nose 118, beard 28 px
+hook 45°                   FÅNGAT (rätt)  mugg till: head INNE, mouth INNE, eyes INNE, nose 35, beard INNE px
+hook -45°                  FÅNGAT (rätt)  mugg till: head INNE, mouth INNE, eyes INNE, nose 35, beard INNE px
+hook 30°                   FÅNGAT (rätt)  mugg till: head INNE, mouth INNE, eyes INNE, nose 35, beard INNE px
+häll 45°                   ok             botten 38° över halsen; halsens spets i öppningen, under kanten; korsar kanten i öppningen; flaska/hand till unga: mouth 131, eyes 122, nose 103; till rompiraten: mouth 104, eyes 107, nose 82, beard 25 px
+häll -45°                  ok             botten 38° över halsen; halsens spets i öppningen, under kanten; korsar kanten i öppningen; flaska/hand till unga: mouth 131, eyes 122, nose 103; till rompiraten: mouth 104, eyes 107, nose 82, beard 25 px
+häll 25°                   ok             botten 38° över halsen; halsens spets i öppningen, under kanten; korsar kanten i öppningen; flaska/hand till unga: mouth 132, eyes 122, nose 104; till rompiraten: mouth 105, eyes 106, nose 81, beard 27 px
+häll 45°                   FÅNGAT (rätt)  botten 38° över halsen; halsens spets UTANFÖR öppningen; korsar kanten I VÄGGEN; flaska/hand till unga: mouth 148, eyes 136, nose 118; till rompiraten: mouth 105, eyes 106, nose 80, beard 27 px
+häll -45°                  FÅNGAT (rätt)  botten 38° över halsen; halsens spets UTANFÖR öppningen; korsar kanten I VÄGGEN; flaska/hand till unga: mouth 113, eyes 103, nose 85; till rompiraten: mouth 105, eyes 105, nose 80, beard 27 px
+häll 25°                   FÅNGAT (rätt)  botten 38° över halsen; halsens spets UTANFÖR öppningen; korsar kanten I VÄGGEN; flaska/hand till unga: mouth 149, eyes 137, nose 119; till rompiraten: mouth 105, eyes 106, nose 80, beard 27 px
+dopp 45°                   ok             muggens botten 56 px under kanten; muggen x 124..208, öppningen 97..268 px; inne i kaggen; handen 1.8 enheter från greppet
+dopp -45°                  ok             muggens botten 56 px under kanten; muggen x -208..-124, öppningen -268..-97 px; inne i kaggen; handen 1.8 enheter från greppet
+dopp 45°                   FÅNGAT (rätt)  muggens botten 56 px under kanten; muggen x 124..208, öppningen 166..337 px; GENOM VÄGGEN; handen 1.8 enheter från greppet
+dopp -45°                  FÅNGAT (rätt)  muggens botten 56 px under kanten; muggen x -208..-124, öppningen -337..-166 px; GENOM VÄGGEN; handen 1.8 enheter från greppet
+
+Rätt bilder godkända: 8, rätt bilder fällda: 0, planterade fel fångade: 8, planterade fel missade: 0

@@ -85,10 +85,20 @@ const ACTS: Record<string, Record<string, Act>> = {
   "2": { young: (m, yaw, s, F) => { const r = ROPE2(); ease(m, -1, { [`arm${r.side}`]: r.up } as Partial<Pose>, 0.01, F({ gaze: [0.5, -0.3], mouth: 0.2 }));
       for (const [a, d] of ROPE2_PULLS) { ease(m, s.t0 + a, { [`arm${r.side}`]: r.down } as Partial<Pose>, 0.22, F({ gaze: [0.5, -0.4], mouth: 0.5, squeeze: 0.3 })); ease(m, s.t0 + a + d, { [`arm${r.side}`]: r.up } as Partial<Pose>, 0.32, F({ gaze: [0.5, -0.3], mouth: 0.2 })); }
       return { hands: { [r.side]: [[0, "grip"]] } }; } },
+  // shot 3: the gunner and the young pirate groan as each lantern dies (shots.json lamps): the head drops a little, the brows sag, the mouth opens
+  "3": { gunner: (m, yaw, s, F) => { groan(m, yaw, s, F, 0.05); return {}; }, young: (m, yaw, s, F) => { groan(m, yaw, s, F, 0.12); return {}; } },
+  // shot 4: in the dark, the rum pirate holds his mug up beside his beard and peers down into it, squinting (his line d3 on the mouth)
+  "4": { rum: (m, yaw, s, F) => { const p = hookMugPose(yaw, 15, 8), sd = JSON.stringify(p.armR) !== JSON.stringify(STAND.armR) ? "R" : "L";
+    ease(m, -1, { head: p.head, [`arm${sd}`]: (p as unknown as Record<string, unknown>)[`arm${sd}`] } as Partial<Pose>, 0.01, F({ gaze: [0.8, 0.5], lid: 0.32, squeeze: 0.15, brow: -0.4 }));
+    ease(m, s.t0 + 1.6, { head: [p.head![0], 14, 4] as [number, number, number] }, 0.4, F({ gaze: [0.85, 0.6], lid: 0.45, squeeze: 0.25, brow: -0.6 }));      // (he leans in closer, the squint harder)
+    return { hands: { [sd]: [[0, "grip"]] } }; } },
   // shot 8, the pour: the young pirate holds his mug out at his waist (POUR_ARM); the rum pirate's arm is set per the pair's placing (POUR8 below)
   "8": { young: (m, yaw, s) => { const p = holdOutPose(yaw, POUR_ARM), sd = JSON.stringify(p.armR) !== JSON.stringify(STAND.armR) ? "R" : "L";
     ease(m, s.t0, { [`arm${sd}`]: (p as unknown as Record<string, unknown>)[`arm${sd}`] } as Partial<Pose>, 0.01); return { hands: { [sd]: [[0, "grip"]] } }; },
     rum: (m, yaw, s) => { const r = POUR8(); ease(m, s.t0, { head: r.pose.head, [`arm${r.side}`]: (r.pose as unknown as Record<string, unknown>)[`arm${r.side}`] } as Partial<Pose>, 0.01); void yaw; return { hands: { [r.side]: [[0, "grip"]] } }; } } };
+const groan: (m: ReturnType<typeof figure>, yaw: number, s: { t0: number }, F: (o: Record<string, unknown>) => Record<string, unknown>, lag: number) => void = (m, yaw, s, F, lag) => {
+  const lamps = ((SH["3"] as unknown as { lamps?: { at: number }[] }).lamps ?? []).map((l) => l.at), h = headTo(yaw);
+  lamps.forEach((at, i) => { ease(m, s.t0 + at + lag, { head: [h[0], 6 + 4 * i, 0] as [number, number, number] }, 0.3, F({ sad: 0.4 + 0.2 * i, mouth: 0.45, gaze: [0.2, -0.2], brow: -0.3 })); }); };
 /** shot 1's blow (film seconds from the shot's start): the lips purse at a, the breath reaches the lantern and it goes out at out, done at b */
 export const BLOW1 = { a: 0.9, out: 1.45, b: 1.55 };
 const STAND = (POSES_STAND as unknown as Pose), POSES_STAND_ARM = { R: (POSES_STAND as unknown as Pose).armR };
@@ -136,6 +146,8 @@ const LAMP1: [number, number, number] = [-0.34, -1.74, 1.08];      // (the barre
 EXTRAS["1"].roberts = { front: (h, pl, fr) => { const g = h as unknown as CanvasRenderingContext2D, k = inCard(g, pl), sk = pl.f.sk, T = fr / FM.FPS;
   drawTea(k, sk, mugSide(sk), SKIN(ROBERTS_LOOK));
   const u = (T - BLOW1.a - 0.15) / (BLOW1.out - BLOW1.a + 0.05); if (u > 0 && u < 1) { const mo = mouthMid(sk, 0.32).c, lp = project("1", fr, LAMP1), to = fromScreen(pl, [lp[0], lp[1]]); drawPuff(g, mo, to, u, 1); } } };
+// shot 4: his mug in the dark (no splash)
+EXTRAS["4"].rum = { front: (h, pl) => { const k = inCard(h as unknown as CanvasRenderingContext2D, pl); drawMug(k, pl.f.sk, mugSide(pl.f.sk), SKIN(RUM_LOOK)); } };
 // shot 1: the toast's mug in the rum pirate's hand, the splash while it rises
 EXTRAS["1"].rum = { front: (h, pl, fr) => { const k = inCard(h as unknown as CanvasRenderingContext2D, pl), T = fr / FM.FPS + SH["1"].t0, up = T > SH["1"].t0 + 0.3 && T < SH["1"].t0 + 1.8;
   drawMug(k, pl.f.sk, mugSide(pl.f.sk), SKIN(RUM_LOOK), undefined, up); } };

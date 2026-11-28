@@ -1,0 +1,39 @@
+{
+ "line": "One pirate crew had a bedtime.",
+ "take": 0,
+ "word_errors": 0.0,
+ "words": [
+  {
+   "w": "One",
+   "a": 0.0,
+   "b": 0.2
+  },
+  {
+   "w": "pirate",
+   "a": 0.2,
+   "b": 0.48
+  },
+  {
+   "w": "crew",
+   "a": 0.48,
+   "b": 0.76
+  },
+  {
+   "w": "had",
+   "a": 0.76,
+   "b": 0.94
+  },
+  {
+   "w": "a",
+   "a": 0.94,
+   "b": 1.04
+  },
+  {
+   "w": "bedtime.",
+   "a": 1.04,
+   "b": 1.48
+  }
+ ],
+ "character_count_before": 4249,
+ "character_count_after": 4249
+}

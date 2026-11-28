@@ -1,0 +1,34 @@
+{
+ "line": "Lights out at eight. Remember?",
+ "take": 0,
+ "word_errors": 0.2,
+ "words": [
+  {
+   "w": "Lights",
+   "a": 0.0,
+   "b": 0.24
+  },
+  {
+   "w": "out",
+   "a": 0.24,
+   "b": 0.46
+  },
+  {
+   "w": "at",
+   "a": 0.46,
+   "b": 0.6
+  },
+  {
+   "w": "8,",
+   "a": 0.6,
+   "b": 0.84
+  },
+  {
+   "w": "remember?",
+   "a": 1.14,
+   "b": 1.16
+  }
+ ],
+ "character_count_before": 4921,
+ "character_count_after": 4921
+}

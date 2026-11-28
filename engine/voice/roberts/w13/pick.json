@@ -1,0 +1,24 @@
+{
+ "line": "Wake up! Warship!",
+ "take": 0,
+ "word_errors": 0.0,
+ "words": [
+  {
+   "w": "Wake",
+   "a": 0.0,
+   "b": 0.2
+  },
+  {
+   "w": "up,",
+   "a": 0.2,
+   "b": 0.42
+  },
+  {
+   "w": "warship!",
+   "a": 0.64,
+   "b": 0.96
+  }
+ ],
+ "character_count_before": 4669,
+ "character_count_after": 4669
+}

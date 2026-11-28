@@ -1,0 +1,44 @@
+{
+ "line": "Next morning, a navy warship found them.",
+ "take": 0,
+ "word_errors": 0.0,
+ "words": [
+  {
+   "w": "Next",
+   "a": 0.0,
+   "b": 0.28
+  },
+  {
+   "w": "morning,",
+   "a": 0.28,
+   "b": 0.62
+  },
+  {
+   "w": "a",
+   "a": 0.82,
+   "b": 0.88
+  },
+  {
+   "w": "Navy",
+   "a": 0.88,
+   "b": 1.14
+  },
+  {
+   "w": "warship",
+   "a": 1.14,
+   "b": 1.58
+  },
+  {
+   "w": "found",
+   "a": 1.58,
+   "b": 1.86
+  },
+  {
+   "w": "them.",
+   "a": 1.86,
+   "b": 2.1
+  }
+ ],
+ "character_count_before": 4669,
+ "character_count_after": 4669
+}

@@ -1,0 +1,29 @@
+{
+ "line": "Roberts himself preferred tea.",
+ "take": 0,
+ "word_errors": 0.0,
+ "words": [
+  {
+   "w": "Roberts",
+   "a": 0.0,
+   "b": 0.36
+  },
+  {
+   "w": "himself",
+   "a": 0.36,
+   "b": 0.76
+  },
+  {
+   "w": "preferred",
+   "a": 0.76,
+   "b": 1.2
+  },
+  {
+   "w": "tea.",
+   "a": 1.2,
+   "b": 1.6
+  }
+ ],
+ "character_count_before": 4345,
+ "character_count_after": 4345
+}

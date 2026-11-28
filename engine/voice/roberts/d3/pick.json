@@ -1,0 +1,39 @@
+{
+ "line": "Oi! I can't see my rum!",
+ "take": 0,
+ "word_errors": 0.0,
+ "words": [
+  {
+   "w": "Oi,",
+   "a": 0.0,
+   "b": 0.28
+  },
+  {
+   "w": "I",
+   "a": 0.38,
+   "b": 0.52
+  },
+  {
+   "w": "can't",
+   "a": 0.52,
+   "b": 0.74
+  },
+  {
+   "w": "see",
+   "a": 0.74,
+   "b": 0.88
+  },
+  {
+   "w": "my",
+   "a": 0.88,
+   "b": 1.04
+  },
+  {
+   "w": "rum.",
+   "a": 1.04,
+   "b": 1.28
+  }
+ ],
+ "character_count_before": 4345,
+ "character_count_after": 4345
+}

@@ -1,0 +1,24 @@
+{
+ "line": "To the captain!",
+ "take": 0,
+ "word_errors": 0.0,
+ "words": [
+  {
+   "w": "To",
+   "a": 0.0,
+   "b": 0.18
+  },
+  {
+   "w": "the",
+   "a": 0.18,
+   "b": 0.34
+  },
+  {
+   "w": "Captain!",
+   "a": 0.34,
+   "b": 0.64
+  }
+ ],
+ "character_count_before": 4345,
+ "character_count_after": 4345
+}

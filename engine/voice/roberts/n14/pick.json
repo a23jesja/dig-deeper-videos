@@ -1,0 +1,59 @@
+{
+ "line": "Roberts went into the fight anyway. It was his last.",
+ "take": 0,
+ "word_errors": 0.0,
+ "words": [
+  {
+   "w": "Roberts",
+   "a": 0.0,
+   "b": 0.32
+  },
+  {
+   "w": "went",
+   "a": 0.32,
+   "b": 0.56
+  },
+  {
+   "w": "into",
+   "a": 0.56,
+   "b": 0.78
+  },
+  {
+   "w": "the",
+   "a": 0.78,
+   "b": 0.96
+  },
+  {
+   "w": "fight",
+   "a": 0.96,
+   "b": 1.18
+  },
+  {
+   "w": "anyway,",
+   "a": 1.18,
+   "b": 1.5
+  },
+  {
+   "w": "it",
+   "a": 1.86,
+   "b": 1.92
+  },
+  {
+   "w": "was",
+   "a": 1.92,
+   "b": 2.04
+  },
+  {
+   "w": "his",
+   "a": 2.04,
+   "b": 2.16
+  },
+  {
+   "w": "last.",
+   "a": 2.16,
+   "b": 2.46
+  }
+ ],
+ "character_count_before": 4921,
+ "character_count_after": 4921
+}

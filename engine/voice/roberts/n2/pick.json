@@ -1,0 +1,59 @@
+{
+ "line": "At eight o'clock, every light and candle went out.",
+ "take": 0,
+ "word_errors": 0.1111111111111111,
+ "words": [
+  {
+   "w": "At",
+   "a": 0.0,
+   "b": 0.16
+  },
+  {
+   "w": "8",
+   "a": 0.16,
+   "b": 0.32
+  },
+  {
+   "w": "o",
+   "a": 0.32,
+   "b": 0.42
+  },
+  {
+   "w": "'clock,",
+   "a": 0.42,
+   "b": 0.78
+  },
+  {
+   "w": "every",
+   "a": 0.98,
+   "b": 1.22
+  },
+  {
+   "w": "light",
+   "a": 1.22,
+   "b": 1.44
+  },
+  {
+   "w": "and",
+   "a": 1.44,
+   "b": 1.62
+  },
+  {
+   "w": "candle",
+   "a": 1.62,
+   "b": 1.94
+  },
+  {
+   "w": "went",
+   "a": 1.94,
+   "b": 2.14
+  },
+  {
+   "w": "out.",
+   "a": 2.14,
+   "b": 2.52
+  }
+ ],
+ "character_count_before": 4249,
+ "character_count_after": 4249
+}

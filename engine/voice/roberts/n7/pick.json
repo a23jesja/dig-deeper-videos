@@ -1,0 +1,69 @@
+{
+ "line": "A book from seventeen twenty-four says Roberts hoped this would curb the drinking.",
+ "take": 0,
+ "word_errors": 0.21428571428571427,
+ "words": [
+  {
+   "w": "A",
+   "a": 0.0,
+   "b": 0.18
+  },
+  {
+   "w": "book",
+   "a": 0.18,
+   "b": 0.3
+  },
+  {
+   "w": "from",
+   "a": 0.3,
+   "b": 0.52
+  },
+  {
+   "w": "1724",
+   "a": 0.52,
+   "b": 1.68
+  },
+  {
+   "w": "says",
+   "a": 1.68,
+   "b": 2.0
+  },
+  {
+   "w": "Roberts",
+   "a": 2.0,
+   "b": 2.32
+  },
+  {
+   "w": "hoped",
+   "a": 2.32,
+   "b": 2.64
+  },
+  {
+   "w": "this",
+   "a": 2.64,
+   "b": 2.9
+  },
+  {
+   "w": "would",
+   "a": 2.9,
+   "b": 3.08
+  },
+  {
+   "w": "curb",
+   "a": 3.08,
+   "b": 3.38
+  },
+  {
+   "w": "the",
+   "a": 3.38,
+   "b": 3.58
+  },
+  {
+   "w": "drinking.",
+   "a": 3.58,
+   "b": 3.88
+  }
+ ],
+ "character_count_before": 4345,
+ "character_count_after": 4345
+}

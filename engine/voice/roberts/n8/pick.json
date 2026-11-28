@@ -1,0 +1,19 @@
+{
+ "line": "It didn't.",
+ "take": 0,
+ "word_errors": 0.0,
+ "words": [
+  {
+   "w": "It",
+   "a": 0.0,
+   "b": 0.16
+  },
+  {
+   "w": "didn't.",
+   "a": 0.16,
+   "b": 0.54
+  }
+ ],
+ "character_count_before": 4345,
+ "character_count_after": 4345
+}

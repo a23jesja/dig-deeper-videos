@@ -1,0 +1,99 @@
+{
+ "line": "One night in February seventeen twenty-two, the crew celebrated a captured ship by drinking through the liquor on board.",
+ "take": 0,
+ "word_errors": 0.15,
+ "words": [
+  {
+   "w": "One",
+   "a": 0.0,
+   "b": 0.18
+  },
+  {
+   "w": "night",
+   "a": 0.18,
+   "b": 0.44
+  },
+  {
+   "w": "in",
+   "a": 0.44,
+   "b": 0.66
+  },
+  {
+   "w": "February",
+   "a": 0.66,
+   "b": 0.96
+  },
+  {
+   "w": "1722,",
+   "a": 0.96,
+   "b": 2.22
+  },
+  {
+   "w": "the",
+   "a": 2.7,
+   "b": 2.72
+  },
+  {
+   "w": "crew",
+   "a": 2.72,
+   "b": 2.94
+  },
+  {
+   "w": "celebrated",
+   "a": 2.94,
+   "b": 3.5
+  },
+  {
+   "w": "a",
+   "a": 3.5,
+   "b": 3.72
+  },
+  {
+   "w": "captured",
+   "a": 3.72,
+   "b": 4.02
+  },
+  {
+   "w": "ship",
+   "a": 4.02,
+   "b": 4.4
+  },
+  {
+   "w": "by",
+   "a": 4.4,
+   "b": 4.7
+  },
+  {
+   "w": "drinking",
+   "a": 4.7,
+   "b": 4.98
+  },
+  {
+   "w": "through",
+   "a": 4.98,
+   "b": 5.32
+  },
+  {
+   "w": "the",
+   "a": 5.32,
+   "b": 5.48
+  },
+  {
+   "w": "liquor",
+   "a": 5.48,
+   "b": 5.68
+  },
+  {
+   "w": "on",
+   "a": 5.68,
+   "b": 5.94
+  },
+  {
+   "w": "board.",
+   "a": 5.94,
+   "b": 6.26
+  }
+ ],
+ "character_count_before": 4669,
+ "character_count_after": 4669
+}

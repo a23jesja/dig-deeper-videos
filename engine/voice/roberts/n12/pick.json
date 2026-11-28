@@ -1,0 +1,44 @@
+{
+ "line": "Many of the men were still drunk.",
+ "take": 0,
+ "word_errors": 0.0,
+ "words": [
+  {
+   "w": "Many",
+   "a": 0.0,
+   "b": 0.24
+  },
+  {
+   "w": "of",
+   "a": 0.24,
+   "b": 0.38
+  },
+  {
+   "w": "the",
+   "a": 0.38,
+   "b": 0.48
+  },
+  {
+   "w": "men",
+   "a": 0.48,
+   "b": 0.66
+  },
+  {
+   "w": "were",
+   "a": 0.66,
+   "b": 0.84
+  },
+  {
+   "w": "still",
+   "a": 0.84,
+   "b": 1.08
+  },
+  {
+   "w": "drunk.",
+   "a": 1.08,
+   "b": 1.36
+  }
+ ],
+ "character_count_before": 4669,
+ "character_count_after": 4669
+}

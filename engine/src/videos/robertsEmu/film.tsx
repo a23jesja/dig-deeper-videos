@@ -39,9 +39,9 @@ const a2: Shot = { id: "a2", blur: 3, focus: 3, drift: [1.0, 1.06, 10, 0], capY:
 const BELL: [number, number, number] = [2.38, -1.14, 1.62];
 const a3: Shot = { id: "a3", blur: 2.5, focus: 2.4, drift: [1.02, 1.08, 0, 10], capY: 1500,
   actors: [{ o: YOUNG, h: 1.48, at: (t) => [2.38 + 0.12 * Math.sin(t * 7), -0.98], lift: (t) => 0.22 + 0.08 * Math.sin(t * 7 + 1), rot: (t) => 8 * Math.sin(t * 7), sharp: true,
-    f: (t) => stand({ mode: "fall", cheer: 1, expr: t % 0.6 < 0.3 ? "grin" : "shock", facing: 1 }),
-    hold: (p, h, t, toD) => { const q = proj("a3", BELL), b = toD([q[0], q[1]]), mid: P2 = [(h[0][0] + h[1][0]) / 2, Math.min(h[0][1], h[1][1])];
-      p.stroke([b, mid, [mid[0], mid[1] + 300]], 16, INK); p.stroke([b, mid, [mid[0], mid[1] + 300]], 9, "#c9b48a"); },
+    f: (t) => stand({ mode: "fall", expr: t % 0.6 < 0.3 ? "grin" : "shock", facing: 1, cheer: 1 }),
+    hold: (p, h, t, toD) => { const q = proj("a3", BELL), b = toD([q[0], q[1]]), mid: P2 = [h[1][0], h[1][1] + 6];
+      p.stroke([b, mid, [mid[0], mid[1] + 40]], 16, INK); p.stroke([b, mid, [mid[0], mid[1] + 40]], 9, "#c9b48a"); },
     fx: (p, t, toD) => { const q = proj("a3", BELL), b = toD([q[0], q[1]]), u = (t * 7) % 2; if (u < 1) { p.g.globalAlpha = 1 - u; for (const r of [90, 140]) p.arc(b[0], b[1], r + 40 * u, r + 40 * u, 200, 340, 9, "#ffe9a8"); p.g.globalAlpha = 1; } } }] };
 
 // ---- a4 (3.6-4.8): high from the bow, the starboard lanterns go out pang-pang-pang; the crew below groan, slumping at each ----
@@ -68,13 +68,14 @@ const a6: Shot = { id: "a6", blur: 3, focus: 2.7, drift: [1.0, 1.05, 0, 10], cap
 
 // ---- a7 (7.4-8.8): in the dark two pirates walk into each other; one drops his mug, it flies glinting in the moonlight ----
 const a7: Shot = { id: "a7", blur: 2.5, focus: 3.2, drift: [1.02, 1.06, 0, 0], capY: 1500, tint: "rgba(8,14,40,0.30)", moon: true,
-  actors: [
-    { o: crew(70), h: 1.7, at: (t) => [lerp(-3.35, -2.78, ease(t / 0.6)), lerp(0.15, 0.68, ease(t / 0.6))], rot: (t) => (t > 0.6 ? -60 * ease((t - 0.6) / 0.3) : 0), sharp: true,
-      f: (t) => (t < 0.6 ? stand({ mode: "march", phase: t * 3, expr: "nervous", facing: 1, reachR: [470, 520] }) : stand({ mode: "fall", expr: "dazed", facing: 1 })),
-      hold: (p, h, t) => { if (t < 0.6) mug(p, h[1], 0, true, 0.7); }, fx: (p, t) => { if (t > 0.7) fxStars(p, (t - 0.7) * 2); } },
-    { o: crew(71), h: 1.75, at: (t) => [lerp(-1.95, -2.5, ease(t / 0.6)), lerp(1.3, 0.85, ease(t / 0.6))], rot: (t) => (t > 0.6 ? 55 * ease((t - 0.6) / 0.3) : 0), sharp: true,
-      f: (t) => (t < 0.6 ? stand({ mode: "march", phase: t * 3, expr: "nervous", facing: -1 }) : stand({ mode: "fall", expr: "dazed", facing: -1 })), fx: (p, t) => { if (t > 0.7) fxStars(p, (t - 0.7) * 2); } }],
-  over: (g, t) => { if (t < 0.6) return; const u = clamp((t - 0.6) / 0.8), a = proj("a7", [-2.7, 0.75, 1.1]), x = a[0] + 380 * u, y = a[1] - 520 * u + 900 * u * u;
+  // (they walk into each other body to body, bounce back a step and sit down hard on the deck, stars round their heads)
+  actors: ([[[-3.35, 0.15], [-2.9, 0.57], [-2.98, 0.49], 1], [[-1.95, 1.3], [-2.41, 0.92], [-2.33, 0.99], -1]] as [[number, number], [number, number], [number, number], 1 | -1][]).map(([s0, s1, s2, fc], i): Actor => ({
+    o: crew(70 + i), h: i ? 1.75 : 1.7, sharp: true,
+    at: (t) => (t < 0.6 ? [lerp(s0[0], s1[0], ease(t / 0.6)), lerp(s0[1], s1[1], ease(t / 0.6))] : [lerp(s1[0], s2[0], ease((t - 0.6) / 0.2)), lerp(s1[1], s2[1], ease((t - 0.6) / 0.2))]),
+    lift: (t) => (t > 0.62 && t < 0.82 ? 0.1 * Math.sin(((t - 0.62) / 0.2) * Math.PI) : 0),
+    f: (t) => (t < 0.6 ? stand({ mode: "march", phase: t * 3, expr: "nervous", facing: fc, reachR: i ? undefined : [470, 520] }) : stand({ mode: t < 0.68 ? "stand" : "sit", expr: t < 0.75 ? "shock" : "dazed", facing: fc })),
+    hold: (p, h, t) => { if (!i && t < 0.6) mug(p, h[1], 0, true, 0.7); }, fx: (p, t) => { if (t > 0.8) { p.g.save(); p.g.translate(0, 300); fxStars(p, (t - 0.8) * 2); p.g.restore(); } } })),
+  over: (g, t) => { if (t < 0.6) return; const u = clamp((t - 0.6) / 0.8), a = proj("a7", [-2.7, 0.75, 1.1]), x = a[0] + 30 * u, y = a[1] - 1050 * u;
     if (t > 0.6 && t < 0.75) { g.save(); g.translate(a[0], a[1]); const p = new Pen(g); g.scale(0.6, 0.6); fxBurst(p, (t - 0.6) / 0.15); g.restore(); }
     g.save(); g.translate(x, y); g.rotate(u * 9); g.scale(0.9, 0.9); mug(new Pen(g), [0, 0], 0, false, 0.9); g.restore(); } };
 
@@ -203,12 +204,15 @@ const c5: Shot = { id: "c1", blur: 2.5, focus: 2.8, drift: [1.08, 1.0, 0, 20], t
     C5.forEach((q, i) => { if (t > 0.15 * i + 0.35) { const h = proj("c1", [q[0], q[1], 0.6]); zzz(g, h[0], h[1], t + i * 0.3, 0.8); } }); } };
 
 // ---- c6 (32.6-34.0): dawn: the sun up over the sea; the sleepers in heaps; a gull lands on one sleeping head ----
-const C6 = crowdPlaces(9, -2.6, 2.6, -1.4, 1.6, 101);
-const c6: Shot = { id: "c6", blur: 2, focus: 3, drift: [1.0, 1.08, 0, 0],
-  actors: C6.map((q, i): Actor => ({ o: crew(160 + i), h: 1.65, at: () => q, rot: () => (i % 2 ? 82 : -82), f: () => stand({ mode: "fall", expr: "dazed", facing: 1 }) })),
+// (the sleepers sit slumped asleep in a heap in front of the mast and clear of the bell post: lying, they were longer than the deck in the picture,
+//  and behind the post and the mast they were drawn over them)
+const C6: [number, number, number][] = [[1.2, -0.2, 1], [0.4, 1.0, -1], [0.8, 1.0, 1], [1.2, 0.6, -1], [1.6, 0.2, 1]];
+const c6Head = (q: [number, number, number], k = 0.62): P2 => { const f = proj("c6", [q[0], q[1], 0]), hp = f[1] - proj("c6", [q[0], q[1], 1.65])[1]; return [f[0] + q[2] * 0.04 * hp, f[1] - k * hp]; };
+const c6: Shot = { id: "c6", blur: 2, focus: 3.4, drift: [1.0, 1.08, 0, 0],
+  actors: C6.map((q, i): Actor => ({ o: crew(160 + i), h: 1.65, at: () => [q[0], q[1]], f: (t) => stand({ mode: "sit", expr: "smile_closed", facing: q[2] as 1 | -1, headTilt: q[2] * (14 + 3 * Math.sin(t * 2 + i)) }) })),
   under: (g, t) => { const y = lerp(760, 560, ease(t / 1.4)); g.save(); g.fillStyle = "rgba(255,214,140,0.9)"; g.beginPath(); g.arc(860, y, 70, 0, 7); g.fill(); g.restore(); },
-  over: (g, t) => { const q = proj("c6", [C6[2][0], C6[2][1], 0.42]), u = ease(t / 0.8), x = lerp(-80, q[0], u), y = lerp(200, q[1] - 30, u) - (u < 1 ? 160 * Math.sin(u * Math.PI) : 0); gull(g, x, y, u < 1 ? Math.abs(Math.sin(t * 14)) : 0.1, 1.1);
-    C6.forEach((qq, i) => { const h = proj("c6", [qq[0], qq[1], 0.6]); zzz(g, h[0], h[1], t + i * 0.4, 0.7); }); } };
+  over: (g, t) => { const q = c6Head(C6[3], 0.66), u = ease(t / 0.8), x = lerp(-80, q[0], u), y = lerp(200, q[1] - 20, u) - (u < 1 ? 160 * Math.sin(u * Math.PI) : 0); gull(g, x, y, u < 1 ? Math.abs(Math.sin(t * 14)) : 0.1, 1.1);
+    C6.forEach((qq, i) => { if (i === 3 && t > 0.6) return; const h = c6Head(qq, 0.7); zzz(g, h[0], h[1], t + i * 0.4, 0.7); }); } };
 
 // ---- c7 (34.0-35.2): a navy warship comes out of the mist, its guns run out ----
 const c7: Shot = { id: "c7", blur: 0.8, drift: [1.0, 1.12, 0, 40], actors: [],
@@ -221,18 +225,31 @@ const c8: Shot = { id: "c8", blur: 2.5, focus: 1.9, drift: [1.04, 1.0, 0, 0],
   over: (g, t) => { const q = proj("c8", [1.6, -1.85, 0.5]); zzz(g, q[0] + 700, q[1] - 120, t, 1);
     if (t > 0.6) { const h = proj("c8", [0.0, -1.4, 1.0]), off = 40 * Math.sin(t * 6); g.save(); g.globalAlpha = 0.45; g.drawImage(g.canvas, h[0] - 300, h[1] - 500, 600, 700, h[0] - 300 + off, h[1] - 500, 600, 700); g.restore(); } } };
 
-// ---- c9 (36.6-37.9): a pirate gets up, wobbles round in a circle and topples head first into a barrel, his boots sticking out ----
+// ---- c9 (36.6-37.9): a pirate gets up, wobbles round in a circle and topples head first into a barrel, his boots sticking out and kicking ----
+// (the barrel by the rail, its lantern out at dawn; while he dives the barrel's column below its rim hides what is inside it)
+const BAR9: [number, number] = [-0.34, -1.74], S9: [number, number] = [0.75, -1.75], E9: [number, number] = [-0.756, 0.655];      // (E9: the deck direction that is right in c8's picture)
+const c9at = (t: number): [number, number] => [S9[0] + 0.1 * Math.sin(Math.min(t, 0.7) * 7), S9[1] - 0.06 + 0.06 * Math.cos(Math.min(t, 0.7) * 7)];
+const c9u = (t: number) => ease((t - 0.7) / 0.3);
+/** his feet (deck x, y and height) while he dives: the hips go from beside the barrel to its rim in an arc, the body turning head first about them */
+/** his feet (deck x, y and height) while he dives: he springs up, his hips go over the barrel in a high arc, the body turning head first about
+ *  them toward the open deck (to the left in the picture: turned the other way his head swung out of the picture) and down into the barrel */
+const c9feet = (t: number): [number, number, number] => { const a = c9at(t), u = c9u(t), r = -Math.PI * u, H = 0.45 * 1.7;
+  const v = ease(Math.min(1, u * 1.6)), hx = lerp(a[0], BAR9[0], v), hy = lerp(a[1], BAR9[1], v), hz = lerp(H, 0.95, u) + 0.5 * Math.sin(Math.PI * u);
+  return [hx - H * Math.sin(r) * E9[0], hy - H * Math.sin(r) * E9[1], hz - H * Math.cos(r)]; };
 const c9: Shot = { id: "c8", blur: 2.5, focus: 2.2, drift: [1.0, 1.05, 0, 0],
-  // (the approved list had him fall into a barrel; the barrel in view carries the lantern, so he falls flat on his face instead)
-  actors: [{ o: crew(181), h: 1.7, at: (t) => (t < 0.85 ? [1.3 + 0.25 * Math.sin(t * 7), -1.0 + 0.25 * Math.cos(t * 7)] : [1.3, -0.75]), sharp: true,
-    rot: (t) => (t < 0.85 ? 14 * Math.sin(t * 9) : 88 * ease((t - 0.85) / 0.25)),
-    f: (t) => stand({ mode: t < 0.85 ? "march" : "fall", phase: t * 3, expr: "dazed", facing: 1 }), fx: (p, t) => fxStars(p, t % 1) }] };
+  actors: [{ o: crew(181), h: 1.7, sharp: true,
+    at: (t) => { if (t < 0.7) return c9at(t); const f = c9feet(t); return [f[0], f[1]]; },
+    lift: (t) => (t < 0.7 ? 0 : c9feet(t)[2]),
+    rot: (t) => (t < 0.7 ? 14 * Math.sin(t * 9) : -180 * c9u(t)),
+    clip: (t) => { if (t < 0.85) return null; const r0 = proj("c8", [BAR9[0], BAR9[1], 0]), r = proj("c8", [BAR9[0], BAR9[1], 0.9]), half = 1.1 * (r0[1] - r[1]) / 0.9;      // (below the rim, a column wider than the barrel: whatever of him is in it is inside the barrel)
+      return [[-200, -200], [1280, -200], [1280, 2200], [r[0] + half, 2200], [r[0] + half, r[1]], [r[0] - half, r[1]], [r[0] - half, 2200], [-200, 2200]]; },
+    f: (t) => stand({ mode: "march", phase: t < 1.0 ? t * 3 : t * 9, expr: "dazed", facing: 1, cheer: t > 0.8 ? 1 : 0 }), fx: (p, t) => { if (t < 0.7) fxStars(p, t % 1); } }] };
 
 // ---- c10 (37.9-39.7): "Wake up! Warship!": the young pirate drops his telescope and rings the bell; everyone sits bolt upright ----
 const c10: Shot = { id: "c10", blur: 2.5, focus: 2.4, drift: [1.04, 1.1, 0, 10],
   actors: [{ o: YOUNG, h: 1.48, at: (t) => [2.38 + 0.12 * Math.sin(t * 8), -0.98], lift: (t) => (t > 0.4 ? 0.22 + 0.08 * Math.sin(t * 8 + 1) : 0), rot: (t) => (t > 0.4 ? 8 * Math.sin(t * 8) : 0), sharp: true, talk: (t) => talkOf(["w13"], t + 37.9),
-    f: (t) => (t < 0.4 ? stand({ expr: "shock", facing: 1, reachR: [420, 400] }) : stand({ mode: "fall", cheer: 1, expr: "shock", facing: 1 })),
-    hold: (p, h, t, toD) => { if (t < 0.4) telescope(p, h[1], -60 + 200 * ease(t / 0.4)); else { const q = proj("c10", BELL), b = toD([q[0], q[1]]), mid: P2 = [(h[0][0] + h[1][0]) / 2, Math.min(h[0][1], h[1][1])]; p.stroke([b, mid, [mid[0], mid[1] + 300]], 16, INK); p.stroke([b, mid, [mid[0], mid[1] + 300]], 9, "#c9b48a"); } },
+    f: (t) => (t < 0.4 ? stand({ expr: "shock", facing: 1, reachR: [420, 400] }) : stand({ mode: "fall", expr: "shock", facing: 1, cheer: 1 })),
+    hold: (p, h, t, toD) => { if (t < 0.4) telescope(p, h[1], -60 + 200 * ease(t / 0.4)); else { const q = proj("c10", BELL), b = toD([q[0], q[1]]), mid: P2 = [h[1][0], h[1][1] + 6]; p.stroke([b, mid, [mid[0], mid[1] + 40]], 16, INK); p.stroke([b, mid, [mid[0], mid[1] + 40]], 9, "#c9b48a"); } },
     fx: (p, t, toD) => { if (t < 0.4) return; const q = proj("c10", BELL), b = toD([q[0], q[1]]), u = (t * 8) % 2; if (u < 1) { p.g.globalAlpha = 1 - u; for (const r of [90, 140]) p.arc(b[0], b[1], r + 40 * u, r + 40 * u, 200, 340, 9, "#ffe9a8"); p.g.globalAlpha = 1; } } },
     ...([[1.0, -0.6], [0.2, 0.2], [1.6, 0.6], [-0.4, -0.9]] as [number, number][]).map((q, i): Actor => ({ o: crew(190 + i), h: 1.65, at: () => q, rot: (t) => (t < 0.7 + 0.1 * i ? 80 : 80 * (1 - ease((t - 0.7 - 0.1 * i) / 0.15))),
       f: (t) => (t < 0.7 + 0.1 * i ? stand({ mode: "fall", expr: "smile_closed", facing: 1 }) : stand({ mode: "sit", expr: "shock", facing: 1 })) }))] };
@@ -250,8 +267,10 @@ const c12: Shot = { id: "c7", blur: 0.8, drift: [1.12, 1.18, 0, 40], actors: [],
 
 // ---- c13 (42.7-43.8): Roberts' silhouette in the smoke; his teacup on the rail rattles and falls ----
 const c13: Shot = { id: "c11", blur: 3, focus: 1.8, drift: [1.08, 1.12, 0, 30],
-  actors: [{ o: { ...ROBERTS, jacket: "#1c1820", pants: "#1c1820", buttons: "#1c1820" }, h: 1.86, at: still(1.2, -1.65), sharp: true, f: () => stand({ facing: -1, expr: "stern", back: true, reachR: [520, 300] }), hold: (p, h) => cutlass(p, h[1], 20) }],
-  over: (g, t) => { g.fillStyle = "rgba(200,200,205,0.55)"; g.fillRect(0, 0, W_, H_); smoke(g, 300, 900, 0.6 + 0.3 * t, 260, "rgba(235,235,238,"); smoke(g, 820, 1100, 0.5 + 0.3 * t, 220, "rgba(235,235,238,");
+  // (a silhouette: all of him dark, the smoke drifting behind him, never over his head)
+  actors: [{ o: { ...ROBERTS, jacket: "#1c1820", pants: "#1c1820", buttons: "#1c1820", skin: "#26222c", moustache: "#1c1820", sash: "#1c1820" }, h: 1.86, at: still(1.2, -1.65), sharp: true, f: () => stand({ facing: -1, expr: "stern", back: true, reachR: [520, 300] }), hold: (p, h) => cutlass(p, h[1], 20) }],
+  under: (g, t) => { g.fillStyle = "rgba(200,200,205,0.55)"; g.fillRect(0, 0, W_, H_); smoke(g, 260, 700, 0.6 + 0.3 * t, 260, "rgba(235,235,238,"); smoke(g, 860, 900, 0.5 + 0.3 * t, 220, "rgba(235,235,238,"); },
+  over: (g, t) => { smoke(g, 540 + 80 * t, 1820, 0.5 + 0.3 * t, 200, "rgba(235,235,238,");
     const q = proj("c11", [1.6, -2.1, 0.86]), u = clamp((t - 0.45) / 0.5); g.save(); g.translate(q[0] + (t < 0.45 ? 6 * Math.sin(t * 60) : 60 * u), q[1] + 700 * u * u); g.rotate(u * 4); teacup(new Pen(g), [0, 0], 0); g.restore(); } };
 
 // ---- c14 (43.8-45.0): back to the party at the start: the barrel's lantern lit again ----

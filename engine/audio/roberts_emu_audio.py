@@ -48,7 +48,7 @@ CUES = [("whoosh", 0.0, 1.0, 0.2),
         ("thud", 29.9, 1.0, 0.1), ("crack", 30.2, 1.0, 0.0), ("splash", 30.55, 0.5, 0.0),          # the keg set down, its lid knocked in, the dip
         ("ting", 31.02, 0.8, -0.2), ("ting", 31.1, 0.8, 0.0), ("ting", 31.17, 0.8, 0.2), ("rattle", 31.05, 0.6, 0.0),   # the bottles topple
         ("flap", 33.0, 0.9, -0.4), ("flap", 33.25, 0.7, -0.1),                                     # the gull
-        ("fall", 37.35, 0.7, 0.2), ("thud", 37.55, 1.0, 0.2),                                       # the drunk falls flat
+        ("fall", 37.35, 0.7, 0.2), ("thunk", 37.55, 1.1, 0.2),                                      # the drunk dives head first into the barrel
         ("thunk", 38.0, 0.9, 0.2),                                                                 # the telescope dropped
         ("tap", 40.45, 1.0, -0.2), ("shing", 40.9, 1.2, -0.1),                                     # the cup on the rail; the cutlass drawn
         ("blast", 41.6, 0.5, -0.3), ("blast", 41.72, 0.45, -0.1), ("blast", 41.84, 0.45, 0.1), ("blast", 41.96, 0.45, 0.3), ("splash", 42.05, 1.0, -0.2), ("splash", 42.25, 1.0, 0.2),   # the broadside

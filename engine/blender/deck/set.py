@@ -13,7 +13,10 @@ HERE = os.path.dirname(os.path.abspath(__file__)); ENGINE = os.path.abspath(os.p
 A = os.path.join(HERE, "..", "cabin", "assets"); T = os.path.join(HERE, "..", "cabin", "tex")
 argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
 SHOTS_MODE = "--shots" in argv; WHICH = argv[argv.index("--shots") + 1] if SHOTS_MODE else None; CAMS_ONLY = "--cams-only" in argv
-RSPEC = json.load(open(os.path.join(ENGINE, "src", "craft", "roberts3d", "shots.json")))
+# (--spec <film dir under src/videos or src/craft> and --plates <public dir>: the Emu-look film's own shot list, cameras and plates (28 Nov);
+#  without them the Knopp film's, as before)
+SPEC_DIR = argv[argv.index("--spec") + 1] if "--spec" in argv else os.path.join("src", "craft", "roberts3d"); PLATES = argv[argv.index("--plates") + 1] if "--plates" in argv else "rob3d"
+RSPEC = json.load(open(os.path.join(ENGINE, SPEC_DIR, "shots.json")))
 LOOK = argv[argv.index("--look") + 1] if "--look" in argv else (argv[argv.index("--light") + 1] if "--light" in argv else "night"); DRAFT = "--draft" in argv
 OBJ = {}      # object name -> kind, for the solid map
 W, H = 1080, 1920
@@ -173,12 +176,17 @@ if SHOTS_MODE:
     for shot in [q for q in RSPEC["shots"] if (WHICH == "all" or q["id"] == WHICH) and q.get("light", "night") == LOOK]:
         C = shot["cam"]; cam.location = Vector(C["from"][0]); tg.location = Vector(C["at"]); camd.lens = C["lens"]; bpy.context.view_layer.update()
         n = int(math.floor((shot["t1"] - shot["t0"]) * RSPEC["fps"] + 0.5)); P, Mwc = projection(); t0 = time.time()
-        camdir = os.path.join(ENGINE, "src", "craft", "roberts3d", "cam"); os.makedirs(camdir, exist_ok=True); json.dump({"id": shot["id"], "frames": [P] * n}, open(os.path.join(camdir, shot["id"] + ".json"), "w"))
+        camdir = os.path.join(ENGINE, SPEC_DIR, "cam"); os.makedirs(camdir, exist_ok=True); json.dump({"id": shot["id"], "frames": [P] * n}, open(os.path.join(camdir, shot["id"] + ".json"), "w"))
         if CAMS_ONLY: print("CAMS", shot["id"], flush=True); continue
-        outp = os.path.join(ENGINE, "public", "rob3d", shot["id"]); outd = os.path.join(ENGINE, "out", "rob3d", shot["id"]); os.makedirs(outp, exist_ok=True); os.makedirs(outd, exist_ok=True)
+        outp = os.path.join(ENGINE, "public", PLATES, shot["id"]); outd = os.path.join(ENGINE, "out", PLATES, shot["id"]); os.makedirs(outp, exist_ok=True); os.makedirs(outd, exist_ok=True)
         dep, kin, kinds = ray_map(Mwc); np.savez_compressed(os.path.join(outd, "map.npz"), depth=np.stack([dep]), kind=np.stack([kin]), kinds=np.array(kinds))
         # (a shot's own changes to the set: "hide" objects the film draws itself (shot 2's bell rope, hauled), "dark" lanterns already out
         #  at its start (shot 2 opens with the barrel's lantern out: Roberts blew it out in shot 1))
+        # (a shot's ships: shots.json "ships" [{"at": [x, y, z], "rot": deg, "s": scale}]: the captured prize alongside, the warship in the mist;
+        #  imported for this shot and removed after it)
+        shipObjs = []
+        for sp in shot.get("ships", []):
+            before = set(sc.objects); imp("dutch_ship_medium", tuple(sp["at"]), sp.get("rot", 0), sp.get("s", 1.0)); shipObjs += [o for o in sc.objects if o not in before]
         hidden = [o for o in sc.objects if o.name.split(".")[0] in shot.get("hide", [])]
         for o in hidden: o.hide_render = True
         def lamps_out(ks):
@@ -199,6 +207,7 @@ if SHOTS_MODE:
             gone += st["out"]; lamps_out(gone)
             sc.render.filepath = os.path.join(outp, f"{j + 2:04d}.jpg"); bpy.ops.render.render(write_still=True)
         for o in hidden: o.hide_render = False
+        for o in shipObjs: bpy.data.objects.remove(o, do_unlink=True)
         for lp, en, es in saved:      # (every lantern lit again for the next shot)
             for L, e in zip(lp["lights"], en): L.energy = e
             lp["flame"].hide_render = False

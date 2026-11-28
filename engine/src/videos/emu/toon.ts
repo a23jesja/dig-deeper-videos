@@ -22,6 +22,8 @@ export type Outfit = {
   sam?: string;
   /** Sir Digsworth extras: monocle, pipe, bow tie, waistcoat, cane */
   sir?: boolean;
+  /** a full beard over the chin and the jaw (Roberts' bedtime: the rum pirate's ginger beard); the mouth drawn over it */
+  beard?: string;
 };
 type P2 = [number, number];
 
@@ -482,13 +484,17 @@ const hatOn = (p: Pen, o: Outfit, hp: P2[], H: Blob, cx: number, hc: number, lig
     const [bx, by] = R([[cx, yb + 1 * u]])[0];
     p.ell(bx, by, 0.45 * W, 0.05 * HH, "#1d1b22", ow, 0, 360, (a * 180) / Math.PI);
   } else if (o.hat === "tricorn") {
-    // (Roberts' bedtime, 28 Nov: Bartholomew Roberts' black tricorn with gold trim and his red feather, Johnson 1724)
-    const yb = crown + 0.26 * HH, col = "#26222c", f = facing || 0;
-    const body = R([[cx - 0.62 * W, yb + 2 * u], [cx - 0.48 * W, yb - 0.3 * HH], [cx - 0.18 * W, yb - 0.2 * HH], [cx + 0.05 * W * f, yb - 0.46 * HH], [cx + 0.2 * W, yb - 0.2 * HH], [cx + 0.5 * W, yb - 0.3 * HH], [cx + 0.62 * W, yb + 2 * u], [cx, yb + 0.06 * HH]]);
-    p.shadedFill(body, col, mul(col, SH_FELT), light, 0.6 * W, 0.4);
-    p.poly(body, null, ow);
-    p.stroke(R([[cx - 0.6 * W, yb], [cx, yb + 0.05 * HH], [cx + 0.6 * W, yb]]), 3 * u, GOLD);
-    const fb = R([[cx + 0.28 * W, yb - 0.24 * HH], [cx + 0.42 * W, yb - 0.55 * HH], [cx + 0.6 * W, yb - 0.78 * HH], [cx + 0.5 * W, yb - 0.5 * HH], [cx + 0.34 * W, yb - 0.22 * HH]]);
+    // (Roberts' bedtime: Bartholomew Roberts' black tricorn, broad and low with its brim turned up on three sides, gold trim, his red feather
+    //  (Johnson 1724); the reviewer: the first one read as a paper crown)
+    const yb = crown + 0.3 * HH, col = "#26222c", f = facing || 0;
+    const [kx, ky] = R([[cx + f * 0.04 * W, yb - 0.3 * HH]])[0];
+    p.ell(kx, ky, 0.36 * W, 0.17 * HH, col, ow, 0, 360, (a * 180) / Math.PI);      // (the crown behind the turned-up brim)
+    const brimPts = R([[cx - 0.74 * W, yb - 0.2 * HH], [cx - 0.42 * W, yb - 0.3 * HH], [cx + f * 0.04 * W, yb - 0.24 * HH], [cx + 0.42 * W, yb - 0.3 * HH], [cx + 0.74 * W, yb - 0.2 * HH],
+      [cx + 0.42 * W, yb - 0.02 * HH], [cx + f * 0.06 * W, yb + 0.1 * HH], [cx - 0.42 * W, yb - 0.02 * HH]]);
+    p.shadedFill(brimPts, col, mul(col, SH_FELT), light, 0.7 * W, 0.4);
+    p.poly(brimPts, null, ow);
+    p.stroke(R([[cx - 0.72 * W, yb - 0.2 * HH], [cx - 0.42 * W, yb - 0.29 * HH], [cx + f * 0.04 * W, yb - 0.23 * HH], [cx + 0.42 * W, yb - 0.29 * HH], [cx + 0.72 * W, yb - 0.2 * HH]]), 3 * u, GOLD);
+    const fb = R([[cx + 0.4 * W, yb - 0.28 * HH], [cx + 0.55 * W, yb - 0.6 * HH], [cx + 0.75 * W, yb - 0.85 * HH], [cx + 0.66 * W, yb - 0.52 * HH], [cx + 0.48 * W, yb - 0.25 * HH]]);
     p.poly(fb, "#d0262f", ow * 0.8);
   } else if (o.hat === "bandana") {
     // (the rum pirate's red bandana with white dots, knotted at the back)
@@ -528,6 +534,8 @@ export type FrontOpts = {
   light?: number; facing?: -1 | 0 | 1; seed?: number;
   /** seen from behind: no face */
   back?: boolean;
+  /** aim a hand at a point in the 600 x 1000 design space (a held prop); reachFront draws the arm over the body */
+  reachL?: [number, number]; reachR?: [number, number]; reachFront?: boolean;
 };
 
 const footStroke = (p: Pen, a: P2, b: P2, w: number, col: string) => {
@@ -535,6 +543,8 @@ const footStroke = (p: Pen, a: P2, b: P2, w: number, col: string) => {
   p.stroke([a, b], w, col);
 };
 
+/** where the last bodyFront drew each hand (design space: [screen-left arm, screen-right arm]), for a prop held in it */
+export let LAST_HANDS: P2[] = [];
 export const bodyFront = (p: Pen, o: Outfit, opts: FrontOpts) => {
   const { phase = 0, expr = "neutral", mode = "march", look = 0, blink = false, lift = 60, prop = null, tilt = 0, headTilt = 0, wave,
     light = DEF_LIGHT, facing = 0, seed = 1, point, cheer, shrug } = opts;
@@ -627,6 +637,9 @@ export const bodyFront = (p: Pen, o: Outfit, opts: FrontOpts) => {
       arms.push({ pts: [S, E, Hd], front: true });
     } else arms.push({ pts: hang(1, sw), front: false });
   }
+  // (a hand aimed at a point (design space), opts.reachL / reachR: the elbow bowed out and down from the line, Roberts' bedtime's props)
+  for (const [i, tgt] of [[0, opts.reachL], [1, opts.reachR]] as [number, P2 | undefined][]) if (tgt && arms[i]) { const S = arms[i].pts[0], side = i ? 1 : -1, mx = (S[0] + tgt[0]) / 2 + side * 10 * u, my = (S[1] + tgt[1]) / 2 + 12 * u; arms[i] = { pts: [S, [mx, my], tgt], front: !!opts.reachFront }; }
+  LAST_HANDS = arms.map((a) => a.pts[2]);
   const drawArm = (a: Arm) => { p.stroke(curve(a.pts[0], a.pts[1], a.pts[2]), 5.2 * u, armCol); p.dot(a.pts[2][0], a.pts[2][1], 5.5 * u); };
   // behind the body: rifle, sword, arms
   if (rifle) {
@@ -722,6 +735,10 @@ export const bodyFront = (p: Pen, o: Outfit, opts: FrontOpts) => {
   p.inkRing(hp, ow, thick);
   hatOn(p, o, hp, H, 300, hc, light, seed, facing, false);
   const brim = !!o.hat && o.hat !== "hair" && o.hat !== "bonnet" && o.hat !== "cap" && o.hat !== "bandana";
+  if (o.beard && !BACK) { const u = W / 100, fx = 300 + 7 * u * facing, top = hc + 6 * u;      // (a full beard: from cheek to cheek under the eyes, down past the chin in a rounded point; its own ink and two strands)
+    const bp: P2[] = [[fx - 0.9 * H.a, top], ...curve([fx - 0.95 * H.a, top + 0.35 * H.b], [fx - 0.55 * H.a, hc + 1.45 * H.b], [fx, hc + 1.62 * H.b], 10), ...curve([fx, hc + 1.62 * H.b], [fx + 0.55 * H.a, hc + 1.45 * H.b], [fx + 0.95 * H.a, top + 0.35 * H.b], 10), [fx + 0.9 * H.a, top], [fx + 0.4 * H.a, top + 0.5 * H.b], [fx - 0.4 * H.a, top + 0.5 * H.b]];
+    p.shadedFill(bp, o.beard, mul(o.beard, SH_SKIN), light, H.a); p.inkRing(bp, ow, thick);
+    for (const sd of [-0.35, 0.35]) p.stroke(curve([fx + sd * H.a, hc + 0.85 * H.b], [fx + sd * 1.1 * H.a, hc + 1.15 * H.b], [fx + sd * 0.7 * H.a, hc + 1.4 * H.b], 8), 2.5 * u, mix(o.beard, "#ffffff", 0.3)); }
   if (!BACK) faceFront(p, 300, hc, W, expr, facing, look, lid, brim, skin, o.moustache, o.build === "stout");
   BACK = false;
   p.rot = null;
